@@ -7,10 +7,8 @@
     <version>1.1-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-jetty</artifactId>
-<!-- Bug in appassembler prevents using a purely attached assembly
   <packaging>pom</packaging>
--->
-  <name>Archiva Web ::  Jetty</name>
+  <name>Archiva Web :: Jetty</name>
   <dependencies>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
@@ -81,24 +79,36 @@
       <artifactId>commons-el</artifactId>
       <version>1.0</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>tomcat</groupId>
       <artifactId>jasper-compiler</artifactId>
       <version>5.5.15</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>jsp-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>    
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler-jdt</artifactId>
-      <version>5.5.15</version>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>tomcat</groupId>
       <artifactId>jasper-runtime</artifactId>
       <version>5.5.15</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -110,18 +120,6 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>1.0.1</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.6.2</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xmlParserAPIs</artifactId>
-      <version>2.6.2</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
