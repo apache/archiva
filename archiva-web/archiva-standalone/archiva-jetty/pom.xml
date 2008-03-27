@@ -8,7 +8,8 @@
   </parent>
   <artifactId>archiva-jetty</artifactId>
   <packaging>pom</packaging>
-  <name>Archiva Web :: Jetty</name>
+  <!-- This is filtered into the scripts, so should be set to Apache Archiva -->
+  <name>Apache Archiva</name>
   <dependencies>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
