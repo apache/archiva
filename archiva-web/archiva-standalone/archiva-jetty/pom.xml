@@ -158,11 +158,14 @@
                   </configuration>
                 </generatorConfiguration>
               </generatorConfigurations>
-			  <jvmSettings>
-				<systemProperties>
-				  <systemProperty>appserver.base="."</systemProperty>
-				</systemProperties>
-			  </jvmSettings> 
+              <jvmSettings>
+                <systemProperties>
+                  <systemProperty>appserver.base="."</systemProperty>
+                </systemProperties>
+                <systemProperties>
+                  <systemProperty>derby.system.home=logs</systemProperty>
+                </systemProperties>
+              </jvmSettings> 
             </daemon>
           </daemons>          
 <!-- TODO:
