@@ -25,9 +25,60 @@ Apache Archiva Databases
 
     * <<<jdbc/users>>> - the user store
 
-  Configuring an external database for either or both of these sources depends is configured in <<<plexus.xml>>> if you are using the
+  Configuring an external database for either or both of these sources depends is configured in <<<jetty.xml>>> if you are using the
   {{{standalone.html} standalone installation}}, or in the application server configuration if you are using the {{{webapp.html} web application
   installation}}.
+
+  By default the archiva and users databases are stored in the <<<databases>>> directory where Archiva is installed. To change the
+  path, just edit all instances of the "DatabaseName" property in <<<conf/jetty.xml>>> (see below). 
+
++------+
+...
+<New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
+  <Arg>jdbc/archiva</Arg>
+  <Arg>
+    <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+      <Set name="DatabaseName">/path/to/database/directory/archiva</Set>
+      <Set name="user">sa</Set>
+      <Set name="createDatabase">create</Set>
+    </New>
+  </Arg>
+</New>
+
+<New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+  <Arg>jdbc/archivaShutdown</Arg>
+  <Arg>
+    <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+      <Set name="DatabaseName">/path/to/database/directory/archiva</Set>
+      <Set name="user">sa</Set>
+      <Set name="shutdownDatabase">shutdown</Set>
+    </New>
+  </Arg>
+</New>
+
+<New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+  <Arg>jdbc/users</Arg>
+  <Arg>
+    <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+      <Set name="DatabaseName">/path/to/database/directory/users</Set>
+      <Set name="user">sa</Set>
+      <Set name="createDatabase">create</Set>
+    </New>
+  </Arg>
+</New>
+
+<New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+  <Arg>jdbc/usersShutdown</Arg>
+  <Arg>
+    <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+      <Set name="DatabaseName">/path/to/database/directory/users</Set>
+      <Set name="user">sa</Set>
+      <Set name="shutdownDatabase">shutdown</Set>
+    </New>
+  </Arg>
+</New>
+...
++------+
 
 * Backing up the database
 

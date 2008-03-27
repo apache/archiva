@@ -28,17 +28,16 @@
 
 Installing Archiva
 
-  The quickest way to install Archiva is to use the standalone distribution. This includes a bundled Jetty server, started using the Plexus Application Server.
-  For more information on advanced configuration of this instance, refer to the {{{adminguide/standalone.html} Administration Guide}}. It is highly recommended
-  that if you intend to use this permanently that you use the base and installation separation described in that document.
+  The quickest way to install Archiva is to use the standalone distribution. This includes a bundled Jetty server which can be easily started.
+  For more information on advanced configuration of this instance, refer to the {{{adminguide/standalone.html} Administration Guide}}.
 
   To get started right away, you can run the following after unpacking:
 
 ----
-./bin/linux-x86-32/run.sh console
+./bin/archiva console
 ----
 
-  You will need to choose a different start command based on your platform, or use the generic <<<./bin/plexus.sh>>> script. The <<<console>>> argument
+  You will need to choose a different start command based on your platform. The <<<console>>> argument
   starts the server with the logs going to standard output, and waits for Ctrl+C to stop the server.
 
   <<Note:>> A Derby exception "Schema 'SA' does not exist" occurs, but is not of concern.
