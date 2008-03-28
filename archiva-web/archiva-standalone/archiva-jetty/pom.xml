@@ -167,10 +167,6 @@
                       <value>TRUE</value>
                     </property>
                     <property>
-                      <name>set.default.APP_BASE</name>
-                      <value>%PWD%/..</value>
-                    </property>
-                    <property>
                       <name>set.default.REPO_DIR</name>
                       <value>lib</value>
                     </property>
@@ -192,7 +188,9 @@
               <jvmSettings>
                 <systemProperties>
                   <systemProperty>appserver.base=%APP_BASE%</systemProperty>
+                  <!-- can't set this at present, it moves the databases if APP_BASE is not set
                   <systemProperty>derby.system.home=%APP_BASE%/logs</systemProperty>
+                  -->
                   <systemProperty>jetty.logs=%APP_BASE%/logs</systemProperty>
                 </systemProperties>
               </jvmSettings> 
