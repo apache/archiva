@@ -76,12 +76,16 @@ public class MultiplexedDavServerRequest
              */
             this.logicalResource = FilenameUtils.normalize( logicalResource );
 
-            if ( logicalResource != null && logicalResource.startsWith( "//" ) )
+            if ( logicalResource != null )
             {
-                logicalResource = logicalResource.substring( 1 );
-            }
+                logicalResource = logicalResource.replace( '\\', '/' );
 
-            if ( this.logicalResource == null )
+                if ( logicalResource.startsWith( "//" ) )
+                {
+                    logicalResource = logicalResource.substring( 1 );
+                }
+            }
+            else
             {
                 this.logicalResource = "/";
             }
