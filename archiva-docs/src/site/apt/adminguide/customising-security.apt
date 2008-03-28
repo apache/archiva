@@ -9,13 +9,12 @@ Archiva Security Configuration
 
    * <<<~/.m2/security.properties>>>
   
-   * <<<$ARCHIVA_HOME/conf/security.properties>>>
+   * <<<conf/security.properties>>> in the Archiva installation
 
    []
 
  (In the above list, <<<~>>> is the home directory of the user who is running
- Archiva, and <<<$ARCHIVA_HOME>>> is the directory where Archiva is installed,
- such as <<</opt/archiva-1.1-SNAPSHOT>>>.)
+ Archiva.)
 
 ~~TODO: Link to plexus-redback documentation when available
 
@@ -47,5 +46,5 @@ security.policy.password.rule.nowhitespace.enabled=true
  
  <<Note:>> If installed standalone, Archiva's list of configuration files is <itself> configurable, and
  can be found in:
- <<<$ARCHIVA_HOME/apps/archiva/webapp/WEB-INF/classes/META-INF/plexus/application.xml>>>
+ <<<apps/archiva/WEB-INF/classes/META-INF/plexus/application.xml>>>
 

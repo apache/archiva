@@ -48,9 +48,9 @@ Installing Standalone Distribution of Apache Archiva
 
     * If <<<~/.m2/archiva.xml>>> exists, it is saved there
 
-    * Otherwise, it is saved to <<<$ARCHIVA_BASE/conf/archiva.xml>>>, regardless of whether it previously existed.
+    * Otherwise, it is saved to <<<$APP_BASE/conf/archiva.xml>>>, regardless of whether it previously existed.
 
-  The configuration will never be saved in <<<$ARCHIVA_HOME>>>.
+  The configuration will never be saved in the Archiva installation directory if you are using a separate base directory.
 
   Note that the configuration can be edited, but only when Archiva is not running as it will not reload a changed configuration file, and will save over it
   if something is changed in the web interface.
@@ -61,9 +61,9 @@ Installing Standalone Distribution of Apache Archiva
  to store the user information. It can be configured to use an external database
  by providing a JDBC driver and editing the <<<jetty.xml>>> file.
 
- [[1]] Place the jar containing the JDBC driver in <<<$ARCHIVA_HOME/lib>>>.
+ [[1]] Place the jar containing the JDBC driver in the <<<lib>>> directory of the Archiva installation.
 
- [[2]] Edit <<<$ARCHIVA_HOME/conf/jetty.xml>>>, providing the JDBC driver class
+ [[2]] Edit <<<conf/jetty.xml>>>, providing the JDBC driver class
  name, database url, username, and password.
 
  []
