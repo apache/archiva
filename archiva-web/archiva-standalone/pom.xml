@@ -29,8 +29,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>archiva-plexus-application</module>
-    <module>archiva-plexus-runtime</module>
     <module>archiva-jetty</module>
   </modules>
 </project>
