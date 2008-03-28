@@ -45,11 +45,11 @@ To deploy Archiva on Tomcat 5.5 and Tomcat 6.0
  </Context>
 +-------------------------------------------------------------------------+
 
-   * Install <<<derby-10.1.3.1.jar>>> and <<<mail-1.4.jar>>> into the Tomcat <<<common/lib>>>. This is required since the data sources are
-     instantiated before the web application.
+   * Install <<<derby-10.1.3.1.jar>>> (or later) and <<<mail-1.4.jar>>> into the Tomcat 5.5 <<<common/lib>>> or Tomcat 6.0 <<<lib>>> directory.
+     This is required since the data sources are instantiated before the web application.
 
    <<Note>>: Tomcat 5.5.20 and 5.5.23 are missing MailSessionFactory and a
-   few other classes.  JNDI mail sessions will <not> work.  Use Tomcat 5.5.17
+   few other classes.  JNDI mail sessions will <not> work.  Use Tomcat 5.5.25
    instead, or see {{{http://issues.apache.org/bugzilla/show_bug.cgi?id=40668}
    Bug 40668}} for a workaround.
 
