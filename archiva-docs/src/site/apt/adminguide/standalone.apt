@@ -19,15 +19,30 @@ Installing Standalone Distribution of Apache Archiva
 
     []
 
+* Separating the base from the installation
+
+  The standalone instance of Archiva uses the Plexus application server, which is capable of separating it's configuration from installation,
+  in much the same way Tomcat does for example.
+
+  This is achieved by the following steps:
+
+   [[1]] Creating the base location. For example, you might install Archiva in <<</opt/archiva-1.0>>> and the data in <<</var/archiva>>>. Create the directories <<</var/archiva/logs>>>, <<</var/archiva/data>>> and <<</var/archiva/conf>>>.
+
+   [[2]] Copy the configuration files from the Archiva installation (eg <<</opt/archiva-1.0/conf>>> to the new location (eg. <<</var/archiva/conf>>>). If you've previously run Archiva, you may need to edit <<<conf/archiva.xml>>> to change the location of the repositories
+
+   [[3]] Set the environment variable <<<APP_BASE>>> to the data location (eg. <<</var/archiva>>>). In bash, be sure to export the variable.
+
+   [[4]] Start Archiva standalone as described above from the installation location
+
 * Configuring Archiva
 
   Archiva's configuration is loaded from the following files, in order of most precedent:
 
     * <<<~/.m2/archiva.xml>>>
 
-    * <<<$ARCHIVA_BASE/conf/archiva.xml>>>
+    * <<<$APP_BASE/conf/archiva.xml>>>
 
-    * <<<$ARCHIVA_HOME/conf/archiva.xml>>>
+    * <<<conf/archiva.xml>>> in the Archiva installation
 
   When Archiva saves it's configuration, all configuration is stored to a single file. The file chosen is by the following rules:
 

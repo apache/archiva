@@ -294,7 +294,7 @@
     <Arg>jdbc/archiva</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">../data/databases/archiva</Set>
+        <Set name="DatabaseName"><SystemProperty name="appserver.base" default=".."/>/data/databases/archiva</Set>
         <Set name="user">sa</Set>
         <Set name="createDatabase">create</Set>
       </New>
@@ -305,7 +305,7 @@
     <Arg>jdbc/archivaShutdown</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">../data/databases/archiva</Set>
+        <Set name="DatabaseName"><SystemProperty name="appserver.base" default=".."/>/data/databases/archiva</Set>
         <Set name="user">sa</Set>
         <Set name="shutdownDatabase">shutdown</Set>
       </New>
@@ -318,7 +318,7 @@
     <Arg>jdbc/users</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">../data/databases/users</Set>
+        <Set name="DatabaseName"><SystemProperty name="appserver.base" default=".."/>/data/databases/users</Set>
         <Set name="user">sa</Set>
         <Set name="createDatabase">create</Set>
       </New>
@@ -329,7 +329,7 @@
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">../data/databases/users</Set>
+        <Set name="DatabaseName"><SystemProperty name="appserver.base" default=".."/>/data/databases/users</Set>
         <Set name="user">sa</Set>
         <Set name="shutdownDatabase">shutdown</Set>
       </New>

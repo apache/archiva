@@ -128,6 +128,12 @@
       <artifactId>jasper-compiler-jdt</artifactId>
       <version>5.5.15</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jdt</groupId>
+          <artifactId>core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>
@@ -161,20 +167,33 @@
                       <value>TRUE</value>
                     </property>
                     <property>
+                      <name>set.default.APP_BASE</name>
+                      <value>%PWD%/..</value>
+                    </property>
+                    <property>
                       <name>set.default.REPO_DIR</name>
                       <value>lib</value>
                     </property>
                     <property>
                       <name>wrapper.logfile</name>
-                      <value>./logs/wrapper.log</value>
+                      <value>%APP_BASE%/logs/wrapper.log</value>
+                    </property>
+                    <property>
+                      <name>wrapper.app.parameter.2</name>
+                      <value>%APP_BASE%/conf/jetty.xml</value>
+                    </property>
+                    <property>
+                      <name>wrapper.app.parameter.3</name>
+                      <value>%APP_BASE%/conf/jetty-logging.xml</value>
                     </property>
                   </configuration>
                 </generatorConfiguration>
               </generatorConfigurations>
               <jvmSettings>
                 <systemProperties>
-                  <systemProperty>appserver.base="."</systemProperty>
-                  <systemProperty>derby.system.home=logs</systemProperty>
+                  <systemProperty>appserver.base=%APP_BASE%</systemProperty>
+                  <systemProperty>derby.system.home=%APP_BASE%/logs</systemProperty>
+                  <systemProperty>jetty.logs=%APP_BASE%/logs</systemProperty>
                 </systemProperties>
               </jvmSettings> 
             </daemon>
