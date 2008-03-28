@@ -31,6 +31,7 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 
 /**
@@ -182,6 +183,7 @@ public class EditManagedRepositoryActionTest
     }
 
     private ManagedRepositoryConfiguration createRepository()
+        throws IOException
     {
         ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
         r.setId( REPO_ID );
@@ -190,10 +192,11 @@ public class EditManagedRepositoryActionTest
     }
 
     private void populateRepository( ManagedRepositoryConfiguration repository )
+        throws IOException
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
-        repository.setLocation( location.getAbsolutePath() );
+        repository.setLocation( location.getCanonicalPath() );
         repository.setLayout( "default" );
         repository.setRefreshCronExpression( "* 0/5 * * * ?" );
         repository.setDaysOlder( 31 );
