@@ -34,7 +34,8 @@ Installing Archiva
   To get started right away, you can run the following after unpacking:
 
 ----
-./bin/archiva console
+./bin/archiva console (Linux, Mac, Solaris)
+.\bin\archiva console (Windows)
 ----
 
   You will need to choose a different start command based on your platform. The <<<console>>> argument
