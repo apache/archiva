@@ -36,9 +36,9 @@
   <packaging>pom</packaging>
   <version>1.1-SNAPSHOT</version>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/trunk</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/archiva/trunk</url>
   </scm>
 
   <url>http://maven.apache.org/archiva/</url>
@@ -147,7 +147,7 @@
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
-            <tagBase>https://svn.apache.org/repos/asf/maven/archiva/tags</tagBase>
+            <tagBase>https://svn.apache.org/repos/asf/archiva/tags</tagBase>
             <preparationGoals>clean install</preparationGoals>
           </configuration>
         </plugin>

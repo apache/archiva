@@ -31,7 +31,7 @@ Writing a Consumer Plugin
  For a sample custom consumer, you can checkout the archiva-consumer-plugin at the archiva sandbox in the SVN repository:
 
 +----+
-http://svn.apache.org/repos/asf/maven/sandbox/trunk/archiva/archiva-consumer-plugin
+http://svn.apache.org/repos/asf/maven/archiva/sandbox/archiva-consumer-plugin
 +----+
 
  Below are the steps on how to create a custom repository consumer and plug it in Archiva:
