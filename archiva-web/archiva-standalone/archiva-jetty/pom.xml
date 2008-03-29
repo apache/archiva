@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.maven.archiva</groupId>
+    <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web-standalone</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
@@ -22,12 +22,12 @@
       <version>6.1.6</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-webapp</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-docs</artifactId>
       <type>zip</type>
       <classifier>docs</classifier>

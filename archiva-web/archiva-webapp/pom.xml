@@ -21,7 +21,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.maven.archiva</groupId>
+    <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
     <version>1.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
@@ -31,51 +31,51 @@
   <name>Archiva Web :: Application</name>
   <dependencies>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-report-manager</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduled</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-indexer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-database</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-security</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-core-consumers</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-database-consumers</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-lucene-consumers</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-signature-consumers</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-applet</artifactId>
       <!-- TODO: actually, just exclude from WAR plugin -->
       <scope>provided</scope>
@@ -181,7 +181,7 @@
     </dependency>
     <!-- Other dependencies -->
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-webdav</artifactId>
     </dependency>
     <dependency>

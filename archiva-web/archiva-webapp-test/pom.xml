@@ -22,7 +22,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.maven.archiva</groupId>
+    <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
     <version>1.0-alpha-3-SNAPSHOT</version>
   </parent>
@@ -35,7 +35,7 @@
       <artifactId>plexus-command-line</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-webapp</artifactId>
       <type>war</type>
     </dependency>

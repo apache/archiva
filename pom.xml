@@ -26,10 +26,9 @@
   </prerequisites>
 
   <parent>
-    <groupId>org.apache.maven.archiva</groupId>
+    <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>2</version>
-    <relativePath>../archiva-parent/pom.xml</relativePath>
+    <version>3-SNAPSHOT</version>
   </parent>
   <name>Archiva</name>
   <artifactId>archiva</artifactId>
@@ -211,146 +210,146 @@
         <version>1.1</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-applet</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-artifact-converter</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-artifact-reports</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-common</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-configuration</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-consumer-api</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-converter</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-dependency-graph</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-core</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-core-consumers</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-database</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-database-consumers</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-indexer</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-lucene-consumers</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-model</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-plexus-application</artifactId>
         <version>1.1-SNAPSHOT</version>
         <type>plexus-application</type>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-policies</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-proxy</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-report-manager</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-repository-layer</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-scheduled</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-security</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-signature-consumers</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-transaction</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-docs</artifactId>
         <version>1.1-SNAPSHOT</version>
         <type>zip</type>
         <classifier>docs</classifier>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-webapp</artifactId>
         <version>1.1-SNAPSHOT</version>
         <type>war</type>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-xml-tools</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-webdav</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>
