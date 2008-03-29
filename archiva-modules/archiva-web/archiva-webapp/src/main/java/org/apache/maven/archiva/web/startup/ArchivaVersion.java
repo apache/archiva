@@ -48,6 +48,7 @@ public class ArchivaVersion
         }
         
         /* This is the search order of modules to find the version.
+          @todo is this really necessary? Just use webapp?
          */
         String[] modules = new String[] {
             "archiva-common",

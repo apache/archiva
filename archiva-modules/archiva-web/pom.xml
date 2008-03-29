@@ -19,20 +19,29 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva</artifactId>
+    <artifactId>archiva-modules</artifactId>
     <version>1.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>archiva-reporting</artifactId>
+  <artifactId>archiva-web</artifactId>
   <version>1.1-SNAPSHOT</version>
-  <name>Archiva Reporting</name>
+  <name>Archiva Web</name>
   <packaging>pom</packaging>
 
   <modules>
-    <module>archiva-report-manager</module>
-    <module>archiva-artifact-reports</module>
-    <module>archiva-metadata-reports</module>
-    <module>archiva-project-reports</module>
+    <module>archiva-applet</module>
+    <module>archiva-security</module>
+    <module>archiva-webapp</module>
+    <module>archiva-webdav</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>webapp-test</id>
+      <modules>
+        <module>archiva-webapp-test</module>        
+      </modules>
+    </profile>
+  </profiles>
 </project>

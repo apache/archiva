@@ -19,16 +19,28 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva-web</artifactId>
+    <artifactId>archiva-modules</artifactId>
     <version>1.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>archiva-web-standalone</artifactId>
-  <name>Archiva Web :: Standalone</name>
+  <artifactId>archiva-base</artifactId>
+  <version>1.1-SNAPSHOT</version>
+  <name>Archiva Base</name>
   <packaging>pom</packaging>
 
   <modules>
-    <module>archiva-jetty</module>
+    <module>archiva-common</module>
+    <module>archiva-policies</module>
+    <module>archiva-configuration</module>
+    <module>archiva-consumers</module>
+    <module>archiva-indexer</module>
+    <module>archiva-model</module>
+    <module>archiva-dependency-graph</module>
+    <module>archiva-repository-layer</module>
+    <module>archiva-xml-tools</module>
+    <module>archiva-proxy</module>
+    <module>archiva-transaction</module>
+    <module>archiva-artifact-converter</module>
+    <module>archiva-converter</module>
   </modules>
 </project>

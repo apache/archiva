@@ -168,15 +168,12 @@
      -->
   </build>
   <modules>
-    <module>archiva-base</module>
-    <module>archiva-database</module>
-    <module>archiva-reporting</module>
-    <module>archiva-scheduled</module>
-    <module>archiva-web</module>
     <module>archiva-cli</module>
-    <!-- Causes Build Loop :-(
+    <!--
     <module>archiva-docs</module>
-      -->
+    -->
+    <module>archiva-jetty</module>
+    <module>archiva-modules</module>
   </modules>
   <dependencies>
     <dependency>

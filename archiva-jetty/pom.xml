@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva-web-standalone</artifactId>
+    <artifactId>archiva</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-jetty</artifactId>
