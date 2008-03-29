@@ -90,9 +90,9 @@
     </mailingList>
    </mailingLists>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/parent</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/parent</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/archiva/parent</url>
   </scm>
   <properties>
     <siteBaseDeployment>scp://people.apache.org/www/maven.apache.org/archiva</siteBaseDeployment>
@@ -110,7 +110,7 @@
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
-            <tagBase>https://svn.apache.org/repos/asf/maven/archiva/tags</tagBase>
+            <tagBase>https://svn.apache.org/repos/asf/archiva/tags</tagBase>
           </configuration>
         </plugin>
       </plugins>
