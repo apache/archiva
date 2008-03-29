@@ -96,13 +96,13 @@
       <unpack>true</unpack>
       <outputDirectory>apps/archiva</outputDirectory>
       <includes>
-        <include>org.apache.maven.archiva:archiva-webapp</include>
+        <include>org.apache.archiva:archiva-webapp</include>
       </includes>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
       <includes>
-        <include>org.apache.maven.archiva:archiva-docs:zip:docs</include>
+        <include>org.apache.archiva:archiva-docs:zip:docs</include>
       </includes>
     </dependencySet>
   </dependencySets>
