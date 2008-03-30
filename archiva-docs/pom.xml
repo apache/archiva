@@ -87,4 +87,27 @@
       <url>${siteBaseDeployment}/docs/${project.version}</url>
     </site>
   </distributionManagement>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <!-- TODO: this deploys directly - what about staging? -->
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-site-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>deploy</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>
