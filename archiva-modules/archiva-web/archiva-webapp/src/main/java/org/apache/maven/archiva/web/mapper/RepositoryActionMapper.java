@@ -72,6 +72,12 @@ public class RepositoryActionMapper
     public ActionMapping getMapping( HttpServletRequest httpServletRequest )
     {
         String path = httpServletRequest.getServletPath();
+
+        if ("".equals(path)){
+        	// if JEE 5 spec is correctly implemented, the "/*" pattern implies an empty string in servletpath
+        	path = httpServletRequest.getPathInfo();
+        }
+        
         if ( path.startsWith( BROWSE_PREFIX ) )
         {
             path = path.substring( BROWSE_PREFIX.length() );
