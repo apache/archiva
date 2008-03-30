@@ -66,7 +66,7 @@ application/x-troff-ms                   ms
 application/x-ustar                      ustar
 application/x-wais-source                src
 application/xhtml+xml                    xhtml xht
-application/xml                          xml xsl
+application/xml                          xml xsl pom
 application/xml-dtd                      dtd
 application/xslt+xml                     xslt
 application/zip                          zip
