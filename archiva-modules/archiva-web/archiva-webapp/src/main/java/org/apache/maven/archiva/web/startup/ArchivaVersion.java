@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.startup;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,65 +48,32 @@ public class ArchivaVersion
             return version;
         }
         
-        /* This is the search order of modules to find the version.
-          @todo is this really necessary? Just use webapp?
-         */
-        String[] modules = new String[] {
-            "archiva-common",
-            "archiva-configuration",
-            "archiva-database",
-            "archiva-consumer-api",
-            "archiva-core-consumers",
-            "archiva-signature-consumers",
-            "archiva-database-consumers",
-            "archiva-lucene-consumers",
-            "archiva-indexer",
-            "archiva-model",
-            "archiva-policies",
-            "archiva-proxy",
-            "archiva-report-manager",
-            "archiva-artifact-reports",
-            "archiva-project-reports",
-            "archiva-metadata-reports",
-            "archiva-repository-layer",
-            "archiva-scheduled",
-            "archiva-webapp",
-            "archiva-security",
-            "archiva-applet",
-            "archiva-xml-tools" };
-
-        for ( int i = 0; i < modules.length; i++ )
+        InputStream is = cloader.getResourceAsStream( "/META-INF/maven/org.apache.archiva/archiva-configuration/pom.properties" );
+        if ( is != null )
         {
-            String module = modules[i];
-            URL pomurl = findModulePom( cloader, module );
-            if ( pomurl != null )
+            try
             {
-                try
+                Properties props = new Properties();
+                props.load( is );
+                String version = props.getProperty( "version" );
+                if ( StringUtils.isNotBlank( version ) )
                 {
-                    Properties props = new Properties();
-                    InputStream is = pomurl.openStream();
-                    props.load( is );
-                    String version = props.getProperty( "version" );
-                    if ( StringUtils.isNotBlank( version ) )
-                    {
-                        ArchivaVersion.version = version;
-                        return version;
-                    }
+                    ArchivaVersion.version = version;
+                    return version;
                 }
-                catch ( IOException e )
-                {
-                    /* do nothing */
-                }
+            }
+            catch ( IOException e )
+            {
+                /* do nothing */
+            }
+            finally
+            {
+                IOUtils.closeQuietly( is );
             }
         }
 
-        version = "<Unknown Version>";
+        ArchivaVersion.version = "";
         return version;
-    }
-
-    private static URL findModulePom( ClassLoader cloader, String module )
-    {
-        return cloader.getResource( "/META-INF/maven/org.apache.maven.archiva/" + module + "/pom.properties" );
     }
 
     public static String getVersion()
