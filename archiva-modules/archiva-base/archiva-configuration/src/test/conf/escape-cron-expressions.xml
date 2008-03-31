@@ -26,7 +26,7 @@
       <location>file://${appserver.base}/repositories/internal</location>
       <releases>false</releases>
       <snapshots>true</snapshots>
-      <refreshCronExpression>0 0\,30 * * ?</refreshCronExpression>
+      <refreshCronExpression>0 0\,30 * * * ?</refreshCronExpression>
     </managedRepository>
   </managedRepositories>
   <databaseScanning>
