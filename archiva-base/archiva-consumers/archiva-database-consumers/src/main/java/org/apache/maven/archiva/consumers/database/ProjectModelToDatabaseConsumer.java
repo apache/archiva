@@ -41,6 +41,8 @@ import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
 
+import org.codehaus.plexus.cache.Cache;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +103,11 @@ public class ProjectModelToDatabaseConsumer
 
     private List<String> includes;
 
+    /**
+     * @plexus.requirement role-hint="effective-project-cache"
+     */
+    private Cache effectiveProjectCache;
+
     public ProjectModelToDatabaseConsumer()
     {
         includes = new ArrayList<String>();
@@ -130,11 +137,15 @@ public class ProjectModelToDatabaseConsumer
             // Not a pom.  Skip it.
             return;
         }
-
-        if ( hasProjectModelInDatabase( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() ) )
+        
+        ArchivaProjectModel model = null;
+        
+        // remove old project model if it already exists in the database
+        if ( ( model =
+            getProjectModelFromDatabase( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() ) ) != null )
         {
-            // Already in the database.  Skip it.
-            return;
+            removeOldProjectModel( model );
+            model = null;
         }
 
         ManagedRepositoryContent repo = getRepository( artifact );
@@ -148,10 +159,10 @@ public class ProjectModelToDatabaseConsumer
 
         try
         {
-            ArchivaProjectModel model = reader.read( artifactFile );
+            model = reader.read( artifactFile );
 
             model.setOrigin( "filesystem" );
-            
+
             // The version should be updated to the artifact/filename version if it is a unique snapshot
             if ( VersionUtil.isUniqueSnapshot( artifact.getVersion() ) )
             {
@@ -167,6 +178,7 @@ public class ProjectModelToDatabaseConsumer
             if ( isValidModel( model, repo, artifact ) )
             {
                 getLogger().debug( "Adding project model to database - " + Keys.toKey( model ) );                
+
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else
@@ -195,20 +207,20 @@ public class ProjectModelToDatabaseConsumer
         }
     }
 
-    private boolean hasProjectModelInDatabase( String groupId, String artifactId, String version )
+    private ArchivaProjectModel getProjectModelFromDatabase( String groupId, String artifactId, String version )
     {
         try
         {
             ArchivaProjectModel model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
-            return ( model != null );
+            return model;
         }
         catch ( ObjectNotFoundException e )
         {
-            return false;
+            return null;
         }
         catch ( ArchivaDatabaseException e )
         {
-            return false;
+            return null;
         }
     }
 
@@ -255,7 +267,7 @@ public class ProjectModelToDatabaseConsumer
             appendModel( emsg, model );
             emsg.append( "]: The model artifactId [" ).append( model.getArtifactId() );
             emsg.append( "] does not match the artifactId portion of the filename: " ).append( artifact.getArtifactId() );
-            
+	    
             getLogger().warn(emsg.toString() );
             addProblem( artifact, emsg.toString() );
 
@@ -271,7 +283,7 @@ public class ProjectModelToDatabaseConsumer
             appendModel( emsg, model );
             emsg.append( "]; The model version [" ).append( model.getVersion() );
             emsg.append( "] does not match the version portion of the filename: " ).append( artifact.getVersion() );
-            
+	    
             getLogger().warn(emsg.toString() );
             addProblem( artifact, emsg.toString() );
 
@@ -293,7 +305,7 @@ public class ProjectModelToDatabaseConsumer
         throws ConsumerException
     {
         ManagedRepositoryContent repo = getRepository( artifact );
-        
+
         RepositoryProblem problem = new RepositoryProblem();
         problem.setRepositoryId( artifact.getModel().getRepositoryId() );
         problem.setPath( repo.toPath( artifact ) );
@@ -316,4 +328,37 @@ public class ProjectModelToDatabaseConsumer
         }
     }
 
+    private String toProjectKey( ArchivaProjectModel project )
+    {
+        StringBuilder key = new StringBuilder();
+
+        key.append( project.getGroupId() ).append( ":" );
+        key.append( project.getArtifactId() ).append( ":" );
+        key.append( project.getVersion() );
+
+        return key.toString();
+    }
+
+    private void removeOldProjectModel( ArchivaProjectModel model )
+    {
+        try
+        {
+            dao.getProjectModelDAO().deleteProjectModel( model );
+        }
+        catch ( ArchivaDatabaseException ae )
+        {
+            getLogger().error( "Unable to delete existing project model." );
+        }
+
+        // Force removal of project model from effective cache
+        String projectKey = toProjectKey( model );
+        synchronized ( effectiveProjectCache )
+        {
+            if ( effectiveProjectCache.hasKey( projectKey ) )
+            {
+                effectiveProjectCache.remove( projectKey );
+            }
+        }
+    }
+    
 }
