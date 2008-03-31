@@ -8,7 +8,7 @@
     <param name="append" value="true" />
     <param name="datePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n"/>
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n"/>
     </layout>
   </appender>
   
@@ -18,13 +18,6 @@
     <param name="datePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %m%n"/>
-    </layout>
-  </appender>
-
-  <appender name="console" class="org.apache.log4j.ConsoleAppender">
-    <param name="Target" value="System.out"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n"/>
     </layout>
   </appender>
 
