@@ -19,6 +19,7 @@ package org.apache.maven.archiva.consumers.database;
  * under the License.
  */
 
+import org.codehaus.plexus.cache.Cache;
 import org.easymock.MockControl;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -37,6 +38,8 @@ public class DatabaseCleanupRemoveProjectConsumerTest
     private ProjectModelDAO projectModelDAOMock;
 
     private DatabaseCleanupRemoveProjectConsumer dbCleanupRemoveProjectConsumer;
+    
+    private Cache effectiveProjectCache;
 
     public void setUp()
         throws Exception
@@ -47,11 +50,15 @@ public class DatabaseCleanupRemoveProjectConsumerTest
 
         projectModelDAOControl = MockControl.createControl( ProjectModelDAO.class );
 
-        projectModelDAOMock = (ProjectModelDAO) projectModelDAOControl.getMock();
+        projectModelDAOMock = (ProjectModelDAO) projectModelDAOControl.getMock();        
+        
+        effectiveProjectCache = (Cache) lookup( Cache.class, "effective-project-cache" );
 
         dbCleanupRemoveProjectConsumer.setProjectModelDAO( projectModelDAOMock );
         
         dbCleanupRemoveProjectConsumer.setRepositoryFactory( repositoryFactory );
+        
+        dbCleanupRemoveProjectConsumer.setEffectiveProjectCache( effectiveProjectCache );
     }
 
     public void testIfArtifactWasNotDeleted()
