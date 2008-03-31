@@ -608,7 +608,7 @@ public class ArchivaConfigurationTest
         userFile.getParentFile().mkdirs();
         FileUtils.fileWrite( userFile.getAbsolutePath(), "<configuration/>" );
 
-        ArchivaConfiguration archivaConfiguration =
+        final ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-cron-expressions" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
@@ -616,9 +616,27 @@ public class ArchivaConfigurationTest
         ManagedRepositoryConfiguration repository =
             (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
 
-        assertEquals( "check cron expression", "0 0,30 * * ?", repository.getRefreshCronExpression().trim() );
+        assertEquals( "check cron expression", "0 0,30 * * * ?", repository.getRefreshCronExpression().trim() );
 
         configuration.getDatabaseScanning().setCronExpression( "0 0,15 0 * * ?" );
+
+        // add a test listener to confirm it doesn't see the escaped format. We don't need to test the number of calls,
+        // etc. as it's done in other tests
+        archivaConfiguration.addListener( new ConfigurationListener()
+        {
+            public void configurationEvent( ConfigurationEvent event )
+            {
+                assertEquals( ConfigurationEvent.SAVED, event.getType() );
+
+                Configuration configuration = archivaConfiguration.getConfiguration();
+
+                ManagedRepositoryConfiguration repository =
+                    (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
+
+                assertEquals( "check cron expression", "0 0,15 0 * * ?",
+                              configuration.getDatabaseScanning().getCronExpression() );
+            }
+        } );
 
         archivaConfiguration.save( configuration );
 
