@@ -172,15 +172,19 @@
                     </property>
                     <property>
                       <name>wrapper.logfile</name>
-                      <value>%APP_BASE%/logs/wrapper.log</value>
+                      <value>%ARCHIVA_BASE%/logs/wrapper.log</value>
                     </property>
                     <property>
                       <name>wrapper.app.parameter.2</name>
-                      <value>%APP_BASE%/conf/jetty.xml</value>
+                      <value>%ARCHIVA_BASE%/conf/jetty.xml</value>
                     </property>
                     <property>
                       <name>wrapper.app.parameter.3</name>
-                      <value>%APP_BASE%/conf/jetty-logging.xml</value>
+                      <value>%ARCHIVA_BASE%/conf/jetty-logging.xml</value>
+                    </property>
+                    <property>
+                      <name>app.base.envvar</name>
+                      <value>ARCHIVA_BASE</value>
                     </property>
                   </configuration>
                 </generatorConfiguration>
@@ -188,11 +192,11 @@
               <jvmSettings>
                 <systemProperties>
                   <systemProperty>appserver.home=.</systemProperty>
-                  <systemProperty>appserver.base=%APP_BASE%</systemProperty>
-                  <!-- can't set this at present, it moves the databases if APP_BASE is not set
-                  <systemProperty>derby.system.home=%APP_BASE%/logs</systemProperty>
+                  <systemProperty>appserver.base=%ARCHIVA_BASE%</systemProperty>
+                  <!-- can't set this at present, it moves the databases if ARCHIVA_BASE is not set
+                  <systemProperty>derby.system.home=%ARCHIVA_BASE%/logs</systemProperty>
                   -->
-                  <systemProperty>jetty.logs=%APP_BASE%/logs</systemProperty>
+                  <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
                 </systemProperties>
               </jvmSettings> 
             </daemon>

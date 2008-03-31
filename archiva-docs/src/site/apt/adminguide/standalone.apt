@@ -50,7 +50,7 @@ Installing Standalone Distribution of Apache Archiva
 
    [[2]] Copy the configuration files from the Archiva installation (eg <<</opt/archiva-1.0/conf>>> to the new location (eg. <<</var/archiva/conf>>>). If you've previously run Archiva, you may need to edit <<<conf/archiva.xml>>> to change the location of the repositories
 
-   [[3]] Set the environment variable <<<APP_BASE>>> to the data location (eg. <<</var/archiva>>>). In bash, be sure to export the variable.
+   [[3]] Set the environment variable <<<ARCHIVA_BASE>>> to the data location (eg. <<</var/archiva>>>). In bash, be sure to export the variable.
 
    [[4]] Start Archiva standalone as described above from the installation location
 
@@ -60,7 +60,7 @@ Installing Standalone Distribution of Apache Archiva
 
     * <<<~/.m2/archiva.xml>>>
 
-    * <<<$APP_BASE/conf/archiva.xml>>>
+    * <<<$ARCHIVA_BASE/conf/archiva.xml>>>
 
     * <<<conf/archiva.xml>>> in the Archiva installation
 
@@ -68,7 +68,7 @@ Installing Standalone Distribution of Apache Archiva
 
     * If <<<~/.m2/archiva.xml>>> exists, it is saved there
 
-    * Otherwise, it is saved to <<<$APP_BASE/conf/archiva.xml>>>, regardless of whether it previously existed.
+    * Otherwise, it is saved to <<<$ARCHIVA_BASE/conf/archiva.xml>>>, regardless of whether it previously existed.
 
   The configuration will never be saved in the Archiva installation directory if you are using a separate base directory.
 
