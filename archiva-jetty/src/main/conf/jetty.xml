@@ -168,7 +168,6 @@
 	  <Set name="parentLoaderPriority">false</Set>
 	  <Set name="extract">true</Set>
 	  <Set name="allowDuplicates">false</Set>
-          <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="."/>/conf/webdefault.xml</Set>
         </New>
       </Arg>
     </Call>
