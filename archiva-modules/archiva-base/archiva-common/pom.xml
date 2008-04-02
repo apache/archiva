@@ -64,9 +64,19 @@
       <version>2.7.0</version>
     </dependency>
     <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+      <version>0.9</version>
+    </dependency>
+    <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
       <version>1.6.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
