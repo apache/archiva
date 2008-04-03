@@ -42,7 +42,7 @@
         <tr>
           <td>
             <ww:label for="policy_${policy.key}" required="true"
-                      theme="simple">${policy.key}:
+                      theme="simple">${policy.value.name}:
             </ww:label>
           </td>
           <td>

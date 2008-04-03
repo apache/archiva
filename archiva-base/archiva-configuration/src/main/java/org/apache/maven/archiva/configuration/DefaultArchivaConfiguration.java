@@ -29,7 +29,7 @@ import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryW
 import org.apache.maven.archiva.policies.AbstractUpdatePolicy;
 import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
-import org.apache.maven.archiva.policies.DownloadPolicy;
+import org.apache.maven.archiva.policies.Policy;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
@@ -276,7 +276,7 @@ public class DefaultArchivaConfiguration
                     // Validate existance of policy key.
                     if ( policyExists( policyId ) )
                     {
-                        DownloadPolicy policy = findPolicy( policyId );
+                        Policy policy = findPolicy( policyId );
                         // Does option exist?
                         if ( !policy.getOptions().contains( setting ) )
                         {
@@ -319,7 +319,7 @@ public class DefaultArchivaConfiguration
         return config;
     }
 
-    private DownloadPolicy findPolicy( String policyId )
+    private Policy findPolicy( String policyId )
     {
         if ( MapUtils.isEmpty( prePolicies ) )
         {
@@ -333,7 +333,7 @@ public class DefaultArchivaConfiguration
             return null;
         }
 
-        DownloadPolicy policy;
+        Policy policy;
 
         policy = prePolicies.get( policyId );
         if ( policy != null )

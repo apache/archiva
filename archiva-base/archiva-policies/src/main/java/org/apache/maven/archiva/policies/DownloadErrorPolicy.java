@@ -20,27 +20,31 @@ package org.apache.maven.archiva.policies;
  */
 
 import java.io.File;
+import java.util.Map;
 import java.util.Properties;
 
 /**
- * DownloadPolicy 
+ * Policy to apply after the download has completed, but before the
+ * resource is made available to the calling client.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id$
  */
-public interface DownloadPolicy
+public interface DownloadErrorPolicy
     extends Policy
 {
-
     /**
-     * Apply the download policy.
-     * 
-     * @param policySetting the policy setting.
-     * @param request the list of request properties that the policy might use.
+     * Apply the download error policy.
+     *
+     * @param policySetting      the policy setting.
+     * @param request            the list of request properties that the policy might use.
      * @param localFile
-     * 
-     * @throws PolicyViolationException if the policy has been violated.
+     * @param exception          the exception that triggered the error
+     * @param previousExceptions any previously triggered exceptions
+     * @return whether to process the exception or not
+     * @throws PolicyConfigurationException if the policy is improperly configured
      */
-    public void applyPolicy( String policySetting, Properties request, File localFile )
-        throws PolicyViolationException, PolicyConfigurationException;
+    public boolean applyPolicy( String policySetting, Properties request, File localFile, Exception exception,
+                                Map<String, Exception> previousExceptions )
+        throws PolicyConfigurationException;
 }

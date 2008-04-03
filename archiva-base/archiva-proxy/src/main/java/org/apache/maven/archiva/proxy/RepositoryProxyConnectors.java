@@ -22,6 +22,7 @@ package org.apache.maven.archiva.proxy;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 
 import java.io.File;
@@ -45,11 +46,11 @@ public interface RepositoryProxyConnectors
      * @param repository the source repository to use. (must be a managed repository)
      * @param artifact the artifact to fetch.
      * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
-     * @throws ProxyException if there was a problem fetching the content from the target repositories.
+     * @throws ProxyDownloadException if there was a problem fetching the content from the target repositories.
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
-        throws ProxyException;
-    
+        throws ProxyDownloadException;
+
     /**
      * Performs the metadata fetch operation against the target repositories
      * of the provided source repository.
@@ -60,11 +61,9 @@ public interface RepositoryProxyConnectors
      * @param repository the source repository to use. (must be a managed repository)
      * @param metadata the metadata to fetch.
      * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
-     * @throws ProxyException if there was a problem fetching the content from the target repositories.
      */
-    public File fetchFromProxies( ManagedRepositoryContent repository, VersionedReference metadata )
-        throws ProxyException;
-    
+    public File fetchFromProxies( ManagedRepositoryContent repository, VersionedReference metadata );
+
     /**
      * Performs the metadata fetch operation against the target repositories
      * of the provided source repository.
@@ -75,10 +74,8 @@ public interface RepositoryProxyConnectors
      * @param repository the source repository to use. (must be a managed repository)
      * @param metadata the metadata to fetch.
      * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
-     * @throws ProxyException if there was a problem fetching the content from the target repositories.
      */
-    public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata )
-        throws ProxyException;
+    public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata );
 
     /**
      * Get the List of {@link ProxyConnector} objects of the source repository.
