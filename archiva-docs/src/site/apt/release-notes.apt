@@ -1,12 +1,12 @@
  -----
- Release Notes for Archiva 1.0
+ Release Notes for Archiva 1.1
  -----
 
-Release Notes for Archiva 1.0
+Release Notes for Archiva 1.1 (DRAFT)
 
-  The Apache Archiva team would like to announce the release of Archiva 1.0.
+  The Apache Archiva team would like to announce the release of Archiva 1.1.
 
-  Archiva 1.0 is {{{http://maven.apache.org/archiva/download.html} available for download from the web site}}.
+  Archiva 1.1 is {{{http://maven.apache.org/archiva/download.html} available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
 
@@ -16,22 +16,161 @@ Release Notes for Archiva 1.0
 
     * the archiva-user mailing list: {{http://maven.apache.org/archiva/mail-lists.html}}
 
+* New in Archiva 1.1
+
+** Artifact Uploads
+
+   To simplify adding artifacts to a repository, an upload form has been put in place that allows you to put an artifact and POM into
+   the repository without the need for the Maven <<<deploy-file>>> command.
+
+   ~~TODO: screenshot, more detail
+
+** RSS
+
+   RSS is now available for getting a feed of new artifacts being added to a given repository, or Archiva-wide (???)
+
+   ~~TODO: screenshot, more detail
+
+** Timeouts
+
+   Connections to remote repositories can now have a configurable timeout value
+
+** New Runtime Bundle
+
+   The application is now distributed using Jetty 6.1 and it's documented configuration, rather than the previous
+   Plexus application server bundle. It continues to use the Java Service Wrapper (v3.2.3) for application monitoring,
+   though the configuration has been improved, particularly with regard to separating the application configuration from the installation.
+
+** Using Spring
+
+   Archiva now uses the Spring Framework as it's underlying container instead of Plexus. This results in a boost in performance and
+   stability for the web application in particular.
+
 * Release Notes
 
-  Archiva 1.0 is the culmination of many months of development and several beta-testing releases. Past issues can be seen in the JIRA instance and the implemented feature set in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.1 feature set can be seen in the {{{tour/index.html} feature tour}}.
 
-  The following describes the changes since the beta-4 release. The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=12113&styleName=Text&projectId=10980} in JIRA}}.
+  The following describes the changes since the 1.0.2 release. The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13861&styleName=Text&projectId=10980} in JIRA}}.
 
------
+* Changes in Archiva 1.1
+
+~~TODO: paste release notes
+
+* Changes in Archiva 1.0.2
+
 ** Bug
-    * [MRM-545] - Documentation for configuring for Tomcat is invalid
-    * [MRM-586] - entire proxy request fails if a queried remote repository throws a proxyexception
-    * [MRM-595] - regression : server-side relocation fails
-    * [MRM-596] - regression : cannot get java-sources anymore from maven1
-    * [MRM-598] - Validation error on new repository creation
+
+    * [MRM-159] - should not respond with a 404 if proxying a file results in a remote error
+
+    * [MRM-532] - Unable to specify the location of the index files through the web ui
+
+    * [MRM-598] - Validation error on new repository creation and other fields under certain conditions
+
+    * [MRM-608] - Unable to find project model for  [...] if the initial import of the POM failed
+
+    * [MRM-617] - Reporting does not work due to bug in client-side JavaScript validation
+
+    * [MRM-618] - PLEXUS_BASE does not work for local databases
+
+    * [MRM-622] - database not being updated with project model information
+
+    * [MRM-626] - ClassCastException when saving proxy connector with property defined
+
+    * [MRM-627] - Archiva doesn't download SNAPSHOTs for proxied repositories.
+
+    * [MRM-631] - network proxy is always used when defined
+
+    * [MRM-642] - archiva-common tests rely on relative paths
+
+    * [MRM-655] - The logs are duplicated in the archiva.log and wrapper.log file.
+
+    * [MRM-659] - archiva cannot serve ejb artifacts from a maven1 repository
+
+    * [MRM-661] - remote repository removals are not saved after restart
+
+    * [MRM-664] - Cannot download a strut-module artifact in a Legacy repository
+
+    * [MRM-674] - LayoutException when downloading SNAPSHOT test-sources
+
+    * [MRM-683] - Archiva version missing from pages and logs
+
+    * [MRM-687] - Project model cannot be added to database if it inherits groupId and/or version from parent POM
+
+    * [MRM-689] - Incorrect war name in example for tomcat
+
+    * [MRM-690] - using undefined appserver.base
+
+    * [MRM-691] - Can't get any of the consumers to work without through a NPE
+
+    * [MRM-701] - Buggy documentation on "separating the base from the installation"
+
+    * [MRM-703] - Artifacts with extensions longer than fours characters breaks repository scanning.
+
+    * [MRM-713] - extensionPattern in FilenameParser is incorrect
+
+    * [MRM-715] - error adding artifacts to Lucene under some circumstances
+
+    * [MRM-719] - NPE during repository scan
+
+    * [MRM-725] - /archiva/browse URL does not work on WebSphere
+
+    * [MRM-727] - Archiva does not download plugin artifacts in Geronimo
+
+    * [MRM-734] - Unable to update metadata - No versions found for reference 
+
+    * [MRM-746] - unable to include *.xml in artifacts list as it picks up maven-metadata.xml
+
+    * [MRM-750] - Adding a network proxy doesn't require an identifier
+
+    * [MRM-755] - No content type for .pom files denoted in file "archiva-mime-types.txt" - workaround included
+
+    * [MRM-758] - unable to schedule cron expressions that contain a comma
+
+    * [MRM-761] - Exception when trying to retrieve a Maven 1 artifact of type zip
+
+    * [MRM-762] - Footer doesn't stretch across repositoryScanning and database pages
+
+    * [MRM-763] - Default cron expression for database update is invalid
+
+    * [MRM-764] - default policies are not selected in the add proxy connector page
+
+** Improvement
+
+    * [MRM-504] - Find Artifact page needs more onscreen information/instructions
+
+    * [MRM-656] - Admin guide for installing WAR needs updating
+
+    * [MRM-666] - Edit Managed Repository page should indicate the repo id being edited
+
+    * [MRM-700] - Review the documentation on deploying to Archiva for inconsistent repository ids
+
+    * [MRM-720] - Upgrade Lucene from 2.0 to 2.3.1
+
+* Changes in Archiva 1.0.1
+
+** Bug
+
+  * [MRM-623] - find artifact self signed certificate will expire soon
+
+  * [MRM-628] - In the audit.log file the userid for each action is guest, even though the deploy was performed by admin
+
+  * [MRM-630] - http 502 proxy error with browse button after 2 days running
+
+  * [MRM-633] - Logging is too verbose
+
+  * [MRM-646] - Documentation for configuring for Tomcat is invalid
+
+  * [MRM-662] - Repo purge is not deleting artifacts in correct order
+
+  * [MRM-668] - Repo browse and search isn't working in trunk and in archiva 1.0.1 release candidate
+
+  * [MRM-670] - legacy artifact mapping form needs better validation
+
+** Improvement
+
+  * [MRM-594] - add some minimal hook in LegacyPathParser to allow exception management in artifact resolution
 
 ** Task
-    * [MRM-583] - Finalise and publish updated web site
-    * [MRM-587] - further changes to logging needed
------
+
+  * [MRM-619] - Update docs/site for some corrections
 
