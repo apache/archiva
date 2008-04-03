@@ -242,6 +242,12 @@ public class ManagedDefaultRepositoryContent
 
             String relativePath = PathUtil.getRelative( repository.getLocation(), repoFiles[i] );
 
+            if ( filetypes.matchesDefaultExclusions( relativePath ) )
+            {
+                // Skip it, it's metadata or similar
+                continue;
+            }
+
             if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
                 ArtifactReference artifact = toArtifactReference( relativePath );
