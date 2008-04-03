@@ -35,6 +35,7 @@ import org.codehaus.plexus.util.SelectorUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,15 @@ public class FileTypes
     private Map<String, List<String>> defaultTypeMap = new HashMap<String, List<String>>();
 
     private List<String> artifactPatterns;
+
+    /**
+     * Default exclusions from artifact consumers that are using the file types. Note that this is simplistic in the
+     * case of the support files (based on extension) as it is elsewhere - it may be better to match these to actual
+     * artifacts and exclude later during scanning.
+     */
+    public static final List<String> DEFAULT_EXCLUSIONS = Arrays.asList( "**/maven-metadata.xml",
+                                                                          "**/maven-metadata-*.xml", "**/*.sha1",
+                                                                          "**/*.asc", "**/*.md5", "**/*.pgp" );
 
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
@@ -125,8 +135,26 @@ public class FileTypes
         {
             artifactPatterns = getFileTypePatterns( ARTIFACTS );
         }
-        
+
         for ( String pattern : artifactPatterns )
+        {
+            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
+            {
+                // Found match
+                return true;
+            }
+        }
+
+        // No match.
+        return false;
+    }
+
+    public boolean matchesDefaultExclusions( String relativePath )
+    {
+        // Correct the slash pattern.
+        relativePath = relativePath.replace( '\\', '/' );
+
+        for ( String pattern : DEFAULT_EXCLUSIONS )
         {
             if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
             {
@@ -145,7 +173,7 @@ public class FileTypes
         // TODO: why is this done by hand?
 
         String errMsg = "Unable to load default archiva configuration for FileTypes: ";
-        
+
         try
         {
             CommonsConfigurationRegistry commonsRegistry = new CommonsConfigurationRegistry();
@@ -156,7 +184,7 @@ public class FileTypes
             fld.set( commonsRegistry, new CombinedConfiguration() );
             commonsRegistry.enableLogging( getLogger() );
             commonsRegistry.addConfigurationFromResource( "org/apache/maven/archiva/configuration/default-archiva.xml" );
-            
+
             // Read configuration as it was intended.
             ConfigurationRegistryReader configReader = new ConfigurationRegistryReader();
             Configuration defaultConfig = configReader.read( commonsRegistry );
