@@ -46,9 +46,12 @@
             </ww:label>
           </td>
           <td>
+            <c:set var="value">
+              <ww:property id="value" value="connector.policies['${policy.key}']" default="${policy.value.defaultOption}" />
+            </c:set>
             <ww:select name="connector.policies['${policy.key}']"
                        list="policyMap['${policy.key}'].options"
-                       value="connector.policies['${policy.key}']"
+                       value="'${value}'"
                        id="policy_${policy.key}"
                        theme="simple"
                        cssStyle="width: 10em"/>
