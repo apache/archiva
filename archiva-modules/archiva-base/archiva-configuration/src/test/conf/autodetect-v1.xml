@@ -28,7 +28,7 @@
       <releases>true</releases>
       <snapshots>false</snapshots>
       <indexed>true</indexed>
-      <refreshCronExpression>0 0 * * ?</refreshCronExpression>
+      <refreshCronExpression>0 0 * * * ?</refreshCronExpression>
     </repository>
     <repository>
       <id>snapshots</id>
@@ -38,7 +38,7 @@
       <releases>false</releases>
       <snapshots>true</snapshots>
       <indexed>true</indexed>
-      <refreshCronExpression>0 0,30 * * ?</refreshCronExpression>
+      <refreshCronExpression>0 0,30 * * * ?</refreshCronExpression>
     </repository>
     <repository>
       <id>central</id>
@@ -164,7 +164,7 @@
   </repositoryScanning>
 
   <databaseScanning>
-    <cronExpression>0 0 * * ?</cronExpression>
+    <cronExpression>0 0 * * * ?</cronExpression>
     <unprocessedConsumers>
       <unprocessedConsumer>index-artifact</unprocessedConsumer>
       <unprocessedConsumer>update-db-project</unprocessedConsumer>
