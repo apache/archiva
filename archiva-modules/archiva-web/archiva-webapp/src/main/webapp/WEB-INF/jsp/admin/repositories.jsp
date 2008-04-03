@@ -113,6 +113,10 @@
   <td>${repository.location}</td>
 </tr>
 <tr>
+  <th>Index Directory</th>
+  <td>${repository.indexDir}</td>
+</tr>
+<tr>
   <th>WebDAV URL</th>
   <td><a href="${baseUrl}/${repository.id}/">${baseUrl}/${repository.id}/</a></td>
 </tr>
