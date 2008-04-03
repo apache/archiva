@@ -55,4 +55,9 @@ public class ReleasesPolicy
     {
         return "releases";
     }
+
+    public String getName()
+    {
+        return "Releases";
+    }
 }

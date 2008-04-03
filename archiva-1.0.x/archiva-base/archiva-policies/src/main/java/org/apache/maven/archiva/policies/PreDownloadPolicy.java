@@ -20,9 +20,6 @@ package org.apache.maven.archiva.policies;
  */
 
 
-import java.io.File;
-import java.util.Properties;
-
 /**
  * Policy to apply before the download is attempted.
  *
@@ -31,18 +28,4 @@ import java.util.Properties;
  */
 public interface PreDownloadPolicy extends DownloadPolicy
 {
-    /**
-     * Apply the download policy.
-     * 
-     * A true result lets the download occur.  A false result prevents the download
-     * from occuring. 
-     * 
-     * @param policySetting the policy setting.
-     * @param request the list of request properties that the policy might use.
-     * @param localFile the local file that this policy affects
-     * 
-     * @throws PolicyViolationException if the policy has been violated.
-     */
-    public void applyPolicy( String policySetting, Properties request, File localFile )
-        throws PolicyViolationException, PolicyConfigurationException;
 }

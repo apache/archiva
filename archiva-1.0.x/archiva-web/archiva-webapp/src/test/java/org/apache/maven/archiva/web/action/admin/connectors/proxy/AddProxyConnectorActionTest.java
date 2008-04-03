@@ -28,6 +28,8 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
+import org.apache.maven.archiva.policies.PropagateErrorsDownloadPolicy;
+import org.apache.maven.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
@@ -36,6 +38,7 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.easymock.MockControl;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * AddProxyConnectorActionTest 
@@ -390,10 +393,13 @@ public class AddProxyConnectorActionTest
         connector.setTargetRepoId( "central" );
 
         // TODO: Set these options programatically via list of available policies.
-        connector.getPolicies().put( "releases", new ReleasesPolicy().getDefaultOption() );
-        connector.getPolicies().put( "snapshots", new SnapshotsPolicy().getDefaultOption() );
-        connector.getPolicies().put( "checksum", new ChecksumPolicy().getDefaultOption() );
-        connector.getPolicies().put( "cache-failures", new CachedFailuresPolicy().getDefaultOption() );
+        Map<String, String> policies = connector.getPolicies();
+        policies.put( "releases", new ReleasesPolicy().getDefaultOption() );
+        policies.put( "snapshots", new SnapshotsPolicy().getDefaultOption() );
+        policies.put( "checksum", new ChecksumPolicy().getDefaultOption() );
+        policies.put( "cache-failures", new CachedFailuresPolicy().getDefaultOption() );
+        policies.put( "propagate-errors", new PropagateErrorsDownloadPolicy().getDefaultOption() );
+        policies.put( "propagate-errors-on-update", new PropagateErrorsOnUpdateDownloadPolicy().getDefaultOption() );
     }
 
     @Override

@@ -105,6 +105,11 @@ public class CachedFailuresPolicy
         return "cache-failures";
     }
 
+    public String getName()
+    {
+        return "Cache failures";
+    }
+
     public List<String> getOptions()
     {
         return options;

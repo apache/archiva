@@ -22,7 +22,8 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 import com.opensymphony.xwork.Preparable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.policies.DownloadPolicy;
+import org.apache.maven.archiva.policies.DownloadErrorPolicy;
+import org.apache.maven.archiva.policies.Policy;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 
@@ -55,6 +56,11 @@ public abstract class AbstractProxyConnectorFormAction
     private Map<String, PostDownloadPolicy> postDownloadPolicyMap;
 
     /**
+     * @plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
+     */
+    private Map<String, DownloadErrorPolicy> downloadErrorPolicyMap;
+
+    /**
      * The list of network proxy ids that are available.
      */
     private List<String> proxyIdOptions;
@@ -72,7 +78,7 @@ public abstract class AbstractProxyConnectorFormAction
     /**
      * The map of policies that are available to be set.
      */
-    private Map<String, DownloadPolicy> policyMap;
+    private Map<String, Policy> policyMap;
 
     /**
      * The property key to add or remove.
@@ -185,7 +191,7 @@ public abstract class AbstractProxyConnectorFormAction
         return pattern;
     }
 
-    public Map<String, DownloadPolicy> getPolicyMap()
+    public Map<String, Policy> getPolicyMap()
     {
         return policyMap;
     }
@@ -318,7 +324,7 @@ public abstract class AbstractProxyConnectorFormAction
         this.pattern = pattern;
     }
 
-    public void setPolicyMap( Map<String, DownloadPolicy> policyMap )
+    public void setPolicyMap( Map<String, Policy> policyMap )
     {
         this.policyMap = policyMap;
     }
@@ -363,12 +369,13 @@ public abstract class AbstractProxyConnectorFormAction
         return options;
     }
 
-    protected Map<String, DownloadPolicy> createPolicyMap()
+    protected Map<String, Policy> createPolicyMap()
     {
-        Map<String, DownloadPolicy> policyMap = new HashMap<String, DownloadPolicy>();
+        Map<String, Policy> policyMap = new HashMap<String, Policy>();
 
         policyMap.putAll( preDownloadPolicyMap );
         policyMap.putAll( postDownloadPolicyMap );
+        policyMap.putAll( downloadErrorPolicyMap );
 
         return policyMap;
     }
@@ -387,10 +394,10 @@ public abstract class AbstractProxyConnectorFormAction
         else
         {
             // Validate / Fix policy settings arriving from browser.
-            for ( Map.Entry<String, DownloadPolicy> entry : getPolicyMap().entrySet() )
+            for ( Map.Entry<String, Policy> entry : getPolicyMap().entrySet() )
             {
-                String policyId = (String) entry.getKey();
-                DownloadPolicy policy = (DownloadPolicy) entry.getValue();
+                String policyId = entry.getKey();
+                Policy policy = entry.getValue();
                 List<String> options = policy.getOptions();
 
                 if ( !connector.getPolicies().containsKey( policyId ) )

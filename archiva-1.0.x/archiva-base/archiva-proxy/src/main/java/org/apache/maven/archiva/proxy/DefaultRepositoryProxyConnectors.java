@@ -31,11 +31,13 @@ import org.apache.maven.archiva.model.Keys;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.policies.DownloadErrorPolicy;
 import org.apache.maven.archiva.policies.DownloadPolicy;
 import org.apache.maven.archiva.policies.PolicyConfigurationException;
 import org.apache.maven.archiva.policies.PolicyViolationException;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
+import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -67,6 +69,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -77,6 +80,7 @@ import java.util.Properties;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * @todo exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than your average brown onion
  * @plexus.component role-hint="default"
  */
 public class DefaultRepositoryProxyConnectors
@@ -114,6 +118,11 @@ public class DefaultRepositoryProxyConnectors
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
     /**
+     * @plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
+     */
+    private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
+
+    /**
      * @plexus.requirement role-hint="default"
      */
     private UrlFailureCache urlFailureCache;
@@ -134,26 +143,31 @@ public class DefaultRepositoryProxyConnectors
      * @param artifact   the artifact reference to fetch.
      * @return the local file in the managed repository that was fetched, or null if the artifact was not (or
      *         could not be) fetched.
-     * @throws ProxyException if there was a problem fetching the artifact.
+     * @throws PolicyViolationException if there was a problem fetching the artifact.
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
+        throws ProxyDownloadException
     {
         File localFile = toLocalFile( repository, artifact );
 
         Properties requestProperties = new Properties();
         requestProperties.setProperty( "filetype", "artifact" );
         requestProperties.setProperty( "version", artifact.getVersion() );
+        requestProperties.setProperty( "managedRepositoryId", repository.getId() );
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
+        Map<String, Exception> previousExceptions = new LinkedHashMap<String, Exception>();
         for ( ProxyConnector connector : connectors )
         {
             RemoteRepositoryContent targetRepository = connector.getTargetRepository();
+            requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
+
             String targetPath = targetRepository.toPath( artifact );
 
             try
             {
-                File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile,
-                                                    requestProperties );
+                File downloadedFile =
+                    transferFile( connector, targetRepository, targetPath, localFile, requestProperties );
 
                 if ( fileExists( downloadedFile ) )
                 {
@@ -163,22 +177,27 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( NotFoundException e )
             {
-                getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not found on repository \""
-                                       + targetRepository.getRepository().getId() + "\"." );
+                getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not found on repository \"" +
+                    targetRepository.getRepository().getId() + "\"." );
             }
             catch ( NotModifiedException e )
             {
-                getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not updated on repository \""
-                                       + targetRepository.getRepository().getId() + "\"." );
+                getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not updated on repository \"" +
+                    targetRepository.getRepository().getId() + "\"." );
             }
             catch ( ProxyException e )
             {
-                getLogger().warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
-                    "\" for artifact " + Keys.toKey( artifact ) + ", continuing to next repository. Error message: " +
-                    e.getMessage() );
-                getLogger().debug( "Full stack trace", e );
+                validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
+                                  targetRepository, localFile, e, previousExceptions );
             }
         }
+
+        if ( !previousExceptions.isEmpty() )
+        {
+            throw new ProxyDownloadException( "Failures occurred downloading from some remote repositories",
+                                              previousExceptions );
+        }
+
         getLogger().debug( "Exhausted all target repositories, artifact " + Keys.toKey( artifact ) + " not found." );
 
         return null;
@@ -218,15 +237,13 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( NotFoundException e )
             {
-                getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata )
-                                       + " not found on remote repository \""
-                                       + targetRepository.getRepository().getId() + "\"." );
+                getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata ) +
+                    " not found on remote repository \"" + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( NotModifiedException e )
             {
-                getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata )
-                                       + " not updated on remote repository \""
-                                       + targetRepository.getRepository().getId() + "\"." );
+                getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata ) +
+                    " not updated on remote repository \"" + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( ProxyException e )
             {
@@ -336,14 +353,13 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( NotFoundException e )
             {
-                getLogger().debug( "Project Metadata " + Keys.toKey( metadata ) + " not found on remote repository \""
-                                       + targetRepository.getRepository().getId() + "\"." );
+                getLogger().debug( "Project Metadata " + Keys.toKey( metadata ) + " not found on remote repository \"" +
+                    targetRepository.getRepository().getId() + "\"." );
             }
             catch ( NotModifiedException e )
             {
-                getLogger().debug( "Project Metadata " + Keys.toKey( metadata )
-                                       + " not updated on remote repository \""
-                                       + targetRepository.getRepository().getId() + "\"." );
+                getLogger().debug( "Project Metadata " + Keys.toKey( metadata ) +
+                    " not updated on remote repository \"" + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( ProxyException e )
             {
@@ -469,10 +485,10 @@ public class DefaultRepositoryProxyConnectors
      * @param localFile         the local file to place the downloaded resource into
      * @param requestProperties the request properties to utilize for policy handling.
      * @return the local file that was downloaded, or null if not downloaded.
-     * @throws NotFoundException if the file was not found on the remote repository.
+     * @throws NotFoundException    if the file was not found on the remote repository.
      * @throws NotModifiedException if the localFile was present, and the resource was present on remote repository,
      *                              but the remote resource is not newer than the local File.
-     * @throws ProxyException if transfer was unsuccessful.
+     * @throws ProxyException       if transfer was unsuccessful.
      */
     private File transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
                                File localFile, Properties requestProperties )
@@ -524,10 +540,10 @@ public class DefaultRepositoryProxyConnectors
             getLogger().info( emsg );
             return null;
         }
-			
+
         Wagon wagon = null;
         try
-        {	
+        {
             RepositoryURL repoUrl = remoteRepository.getURL();
             String protocol = repoUrl.getProtocol();
             wagon = (Wagon) wagons.get( protocol );
@@ -689,13 +705,13 @@ public class DefaultRepositoryProxyConnectors
             }
             else
             {
-                getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName()
-                                       + " if updated" );
+                getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName() +
+                    " if updated" );
                 success = wagon.getIfNewer( remotePath, temp, localFile.lastModified() );
                 if ( !success )
                 {
-                    throw new NotModifiedException( "Not downloaded, as local file is newer than remote side: "
-                                                    + localFile.getAbsolutePath() );
+                    throw new NotModifiedException(
+                        "Not downloaded, as local file is newer than remote side: " + localFile.getAbsolutePath() );
                 }
 
                 if ( temp.exists() )
@@ -709,13 +725,15 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ResourceDoesNotExistException e )
         {
-            throw new NotFoundException( "Resource [" + remoteRepository.getURL() + "/" + remotePath
-                + "] does not exist: " + e.getMessage(), e );
+            throw new NotFoundException(
+                "Resource [" + remoteRepository.getURL() + "/" + remotePath + "] does not exist: " + e.getMessage(),
+                e );
         }
         catch ( WagonException e )
         {
-            throw new ProxyException( "Download failure on resource [" + remoteRepository.getURL() + "/" + remotePath + "]:"
-                                  + e.getMessage(), e );
+            throw new ProxyException(
+                "Download failure on resource [" + remoteRepository.getURL() + "/" + remotePath + "]:" + e.getMessage(),
+                e );
         }
         finally
         {
@@ -740,10 +758,10 @@ public class DefaultRepositoryProxyConnectors
     {
         for ( Entry<String, ? extends DownloadPolicy> entry : policies.entrySet() )
         {
-            String key = (String) entry.getKey();
+            String key = entry.getKey();
             DownloadPolicy policy = entry.getValue();
             String defaultSetting = policy.getDefaultOption();
-            String setting = StringUtils.defaultString( (String) settings.get( key ), defaultSetting );
+            String setting = StringUtils.defaultString( settings.get( key ), defaultSetting );
 
             getLogger().debug( "Applying [" + key + "] policy with [" + setting + "]" );
             try
@@ -755,6 +773,56 @@ public class DefaultRepositoryProxyConnectors
                 getLogger().error( e.getMessage(), e );
             }
         }
+    }
+
+    private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<String, String> settings,
+                                   Properties request, ArtifactReference artifact, RemoteRepositoryContent content,
+                                   File localFile, ProxyException exception, Map<String, Exception> previousExceptions )
+        throws ProxyDownloadException
+    {
+        boolean process = true;
+        for ( Entry<String, ? extends DownloadErrorPolicy> entry : policies.entrySet() )
+        {
+            String key = entry.getKey();
+            DownloadErrorPolicy policy = entry.getValue();
+            String defaultSetting = policy.getDefaultOption();
+            String setting = StringUtils.defaultString( settings.get( key ), defaultSetting );
+
+            getLogger().debug( "Applying [" + key + "] policy with [" + setting + "]" );
+            try
+            {
+                // all policies must approve the exception, any can cancel
+                process = policy.applyPolicy( setting, request, localFile, exception, previousExceptions );
+                if ( !process )
+                {
+                    break;
+                }
+            }
+            catch ( PolicyConfigurationException e )
+            {
+                getLogger().error( e.getMessage(), e );
+            }
+        }
+
+        if ( process )
+        {
+            // if the exception was queued, don't throw it
+            if ( !previousExceptions.containsKey( content.getId() ) )
+            {
+                throw new ProxyDownloadException(
+                    "An error occurred in downloading from the remote repository, and the policy is to fail immediately",
+                    content.getId(), exception );
+            }
+        }
+        else
+        {
+            // if the exception was queued, but cancelled, remove it
+            previousExceptions.remove( content.getId() );
+        }
+
+        getLogger().warn( "Transfer error from repository \"" + content.getRepository().getId() + "\" for artifact " +
+            Keys.toKey( artifact ) + ", continuing to next repository. Error message: " + exception.getMessage() );
+        getLogger().debug( "Full stack trace", exception );
     }
 
     /**
@@ -800,7 +868,8 @@ public class DefaultRepositoryProxyConnectors
      * @param remoteRepository the remote repository to connect to.
      * @return true if the connection was successful. false if not connected.
      */
-    private boolean connectToRepository( ProxyConnector connector, Wagon wagon, RemoteRepositoryContent remoteRepository )
+    private boolean connectToRepository( ProxyConnector connector, Wagon wagon,
+                                         RemoteRepositoryContent remoteRepository )
     {
         boolean connected = false;
 
@@ -818,8 +887,8 @@ public class DefaultRepositoryProxyConnectors
 
             if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
             {
-                getLogger().debug( "Using username " + username + " to connect to remote repository "
-                                       + remoteRepository.getURL() );
+                getLogger().debug(
+                    "Using username " + username + " to connect to remote repository " + remoteRepository.getURL() );
                 authInfo = new AuthenticationInfo();
                 authInfo.setUserName( username );
                 authInfo.setPassword( password );
@@ -829,7 +898,8 @@ public class DefaultRepositoryProxyConnectors
                 getLogger().debug( "No authentication for remote repository needed" );
             }
 
-            Repository wagonRepository = new Repository( remoteRepository.getId(), remoteRepository.getURL().toString() );
+            Repository wagonRepository =
+                new Repository( remoteRepository.getId(), remoteRepository.getURL().toString() );
             if ( networkProxy != null )
             {
                 wagon.connect( wagonRepository, authInfo, networkProxy );
@@ -843,15 +913,13 @@ public class DefaultRepositoryProxyConnectors
         catch ( ConnectionException e )
         {
             getLogger().warn(
-                              "Could not connect to " + remoteRepository.getRepository().getName() + ": "
-                                  + e.getMessage() );
+                "Could not connect to " + remoteRepository.getRepository().getName() + ": " + e.getMessage() );
             connected = false;
         }
         catch ( AuthenticationException e )
         {
             getLogger().warn(
-                              "Could not connect to " + remoteRepository.getRepository().getName() + ": "
-                                  + e.getMessage() );
+                "Could not connect to " + remoteRepository.getRepository().getName() + ": " + e.getMessage() );
             connected = false;
         }
 
@@ -903,10 +971,10 @@ public class DefaultRepositoryProxyConnectors
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isNetworkProxy( propertyName )
-            || ConfigurationNames.isManagedRepositories( propertyName )
-            || ConfigurationNames.isRemoteRepositories( propertyName )
-            || ConfigurationNames.isProxyConnector( propertyName ) )
+        if ( ConfigurationNames.isNetworkProxy( propertyName ) ||
+            ConfigurationNames.isManagedRepositories( propertyName ) ||
+            ConfigurationNames.isRemoteRepositories( propertyName ) ||
+            ConfigurationNames.isProxyConnector( propertyName ) )
         {
             initConnectorsAndNetworkProxies();
         }

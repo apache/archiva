@@ -55,4 +55,9 @@ public class SnapshotsPolicy
     {
         return "snapshots";
     }
+
+    public String getName()
+    {
+        return "Snapshots";
+    }
 }
