@@ -19,7 +19,6 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,15 +34,6 @@ public abstract class AbstractMonitoredConsumer
     implements BaseConsumer
 {
     private Set<ConsumerMonitor> monitors = new HashSet<ConsumerMonitor>();
-
-    /**
-     * Default exclusions from artifact consumers that are using the file types. Note that this is simplistic in the
-     * case of the support files (based on extension) as it is elsewhere - it may be better to match these to actual
-     * artifacts and exclude later during scanning.
-     */
-    private static final List<String> DEFAULT_EXCLUSIONS = Arrays.asList( "**/maven-metadata.xml",
-                                                                          "**/maven-metadata-*.xml", "**/*.sha1",
-                                                                          "**/*.asc", "**/*.md5", "**/*.pgp" );
 
     public void addConsumerMonitor( ConsumerMonitor monitor )
     {
@@ -110,6 +100,6 @@ public abstract class AbstractMonitoredConsumer
 
     protected List<String> getDefaultArtifactExclusions()
     {
-        return DEFAULT_EXCLUSIONS;
+        return FileTypes.DEFAULT_EXCLUSIONS;
     }
 }
