@@ -53,7 +53,7 @@
       <otherArchives>
         <otherArchive>http://www.mail-archive.com/archiva-users@maven.apache.org</otherArchive>
         <otherArchive>http://www.nabble.com/archiva-users-f16426.html</otherArchive>
-        <otherArchive>http://maven.archiva.users.markmail.org/</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.maven.archiva-users</otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
@@ -65,7 +65,7 @@
       <otherArchives>
         <otherArchive>http://www.mail-archive.com/archiva-dev@maven.apache.org</otherArchive>
         <otherArchive>http://www.nabble.com/archiva-dev-f16427.html</otherArchive>
-        <otherArchive>http://maven.archiva.dev.markmail.org/</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.maven.archiva-dev</otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
@@ -75,7 +75,7 @@
       <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-commits</archive>
       <otherArchives>
         <otherArchive>http://www.mail-archive.com/archiva-commits@maven.apache.org</otherArchive>
-        <otherArchive>http://maven.archiva.commits.markmail.org/</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.maven.archiva-commits</otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
