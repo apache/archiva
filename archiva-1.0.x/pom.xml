@@ -698,6 +698,7 @@
   </dependencyManagement>
   <reporting>
     <plugins>
+<!-- TODO: OOME
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
@@ -710,13 +711,11 @@
           <configLocation>config/maven_checks.xml</configLocation>
         </configuration>
       </plugin>
-<!-- TODO: OOME
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>1.1.1</version>
       </plugin>
--->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>changelog-maven-plugin</artifactId>
@@ -755,11 +754,11 @@
       </plugin>
       <plugin>
         <artifactId>maven-pmd-plugin</artifactId>
-        <!-- TODO: choose appropriate rulesets -->
         <configuration>
           <targetJdk>1.5</targetJdk>
         </configuration>
       </plugin>
+-->
     </plugins>
   </reporting>
   <profiles>
