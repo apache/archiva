@@ -20,12 +20,12 @@
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>archiva-reporting</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.2</version>
   <name>Archiva Reporting</name>
   <packaging>pom</packaging>
 
