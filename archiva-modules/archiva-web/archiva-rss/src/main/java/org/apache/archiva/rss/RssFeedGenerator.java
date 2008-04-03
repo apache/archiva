@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.common.rss;
+package org.apache.archiva.rss;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -42,7 +42,7 @@ import com.sun.syndication.io.SyndFeedOutput;
 /**
  * Generates RSS feeds.
  * 
- * @plexus.component role="org.apache.maven.archiva.common.rss.RssFeedGenerator"
+ * @plexus.component role="org.apache.archiva.rss.RssFeedGenerator"
  * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version

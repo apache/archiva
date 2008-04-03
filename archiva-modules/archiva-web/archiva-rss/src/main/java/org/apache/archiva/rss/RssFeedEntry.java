@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.common.rss;
+package org.apache.archiva.rss;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
