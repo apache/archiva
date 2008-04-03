@@ -37,6 +37,8 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
+import org.apache.maven.archiva.policies.PropagateErrorsDownloadPolicy;
+import org.apache.maven.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -295,8 +297,23 @@ public abstract class AbstractProxyTestCase
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
     }
 
-    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy,
-                                  String releasePolicy, String snapshotPolicy, String cacheFailuresPolicy )
+    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
+                                  String snapshotPolicy, String cacheFailuresPolicy )
+    {
+        saveConnector( sourceRepoId, targetRepoId, checksumPolicy, releasePolicy, snapshotPolicy, cacheFailuresPolicy,
+                       PropagateErrorsDownloadPolicy.QUEUE );
+    }
+
+    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
+                                  String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy )
+    {
+        saveConnector( sourceRepoId, targetRepoId, checksumPolicy, releasePolicy, snapshotPolicy, cacheFailuresPolicy,
+                       errorPolicy, PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
+    }
+
+    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
+                                  String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy,
+                                  String errorOnUpdatePolicy )
     {
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
         connectorConfig.setSourceRepoId( sourceRepoId );
@@ -305,6 +322,8 @@ public abstract class AbstractProxyTestCase
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, releasePolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, snapshotPolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, cacheFailuresPolicy );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS, errorPolicy );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS_ON_UPDATE, errorOnUpdatePolicy );
 
         int count = config.getConfiguration().getProxyConnectors().size();
         config.getConfiguration().addProxyConnector( connectorConfig );
@@ -318,6 +337,10 @@ public abstract class AbstractProxyTestCase
         config.triggerChange( prefix + ".policies.checksum", connectorConfig.getPolicy( "checksum", "" ) );
         config.triggerChange( prefix + ".policies.snapshots", connectorConfig.getPolicy( "snapshots", "" ) );
         config.triggerChange( prefix + ".policies.cache-failures", connectorConfig.getPolicy( "cache-failures", "" ) );
+        config.triggerChange( prefix + ".policies.propagate-errors",
+                              connectorConfig.getPolicy( "propagate-errors", "" ) );
+        config.triggerChange( prefix + ".policies.propagate-errors-on-update",
+                              connectorConfig.getPolicy( "propagate-errors-on-update", "" ) );
     }
 
     protected void saveManagedRepositoryConfig( String id, String name, String path, String layout )

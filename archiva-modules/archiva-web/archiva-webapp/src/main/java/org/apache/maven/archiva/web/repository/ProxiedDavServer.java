@@ -23,7 +23,7 @@ import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.proxy.ProxyException;
+import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
@@ -364,7 +364,7 @@ public class ProxiedDavServer
         {
             /* eat it */
         }
-        catch ( ProxyException e )
+        catch ( ProxyDownloadException e )
         {
             throw new ServletException( "Unable to fetch artifact resource.", e );
         }
@@ -391,10 +391,6 @@ public class ProxiedDavServer
         {
             /* eat it */
         }
-        catch ( ProxyException e )
-        {
-            throw new ServletException( "Unable to fetch versioned metadata resource.", e );
-        }
 
         try
         {
@@ -408,10 +404,6 @@ public class ProxiedDavServer
         catch ( RepositoryMetadataException e )
         {
             /* eat it */
-        }
-        catch ( ProxyException e )
-        {
-            throw new ServletException( "Unable to fetch project metadata resource.", e );
         }
 
         return false;
@@ -428,7 +420,7 @@ public class ProxiedDavServer
      * artifact.
      */
     protected void applyServerSideRelocation( ArtifactReference artifact )
-        throws ProxyException
+        throws ProxyDownloadException
     {
         if ( "pom".equals( artifact.getType() ) )
         {

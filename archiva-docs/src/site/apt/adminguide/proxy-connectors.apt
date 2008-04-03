@@ -29,14 +29,18 @@ Understanding Proxy Connector Configuration of Apache Archiva
 
   By default, Archiva comes with the following policies:
 
-    * <<<releases>>> - how to behave for released artifact metadata (those not carrying a <<<SNAPSHOT>>> version). This can be set to <<<always>>> (default), <<<hourly>>>, <<<daily>>>, <<<once>>> and <<<never>>>.
+    * <<<Releases>>> - how to behave for released artifact metadata (those not carrying a <<<SNAPSHOT>>> version). This can be set to <<<always>>> (default), <<<hourly>>>, <<<daily>>>, <<<once>>> and <<<never>>>.
 
-    * <<<snapshots>>> - how to behave for snapshot artifact metadata (those carrying a <<<SNAPSHOT>>> version). This can be set to <<<always>>> (default), <<<hourly>>>, <<<daily>>>, <<<once>>> and <<<never>>>.
+    * <<<Snapshots>>> - how to behave for snapshot artifact metadata (those carrying a <<<SNAPSHOT>>> version). This can be set to <<<always>>> (default), <<<hourly>>>, <<<daily>>>, <<<once>>> and <<<never>>>.
 
-    * <<<checksum>>> - how to handle incorrect checksums when downloading an artifact from the remote repository (ie, the checksum of the artifact does not match the corresponding detached checksum file).
+    * <<<Checksum>>> - how to handle incorrect checksums when downloading an artifact from the remote repository (ie, the checksum of the artifact does not match the corresponding detached checksum file).
       The options are to fail the request for the remote artifact, fix the checksum on the fly (default), or simply ignore the incorrect checksum
 
-    * <<<cache-failures>>> - whether failures retrieving the remote artifact should be cached (to save network bandwidth for missing or bad artifacts), or uncached (default).
+    * <<<Cache failures>>> - whether failures retrieving the remote artifact should be cached (to save network bandwidth for missing or bad artifacts), or uncached (default).
+
+    * <<<Return error when>>> - if a remote proxy causes an error, this option determines whether an existing artifact should be returned (error when <<<artifact not already present>>>), or the error passed on regardless (<<<always>>>).
+
+    * <<<On remote error>>> - if a remote error is encountered, <<<stop>>> causes the error to be returned immediately, <<<queue error>>> will return all errors after checking for other successful remote repositories first, and <<<ignore>>> will disregard ay errors.
 
     []
 

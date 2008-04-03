@@ -157,6 +157,11 @@ public class ChecksumPolicy
         return "checksum";
     }
 
+    public String getName()
+    {
+        return "Checksum";
+    }
+
     public List<String> getOptions()
     {
         return options;

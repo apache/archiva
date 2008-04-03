@@ -652,6 +652,20 @@
     public static final int UNORDERED = 0;
 
     /**
+     * The policy key {@link #getPolicies()} for error handling.
+     * See {@link org.apache.maven.archiva.policies.DownloadErrorPolicy}
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_PROPAGATE_ERRORS = "propagate-errors";
+
+    /**
+     * The policy key {@link #getPolicies()} for error handling when an artifact is present.
+     * See {@link org.apache.maven.archiva.policies.DownloadErrorPolicy}
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_PROPAGATE_ERRORS_ON_UPDATE = "propagate-errors-on-update";
+
+    /**
      * The policy key {@link #getPolicies()} for snapshot handling.
      * See {@link org.apache.maven.archiva.policies.SnapshotsPolicy}
      * for details on potential values to this policy key.
