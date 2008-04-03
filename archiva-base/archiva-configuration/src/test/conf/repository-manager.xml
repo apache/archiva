@@ -29,7 +29,7 @@
       <releases>true</releases>
       <snapshots>false</snapshots>
       <scanned>true</scanned>
-      <refreshCronExpression>0 0 * * ?</refreshCronExpression>
+      <refreshCronExpression>0 0 * * * ?</refreshCronExpression>
     </managedRepository>
     <managedRepository>
       <id>snapshots</id>
@@ -39,7 +39,7 @@
       <releases>false</releases>
       <snapshots>true</snapshots>
       <scanned>true</scanned>
-      <refreshCronExpression>0 0,30 * * ?</refreshCronExpression>
+      <refreshCronExpression>0 0,30 * * * ?</refreshCronExpression>
     </managedRepository>
   </managedRepositories>
   <remoteRepositories>
@@ -167,7 +167,7 @@
   </repositoryScanning>
 
   <databaseScanning>
-    <cronExpression>0 0 * * ?</cronExpression>
+    <cronExpression>0 0 * * * ?</cronExpression>
     <unprocessedConsumers>
       <unprocessedConsumer>index-artifact</unprocessedConsumer>
       <unprocessedConsumer>update-db-project</unprocessedConsumer>

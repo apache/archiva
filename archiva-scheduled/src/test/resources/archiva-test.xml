@@ -28,7 +28,7 @@
       <releases>true</releases>
       <snapshots>false</snapshots>
       <indexed>true</indexed>
-      <refreshCronExpression>0 0 * * ?</refreshCronExpression>
+      <refreshCronExpression>0 0 * * * ?</refreshCronExpression>
     </managedRepository>
   </managedRepositories>
 
@@ -106,7 +106,7 @@
   </repositoryScanning>
 
   <databaseScanning>
-    <cronExpression>0 0 * * ?</cronExpression>
+    <cronExpression>0 0 * * * ?</cronExpression>
     <unprocessedConsumers>
       <unprocessedConsumer>test-db-unprocessed</unprocessedConsumer>
       <unprocessedConsumer>update-db-artifact</unprocessedConsumer>

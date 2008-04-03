@@ -29,7 +29,7 @@ import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryW
 import org.apache.maven.archiva.policies.AbstractUpdatePolicy;
 import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
-import org.apache.maven.archiva.policies.DownloadPolicy;
+import org.apache.maven.archiva.policies.Policy;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
@@ -141,7 +141,7 @@ public class DefaultArchivaConfiguration
         if ( configuration == null )
         {
             configuration = load();
-            configuration = processExpressions( configuration );
+            configuration = unescapeExpressions( configuration );
         }
 
         return configuration;
@@ -276,7 +276,7 @@ public class DefaultArchivaConfiguration
                     // Validate existance of policy key.
                     if ( policyExists( policyId ) )
                     {
-                        DownloadPolicy policy = findPolicy( policyId );
+                        Policy policy = findPolicy( policyId );
                         // Does option exist?
                         if ( !policy.getOptions().contains( setting ) )
                         {
@@ -319,7 +319,7 @@ public class DefaultArchivaConfiguration
         return config;
     }
 
-    private DownloadPolicy findPolicy( String policyId )
+    private Policy findPolicy( String policyId )
     {
         if ( MapUtils.isEmpty( prePolicies ) )
         {
@@ -333,7 +333,7 @@ public class DefaultArchivaConfiguration
             return null;
         }
 
-        DownloadPolicy policy;
+        Policy policy;
 
         policy = prePolicies.get( policyId );
         if ( policy != null )
@@ -428,19 +428,7 @@ public class DefaultArchivaConfiguration
         }
 
         // escape all cron expressions to handle ','
-        for ( Iterator<ManagedRepositoryConfiguration> i = configuration.getManagedRepositories().iterator(); i
-            .hasNext(); )
-        {
-            ManagedRepositoryConfiguration c = i.next();
-            c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
-        }
-
-        if ( configuration.getDatabaseScanning() != null )
-        {
-            configuration.getDatabaseScanning().setCronExpression(
-                                                                   escapeCronExpression( configuration
-                                                                       .getDatabaseScanning().getCronExpression() ) );
-        }
+        escapeCronExpressions( configuration );
 
         // [MRM-661] Due to a bug in the modello registry writer, we need to take these out by hand. They'll be put back by the writer.
         if ( configuration.getManagedRepositories().isEmpty() )
@@ -489,9 +477,23 @@ public class DefaultArchivaConfiguration
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
 
-        triggerEvent( ConfigurationEvent.SAVED );
+        this.configuration = unescapeExpressions( configuration );
 
-        this.configuration = processExpressions( configuration );
+        triggerEvent( ConfigurationEvent.SAVED );
+    }
+
+    private void escapeCronExpressions( Configuration configuration )
+    {
+        for ( ManagedRepositoryConfiguration c : (List<ManagedRepositoryConfiguration>) configuration.getManagedRepositories() )
+        {
+            c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
+        }
+
+        DatabaseScanningConfiguration scanning = configuration.getDatabaseScanning();
+        if ( scanning != null )
+        {
+            scanning.setCronExpression( escapeCronExpression( scanning.getCronExpression() ) );
+        }
     }
 
     private Registry createDefaultConfigurationFile()
@@ -559,14 +561,7 @@ public class DefaultArchivaConfiguration
         ConfigurationEvent evt = new ConfigurationEvent( type );
         for ( ConfigurationListener listener : listeners )
         {
-            try
-            {
-                listener.configurationEvent( evt );
-            }
-            catch ( Throwable t )
-            {
-                getLogger().warn( "Unable to notify of saved configuration event.", t );
-            }
+            listener.configurationEvent( evt );
         }
     }
 
@@ -661,7 +656,7 @@ public class DefaultArchivaConfiguration
         return StringUtils.replace( cronExpression, ",", "\\," );
     }
 
-    private Configuration processExpressions( Configuration config )
+    private Configuration unescapeExpressions( Configuration config )
     {
         // TODO: for commons-configuration 1.3 only
         for ( Iterator<ManagedRepositoryConfiguration> i = config.getManagedRepositories().iterator(); i.hasNext(); )

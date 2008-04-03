@@ -20,6 +20,9 @@ package org.apache.maven.archiva.repository.content;
  */
 
 import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
@@ -122,6 +125,12 @@ public class ManagedDefaultRepositoryContentTest
         }
     }
 
+    public void testExcludeMetadataFile()
+        throws Exception
+    {
+        assertVersions( "include_xml", "1.0", new String[] { "1.0" } );
+    }
+
     private void assertGetVersions( String artifactId, List<String> expectedVersions )
         throws Exception
     {
@@ -186,6 +195,14 @@ public class ManagedDefaultRepositoryContentTest
         File repoDir = getTestFile( "src/test/repositories/default-repository" );
 
         ManagedRepositoryConfiguration repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
+
+        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.ROLE );
+        FileType fileType = (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+        fileType.addPattern( "**/*.xml" );
+        assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
+
+        FileTypes fileTypes = (FileTypes) lookup( FileTypes.class );
+        fileTypes.afterConfigurationChange( null, "fileType", null );
 
         repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
         repoContent.setRepository( repository );

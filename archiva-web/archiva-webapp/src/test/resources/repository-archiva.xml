@@ -92,7 +92,7 @@
   </repositoryScanning>
 
   <databaseScanning>
-    <cronExpression>0 0 * * ?</cronExpression>
+    <cronExpression>0 0 * * * ?</cronExpression>
     <unprocessedConsumers>
       <unprocessedConsumer>index-artifact</unprocessedConsumer>
       <unprocessedConsumer>update-db-project</unprocessedConsumer>

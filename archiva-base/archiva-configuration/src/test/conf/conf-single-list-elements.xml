@@ -29,7 +29,7 @@
       <releases>false</releases>
       <snapshots>true</snapshots>
       <scanned>true</scanned>
-      <refreshCronExpression>0 0,30 * * ?</refreshCronExpression>
+      <refreshCronExpression>0 0,30 * * * ?</refreshCronExpression>
     </managedRepository>
   </managedRepositories>
   <remoteRepositories>
