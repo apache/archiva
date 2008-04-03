@@ -21,7 +21,7 @@
 <project>
   <body>
     <breadcrumbs>
-      <item name="1.0.1" href="/docs/1.0.1/" />
+      <item name="1.0.2" href="/docs/1.0.2/" />
 <!-- TODO in beta-6
       <item name="${project.version}" href="/docs/${project.version}" />
 -->
