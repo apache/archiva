@@ -34,11 +34,11 @@
   <name>Archiva</name>
   <artifactId>archiva</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-1.0.2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-1.0.2</developerConnection>
-    <url>https://svn.apache.org/repos/asf/archiva/tags/archiva-1.0.2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/branches/archiva-1.0.x</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/branches/archiva-1.0.x</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/archiva/branches/archiva-1.0.x</url>
   </scm>
 
   <url>http://maven.apache.org/archiva/</url>
