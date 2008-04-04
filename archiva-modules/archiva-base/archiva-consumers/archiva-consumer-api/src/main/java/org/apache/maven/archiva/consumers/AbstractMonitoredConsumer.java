@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.maven.archiva.configuration.FileTypes;
+
 /**
  * AbstractMonitoredConsumer 
  *
