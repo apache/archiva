@@ -19,17 +19,17 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ProjectReaderConsumer 
@@ -37,13 +37,13 @@ import java.util.List;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *                   role-hint="read-poms"
  *                   instantiation-strategy="per-lookup"
  */
 public class ProjectReaderConsumer
     extends AbstractProgressConsumer
-    implements RepositoryContentConsumer
+    implements KnownRepositoryContentConsumer
 {
     /**
      * @plexus.configuration default-value="read-poms"

@@ -19,59 +19,48 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.codehaus.plexus.tools.cli.AbstractCli;
+import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
+import org.codehaus.plexus.spring.PlexusToSpringUtils;
+
+import com.sampullara.cli.Args;
+import com.sampullara.cli.Argument;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * ArchivaCli 
- *
+ * ArchivaCli
+ * 
+ * @todo add back reading of archiva.xml from a given location
  * @author Jason van Zyl
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ArchivaCli
-    extends AbstractCli
 {
-    // ----------------------------------------------------------------------------
-    // Options
-    // ----------------------------------------------------------------------------
-
-    public static final char CONVERT = 'c';
-
-    public static final char SCAN = 's';
-
-    public static final char CONSUMERS = 'u';
-
-    public static final char LIST_CONSUMERS = 'l';
-
-    public static final char DUMP_CONFIGURATION = 'd';
-
     // ----------------------------------------------------------------------------
     // Properties controlling Repository conversion
     // ----------------------------------------------------------------------------
@@ -82,111 +71,102 @@ public class ArchivaCli
 
     public static final String BLACKLISTED_PATTERNS = "blacklistPatterns";
 
-    /**
-     * Configuration store.
-     *
-     * @plexus.requirement
-     */
-    private ArchivaConfiguration archivaConfiguration;
+    private static String getVersion()
+        throws IOException
+    {
+        Properties properties = new Properties();
+        properties.load( ArchivaCli.class.getResourceAsStream( "/META-INF/maven/org.apache.archiva/archiva-cli/pom.properties" ) );
+        return properties.getProperty( "version" );
+    }
+
+    private PlexusClassPathXmlApplicationContext applicationContext;
+
+    public ArchivaCli()
+    {
+        applicationContext =
+            new PlexusClassPathXmlApplicationContext( new String[] { "classpath*:/META-INF/spring-context.xml",
+                "classpath*:/META-INF/plexus/components.xml" } );
+    }
 
     public static void main( String[] args )
         throws Exception
     {
-        new ArchivaCli().execute( args );
-    }
+        Commands command = new Commands();
 
-    public String getPomPropertiesPath()
-    {
-        return "META-INF/maven/org.apache.maven.archiva/archiva-cli/pom.properties";
-    }
-
-    private Option createOption( char shortOpt, String longOpt, int argCount, String description )
-    {
-        boolean hasArg = ( argCount > 0 );
-        Option opt = new Option( String.valueOf( shortOpt ), hasArg, description );
-        opt.setLongOpt( longOpt );
-        if ( hasArg )
+        try
         {
-            opt.setArgs( argCount );
+            Args.parse( command, args );
         }
-        return opt;
+        catch ( IllegalArgumentException e )
+        {
+            System.err.println( e.getMessage() );
+            Args.usage( command );
+            return;
+        }
+
+        new ArchivaCli().execute( command );
     }
 
-    public Options buildCliOptions( Options options )
-    {
-        Option convertOption = createOption( CONVERT, "convert", 1, "Convert a legacy Maven 1.x repository to a "
-            + "Maven 2.x repository using a properties file to describe the conversion." );
-        convertOption.setArgName( "conversion.properties" );
-        options.addOption( convertOption );
-
-        Option scanOption = createOption( SCAN, "scan", 1, "Scan the specified repository." );
-        scanOption.setArgName( "repository directory" );
-        options.addOption( scanOption );
-
-        Option consumerOption = createOption( CONSUMERS, "consumers", 1, "The consumers to use. "
-            + "(comma delimited. default: 'count-artifacts')" );
-        consumerOption.setArgName( "consumer list" );
-        options.addOption( consumerOption );
-
-        Option listConsumersOption = createOption( LIST_CONSUMERS, "listconsumers", 0, "List available consumers." );
-        options.addOption( listConsumersOption );
-
-        Option dumpConfig = createOption( DUMP_CONFIGURATION, "dumpconfig", 0, "Dump Current Configuration." );
-        options.addOption( dumpConfig );
-
-        return options;
-    }
-
-    public void invokePlexusComponent( CommandLine cli, PlexusContainer plexus )
+    private void execute( Commands command )
         throws Exception
     {
-        if ( cli.hasOption( CONVERT ) )
+        if ( command.help )
         {
-            doConversion( cli, plexus );
+            Args.usage( command );
         }
-        else if ( cli.hasOption( SCAN ) )
+        else if ( command.version )
         {
-            doScan( cli, plexus );
+            System.out.print( "Version: " + getVersion() );
         }
-        else if ( cli.hasOption( LIST_CONSUMERS ) )
+        else if ( command.convert )
         {
-            dumpAvailableConsumers( plexus );
+            doConversion( command.properties );
         }
-        else if ( cli.hasOption( DUMP_CONFIGURATION ) )
+        else if ( command.scan )
         {
-            dumpConfiguration( plexus );
+            if ( command.repository == null )
+            {
+                System.err.println( "The repository must be specified." );
+                Args.usage( command );
+                return;
+            }
+
+            doScan( command.repository, command.consumers.split( "," ) );
+        }
+        else if ( command.listConsumers )
+        {
+            dumpAvailableConsumers();
         }
         else
         {
-            displayHelp();
+            Args.usage( command );
         }
     }
 
-    private void doScan( CommandLine cli, PlexusContainer plexus )
-        throws ConsumerException, ComponentLookupException
+    private void doScan( String path, String[] consumers )
+        throws ConsumerException
     {
-        String path = cli.getOptionValue( SCAN );
-
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( "cliRepo" );
         repo.setName( "Archiva CLI Provided Repo" );
         repo.setLocation( path );
 
-        List knownConsumerList = new ArrayList();
+        List<KnownRepositoryContentConsumer> knownConsumerList = new ArrayList<KnownRepositoryContentConsumer>();
 
-        knownConsumerList.addAll( getConsumerList( cli, plexus ) );
+        knownConsumerList.addAll( getConsumerList( consumers ) );
 
-        List invalidConsumerList = Collections.EMPTY_LIST;
+        List<InvalidRepositoryContentConsumer> invalidConsumerList = Collections.emptyList();
 
-        List ignoredContent = new ArrayList();
+        List<String> ignoredContent = new ArrayList<String>();
         ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
 
-        RepositoryScanner scanner = (RepositoryScanner) plexus.lookup( RepositoryScanner.class );
+        RepositoryScanner scanner = (RepositoryScanner) lookup( RepositoryScanner.class );
 
         try
         {
-            RepositoryScanStatistics stats = scanner.scan( repo, knownConsumerList, invalidConsumerList,
-                                                           ignoredContent, RepositoryScanner.FRESH_SCAN );
+            RepositoryScanStatistics stats =
+                scanner.scan( repo, knownConsumerList, invalidConsumerList, ignoredContent,
+                              RepositoryScanner.FRESH_SCAN );
 
             System.out.println( "\n" + stats.toDump( repo ) );
         }
@@ -196,29 +176,24 @@ public class ArchivaCli
         }
     }
 
-    private Collection getConsumerList( CommandLine cli, PlexusContainer plexus )
-        throws ComponentLookupException, ConsumerException
+    private Object lookup( Class<?> clazz )
     {
-        String specifiedConsumers = "count-artifacts";
+        return applicationContext.getBean( PlexusToSpringUtils.buildSpringId( clazz.getName(), null ) );
+    }
 
-        if ( cli.hasOption( CONSUMERS ) )
+    private List<KnownRepositoryContentConsumer> getConsumerList( String[] consumers )
+        throws ConsumerException
+    {
+        List<KnownRepositoryContentConsumer> consumerList = new ArrayList<KnownRepositoryContentConsumer>();
+
+        Map<String, KnownRepositoryContentConsumer> availableConsumers = getConsumers();
+
+        for ( String specifiedConsumer : consumers )
         {
-            specifiedConsumers = cli.getOptionValue( CONSUMERS );
-        }
-
-        List consumerList = new ArrayList();
-
-        Map availableConsumers = plexus.lookupMap( RepositoryContentConsumer.class );
-
-        String consumerArray[] = StringUtils.split( specifiedConsumers, ',' );
-
-        for ( int i = 0; i < consumerArray.length; i++ )
-        {
-            String specifiedConsumer = consumerArray[i];
             if ( !availableConsumers.containsKey( specifiedConsumer ) )
             {
                 System.err.println( "Specified consumer [" + specifiedConsumer + "] not found." );
-                dumpAvailableConsumers( plexus );
+                dumpAvailableConsumers();
                 System.exit( 1 );
             }
 
@@ -228,16 +203,14 @@ public class ArchivaCli
         return consumerList;
     }
 
-    private void dumpAvailableConsumers( PlexusContainer plexus )
-        throws ComponentLookupException
+    private void dumpAvailableConsumers()
     {
-        Map availableConsumers = plexus.lookupMap( RepositoryContentConsumer.class );
+        Map<String, KnownRepositoryContentConsumer> availableConsumers = getConsumers();
 
         System.out.println( ".\\ Available Consumer List \\.______________________________" );
 
-        for ( Iterator iter = availableConsumers.entrySet().iterator(); iter.hasNext(); )
+        for ( Map.Entry<String, KnownRepositoryContentConsumer> entry : availableConsumers.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) iter.next();
             String consumerHint = (String) entry.getKey();
             RepositoryContentConsumer consumer = (RepositoryContentConsumer) entry.getValue();
             System.out.println( "  " + consumerHint + ": " + consumer.getDescription() + " ("
@@ -245,22 +218,21 @@ public class ArchivaCli
         }
     }
 
-    private void doConversion( CommandLine cli, PlexusContainer plexus )
-        throws ComponentLookupException
+    @SuppressWarnings("unchecked")
+    private Map<String, KnownRepositoryContentConsumer> getConsumers()
     {
-        LegacyRepositoryConverter legacyRepositoryConverter = (LegacyRepositoryConverter) plexus
-            .lookup( LegacyRepositoryConverter.ROLE );
+        return PlexusToSpringUtils.lookupMap( "knownRepositoryContentConsumer", applicationContext );
+    }
+
+    private void doConversion( String properties )
+        throws FileNotFoundException, IOException, RepositoryConversionException
+    {
+        LegacyRepositoryConverter legacyRepositoryConverter =
+            (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.class );
 
         Properties p = new Properties();
 
-        try
-        {
-            p.load( new FileInputStream( cli.getOptionValue( CONVERT ) ) );
-        }
-        catch ( IOException e )
-        {
-            showFatalError( "Cannot find properties file which describes the conversion.", e, true );
-        }
+        p.load( new FileInputStream( properties ) );
 
         File oldRepositoryPath = new File( p.getProperty( SOURCE_REPO_PATH ) );
 
@@ -268,7 +240,7 @@ public class ArchivaCli
 
         System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
 
-        List fileExclusionPatterns = null;
+        List<String> fileExclusionPatterns = null;
 
         String s = p.getProperty( BLACKLISTED_PATTERNS );
 
@@ -277,23 +249,33 @@ public class ArchivaCli
             fileExclusionPatterns = Arrays.asList( StringUtils.split( s, "," ) );
         }
 
-        try
-        {
-            legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
-                                                               fileExclusionPatterns );
-        }
-        catch ( RepositoryConversionException e )
-        {
-            showFatalError( "Error converting repository.", e, true );
-        }
+        legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath, fileExclusionPatterns );
     }
 
-    private void dumpConfiguration( PlexusContainer plexus )
-        throws ComponentLookupException
+    private static class Commands
     {
-        archivaConfiguration = (ArchivaConfiguration) plexus.lookup( ArchivaConfiguration.ROLE, "cli" );
+        @Argument( description = "Display help information", value = "help", alias = "h" )
+        private boolean help;
 
-        System.out.println( "File Type Count: "
-            + archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().size() );
+        @Argument( description = "Display version information", value = "version", alias = "v" )
+        private boolean version;
+
+        @Argument( description = "List available consumers", value = "listconsumers", alias = "l" )
+        private boolean listConsumers;
+
+        @Argument( description = "The consumers to use (comma delimited)", value = "consumers", alias = "u" )
+        private String consumers = "count-artifacts";
+
+        @Argument( description = "Scan the specified repository", value = "scan", alias = "s" )
+        private boolean scan;
+
+        @Argument( description = "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion", value = "convert", alias = "c" )
+        private boolean convert;
+
+        @Argument( description = "The properties file for the converstion", value = "properties" )
+        private String properties = "conversion.properties";
+
+        @Argument( description = "The repository to scan", value = "repository" )
+        private String repository;
     }
 }

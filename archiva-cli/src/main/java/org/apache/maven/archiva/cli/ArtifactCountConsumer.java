@@ -19,10 +19,10 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 
 /**
  * ArtifactCountConsumer 
@@ -30,13 +30,13 @@ import java.util.List;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *                   role-hint="count-artifacts"
  *                   instantiation-strategy="per-lookup"
  */
 public class ArtifactCountConsumer
     extends AbstractProgressConsumer
-    implements RepositoryContentConsumer
+    implements KnownRepositoryContentConsumer
 {
     /**
      * @plexus.configuration default-value="count-artifacts"

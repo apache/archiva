@@ -38,6 +38,10 @@
       <outputDirectory>/</outputDirectory>
       <unpack>true</unpack>
       <scope>runtime</scope>
+      <excludes>
+        <exclude>xml-apis:xml-apis</exclude>
+        <exclude>xalan:xalan</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets>
 </assembly>
