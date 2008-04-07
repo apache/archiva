@@ -26,7 +26,6 @@
 
   <artifactId>archiva-core-consumers</artifactId>
   <name>Archiva Consumers :: Core Consumers</name>
-  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>

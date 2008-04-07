@@ -52,7 +52,7 @@ import java.util.Map;
  * @plexus.component 
  *      role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *      role-hint="repository-purge"
- *      instantiation-strategy="per-lookup
+ *      instantiation-strategy="per-lookup"
  */
 public class RepositoryPurgeConsumer
     extends AbstractMonitoredConsumer

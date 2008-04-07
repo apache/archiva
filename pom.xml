@@ -585,7 +585,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>1.4</version>
+        <version>1.4.5</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -755,7 +755,7 @@
     </dependencies>
   </dependencyManagement>
   <properties>
-    <maven.version>2.0.5</maven.version>
+    <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-rc1-SNAPSHOT</wagon.version>
     <redback.version>1.1-SNAPSHOT</redback.version>
   </properties>
