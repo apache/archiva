@@ -43,7 +43,6 @@
     <dependency>
       <groupId>javax.jdo</groupId>
       <artifactId>jdo2-api</artifactId>
-      <scope>runtime</scope>
     </dependency>
   </dependencies>
   <build>
