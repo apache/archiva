@@ -30,6 +30,8 @@ import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Process new artifacts in the repository and generate RSS feeds.
@@ -50,12 +52,16 @@ public class NewArtifactsRssFeedProcessor
      */
     private RssFeedGenerator generator;
 
+    private Logger log = LoggerFactory.getLogger( NewArtifactsRssFeedProcessor.class );
+
     /**
      * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
      * new versions of artifact.
      */
     public void process( List<ArchivaArtifact> data )
     {
+        log.debug( "Process new artifacts into rss feeds." );
+        
         processNewArtifactsInRepo( data );
         processNewVersionsOfArtifact( data );
     }
@@ -67,19 +73,19 @@ public class NewArtifactsRssFeedProcessor
 
         RssFeedEntry entry =
             new RssFeedEntry( NEW_ARTIFACTS_IN_REPO + "\'" + repoId + "\'" + " as of " +
-                Calendar.getInstance().getTime(), "http://localhost:8080/archiva/repository/" + repoId );
+                Calendar.getInstance().getTime(), "http://localhost:8080/archiva/rss/new_artifacts_" + repoId + ".xml" );
         String description = "These are the new artifacts found in repository " + "\'" + repoId + "\'" + ": \n";
 
         for ( ArchivaArtifact artifact : data )
         {
-            description = description + artifact.toString() + "\n";
+            description = description + artifact.toString() + " | ";
         }
         entry.setDescription( description );
         entries.add( entry );
 
         generateFeed( "new_artifacts_" + repoId + ".xml", NEW_ARTIFACTS_IN_REPO + "\'" + repoId + "\'",
-                      "http://localhost:8080/archiva/repository/" + repoId, "New artifacts found in repository " +
-                          "\'" + repoId + "\'" + " during repository scan.", entries );
+                      "http://localhost:8080/archiva/repository/rss/new_artifacts_" + repoId + ".xml",
+                      "New artifacts found in repository " + "\'" + repoId + "\'" + " during repository scan.", entries );
     }
 
     private void processNewVersionsOfArtifact( List<ArchivaArtifact> data )
@@ -100,21 +106,19 @@ public class NewArtifactsRssFeedProcessor
         for ( String key : artifactsMap.keySet() )
         {
             List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
-            String artifactPath = getArtifactPath( key );
             RssFeedEntry entry =
                 new RssFeedEntry( NEW_VERSIONS_OF_ARTIFACT + "\'" + key + "\'" + " as of " +
-                    Calendar.getInstance().getTime(), "http://localhost:8080/archiva/repository/" + repoId + "/" +
-                    artifactPath );
+                    Calendar.getInstance().getTime(), "http://localhost:8080/archiva/rss/new_versions_" + key + ".xml" );
 
             String description =
                 "These are the new versions of artifact " + "\'" + key + "\'" + " in the repository: \n" +
-                    StringUtils.replace( ( (String) artifactsMap.get( key ) ), "|", "\n" );
+                    ( (String) artifactsMap.get( key ) );
 
             entry.setDescription( description );
             entries.add( entry );
 
-            generateFeed( "new_versions_" + repoId + "_" + key + ".xml", NEW_VERSIONS_OF_ARTIFACT + "\'" + key + "\'",
-                          "http://localhost:8080/archiva/repository/" + repoId + "/" + artifactPath,
+            generateFeed( "new_versions_" + key + ".xml", NEW_VERSIONS_OF_ARTIFACT + "\'" + key + "\'",
+                          "http://localhost:8080/archiva/rss/new_versions_" + key + ".xml",
                           "New versions of artifact " + "\'" + key + "\' found in repository " + "\'" + repoId + "\'" +
                               " during repository scan.", entries );
         }
@@ -148,7 +152,7 @@ public class NewArtifactsRssFeedProcessor
             String value = (String) artifactsMap.get( key );
             if ( value != null )
             {
-                value = value + "|" + id;
+                value = value + " | " + id;
             }
             else
             {
@@ -160,16 +164,11 @@ public class NewArtifactsRssFeedProcessor
         return artifactsMap;
     }
 
-    private String getArtifactPath( String key )
-    {
-        return StringUtils.replace( StringUtils.replace( key, ".", "/" ), ":", "/" );
-    }
-    
     public RssFeedGenerator getGenerator()
     {
         return generator;
     }
-    
+
     public void setGenerator( RssFeedGenerator generator )
     {
         this.generator = generator;

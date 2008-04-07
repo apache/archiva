@@ -93,16 +93,16 @@ public class NewArtifactsRssFeedProcessorTest
         File outputFile = new File( rssDirectory, "new_artifacts_test-repo.xml" );        
         assertTrue( outputFile.exists() );
         
-        outputFile = new File( rssDirectory, "new_versions_test-repo_org.apache.archiva:artifact-one.xml" );        
+        outputFile = new File( rssDirectory, "new_versions_org.apache.archiva:artifact-one.xml" );        
         assertTrue( outputFile.exists() );
         
-        outputFile = new File( rssDirectory, "new_versions_test-repo_org.apache.archiva:artifact-two.xml" );        
+        outputFile = new File( rssDirectory, "new_versions_org.apache.archiva:artifact-two.xml" );        
         assertTrue( outputFile.exists() );
         
-        outputFile = new File( rssDirectory, "new_versions_test-repo_org.apache.archiva:artifact-three.xml" );        
+        outputFile = new File( rssDirectory, "new_versions_org.apache.archiva:artifact-three.xml" );        
         assertTrue( outputFile.exists() );
         
-        outputFile = new File( rssDirectory, "new_versions_test-repo_org.apache.archiva:artifact-four.xml" );        
+        outputFile = new File( rssDirectory, "new_versions_org.apache.archiva:artifact-four.xml" );        
         assertTrue( outputFile.exists() );
     }
 }

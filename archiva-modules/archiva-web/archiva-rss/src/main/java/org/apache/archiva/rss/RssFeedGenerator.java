@@ -44,7 +44,8 @@ import com.sun.syndication.io.XmlReader;
 /**
  * Generates RSS feeds.
  * 
- * @plexus.component role="org.apache.archiva.rss.RssFeedGenerator"
+ * @plexus.component role="org.apache.archiva.rss.RssFeedGenerator" 
+ *      instantiation-strategy="per-lookup"
  * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
@@ -57,21 +58,21 @@ public class RssFeedGenerator
     public static String DEFAULT_FEEDTYPE = "rss_2.0";
 
     public static String DEFAULT_LANGUAGE = "en-us";
-    
+
     /**
-     * @plexus.configuration default-value="${appserver.base}/data/rss"
+     * @plexus.configuration default-value="./apps/archiva/rss/"
      */
     private String rssDirectory;
 
     public void generateFeed( String title, String link, String description, List<RssFeedEntry> dataEntries,
                               String outputFilename )
-    {   
-        File outputFile = new File( rssDirectory, outputFilename );     
+    {           
+        File outputFile = new File( rssDirectory, outputFilename );
         SyndFeed feed = null;
         List<SyndEntry> existingEntries = null;
-        
-        if( outputFile.exists() )
-        {   
+
+        if ( outputFile.exists() )
+        {
             try
             {
                 SyndFeedInput input = new SyndFeedInput();
@@ -88,25 +89,27 @@ public class RssFeedGenerator
             }
         }
         else
-        {        
-            feed = new SyndFeedImpl();            
-    
+        {
+            feed = new SyndFeedImpl();
+
             feed.setTitle( title );
             feed.setLink( link );
             feed.setDescription( description );
-            feed.setLanguage( DEFAULT_LANGUAGE );            
+            feed.setLanguage( DEFAULT_LANGUAGE );
+            feed.setPublishedDate( Calendar.getInstance().getTime() );
         }
 
-        feed.setFeedType( DEFAULT_FEEDTYPE );
-        feed.setPublishedDate( Calendar.getInstance().getTime() );
+        feed.setFeedType( DEFAULT_FEEDTYPE );        
         feed.setEntries( getEntries( dataEntries, existingEntries ) );
-        
+
         try
-        {            
+        {
             Writer writer = new FileWriter( outputFile );
             SyndFeedOutput output = new SyndFeedOutput();
             output.output( feed, writer );
             writer.close();
+
+            log.debug( "Finished writing feed to " + outputFile.getAbsolutePath() );
         }
         catch ( IOException ie )
         {
@@ -119,13 +122,13 @@ public class RssFeedGenerator
     }
 
     private List<SyndEntry> getEntries( List<RssFeedEntry> dataEntries, List<SyndEntry> existingEntries )
-    {        
-        List<SyndEntry> entries = existingEntries;     
-        if( entries == null )
+    {
+        List<SyndEntry> entries = existingEntries;
+        if ( entries == null )
         {
             entries = new ArrayList<SyndEntry>();
         }
-        
+
         SyndEntry entry;
         SyndContent description;
 
@@ -151,4 +154,5 @@ public class RssFeedGenerator
     {
         this.rssDirectory = rssDirectory;
     }
+    
 }

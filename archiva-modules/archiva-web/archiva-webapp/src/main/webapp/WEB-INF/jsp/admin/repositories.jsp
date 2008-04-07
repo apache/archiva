@@ -87,6 +87,10 @@
       Delete
     </ww:a>
   </redback:ifAnyAuthorized>
+  <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
+  <a href="/archiva/rss/new_artifacts_${repository.id}.xml">
+	<img src="${rssFeedIconUrl}" />
+  </a>
 </div>
 
 <div style="float: left">

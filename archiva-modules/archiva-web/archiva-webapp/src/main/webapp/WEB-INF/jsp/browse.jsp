@@ -62,14 +62,20 @@
     <div id="nameColumn">
       <h2>Artifacts</h2>
       <ul>
+        <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
         <c:forEach items="${results.artifacts}" var="artifactId">
           <c:set var="url">
             <ww:url action="browseArtifact" namespace="/">
               <ww:param name="groupId" value="%{'${results.selectedGroupId}'}"/>
               <ww:param name="artifactId" value="%{'${artifactId}'}"/>
             </ww:url>
-          </c:set>
-          <li><a href="${url}">${artifactId}/</a></li>
+          </c:set>          
+          <li>
+          <a href="${url}">${artifactId}/</a>
+          <a href="/archiva/rss/new_versions_${groupId}:${artifactId}.xml">
+      		<img src="${rssFeedIconUrl}" />
+    	  </a>
+    	  </li>    
         </c:forEach>
       </ul>
     </div>
