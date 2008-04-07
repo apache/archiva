@@ -49,35 +49,30 @@ public class RssFeedGeneratorTest
 
     public void testGenerateFeed()
         throws Exception
-    {
-        File outputFile = new File( getBasedir(), "/target/test-classes/rss-feeds/generated-rss2.0-feed.xml" );
-
+    {        
+        generator.setRssDirectory( getBasedir() + "/target/test-classes/rss-feeds/" );
+        
         List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
-        RssFeedEntry entry = new RssFeedEntry();
+        RssFeedEntry entry = new RssFeedEntry( "Item 1", "http://rss-2.0-test-feed.com");
 
-        entry.setTitle( "Item 1" );
-        entry.setLink( "http://rss-2.0-test-feed.com" );
         entry.setDescription( "RSS 2.0 feed item 1." );
         entry.setGuid( "http://rss-2.0-test-feed.com/item1" );
         entries.add( entry );
 
-        entry = new RssFeedEntry();
-        entry.setTitle( "Item 2" );
-        entry.setLink( "http://rss-2.0-test-feed.com" );
+        entry = new RssFeedEntry( "Item 2", "http://rss-2.0-test-feed.com" );
         entry.setDescription( "RSS 2.0 feed item 2." );
         entry.setGuid( "http://rss-2.0-test-feed.com/item2" );
         entries.add( entry );
 
-        entry = new RssFeedEntry();
-        entry.setTitle( "Item 3" );
-        entry.setLink( "http://rss-2.0-test-feed.com" );
+        entry = new RssFeedEntry( "Item 3", "http://rss-2.0-test-feed.com" );
         entry.setDescription( "RSS 2.0 feed item 3." );
         entry.setGuid( "http://rss-2.0-test-feed.com/item3" );
         entries.add( entry );
 
         generator.generateFeed( "Test Feed", "http://localhost:8080/archiva", "The test feed from Archiva.", entries,
-                                outputFile );
+                                "generated-rss2.0-feed.xml" );
 
+        File outputFile = new File( getBasedir(), "/target/test-classes/rss-feeds/generated-rss2.0-feed.xml" );
         String generatedContent = FileUtils.readFileToString( outputFile );
 
         XMLAssert.assertXpathEvaluatesTo( "Test Feed", "//channel/title", generatedContent );
@@ -89,5 +84,7 @@ public class RssFeedGeneratorTest
             "<channel><item><title>Item 1</title></item><item><title>Item 2</title></item>"
                 + "<item><title>Item 3</title></item></channel>";
         XMLAssert.assertXpathsEqual( "//channel/item/title", expectedItem1, "//channel/item/title", generatedContent );
+        
+        outputFile.deleteOnExit();
     }
 }

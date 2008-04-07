@@ -37,7 +37,9 @@ import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.XmlReader;
 
 /**
  * Generates RSS feeds.
@@ -55,23 +57,52 @@ public class RssFeedGenerator
     public static String DEFAULT_FEEDTYPE = "rss_2.0";
 
     public static String DEFAULT_LANGUAGE = "en-us";
+    
+    /**
+     * @plexus.configuration default-value="${appserver.base}/data/rss"
+     */
+    private String rssDirectory;
 
     public void generateFeed( String title, String link, String description, List<RssFeedEntry> dataEntries,
-                              File outputFile )
-    {
-        SyndFeed feed = new SyndFeedImpl();
+                              String outputFilename )
+    {   
+        File outputFile = new File( rssDirectory, outputFilename );     
+        SyndFeed feed = null;
+        List<SyndEntry> existingEntries = null;
+        
+        if( outputFile.exists() )
+        {   
+            try
+            {
+                SyndFeedInput input = new SyndFeedInput();
+                feed = input.build( new XmlReader( outputFile ) );
+                existingEntries = feed.getEntries();
+            }
+            catch ( IOException ie )
+            {
+                log.error( "Error occurred while reading existing feed : " + ie.getLocalizedMessage() );
+            }
+            catch ( FeedException fe )
+            {
+                log.error( "Error occurred while reading existing feed : " + fe.getLocalizedMessage() );
+            }
+        }
+        else
+        {        
+            feed = new SyndFeedImpl();            
+    
+            feed.setTitle( title );
+            feed.setLink( link );
+            feed.setDescription( description );
+            feed.setLanguage( DEFAULT_LANGUAGE );            
+        }
+
         feed.setFeedType( DEFAULT_FEEDTYPE );
-
-        feed.setTitle( title );
-        feed.setLink( link );
-        feed.setDescription( description );
-        feed.setLanguage( DEFAULT_LANGUAGE );
         feed.setPublishedDate( Calendar.getInstance().getTime() );
-
-        feed.setEntries( getEntries( dataEntries ) );
-
+        feed.setEntries( getEntries( dataEntries, existingEntries ) );
+        
         try
-        {
+        {            
             Writer writer = new FileWriter( outputFile );
             SyndFeedOutput output = new SyndFeedOutput();
             output.output( feed, writer );
@@ -87,9 +118,14 @@ public class RssFeedGenerator
         }
     }
 
-    private List<SyndEntry> getEntries( List<RssFeedEntry> dataEntries )
-    {
-        List<SyndEntry> entries = new ArrayList<SyndEntry>();
+    private List<SyndEntry> getEntries( List<RssFeedEntry> dataEntries, List<SyndEntry> existingEntries )
+    {        
+        List<SyndEntry> entries = existingEntries;     
+        if( entries == null )
+        {
+            entries = new ArrayList<SyndEntry>();
+        }
+        
         SyndEntry entry;
         SyndContent description;
 
@@ -111,4 +147,8 @@ public class RssFeedGenerator
         return entries;
     }
 
+    public void setRssDirectory( String rssDirectory )
+    {
+        this.rssDirectory = rssDirectory;
+    }
 }

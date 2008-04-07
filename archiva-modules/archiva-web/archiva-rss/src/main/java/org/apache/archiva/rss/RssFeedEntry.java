@@ -44,6 +44,17 @@ public class RssFeedEntry
     private String guid;
     
     private String source;
+    
+    public RssFeedEntry()
+    {
+        
+    }
+    
+    public RssFeedEntry( String title, String link )
+    {
+        this.title = title;
+        this.link = link;
+    }
 
     public String getTitle()
     {
