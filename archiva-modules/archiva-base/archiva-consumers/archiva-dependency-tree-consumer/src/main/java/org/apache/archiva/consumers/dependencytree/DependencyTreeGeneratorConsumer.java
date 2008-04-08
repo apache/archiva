@@ -89,7 +89,7 @@ public class DependencyTreeGeneratorConsumer
 
     /** @plexus.requirement */
     private MavenProjectBuilder projectBuilder;
-
+    
     /** @plexus.requirement */
     private ArtifactRepositoryFactory artifactRepositoryFactory;
 
@@ -299,6 +299,10 @@ public class DependencyTreeGeneratorConsumer
             if ( artifact.getScope() != null )
             {
                 dependency.addElement( "scope" ).setText( artifact.getScope() );
+            }
+            if ( artifact.getClassifier() != null )
+            {
+                dependency.addElement( "classifier" ).setText( artifact.getClassifier() );
             }
 
             xmlNode = dependency.addElement( "dependencies" );

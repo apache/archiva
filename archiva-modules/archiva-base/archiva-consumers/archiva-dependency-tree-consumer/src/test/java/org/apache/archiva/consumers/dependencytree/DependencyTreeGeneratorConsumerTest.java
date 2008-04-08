@@ -27,6 +27,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.profiles.DefaultProfileManager;
+import org.codehaus.plexus.spring.PlexusContainerAdapter;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 public class DependencyTreeGeneratorConsumerTest
@@ -44,7 +46,7 @@ public class DependencyTreeGeneratorConsumerTest
         throws Exception
     {
         super.setUp();
-        
+
         consumer =
             (DependencyTreeGeneratorConsumer) lookup( KnownRepositoryContentConsumer.class, "dependency-tree-generator" );
 
@@ -72,6 +74,47 @@ public class DependencyTreeGeneratorConsumerTest
 
         File generatedFile = new File( generatedRepositoryLocation, path + ".xml" );
         assertEquals( IOUtils.toString( getClass().getResourceAsStream( "/test-data/maven-core-2.0-tree.xml" ) ),
+                      FileUtils.readFileToString( generatedFile ) );
+
+        consumer.completeScan();
+    }
+
+    public void testInvalidCoordinate()
+        throws IOException, ConsumerException
+    {
+        consumer.beginScan( repository );
+
+        String path = "openejb/jaxb-xjc/2.0EA3/jaxb-xjc-2.0EA3.pom";
+        try
+        {
+            consumer.processFile( path );
+
+            fail( "Should not have successfully processed the file" );
+        }
+        catch ( ConsumerException e )
+        {
+            File generatedFile = new File( generatedRepositoryLocation, path + ".xml" );
+            assertFalse( generatedFile.exists() );
+        }
+
+        consumer.completeScan();
+    }
+
+    public void testProfiles()
+        throws IOException, ConsumerException
+    {
+        PlexusContainerAdapter container = new PlexusContainerAdapter();
+        container.setApplicationContext( getApplicationContext() );
+        
+        DefaultProfileManager m = new DefaultProfileManager( container );
+        
+        consumer.beginScan( repository );
+
+        String path = "org/apache/maven/surefire/surefire-testng/2.0/surefire-testng-2.0.pom";
+        consumer.processFile( path );
+
+        File generatedFile = new File( generatedRepositoryLocation, path + ".xml" );
+        assertEquals( IOUtils.toString( getClass().getResourceAsStream( "/test-data/surefire-testng-2.0-tree.xml" ) ),
                       FileUtils.readFileToString( generatedFile ) );
 
         consumer.completeScan();
