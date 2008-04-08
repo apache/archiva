@@ -34,6 +34,8 @@ public class ArtifactExtensionMapping
     public static final String MAVEN_ARCHETYPE = "maven-archetype";
 
     public static final String MAVEN_PLUGIN = "maven-plugin";
+	
+	public static final String MAVEN_ONE_PLUGIN = "maven-one-plugin";
 
     private static final Map<String, String> typeToExtensionMap;
 
@@ -52,6 +54,7 @@ public class ArtifactExtensionMapping
         typeToExtensionMap.put( "aspect", "jar" );
         typeToExtensionMap.put( "uberjar", "jar" );
         typeToExtensionMap.put( MAVEN_PLUGIN, "jar" );
+        typeToExtensionMap.put( MAVEN_ONE_PLUGIN, "jar" );
         typeToExtensionMap.put( MAVEN_ARCHETYPE, "jar" );
     }
 
