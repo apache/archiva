@@ -22,8 +22,10 @@ package org.apache.archiva.consumers.dependencytree;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -39,6 +41,7 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.apache.maven.project.DefaultMavenProjectBuilder;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
@@ -92,6 +95,14 @@ public class DependencyTreeGeneratorConsumer
 
     private String repositoryLocation;
 
+    private final DefaultRepositoryLayout layout = new DefaultRepositoryLayout();
+
+    private ArtifactRepository localArtifactRepository;
+
+    private Field rawProjectCacheField;
+
+    private Field processedProjectCacheField;
+
     public String getDescription()
     {
         return "Generate dependency tree metadata for tracking changes across algorithms";
@@ -127,6 +138,17 @@ public class DependencyTreeGeneratorConsumer
             // This is a bit crappy, it would be better to operate entirely within
             // the base repository, but would need to adjust maven-artifact
             localRepository = new File( System.getProperty( "user.home" ), ".m2/repository" );
+            try
+            {
+                localArtifactRepository =
+                    artifactRepositoryFactory.createArtifactRepository( "local",
+                                                                        localRepository.toURL().toExternalForm(),
+                                                                        layout, null, null );
+            }
+            catch ( MalformedURLException e )
+            {
+                throw new ConsumerException( e.getMessage(), e );
+            }
         }
     }
 
@@ -147,24 +169,15 @@ public class DependencyTreeGeneratorConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        DefaultRepositoryLayout layout = new DefaultRepositoryLayout();
-
-        ArtifactRepository localRepository;
         MavenProject project;
         try
         {
-            localRepository =
-                artifactRepositoryFactory.createArtifactRepository( "local",
-                                                                    this.localRepository.toURL().toExternalForm(),
-                                                                    layout, null, null );
+            project = projectBuilder.build( new File( repositoryLocation, path ), localArtifactRepository, null, false );
 
-            project = projectBuilder.build( new File( repositoryLocation, path ), localRepository, null, false );
+            // manually flush out the cache for memory concerns and more accurate building
+            flushProjectCache( projectBuilder );
         }
         catch ( ProjectBuildingException e )
-        {
-            throw new ConsumerException( e.getMessage(), e );
-        }
-        catch ( MalformedURLException e )
         {
             throw new ConsumerException( e.getMessage(), e );
         }
@@ -176,7 +189,7 @@ public class DependencyTreeGeneratorConsumer
             ArtifactFilter artifactFilter = null;
 
             rootNode =
-                dependencyTreeBuilder.buildDependencyTree( project, localRepository, artifactFactory,
+                dependencyTreeBuilder.buildDependencyTree( project, localArtifactRepository, artifactFactory,
                                                            artifactMetadataSource, artifactFilter, artifactCollector );
         }
         catch ( DependencyTreeBuilderException e )
@@ -221,6 +234,33 @@ public class DependencyTreeGeneratorConsumer
         finally
         {
             IOUtils.closeQuietly( writer );
+        }
+    }
+
+    private void flushProjectCache( MavenProjectBuilder projectBuilder )
+    {
+        try
+        {
+            if ( rawProjectCacheField == null )
+            {
+                rawProjectCacheField = DefaultMavenProjectBuilder.class.getDeclaredField( "rawProjectCache" );
+                rawProjectCacheField.setAccessible( true );
+            }
+
+            if ( processedProjectCacheField == null )
+            {
+                processedProjectCacheField =
+                    DefaultMavenProjectBuilder.class.getDeclaredField( "processedProjectCache" );
+                processedProjectCacheField.setAccessible( true );
+            }
+
+            rawProjectCacheField.set( projectBuilder, new HashMap() );
+
+            processedProjectCacheField.set( projectBuilder, new HashMap() );
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( e );
         }
     }
 

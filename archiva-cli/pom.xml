@@ -48,6 +48,11 @@
       <artifactId>archiva-converter</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-file</artifactId>
+      <version>1.0-beta-2</version>
+    </dependency>
+    <dependency>
       <groupId>com.google.code.cli-parser</groupId>
       <artifactId>cli</artifactId>
       <version>7</version>

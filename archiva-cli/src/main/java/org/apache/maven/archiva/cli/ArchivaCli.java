@@ -19,8 +19,19 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
@@ -31,25 +42,12 @@ import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
+import org.apache.maven.artifact.manager.WagonManager;
 import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * ArchivaCli
@@ -144,8 +142,14 @@ public class ArchivaCli
     }
 
     private void doScan( String path, String[] consumers )
-        throws ConsumerException
+        throws ConsumerException, MalformedURLException
     {
+        // hack around poorly configurable project builder by pointing all repositories back at this location to be self
+        // contained
+        WagonManager wagonManager =
+            (WagonManager) applicationContext.getBean( PlexusToSpringUtils.buildSpringId( WagonManager.class.getName() ) );
+        wagonManager.addMirror( "internal", "*", new File( path ).toURL().toExternalForm() );
+
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( "cliRepo" );
         repo.setName( "Archiva CLI Provided Repo" );
@@ -218,7 +222,7 @@ public class ArchivaCli
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private Map<String, KnownRepositoryContentConsumer> getConsumers()
     {
         return PlexusToSpringUtils.lookupMap( "knownRepositoryContentConsumer", applicationContext );
