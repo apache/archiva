@@ -340,7 +340,7 @@ public class LegacyPathParserTest
         String groupId = "maven";
         String artifactId = "maven-test-plugin";
         String version = "1.8.2";
-        String type = "maven-plugin";
+        String type = "maven-one-plugin";
         String path = "maven/plugins/maven-test-plugin-1.8.2.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
@@ -355,7 +355,7 @@ public class LegacyPathParserTest
         String groupId = "avalon-meta";
         String artifactId = "avalon-meta-plugin";
         String version = "1.1";
-        String type = "maven-plugin";
+        String type = "maven-one-plugin";
         String path = "avalon-meta/plugins/avalon-meta-plugin-1.1.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
@@ -370,7 +370,7 @@ public class LegacyPathParserTest
         String groupId = "cactus";
         String artifactId = "cactus-maven";
         String version = "1.7dev-20040815";
-        String type = "maven-plugin";
+        String type = "maven-one-plugin";
         String path = "cactus/plugins/cactus-maven-1.7dev-20040815.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
@@ -385,7 +385,7 @@ public class LegacyPathParserTest
         String groupId = "geronimo";
         String artifactId = "geronimo-packaging-plugin";
         String version = "1.0.1";
-        String type = "maven-plugin";
+        String type = "maven-one-plugin";
         String path = "geronimo/plugins/geronimo-packaging-plugin-1.0.1.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
