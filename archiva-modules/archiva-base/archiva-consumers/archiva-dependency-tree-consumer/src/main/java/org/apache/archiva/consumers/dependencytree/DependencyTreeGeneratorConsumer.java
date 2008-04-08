@@ -103,6 +103,8 @@ public class DependencyTreeGeneratorConsumer
 
     private Field processedProjectCacheField;
 
+    private List<String> includes = Collections.singletonList( "**/*.pom" );
+
     public String getDescription()
     {
         return "Generate dependency tree metadata for tracking changes across algorithms";
@@ -163,7 +165,7 @@ public class DependencyTreeGeneratorConsumer
 
     public List getIncludes()
     {
-        return Collections.singletonList( "**/*.pom" );
+        return includes;
     }
 
     public void processFile( String path )
@@ -220,7 +222,13 @@ public class DependencyTreeGeneratorConsumer
                 artifactFactory.createProjectArtifact( project.getGroupId(), project.getArtifactId(),
                                                        project.getVersion() );
 
-            File generatedFile = new File( generatedRepositoryLocation, layout.pathOf( artifact ) + ".xml" );
+            String p = layout.pathOf( artifact );
+            if ( !p.equals( path ) )
+            {
+                throw new ConsumerException( "Bad path: " + p + "; should be: " + path );
+            }
+
+            File generatedFile = new File( generatedRepositoryLocation, p + ".xml" );
             generatedFile.getParentFile().mkdirs();
             writer = new FileWriter( generatedFile );
             OutputFormat format = OutputFormat.createPrettyPrint();
@@ -314,5 +322,10 @@ public class DependencyTreeGeneratorConsumer
 
             return true;
         }
+    }
+
+    public void setIncludes( List<String> includes )
+    {
+        this.includes = includes;
     }
 }
