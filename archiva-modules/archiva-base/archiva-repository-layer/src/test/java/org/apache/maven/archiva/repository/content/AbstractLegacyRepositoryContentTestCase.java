@@ -271,7 +271,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String groupId = "maven";
         String artifactId = "maven-test-plugin";
         String version = "1.8.2";
-        String type = "maven-plugin";
+        String type = "maven-one-plugin";
         String path = "maven/plugins/maven-test-plugin-1.8.2.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
@@ -286,7 +286,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String groupId = "avalon-meta";
         String artifactId = "avalon-meta-plugin";
         String version = "1.1";
-        String type = "maven-plugin";
+        String type = "maven-one-plugin";
         String path = "avalon-meta/plugins/avalon-meta-plugin-1.1.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
@@ -301,7 +301,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String groupId = "cactus";
         String artifactId = "cactus-maven";
         String version = "1.7dev-20040815";
-        String type = "maven-plugin";
+        String type = "maven-one-plugin";
         String path = "cactus/plugins/cactus-maven-1.7dev-20040815.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
@@ -316,12 +316,28 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String groupId = "geronimo";
         String artifactId = "geronimo-packaging-plugin";
         String version = "1.0.1";
-        String type = "maven-plugin";
+        String type = "maven-one-plugin";
         String path = "geronimo/plugins/geronimo-packaging-plugin-1.0.1.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+	/**
+	 * [MRM-768] Artifact type "maven-plugin" does not distinguish maven1 and maven2 plugins. 
+	 * This produces conflicts when m2 plugins are stored in legacy-layout repository
+	 */
+	public void testMaven1Maven2PluginTypeDistinc()
+	    throws Exception
+    {
+        String groupId = "com.sun.tools.xjc.maven2";
+        String artifactId = "maven-jaxb-plugin";
+        String version = "1.1";
+        String type = "maven-plugin";
+        String path = "com.sun.tools.xjc.maven2/maven-plugins/maven-jaxb-plugin-1.1.jar";
+
+        assertLayout( path, groupId, artifactId, version, null, type );
+	}
+	
     /**
      * Perform a roundtrip through the layout routines to determine success.
      * @param classifier TODO

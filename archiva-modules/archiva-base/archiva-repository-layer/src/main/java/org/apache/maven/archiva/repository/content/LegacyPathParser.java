@@ -191,7 +191,7 @@ public class LegacyPathParser
         // Special Case with Maven Plugins
         if ( StringUtils.equals( "jar", extension ) && StringUtils.equals( "plugins", expectedType ) )
         {
-            artifact.setType( ArtifactExtensionMapping.MAVEN_PLUGIN );
+            artifact.setType( ArtifactExtensionMapping.MAVEN_ONE_PLUGIN );
         }
         else
         {
