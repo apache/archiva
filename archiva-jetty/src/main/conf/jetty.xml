@@ -51,6 +51,15 @@
     </Set>
 
 
+    <Call class="java.lang.System" name="setProperty">
+      <Arg>jetty.port</Arg>
+      <Arg>8080</Arg>
+    </Call>
+
+    <Call class="java.lang.System" name="setProperty">
+      <Arg>jetty.host</Arg>
+      <Arg>localhost</Arg>
+    </Call>
 
     <!-- =========================================================== -->
     <!-- Set connectors                                              -->
@@ -64,7 +73,7 @@
     <Call name="addConnector">
       <Arg>
           <New class="org.mortbay.jetty.nio.SelectChannelConnector">
-            <Set name="host"><SystemProperty name="jetty.host" /></Set>
+            <Set name="host"><SystemProperty name="jetty.host"/></Set>
             <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
             <Set name="maxIdleTime">30000</Set>
             <Set name="Acceptors">2</Set>
@@ -268,8 +277,7 @@
     <Arg type="boolean">True</Arg>
     <Arg type="boolean">False</Arg>
   </Call>
-  
-  
+
   <!-- ARCHIVA CONFIG -->
 	
   <New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">

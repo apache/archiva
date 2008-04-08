@@ -22,9 +22,11 @@ package org.apache.archiva.rss.processor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
@@ -53,7 +55,17 @@ public class NewArtifactsRssFeedProcessor
     private RssFeedGenerator generator;
 
     private Logger log = LoggerFactory.getLogger( NewArtifactsRssFeedProcessor.class );
-
+    
+    /**
+     * The hostname that will be used in the urls for the feed links.
+     */
+    private String host = "localhost";
+    
+    /**
+     * The port that will be used in the urls for the feed links.
+     */
+    private String port = "8080";
+    
     /**
      * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
      * new versions of artifact.
@@ -61,6 +73,16 @@ public class NewArtifactsRssFeedProcessor
     public void process( List<ArchivaArtifact> data )
     {
         log.debug( "Process new artifacts into rss feeds." );
+        
+        if ( System.getProperty( "jetty.host" ) != null )
+        {
+            host = System.getProperty( "jetty.host" );
+        }
+        
+        if ( System.getProperty( "jetty.port" ) != null )
+        {
+            port = System.getProperty( "jetty.port" );
+        }
         
         processNewArtifactsInRepo( data );
         processNewVersionsOfArtifact( data );
@@ -73,7 +95,7 @@ public class NewArtifactsRssFeedProcessor
 
         RssFeedEntry entry =
             new RssFeedEntry( NEW_ARTIFACTS_IN_REPO + "\'" + repoId + "\'" + " as of " +
-                Calendar.getInstance().getTime(), "http://localhost:8080/archiva/rss/new_artifacts_" + repoId + ".xml" );
+                Calendar.getInstance().getTime(), getBaseUrl() + "/archiva/rss/new_artifacts_" + repoId + ".xml" );
         String description = "These are the new artifacts found in repository " + "\'" + repoId + "\'" + ": \n";
 
         for ( ArchivaArtifact artifact : data )
@@ -84,7 +106,7 @@ public class NewArtifactsRssFeedProcessor
         entries.add( entry );
 
         generateFeed( "new_artifacts_" + repoId + ".xml", NEW_ARTIFACTS_IN_REPO + "\'" + repoId + "\'",
-                      "http://localhost:8080/archiva/repository/rss/new_artifacts_" + repoId + ".xml",
+                      getBaseUrl() + "/archiva/repository/rss/new_artifacts_" + repoId + ".xml",
                       "New artifacts found in repository " + "\'" + repoId + "\'" + " during repository scan.", entries );
     }
 
@@ -108,7 +130,7 @@ public class NewArtifactsRssFeedProcessor
             List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
             RssFeedEntry entry =
                 new RssFeedEntry( NEW_VERSIONS_OF_ARTIFACT + "\'" + key + "\'" + " as of " +
-                    Calendar.getInstance().getTime(), "http://localhost:8080/archiva/rss/new_versions_" + key + ".xml" );
+                    Calendar.getInstance().getTime(), getBaseUrl() + "/archiva/rss/new_versions_" + key + ".xml" );
 
             String description =
                 "These are the new versions of artifact " + "\'" + key + "\'" + " in the repository: \n" +
@@ -116,9 +138,9 @@ public class NewArtifactsRssFeedProcessor
 
             entry.setDescription( description );
             entries.add( entry );
-
+            
             generateFeed( "new_versions_" + key + ".xml", NEW_VERSIONS_OF_ARTIFACT + "\'" + key + "\'",
-                          "http://localhost:8080/archiva/rss/new_versions_" + key + ".xml",
+                          getBaseUrl() + "/archiva/rss/new_versions_" + key + ".xml",
                           "New versions of artifact " + "\'" + key + "\' found in repository " + "\'" + repoId + "\'" +
                               " during repository scan.", entries );
         }
@@ -173,5 +195,17 @@ public class NewArtifactsRssFeedProcessor
     {
         this.generator = generator;
     }
-
+    
+    private String getBaseUrl()
+    {
+        String baseUrl = "http://" + host;
+        
+        if( port != null && !"".equals( port ) )
+        {
+            baseUrl = baseUrl + ":" + port;
+        }
+        
+        return baseUrl;
+    }
+    
 }
