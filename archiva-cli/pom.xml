@@ -63,6 +63,10 @@
       <version>1.5.0</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-spring</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

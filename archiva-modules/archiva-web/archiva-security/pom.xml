@@ -33,6 +33,11 @@
       <artifactId>archiva-configuration</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-spring</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-system</artifactId>
     </dependency>
