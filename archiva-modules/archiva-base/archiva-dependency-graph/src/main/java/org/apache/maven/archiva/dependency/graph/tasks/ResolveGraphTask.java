@@ -34,11 +34,6 @@ import org.apache.maven.archiva.model.VersionedReference;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.dependency.graph.GraphTask"
- *      role-hint="resolve-graph"
- *      instantiation-strategy="per-lookup"
  */
 public class ResolveGraphTask
     implements GraphTask, PotentialCyclicEdgeProducer

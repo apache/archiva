@@ -19,6 +19,10 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.net.MalformedURLException;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDAO;
@@ -31,14 +35,10 @@ import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.ArchivaUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.maven.archiva.web.util.ArchivaXworkUser;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
-
-import java.net.MalformedURLException;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -73,11 +73,6 @@ public class SearchAction
      */
     private UserRepositories userRepositories;
     
-    /**
-     * @plexus.requirement role-hint="xwork"
-     */
-    private ArchivaUser archivaUser;
-
     private static final String RESULTS = "results";
 
     private static final String ARTIFACT = "artifact";
@@ -160,7 +155,7 @@ public class SearchAction
     
     private String getPrincipal()
     {
-        return archivaUser.getActivePrincipal();
+        return ArchivaXworkUser.getActivePrincipal();
     }
     
     private List<String> getObservableRepos()

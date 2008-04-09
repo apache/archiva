@@ -30,10 +30,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.commons.collections.Predicate" 
- *      role-hint="index-exists"
  */
 public class IndexExistsPredicate
     implements Predicate

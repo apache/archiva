@@ -51,10 +51,6 @@ import java.util.Properties;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- *
- * @plexus.component
- *      role="org.apache.maven.archiva.repository.project.ProjectModelReader"
- *      role-hint="model400"
  */
 public class ProjectModel400Reader
     implements ProjectModelReader

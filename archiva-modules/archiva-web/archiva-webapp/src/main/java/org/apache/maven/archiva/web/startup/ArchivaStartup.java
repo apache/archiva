@@ -54,7 +54,7 @@ public class ArchivaStartup
         ArchivaTaskScheduler taskScheduler = (ArchivaTaskScheduler) wac.getBean(PlexusToSpringUtils.buildSpringId(ArchivaTaskScheduler.class));
         TaskQueueExecutor databaseUpdateQueue = (TaskQueueExecutor) wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "database-update"));
         TaskQueueExecutor repositoryScanningQueue = (TaskQueueExecutor) wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "repository-scanning"));
-        Banner banner = (Banner) wac.getBean(PlexusToSpringUtils.buildSpringId(Banner.class));
+        Banner banner = new Banner();
 
         try
         {

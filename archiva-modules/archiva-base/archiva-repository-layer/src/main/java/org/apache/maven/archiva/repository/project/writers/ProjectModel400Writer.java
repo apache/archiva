@@ -58,10 +58,6 @@ import java.util.List;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.repository.project.ProjectModelWriter"
- *      role-hint="model400"
  */
 public class ProjectModel400Writer
     implements ProjectModelWriter

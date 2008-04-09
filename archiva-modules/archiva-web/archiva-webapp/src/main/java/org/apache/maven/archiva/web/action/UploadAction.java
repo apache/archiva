@@ -19,7 +19,15 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.maven.archiva.common.utils.Checksums;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -38,22 +46,15 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelWriter;
+import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.ArchivaUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.maven.archiva.web.util.ArchivaXworkUser;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
@@ -123,11 +124,6 @@ public class UploadAction
     private List<String> managedRepoIdList;
 
     /**
-     * @plexus.requirement role-hint="xwork"
-     */
-    private ArchivaUser archivaUser;
-
-    /**
      * @plexus.requirement
      */
     private UserRepositories userRepositories;
@@ -142,10 +138,7 @@ public class UploadAction
      */
     private RepositoryContentFactory repositoryFactory;
 
-    /**
-     * @plexus.requirement role-hint="model400"
-     */
-    private ProjectModelWriter pomWriter;
+    private ProjectModelWriter pomWriter = new ProjectModel400Writer();
     
     /**
      * @plexus.requirement
@@ -334,7 +327,7 @@ public class UploadAction
 
     private String getPrincipal()
     {
-        return archivaUser.getActivePrincipal();
+        return ArchivaXworkUser.getActivePrincipal();
     }
 
     private void copyFile( File targetPath, String artifactFilename )

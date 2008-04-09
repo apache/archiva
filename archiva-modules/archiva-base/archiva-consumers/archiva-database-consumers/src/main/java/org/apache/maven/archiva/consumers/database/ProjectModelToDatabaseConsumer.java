@@ -44,6 +44,8 @@ import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
+import org.apache.maven.archiva.repository.project.readers.ProjectModel300Reader;
+import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.codehaus.plexus.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,16 +84,6 @@ public class ProjectModelToDatabaseConsumer
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
-
-    /**
-     * @plexus.requirement role-hint="model400"
-     */
-    private ProjectModelReader project400Reader;
-
-    /**
-     * @plexus.requirement role-hint="model300"
-     */
-    private ProjectModelReader project300Reader;
 
     /**
      * @plexus.requirement role-hint="expression"
@@ -153,11 +145,15 @@ public class ProjectModelToDatabaseConsumer
 
         ManagedRepositoryContent repo = getRepository( artifact );
         File artifactFile = repo.toFile( artifact );
-        ProjectModelReader reader = project400Reader;
-
+        
+        ProjectModelReader reader;
         if ( repo instanceof ManagedLegacyRepositoryContent )
         {
-            reader = project300Reader;
+            reader = new ProjectModel300Reader();
+        }
+        else
+        {
+            reader = new ProjectModel400Reader();
         }
 
         try

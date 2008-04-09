@@ -29,11 +29,6 @@ import org.apache.maven.archiva.dependency.graph.walk.WalkBreadthFirstSearch;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.dependency.graph.GraphTask"
- *      role-hint="reduce-transitive-edges"
- *      instantiation-strategy="per-lookup"
  */
 public class ReduceTransitiveEdgesTask
     implements GraphTask

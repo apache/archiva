@@ -25,6 +25,7 @@ import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
+import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class JdoProjectModelDAOTest
 
         ProjectModelDAO projectDao = dao.getProjectModelDAO();
 
-        ProjectModelReader modelReader = (ProjectModelReader) lookup( ProjectModelReader.class, "model400" );
+        ProjectModelReader modelReader = new ProjectModel400Reader();
 
         File pomFile = getTestFile( "src/test/resources/projects/maven-shared-jar-1.0-SNAPSHOT.pom" );
 

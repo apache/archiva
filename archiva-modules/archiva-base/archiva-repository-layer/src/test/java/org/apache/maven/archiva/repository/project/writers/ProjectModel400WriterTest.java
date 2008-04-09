@@ -52,7 +52,7 @@ public class ProjectModel400WriterTest
     {
         super.setUp();
 
-        modelWriter = (ProjectModelWriter) lookup( ProjectModelWriter.class, "model400" );
+        modelWriter = new ProjectModel400Writer();
     }
 
     public void testSimpleWrite()

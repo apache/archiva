@@ -19,7 +19,8 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.opensymphony.xwork.Validateable;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -28,13 +29,12 @@ import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.ArchivaUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.maven.archiva.web.util.ArchivaXworkUser;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.util.Collections;
-import java.util.List;
+import com.opensymphony.xwork.Validateable;
 
 /**
  * Browse the repository.
@@ -58,11 +58,6 @@ public class ShowArtifactAction
      */
     private UserRepositories userRepositories;
     
-    /**
-     * @plexus.requirement role-hint="xwork"
-     */
-    private ArchivaUser archivaUser;
-
     /* .\ Input Parameters \.________________________________________ */
 
     private String groupId;
@@ -178,7 +173,7 @@ public class ShowArtifactAction
     
     private String getPrincipal()
     {
-        return archivaUser.getActivePrincipal();
+        return ArchivaXworkUser.getActivePrincipal();
     }
     
     private List<String> getObservableRepos()

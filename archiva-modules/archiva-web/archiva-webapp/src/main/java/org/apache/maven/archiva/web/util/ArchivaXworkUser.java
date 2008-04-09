@@ -19,30 +19,25 @@ package org.apache.maven.archiva.web.util;
  * under the License.
  */
 
-import com.opensymphony.xwork.ActionContext;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.security.ArchivaUser;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.plexus.redback.users.User;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.opensymphony.xwork.ActionContext;
 
 /**
  * ArchivaXworkUser 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.security.ArchivaUser"
- *                   role-hint="xwork"
  */
 public class ArchivaXworkUser
-    implements ArchivaUser
 {
-    private Map<String, Object> getContextSession()
+    private static Map<String, Object> getContextSession()
     {
         ActionContext context = ActionContext.getContext();
         Map<String, Object> sessionMap = context.getSession();
@@ -54,7 +49,7 @@ public class ArchivaXworkUser
         return sessionMap;
     }
 
-    private SecuritySession getSecuritySession()
+    private static SecuritySession getSecuritySession()
     {
     	SecuritySession securitySession =
             (SecuritySession) getContextSession().get( SecuritySystemConstants.SECURITY_SESSION_KEY );
@@ -67,7 +62,7 @@ public class ArchivaXworkUser
         return securitySession;        
     }
 
-    public String getActivePrincipal()
+    public static String getActivePrincipal()
     {
         SecuritySession securitySession = getSecuritySession();        
         

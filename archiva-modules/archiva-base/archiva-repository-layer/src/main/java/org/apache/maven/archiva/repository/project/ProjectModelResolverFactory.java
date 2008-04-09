@@ -28,6 +28,8 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.project.readers.ProjectModel300Reader;
+import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.resolvers.ManagedRepositoryProjectResolver;
 import org.apache.maven.archiva.repository.project.resolvers.NopProjectResolver;
 import org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolverStack;
@@ -60,16 +62,6 @@ public class ProjectModelResolverFactory
      */
     private RepositoryContentFactory repositoryFactory;
 
-    /**
-     * @plexus.requirement role-hint="model400"
-     */
-    private ProjectModelReader project400Reader;
-
-    /**
-     * @plexus.requirement role-hint="model300"
-     */
-    private ProjectModelReader project300Reader;
-    
     private ProjectModelResolverStack currentResolverStack = new ProjectModelResolverStack();
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
@@ -101,11 +93,15 @@ public class ProjectModelResolverFactory
         throws RepositoryException
     {
         ManagedRepositoryContent repoContent = repositoryFactory.getManagedRepositoryContent( repo.getId() );
-        ProjectModelReader reader = project400Reader;
-
+        
+        ProjectModelReader reader;
         if ( StringUtils.equals( "legacy", repo.getLayout() ) )
         {
-            reader = project300Reader;
+            reader = new ProjectModel300Reader();
+        }
+        else
+        {
+            reader = new ProjectModel400Reader();
         }
 
         return new ManagedRepositoryProjectResolver( repoContent, reader );

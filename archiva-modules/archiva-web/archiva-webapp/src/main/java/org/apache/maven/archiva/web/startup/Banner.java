@@ -31,10 +31,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *              role="org.apache.maven.archiva.web.startup.Banner"
- *              role-hint="default"
  */
 public class Banner
 {

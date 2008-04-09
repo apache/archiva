@@ -42,6 +42,8 @@ import java.util.Set;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
+ * @todo no need to be a component when filetypes is not
+ * 
  * @plexus.component 
  *      role="org.apache.maven.archiva.repository.ManagedRepositoryContent"
  *      role-hint="default"

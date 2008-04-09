@@ -19,6 +19,18 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
@@ -36,7 +48,7 @@ import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.maven.archiva.security.ArchivaUser;
+import org.apache.maven.archiva.web.util.ArchivaXworkUser;
 import org.apache.maven.archiva.webdav.AbstractDavServerComponent;
 import org.apache.maven.archiva.webdav.DavServerComponent;
 import org.apache.maven.archiva.webdav.DavServerException;
@@ -48,17 +60,6 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ProxiedDavServer
@@ -101,11 +102,6 @@ public class ProxiedDavServer
      * @plexus.requirement
      */
     private MetadataTools metadataTools;
-
-    /**
-     * @plexus.requirement role-hint="xwork"
-     */
-    private ArchivaUser archivaUser;
 
     private ManagedRepositoryContent managedRepository;
 
@@ -576,7 +572,7 @@ public class ProxiedDavServer
 
     private void triggerAuditEvent( DavServerRequest request, String resource, String action )
     {
-        triggerAuditEvent( archivaUser.getActivePrincipal(), getRemoteIP( request ), resource,
+        triggerAuditEvent( ArchivaXworkUser.getActivePrincipal(), getRemoteIP( request ), resource,
             action );
     }
 

@@ -19,6 +19,14 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.configuration.CombinedConfiguration;
@@ -32,16 +40,6 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry;
 import org.codehaus.plexus.util.SelectorUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * FileTypes 
@@ -54,8 +52,6 @@ import java.util.Map;
 public class FileTypes
     implements Initializable, RegistryListener
 {
-    private Logger log = LoggerFactory.getLogger(FileTypes.class);
-    
     public static final String ARTIFACTS = "artifacts";
 
     public static final String AUTO_REMOVE = "auto-remove";
@@ -174,6 +170,8 @@ public class FileTypes
         throws InitializationException
     {
         // TODO: why is this done by hand?
+        
+        // TODO: ideally, this would be instantiated by configuration instead, and not need to be a component
 
         String errMsg = "Unable to load default archiva configuration for FileTypes: ";
 

@@ -34,25 +34,14 @@ import org.apache.maven.archiva.repository.metadata.MetadataTools;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  *
+ * @todo no need to be a component once legacy path parser is not
+ *
  * @plexus.component
  *      role="org.apache.maven.archiva.repository.content.RepositoryRequest"
  */
 public class RepositoryRequest
 {
-    /**
-     * @plexus.requirement
-     */
-    private FileTypes filetypes;
-
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaConfiguration archivaConfiguration;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private PathParser defaultPathParser;
+    private PathParser defaultPathParser = new DefaultPathParser();
 
     /**
      * @plexus.requirement role-hint="legacy"

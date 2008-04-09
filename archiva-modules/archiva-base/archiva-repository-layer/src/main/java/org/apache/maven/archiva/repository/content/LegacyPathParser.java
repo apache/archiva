@@ -43,6 +43,7 @@ public class LegacyPathParser
     private static final String INVALID_ARTIFACT_PATH = "Invalid path to Artifact: ";
 
     /**
+     * @todo pass these in on construction instead, since this can't be long lived (no config listener), then no need to be a component
      * @plexus.requirement
      */
     protected ArchivaConfiguration configuration;

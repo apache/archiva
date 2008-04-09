@@ -19,19 +19,19 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.ArchivaUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.maven.archiva.web.util.ArchivaXworkUser;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Browse the repository.
@@ -54,11 +54,6 @@ public class BrowseAction
      */
     private UserRepositories userRepositories;
     
-    /**
-     * @plexus.requirement role-hint="xwork"
-     */
-    private ArchivaUser archivaUser;
-
     private BrowsingResults results;
 
     private String groupId;
@@ -126,7 +121,7 @@ public class BrowseAction
     
     private String getPrincipal()
     {
-        return archivaUser.getActivePrincipal();
+        return ArchivaXworkUser.getActivePrincipal();
     }
     
     private List<String> getObservableRepos()

@@ -42,11 +42,6 @@ import java.util.Map.Entry;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.dependency.graph.GraphTask"
- *      role-hint="refine-conflicts"
- *      instantiation-strategy="per-lookup"
  */
 public class RefineConflictsTask
     implements GraphTask, PotentialCyclicEdgeProducer

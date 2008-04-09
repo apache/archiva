@@ -43,10 +43,7 @@ public abstract class AbstractDefaultRepositoryContent
 
     protected static final char ARTIFACT_SEPARATOR = '-';
 
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private PathParser defaultPathParser;
+    private PathParser defaultPathParser = new DefaultPathParser();
 
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException

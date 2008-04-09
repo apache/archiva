@@ -32,11 +32,6 @@ import org.apache.maven.archiva.dependency.graph.walk.WalkDepthFirstSearch;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.dependency.graph.GraphTask"
- *      role-hint="populate-graph"
- *      instantiation-strategy="per-lookup"
  */
 public class PopulateGraphMasterTask
     implements GraphTask
