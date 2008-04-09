@@ -442,7 +442,7 @@ public class ManagedDefaultTransferTest
     public void testGetFromLegacyProxyPluginNotPresentInManaged()
         throws Exception
     {
-        String legacyPath = "org.apache.maven.test/plugins/example-maven-plugin-0.42.jar";
+        String legacyPath = "org.apache.maven.test/maven-plugins/example-maven-plugin-0.42.jar";
         String path = "org/apache/maven/test/example-maven-plugin/0.42/example-maven-plugin-0.42.jar";
         setupTestableManagedRepository( path );
 
