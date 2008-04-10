@@ -27,7 +27,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +45,7 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class AbstractIndexerTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     protected RepositoryContentIndex index;
 
