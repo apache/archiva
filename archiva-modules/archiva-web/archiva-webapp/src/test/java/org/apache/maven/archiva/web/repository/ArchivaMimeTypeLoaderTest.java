@@ -20,7 +20,7 @@ package org.apache.maven.archiva.web.repository;
  */
 
 import org.apache.maven.archiva.webdav.util.MimeTypes;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * ArchivaMimeTypesTest 
@@ -29,7 +29,7 @@ import org.codehaus.plexus.PlexusTestCase;
  * @version $Id$
  */
 public class ArchivaMimeTypeLoaderTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     public void testArchivaTypes()
         throws Exception

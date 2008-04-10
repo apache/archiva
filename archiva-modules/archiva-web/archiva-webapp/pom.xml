@@ -160,10 +160,6 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-component-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-container-default</artifactId>
-    </dependency>
     <!-- Plexus Security Dependencies -->
     <dependency>
       <groupId>org.codehaus.plexus.redback</groupId>
