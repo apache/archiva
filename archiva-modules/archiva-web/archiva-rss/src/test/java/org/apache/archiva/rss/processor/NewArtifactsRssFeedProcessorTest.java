@@ -25,14 +25,14 @@ import java.util.List;
 
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class NewArtifactsRssFeedProcessorTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private RssFeedProcessor newArtifactsProcessor;
     

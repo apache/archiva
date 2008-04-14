@@ -20,7 +20,7 @@ package org.apache.maven.archiva.repository.metadata;
  */
 
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
 
@@ -30,7 +30,7 @@ import java.io.File;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryMetadataReaderTest extends PlexusTestCase
+public class RepositoryMetadataReaderTest extends PlexusInSpringTestCase
 {
     public void testLoadSimple() throws RepositoryMetadataException
     {

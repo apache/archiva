@@ -19,13 +19,13 @@ package org.apache.maven.archiva.dependency.graph;
  * under the License.
  */
 
+import junit.framework.Assert;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.dependency.DependencyGraphFactory;
 import org.apache.maven.archiva.model.DependencyScope;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -41,7 +41,6 @@ import java.util.List;
  * @version $Id$
  */
 public class GraphvizDotTool
-    extends PlexusTestCase
     implements GraphListener
 {
     private int phaseNumber = 0;
@@ -49,7 +48,7 @@ public class GraphvizDotTool
     protected VersionedReference toVersionedReference( String key )
     {
         String parts[] = StringUtils.splitPreserveAllTokens( key, ':' );
-        assertEquals( "Versioned Reference [" + key + "] part count.", 3, parts.length );
+        Assert.assertEquals( "Versioned Reference [" + key + "] part count.", 3, parts.length );
 
         VersionedReference ref = new VersionedReference();
         ref.setGroupId( parts[0] );
@@ -78,7 +77,7 @@ public class GraphvizDotTool
         DependencyGraph graph = factory.getGraph( rootRef );
 
         // Test the results.
-        assertNotNull( "Graph shouldn't be null.", graph );
+        Assert.assertNotNull( "Graph shouldn't be null.", graph );
 
         return graph;
     }

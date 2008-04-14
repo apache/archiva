@@ -20,7 +20,7 @@
 package org.apache.maven.archiva.webdav.util;
 
 import org.apache.maven.archiva.webdav.TestableHttpServletRequest;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
@@ -32,7 +32,7 @@ import java.net.MalformedURLException;
  * @version $Id: WrappedRepositoryRequestTest.java 6940 2007-10-16 01:02:02Z joakime $
  */
 public class WrappedRepositoryRequestTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private HttpServletRequest createHttpServletGetRequest( String url )
         throws MalformedURLException

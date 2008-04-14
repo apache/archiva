@@ -21,11 +21,10 @@ package org.apache.maven.archiva.webdav.test;
 
 import org.apache.maven.archiva.webdav.DavServerManager;
 import org.apache.maven.archiva.webdav.servlet.basic.BasicWebDavServlet;
-import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
-import org.codehaus.plexus.context.DefaultContext;
+import org.codehaus.plexus.spring.PlexusContainerAdapter;
 import org.codehaus.plexus.util.FileUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
@@ -53,17 +52,10 @@ public abstract class AbstractWebdavServer
 
     protected String basedir;
 
-    protected Map context;
-
     /** the jetty server */
     protected Server server;
 
     private DavServerManager manager;
-
-    public void init()
-    {
-        context = new HashMap();
-    }
 
     public String getBasedir()
     {
@@ -91,86 +83,7 @@ public abstract class AbstractWebdavServer
     public void startServer()
         throws Exception
     {
-        basedir = getBasedir();
-
-        // ----------------------------------------------------------------------------
-        // Context Setup
-        // ----------------------------------------------------------------------------
-
-        context = new HashMap();
-
-        context.put( "basedir", getBasedir() );
-
-        customizeContext( new DefaultContext( context ) );
-
-        boolean hasPlexusHome = context.containsKey( "plexus.home" );
-
-        if ( !hasPlexusHome )
-        {
-            File f = getTestFile( "target/plexus-home" );
-
-            if ( !f.isDirectory() )
-            {
-                f.mkdir();
-            }
-
-            context.put( "plexus.home", f.getAbsolutePath() );
-        }
-
-        // ----------------------------------------------------------------------------
-        // Configuration
-        // ----------------------------------------------------------------------------
-
-        String config = getCustomConfigurationName();
-        InputStream is;
-
-        if ( config != null )
-        {
-            is = getClass().getClassLoader().getResourceAsStream( config );
-
-            if ( is == null )
-            {
-                try
-                {
-                    File configFile = new File( config );
-
-                    if ( configFile.exists() )
-                    {
-                        is = new FileInputStream( configFile );
-                    }
-                }
-                catch ( IOException e )
-                {
-                    throw new Exception( "The custom configuration specified is null: " + config );
-                }
-            }
-
-        }
-        else
-        {
-            config = getConfigurationName( null );
-
-            is = getClass().getClassLoader().getResourceAsStream( config );
-        }
-
-        // Look for a configuration associated with this test but return null if we
-        // can't find one so the container doesn't look for a configuration that we
-        // know doesn't exist. Not all tests have an associated Foo.xml for testing.
-
-        if ( is == null )
-        {
-            config = null;
-        }
-        else
-        {
-            is.close();
-        }
-
-        // ----------------------------------------------------------------------------
-        // Create the container
-        // ----------------------------------------------------------------------------
-
-        container = createContainerInstance( context, config );
+        container = createContainerInstance();
         
         // ----------------------------------------------------------------------------
         // Create the DavServerManager
@@ -222,27 +135,10 @@ public abstract class AbstractWebdavServer
         server.start();
     }
 
-    protected PlexusContainer createContainerInstance( Map context, String configuration )
+    protected PlexusContainer createContainerInstance()
         throws PlexusContainerException
     {
-        return new DefaultPlexusContainer( "test", context, configuration );
-    }
-
-    protected void customizeContext( DefaultContext ctx )
-    {
-        /* override to specify more */
-    }
-
-    protected String getCustomConfigurationName()
-    {
-        /* override to specify */
-        return null;
-    }
-
-    protected String getConfigurationName( String subname )
-        throws Exception
-    {
-        return getClass().getName().replace( '.', '/' ) + ".xml";
+        return new PlexusContainerAdapter();
     }
 
     public void stopServer()

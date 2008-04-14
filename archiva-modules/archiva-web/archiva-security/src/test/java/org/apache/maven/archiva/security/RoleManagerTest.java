@@ -19,7 +19,7 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
 
 /**
@@ -29,7 +29,7 @@ import org.codehaus.plexus.redback.role.RoleManager;
  * @version $Id: RoleManagerTest.java 4330 2007-05-10 17:28:56Z jmcconnell $
  */
 public class RoleManagerTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     /**
      * @plexus.requirement role-hint="default"

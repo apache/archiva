@@ -26,7 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.system.SecuritySystem;
@@ -40,7 +40,7 @@ import org.codehaus.plexus.redback.users.UserManager;
  * @version $Id$
  */
 public class DefaultUserRepositoriesTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private static final String USER_GUEST = "guest";
 

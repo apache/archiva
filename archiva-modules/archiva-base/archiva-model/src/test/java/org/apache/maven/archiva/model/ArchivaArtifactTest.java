@@ -21,7 +21,6 @@ package org.apache.maven.archiva.model;
 
 import java.util.Date;
 
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**

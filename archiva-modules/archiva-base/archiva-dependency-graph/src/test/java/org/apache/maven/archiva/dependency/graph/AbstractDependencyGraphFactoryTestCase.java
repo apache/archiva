@@ -33,7 +33,7 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +47,7 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class AbstractDependencyGraphFactoryTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     public class ExpectedEdge
     {

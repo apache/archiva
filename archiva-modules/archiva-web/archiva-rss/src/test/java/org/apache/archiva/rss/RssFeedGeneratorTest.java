@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.custommonkey.xmlunit.XMLAssert;
 
 /**
@@ -32,7 +32,7 @@ import org.custommonkey.xmlunit.XMLAssert;
  * @version
  */
 public class RssFeedGeneratorTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private RssFeedGenerator generator;
 

@@ -20,7 +20,7 @@ package org.apache.maven.archiva.common.utils;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,7 +33,7 @@ import java.io.FileReader;
  * @version $Id$
  */
 public class ChecksumsTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private static final String GOOD = "good";
 

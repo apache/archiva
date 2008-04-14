@@ -60,26 +60,25 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Doesn't work on Mac with Java 6 yet
-            <plugin>
-              <artifactId>maven-enforcer-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>enforce-java</id>
-                  <goals>
-                    <goal>enforce-once</goal>
-                  </goals>
-                  <configuration>
-                    <rules>
-                      <requireJavaVersion>
-                        <version>1.5.0</version>
-                      </requireJavaVersion>
-                    </rules>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-      -->
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <excludes>
+                    <exclude>org.codehaus.plexus:plexus-container-default</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
@@ -183,11 +182,6 @@
       <groupId>easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>1.2_Java1.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-slf4j-logging</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -44,6 +44,12 @@
     <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
       <artifactId>plexus-cache-ehcache</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-container-default</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>

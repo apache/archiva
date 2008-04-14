@@ -66,11 +66,5 @@
         <time-to-live-seconds>1800</time-to-live-seconds>
       </configuration>
     </component>
-        
-    <component>
-      <role>org.codehaus.plexus.logging.LoggerManager</role>
-      <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
-      <lifecycle-handler>basic</lifecycle-handler>
-    </component>
   </components>
 </component-set>

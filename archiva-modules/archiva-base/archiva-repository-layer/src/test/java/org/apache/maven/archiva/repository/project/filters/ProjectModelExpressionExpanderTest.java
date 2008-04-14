@@ -27,7 +27,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelWriter;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import java.util.List;
  * @version $Id$
  */
 public class ProjectModelExpressionExpanderTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private static final String DEFAULT_REPOSITORY = "src/test/repositories/default-repository";
 

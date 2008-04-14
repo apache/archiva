@@ -55,6 +55,10 @@
       <artifactId>plexus-jdo2</artifactId>
       <exclusions>
         <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-container-default</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>xerces</groupId>
           <artifactId>xercesImpl</artifactId>
         </exclusion>

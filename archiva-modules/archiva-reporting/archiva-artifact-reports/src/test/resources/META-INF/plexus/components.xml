@@ -33,11 +33,6 @@
         </properties>
       </configuration>
     </component>
-
-    <component>
-      <role>org.codehaus.plexus.logging.LoggerManager</role>
-      <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
-    </component>
   </components>
 
   <lifecycle-handler-manager implementation="org.codehaus.plexus.lifecycle.DefaultLifecycleHandlerManager">

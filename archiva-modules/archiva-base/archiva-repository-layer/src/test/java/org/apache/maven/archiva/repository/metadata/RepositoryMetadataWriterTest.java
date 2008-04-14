@@ -21,7 +21,7 @@ package org.apache.maven.archiva.repository.metadata;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.custommonkey.xmlunit.XMLAssert;
 
 import java.io.File;
@@ -34,7 +34,7 @@ import java.io.StringWriter;
  * @version $Id$
  */
 public class RepositoryMetadataWriterTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     public void testWriteSimple()
         throws Exception

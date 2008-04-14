@@ -29,6 +29,11 @@
   <name>Archiva Base :: Dependency Graph</name>
   <dependencies>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-spring</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>

@@ -23,7 +23,7 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ import java.io.File;
  * @version $Id$
  */
 public class ProjectModel400ReaderTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     public void testLoadSimple()
         throws ProjectModelException

@@ -35,7 +35,6 @@ public class SimpleWebdavServer
         try
         {
             SimpleWebdavServer server = new SimpleWebdavServer();
-            server.init();
             server.startServer();
         }
         catch ( Exception e )

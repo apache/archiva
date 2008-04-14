@@ -19,7 +19,7 @@
 
 package org.apache.maven.archiva.webdav.util;
 
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * MimeTypesTest 
@@ -27,7 +27,7 @@ import org.codehaus.plexus.PlexusTestCase;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id: MimeTypesTest.java 6556 2007-06-20 20:44:46Z joakime $
  */
-public class MimeTypesTest extends PlexusTestCase
+public class MimeTypesTest extends PlexusInSpringTestCase
 {
     public void testGetMimeType() throws Exception
     {
