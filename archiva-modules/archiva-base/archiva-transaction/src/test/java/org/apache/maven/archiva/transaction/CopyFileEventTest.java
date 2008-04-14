@@ -20,7 +20,6 @@ package org.apache.maven.archiva.transaction;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,11 +30,11 @@ import java.io.IOException;
 public class CopyFileEventTest
     extends AbstractFileEventTest
 {
-    private File testDir = new File( PlexusTestCase.getBasedir(), "target/transaction-tests/copy-file" );
+    private File testDir = new File( getBasedir(), "target/transaction-tests/copy-file" );
 
     private File testDest = new File( testDir, "test-file.txt" );
 
-    private File testSource = new File( PlexusTestCase.getBasedir(), "target/transaction-tests/test-file.txt" );
+    private File testSource = new File( getBasedir(), "target/transaction-tests/test-file.txt" );
 
     private File testDestChecksum;
 
@@ -154,7 +153,7 @@ public class CopyFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory( new File( PlexusTestCase.getBasedir(), "target/transaction-tests" ) );
+        FileUtils.deleteDirectory( new File( getBasedir(), "target/transaction-tests" ) );
     }
 
     protected void assertChecksumCommit( File file )

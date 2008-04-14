@@ -22,7 +22,6 @@ package org.apache.maven.archiva.transaction;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.PlexusTestCase;
 
 /**
  * @author Edwin Punzalan
@@ -30,7 +29,7 @@ import org.codehaus.plexus.PlexusTestCase;
 public class CreateFileEventTest
     extends AbstractFileEventTest
 {
-    private File testDir = new File( PlexusTestCase.getBasedir(), "target/transaction-tests/create-file" );
+    private File testDir = new File( getBasedir(), "target/transaction-tests/create-file" );
 
     public void testCreateCommitRollback()
         throws Exception
@@ -54,7 +53,7 @@ public class CreateFileEventTest
         assertChecksumRollback( testFile );
 
         assertFalse( "Test file parent directories has been rolledback too", testDir.exists() );
-        assertTrue( "target directory still exists", new File( PlexusTestCase.getBasedir(), "target" ).exists() );
+        assertTrue( "target directory still exists", new File( getBasedir(), "target" ).exists() );
     }
 
     public void testCreateCommitRollbackWithBackup()
@@ -116,6 +115,6 @@ public class CreateFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory( new File( PlexusTestCase.getBasedir(), "target/transaction-tests" ) );
+        FileUtils.deleteDirectory( new File( getBasedir(), "target/transaction-tests" ) );
     }
 }

@@ -20,7 +20,8 @@ package org.apache.maven.archiva.transaction;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.plexus.digest.Digester;
 
 import java.io.File;
@@ -33,7 +34,7 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class AbstractFileEventTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     protected List digesters;
 
@@ -42,7 +43,7 @@ public abstract class AbstractFileEventTest
     {
         super.setUp();
 
-        digesters = getContainer().lookupList( Digester.class.getName() );
+        digesters = PlexusToSpringUtils.lookupList( PlexusToSpringUtils.buildSpringId( Digester.class.getName() ), getApplicationContext() );
     }
 
     protected void assertChecksumExists( File file, String algorithm )
