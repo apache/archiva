@@ -32,7 +32,7 @@ import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
 import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,8 +46,8 @@ import java.util.Map;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class DefaultCrossRepositorySearchTest
-    extends PlexusTestCase
+public class DefaultCrossRepositorySearchTest    
+    extends PlexusInSpringTestCase
 {
     private static final String TEST_DEFAULT_REPOSITORY_NAME = "Test Default Repository";
 
@@ -61,7 +61,7 @@ public class DefaultCrossRepositorySearchTest
 
         RepositoryContentIndexFactory indexFactory =
             (RepositoryContentIndexFactory) lookup( RepositoryContentIndexFactory.class
-                .getName(), "lucene" );
+               .getName(), "lucene" );
 
         File repoDir = new File( getBasedir(), "src/test/managed-repository" );
 
