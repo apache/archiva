@@ -35,7 +35,7 @@ public class RssFeedGeneratorTest
     extends PlexusInSpringTestCase
 {
     private RssFeedGenerator generator;
-
+   
     public void setUp()
         throws Exception
     {
@@ -46,14 +46,14 @@ public class RssFeedGeneratorTest
         File outputDir = new File( getBasedir(), "/target/test-classes/rss-feeds" );
         outputDir.mkdir();
     }
-
-    public void testGenerateFeed()
+    
+    public void testNewFeed()
         throws Exception
-    {        
+    {
         generator.setRssDirectory( getBasedir() + "/target/test-classes/rss-feeds/" );
-        
+
         List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
-        RssFeedEntry entry = new RssFeedEntry( "Item 1", "http://rss-2.0-test-feed.com");
+        RssFeedEntry entry = new RssFeedEntry( "Item 1", "http://rss-2.0-test-feed.com" );
 
         entry.setDescription( "RSS 2.0 feed item 1." );
         entry.setGuid( "http://rss-2.0-test-feed.com/item1" );
@@ -84,7 +84,73 @@ public class RssFeedGeneratorTest
             "<channel><item><title>Item 1</title></item><item><title>Item 2</title></item>"
                 + "<item><title>Item 3</title></item></channel>";
         XMLAssert.assertXpathsEqual( "//channel/item/title", expectedItem1, "//channel/item/title", generatedContent );
+
+        outputFile.deleteOnExit();
+    }
+    
+    public void testUpdateFeed()
+        throws Exception
+    {
+        generator.setRssDirectory( getBasedir() + "/target/test-classes/rss-feeds/" );
+
+        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        RssFeedEntry entry = new RssFeedEntry( "Item 1", "http://rss-2.0-test-feed.com" );
+
+        entry.setDescription( "RSS 2.0 feed item 1." );
+        entry.setGuid( "http://rss-2.0-test-feed.com/item1" );
+        entries.add( entry );
+
+        entry = new RssFeedEntry( "Item 2", "http://rss-2.0-test-feed.com" );
+        entry.setDescription( "RSS 2.0 feed item 2." );
+        entry.setGuid( "http://rss-2.0-test-feed.com/item2" );
+        entries.add( entry );
+
+        generator.generateFeed( "Test Feed", "http://localhost:8080/archiva", "The test feed from Archiva.", entries,
+                                "generated-test-update-rss2.0-feed.xml" );
+
+        File outputFile = new File( getBasedir(), "/target/test-classes/rss-feeds/generated-test-update-rss2.0-feed.xml" );
+        String generatedContent = FileUtils.readFileToString( outputFile );
+
+        XMLAssert.assertXpathEvaluatesTo( "Test Feed", "//channel/title", generatedContent );
+        XMLAssert.assertXpathEvaluatesTo( "http://localhost:8080/archiva", "//channel/link", generatedContent );
+        XMLAssert.assertXpathEvaluatesTo( "The test feed from Archiva.", "//channel/description", generatedContent );
+        XMLAssert.assertXpathEvaluatesTo( "en-us", "//channel/language", generatedContent );
+
+        String expectedItem1 =
+            "<channel><item><title>Item 1</title></item><item><title>Item 2</title></item></channel>";
+        
+        XMLAssert.assertXpathsEqual( "//channel/item/title", expectedItem1, "//channel/item/title", generatedContent );
+
+        //update existing rss feed
+        entries = new ArrayList<RssFeedEntry>();
+        entry = new RssFeedEntry( "Item 3", "http://rss-2.0-test-feed.com" );
+
+        entry.setDescription( "RSS 2.0 feed item 3." );
+        entry.setGuid( "http://rss-2.0-test-feed.com/item4" );
+        entries.add( entry );
+
+        entry = new RssFeedEntry( "Item 4", "http://rss-2.0-test-feed.com" );
+        entry.setDescription( "RSS 2.0 feed item 4." );
+        entry.setGuid( "http://rss-2.0-test-feed.com/item5" );
+        entries.add( entry );
+
+        generator.generateFeed( "Test Feed", "http://localhost:8080/archiva", "The test feed from Archiva.", entries,
+                                "generated-test-update-rss2.0-feed.xml" );
+        
+        outputFile = new File( getBasedir(), "/target/test-classes/rss-feeds/generated-test-update-rss2.0-feed.xml" );        
+        generatedContent = FileUtils.readFileToString( outputFile );       
+        
+        XMLAssert.assertXpathEvaluatesTo( "Test Feed", "//channel/title", generatedContent );
+        XMLAssert.assertXpathEvaluatesTo( "http://localhost:8080/archiva", "//channel/link", generatedContent );
+        XMLAssert.assertXpathEvaluatesTo( "The test feed from Archiva.", "//channel/description", generatedContent );
+        XMLAssert.assertXpathEvaluatesTo( "en-us", "//channel/language", generatedContent );
+
+        expectedItem1 =
+            "<channel><item><title>Item 1</title></item><item><title>Item 2</title></item>"
+            + "<item><title>Item 3</title></item><item><title>Item 4</title></item></channel>";
+        XMLAssert.assertXpathsEqual( "//channel/item/title", expectedItem1, "//channel/item/title", generatedContent );
         
         outputFile.deleteOnExit();
     }
+
 }
