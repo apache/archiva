@@ -158,7 +158,7 @@ public class ChecksummedFileTest
         File jarFile = createTestableJar( "examples/redback-authz-open.jar", false, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertTrue( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums( new ChecksumAlgorithm[] {
+        assertFalse( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums( new ChecksumAlgorithm[] {
             ChecksumAlgorithm.SHA1,
             ChecksumAlgorithm.MD5 } ) );
 

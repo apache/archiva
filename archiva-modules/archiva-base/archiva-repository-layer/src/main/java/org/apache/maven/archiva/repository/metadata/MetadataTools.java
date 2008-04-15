@@ -19,11 +19,12 @@ package org.apache.maven.archiva.repository.metadata;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.maven.archiva.common.utils.Checksums;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -94,11 +95,8 @@ public class MetadataTools
      */
     private FileTypes filetypes;
     
-    /**
-     * @plexus.requirement
-     */
-    private Checksums checksums;
-
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+    
     private List<String> artifactPatterns;
 
     private Map<String, Set<String>> proxies;
@@ -519,7 +517,8 @@ public class MetadataTools
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        checksums.update( metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        checksum.fixChecksums( algorithms );
     }
 
     private Date toLastUpdatedDate( long lastUpdated )
@@ -717,7 +716,8 @@ public class MetadataTools
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        checksums.update( metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        checksum.fixChecksums( algorithms );
     }
 
     private void initConfigVariables()

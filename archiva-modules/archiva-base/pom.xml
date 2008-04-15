@@ -29,6 +29,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>archiva-checksum</module>
     <module>archiva-common</module>
     <module>archiva-policies</module>
     <module>archiva-configuration</module>

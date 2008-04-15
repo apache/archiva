@@ -141,11 +141,9 @@ public class ChecksummedFile
      * the to the checksum.   
      * 
      * @param algorithms the algorithms to check for.
-     * @return true if the checksums report that the the reference file is valid.
-     * @throws IOException if unable to validate the checksums.
+     * @return true if the checksums report that the the reference file is valid, false if invalid.
      */
     public boolean isValidChecksums( ChecksumAlgorithm algorithms[] )
-        throws IOException
     {
         FileInputStream fis = null;
         try
@@ -166,29 +164,45 @@ public class ChecksummedFile
             // Any checksums?
             if ( checksums.isEmpty() )
             {
-                // No checksum objects, no checksum files, default to is valid.
-                return true;
+                // No checksum objects, no checksum files, default to is invalid.
+                return false;
             }
 
             // Parse file once, for all checksums.
-            fis = new FileInputStream( referenceFile );
-            Checksum.update( checksums, fis );
+            try
+            {
+                fis = new FileInputStream( referenceFile );
+                Checksum.update( checksums, fis );
+            }
+            catch ( IOException e )
+            {
+                log.warn( "Unable to update checksum:" + e.getMessage() );
+                return false;
+            }
 
             boolean valid = true;
 
             // check the checksum files
-            for ( Checksum checksum : checksums )
+            try
             {
-                ChecksumAlgorithm checksumAlgorithm = checksum.getAlgorithm();
-                File checksumFile = getChecksumFile( checksumAlgorithm );
-
-                String rawChecksum = FileUtils.readFileToString( checksumFile );
-                String expectedChecksum = parseChecksum( rawChecksum, checksumAlgorithm, referenceFile.getName() );
-
-                if ( StringUtils.equalsIgnoreCase( expectedChecksum, checksum.getChecksum() ) == false )
+                for ( Checksum checksum : checksums )
                 {
-                    valid = false;
+                    ChecksumAlgorithm checksumAlgorithm = checksum.getAlgorithm();
+                    File checksumFile = getChecksumFile( checksumAlgorithm );
+
+                    String rawChecksum = FileUtils.readFileToString( checksumFile );
+                    String expectedChecksum = parseChecksum( rawChecksum, checksumAlgorithm, referenceFile.getName() );
+
+                    if ( StringUtils.equalsIgnoreCase( expectedChecksum, checksum.getChecksum() ) == false )
+                    {
+                        valid = false;
+                    }
                 }
+            }
+            catch ( IOException e )
+            {
+                log.warn( "Unable to read / parse checksum: " + e.getMessage() );
+                return false;
             }
 
             return valid;

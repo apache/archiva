@@ -24,8 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.Checksums;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,10 +66,7 @@ public class ChecksumPolicy
      */
     public static final String FIX = "fix";
 
-    /**
-     * @plexus.requirement
-     */
-    private Checksums checksums;
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
     private List<String> options = new ArrayList<String>();
 
@@ -105,25 +103,21 @@ public class ChecksumPolicy
 
         if ( FAIL.equals( policySetting ) )
         {
-            if( checksums.check( localFile ) )
+            ChecksummedFile checksum = new ChecksummedFile( localFile );
+            if ( checksum.isValidChecksums( algorithms ) )
             {
                 return;
             }
+
+            for ( ChecksumAlgorithm algorithm : algorithms )
+            {
+                File file = new File( localFile.getAbsolutePath() + "." + algorithm.getExt() );
+                if ( file.exists() )
+                {
+                    file.delete();
+                }
+            }
             
-            File sha1File = new File( localFile.getAbsolutePath() + ".sha1" );
-            File md5File = new File( localFile.getAbsolutePath() + ".md5" );
-
-            // On failure. delete files.
-            if ( sha1File.exists() )
-            {
-                sha1File.delete();
-            }
-
-            if ( md5File.exists() )
-            {
-                md5File.delete();
-            }
-
             localFile.delete();
             throw new PolicyViolationException( "Checksums do not match, policy set to FAIL, "
                 + "deleting checksum files and local file " + localFile.getAbsolutePath() + "." );
@@ -131,7 +125,8 @@ public class ChecksumPolicy
 
         if ( FIX.equals( policySetting ) )
         {
-            if( checksums.update( localFile ) )
+            ChecksummedFile checksum = new ChecksummedFile( localFile );
+            if( checksum.fixChecksums( algorithms ) )
             {
                 log.debug( "Checksum policy set to FIX, checksum files have been updated." );
                 return;

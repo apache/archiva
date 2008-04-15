@@ -214,6 +214,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-checksum</artifactId>
+        <version>1.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-common</artifactId>
         <version>1.1-SNAPSHOT</version>
       </dependency>

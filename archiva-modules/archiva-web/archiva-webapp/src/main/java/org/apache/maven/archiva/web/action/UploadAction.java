@@ -28,7 +28,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.maven.archiva.common.utils.Checksums;
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -137,14 +138,11 @@ public class UploadAction
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
+    
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
     private ProjectModelWriter pomWriter = new ProjectModel400Writer();
     
-    /**
-     * @plexus.requirement
-     */
-    private Checksums checksums;
-
     public void setUpload( File file )
     {
         this.file = file;
@@ -422,8 +420,8 @@ public class UploadAction
         }
 
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        
-        checksums.update( metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        checksum.fixChecksums( algorithms );
     }
     
     public void validate()
