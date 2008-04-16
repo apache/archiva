@@ -90,6 +90,7 @@
                   <exclude>xml-apis:xml-apis</exclude>
                   <exclude>xalan:xalan</exclude>
                   <exclude>commons-beanutils:commons-beanutils</exclude>
+                  <exclude>commons-io:commons-io</exclude>
                 </excludes>
               </artifactSet>
             </configuration>
