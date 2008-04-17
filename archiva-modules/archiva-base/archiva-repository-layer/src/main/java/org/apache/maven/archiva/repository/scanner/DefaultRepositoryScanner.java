@@ -143,9 +143,12 @@ public class DefaultRepositoryScanner
         stats.setKnownConsumers( gatherIds( knownContentConsumers ) );
         stats.setInvalidConsumers( gatherIds( invalidContentConsumers ) );
 
-        // generate RSS feeds
-        List<ArchivaArtifact> newArtifacts = getNewArtifacts( scannerInstance.getNewFiles(), repository.getId() );
-        rssFeedProcessor.process( newArtifacts );
+        if ( scannerInstance.getNewFiles() != null && scannerInstance.getNewFiles().size() > 0 )
+        {
+            // generate RSS feeds
+            List<ArchivaArtifact> newArtifacts = getNewArtifacts( scannerInstance.getNewFiles(), repository.getId() );
+            rssFeedProcessor.process( newArtifacts );
+        }
         
         return stats;
     }
