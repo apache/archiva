@@ -22,7 +22,11 @@ package org.apache.maven.archiva.webdav.util;
 import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.io.OutputContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.io.PrintWriter;
 import java.io.File;
 
@@ -91,7 +95,10 @@ public class IndexWriter
 
     private void writeHyperlinks(PrintWriter writer)
     {
-        for (File file : localResource.listFiles())
+        List<File> files = new ArrayList<File>( Arrays.asList( localResource.listFiles() ) ); 
+        Collections.sort( files );
+        
+        for ( File file : files )
         {
             writeHyperlink(writer, file.getName(), file.isDirectory());
         }
