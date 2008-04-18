@@ -116,10 +116,12 @@
   <th>Directory</th>
   <td>${repository.location}</td>
 </tr>
-<tr>
-  <th>Index Directory</th>
-  <td>${repository.indexDir}</td>
-</tr>
+<c:if test="${!empty(repository.indexDir)}">
+	<tr>
+	  <th>Index Directory</th>
+	  <td>${repository.indexDir}</td>
+	</tr>
+</c:if>
 <tr>
   <th>WebDAV URL</th>
   <td><a href="${baseUrl}/${repository.id}/">${baseUrl}/${repository.id}/</a></td>
@@ -138,6 +140,16 @@
     </c:choose>
   </td>
 </tr>
+<c:if test="${!empty(repositoryToGroupMap[repository.id])}">
+  <tr>
+    <th>Groups</th>
+    <td>
+      <c:forEach items="${repositoryToGroupMap[repository.id]}" varStatus="i" var="group">
+        ${group}<c:if test="${!i.last}">,</c:if>        
+      </c:forEach>
+    </td>
+  </tr>
+</c:if>
 <tr>
   <th>Releases Included</th>
   <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> </td>

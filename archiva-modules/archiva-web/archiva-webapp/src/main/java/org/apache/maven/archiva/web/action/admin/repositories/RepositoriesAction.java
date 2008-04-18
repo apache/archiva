@@ -65,6 +65,8 @@ public class RepositoriesAction
     private List<RemoteRepositoryConfiguration> remoteRepositories;
 
     private Map<String, RepositoryContentStatistics> repositoryStatistics;
+    
+    private Map<String, List<String>> repositoryToGroupMap;
 
     /**
      * @plexus.requirement role-hint="jdo"
@@ -99,6 +101,7 @@ public class RepositoriesAction
 
         remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>( config.getRemoteRepositories() );
         managedRepositories = new ArrayList<ManagedRepositoryConfiguration>( config.getManagedRepositories() );
+        repositoryToGroupMap = config.getRepositoryToGroupMap();
 
         Collections.sort( managedRepositories, new RepositoryConfigurationComparator() );
         Collections.sort( remoteRepositories, new RepositoryConfigurationComparator() );
@@ -133,5 +136,10 @@ public class RepositoriesAction
     public String getBaseUrl()
     {
         return baseUrl;
+    }
+
+    public Map<String, List<String>> getRepositoryToGroupMap()
+    {
+        return repositoryToGroupMap;
     }
 }

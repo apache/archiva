@@ -161,6 +161,37 @@
       </fields>
       <codeSegments>
         <codeSegment>
+          <version>1.2.0+</version>
+          <code><![CDATA[
+    private java.util.Map<String, java.util.List<String>> repositoryToGroupMap; 
+    
+    public java.util.Map<String, java.util.List<String>> getRepositoryToGroupMap()
+    {
+        if ( repositoryToGroupMap == null )
+        {
+            java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
+            
+            for ( RepositoryGroupConfiguration group : (java.util.List<RepositoryGroupConfiguration>) repositoryGroups )
+            {
+                for ( String repositoryId : (java.util.List<String>) group.getRepositories() )
+                {
+                    java.util.List<String> groups = map.get( repositoryId );
+                    if ( groups == null )
+                    {
+                        groups = new java.util.ArrayList<String>();
+                        map.put( repositoryId, groups );
+                    }
+                    groups.add( group.getId() );
+                }
+            }
+            
+            repositoryToGroupMap = map;
+        }
+        return repositoryToGroupMap;
+    }
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
           <version>1.0.0+</version>
           <code><![CDATA[
     public java.util.Map<String, NetworkProxyConfiguration> getNetworkProxiesAsMap()
