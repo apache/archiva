@@ -269,7 +269,7 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
         }
         catch ( RepositoryMetadataException e )
         {
-            log.error(e.getMessage(), e);
+            /* eat it */
         }
 
         try
@@ -283,7 +283,7 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
         }
         catch ( RepositoryMetadataException e )
         {
-            log.error(e.getMessage(), e);
+            /* eat it */
         }
 
         return false;
