@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.List;
 
+import com.opensymphony.xwork.ActionContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDAO;
@@ -33,11 +34,8 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.web.util.ArchivaXworkUser;
+import org.apache.maven.archiva.security.*;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
@@ -155,7 +153,7 @@ public class SearchAction
     
     private String getPrincipal()
     {
-        return ArchivaXworkUser.getActivePrincipal();
+        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
     
     private List<String> getObservableRepos()

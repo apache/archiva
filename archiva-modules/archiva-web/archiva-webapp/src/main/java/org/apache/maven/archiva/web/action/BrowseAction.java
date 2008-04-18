@@ -22,15 +22,13 @@ package org.apache.maven.archiva.web.action;
 import java.util.Collections;
 import java.util.List;
 
+import com.opensymphony.xwork.ActionContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.web.util.ArchivaXworkUser;
+import org.apache.maven.archiva.security.*;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
@@ -121,7 +119,7 @@ public class BrowseAction
     
     private String getPrincipal()
     {
-        return ArchivaXworkUser.getActivePrincipal();
+        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
     
     private List<String> getObservableRepos()

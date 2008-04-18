@@ -23,29 +23,24 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.webdav.DavServerComponent;
-import org.apache.maven.archiva.webdav.DavServerException;
-import org.apache.maven.archiva.webdav.servlet.DavServerRequest;
-import org.apache.maven.archiva.webdav.servlet.multiplexed.MultiplexedWebDavServlet;
-import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authorization.AuthorizationException;
-import org.codehaus.plexus.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
-import org.codehaus.plexus.redback.system.SecuritySession;
+import org.apache.maven.archiva.webdav.ArchivaDavLocatorFactory;
+import org.apache.maven.archiva.webdav.ArchivaDavResourceFactory;
+import org.apache.maven.archiva.webdav.ArchivaDavSessionProvider;
+import org.apache.maven.archiva.webdav.UnauthorizedDavException;
+import org.apache.jackrabbit.webdav.server.AbstractWebdavServlet;
+import org.apache.jackrabbit.webdav.*;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -57,9 +52,11 @@ import java.util.Map;
  * @version $Id$
  */
 public class RepositoryServlet
-    extends MultiplexedWebDavServlet
+    extends AbstractWebdavServlet
     implements ConfigurationListener
 {
+    private Logger log = LoggerFactory.getLogger(RepositoryServlet.class);
+
     private SecuritySystem securitySystem;
 
     private HttpAuthenticator httpAuth;
@@ -67,16 +64,75 @@ public class RepositoryServlet
     private ArchivaConfiguration configuration;
 
     private Map<String, ManagedRepositoryConfiguration> repositoryMap;
-    
-    private ArchivaMimeTypeLoader mimeTypeLoader;
+
+    private DavLocatorFactory locatorFactory;
+
+    private DavResourceFactory resourceFactory;
+
+    private DavSessionProvider sessionProvider;
+
+    private final Object reloadLock = new Object();
+
+    public void init(javax.servlet.ServletConfig servletConfig)
+        throws ServletException
+    {
+        super.init(servletConfig);
+        initServers(servletConfig);
+    }
+
+    /**
+     * Service the given request.
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws java.io.IOException
+     */
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        WebdavRequest webdavRequest = new WebdavRequestImpl(request, getLocatorFactory());
+        // DeltaV requires 'Cache-Control' header for all methods except 'VERSION-CONTROL' and 'REPORT'.
+        int methodCode = DavMethods.getMethodCode(request.getMethod());
+        boolean noCache = DavMethods.isDeltaVMethod(webdavRequest) && !(DavMethods.DAV_VERSION_CONTROL == methodCode || DavMethods.DAV_REPORT == methodCode);
+        WebdavResponse webdavResponse = new WebdavResponseImpl(response, noCache);
+        try {
+            // make sure there is a authenticated user
+            if (!getDavSessionProvider().attachSession(webdavRequest)) {
+                return;
+            }
+
+            // check matching if=header for lock-token relevant operations
+            DavResource resource = getResourceFactory().createResource(webdavRequest.getRequestLocator(), webdavRequest, webdavResponse);
+            if (!isPreconditionValid(webdavRequest, resource)) {
+                webdavResponse.sendError(DavServletResponse.SC_PRECONDITION_FAILED);
+                return;
+            }
+            if (!execute(webdavRequest, webdavResponse, methodCode, resource)) {
+                super.service(request, response);
+            }
+
+        }
+        catch (UnauthorizedDavException e)
+        {
+            webdavResponse.setHeader("WWW-Authenticate", getAuthenticateHeaderValue(e.getRepositoryName()));
+            webdavResponse.sendError(e.getErrorCode(), e.getStatusPhrase());
+        }
+        catch (DavException e) {
+            if (e.getErrorCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+                log.error("Should throw UnauthorizedDavException");
+            } else {
+                webdavResponse.sendError(e);
+            }
+        } finally {
+            getDavSessionProvider().releaseSession(webdavRequest);
+        }
+    }
 
     public synchronized void initServers( ServletConfig servletConfig )
-        throws DavServerException
     {
         WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
-
-        mimeTypeLoader = (ArchivaMimeTypeLoader) wac.getBean(
-            PlexusToSpringUtils.buildSpringId( ArchivaMimeTypeLoader.class.getName() ) );
 
         securitySystem = (SecuritySystem) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySystem.ROLE ) );
         httpAuth =
@@ -101,120 +157,11 @@ public class RepositoryServlet
                     continue;
                 }
             }
-
-            DavServerComponent server = createServer( repo.getId(), repoDir, servletConfig );
-
-            server.setUseIndexHtml( true );
-        }
-    }
-    
-    @Override
-    protected void service( HttpServletRequest httpRequest, HttpServletResponse httpResponse )
-        throws ServletException, IOException
-    {
-        // Wrap the incoming request to adjust paths and whatnot.
-        super.service( new PolicingServletRequest( httpRequest ), httpResponse );
-    }
-
-    public synchronized ManagedRepositoryConfiguration getRepository( String prefix )
-    {
-        if ( repositoryMap.isEmpty() )
-        {
-            repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
-        }
-        return repositoryMap.get( prefix );
-    }
-
-    private String getRepositoryName( DavServerRequest request )
-    {
-        ManagedRepositoryConfiguration repoConfig = getRepository( request.getPrefix() );
-        if ( repoConfig == null )
-        {
-            return "Unknown";
         }
 
-        return repoConfig.getName();
-    }
-
-    public boolean isAuthenticated( DavServerRequest davRequest, HttpServletResponse response )
-        throws ServletException, IOException
-    {
-        HttpServletRequest request = davRequest.getRequest();
-
-        // Authentication Tests.
-        try
-        {
-            AuthenticationResult result = httpAuth.getAuthenticationResult( request, response );
-
-            if ( result != null && !result.isAuthenticated() )
-            {
-                // Must Authenticate.
-                httpAuth.challenge( request, response, "Repository " + getRepositoryName( davRequest ),
-                                    new AuthenticationException( "User Credentials Invalid" ) );
-                return false;
-            }
-        }
-        catch ( AuthenticationException e )
-        {
-            log( "Fatal Http Authentication Error.", e );
-            throw new ServletException( "Fatal Http Authentication Error.", e );
-        }
-        catch ( AccountLockedException e )
-        {
-            httpAuth.challenge( request, response, "Repository " + getRepositoryName( davRequest ),
-                                new AuthenticationException( "User account is locked" ) );
-        }
-        catch ( MustChangePasswordException e )
-        {
-            httpAuth.challenge( request, response, "Repository " + getRepositoryName( davRequest ),
-                                new AuthenticationException( "You must change your password." ) );
-        }
-
-        return true;
-    }
-
-    public boolean isAuthorized( DavServerRequest davRequest, HttpServletResponse response )
-        throws ServletException, IOException
-    {
-        // Authorization Tests.
-        HttpServletRequest request = davRequest.getRequest();
-
-        boolean isWriteRequest = WebdavMethodUtil.isWriteMethod( request.getMethod() );
-
-        SecuritySession securitySession = httpAuth.getSecuritySession();
-        try
-        {
-            String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
-
-            if ( isWriteRequest )
-            {
-                permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
-            }
-
-            AuthorizationResult authzResult =
-                securitySystem.authorize( securitySession, permission, davRequest.getPrefix() );
-
-            if ( !authzResult.isAuthorized() )
-            {
-                if ( authzResult.getException() != null )
-                {
-                    log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest +
-                        ",permission=" + permission + ",repo=" + davRequest.getPrefix() + "] : " +
-                        authzResult.getException().getMessage() );
-                }
-
-                // Issue HTTP Challenge.
-                httpAuth.challenge( request, response, "Repository " + getRepositoryName( davRequest ),
-                                    new AuthenticationException( "Authorization Denied." ) );
-                return false;
-            }
-        }
-        catch ( AuthorizationException e )
-        {
-            throw new ServletException( "Fatal Authorization Subsystem Error." );
-        }
-
-        return true;
+        resourceFactory = (DavResourceFactory)wac.getBean(PlexusToSpringUtils.buildSpringId(ArchivaDavResourceFactory.class));
+        locatorFactory = new ArchivaDavLocatorFactory();
+        sessionProvider = new ArchivaDavSessionProvider(wac);
     }
     
     public void configurationEvent( ConfigurationEvent event )
@@ -233,25 +180,68 @@ public class RepositoryServlet
             repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
         }
 
-        synchronized ( davManager )
+        synchronized ( reloadLock )
         {
-            // Clear out the old servers.
-            davManager.removeAllServers();
-
-            // Create new servers.
-            try
-            {
-                initServers( getServletConfig() );
-            }
-            catch ( DavServerException e )
-            {
-                log( "Unable to init servers: " + e.getMessage(), e );
-            }
+            initServers( getServletConfig() );
         }
+    }
+
+    public synchronized ManagedRepositoryConfiguration getRepository( String prefix )
+    {
+        if ( repositoryMap.isEmpty() )
+        {
+            repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
+        }
+        return repositoryMap.get( prefix );
     }
 
     ArchivaConfiguration getConfiguration()
     {
         return configuration;
+    }
+
+    protected boolean isPreconditionValid(final WebdavRequest request, final DavResource davResource)
+    {
+        return true;
+    }
+
+    public DavSessionProvider getDavSessionProvider()
+    {
+        return sessionProvider;
+    }
+
+    public void setDavSessionProvider(final DavSessionProvider davSessionProvider)
+    {
+        this.sessionProvider = davSessionProvider;
+    }
+
+    public DavLocatorFactory getLocatorFactory()
+    {
+        return locatorFactory;
+    }
+
+    public void setLocatorFactory(final DavLocatorFactory davLocatorFactory)
+    {
+        locatorFactory = davLocatorFactory;
+    }
+
+    public DavResourceFactory getResourceFactory()
+    {
+        return resourceFactory;
+    }
+
+    public void setResourceFactory(final DavResourceFactory davResourceFactory)
+    {
+        resourceFactory = davResourceFactory;
+    }
+
+    public String getAuthenticateHeaderValue()
+    {
+        throw new UnsupportedOperationException("");
+    }
+
+    public String getAuthenticateHeaderValue(String repository)
+    {
+        return "Basic realm=\"Repository Archiva Managed " + repository + " Repository\"";
     }
 }

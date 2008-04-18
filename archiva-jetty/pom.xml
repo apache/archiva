@@ -255,7 +255,7 @@
   </build>
   <pluginRepositories>
     <pluginRepository>
-      <id>codehaus.org</id>
+      <id>codehaus.snapshots</id>
       <url>http://snapshots.repository.codehaus.org/</url>
     </pluginRepository>
   </pluginRepositories>

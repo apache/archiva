@@ -51,9 +51,10 @@ import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.web.util.ArchivaXworkUser;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
+import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
 
@@ -325,7 +326,7 @@ public class UploadAction
 
     private String getPrincipal()
     {
-        return ArchivaXworkUser.getActivePrincipal();
+        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
 
     private void copyFile( File targetPath, String artifactFilename )

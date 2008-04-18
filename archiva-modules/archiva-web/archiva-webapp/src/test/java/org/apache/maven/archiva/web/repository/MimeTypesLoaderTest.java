@@ -19,28 +19,30 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletConfig;
+import org.apache.maven.archiva.webdav.util.MimeTypes;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
- * UnauthenticatedRepositoryServlet 
+ * ArchivaMimeTypesTest 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class UnauthenticatedRepositoryServlet
-    extends RepositoryServlet
+public class MimeTypesLoaderTest
+    extends PlexusInSpringTestCase
 {
-    @Override
-    public synchronized void initServers( ServletConfig servletConfig )
+    public void testArchivaTypes()
+        throws Exception
     {
-        super.initServers(servletConfig);
+        lookup( MimeTypes.class );
+        MimeTypes mimeTypes = (MimeTypes) lookup( MimeTypes.class );
+        assertNotNull( mimeTypes );
 
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
-
-        UnauthenticatedDavSessionProvider sessionProvider = new UnauthenticatedDavSessionProvider(wac);
-        setDavSessionProvider(sessionProvider);
+        // Test for some added types.
+        assertEquals( "sha1", "text/plain", mimeTypes.getMimeType( "foo.sha1" ) );
+        assertEquals( "md5", "text/plain", mimeTypes.getMimeType( "foo.md5" ) );
+        assertEquals( "pgp", "application/pgp-encrypted", mimeTypes.getMimeType( "foo.pgp" ) );
+        assertEquals( "jar", "application/java-archive", mimeTypes.getMimeType( "foo.jar" ) );
+        assertEquals( "Default", "application/octet-stream", mimeTypes.getMimeType(".SomeUnknownExtension"));
     }
 }

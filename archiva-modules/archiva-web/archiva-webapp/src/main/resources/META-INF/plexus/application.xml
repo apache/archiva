@@ -67,19 +67,6 @@
     </component>
 
     <component>
-      <role>org.apache.maven.archiva.webdav.DavServerManager</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.webdav.DefaultDavServerManager</implementation>
-      <description>DefaultDavServerManager</description>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.webdav.DavServerComponent</role>
-          <role-hint>proxied</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-
-    <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>
       <role-hint>archiva</role-hint>
       <implementation>org.codehaus.plexus.jdo.DataSourceConfigurableJdoFactory</implementation>
@@ -187,14 +174,14 @@
       </configuration>
     </component>
     
-    <component>
+    <!-- <component>
       <role>org.apache.maven.archiva.webdav.util.MimeTypes</role>
       <implementation>org.apache.maven.archiva.webdav.util.MimeTypes</implementation>
       <description>MimeTypes</description>
       <configuration>
         <resource>archiva-mime-types.txt</resource>
       </configuration>
-    </component>
+    </component> -->
 
     <!--
      | Logger manager

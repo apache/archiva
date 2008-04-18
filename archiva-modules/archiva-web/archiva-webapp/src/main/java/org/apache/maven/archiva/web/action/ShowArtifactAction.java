@@ -31,9 +31,10 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.web.util.ArchivaXworkUser;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
+import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.Validateable;
 
 /**
@@ -173,7 +174,7 @@ public class ShowArtifactAction
     
     private String getPrincipal()
     {
-        return ArchivaXworkUser.getActivePrincipal();
+        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
     
     private List<String> getObservableRepos()

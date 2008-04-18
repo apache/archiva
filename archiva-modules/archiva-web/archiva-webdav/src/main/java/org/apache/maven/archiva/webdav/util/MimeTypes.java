@@ -1,3 +1,5 @@
+package org.apache.maven.archiva.webdav.util;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -7,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,8 +18,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.maven.archiva.webdav.util;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,10 +49,9 @@ public class MimeTypes
     extends AbstractLogEnabled
     implements Initializable
 {
-    /**
-     * @plexus.configuration default-value="org/apache/maven/archiva/webdav/util/mime-types.txt"
-     */
-    private String resource;
+    private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
+
+    private String resource = "org/apache/maven/archiva/webdav/util/mime.types";
     
     private Map mimeMap = new HashMap();
 
@@ -74,6 +73,13 @@ public class MimeTypes
                 value = (String) mimeMap.get( filename.substring( index + 1 ).toLowerCase() );
             }
         }
+
+
+        if (value == null)
+        {
+            value = DEFAULT_MIME_TYPE;
+        }
+
         return value;
 
     }
