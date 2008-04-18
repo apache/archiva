@@ -20,6 +20,14 @@
 
 <configuration>
   <version>2</version>
+  <repositoryGroups>
+    <repositoryGroup>
+      <id>default</id>
+      <repositories>
+        <repository>snapshots</repository>
+      </repositories>
+    </repositoryGroup>
+  </repositoryGroups>
   <managedRepositories>
     <managedRepository>
       <id>snapshots</id>

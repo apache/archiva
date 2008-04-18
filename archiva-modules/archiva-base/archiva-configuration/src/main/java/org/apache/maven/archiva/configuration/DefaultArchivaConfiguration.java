@@ -416,7 +416,7 @@ public class DefaultArchivaConfiguration
                 if ( key.startsWith( "repositories" ) || key.startsWith( "proxyConnectors" )
                     || key.startsWith( "networkProxies" ) || key.startsWith( "repositoryScanning" )
                     || key.startsWith( "databaseScanning" ) || key.startsWith( "remoteRepositories" )
-                    || key.startsWith( "managedRepositories" ) )
+                    || key.startsWith( "managedRepositories" ) || key.startsWith( "repositoryGroups" ) )
                 {
                     foundList = true;
                 }
@@ -454,6 +454,10 @@ public class DefaultArchivaConfiguration
         if ( configuration.getLegacyArtifactPaths().isEmpty() )
         {
             section.removeSubset( "legacyArtifactPaths" );
+        }
+        if ( configuration.getRepositoryGroups().isEmpty() )        	
+        {
+            section.removeSubset( "repositoryGroups" );
         }
         if ( configuration.getRepositoryScanning() != null )
         {

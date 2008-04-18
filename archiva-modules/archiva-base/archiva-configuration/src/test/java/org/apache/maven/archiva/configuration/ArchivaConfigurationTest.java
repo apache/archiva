@@ -686,7 +686,12 @@ public class ArchivaConfigurationTest
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-remove-central" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
-
+       
+        RepositoryGroupConfiguration repositoryGroup = ( RepositoryGroupConfiguration ) configuration.getRepositoryGroups().get( 0 );
+        assertNotNull( repositoryGroup );
+        configuration.removeRepositoryGroup( repositoryGroup );
+        assertTrue( configuration.getRepositoryGroups().isEmpty() );
+        
         RemoteRepositoryConfiguration repository = configuration.getRemoteRepositoriesAsMap().get( "central" );
         assertNotNull( repository );
         configuration.removeRemoteRepository( repository );
@@ -740,6 +745,7 @@ public class ArchivaConfigurationTest
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-saved" );
         configuration = archivaConfiguration.getConfiguration();
         assertNull( configuration.getRemoteRepositoriesAsMap().get( "central" ) );
+        assertTrue( configuration.getRepositoryGroups().isEmpty() );
         assertNull( configuration.getManagedRepositoriesAsMap().get( "snapshots" ) );
         assertTrue( configuration.getProxyConnectors().isEmpty() );
         assertNull( configuration.getNetworkProxiesAsMap().get( "proxy" ) );

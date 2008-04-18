@@ -57,6 +57,15 @@
           </association>
         </field>
         <field>
+          <name>repositoryGroups</name>
+          <version>1.2.0+</version>
+          <association>
+            <type>RepositoryGroupConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>The list of repository groups.</description>
+        </field>
+        <field>
           <name>managedRepositories</name>
           <version>1.0.0+</version>
           <association>
@@ -510,6 +519,28 @@
        ]]></code>
         </codeSegment>
       </codeSegments>
+    </class>
+    <class>
+      <name>RepositoryGroupConfiguration</name>
+      <version>1.2.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.2.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>The id of the repository group.</description>
+        </field>
+        <field>
+          <name>repositories</name>
+          <version>1.2.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>The list of repository ids under the group.</description>          
+        </field>
+      </fields>
     </class>
 
     <!--
