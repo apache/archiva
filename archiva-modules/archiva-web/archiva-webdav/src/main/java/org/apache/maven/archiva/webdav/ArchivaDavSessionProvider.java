@@ -77,12 +77,11 @@ public class ArchivaDavSessionProvider implements DavSessionProvider
         // Authentication Tests.
         try
         {
-            AuthenticationResult result = httpAuth.getAuthenticationResult(request, null);
+            AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
 
-            if ( result == null || !result.isAuthenticated() )
+            if ( result != null && !result.isAuthenticated() )
             {
-                //Unfortunatly, the DavSessionProvider does not pass in the response
-                httpAuth.authenticate(request, null);
+                throw new UnauthorizedDavException(repositoryId, "User Credentials Invalid");
             }
         }
         catch ( AuthenticationException e )
@@ -130,7 +129,7 @@ public class ArchivaDavSessionProvider implements DavSessionProvider
                         ",permission=" + permission + ",repo=" + repositoryId + "] : " +
                         authzResult.getException().getMessage() );
                 }
-                throw new DavException(HttpServletResponse.SC_UNAUTHORIZED, "Access denied for repository " + repositoryId);
+                throw new UnauthorizedDavException(repositoryId, "Access denied for repository " + repositoryId);
             }
         }
         catch ( AuthorizationException e )

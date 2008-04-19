@@ -121,7 +121,9 @@ public class RepositoryServlet
         }
         catch (DavException e) {
             if (e.getErrorCode() == HttpServletResponse.SC_UNAUTHORIZED) {
-                log.error("Should throw UnauthorizedDavException");
+                final String msg = "Should throw " + UnauthorizedDavException.class.getName();
+                log.error(msg);
+                webdavResponse.sendError(e.getErrorCode(), msg);
             } else {
                 webdavResponse.sendError(e);
             }
