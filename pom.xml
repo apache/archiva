@@ -29,6 +29,7 @@
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
     <version>3-SNAPSHOT</version>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
   <name>Archiva</name>
   <artifactId>archiva</artifactId>
