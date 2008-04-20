@@ -23,6 +23,12 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
+import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.HttpNotFoundException;
+import com.meterware.httpunit.HttpUnitOptions;
+import com.meterware.httpunit.WebRequest;
+import com.meterware.httpunit.WebResponse;
+
 import java.io.File;
 
 /**
@@ -90,5 +96,35 @@ public class RepositoryServletTest
 
         // check other is still intact
         assertRepositoryValid( servlet, REPOID_INTERNAL );
+    }
+
+    public void testGetRepositoryInvalidPathPassthroughPresent()
+        throws Exception
+    {
+        String path = REQUEST_PATH + ".index/filecontent/segments.gen";
+
+        populateRepo( repoRootInternal, ".index/filecontent/segments.gen", "index file" );
+        
+        WebRequest request = new GetMethodWebRequest( path );
+        WebResponse response = sc.getResponse( request );
+        assertResponseOK( response );
+        assertEquals( "index file", response.getText() );        
+    }
+
+    public void testGetRepositoryInvalidPathPassthroughMissing()
+        throws Exception
+    {
+        String path = REQUEST_PATH + ".index/filecontent/foo.bar";
+
+        WebRequest request = new GetMethodWebRequest( path );
+        try
+        {
+            sc.getResponse( request );
+            fail( "should have been not found" );
+        }
+        catch ( HttpNotFoundException e )
+        {
+            assertEquals( "Error on HTTP request: 404 Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path. [http://machine.com/repository/internal/.index/filecontent/foo.bar]", e.getMessage() );
+        }
     }
 }

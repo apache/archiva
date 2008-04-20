@@ -124,8 +124,10 @@ public class RepositoryServlet
                 final String msg = "Should throw " + UnauthorizedDavException.class.getName();
                 log.error(msg);
                 webdavResponse.sendError(e.getErrorCode(), msg);
+            } else if ( e.getCause() != null ) {
+                webdavResponse.sendError(e.getErrorCode(), e.getCause().getMessage());
             } else {
-                webdavResponse.sendError(e);
+                webdavResponse.sendError(e.getErrorCode(), e.getMessage());
             }
         } finally {
             getDavSessionProvider().releaseSession(webdavRequest);

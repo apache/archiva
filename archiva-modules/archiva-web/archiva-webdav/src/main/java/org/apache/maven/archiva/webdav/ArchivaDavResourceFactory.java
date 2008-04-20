@@ -148,29 +148,32 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
         {
             // At this point the incoming request can either be in default or
             // legacy layout format.
+            boolean fromProxy = fetchContentFromProxies(managedRepository, request, logicalResource );
+
+            boolean previouslyExisted = resourceFile.exists();
+
             try
             {
-                boolean fromProxy = fetchContentFromProxies(managedRepository, request, logicalResource );
-
                 // Perform an adjustment of the resource to the managed
                 // repository expected path.
                 String localResourcePath = repositoryRequest.toNativePath( logicalResource.getPath(), managedRepository );
                 resourceFile = new File( managedRepository.getRepoRoot(), localResourcePath );
-
-                boolean previouslyExisted = resourceFile.exists();
-
-                // Attempt to fetch the resource from any defined proxy.
-                if ( fromProxy )
-                {
-                    processAuditEvents(request, locator.getWorkspaceName(), logicalResource.getPath(), previouslyExisted, resourceFile, " (proxied)");
-                }
-                resource = new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this, null);
-
             }
             catch ( LayoutException e )
             {
+                if ( previouslyExisted )
+                {
+                    return resource;
+                }
                 throw new DavException(HttpServletResponse.SC_NOT_FOUND, e);
             }
+
+            // Attempt to fetch the resource from any defined proxy.
+            if ( fromProxy )
+            {
+                processAuditEvents(request, locator.getWorkspaceName(), logicalResource.getPath(), previouslyExisted, resourceFile, " (proxied)");
+            }
+            resource = new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this, null);
         }
         return resource;
     }
