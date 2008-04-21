@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.repository;
  */
 
 import com.meterware.httpunit.WebResponse;
+import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import net.sf.ehcache.CacheManager;
@@ -161,6 +162,8 @@ public abstract class AbstractRepositoryServletTestCase
         saveConfiguration( archivaConfiguration );
 
         CacheManager.getInstance().removeCache( "url-failures-cache" );
+
+        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );                
 
         sr = new ServletRunner( getTestFile( "src/test/webapp/WEB-INF/web.xml" ) );
         sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );

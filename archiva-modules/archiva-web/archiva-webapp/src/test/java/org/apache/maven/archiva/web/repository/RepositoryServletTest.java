@@ -117,14 +117,8 @@ public class RepositoryServletTest
         String path = REQUEST_PATH + ".index/filecontent/foo.bar";
 
         WebRequest request = new GetMethodWebRequest( path );
-        try
-        {
-            sc.getResponse( request );
-            fail( "should have been not found" );
-        }
-        catch ( HttpNotFoundException e )
-        {
-            assertEquals( "Error on HTTP request: 404 Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path. [http://machine.com/repository/internal/.index/filecontent/foo.bar]", e.getMessage() );
-        }
+        WebResponse response = sc.getResponse( request );
+        assertResponseNotFound( response );
+        assertEquals( "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path.", response.getResponseMessage() );
     }
 }
