@@ -132,9 +132,20 @@ public class ArchivaDavResource implements DavResource
     {
         if (!isCollection())
         {
-            IOUtils.copy(new FileInputStream(localResource), outputContext.getOutputStream());
-            outputContext.setContentLength(getContentLength());
-            outputContext.setContentType(getContentType());
+	    FileInputStream is = null;
+	    try
+	    {
+	        outputContext.setContentLength(getContentLength());
+		outputContext.setContentType(getContentType());
+		
+		//Write content to stream
+		is = new FileInputStream(localResource);
+		IOUtils.copy(is, outputContext.getOutputStream());
+	    }
+	    finally
+	    {
+		IOUtils.closeQuietly(is);
+	    }
         }
         else
         {
