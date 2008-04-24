@@ -33,7 +33,7 @@
   <name>Archiva Common Parent Project</name>
   <version>3-SNAPSHOT</version>
   <inceptionYear>2006</inceptionYear>
-  <url>http://maven.apache.org/archiva/</url>
+  <url>http://archiva.apache.org/</url>
   <description>
     Archiva is an application for managing one or more remote
     repositories, including administration, artifact handling,
@@ -95,7 +95,7 @@
     <url>http://svn.apache.org/viewcvs.cgi/archiva/parent</url>
   </scm>
   <properties>
-    <siteBaseDeployment>scp://people.apache.org/www/maven.apache.org/archiva</siteBaseDeployment>
+    <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
 <!-- For testing
     <siteBaseDeployment>file://localhost/www/maven.apache.org/archiva</siteBaseDeployment>
 -->
