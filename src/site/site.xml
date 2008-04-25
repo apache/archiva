@@ -21,14 +21,14 @@
 <project>
   <!-- TODO: inherited publish, banner, skin -->
   <bannerLeft>
-    <name>Apache Maven</name>
-    <src>http://maven.apache.org/images/apache-maven-project-2.png</src>
-    <href>http://maven.apache.org/</href>
+    <name>Apache Archiva</name>
+    <src>/images/archiva.png</src>
+    <href>http://archiva.apache.org/</href>
   </bannerLeft>
   <bannerRight>
-    <name>Apache Archiva</name>
-    <src>images/archiva-logo-banner.jpg</src>
-    <href>/</href>
+    <name>Apache Software Foundation</name>
+    <src>http://www.apache.org/images/asf_logo_wide.png</src>
+    <href>http://www.apache.org/</href>
   </bannerRight>
   <publishDate format="dd MMM yyyy" position="right" />
   <skin>
@@ -40,7 +40,6 @@
     <!-- TODO: inherited breadcrumbs, head, link menu -->
     <breadcrumbs>
       <item name="Apache" href="http://www.apache.org/"/>
-      <item name="Maven" href="http://maven.apache.org/"/>
       <item name="Archiva" href="/" />
     </breadcrumbs>
 
