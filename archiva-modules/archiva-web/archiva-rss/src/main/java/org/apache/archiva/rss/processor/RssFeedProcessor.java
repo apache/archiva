@@ -19,17 +19,23 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
-import java.util.List;
+import java.util.Map;
 
-import org.apache.maven.archiva.model.ArchivaArtifact;
+import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
- * Process data that will be fed into the RssFeedGenerator
+ * Retrieve and process the data that will be fed into the RssFeedGenerator.
  * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public interface RssFeedProcessor
 {
-    void process( List<ArchivaArtifact> data );
+    public static final String KEY_REPO_ID = "repoId";
+
+    public static final String KEY_GROUP_ID = "groupId";
+
+    public static final String KEY_ARTIFACT_ID = "artifactId";
+
+    SyndFeed process( Map<String, String> reqParams );
 }

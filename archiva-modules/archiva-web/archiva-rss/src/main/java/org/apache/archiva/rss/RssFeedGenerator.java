@@ -19,10 +19,6 @@ package org.apache.archiva.rss;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -36,10 +32,6 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
 
 /**
  * Generates RSS feeds.
@@ -59,66 +51,27 @@ public class RssFeedGenerator
 
     public static String DEFAULT_LANGUAGE = "en-us";
 
-    /**
-     * @plexus.configuration default-value="./apps/archiva/rss/"
-     */
-    private String rssDirectory;
+    private String DEFAULT_LINK = "http://localhost:8080/archiva/rss/";
 
-    public void generateFeed( String title, String link, String description, List<RssFeedEntry> dataEntries,
-                              String outputFilename )
-    {           
-        File outputFile = new File( rssDirectory, outputFilename );
+    public SyndFeed generateFeed( String title, String description, List<RssFeedEntry> dataEntries,
+                                  String outputFilename )
+    {
         SyndFeed feed = null;
         List<SyndEntry> existingEntries = null;
 
-        if ( outputFile.exists() )
-        {
-            try
-            {
-                SyndFeedInput input = new SyndFeedInput();
-                feed = input.build( new XmlReader( outputFile ) );
-                existingEntries = feed.getEntries();
-            }
-            catch ( IOException ie )
-            {
-                log.error( "Error occurred while reading existing feed : " + ie.getLocalizedMessage() );
-            }
-            catch ( FeedException fe )
-            {
-                log.error( "Error occurred while reading existing feed : " + fe.getLocalizedMessage() );
-            }
-        }
-        else
-        {
-            feed = new SyndFeedImpl();
+        feed = new SyndFeedImpl();
 
-            feed.setTitle( title );
-            feed.setLink( link );
-            feed.setDescription( description );
-            feed.setLanguage( DEFAULT_LANGUAGE );
-        }
-        
+        feed.setTitle( title );
+        feed.setLink( DEFAULT_LINK + outputFilename );
+        feed.setDescription( description );
+        feed.setLanguage( DEFAULT_LANGUAGE );
         feed.setPublishedDate( Calendar.getInstance().getTime() );
-        feed.setFeedType( DEFAULT_FEEDTYPE );        
+        feed.setFeedType( DEFAULT_FEEDTYPE );
         feed.setEntries( getEntries( dataEntries, existingEntries ) );
 
-        try
-        {
-            Writer writer = new FileWriter( outputFile );
-            SyndFeedOutput output = new SyndFeedOutput();
-            output.output( feed, writer );
-            writer.close();
-
-            log.debug( "Finished writing feed to " + outputFile.getAbsolutePath() );
-        }
-        catch ( IOException ie )
-        {
-            log.error( "Error occurred while generating the feed : " + ie.getMessage() );
-        }
-        catch ( FeedException fe )
-        {
-            log.error( "Error occurred while generating the feed : " + fe.getMessage() );
-        }
+        log.debug( "Finished generating the feed \'" + title + "\'." );
+        
+        return feed;
     }
 
     private List<SyndEntry> getEntries( List<RssFeedEntry> dataEntries, List<SyndEntry> existingEntries )
@@ -148,10 +101,4 @@ public class RssFeedGenerator
 
         return entries;
     }
-
-    public void setRssDirectory( String rssDirectory )
-    {
-        this.rssDirectory = rssDirectory;
-    }
-    
 }

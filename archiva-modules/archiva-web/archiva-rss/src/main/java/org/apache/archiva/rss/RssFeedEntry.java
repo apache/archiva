@@ -50,10 +50,9 @@ public class RssFeedEntry
         
     }
     
-    public RssFeedEntry( String title, String link )
+    public RssFeedEntry( String title )
     {
         this.title = title;
-        this.link = link;
     }
 
     public String getTitle()

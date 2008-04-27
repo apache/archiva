@@ -19,13 +19,19 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.archiva.rss.RssFeedGenerator;
+import org.apache.archiva.rss.stubs.ArtifactDAOStub;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -34,75 +40,89 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 public class NewArtifactsRssFeedProcessorTest
     extends PlexusInSpringTestCase
 {
-    private RssFeedProcessor newArtifactsProcessor;
-    
-    private String rssDirectory;
+    private NewArtifactsRssFeedProcessor newArtifactsProcessor;
+
+    private ArtifactDAOStub artifactDAOStub;
+
+    private RssFeedGenerator rssFeedGenerator;
 
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        newArtifactsProcessor = (RssFeedProcessor) lookup( RssFeedProcessor.class, "new-artifacts" );
-        rssDirectory = getBasedir() + "/target/test-classes/rss-feeds/";
-        
-        RssFeedGenerator generator = ( ( NewArtifactsRssFeedProcessor ) newArtifactsProcessor ).getGenerator();
-        generator.setRssDirectory( rssDirectory );
-        ( (NewArtifactsRssFeedProcessor) newArtifactsProcessor ).setGenerator( generator );
+        newArtifactsProcessor = new NewArtifactsRssFeedProcessor();
+        artifactDAOStub = new ArtifactDAOStub();
+
+        rssFeedGenerator = new RssFeedGenerator();
+
+        newArtifactsProcessor.setGenerator( rssFeedGenerator );
+        newArtifactsProcessor.setArtifactDAO( artifactDAOStub );
     }
 
     public void testProcess()
         throws Exception
     {
         List<ArchivaArtifact> newArtifacts = new ArrayList<ArchivaArtifact>();
-        
+
+        Date whenGathered = Calendar.getInstance().getTime();
+        whenGathered.setTime( 123456789 );
+
         ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.0", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
+        artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
-        
+
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.1", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
+        artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
-        
+
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "2.0", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
+        artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
+        artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
-        
+
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
+        artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
-        
+
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
+        artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
-        
+
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-three", "2.0-SNAPSHOT", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
+        artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
-        
+
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-four", "1.1-beta-2", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
+        artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
-        
-        newArtifactsProcessor.process( newArtifacts );
 
-        File outputFile = new File( rssDirectory, "new_artifacts_test-repo.xml" );        
-        assertTrue( outputFile.exists() );
-        
-        outputFile = new File( rssDirectory, "new_versions_org.apache.archiva:artifact-one.xml" );        
-        assertTrue( outputFile.exists() );
-        
-        outputFile = new File( rssDirectory, "new_versions_org.apache.archiva:artifact-two.xml" );        
-        assertTrue( outputFile.exists() );
-        
-        outputFile = new File( rssDirectory, "new_versions_org.apache.archiva:artifact-three.xml" );        
-        assertTrue( outputFile.exists() );
-        
-        outputFile = new File( rssDirectory, "new_versions_org.apache.archiva:artifact-four.xml" );        
-        assertTrue( outputFile.exists() );
+        artifactDAOStub.setArtifacts( newArtifacts );
+
+        Map<String, String> reqParams = new HashMap<String, String>();
+        reqParams.put( RssFeedProcessor.KEY_REPO_ID, "test-repo" );
+
+        SyndFeed feed = newArtifactsProcessor.process( reqParams );
+
+        assertTrue( feed.getTitle().equals( "New Artifacts in Repository 'test-repo'" ) );
+        assertTrue( feed.getLink().equals( "http://localhost:8080/archiva/rss/new_artifacts_test-repo.xml" ) );
+        assertTrue( feed.getDescription().equals(
+                                                  "New artifacts found in repository 'test-repo' during repository scan." ) );
+        assertTrue( feed.getLanguage().equals( "en-us" ) );
+
+        List<SyndEntry> entries = feed.getEntries();
+        assertEquals( entries.size(), 1 );
+        assertTrue( entries.get( 0 ).getTitle().equals( "New Artifacts in Repository 'test-repo' as of " + whenGathered ) );
     }
 }

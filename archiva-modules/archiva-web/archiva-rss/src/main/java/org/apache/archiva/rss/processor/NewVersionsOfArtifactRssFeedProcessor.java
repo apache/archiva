@@ -27,7 +27,8 @@ import org.apache.archiva.rss.RssFeedGenerator;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstraint;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,20 +36,20 @@ import org.slf4j.LoggerFactory;
 import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
- * Retrieve and process all artifacts of a repository from the database and generate a rss feed.
- * The artifacts will be grouped by the date when the artifacts were gathered. 
- * Each group will appear as one entry in the feed.
+ * Retrieve and process new versions of an artifact from the database and
+ * generate a rss feed. The versions will be grouped by the date when the artifact 
+ * was gathered. Each group will appear as one entry in the feed.
  * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
- * @plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-artifacts"
+ * @plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-versions"
  */
-public class NewArtifactsRssFeedProcessor
+public class NewVersionsOfArtifactRssFeedProcessor
     extends AbstractArtifactsRssFeedProcessor
 {
-    private String title = "New Artifacts in Repository ";
+    private String title = "New Versions of Artifact ";
 
-    private String desc = "New Versions of Artifact ";
+    private String desc = "These are the new artifacts found in the repository ";
 
     /**
      * @plexus.requirement
@@ -63,36 +64,45 @@ public class NewArtifactsRssFeedProcessor
     private ArtifactDAO artifactDAO;
 
     /**
-     * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
-     * new versions of artifact.
+     * Process all versions of the artifact which had a rss feed request.
      */
     public SyndFeed process( Map<String, String> reqParams )
     {
-        log.debug( "Process new artifacts into rss feeds." );
-
         String repoId = reqParams.get( RssFeedProcessor.KEY_REPO_ID );
-        if ( repoId != null )
+        String groupId = reqParams.get( RssFeedProcessor.KEY_GROUP_ID );
+        String artifactId = reqParams.get( RssFeedProcessor.KEY_ARTIFACT_ID );
+
+        if ( repoId != null && groupId != null && artifactId != null )
         {
-            return processNewArtifactsInRepo( repoId );
+            return processNewVersionsOfArtifact( repoId, groupId, artifactId );
         }
 
         return null;
     }
 
-    private SyndFeed processNewArtifactsInRepo( String repoId )
+    private SyndFeed processNewVersionsOfArtifact( String repoId, String groupId, String artifactId )
     {
         try
         {
-            Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, "whenGathered" );
-            List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactsByRepo );
+            Constraint artifactVersions = new ArtifactVersionsConstraint( repoId, groupId, artifactId, "whenGathered" );
+            List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactVersions );
 
-            List<RssFeedEntry> entries = processData( artifacts, true );
+            List<RssFeedEntry> entries = processData( artifacts, false );
 
-            return generator.generateFeed( getTitle() + "\'" + repoId + "\'", "New artifacts found in repository " +
-                "\'" + repoId + "\'" + " during repository scan.", entries, "new_artifacts_" + repoId + ".xml" );
+            String key = groupId + ":" + artifactId;
+            return generator.generateFeed( getTitle() + "\'" + key + "\'", "New versions of artifact " + "\'" + key +
+                "\' found in repository " + "\'" + repoId + "\'" + " during repository scan.", entries,
+                                           "new_versions_" + key + ".xml" );
+
+        }
+        catch ( ObjectNotFoundException oe )
+        {
+            oe.printStackTrace();
+            log.error( oe.getMessage() );
         }
         catch ( ArchivaDatabaseException ae )
         {
+            ae.printStackTrace();
             log.error( ae.getMessage() );
         }
 
@@ -128,4 +138,5 @@ public class NewArtifactsRssFeedProcessor
     {
         this.artifactDAO = artifactDAO;
     }
+
 }
