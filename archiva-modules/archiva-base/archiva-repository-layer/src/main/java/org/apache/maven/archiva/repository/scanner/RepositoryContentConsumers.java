@@ -71,6 +71,8 @@ public class RepositoryContentConsumers
     private List<KnownRepositoryContentConsumer> selectedKnownConsumers;
 
     private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
+    
+    private Date startTime;
 
     /**
      * <p>
@@ -264,7 +266,7 @@ public class RepositoryContentConsumers
         // Run the repository consumers
         try
         {   
-            Closure triggerBeginScan = new TriggerBeginScanClosure( repository, new Date( System.currentTimeMillis() ) );
+            Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime() );
 
             List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
             List<InvalidRepositoryContentConsumer> selectedInvalidConsumers = getSelectedInvalidConsumers();
@@ -306,5 +308,19 @@ public class RepositoryContentConsumers
     public void setSelectedInvalidConsumers( List<InvalidRepositoryContentConsumer> selectedInvalidConsumers )
     {
         this.selectedInvalidConsumers = selectedInvalidConsumers;
+    }
+    
+    public void setStartTime( Date startTime )
+    {
+        this.startTime = startTime;
+    }
+    
+    public Date getStartTime()
+    {
+        if( startTime == null )
+        {
+            startTime = new Date( System.currentTimeMillis() );
+        }
+        return startTime;
     }
 }
