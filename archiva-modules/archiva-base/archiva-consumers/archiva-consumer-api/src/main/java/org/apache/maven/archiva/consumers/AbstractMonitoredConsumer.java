@@ -36,7 +36,7 @@ public abstract class AbstractMonitoredConsumer
     implements BaseConsumer
 {
     private Set<ConsumerMonitor> monitors = new HashSet<ConsumerMonitor>();
-
+    
     public void addConsumerMonitor( ConsumerMonitor monitor )
     {
         monitors.add( monitor );
@@ -104,4 +104,6 @@ public abstract class AbstractMonitoredConsumer
     {
         return FileTypes.DEFAULT_EXCLUSIONS;
     }
+    
+    
 }

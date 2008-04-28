@@ -21,6 +21,7 @@ package org.apache.maven.archiva.repository.scanner;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -262,8 +263,8 @@ public class RepositoryContentConsumers
     {
         // Run the repository consumers
         try
-        {
-            Closure triggerBeginScan = new TriggerBeginScanClosure( repository );
+        {   
+            Closure triggerBeginScan = new TriggerBeginScanClosure( repository, new Date( System.currentTimeMillis() ) );
 
             List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
             List<InvalidRepositoryContentConsumer> selectedInvalidConsumers = getSelectedInvalidConsumers();

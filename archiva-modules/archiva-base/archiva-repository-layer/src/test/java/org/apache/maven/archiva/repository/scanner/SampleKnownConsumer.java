@@ -24,6 +24,7 @@ import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class SampleKnownConsumer
      */
     private String id = "unset-id";
     
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
         /* nothing to do */

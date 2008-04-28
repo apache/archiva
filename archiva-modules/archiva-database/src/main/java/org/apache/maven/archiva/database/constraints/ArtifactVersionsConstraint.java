@@ -22,39 +22,40 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.maven.archiva.database.Constraint;
 
 /**
- * ArtifactsByRepositoryConstraint
+ * ArtifactVersionsConstraint
  * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
-public class ArtifactsByRepositoryConstraint 
-	extends AbstractDeclarativeConstraint
-	implements Constraint 
+public class ArtifactVersionsConstraint
+    extends AbstractDeclarativeConstraint
+    implements Constraint
 {
-	private String whereClause;
-	
-	private String sortColumn = "groupId";
-	
-	public ArtifactsByRepositoryConstraint( String repoId )
-	{
-		whereClause = "repositoryId == repoId";        
-        declParams = new String[] { "String repoId" };
-        params = new Object[] { repoId };
-	}
-	
-	public ArtifactsByRepositoryConstraint( String repoId, String sortColumn )
+    private String whereClause;
+    
+    private String sortColumn = "repositoryId";
+    
+    public ArtifactVersionsConstraint( String repoId, String groupId, String artifactId )
     {
-        this( repoId );
-        this.sortColumn = sortColumn;
+        whereClause = "repositoryId == repoId && groupId == groupId && artifactId == artifactId";        
+        declParams = new String[] { "String repoId", "String groupId", "String artifactId" };
+        params = new Object[] { repoId, groupId, artifactId };
     }
-	
-	public String getSortColumn() 
-	{		
-		return sortColumn;
-	}
+    
+    public ArtifactVersionsConstraint( String repoId, String groupId, String artifactId, String sortColumn )
+    {   
+        this( repoId, groupId, artifactId );
+        this.sortColumn = sortColumn;        
+    }
 
-	public String getWhereCondition() 
-	{	
-		return whereClause;
-	}	
+    public String getSortColumn()
+    {        
+        return sortColumn;
+    }
+
+    public String getWhereCondition()
+    {        
+        return whereClause;
+    }
+
 }

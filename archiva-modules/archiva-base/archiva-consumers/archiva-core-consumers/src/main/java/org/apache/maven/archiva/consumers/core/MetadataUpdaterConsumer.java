@@ -22,6 +22,7 @@ package org.apache.maven.archiva.consumers.core;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -123,7 +124,7 @@ public class MetadataUpdaterConsumer
         this.includes = includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repoConfig )
+    public void beginScan( ManagedRepositoryConfiguration repoConfig, Date whenGathered )
         throws ConsumerException
     {
         try

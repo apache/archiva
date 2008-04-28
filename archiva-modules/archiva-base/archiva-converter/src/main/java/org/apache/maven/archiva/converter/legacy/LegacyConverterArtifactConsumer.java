@@ -20,6 +20,7 @@ package org.apache.maven.archiva.converter.legacy;
  */
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -81,7 +82,7 @@ public class LegacyConverterArtifactConsumer
         includes.add( "**/*.war" );
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
         this.managedRepository = new ManagedDefaultRepositoryContent();

@@ -20,7 +20,7 @@ package org.apache.maven.archiva.repository.scanner;
  */
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.Closure;
@@ -67,8 +67,6 @@ public class RepositoryScannerInstance
     private ConsumerProcessFileClosure consumerProcessFile;
 
     private ConsumerWantsFilePredicate consumerWantsFile;
-    
-    private List<File> newFiles = new ArrayList<File>();
 
     public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,
                                       List<KnownRepositoryContentConsumer> knownConsumerList,
@@ -84,7 +82,7 @@ public class RepositoryScannerInstance
         stats = new RepositoryScanStatistics();
         stats.setRepositoryId( repository.getId() );
 
-        Closure triggerBeginScan = new TriggerBeginScanClosure( repository );
+        Closure triggerBeginScan = new TriggerBeginScanClosure( repository, new Date( System.currentTimeMillis() ) );
 
         CollectionUtils.forAllDo( knownConsumerList, triggerBeginScan );
         CollectionUtils.forAllDo( invalidConsumerList, triggerBeginScan );
@@ -129,8 +127,7 @@ public class RepositoryScannerInstance
         // Timestamp finished points to the last successful scan, not this current one.
         if ( file.lastModified() >= changesSince )
         {
-            stats.increaseNewFileCount();
-            newFiles.add( basefile );       
+            stats.increaseNewFileCount();             
         }
         
         consumerProcessFile.setBasefile( basefile );
@@ -160,8 +157,4 @@ public class RepositoryScannerInstance
         log.debug( "Repository Scanner: " + message );
     }
     
-    public List<File> getNewFiles()
-    {
-        return newFiles;
-    }
 }

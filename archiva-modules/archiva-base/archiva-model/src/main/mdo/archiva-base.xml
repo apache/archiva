@@ -401,6 +401,16 @@
             The origin of this artifact. (Filesystem, Proxy, Deploy)
           </description>
         </field>
+        <field>
+          <name>whenGathered</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>false</required>
+          <description>
+            When this artifact was gathered or disovered from the repository.
+          </description>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>

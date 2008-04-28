@@ -26,6 +26,7 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,7 +71,7 @@ public class KnownScanConsumer
         return "Scan Consumer (for testing)";
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
         /* do nothing */

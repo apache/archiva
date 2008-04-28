@@ -21,6 +21,7 @@ package org.apache.maven.archiva.cli;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -94,10 +95,10 @@ public class ProjectReaderConsumer
         return includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
-        super.beginScan( repository );
+        super.beginScan( repository, whenGathered );
         this.repo = repository;
     }
 

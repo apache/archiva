@@ -110,6 +110,8 @@ public class ArtifactUpdateDatabaseConsumer
     private File repositoryDir;
 
     private List<String> includes = new ArrayList<String>();
+    
+    private Date whenGathered;
 
     public String getId()
     {
@@ -136,13 +138,14 @@ public class ArtifactUpdateDatabaseConsumer
         return this.includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repo )
+    public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered )
         throws ConsumerException
     {
         try
         {
             this.repository = repositoryFactory.getManagedRepositoryContent( repo.getId() );
             this.repositoryDir = new File( repository.getRepoRoot() );
+            this.whenGathered = whenGathered;
         }
         catch(RepositoryException e)
         {
@@ -190,6 +193,12 @@ public class ArtifactUpdateDatabaseConsumer
             artifact.getModel().setSize( artifactFile.length() );
             artifact.getModel().setOrigin( "FileSystem" );
             artifact.getModel().setWhenProcessed( null );
+            
+            // set this to when the artifact was first discovered in the repo
+            if ( artifact.getModel().getWhenGathered() == null )
+            {
+                artifact.getModel().setWhenGathered( whenGathered );
+            }
 
             dao.getArtifactDAO().saveArtifact( artifact );
         }

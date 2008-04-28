@@ -209,7 +209,7 @@ public class RepositoryContentConsumersTest
         ManagedRepositoryConfiguration repo = createRepository( "id", "name", getTestFile( "target/test-repo" ) );
         File testFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
 
-        selectedKnownConsumer.beginScan( repo );
+        selectedKnownConsumer.beginScan( repo, null );
         selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.EMPTY_LIST );
         selectedKnownConsumer.getIncludes();
@@ -218,7 +218,7 @@ public class RepositoryContentConsumersTest
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        selectedInvalidConsumer.beginScan( repo );
+        selectedInvalidConsumer.beginScan( repo, null );
         //        invalidConsumer.completeScan();
         invalidControl.replay();
 
@@ -232,7 +232,7 @@ public class RepositoryContentConsumersTest
 
         File notIncludedTestFile = getTestFile( "target/test-repo/path/to/test-file.xml" );
 
-        selectedKnownConsumer.beginScan( repo );
+        selectedKnownConsumer.beginScan( repo, null );
         selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.EMPTY_LIST );
         selectedKnownConsumer.getIncludes();
@@ -240,7 +240,7 @@ public class RepositoryContentConsumersTest
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        selectedInvalidConsumer.beginScan( repo );
+        selectedInvalidConsumer.beginScan( repo, null );
         selectedInvalidConsumer.processFile( _OS( "path/to/test-file.xml" ) );
         selectedInvalidConsumer.getId();
         invalidControl.setReturnValue( "invalid" );
@@ -257,13 +257,13 @@ public class RepositoryContentConsumersTest
 
         File excludedTestFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
 
-        selectedKnownConsumer.beginScan( repo );
+        selectedKnownConsumer.beginScan( repo, null );
         selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.singletonList( "**/test-file.txt" ) );
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        selectedInvalidConsumer.beginScan( repo );
+        selectedInvalidConsumer.beginScan( repo, null );
         selectedInvalidConsumer.processFile( _OS( "path/to/test-file.txt" ) );
         selectedInvalidConsumer.getId();
         invalidControl.setReturnValue( "invalid" );

@@ -67,7 +67,7 @@ public class DependencyTreeGeneratorConsumerTest
     public void testGenerateBasicTree()
         throws IOException, ConsumerException
     {
-        consumer.beginScan( repository );
+        consumer.beginScan( repository, null );
 
         String path = "org/apache/maven/maven-core/2.0/maven-core-2.0.pom";
         consumer.processFile( path );
@@ -82,7 +82,7 @@ public class DependencyTreeGeneratorConsumerTest
     public void testInvalidCoordinate()
         throws IOException, ConsumerException
     {
-        consumer.beginScan( repository );
+        consumer.beginScan( repository, null );
 
         String path = "openejb/jaxb-xjc/2.0EA3/jaxb-xjc-2.0EA3.pom";
         try
@@ -108,7 +108,7 @@ public class DependencyTreeGeneratorConsumerTest
         
         DefaultProfileManager m = new DefaultProfileManager( container );
         
-        consumer.beginScan( repository );
+        consumer.beginScan( repository, null );
 
         String path = "org/apache/maven/surefire/surefire-testng/2.0/surefire-testng-2.0.pom";
         consumer.processFile( path );

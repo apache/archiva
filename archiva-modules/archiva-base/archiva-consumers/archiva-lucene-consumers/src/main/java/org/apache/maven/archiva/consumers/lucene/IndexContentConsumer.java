@@ -44,6 +44,7 @@ import org.codehaus.plexus.registry.RegistryListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -128,7 +129,7 @@ public class IndexContentConsumer
         return this.includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repo )
+    public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered )
         throws ConsumerException
     {
         try

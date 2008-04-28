@@ -111,7 +111,7 @@ public class RepositoryPurgeConsumerTest
         repoConfiguration.setRetentionCount( TEST_RETENTION_COUNT );
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
-        repoPurgeConsumer.beginScan( repoConfiguration );
+        repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepo();
 
@@ -178,7 +178,7 @@ public class RepositoryPurgeConsumerTest
         repoConfiguration.setDaysOlder( TEST_DAYS_OLDER );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
-        repoPurgeConsumer.beginScan( repoConfiguration );
+        repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepo();
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-install-plugin";
@@ -228,7 +228,7 @@ public class RepositoryPurgeConsumerTest
         repoConfiguration.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
-        repoPurgeConsumer.beginScan( repoConfiguration );
+        repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepo();
 
@@ -271,7 +271,7 @@ public class RepositoryPurgeConsumerTest
         repoConfiguration.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
-        repoPurgeConsumer.beginScan( repoConfiguration );
+        repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepo();
 

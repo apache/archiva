@@ -32,6 +32,7 @@ import org.codehaus.plexus.registry.RegistryListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,7 +89,7 @@ public class AutoRemoveConsumer
         return false;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
         this.repositoryDir = new File( repository.getLocation() );

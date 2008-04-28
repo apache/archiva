@@ -19,6 +19,8 @@ package org.apache.maven.archiva.repository.scanner.functors;
  * under the License.
  */
 
+import java.util.Date;
+
 import org.apache.commons.collections.Closure;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -38,10 +40,18 @@ public class TriggerBeginScanClosure
     private Logger log = LoggerFactory.getLogger( TriggerBeginScanClosure.class );
     
     private ManagedRepositoryConfiguration repository;
+    
+    private Date whenGathered;
 
     public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository )
     {
         this.repository = repository;
+    }
+    
+    public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository, Date whenGathered )
+    {
+        this( repository );
+        this.whenGathered = whenGathered;
     }
 
     public void execute( Object input )
@@ -49,10 +59,10 @@ public class TriggerBeginScanClosure
         if ( input instanceof RepositoryContentConsumer )
         {
             RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
-
+                
             try
             {
-                consumer.beginScan( repository );
+                consumer.beginScan( repository, whenGathered );
             }
             catch ( ConsumerException e )
             {

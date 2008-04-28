@@ -21,6 +21,7 @@ package org.apache.maven.archiva.consumers;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,9 +57,10 @@ public interface RepositoryContentConsumer extends BaseConsumer
      * </p>
      * 
      * @param repository the repository that this consumer is being used for.
+     * @param whenGathered the start of the repository scan
      * @throws ConsumerException if there was a problem with using the provided repository with the consumer.
      */
-    public void beginScan( ManagedRepositoryConfiguration repository ) throws ConsumerException;
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered ) throws ConsumerException;
 
     /**
      * <p>
@@ -95,5 +97,5 @@ public interface RepositoryContentConsumer extends BaseConsumer
      * method.
      * @return whether to process the unmodified files
      */
-    boolean isProcessUnmodified();
+    boolean isProcessUnmodified();        
 }

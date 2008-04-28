@@ -23,20 +23,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.archiva.rss.processor.RssFeedProcessor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,16 +56,6 @@ public class DefaultRepositoryScanner
      */
     private RepositoryContentConsumers consumerUtil;
     
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryContentFactory repositoryFactory;
-    
-    /**
-     * @plexus.requirement role-hint="new-artifacts"
-     */
-    private RssFeedProcessor rssFeedProcessor;
-
     public RepositoryScanStatistics scan( ManagedRepositoryConfiguration repository, long changesSince )
         throws RepositoryException
     {
@@ -142,13 +125,6 @@ public class DefaultRepositoryScanner
 
         stats.setKnownConsumers( gatherIds( knownContentConsumers ) );
         stats.setInvalidConsumers( gatherIds( invalidContentConsumers ) );
-
-        if ( scannerInstance.getNewFiles() != null && scannerInstance.getNewFiles().size() > 0 )
-        {
-            // generate RSS feeds
-            List<ArchivaArtifact> newArtifacts = getNewArtifacts( scannerInstance.getNewFiles(), repository.getId() );
-            rssFeedProcessor.process( newArtifacts );
-        }
         
         return stats;
     }
@@ -161,41 +137,5 @@ public class DefaultRepositoryScanner
             ids.add( consumer.getId() );
         }
         return ids;
-    }
-    
-    private List<ArchivaArtifact> getNewArtifacts( List<File> files, String repoId )
-    {
-        List<ArchivaArtifact> newArtifacts = new ArrayList<ArchivaArtifact>();
-        
-        // TODO: filter the file types of artifacts that will be included in the rss feeds        
-        try
-        {
-            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repoId );
-            for( File file : files )
-            {
-                try
-                {
-                    ArtifactReference ref = repository.toArtifactReference( file.getAbsolutePath() );
-                    ArchivaArtifact artifact = new ArchivaArtifact( ref.getGroupId(),ref.getArtifactId(), ref.getVersion(),
-                                                                   ref.getClassifier(), ref.getType() );
-                    artifact.getModel().setRepositoryId( repoId );
-                    newArtifacts.add( artifact );
-                }
-                catch ( LayoutException le )
-                {
-                    
-                }
-            }
-        }
-        catch ( RepositoryNotFoundException re )
-        {
-            log.error( re.getMessage() );
-        }
-        catch ( RepositoryException e )
-        {
-            log.error( e.getMessage() );   
-        }
-        
-        return newArtifacts;
-    }
+    }   
 }
