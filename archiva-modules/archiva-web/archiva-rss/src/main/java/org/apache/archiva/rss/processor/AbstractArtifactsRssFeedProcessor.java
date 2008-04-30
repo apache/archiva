@@ -56,17 +56,18 @@ public abstract class AbstractArtifactsRssFeedProcessor
                     entry.setDescription( description );
                     entries.add( entry );
                 }
-
-                String repoId = artifact.getModel().getRepositoryId();
+                
                 if ( !isRepoLevel )
                 {
                     entry =
                         new RssFeedEntry( getTitle() + "\'" + artifact.getGroupId() + ":" + artifact.getArtifactId() +
                             "\'" + " as of " + new Date( whenGathered ) );
-                    description = getDescription() + "\'" + repoId + "\'" + ": \n" + artifact.toString() + " | ";
+                    description = getDescription() + "\'" + artifact.getGroupId() + ":" + artifact.getArtifactId() +
+                        "\'" + ": \n" + artifact.toString() + " | ";
                 }
                 else
                 {
+                    String repoId = artifact.getModel().getRepositoryId();
                     entry = new RssFeedEntry( getTitle() + "\'" + repoId + "\'" + " as of " + new Date( whenGathered ) );
                     description = getDescription() + "\'" + repoId + "\'" + ": \n" + artifact.toString() + " | ";
                 }

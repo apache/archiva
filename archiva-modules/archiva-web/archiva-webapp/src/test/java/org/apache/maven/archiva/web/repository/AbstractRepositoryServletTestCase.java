@@ -172,7 +172,6 @@ public abstract class AbstractRepositoryServletTestCase
 
     @Override
     protected String getPlexusConfigLocation()
-        throws Exception
     {
         return "org/apache/maven/archiva/web/repository/RepositoryServletTest.xml";
     }

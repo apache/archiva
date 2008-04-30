@@ -72,7 +72,7 @@
           </c:set>          
           <li>
           <a href="${url}">${artifactId}/</a>
-          <a href="/archiva/rss/new_versions_${groupId}:${artifactId}.xml">
+          <a href="/archiva/rss/rss_feeds?groupId=${groupId}&artifactId=${artifactId}">
       		<img src="${rssFeedIconUrl}" />
     	  </a>
     	  </li>    

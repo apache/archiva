@@ -40,7 +40,6 @@ public abstract class AbstractRepositoryLayerTestCase
      */
     @Override
     protected String getSpringConfigLocation()
-        throws Exception
     {
         return "org/apache/maven/archiva/repository/spring-context.xml";
     }

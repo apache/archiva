@@ -49,7 +49,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
 {
     private String title = "New Versions of Artifact ";
 
-    private String desc = "These are the new artifacts found in the repository ";
+    private String desc = "These are the new versions of artifact ";
 
     /**
      * @plexus.requirement
@@ -71,8 +71,8 @@ public class NewVersionsOfArtifactRssFeedProcessor
         String repoId = reqParams.get( RssFeedProcessor.KEY_REPO_ID );
         String groupId = reqParams.get( RssFeedProcessor.KEY_GROUP_ID );
         String artifactId = reqParams.get( RssFeedProcessor.KEY_ARTIFACT_ID );
-
-        if ( repoId != null && groupId != null && artifactId != null )
+        
+        if ( groupId != null && artifactId != null )
         {
             return processNewVersionsOfArtifact( repoId, groupId, artifactId );
         }
@@ -87,12 +87,14 @@ public class NewVersionsOfArtifactRssFeedProcessor
             Constraint artifactVersions = new ArtifactVersionsConstraint( repoId, groupId, artifactId, "whenGathered" );
             List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactVersions );
 
+            log.info( "Queried artifacts size :: " + artifacts.size() );
+            
             List<RssFeedEntry> entries = processData( artifacts, false );
 
             String key = groupId + ":" + artifactId;
             return generator.generateFeed( getTitle() + "\'" + key + "\'", "New versions of artifact " + "\'" + key +
                 "\' found in repository " + "\'" + repoId + "\'" + " during repository scan.", entries,
-                                           "new_versions_" + key + ".xml" );
+                                           "rss_feeds?groupId=" + groupId + "&artifactId=" + artifactId );
 
         }
         catch ( ObjectNotFoundException oe )

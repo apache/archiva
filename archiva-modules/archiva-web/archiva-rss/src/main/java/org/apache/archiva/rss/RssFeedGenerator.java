@@ -54,33 +54,26 @@ public class RssFeedGenerator
     private String DEFAULT_LINK = "http://localhost:8080/archiva/rss/";
 
     public SyndFeed generateFeed( String title, String description, List<RssFeedEntry> dataEntries,
-                                  String outputFilename )
+                                  String queryString )
     {
-        SyndFeed feed = null;
-        List<SyndEntry> existingEntries = null;
-
-        feed = new SyndFeedImpl();
+        SyndFeed feed = new SyndFeedImpl();
 
         feed.setTitle( title );
-        feed.setLink( DEFAULT_LINK + outputFilename );
+        feed.setLink( DEFAULT_LINK + queryString );
         feed.setDescription( description );
         feed.setLanguage( DEFAULT_LANGUAGE );
         feed.setPublishedDate( Calendar.getInstance().getTime() );
         feed.setFeedType( DEFAULT_FEEDTYPE );
-        feed.setEntries( getEntries( dataEntries, existingEntries ) );
+        feed.setEntries( getEntries( dataEntries ) );
 
         log.debug( "Finished generating the feed \'" + title + "\'." );
         
         return feed;
     }
 
-    private List<SyndEntry> getEntries( List<RssFeedEntry> dataEntries, List<SyndEntry> existingEntries )
+    private List<SyndEntry> getEntries( List<RssFeedEntry> dataEntries )
     {
-        List<SyndEntry> entries = existingEntries;
-        if ( entries == null )
-        {
-            entries = new ArrayList<SyndEntry>();
-        }
+        List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
         SyndEntry entry;
         SyndContent description;

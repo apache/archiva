@@ -85,7 +85,17 @@
     <!-- Loading this on startup so as to take advantage of configuration listeners -->
     <load-on-startup>1</load-on-startup>
   </servlet>
-
+  
+  <servlet>
+    <servlet-name>RssFeedServlet</servlet-name>
+    <servlet-class>org.apache.maven.archiva.web.rss.RssFeedServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+     <servlet-name>RssFeedServlet</servlet-name>
+     <url-pattern>/rss/*</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>RepositoryServlet</servlet-name>
     <url-pattern>/repository/*</url-pattern>

@@ -31,13 +31,18 @@ public class ArtifactVersionsConstraint
     extends AbstractDeclarativeConstraint
     implements Constraint
 {
-    private String whereClause;
+    private String whereClause = "";
     
     private String sortColumn = "repositoryId";
     
     public ArtifactVersionsConstraint( String repoId, String groupId, String artifactId )
     {
-        whereClause = "repositoryId == repoId && groupId == groupId && artifactId == artifactId";        
+        if( repoId != null )
+        {
+            whereClause = "repositoryId == repoId && "; 
+        }
+                
+        whereClause = whereClause + "groupId == groupId && artifactId == artifactId";
         declParams = new String[] { "String repoId", "String groupId", "String artifactId" };
         params = new Object[] { repoId, groupId, artifactId };
     }
@@ -47,7 +52,7 @@ public class ArtifactVersionsConstraint
         this( repoId, groupId, artifactId );
         this.sortColumn = sortColumn;        
     }
-
+        
     public String getSortColumn()
     {        
         return sortColumn;

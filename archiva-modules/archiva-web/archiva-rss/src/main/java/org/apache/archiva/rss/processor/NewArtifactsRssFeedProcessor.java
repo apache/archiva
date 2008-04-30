@@ -48,7 +48,7 @@ public class NewArtifactsRssFeedProcessor
 {
     private String title = "New Artifacts in Repository ";
 
-    private String desc = "New Versions of Artifact ";
+    private String desc = "These are the new artifacts found in the repository ";
 
     /**
      * @plexus.requirement
@@ -89,7 +89,7 @@ public class NewArtifactsRssFeedProcessor
             List<RssFeedEntry> entries = processData( artifacts, true );
 
             return generator.generateFeed( getTitle() + "\'" + repoId + "\'", "New artifacts found in repository " +
-                "\'" + repoId + "\'" + " during repository scan.", entries, "new_artifacts_" + repoId + ".xml" );
+                "\'" + repoId + "\'" + " during repository scan.", entries, "rss_feeds?repoId=" + repoId );
         }
         catch ( ArchivaDatabaseException ae )
         {

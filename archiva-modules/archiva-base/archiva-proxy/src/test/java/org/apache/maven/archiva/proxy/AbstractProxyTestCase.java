@@ -400,7 +400,6 @@ public abstract class AbstractProxyTestCase
      */
     @Override
     protected String getSpringConfigLocation()
-        throws Exception
     {
         return "org/apache/maven/archiva/proxy/spring-context.xml";
     }

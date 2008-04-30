@@ -1,4 +1,4 @@
-package org.apache.archiva.rss.processor;
+package org.apache.maven.archiva.web.rss;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,48 +22,50 @@ package org.apache.archiva.rss.processor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.archiva.rss.RssFeedGenerator;
-import org.apache.archiva.rss.stubs.ArtifactDAOStub;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
+ * Stub used for RssFeedServlet unit test.
+ * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
-public class NewArtifactsRssFeedProcessorTest
-    extends PlexusInSpringTestCase
+public class ArtifactDAOStub
+    implements ArtifactDAO
 {
-    private NewArtifactsRssFeedProcessor newArtifactsProcessor;
 
-    private ArtifactDAOStub artifactDAOStub;
-
-    private RssFeedGenerator rssFeedGenerator;
-
-    public void setUp()
-        throws Exception
+    public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
+                                           String type )
     {
-        super.setUp();
-
-        newArtifactsProcessor = new NewArtifactsRssFeedProcessor();
-        artifactDAOStub = new ArtifactDAOStub();
-
-        rssFeedGenerator = new RssFeedGenerator();
-
-        newArtifactsProcessor.setGenerator( rssFeedGenerator );
-        newArtifactsProcessor.setArtifactDAO( artifactDAOStub );
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public void testProcess()
-        throws Exception
+    public void deleteArtifact( ArchivaArtifact artifact )
+        throws ArchivaDatabaseException
     {
-        List<ArchivaArtifact> newArtifacts = new ArrayList<ArchivaArtifact>();
+        // TODO Auto-generated method stub
+
+    }
+
+    public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
+                                        String type )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List queryArtifacts( Constraint constraint )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();
 
         Date whenGathered = Calendar.getInstance().getTime();
         whenGathered.setTime( 123456789 );
@@ -71,58 +73,51 @@ public class NewArtifactsRssFeedProcessorTest
         ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.0", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        artifacts.add( artifact );
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.1", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        artifacts.add( artifact );
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "2.0", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        artifacts.add( artifact );
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        artifacts.add( artifact );
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        artifacts.add( artifact );
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        artifacts.add( artifact );
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-three", "2.0-SNAPSHOT", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        artifacts.add( artifact );
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-four", "1.1-beta-2", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        artifacts.add( artifact );
 
-        artifactDAOStub.setArtifacts( newArtifacts );
-
-        Map<String, String> reqParams = new HashMap<String, String>();
-        reqParams.put( RssFeedProcessor.KEY_REPO_ID, "test-repo" );
-
-        SyndFeed feed = newArtifactsProcessor.process( reqParams );
-
-        assertTrue( feed.getTitle().equals( "New Artifacts in Repository 'test-repo'" ) );
-        assertTrue( feed.getLink().equals( "http://localhost:8080/archiva/rss/rss_feeds?repoId=test-repo" ) );
-        assertTrue( feed.getDescription().equals(
-                                                  "New artifacts found in repository 'test-repo' during repository scan." ) );
-        assertTrue( feed.getLanguage().equals( "en-us" ) );
-
-        List<SyndEntry> entries = feed.getEntries();
-        assertEquals( entries.size(), 1 );
-        assertTrue( entries.get( 0 ).getTitle().equals( "New Artifacts in Repository 'test-repo' as of " + whenGathered ) );
+        return artifacts;
     }
+
+    public ArchivaArtifact saveArtifact( ArchivaArtifact artifact )
+        throws ArchivaDatabaseException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

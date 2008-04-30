@@ -42,7 +42,6 @@ public class ArchivaConfigurationTest
      * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
      */
     protected String getSpringConfigLocation()
-        throws Exception
     {
         return "org/apache/maven/archiva/configuration/spring-context.xml";
     }
