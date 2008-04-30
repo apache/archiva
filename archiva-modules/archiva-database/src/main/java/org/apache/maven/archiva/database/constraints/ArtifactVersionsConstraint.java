@@ -39,12 +39,16 @@ public class ArtifactVersionsConstraint
     {
         if( repoId != null )
         {
-            whereClause = "repositoryId == repoId && "; 
+            whereClause = "repositoryId.equals(selectedRepoId) && groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId)";
+            declParams = new String[] { "String selectedRepoId", "String selectedGroupId", "String selectedArtifactId" };
+            params = new Object[] { repoId, groupId, artifactId };
         }
-                
-        whereClause = whereClause + "groupId == groupId && artifactId == artifactId";
-        declParams = new String[] { "String repoId", "String groupId", "String artifactId" };
-        params = new Object[] { repoId, groupId, artifactId };
+        else
+        {
+            whereClause = "groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId)";
+            declParams = new String[] { "String selectedGroupId", "String selectedArtifactId" };
+            params = new Object[] { groupId, artifactId };
+        }
     }
     
     public ArtifactVersionsConstraint( String repoId, String groupId, String artifactId, String sortColumn )

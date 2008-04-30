@@ -56,7 +56,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
      */
     private RssFeedGenerator generator;
 
-    private Logger log = LoggerFactory.getLogger( NewArtifactsRssFeedProcessor.class );
+    private Logger log = LoggerFactory.getLogger( NewVersionsOfArtifactRssFeedProcessor.class );
 
     /**
      * @plexus.requirement role-hint="jdo"
@@ -83,19 +83,15 @@ public class NewVersionsOfArtifactRssFeedProcessor
     private SyndFeed processNewVersionsOfArtifact( String repoId, String groupId, String artifactId )
     {
         try
-        {
+        {            
             Constraint artifactVersions = new ArtifactVersionsConstraint( repoId, groupId, artifactId, "whenGathered" );
             List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactVersions );
-
-            log.info( "Queried artifacts size :: " + artifacts.size() );
             
             List<RssFeedEntry> entries = processData( artifacts, false );
-
             String key = groupId + ":" + artifactId;
             return generator.generateFeed( getTitle() + "\'" + key + "\'", "New versions of artifact " + "\'" + key +
                 "\' found in repository " + "\'" + repoId + "\'" + " during repository scan.", entries,
                                            "rss_feeds?groupId=" + groupId + "&artifactId=" + artifactId );
-
         }
         catch ( ObjectNotFoundException oe )
         {
