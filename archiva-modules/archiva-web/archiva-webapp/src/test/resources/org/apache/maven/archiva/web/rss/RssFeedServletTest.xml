@@ -34,5 +34,17 @@
 	  <role-hint>jdo</role-hint>
 	  <implementation>org.apache.maven.archiva.web.rss.ArtifactDAOStub</implementation>	  
 	</component>
+	
+	<component>
+	  <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
+	  <role-hint>default</role-hint>
+	  <implementation>org.apache.maven.archiva.web.rss.SecuritySystemStub</implementation>
+	</component>
+	
+	<component>
+	  <role>org.apache.maven.archiva.security.UserRepositories</role>
+	  <role-hint>default</role-hint>
+	  <implementation>org.apache.maven.archiva.web.rss.UserRepositoriesStub</implementation>
+	</component>
   </components>
 </plexus>
