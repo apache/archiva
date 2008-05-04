@@ -27,9 +27,10 @@
 <ww:textfield name="version" label="Version" size="50" required="true"/>
 <ww:textfield name="packaging" label="Packaging" size="50" required="true"/>
 <ww:textfield name="classifier" label="Classifier" size="50" required="false"/>
-<ww:select name="repositoryId" list="managedRepoIdList" label="Repository Id"/>
-<ww:file name="upload" label="File"/>
 <ww:checkbox name="generatePom" value="generatePom" 
-	label="Generate Pom (Currently, only Maven 2 poms can be generated)"/> 
+	label="Generate Maven 2 POM"/> 
+<ww:file name="artifact" label="Artifact File" required="true"/>
+<ww:file name="pom" label="POM File"/>
+<ww:select name="repositoryId" list="managedRepoIdList" label="Repository Id"/>
 
-    
+	

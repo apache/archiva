@@ -96,19 +96,34 @@ public class UploadAction
     private String classifier;
 
     /**
-     * The artifact to be deployed.
+     * The temporary file representing the artifact to be deployed.
      */
-    private File file;
+    private File artifactFile;
 
     /**
      * The content type of the artifact to be deployed.
      */
-    private String contentType;
+    private String artifactContentType;
 
     /**
-     * The temporary filename of the artifact to be deployed.
+     * The original filename of the uploaded artifact file.
      */
-    private String filename;
+    private String artifactFilename;
+
+    /**
+     * The temporary file representing the pom to be deployed alongside the artifact.
+     */
+    private File pomFile;
+
+    /**
+     * The content type of the pom file.
+     */
+    private String pomContentType;
+
+    /**
+     * The original filename of the uploaded pom file.
+     */
+    private String pomFilename;
 
     /**
      * The repository where the artifact is to be deployed.
@@ -144,19 +159,34 @@ public class UploadAction
 
     private ProjectModelWriter pomWriter = new ProjectModel400Writer();
     
-    public void setUpload( File file )
+    public void setArtifact( File file )
     {
-        this.file = file;
+        this.artifactFile = file;
     }
 
-    public void setUploadContentType( String contentType )
+    public void setArtifactContentType( String contentType )
     {
-        this.contentType = contentType;
+        this.artifactContentType = contentType;
     }
 
-    public void setUploadFileName( String filename )
+    public void setArtifactFileName( String filename )
     {
-        this.filename = filename;
+        this.artifactFilename = filename;
+    }
+
+    public void setPom( File file )
+    {
+        this.pomFile = file;
+    }
+
+    public void setPomContentType( String contentType )
+    {
+        this.pomContentType = contentType;
+    }
+
+    public void setPomFileName( String filename )
+    {
+        this.pomFilename = filename;
     }
 
     public String getGroupId()
@@ -279,7 +309,7 @@ public class UploadAction
 
             try
             {
-                copyFile( targetPath, artifactPath.substring( lastIndex + 1 ) );
+                copyFile( artifactFile, targetPath, artifactPath.substring( lastIndex + 1 ) );
             }
             catch ( IOException ie )
             {
@@ -303,6 +333,22 @@ public class UploadAction
                     addActionError( "Error encountered while generating pom file: " + pe.getMessage() );
                     return ERROR;
                 }
+            }
+            
+            if ( pomFile != null && pomFile.length() > 0 ) 
+            {
+            	
+                try
+                {
+                    String targetFilename = artifactPath.substring( lastIndex + 1 ).replaceAll( packaging, "pom" );
+                    copyFile( pomFile, targetPath, targetFilename );
+                }
+                catch ( IOException ie )
+                {
+                    addActionError( "Error encountered while uploading pom file: " + ie.getMessage() );
+                    return ERROR;
+                }
+                
             }
 
             updateMetadata( getMetadata( targetPath.getAbsolutePath() ) );
@@ -329,14 +375,14 @@ public class UploadAction
         return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
 
-    private void copyFile( File targetPath, String artifactFilename )
+    private void copyFile( File sourceFile, File targetPath, String targetFilename )
         throws IOException
     {
-        FileOutputStream out = new FileOutputStream( new File( targetPath, artifactFilename ) );
+        FileOutputStream out = new FileOutputStream( new File( targetPath, targetFilename ) );
 
         try
         {
-            FileInputStream input = new FileInputStream( file );
+            FileInputStream input = new FileInputStream( sourceFile );
             int i = 0;
             while ( ( i = input.read() ) != -1 )
             {
@@ -374,7 +420,7 @@ public class UploadAction
     /**
      * Update artifact level metadata. If it does not exist, create the metadata.
      * 
-     * @param targetPath
+     * @param metadataFile
      */
     private void updateMetadata( File metadataFile )
         throws RepositoryMetadataException
@@ -435,7 +481,7 @@ public class UploadAction
                 addActionError( "User is not authorized to upload in repository " + repositoryId );
             }
 
-            if ( file == null || file.length() == 0 )
+            if ( artifactFile == null || artifactFile.length() == 0 )
             {
                 addActionError( "Please add a file to upload." );
             }
