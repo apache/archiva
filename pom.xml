@@ -41,7 +41,6 @@
     <url>http://svn.apache.org/viewcvs.cgi/archiva/trunk</url>
   </scm>
 
-  <url>http://maven.apache.org/archiva/</url>
   <build>
     <plugins>
       <!-- We want to package up license resources in the JARs produced -->
