@@ -19,6 +19,8 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
+import java.util.Date;
+
 import org.apache.maven.archiva.database.Constraint;
 
 /**
@@ -41,13 +43,15 @@ public class ArtifactsByRepositoryConstraint
         declParams = new String[] { "String repoId" };
         params = new Object[] { repoId };
 	}
-	
-	public ArtifactsByRepositoryConstraint( String repoId, String sortColumn )
+		
+	public ArtifactsByRepositoryConstraint( String repoId, Date whenGathered, String sortColumn )
     {
-        this( repoId );
+	    whereClause = "repositoryId == repoId && whenGathered >= whenGathered";        
+        declParams = new String[] { "String repoId", "Date whenGathered" };
+        params = new Object[] { repoId, whenGathered };
         this.sortColumn = sortColumn;
     }
-	
+		
 	public String getSortColumn() 
 	{		
 		return sortColumn;

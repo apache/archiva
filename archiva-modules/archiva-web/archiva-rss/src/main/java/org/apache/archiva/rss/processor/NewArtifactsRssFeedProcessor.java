@@ -19,11 +19,13 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
@@ -46,6 +48,8 @@ import com.sun.syndication.feed.synd.SyndFeed;
 public class NewArtifactsRssFeedProcessor
     extends AbstractArtifactsRssFeedProcessor
 {
+    public static int numberOfDaysBeforeNow = 100;
+    
     private String title = "New Artifacts in Repository ";
 
     private String desc = "These are the new artifacts found in the repository ";
@@ -83,7 +87,10 @@ public class NewArtifactsRssFeedProcessor
     {
         try
         {
-            Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, "whenGathered" );
+            Calendar greaterThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+            greaterThanThisDate.add( Calendar.DATE, -numberOfDaysBeforeNow );
+            
+            Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, greaterThanThisDate.getTime(), "whenGathered" );
             List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactsByRepo );
 
             List<RssFeedEntry> entries = processData( artifacts, true );

@@ -30,6 +30,7 @@ import org.apache.archiva.rss.RssFeedGenerator;
 import org.apache.archiva.rss.stubs.ArtifactDAOStub;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 
@@ -64,9 +65,7 @@ public class NewArtifactsRssFeedProcessorTest
         throws Exception
     {
         List<ArchivaArtifact> newArtifacts = new ArrayList<ArchivaArtifact>();
-
         Date whenGathered = Calendar.getInstance().getTime();
-        whenGathered.setTime( 123456789 );
 
         ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.0", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
