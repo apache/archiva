@@ -21,15 +21,15 @@ Deploying to Repository
 
   * Packaging - the packaging of the artifact to be deployed. (ex. jar, war, ear, etc.)
 
-  * File - the actual artifact to be deployed.
+  * Artifact File - the actual artifact to be deployed.
 
   []
 
   [[2]] Select the repository you want to deploy to. Please note that if you do not have write permission to the repository,
    you will not be allowed to deploy in it.
 
-  [[3]] Now, if you want Archiva to generate a pom for the artifact, check the Generate Pom field. Right now, only Maven 2 poms
-  can be generated.
+  [[3]] Now, if you want Archiva to generate a pom for the artifact, check the Generate Maven 2 POM field.
+   (Right now, only Maven 2 poms can be generated.)  Alternately, supply a POM file to be deployed alongside the artifact.
 
   [[4]] Click Submit and a message will be displayed notifying you if the upload/deployment was successful or not.
 
@@ -39,7 +39,7 @@ Deploying to Repository
 
   * artifact 
 
-  * pom file (if you checked Generate Pom)
+  * POM file (if you supplied one or checked Generate Maven 2 POM)
 
   * maven-metadata.xml (this will be created if none exists in the artifact level yet, otherwise it will just be updated)
 
