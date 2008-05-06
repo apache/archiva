@@ -23,10 +23,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.webdav.ArchivaDavLocatorFactory;
-import org.apache.maven.archiva.webdav.ArchivaDavResourceFactory;
-import org.apache.maven.archiva.webdav.ArchivaDavSessionProvider;
-import org.apache.maven.archiva.webdav.UnauthorizedDavException;
+import org.apache.maven.archiva.webdav.*;
 import org.apache.jackrabbit.webdav.server.AbstractWebdavServlet;
 import org.apache.jackrabbit.webdav.*;
 import org.codehaus.plexus.redback.system.SecuritySystem;
@@ -121,7 +118,12 @@ public class RepositoryServlet
             webdavResponse.setHeader("WWW-Authenticate", getAuthenticateHeaderValue(e.getRepositoryName()));
             webdavResponse.sendError(e.getErrorCode(), e.getStatusPhrase());
         }
-        catch (DavException e) {
+        catch (BrowserRedirectException e)
+        {
+            response.sendRedirect(e.getLocation());
+        }
+        catch (DavException e)
+        {
             if (e.getErrorCode() == HttpServletResponse.SC_UNAUTHORIZED) {
                 final String msg = "Should throw " + UnauthorizedDavException.class.getName();
                 log.error(msg);

@@ -129,7 +129,14 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
             {
                 throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not get resource for method " + request.getMethod());
             }
+
             setHeaders(locator, response);
+
+            //compatibility with MRM-440 to ensure browsing the repository works ok
+            if (resource.isCollection() && !resource.getLocator().getResourcePath().endsWith("/"))
+            {
+                throw new BrowserRedirectException(resource.getHref());
+            }
         }
         return resource;
     }

@@ -40,7 +40,7 @@ public class ArchivaDavResourceLocatorTest extends TestCase
         throws Exception
     {
         String prefix = "http://myproxy/";
-        String href = "repository/internal";
+        String href = "/repository/internal";
         ArchivaDavResourceLocator locator = (ArchivaDavResourceLocator)factory.createResourceLocator(prefix, href);
 
         assertEquals("internal", locator.getRepositoryId());
@@ -49,8 +49,8 @@ public class ArchivaDavResourceLocatorTest extends TestCase
         assertEquals("http://myproxy/", locator.getPrefix());
         assertEquals("http://myproxy/repository/internal", locator.getHref(false));
         assertEquals("http://myproxy/repository/internal/", locator.getHref(true));
-        assertEquals("repository/internal", locator.getResourcePath());
-        assertEquals("repository/internal", locator.getRepositoryPath());
+        assertEquals("/repository/internal", locator.getResourcePath());
+        assertEquals("/repository/internal", locator.getRepositoryPath());
     }
 
     public void testLocatorWithHrefThatContainsPrefix()
@@ -81,8 +81,8 @@ public class ArchivaDavResourceLocatorTest extends TestCase
         assertEquals("", locator.getWorkspaceName());
         assertEquals("", locator.getWorkspacePath());
         assertEquals("http://myproxy/", locator.getPrefix());
-        assertEquals("http://myproxy//", locator.getHref(false));
-        assertEquals("http://myproxy//", locator.getHref(true));
+        assertEquals("http://myproxy/", locator.getHref(false));
+        assertEquals("http://myproxy/", locator.getHref(true));
         assertEquals("/", locator.getResourcePath());
         assertEquals("/", locator.getRepositoryPath());
     }

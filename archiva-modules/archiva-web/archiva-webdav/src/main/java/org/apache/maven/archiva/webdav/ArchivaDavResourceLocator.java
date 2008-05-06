@@ -43,14 +43,18 @@ public class ArchivaDavResourceLocator implements DavResourceLocator, Repository
         this.prefix = prefix;
         this.repositoryId = repositoryId;
         this.davLocatorFactory = davLocatorFactory;
-
-        // remove trailing '/' that is not part of the resourcePath except for the root item.
-        if (resourcePath.endsWith("/") && !"/".equals(resourcePath)) {
-            resourcePath = resourcePath.substring(0, resourcePath.length()-1);
-        }
         this.resourcePath = resourcePath;
 
-        href = prefix + Text.escapePath(resourcePath);
+        String escapedPath = Text.escapePath(resourcePath);
+        String hrefPrefix = prefix;
+
+        //Ensure no extra slashes when href is joined
+        if (hrefPrefix.endsWith("/") && escapedPath.startsWith("/"))
+        {
+            hrefPrefix = hrefPrefix.substring(0, hrefPrefix.length()-1);
+        }
+
+        href = hrefPrefix + escapedPath;
     }
 
     public String getRepositoryId()

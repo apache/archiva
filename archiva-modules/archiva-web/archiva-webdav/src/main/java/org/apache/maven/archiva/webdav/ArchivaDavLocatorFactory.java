@@ -66,6 +66,4 @@ public class ArchivaDavLocatorFactory implements DavLocatorFactory
         final String repository = RepositoryPathUtil.getRepositoryName(path);
         return new ArchivaDavResourceLocator(prefix, path, repository, this);
     }
-
-
 }
