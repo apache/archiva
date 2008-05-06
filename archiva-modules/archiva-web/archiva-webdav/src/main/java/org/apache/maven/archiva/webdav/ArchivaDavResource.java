@@ -20,10 +20,7 @@ package org.apache.maven.archiva.webdav;
  */
 
 import org.apache.jackrabbit.webdav.*;
-import org.apache.jackrabbit.webdav.property.DavPropertySet;
-import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
-import org.apache.jackrabbit.webdav.property.DavProperty;
-import org.apache.jackrabbit.webdav.property.DavPropertyName;
+import org.apache.jackrabbit.webdav.property.*;
 import org.apache.jackrabbit.webdav.io.InputContext;
 import org.apache.jackrabbit.webdav.io.OutputContext;
 import org.apache.jackrabbit.webdav.lock.*;
@@ -32,24 +29,28 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.apache.maven.archiva.webdav.util.IndexWriter;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Date;
+import java.util.ArrayList;
 import java.io.*;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
+ * Portions from the Apache Jackrabbit Project
  */
 public class ArchivaDavResource implements DavResource
 {
+    public static final String HIDDEN_PATH_PREFIX = ".";
+
     private final MimeTypes mimeTypes;
 
-    private final DavResourceLocator locator;
+    private final ArchivaDavResourceLocator locator;
 
     private final DavResourceFactory factory;
-
-    private final DavSession session;
 
     private final File localResource;
 
@@ -61,14 +62,15 @@ public class ArchivaDavResource implements DavResource
 
     private DavPropertySet properties;
 
-    public ArchivaDavResource(String localResource, String logicalResource, MimeTypes mimeTypes, DavResourceLocator locator, DavResourceFactory factory, DavSession session)
+    private boolean propsInitialized = false;
+
+    public ArchivaDavResource(String localResource, String logicalResource, MimeTypes mimeTypes, ArchivaDavResourceLocator locator, DavResourceFactory factory)
     {
         this.mimeTypes = mimeTypes;
         this.localResource = new File(localResource);
         this.logicalResource = logicalResource;
         this.locator = locator;
         this.factory = factory;
-        this.session = session;
         this.properties = new DavPropertySet();
     }
 
@@ -108,6 +110,11 @@ public class ArchivaDavResource implements DavResource
         return locator;
     }
 
+    public File getLocalResource()
+    {
+        return localResource;
+    }
+
     public String getResourcePath()
     {
         return locator.getResourcePath();
@@ -120,11 +127,13 @@ public class ArchivaDavResource implements DavResource
 
     public long getModificationTime()
     {
+        initProperties();
         return localResource.lastModified();
     }
 
     public long getContentLength()
     {
+        initProperties();
         return localResource.length();
     }
 
@@ -132,20 +141,20 @@ public class ArchivaDavResource implements DavResource
     {
         if (!isCollection())
         {
-	    FileInputStream is = null;
-	    try
-	    {
-	        outputContext.setContentLength(getContentLength());
-		outputContext.setContentType(getContentType());
+	    	FileInputStream is = null;
+	    	try
+	    	{
+	        	outputContext.setContentLength(getContentLength());
+				outputContext.setContentType(getContentType());
 		
-		//Write content to stream
-		is = new FileInputStream(localResource);
-		IOUtils.copy(is, outputContext.getOutputStream());
-	    }
-	    finally
-	    {
-		IOUtils.closeQuietly(is);
-	    }
+				//Write content to stream
+				is = new FileInputStream(localResource);
+				IOUtils.copy(is, outputContext.getOutputStream());
+	    	}
+	    	finally
+	    	{
+				IOUtils.closeQuietly(is);
+	    	}
         }
         else
         {
@@ -156,16 +165,18 @@ public class ArchivaDavResource implements DavResource
 
     public DavPropertyName[] getPropertyNames()
     {
-        return new DavPropertyName[0];
+        return getProperties().getPropertyNames();
     }
 
     public DavProperty getProperty(DavPropertyName name)
     {
-        return null;
+        initProperties();
+        return properties.get(name);
     }
 
     public DavPropertySet getProperties()
     {
+        initProperties();
         return properties;
     }
 
@@ -195,9 +206,9 @@ public class ArchivaDavResource implements DavResource
             if (parentPath.equals("")) {
                 parentPath = "/";
             }
-            DavResourceLocator parentloc = locator.getFactory().createResourceLocator(locator.getPrefix(), locator.getWorkspacePath(), parentPath);
+            DavResourceLocator parentloc = locator.getFactory().createResourceLocator(locator.getPrefix(), parentPath);
             try {
-                parent = factory.createResource(parentloc, session);
+                parent = factory.createResource(parentloc, null);
             } catch (DavException e) {
                 // should not occur
             }
@@ -208,7 +219,7 @@ public class ArchivaDavResource implements DavResource
     public void addMember(DavResource resource, InputContext inputContext) throws DavException
     {
         File localFile = new File(localResource, resource.getDisplayName());
-        if (!resource.isCollection() && isCollection() && inputContext.hasStream()) //New File
+        if (isCollection() && inputContext.hasStream()) //New File
         {
             boolean deleteFile = false;
             FileOutputStream stream = null;
@@ -236,7 +247,7 @@ public class ArchivaDavResource implements DavResource
                 }
             }
         }
-        else if (resource.isCollection() && isCollection()) //New directory
+        else if (!inputContext.hasStream() && isCollection()) //New directory
         {
             localFile.mkdir();
         }
@@ -249,19 +260,118 @@ public class ArchivaDavResource implements DavResource
 
     public DavResourceIterator getMembers()
     {
-        return null;
+        ArrayList list = new ArrayList();
+        if (exists() && isCollection())
+        {
+            for (String item : localResource.list())
+            {
+                try
+                {
+                    if (!item.startsWith(HIDDEN_PATH_PREFIX))
+                    {
+                        String path = locator.getResourcePath() + '/' + item;
+                        DavResourceLocator resourceLocator = locator.getFactory().createResourceLocator(locator.getPrefix(), path);
+                        DavResource resource = factory.createResource(resourceLocator, null);
+                        if (resource != null) list.add(resource);
+                    }
+                }
+                catch (DavException e)
+                {
+                    //Should not occur
+                }
+            }
+        }
+        return new DavResourceIteratorImpl(list);
     }
 
     public void removeMember(DavResource member) throws DavException
     {
+        File localResource = checkDavResourceIsArchivaDavResource(member).getLocalResource();
+
+        if (!localResource.exists())
+        {
+            throw new DavException(HttpServletResponse.SC_NOT_FOUND, member.getResourcePath());
+        }
+
+        boolean suceeded = false;
+
+        if (localResource.isDirectory())
+        {
+            try
+            {
+                FileUtils.deleteDirectory(localResource);
+                suceeded = true;
+            }
+            catch (IOException e)
+            {
+                throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
+            }
+        }
+
+        if (!suceeded && localResource.isFile())
+        {
+            suceeded = localResource.delete();
+        }
+
+        if (!suceeded)
+        {
+            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not delete resource " + member.getResourcePath());
+        }
     }
 
     public void move(DavResource destination) throws DavException
     {
+        if (!exists())
+        {
+            throw new DavException(HttpServletResponse.SC_NOT_FOUND, "Resource to copy does not exist.");
+        }
+
+        try
+        {
+            ArchivaDavResource localResource = checkDavResourceIsArchivaDavResource(destination);
+            if (isCollection())
+            {
+                FileUtils.moveDirectory(getLocalResource(), localResource.getLocalResource());
+            }
+            else
+            {
+                FileUtils.moveFile(getLocalResource(), localResource.getLocalResource());
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
+        }
     }
 
     public void copy(DavResource destination, boolean shallow) throws DavException
     {
+        if (!exists())
+        {
+            throw new DavException(HttpServletResponse.SC_NOT_FOUND, "Resource to copy does not exist.");
+        }
+
+        if (shallow && isCollection())
+        {
+            throw new DavException(DavServletResponse.SC_FORBIDDEN, "Unable to perform shallow copy for collection");
+        }
+
+        try
+        {
+            ArchivaDavResource localResource = checkDavResourceIsArchivaDavResource(destination);
+            if (isCollection())
+            {
+                FileUtils.copyDirectory(getLocalResource(), localResource.getLocalResource());
+            }
+            else
+            {
+                FileUtils.copyFile(getLocalResource(), localResource.getLocalResource());
+            }
+        }
+        catch ( IOException e)
+        {
+            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
+        }
     }
 
     public boolean isLockable(Type type, Scope scope)
@@ -309,6 +419,52 @@ public class ArchivaDavResource implements DavResource
 
     public DavSession getSession()
     {
-        return session;
+        return null;
+    }
+
+    /**
+     * Fill the set of properties
+     */
+    protected void initProperties() {
+        if (!exists() || propsInitialized) {
+            return;
+        }
+
+        // set (or reset) fundamental properties
+        if (getDisplayName() != null) {
+            properties.add(new DefaultDavProperty(DavPropertyName.DISPLAYNAME, getDisplayName()));
+        }
+        if (isCollection()) {
+            properties.add(new ResourceType(ResourceType.COLLECTION));
+            // Windows XP support
+            properties.add(new DefaultDavProperty(DavPropertyName.ISCOLLECTION, "1"));
+        } else {
+            properties.add(new ResourceType(ResourceType.DEFAULT_RESOURCE));
+
+            // Windows XP support
+            properties.add(new DefaultDavProperty(DavPropertyName.ISCOLLECTION, "0"));
+        }
+
+        //Need to get the ISO8601 date for properties
+        DateTime dt = new DateTime(localResource.lastModified());
+        DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+        String modifiedDate = fmt.print(dt);
+
+        properties.add(new DefaultDavProperty(DavPropertyName.GETLASTMODIFIED, modifiedDate));
+
+        properties.add(new DefaultDavProperty(DavPropertyName.CREATIONDATE, modifiedDate));
+
+        properties.add(new DefaultDavProperty(DavPropertyName.GETCONTENTLENGTH, localResource.length()));
+
+        propsInitialized = true;
+    }
+
+    private ArchivaDavResource checkDavResourceIsArchivaDavResource(DavResource resource) throws DavException
+    {
+        if (!(resource instanceof ArchivaDavResource))
+        {
+            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "DavResource is not instance of ArchivaDavResource");
+        }
+        return (ArchivaDavResource)resource;
     }
 }

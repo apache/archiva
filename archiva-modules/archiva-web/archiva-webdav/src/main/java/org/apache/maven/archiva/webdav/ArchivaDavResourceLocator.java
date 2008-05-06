@@ -26,7 +26,7 @@ import org.apache.jackrabbit.util.Text;
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
-public class ArchivaDavResourceLocator implements DavResourceLocator
+public class ArchivaDavResourceLocator implements DavResourceLocator, RepositoryLocator
 {
     private String prefix;
 
@@ -34,14 +34,14 @@ public class ArchivaDavResourceLocator implements DavResourceLocator
 
     private String href;
 
-    private String workspaceName;
+    private String repositoryId;
 
     private DavLocatorFactory davLocatorFactory;
 
-    public ArchivaDavResourceLocator(String prefix, String resourcePath, String workspaceName, DavLocatorFactory davLocatorFactory)
+    public ArchivaDavResourceLocator(String prefix, String resourcePath, String repositoryId, DavLocatorFactory davLocatorFactory)
     {
         this.prefix = prefix;
-        this.workspaceName = workspaceName;
+        this.repositoryId = repositoryId;
         this.davLocatorFactory = davLocatorFactory;
 
         // remove trailing '/' that is not part of the resourcePath except for the root item.
@@ -51,6 +51,11 @@ public class ArchivaDavResourceLocator implements DavResourceLocator
         this.resourcePath = resourcePath;
 
         href = prefix + Text.escapePath(resourcePath);
+    }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
     }
 
     public String getPrefix()
@@ -70,7 +75,7 @@ public class ArchivaDavResourceLocator implements DavResourceLocator
 
     public String getWorkspaceName()
     {
-        return workspaceName;
+        return "";
     }
 
     public boolean isSameWorkspace(DavResourceLocator locator)

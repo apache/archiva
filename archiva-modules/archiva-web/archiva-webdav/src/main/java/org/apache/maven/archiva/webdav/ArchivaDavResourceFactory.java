@@ -51,7 +51,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
@@ -96,53 +95,65 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
 
     public DavResource createResource(final DavResourceLocator locator, final DavServletRequest request, final DavServletResponse response) throws DavException
     {
-        final ManagedRepositoryContent managedRepository = getManagedRepository(locator.getWorkspaceName());
-        final LogicalResource logicalResource = new LogicalResource(RepositoryPathUtil.getLogicalResource(locator.getResourcePath()));
+        checkLocatorIsInstanceOfRepositoryLocator(locator);
+        ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator)locator;
 
         DavResource resource = null;
 
-        if (managedRepository != null)
+        if (!locator.getResourcePath().startsWith(ArchivaDavResource.HIDDEN_PATH_PREFIX))
         {
-            final boolean isGet = WebdavMethodUtil.isReadMethod( request.getMethod() );
-            final boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
+            final ManagedRepositoryContent managedRepository = getManagedRepository(((RepositoryLocator)locator).getRepositoryId());
 
-            if (isGet)
+            if (managedRepository != null)
             {
-                resource = doGet(managedRepository, request, locator, logicalResource);
+                LogicalResource logicalResource = new LogicalResource(RepositoryPathUtil.getLogicalResource(locator.getResourcePath()));
+                boolean isGet = WebdavMethodUtil.isReadMethod( request.getMethod() );
+                boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
+
+                if (isGet)
+                {
+                    resource = doGet(managedRepository, request, archivaLocator, logicalResource);
+                }
+
+                if (isPut)
+                {
+                    resource = doPut(managedRepository, request, archivaLocator, logicalResource);
+                }
+            }
+            else
+            {
+                throw new DavException(HttpServletResponse.SC_NOT_FOUND, "Repository does not exist");
             }
 
-            if (isPut)
+            if (resource == null)
             {
-                resource = doPut(managedRepository, request, locator, logicalResource);
+                throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not get resource for method " + request.getMethod());
             }
-        }
-        else
-        {
-            throw new DavException(HttpServletResponse.SC_NOT_FOUND, "Repository does not exist");
-        }
-
-        if (resource != null)
-        {
             setHeaders(locator, response);
-            return resource;
         }
-
-        throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not get resource for method " + request.getMethod());
+        return resource;
     }
 
     public DavResource createResource(final DavResourceLocator locator, final DavSession davSession) throws DavException
     {
-        final ManagedRepositoryContent managedRepository = getManagedRepository(locator.getWorkspaceName());
-        final String logicalResource = RepositoryPathUtil.getLogicalResource(locator.getResourcePath());
-        final File resourceFile = new File ( managedRepository.getRepoRoot(), logicalResource);
-        
-        return new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource, mimeTypes, locator, this, null);
+        checkLocatorIsInstanceOfRepositoryLocator(locator);
+        ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator)locator;
+
+        DavResource resource = null;
+        if (!locator.getResourcePath().startsWith(ArchivaDavResource.HIDDEN_PATH_PREFIX))
+        {
+            ManagedRepositoryContent managedRepository = getManagedRepository(archivaLocator.getRepositoryId());
+            String logicalResource = RepositoryPathUtil.getLogicalResource(locator.getResourcePath());
+            File resourceFile = new File ( managedRepository.getRepoRoot(), logicalResource);
+            resource = new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource, mimeTypes, archivaLocator, this);
+        }
+        return resource;
     }
 
-    private DavResource doGet(ManagedRepositoryContent managedRepository, DavServletRequest request, DavResourceLocator locator, LogicalResource logicalResource) throws DavException
+    private DavResource doGet(ManagedRepositoryContent managedRepository, DavServletRequest request, ArchivaDavResourceLocator locator, LogicalResource logicalResource) throws DavException
     {
         File resourceFile = new File ( managedRepository.getRepoRoot(), logicalResource.getPath());
-        ArchivaDavResource resource = new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this, null);
+        ArchivaDavResource resource = new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this);
 
         if ( !resource.isCollection() )
         {
@@ -173,12 +184,12 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
             {
                 processAuditEvents(request, locator.getWorkspaceName(), logicalResource.getPath(), previouslyExisted, resourceFile, " (proxied)");
             }
-            resource = new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this, null);
+            resource = new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this);
         }
         return resource;
     }
 
-    private DavResource doPut(ManagedRepositoryContent managedRepository, DavServletRequest request, DavResourceLocator locator, LogicalResource logicalResource) throws DavException
+    private DavResource doPut(ManagedRepositoryContent managedRepository, DavServletRequest request, ArchivaDavResourceLocator locator, LogicalResource logicalResource) throws DavException
     {
         /*
          * Create parent directories that don't exist when writing a file
@@ -194,8 +205,7 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
         if ( !destDir.exists() )
         {
             destDir.mkdirs();
-            String relPath =
-                PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
+            String relPath = PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
             triggerAuditEvent(request, logicalResource.getPath(), relPath, AuditEvent.CREATE_DIR );
         }
 
@@ -203,9 +213,9 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
 
         boolean previouslyExisted = resourceFile.exists();
 
-        processAuditEvents(request, locator.getWorkspaceName(), logicalResource.getPath(), previouslyExisted, resourceFile, null );
+        processAuditEvents(request, locator.getRepositoryId(), logicalResource.getPath(), previouslyExisted, resourceFile, null );
 
-        return new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this, null);
+        return new ArchivaDavResource(resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this);
     }
 
     private boolean fetchContentFromProxies( ManagedRepositoryContent managedRepository, DavServletRequest request, LogicalResource resource )
@@ -476,6 +486,14 @@ public class ArchivaDavResourceFactory implements DavResourceFactory, Auditable
             }
         }
         return null;
+    }
+
+    private void checkLocatorIsInstanceOfRepositoryLocator(DavResourceLocator locator) throws DavException
+    {
+        if (!(locator instanceof RepositoryLocator))
+        {
+            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Locator does not implement RepositoryLocator");
+        }
     }
 
     class LogicalResource

@@ -82,6 +82,8 @@ public class RepositoryServlet
 
     /**
      * Service the given request.
+     * This method has been overridden and copy/pasted to allow better exception handling
+     * and to support different realms
      *
      * @param request
      * @param response
@@ -241,7 +243,7 @@ public class RepositoryServlet
 
     public String getAuthenticateHeaderValue()
     {
-        throw new UnsupportedOperationException("");
+        throw new UnsupportedOperationException();
     }
 
     public String getAuthenticateHeaderValue(String repository)

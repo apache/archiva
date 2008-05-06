@@ -51,9 +51,8 @@ public class ArchivaDavLocatorFactory implements DavLocatorFactory
             href = "/";
         }
 
-        final String workspaceName = RepositoryPathUtil.getRepositoryName(href);
-
-        return new ArchivaDavResourceLocator(b.toString(), Text.unescape(href), workspaceName,  this);
+        final String repository = RepositoryPathUtil.getRepositoryName(href);
+        return new ArchivaDavResourceLocator(b.toString(), Text.unescape(href), repository,  this);
     }
 
     public DavResourceLocator createResourceLocator(String prefix, String workspacePath, String resourcePath)

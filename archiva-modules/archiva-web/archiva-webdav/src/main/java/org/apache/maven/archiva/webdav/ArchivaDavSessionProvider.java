@@ -134,7 +134,6 @@ public class ArchivaDavSessionProvider implements DavSessionProvider
         }
         catch ( AuthorizationException e )
         {
-            log.error(e.getMessage(), e);
             throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fatal Authorization Subsystem Error." );
         }
 
