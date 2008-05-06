@@ -320,7 +320,8 @@ public class ChecksummedFile
             String filename = m.group( 1 );
             if ( !isValidChecksumPattern( filename, expectedPath ) )
             {
-                throw new IOException( "Supplied checksum does not match checksum pattern" );
+                throw new IOException( "Supplied checksum file '" + filename + "' does not match expected file: '"
+                    + expectedPath + "'" );
             }
             trimmedChecksum = m.group( 2 );
         }
@@ -333,7 +334,8 @@ public class ChecksummedFile
                 String filename = m.group( 2 );
                 if ( !isValidChecksumPattern( filename, expectedPath ) )
                 {
-                    throw new IOException( "Supplied checksum does not match checksum pattern" );
+                    throw new IOException( "Supplied checksum file '" + filename + "' does not match expected file: '"
+                        + expectedPath + "'" );
                 }
                 trimmedChecksum = m.group( 1 );
             }
