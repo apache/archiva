@@ -269,6 +269,28 @@
       </roles>
       <timezone>+11</timezone>
     </developer>
+    <!-- Emeritus Committers -->
+    <developer>
+      <id>jvanzyl</id>
+      <name>Jason van Zyl</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>bayard</id>
+      <name>Henri Yandell</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>kenney</id>
+      <name>Kenney Westerhof</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
   </developers>
 
   <contributors>
@@ -330,13 +352,16 @@
       <name>Allan Ramirez</name>
     </contributor>
     <contributor>
-      <name>Henri Yandell</name>
-    </contributor>
-    <contributor>
       <name>Pete Marvin King</name>
     </contributor>
     <contributor>
       <name>Joel Sudiacal</name>
+    </contributor>
+    <contributor>
+      <name>Milos Kleint</name>
+    </contributor>
+    <contributor>
+      <name>Nick Gonzalez</name>
     </contributor>
   </contributors>
 
