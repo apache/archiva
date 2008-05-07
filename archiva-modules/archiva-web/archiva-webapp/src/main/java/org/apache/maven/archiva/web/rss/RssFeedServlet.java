@@ -98,8 +98,7 @@ public class RssFeedServlet
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws ServletException, IOException
-    {
-        log.info( "Request URL: " + req.getRequestURL() );
+    {       
         try
         {
             Map<String, String> map = new HashMap<String, String>();
@@ -107,28 +106,19 @@ public class RssFeedServlet
             String repoId = req.getParameter( "repoId" );
             String groupId = req.getParameter( "groupId" );
             String artifactId = req.getParameter( "artifactId" );
-
-            if ( repoId != null )
+            
+            if ( isAuthorized( req ) )
             {
-
-                if ( isAuthorized( req ) )
-                {
+                if ( repoId != null )
+                {                   
                     // new artifacts in repo feed request
                     processor =
                         (RssFeedProcessor) wac.getBean( PlexusToSpringUtils.buildSpringId(
                                                                                            RssFeedProcessor.class.getName(),
                                                                                            "new-artifacts" ) );
-                    map.put( RssFeedProcessor.KEY_REPO_ID, repoId );
+                    map.put( RssFeedProcessor.KEY_REPO_ID, repoId );                    
                 }
-                else
-                {
-                    res.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Request is not authorized." );
-                    return;
-                }
-            }
-            else if ( ( groupId != null ) && ( artifactId != null ) )
-            {
-                if ( isAuthorized( req ) )
+                else if ( ( groupId != null ) && ( artifactId != null ) )
                 {
                     // new versions of artifact feed request
                     processor =
@@ -136,22 +126,31 @@ public class RssFeedServlet
                                                                                            RssFeedProcessor.class.getName(),
                                                                                            "new-versions" ) );
                     map.put( RssFeedProcessor.KEY_GROUP_ID, groupId );
-                    map.put( RssFeedProcessor.KEY_ARTIFACT_ID, artifactId );
+                    map.put( RssFeedProcessor.KEY_ARTIFACT_ID, artifactId );                    
                 }
                 else
                 {
-                    res.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Request is not authorized." );
+                    res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Required fields not found in request." );
                     return;
                 }
             }
             else
             {
-                res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Required fields not found in request." );
+                res.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Request is not authorized." );
                 return;
             }
-
+            
             feed = processor.process( map );
             res.setContentType( MIME_TYPE );
+            
+            if ( repoId != null )
+            {
+                feed.setLink( req.getRequestURL() + "?repoId=" + repoId );
+            }
+            else if ( ( groupId != null ) && ( artifactId != null ) )
+            {
+                feed.setLink( req.getRequestURL() + "?groupId=" + groupId + "&artifactId=" + artifactId );
+            }
 
             SyndFeedOutput output = new SyndFeedOutput();
             output.output( feed, res.getWriter() );
@@ -193,7 +192,7 @@ public class RssFeedServlet
         throws UserNotFoundException, AccountLockedException, AuthenticationException, AuthorizationException
     {
         String auth = req.getHeader( "Authorization" );
-
+        
         if ( auth == null )
         {
             return false;
@@ -219,7 +218,7 @@ public class RssFeedServlet
         String[] userCredentials = usernamePassword.split( ":" );
         String username = userCredentials[0];
         String password = userCredentials[1];
-
+        
         AuthenticationDataSource dataSource = new PasswordBasedAuthenticationDataSource( username, password );
         SecuritySession session = null;
 
@@ -236,7 +235,7 @@ public class RssFeedServlet
         session = securitySystem.authenticate( dataSource );
 
         for ( String repoId : repoIds )
-        {
+        {            
             if ( securitySystem.isAuthorized( session, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, repoId ) )
             {
                 return true;

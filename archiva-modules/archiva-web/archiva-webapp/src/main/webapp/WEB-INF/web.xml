@@ -93,7 +93,7 @@
   
   <servlet-mapping>
      <servlet-name>RssFeedServlet</servlet-name>
-     <url-pattern>/rss/*</url-pattern>
+     <url-pattern>/rss/rss_feeds</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

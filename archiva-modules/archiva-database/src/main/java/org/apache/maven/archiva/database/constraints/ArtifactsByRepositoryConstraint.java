@@ -44,11 +44,12 @@ public class ArtifactsByRepositoryConstraint
         params = new Object[] { repoId };
 	}
 		
-	public ArtifactsByRepositoryConstraint( String repoId, Date whenGathered, String sortColumn )
+	public ArtifactsByRepositoryConstraint( String repoId, Date targetWhenGathered, String sortColumn )
     {
-	    whereClause = "repositoryId == repoId && whenGathered >= whenGathered";        
-        declParams = new String[] { "String repoId", "Date whenGathered" };
-        params = new Object[] { repoId, whenGathered };
+	    declImports = new String[] { "import java.util.Date" };
+	    whereClause = "this.repositoryId == repoId && this.whenGathered >= targetWhenGathered";        
+        declParams = new String[] { "String repoId", "Date targetWhenGathered" };
+        params = new Object[] { repoId, targetWhenGathered };        
         this.sortColumn = sortColumn;
     }
 		
