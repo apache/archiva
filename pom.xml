@@ -271,5 +271,74 @@
     </developer>
   </developers>
 
+  <contributors>
+    <contributor>
+      <name>Steffen Grunwald</name>
+    </contributor>
+    <contributor>
+      <name>Stefan Prange</name>
+    </contributor>
+    <contributor>
+      <name>John Michael Luy</name>
+    </contributor>
+    <contributor>
+      <name>Martin Höller</name>
+    </contributor>
+    <contributor>
+      <name>Stephen Gargan</name>
+    </contributor>
+    <contributor>
+      <name>Dario Oliveros</name>
+    </contributor>
+    <contributor>
+      <name>james ahlborn</name>
+    </contributor>
+    <contributor>
+      <name>Jim Jackson</name>
+    </contributor>
+    <contributor>
+      <name>Daniel Harvey</name>
+    </contributor>
+    <contributor>
+      <name>Aleksandr Tarutin</name>
+    </contributor>
+    <contributor>
+      <name>Teodoro Cue Jr.</name>
+    </contributor>
+    <contributor>
+      <name>Jan Ancajas</name>
+    </contributor>
+    <contributor>
+      <name>Jens Mühlenhoff</name>
+    </contributor>
+    <contributor>
+      <name>Dawn Angelito</name>
+    </contributor>
+    <contributor>
+      <name>Nap Ramirez</name>
+    </contributor>
+    <contributor>
+      <name>Henry Isidro</name>
+    </contributor>
+    <contributor>
+      <name>Antoine Veret</name>
+    </contributor>
+    <contributor>
+      <name>Christian Gruber</name>
+    </contributor>
+    <contributor>
+      <name>Allan Ramirez</name>
+    </contributor>
+    <contributor>
+      <name>Henri Yandell</name>
+    </contributor>
+    <contributor>
+      <name>Pete Marvin King</name>
+    </contributor>
+    <contributor>
+      <name>Joel Sudiacal</name>
+    </contributor>
+  </contributors>
+
 </project>
 
