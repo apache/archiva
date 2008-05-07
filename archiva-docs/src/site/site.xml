@@ -39,6 +39,7 @@
       <item name="Identifying an Artifact"   href="/userguide/find-artifact.html" />
       <item name="Using as a repository"     href="/userguide/using-repository.html" />
       <item name="Deploying to repository"   href="/userguide/deploy.html" />
+      <item name="Rss Feeds in Archiva"      href="/userguide/rss.html"/>
     </menu>
 
     <menu name="Administrators Guide">
