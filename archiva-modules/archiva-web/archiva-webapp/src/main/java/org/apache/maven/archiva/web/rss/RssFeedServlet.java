@@ -40,14 +40,16 @@ import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
+import org.codehaus.plexus.redback.authorization.AuthorizationResult;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
+import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +87,8 @@ public class RssFeedServlet
 
     private UserRepositories userRepositories;
 
+    private HttpAuthenticator httpAuth;
+
     public void init( javax.servlet.ServletConfig servletConfig )
         throws ServletException
     {
@@ -94,11 +98,13 @@ public class RssFeedServlet
             (SecuritySystem) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySystem.class.getName() ) );
         userRepositories =
             (UserRepositories) wac.getBean( PlexusToSpringUtils.buildSpringId( UserRepositories.class.getName() ) );
+        httpAuth =
+            (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws ServletException, IOException
-    {       
+    {
         try
         {
             Map<String, String> map = new HashMap<String, String>();
@@ -107,16 +113,22 @@ public class RssFeedServlet
             String groupId = req.getParameter( "groupId" );
             String artifactId = req.getParameter( "artifactId" );
             
-            if ( isAuthorized( req ) )
+            if( ( repoId == null ) && ( groupId == null && artifactId == null ) )                
+            {
+                res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Required fields not found in request." );
+                return;
+            }
+
+            if ( isAllowed( req ) )
             {
                 if ( repoId != null )
-                {                   
+                {
                     // new artifacts in repo feed request
                     processor =
                         (RssFeedProcessor) wac.getBean( PlexusToSpringUtils.buildSpringId(
                                                                                            RssFeedProcessor.class.getName(),
                                                                                            "new-artifacts" ) );
-                    map.put( RssFeedProcessor.KEY_REPO_ID, repoId );                    
+                    map.put( RssFeedProcessor.KEY_REPO_ID, repoId );
                 }
                 else if ( ( groupId != null ) && ( artifactId != null ) )
                 {
@@ -126,23 +138,18 @@ public class RssFeedServlet
                                                                                            RssFeedProcessor.class.getName(),
                                                                                            "new-versions" ) );
                     map.put( RssFeedProcessor.KEY_GROUP_ID, groupId );
-                    map.put( RssFeedProcessor.KEY_ARTIFACT_ID, artifactId );                    
-                }
-                else
-                {
-                    res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Required fields not found in request." );
-                    return;
-                }
+                    map.put( RssFeedProcessor.KEY_ARTIFACT_ID, artifactId );
+                }                
             }
             else
             {
                 res.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Request is not authorized." );
                 return;
             }
-            
+
             feed = processor.process( map );
             res.setContentType( MIME_TYPE );
-            
+
             if ( repoId != null )
             {
                 feed.setLink( req.getRequestURL() + "?repoId=" + repoId );
@@ -188,55 +195,62 @@ public class RssFeedServlet
      * @param req
      * @return
      */
-    private boolean isAuthorized( HttpServletRequest req )
+    private boolean isAllowed( HttpServletRequest req )
         throws UserNotFoundException, AccountLockedException, AuthenticationException, AuthorizationException
     {
         String auth = req.getHeader( "Authorization" );
-        
-        if ( auth == null )
-        {
-            return false;
-        }
 
-        if ( !auth.toUpperCase().startsWith( "BASIC " ) )
-        {
-            return false;
-        }
-
-        Decoder dec = new Base64();        
-        String usernamePassword = "";
-
-        try
-        {
-            usernamePassword = new String( ( byte[] ) dec.decode( auth.substring( 6 ).getBytes() ) );
-        }
-        catch ( DecoderException ie )
-        {
-            log.error( "Error decoding username and password.", ie.getMessage() );
-        }
-        
-        String[] userCredentials = usernamePassword.split( ":" );
-        String username = userCredentials[0];
-        String password = userCredentials[1];
-        
-        AuthenticationDataSource dataSource = new PasswordBasedAuthenticationDataSource( username, password );
-        SecuritySession session = null;
+        //        if ( auth == null )
+        //        {
+        //            return false;
+        //        }
 
         List<String> repoIds = new ArrayList<String>();
         if ( req.getParameter( "repoId" ) != null )
         {
             repoIds.add( req.getParameter( "repoId" ) );
         }
-        else
-        {
-            repoIds = getObservableRepos( username );
-        }
 
-        session = securitySystem.authenticate( dataSource );
+        if ( auth != null )
+        {
+            if ( !auth.toUpperCase().startsWith( "BASIC " ) )
+            {
+                return false;
+            }
+
+            Decoder dec = new Base64();
+            String usernamePassword = "";
+
+            try
+            {
+                usernamePassword = new String( (byte[]) dec.decode( auth.substring( 6 ).getBytes() ) );
+            }
+            catch ( DecoderException ie )
+            {
+                log.error( "Error decoding username and password.", ie.getMessage() );
+            }
+
+            if ( usernamePassword != null && !usernamePassword.trim().equals( "" ) )
+            {
+                //String[] userCredentials = usernamePassword.split( ":" );
+                //String username = userCredentials[0];
+                //String password = userCredentials[1];
+
+                //AuthenticationDataSource dataSource = new PasswordBasedAuthenticationDataSource( username, password );
+                //SecuritySession session = null;            
+
+                //if( req.getParameter( "groupId" ) != null && req.getParameter( "artifactId" ) != null )            
+                //{
+                //    repoIds = getObservableRepos( username );
+                //}
+            }
+        }
+        //session = securitySystem.authenticate( dataSource );
 
         for ( String repoId : repoIds )
-        {            
-            if ( securitySystem.isAuthorized( session, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, repoId ) )
+        {
+            //if ( securitySystem.isAuthorized( session, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, repoId ) )
+            if ( isAuthenticated( req, repoId ) && isAuthorized( req, repoId ) )
             {
                 return true;
             }
@@ -265,5 +279,66 @@ public class RssFeedServlet
         }
 
         return Collections.emptyList();
+    }
+
+    private boolean isAuthenticated( HttpServletRequest request, String repositoryId )
+    {
+        try
+        {
+            AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
+           
+            if ( result != null && !result.isAuthenticated() )
+            {
+                log.error( "User credentials is invalid." );
+                return false;
+            }
+        }
+        catch ( AuthenticationException e )
+        {
+            log.error( "User is not authenticated." );
+            return false;
+        }
+        catch ( AccountLockedException e )
+        {
+            log.error( "User account is locked." );
+            return false;
+        }
+        catch ( MustChangePasswordException e )
+        {
+            log.error( "Password must be changed." );
+            return false;
+        }
+
+        log.info( "before returning TRUE in isAuthenticated(..)" );
+        return true;
+    }
+
+    private boolean isAuthorized( HttpServletRequest request, String repositoryId )
+    {
+        SecuritySession securitySession = httpAuth.getSecuritySession();
+
+        try
+        {
+            String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
+
+            AuthorizationResult authzResult = securitySystem.authorize( securitySession, permission, repositoryId );
+
+            if ( !authzResult.isAuthorized() )
+            {
+                if ( authzResult.getException() != null )
+                {
+                    log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",permission=" + permission +
+                        ",repo=" + repositoryId + "] : " + authzResult.getException().getMessage() );
+                }
+                return false;
+            }
+        }
+        catch ( AuthorizationException e )
+        {
+            log.error( "Error in authorization : " + e.getMessage() );
+            return false;
+        }
+
+        return true;
     }
 }

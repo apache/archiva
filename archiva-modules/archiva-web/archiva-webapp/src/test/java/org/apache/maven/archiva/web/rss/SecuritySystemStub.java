@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -89,15 +90,15 @@ public class SecuritySystemStub
     public AuthorizationResult authorize( SecuritySession arg0, Object arg1 )
         throws AuthorizationException
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public AuthorizationResult authorize( SecuritySession arg0, Object arg1, Object arg2 )
         throws AuthorizationException
     {
-        // TODO Auto-generated method stub
-        return null;
+        AuthorizationResult result = new AuthorizationResult( true, arg1, null);
+        
+        return result;
     }
 
     public String getAuthenticatorId()
