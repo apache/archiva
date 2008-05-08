@@ -138,9 +138,11 @@
     <developer>
       <id>oching</id>
       <name>Maria Odea B. Ching</name>
+      <email>oching@apache.org</email>
       <roles>
         <role>PMC Chair</role>
       </roles>
+      <timezone>+8</timezone>
     </developer>
     <developer>
       <id>aheritier</id>
