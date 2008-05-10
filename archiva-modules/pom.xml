@@ -29,6 +29,7 @@
   <artifactId>archiva-modules</artifactId>
   <packaging>pom</packaging>
   <name>Archiva :: Modules</name>
+  <url>http://archiva.apache.org/ref/${project.version}</url>
   <modules>
     <module>archiva-base</module>
     <module>archiva-database</module>

@@ -28,7 +28,7 @@
   <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Archiva Documentation</name>
-  <url>http://maven.apache.org/archiva/docs/${project.version}/</url>
+  <url>http://archiva.apache.org/docs/${project.version}/</url>
 
   <build>
     <plugins>
