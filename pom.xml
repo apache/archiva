@@ -85,6 +85,7 @@
       <archive>http://mail-archives.apache.org/mod_mbox/archiva-issues</archive>
       <otherArchives>
         <otherArchive>http://www.mail-archive.com/issues@archiva.apache.org</otherArchive>
+		<otherArchive>http://www.nabble.com/Archiva---Issues-f29617.html</otherArchive>
       </otherArchives>
     </mailingList>
    </mailingLists>
