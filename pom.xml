@@ -46,46 +46,46 @@
   <mailingLists>
     <mailingList>
       <name>Archiva User List</name>
-      <subscribe>archiva-users-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>archiva-users-unsubscribe@maven.apache.org</unsubscribe>
-      <post>archiva-users@maven.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-users</archive>
+      <subscribe>users-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>users-unsubscribe@archiva.apache.org</unsubscribe>
+      <post>users@archiva.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-users/</archive>
       <otherArchives>
-        <otherArchive>http://www.mail-archive.com/archiva-users@maven.apache.org</otherArchive>
+        <otherArchive>http://www.mail-archive.com/users@archiva.apache.org</otherArchive>
         <otherArchive>http://www.nabble.com/archiva-users-f16426.html</otherArchive>
-        <otherArchive>http://markmail.org/list/org.apache.maven.archiva-users</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.users</otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
       <name>Archiva Developer List</name>
-      <subscribe>archiva-dev-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>archiva-dev-unsubscribe@maven.apache.org</unsubscribe>
-      <post>archiva-dev@maven.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-dev</archive>
+      <subscribe>dev-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@archiva.apache.org</unsubscribe>
+      <post>dev@archiva.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-dev</archive>
       <otherArchives>
-        <otherArchive>http://www.mail-archive.com/archiva-dev@maven.apache.org</otherArchive>
+        <otherArchive>http://www.mail-archive.com/dev@archiva.apache.org</otherArchive>
         <otherArchive>http://www.nabble.com/archiva-dev-f16427.html</otherArchive>
-        <otherArchive>http://markmail.org/list/org.apache.maven.archiva-dev</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.dev</otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
       <name>Archiva Commits List</name>
-      <subscribe>archiva-commits-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>archiva-commits-unsubscribe@maven.apache.org</unsubscribe>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-commits</archive>
+      <subscribe>commits-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>commits-unsubscribe@archiva.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-commits</archive>
       <otherArchives>
-        <otherArchive>http://www.mail-archive.com/archiva-commits@maven.apache.org</otherArchive>
-        <otherArchive>http://markmail.org/list/org.apache.maven.archiva-commits</otherArchive>
+        <otherArchive>http://www.mail-archive.com/commits@archiva.apache.org</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.commits</otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
       <name>Archiva Issues List</name>
-      <subscribe>archiva-issues-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>archiva-issues-unsubscribe@maven.apache.org</unsubscribe>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-issues</archive>
+      <subscribe>issues-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>issues-unsubscribe@archiva.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-issues</archive>
       <otherArchives>
-        <otherArchive>http://www.mail-archive.com/archiva-issues@maven.apache.org</otherArchive>
-        <otherArchive>http://www.nabble.com/Archiva---Issues-f29617.html</otherArchive>
+        <otherArchive>http://www.mail-archive.com/issues@archiva.apache.org</otherArchive>
+        <!-- <otherArchive>http://www.nabble.com/Archiva---Issues-f29617.html</otherArchive> -->
       </otherArchives>
     </mailingList>
    </mailingLists>
