@@ -33,7 +33,6 @@
   <name>Archiva Common Parent Project</name>
   <version>3-SNAPSHOT</version>
   <inceptionYear>2006</inceptionYear>
-  <url>http://archiva.apache.org/</url>
   <description>
     Archiva is an application for managing one or more remote
     repositories, including administration, artifact handling,
