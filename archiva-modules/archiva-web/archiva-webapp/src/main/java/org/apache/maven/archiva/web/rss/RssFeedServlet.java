@@ -39,17 +39,13 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
+import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
-import org.codehaus.plexus.redback.authorization.AuthorizationResult;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
-import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +65,7 @@ import com.sun.syndication.io.SyndFeedOutput;
 public class RssFeedServlet
     extends HttpServlet
 {
-    public static final String MIME_TYPE = "application/xml; charset=UTF-8";
+    public static final String MIME_TYPE = "application/rss+xml; charset=UTF-8";
 
     private static final String COULD_NOT_GENERATE_FEED_ERROR = "Could not generate feed";
 
@@ -83,23 +79,23 @@ public class RssFeedServlet
 
     private WebApplicationContext wac;
 
-    private SecuritySystem securitySystem;
-
     private UserRepositories userRepositories;
 
-    private HttpAuthenticator httpAuth;
+    private ServletAuthenticator servletAuth;
 
     public void init( javax.servlet.ServletConfig servletConfig )
         throws ServletException
     {
         super.init( servletConfig );
         wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
-        securitySystem =
-            (SecuritySystem) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySystem.class.getName() ) );
+        // securitySystem =
+        // (SecuritySystem) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySystem.class.getName() ) );
         userRepositories =
             (UserRepositories) wac.getBean( PlexusToSpringUtils.buildSpringId( UserRepositories.class.getName() ) );
-        httpAuth =
-            (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
+        // httpAuth =
+        // (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
+        servletAuth =
+            (ServletAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
@@ -112,8 +108,8 @@ public class RssFeedServlet
             String repoId = req.getParameter( "repoId" );
             String groupId = req.getParameter( "groupId" );
             String artifactId = req.getParameter( "artifactId" );
-            
-            if( ( repoId == null ) && ( groupId == null && artifactId == null ) )                
+
+            if ( ( repoId == null ) && ( groupId == null && artifactId == null ) )
             {
                 res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Required fields not found in request." );
                 return;
@@ -139,11 +135,11 @@ public class RssFeedServlet
                                                                                            "new-versions" ) );
                     map.put( RssFeedProcessor.KEY_GROUP_ID, groupId );
                     map.put( RssFeedProcessor.KEY_ARTIFACT_ID, artifactId );
-                }                
+                }
             }
             else
             {
-                res.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Request is not authorized." );
+                res.sendError( HttpServletResponse.SC_UNAUTHORIZED, USER_NOT_AUTHORIZED );
                 return;
             }
 
@@ -161,11 +157,6 @@ public class RssFeedServlet
 
             SyndFeedOutput output = new SyndFeedOutput();
             output.output( feed, res.getWriter() );
-        }
-        catch ( AuthorizationException ae )
-        {
-            log.error( USER_NOT_AUTHORIZED, ae );
-            res.sendError( HttpServletResponse.SC_UNAUTHORIZED, USER_NOT_AUTHORIZED );
         }
         catch ( UserNotFoundException unfe )
         {
@@ -187,6 +178,11 @@ public class RssFeedServlet
             log.error( COULD_NOT_GENERATE_FEED_ERROR, ex );
             res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, COULD_NOT_GENERATE_FEED_ERROR );
         }
+        catch ( MustChangePasswordException e )
+        {
+            log.error( COULD_NOT_AUTHENTICATE_USER, e );
+            res.sendError( HttpServletResponse.SC_UNAUTHORIZED, COULD_NOT_AUTHENTICATE_USER );
+        }
     }
 
     /**
@@ -196,63 +192,68 @@ public class RssFeedServlet
      * @return
      */
     private boolean isAllowed( HttpServletRequest req )
-        throws UserNotFoundException, AccountLockedException, AuthenticationException, AuthorizationException
+        throws UserNotFoundException, AccountLockedException, AuthenticationException, MustChangePasswordException
     {
         String auth = req.getHeader( "Authorization" );
-
-        //        if ( auth == null )
-        //        {
-        //            return false;
-        //        }
-
         List<String> repoIds = new ArrayList<String>();
+
         if ( req.getParameter( "repoId" ) != null )
         {
             repoIds.add( req.getParameter( "repoId" ) );
         }
-
-        if ( auth != null )
+        else if ( req.getParameter( "artifactId" ) != null && req.getParameter( "version" ) != null )
         {
-            if ( !auth.toUpperCase().startsWith( "BASIC " ) )
+            if ( auth != null )
             {
-                return false;
+                if ( !auth.toUpperCase().startsWith( "BASIC " ) )
+                {
+                    return false;
+                }
+
+                Decoder dec = new Base64();
+                String usernamePassword = "";
+
+                try
+                {
+                    usernamePassword = new String( (byte[]) dec.decode( auth.substring( 6 ).getBytes() ) );
+                }
+                catch ( DecoderException ie )
+                {
+                    log.error( "Error decoding username and password.", ie.getMessage() );
+                }
+
+                if ( usernamePassword == null || usernamePassword.trim().equals( "" ) )
+                {
+                    repoIds = getObservableRepos( ArchivaRoleConstants.PRINCIPAL_GUEST );
+                }
+                else
+                {
+                    String[] userCredentials = usernamePassword.split( ":" );
+                    repoIds = getObservableRepos( userCredentials[0] );
+                }
             }
-
-            Decoder dec = new Base64();
-            String usernamePassword = "";
-
-            try
+            else
             {
-                usernamePassword = new String( (byte[]) dec.decode( auth.substring( 6 ).getBytes() ) );
-            }
-            catch ( DecoderException ie )
-            {
-                log.error( "Error decoding username and password.", ie.getMessage() );
-            }
-
-            if ( usernamePassword != null && !usernamePassword.trim().equals( "" ) )
-            {
-                //String[] userCredentials = usernamePassword.split( ":" );
-                //String username = userCredentials[0];
-                //String password = userCredentials[1];
-
-                //AuthenticationDataSource dataSource = new PasswordBasedAuthenticationDataSource( username, password );
-                //SecuritySession session = null;            
-
-                //if( req.getParameter( "groupId" ) != null && req.getParameter( "artifactId" ) != null )            
-                //{
-                //    repoIds = getObservableRepos( username );
-                //}
+                repoIds = getObservableRepos( ArchivaRoleConstants.PRINCIPAL_GUEST );
             }
         }
-        //session = securitySystem.authenticate( dataSource );
+        else
+        {
+            return false;
+        }
 
         for ( String repoId : repoIds )
         {
-            //if ( securitySystem.isAuthorized( session, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, repoId ) )
-            if ( isAuthenticated( req, repoId ) && isAuthorized( req, repoId ) )
+            try
             {
-                return true;
+                if ( servletAuth.isAuthenticated( req, repoId ) && servletAuth.isAuthorized( req, repoId, false ) )
+                {
+                    return true;
+                }
+            }
+            catch ( AuthorizationException e )
+            {
+                log.error( "Fatal Authorization Subsystem Error." );
             }
         }
 
@@ -281,12 +282,13 @@ public class RssFeedServlet
         return Collections.emptyList();
     }
 
+    /*
     private boolean isAuthenticated( HttpServletRequest request, String repositoryId )
     {
         try
         {
             AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
-           
+
             if ( result != null && !result.isAuthenticated() )
             {
                 log.error( "User credentials is invalid." );
@@ -309,7 +311,6 @@ public class RssFeedServlet
             return false;
         }
 
-        log.info( "before returning TRUE in isAuthenticated(..)" );
         return true;
     }
 
@@ -341,4 +342,5 @@ public class RssFeedServlet
 
         return true;
     }
+     */
 }

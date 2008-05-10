@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.repository;
+package org.apache.maven.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,25 +19,23 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.webdav.ArchivaDavSessionProvider;
-import org.apache.jackrabbit.webdav.DavException;
-import org.apache.jackrabbit.webdav.WebdavRequest;
-import org.springframework.web.context.WebApplicationContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.codehaus.plexus.redback.authentication.AuthenticationException;
+import org.codehaus.plexus.redback.authorization.AuthorizationException;
+import org.codehaus.plexus.redback.policy.AccountLockedException;
+import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
+ * 
+ * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
+ * @version 
  */
-public class UnauthenticatedDavSessionProvider extends ArchivaDavSessionProvider
+public interface ServletAuthenticator
 {
-    public UnauthenticatedDavSessionProvider(WebApplicationContext applicationContext)
-    {
-        super(applicationContext);
-    }
+    public boolean isAuthenticated( HttpServletRequest request, String repositoryId )
+        throws AuthenticationException, AccountLockedException, MustChangePasswordException;
     
-    @Override
-    public boolean attachSession( WebdavRequest request )
-        throws DavException
-    {
-        return true;
-    }    
+    public boolean isAuthorized( HttpServletRequest request, String repositoryId, boolean isWriteRequest )
+        throws AuthorizationException;
 }
