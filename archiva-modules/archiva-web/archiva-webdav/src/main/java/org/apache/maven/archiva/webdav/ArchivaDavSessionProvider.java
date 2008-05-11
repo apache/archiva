@@ -27,8 +27,11 @@ import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
+import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
+import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -45,10 +48,14 @@ public class ArchivaDavSessionProvider implements DavSessionProvider
     private Logger log = LoggerFactory.getLogger(ArchivaDavSessionProvider.class);
     
     private ServletAuthenticator servletAuth;    
+    
+    private HttpAuthenticator httpAuth;
             
     public ArchivaDavSessionProvider(WebApplicationContext applicationContext)
     {
         servletAuth = (ServletAuthenticator) applicationContext.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
+        httpAuth =
+            (HttpAuthenticator) applicationContext.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
     }
 
     public boolean attachSession(WebdavRequest request) throws DavException
@@ -57,8 +64,11 @@ public class ArchivaDavSessionProvider implements DavSessionProvider
         
         try
         {
-            return servletAuth.isAuthenticated(request, repositoryId) && 
-                servletAuth.isAuthorized(request, repositoryId, WebdavMethodUtil.isWriteMethod( request.getMethod() ) );
+            AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
+            SecuritySession securitySession = httpAuth.getSecuritySession();
+            
+            return servletAuth.isAuthenticated(request, result, repositoryId) && 
+                servletAuth.isAuthorized(request, securitySession, repositoryId, WebdavMethodUtil.isWriteMethod( request.getMethod() ) );
         }
         catch ( AuthenticationException e )
         {

@@ -22,20 +22,21 @@ package org.apache.maven.archiva.security;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
+import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.codehaus.plexus.redback.system.SecuritySession;
 
 /**
- * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version 
+ * @version
  */
 public interface ServletAuthenticator
 {
-    public boolean isAuthenticated( HttpServletRequest request, String repositoryId )
+    public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result, String repositoryId )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException;
-    
-    public boolean isAuthorized( HttpServletRequest request, String repositoryId, boolean isWriteRequest )
-        throws AuthorizationException;
+
+    public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
+        boolean isWriteRequest ) throws AuthorizationException;
 }

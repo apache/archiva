@@ -101,6 +101,16 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-xwork-integration</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-container-default</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <!-- Required by it.could classes -->

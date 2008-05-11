@@ -117,20 +117,5 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.redback</groupId>
-      <artifactId>redback-xwork-integration</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency> 
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <scope>provided</scope>
-    </dependency>   
   </dependencies>
 </project>

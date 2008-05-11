@@ -42,10 +42,13 @@ import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
+import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,19 +86,19 @@ public class RssFeedServlet
 
     private ServletAuthenticator servletAuth;
 
+    private HttpAuthenticator httpAuth;
+
     public void init( javax.servlet.ServletConfig servletConfig )
         throws ServletException
     {
         super.init( servletConfig );
         wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
-        // securitySystem =
-        // (SecuritySystem) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySystem.class.getName() ) );
         userRepositories =
             (UserRepositories) wac.getBean( PlexusToSpringUtils.buildSpringId( UserRepositories.class.getName() ) );
-        // httpAuth =
-        // (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
         servletAuth =
             (ServletAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
+        httpAuth =
+            (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
@@ -246,7 +249,11 @@ public class RssFeedServlet
         {
             try
             {
-                if ( servletAuth.isAuthenticated( req, repoId ) && servletAuth.isAuthorized( req, repoId, false ) )
+                AuthenticationResult result = httpAuth.getAuthenticationResult( req, null );
+                SecuritySession securitySession = httpAuth.getSecuritySession();
+
+                if ( servletAuth.isAuthenticated( req, result, repoId ) &&
+                    servletAuth.isAuthorized( req, securitySession, repoId, false ) )
                 {
                     return true;
                 }
@@ -282,65 +289,4 @@ public class RssFeedServlet
         return Collections.emptyList();
     }
 
-    /*
-    private boolean isAuthenticated( HttpServletRequest request, String repositoryId )
-    {
-        try
-        {
-            AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
-
-            if ( result != null && !result.isAuthenticated() )
-            {
-                log.error( "User credentials is invalid." );
-                return false;
-            }
-        }
-        catch ( AuthenticationException e )
-        {
-            log.error( "User is not authenticated." );
-            return false;
-        }
-        catch ( AccountLockedException e )
-        {
-            log.error( "User account is locked." );
-            return false;
-        }
-        catch ( MustChangePasswordException e )
-        {
-            log.error( "Password must be changed." );
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean isAuthorized( HttpServletRequest request, String repositoryId )
-    {
-        SecuritySession securitySession = httpAuth.getSecuritySession();
-
-        try
-        {
-            String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
-
-            AuthorizationResult authzResult = securitySystem.authorize( securitySession, permission, repositoryId );
-
-            if ( !authzResult.isAuthorized() )
-            {
-                if ( authzResult.getException() != null )
-                {
-                    log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",permission=" + permission +
-                        ",repo=" + repositoryId + "] : " + authzResult.getException().getMessage() );
-                }
-                return false;
-            }
-        }
-        catch ( AuthorizationException e )
-        {
-            log.error( "Error in authorization : " + e.getMessage() );
-            return false;
-        }
-
-        return true;
-    }
-     */
 }

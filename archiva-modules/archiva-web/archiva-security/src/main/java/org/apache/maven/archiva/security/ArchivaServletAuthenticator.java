@@ -30,7 +30,6 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,44 +41,36 @@ public class ArchivaServletAuthenticator
     implements ServletAuthenticator
 {
     private Logger log = LoggerFactory.getLogger( ArchivaServletAuthenticator.class );
-    
-    /**
-     * @plexus.requirement role-hint="basic"
-     */
-    private HttpAuthenticator httpAuth;
 
     /**
      * @plexus.requirement 
      */
     private SecuritySystem securitySystem;
-   
-    public boolean isAuthenticated( HttpServletRequest request, String repositoryId )
-        throws AuthenticationException, AccountLockedException, MustChangePasswordException   
-    {        
-        AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
-        
+
+    public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result, String repositoryId )
+        throws AuthenticationException, AccountLockedException, MustChangePasswordException
+    {
         if ( result != null && !result.isAuthenticated() )
         {
-            throw new AuthenticationException( "User Credentials Invalid" );            
-        }        
+            throw new AuthenticationException( "User Credentials Invalid" );
+        }
 
         return true;
     }
 
-    public boolean isAuthorized( HttpServletRequest request, String repositoryId, boolean isWriteRequest )
+    public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
+                                 boolean isWriteRequest )
         throws AuthorizationException
-    {           
-        SecuritySession securitySession = httpAuth.getSecuritySession();
-        
+    {
         String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
 
         if ( isWriteRequest )
         {
             permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
         }
-        
+
         AuthorizationResult authzResult = securitySystem.authorize( securitySession, permission, repositoryId );
-        
+
         if ( !authzResult.isAuthorized() )
         {
             if ( authzResult.getException() != null )
@@ -87,9 +78,9 @@ public class ArchivaServletAuthenticator
                 log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest +
                     ",permission=" + permission + ",repo=" + repositoryId + "] : " +
                     authzResult.getException().getMessage() );
-            }            
+            }
         }
 
         return true;
-    }    
+    }
 }
