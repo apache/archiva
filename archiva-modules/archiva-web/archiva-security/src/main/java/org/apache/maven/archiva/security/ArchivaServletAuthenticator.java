@@ -74,10 +74,12 @@ public class ArchivaServletAuthenticator
         if ( !authzResult.isAuthorized() )
         {
             if ( authzResult.getException() != null )
-            {
+            {                
                 log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest +
                     ",permission=" + permission + ",repo=" + repositoryId + "] : " +
                     authzResult.getException().getMessage() );
+                
+                return false;
             }
         }
 
