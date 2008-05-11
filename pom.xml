@@ -42,13 +42,6 @@
     <url>http://svn.apache.org/viewvc/archiva/trunk</url>
   </scm>
 
-  <distributionManagement>
-    <site>
-      <id>apache.website</id>
-      <url>scp://people.apache.org/www/archiva.apache.org/ref/${project.version}</url>
-    </site>
-  </distributionManagement>
-
   <build>
     <plugins>
       <!-- We want to package up license resources in the JARs produced -->
