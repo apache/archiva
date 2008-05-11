@@ -44,6 +44,7 @@ import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
+import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
@@ -104,14 +105,15 @@ public class RssFeedServlet
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws ServletException, IOException
     {
+        String repoId = req.getParameter( "repoId" );
+        String groupId = req.getParameter( "groupId" );
+        String artifactId = req.getParameter( "artifactId" );
+        
         try
         {
             Map<String, String> map = new HashMap<String, String>();
             SyndFeed feed = null;
-            String repoId = req.getParameter( "repoId" );
-            String groupId = req.getParameter( "groupId" );
-            String artifactId = req.getParameter( "artifactId" );
-
+        
             if ( ( repoId == null ) && ( groupId == null && artifactId == null ) )
             {
                 res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Required fields not found in request." );
@@ -173,6 +175,7 @@ public class RssFeedServlet
         }
         catch ( AuthenticationException authe )
         {
+            authe.printStackTrace();
             log.error( COULD_NOT_AUTHENTICATE_USER, authe );
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, COULD_NOT_AUTHENTICATE_USER );
         }
@@ -186,6 +189,20 @@ public class RssFeedServlet
             log.error( COULD_NOT_AUTHENTICATE_USER, e );
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, COULD_NOT_AUTHENTICATE_USER );
         }
+        catch ( UnauthorizedException e )
+        {
+            log.error( e.getMessage() );
+            if ( repoId != null )
+            {
+                res.setHeader("WWW-Authenticate", "Basic realm=\"Repository Archiva Managed " + repoId + " Repository" );
+            }
+            else
+            {
+                res.setHeader("WWW-Authenticate", "Basic realm=\"Artifact " + groupId + ":" + artifactId );
+            }
+            
+            res.sendError( HttpServletResponse.SC_UNAUTHORIZED, USER_NOT_AUTHORIZED );
+        }
     }
 
     /**
@@ -195,7 +212,8 @@ public class RssFeedServlet
      * @return
      */
     private boolean isAllowed( HttpServletRequest req )
-        throws UserNotFoundException, AccountLockedException, AuthenticationException, MustChangePasswordException
+        throws UserNotFoundException, AccountLockedException, AuthenticationException, MustChangePasswordException,
+        UnauthorizedException
     {
         String auth = req.getHeader( "Authorization" );
         List<String> repoIds = new ArrayList<String>();
@@ -262,9 +280,13 @@ public class RssFeedServlet
             {
                 log.error( "Fatal Authorization Subsystem Error." );
             }
+            catch ( UnauthorizedException e )
+            {
+                log.error( e.getMessage() );
+            }
         }
 
-        return false;
+        throw new UnauthorizedException( "Access denied." );
     }
 
     private List<String> getObservableRepos( String principal )

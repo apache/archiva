@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
+import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
@@ -38,5 +39,5 @@ public interface ServletAuthenticator
         throws AuthenticationException, AccountLockedException, MustChangePasswordException;
 
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
-        boolean isWriteRequest ) throws AuthorizationException;
+        boolean isWriteRequest ) throws AuthorizationException, UnauthorizedException;
 }

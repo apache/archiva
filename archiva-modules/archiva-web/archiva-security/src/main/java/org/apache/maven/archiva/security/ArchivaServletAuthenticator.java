@@ -26,6 +26,7 @@ import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.authorization.AuthorizationResult;
+import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
@@ -43,7 +44,7 @@ public class ArchivaServletAuthenticator
     private Logger log = LoggerFactory.getLogger( ArchivaServletAuthenticator.class );
 
     /**
-     * @plexus.requirement 
+     * @plexus.requirement
      */
     private SecuritySystem securitySystem;
 
@@ -60,7 +61,7 @@ public class ArchivaServletAuthenticator
 
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
                                  boolean isWriteRequest )
-        throws AuthorizationException
+        throws AuthorizationException, UnauthorizedException
     {
         String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
 
@@ -74,13 +75,14 @@ public class ArchivaServletAuthenticator
         if ( !authzResult.isAuthorized() )
         {
             if ( authzResult.getException() != null )
-            {                
+            {
                 log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest +
                     ",permission=" + permission + ",repo=" + repositoryId + "] : " +
                     authzResult.getException().getMessage() );
-                
-                return false;
+
+                throw new UnauthorizedException( "Access denied for repository " + repositoryId );
             }
+            throw new UnauthorizedException( "User account is locked" );
         }
 
         return true;

@@ -33,6 +33,7 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
+import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.slf4j.Logger;
@@ -89,6 +90,11 @@ public class ArchivaDavSessionProvider implements DavSessionProvider
         {
             log.error( "Fatal Authorization Subsystem Error." );
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fatal Authorization Subsystem Error." );
+        }
+        catch ( UnauthorizedException e )
+        {
+            log.error( e.getMessage() );
+            throw new UnauthorizedDavException(repositoryId, e.getMessage() );
         }
     }
 
