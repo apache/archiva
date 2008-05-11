@@ -31,7 +31,7 @@
   <artifactId>archiva-parent</artifactId>
   <packaging>pom</packaging>
   <name>Archiva Common Parent Project</name>
-  <version>4-SNAPSHOT</version>
+  <version>3-SNAPSHOT</version>
   <inceptionYear>2006</inceptionYear>
   <description>
     Archiva is an application for managing one or more remote
