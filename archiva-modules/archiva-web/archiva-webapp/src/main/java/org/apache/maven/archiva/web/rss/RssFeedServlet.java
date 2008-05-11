@@ -204,7 +204,7 @@ public class RssFeedServlet
         {
             repoIds.add( req.getParameter( "repoId" ) );
         }
-        else if ( req.getParameter( "artifactId" ) != null && req.getParameter( "version" ) != null )
+        else if ( req.getParameter( "artifactId" ) != null && req.getParameter( "groupId" ) != null )
         {
             if ( auth != null )
             {

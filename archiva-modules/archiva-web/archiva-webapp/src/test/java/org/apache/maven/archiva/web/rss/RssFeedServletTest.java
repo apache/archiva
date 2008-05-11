@@ -82,8 +82,7 @@ public class RssFeedServletTest
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
     }
-
-    /*
+    
     public void testRequestNewVersionsOfArtifact()
         throws Exception
     {
@@ -104,7 +103,6 @@ public class RssFeedServletTest
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );        
     }
-    */
     
     public void testInvalidRequest()
         throws Exception
