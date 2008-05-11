@@ -39,8 +39,15 @@
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/trunk</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/archiva/trunk</url>
+    <url>http://svn.apache.org/viewvc/archiva/trunk</url>
   </scm>
+
+  <distributionManagement>
+    <site>
+      <id>apache.website</id>
+      <url>scp://people.apache.org/www/archiva.apache.org/ref/${project.version}</url>
+    </site>
+  </distributionManagement>
 
   <build>
     <plugins>
