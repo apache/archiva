@@ -46,6 +46,11 @@ Release Notes for Archiva 1.1 (DRAFT)
    Archiva now uses the Spring Framework as it's underlying container instead of Plexus. This results in a boost in performance and
    stability for the web application in particular.
 
+** Using Apache Jackrabbit WebDAV Servlet
+   Archiva now uses Apache Jackrabbit's WebDAV servlet for serving repository content instead of plexus-webdav. The change results in reduced
+   codebase complexity, increased standards compliance, better webdav client support and a small peformance boost.
+
+
 * Release Notes
 
   The Archiva 1.1 feature set can be seen in the {{{tour/index.html} feature tour}}.
