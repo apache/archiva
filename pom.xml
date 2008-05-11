@@ -93,6 +93,15 @@
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/archiva/parent</url>
   </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>archiva.staging</id>
+      <url>scp://people.apache.org/www/people.apache.org/builds/archiva/${project.version}/staging-repo</url>
+    </repository>
+  </distributionManagement>
+
+
   <properties>
     <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
 <!-- For testing
@@ -365,21 +374,6 @@
       <name>Nick Gonzalez</name>
     </contributor>
   </contributors>
-
-  <distributionManagement>
-    <repository>
-      <id>archiva.staging</id>
-      <url>scp://people.apache.org/www/people.apache.org/builds/archiva/${project.version}/staging-repo</url>
-    </repository>
-    <snapshotRepository>
-      <id>apache.snapshots</id>
-      <url>scp://people.apache.org/www/archiva.apache.org/repo/m2-snapshot-repository</url>
-    </snapshotRepository>
-    <site>
-      <id>apache.website</id>
-      <url>scp://people.apache.org/www/archiva.apache.org</url>
-    </site>
-  </distributionManagement>
 
 </project>
 
