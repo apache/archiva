@@ -54,5 +54,8 @@ RSS Feeds
 * Authentication
 
   The authentication method used for the rss feeds is Http Basic Authentication. If your reader supports this, you would be
-  prompted for a username and password when you subscribe to the feed. Supply you Archiva account credentials for this. Take 
+  prompted for a username and password when you subscribe to the feed. Supply your Archiva account credentials for this. Take
   note that only users with an Observer role for the specific repository would be able to subscribe to this feed.
+
+  If the 'guest' account is enabled for the repository, you would no longer be asked for the username and password when you
+  subscribe to the feed.
