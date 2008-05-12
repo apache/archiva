@@ -200,6 +200,8 @@
           <version>2.0-beta-7</version>
           <configuration>
             <tagBase>https://svn.apache.org/repos/asf/archiva/tags/</tagBase>
+            <useReleaseProfile>false</useReleaseProfile>
+            <arguments>-Prelease</arguments>
           </configuration>
         </plugin>
         <plugin>
