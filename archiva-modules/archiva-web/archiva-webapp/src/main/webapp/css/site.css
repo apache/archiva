@@ -245,14 +245,16 @@ div.repository {
 	border-bottom: 1px solid #DFDEDE;
 }
 
-div.proxyConfig {
+div.proxyConfig,
+div.repoGroup {
 	border: 1px dashed #DFDEDE;
 	margin-bottom: 15px;
 	padding: 5px;
 }
 
 div.proxyConfig div.managedRepo,
-div.proxyConfig div.remoteRepo {
+div.proxyConfig div.remoteRepo,
+div.repoGroup div.managedRepo {
     border: 1px dotted gray;
 	padding: 5px;
 	background-color: white;
@@ -263,7 +265,8 @@ div.proxyConfig div.remoteRepo {
 }
 
 div.proxyConfig div.managedRepo img,
-div.proxyConfig div.remoteRepo img {
+div.proxyConfig div.remoteRepo img,
+div.repoGroup div.managedRepo img {
 	float: left;
 	border: 0px;
 }
@@ -275,12 +278,20 @@ div.proxyConfig div.remoteRepo p {
 	padding: 0px;
 }
 
+div.repoGroup div.managedRepo p {
+    margin: 8px;
+	margin-left: 40px;
+	padding: 0px;
+}
+
 div.proxyConfig div.managedRepo p.id,
-div.proxyConfig div.remoteRepo p.id {
+div.proxyConfig div.remoteRepo p.id,
+div.repoGroup div.managedRepo p.id {
 	font-family: monospace;
 }
 
-div.proxyConfig div.connector {
+div.proxyConfig div.connector,
+div.repoGroup div.connector {
 	border: 1px solid #aaaaff;
 	margin-top: 10px;
 	margin-left: 40px !important;
@@ -291,11 +302,13 @@ div.proxyConfig a.expand {
 	color: gray;	
 }
 
-div.proxyConfig div.controls {
+div.proxyConfig div.controls,
+div.repoGroup div.controls {
 	float: right;
 }
 
-div.proxyConfig div.connector h4 {
+div.proxyConfig div.connector h4,
+div.repoGroup div.connector h4 {
 	padding: 3px;
 	font-size: 8pt;
 	margin: 0px;
@@ -321,6 +334,12 @@ div.proxyConfig div.connector table p {
 	margin: 0px;
 	padding: 0px;
 }
+
+div.repoGroup div.repos {
+    text-align: right;
+    padding: 4px 0px 0px 0px;
+}
+
 div.admin div.dark,
 div.admin div.lite {
 	border: 1px solid #aaaaaa;	

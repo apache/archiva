@@ -167,7 +167,7 @@
     
     public java.util.Map<String, java.util.List<String>> getRepositoryToGroupMap()
     {
-        if ( repositoryToGroupMap == null )
+        if ( repositoryGroups != null )
         {
             java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
             
@@ -188,6 +188,64 @@
             repositoryToGroupMap = map;
         }
         return repositoryToGroupMap;
+    }
+    
+    public java.util.Map<String, RepositoryGroupConfiguration> getRepositoryGroupsAsMap()
+    {
+        java.util.Map<String, RepositoryGroupConfiguration> map = new java.util.HashMap<String, RepositoryGroupConfiguration>();
+        if ( repositoryGroups != null )
+        {
+            for ( RepositoryGroupConfiguration group : (java.util.List<RepositoryGroupConfiguration>) repositoryGroups )
+            {
+                map.put( group.getId(), group );
+            }
+        }
+        return map;
+    }
+    
+    public RepositoryGroupConfiguration findRepositoryGroupById( String id )
+    {
+        if ( repositoryGroups != null )
+        {
+            for ( RepositoryGroupConfiguration group : (java.util.List<RepositoryGroupConfiguration>) repositoryGroups )
+            {
+                if ( group.getId().equals( id ) )
+                {
+                    return group;
+                }
+            }
+        }
+        return null;
+    }
+
+    private java.util.Map<String, java.util.List<String>> groupToRepositoryMap;
+    	
+    public java.util.Map<String, java.util.List<String>> getGroupToRepositoryMap()
+    {
+    	if ( repositoryGroups != null && managedRepositories != null )
+        {
+            java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
+            
+            for ( ManagedRepositoryConfiguration repo : (java.util.List<ManagedRepositoryConfiguration>) managedRepositories )
+            {
+                for ( RepositoryGroupConfiguration group : (java.util.List<RepositoryGroupConfiguration>) repositoryGroups )
+                {
+                    if ( !group.getRepositories().contains( repo.getId() ) )
+                    {
+                        String groupId = group.getId();
+                        java.util.List<String> repos = map.get( groupId );
+                        if ( repos == null )
+                        {
+                            repos = new java.util.ArrayList<String>();
+                            map.put( groupId, repos );
+                        }
+                        repos.add( repo.getId() );
+                    }
+                }
+            }
+            groupToRepositoryMap = map;
+        }
+        return groupToRepositoryMap;
     }
           ]]></code>
         </codeSegment>

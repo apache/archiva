@@ -135,6 +135,9 @@
       <h5>Administration</h5>
       <ul>
         <li class="none">
+          <my:currentWWUrl action="repositoryGroups" namespace="/admin">Repository Groups</my:currentWWUrl>
+        </li>
+        <li class="none">
           <my:currentWWUrl action="repositories" namespace="/admin">Repositories</my:currentWWUrl>
         </li>
         <li class="none">

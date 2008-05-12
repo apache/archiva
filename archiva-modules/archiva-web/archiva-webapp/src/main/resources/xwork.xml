@@ -223,6 +223,59 @@
     <action name="index" class="repositoriesAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositories.jsp</result>
     </action>
+    
+    <!-- .\ REPOSITORY GROUPS \._______________________________________ -->
+    
+    <action name="repositoryGroups" class="repositoryGroupsAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+    </action>
+    
+    <action name="addRepositoryGroup" class="repositoryGroupsAction" method="addRepositoryGroup">
+      <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="success" type="redirect-action">repositoryGroups</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="confirmDeleteRepositoryGroup" class="deleteRepositoryGroupAction" method="confirmDelete">
+      <result name="input">/WEB-INF/jsp/admin/deleteRepositoryGroup.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="deleteRepositoryGroup" class="deleteRepositoryGroupAction" method="delete">
+      <result name="input">/WEB-INF/jsp/admin/deleteRepositoryGroup.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/deleteRepositoryGroup.jsp</result>
+      <result name="success" type="redirect-action">repositoryGroups</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+	
+    <action name="addRepositoryToGroup" class="repositoryGroupsAction" method="addRepositoryToGroup">
+      <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="success" type="redirect-action">repositoryGroups</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+	
+    <action name="removeRepositoryFromGroup" class="repositoryGroupsAction" method="removeRepositoryFromGroup">
+      <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="success" type="redirect-action">repositoryGroups</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+	
+    <action name="sortDownRepositoryFromGroup" class="sortRepositoriesAction" method="sortDown">
+      <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="success" type="redirect-action">repositoryGroups</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+	
+    <action name="sortUpRepositoryFromGroup" class="sortRepositoriesAction" method="sortUp">
+      <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
+      <result name="success" type="redirect-action">repositoryGroups</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
 
     <!-- .\ REPOSITORIES \.____________________________________________ -->
 
