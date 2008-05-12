@@ -84,7 +84,7 @@
       <archive>http://mail-archives.apache.org/mod_mbox/archiva-issues</archive>
       <otherArchives>
         <otherArchive>http://www.mail-archive.com/issues@archiva.apache.org</otherArchive>
-		<otherArchive>http://www.nabble.com/Archiva---Issues-f29617.html</otherArchive>
+        <otherArchive>http://www.nabble.com/Archiva---Issues-f29617.html</otherArchive>
       </otherArchives>
     </mailingList>
    </mailingLists>
@@ -104,23 +104,10 @@
 
   <properties>
     <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
-<!-- For testing
-    <siteBaseDeployment>file://localhost/www/maven.apache.org/archiva</siteBaseDeployment>
--->
   </properties>
   <ciManagement>
     <system>continuum</system>
     <url>http://vmbuild.apache.org/continuum</url>
-<!--
-    <notifiers>
-      <notifier>
-        <type>mail</type>
-        <configuration>
-          <address>notifications@maven.apache.org</address>
-        </configuration>
-      </notifier>
-    </notifiers>
--->
   </ciManagement>
   <profiles>
     <profile>
@@ -345,7 +332,7 @@
       <email>james@atlassian.com</email>
       <organization>Atlassian</organization>
       <roles>
-	<roles>Committer</roles>
+        <roles>Committer</roles>
       </roles>
       <timezone>+11</timezone>
     </developer>
