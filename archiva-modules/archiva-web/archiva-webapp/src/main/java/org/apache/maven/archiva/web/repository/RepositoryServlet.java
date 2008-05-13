@@ -26,8 +26,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.webdav.*;
 import org.apache.jackrabbit.webdav.server.AbstractWebdavServlet;
 import org.apache.jackrabbit.webdav.*;
-import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -53,10 +51,6 @@ public class RepositoryServlet
     implements ConfigurationListener
 {
     private Logger log = LoggerFactory.getLogger(RepositoryServlet.class);
-
-    private SecuritySystem securitySystem;
-
-    private HttpAuthenticator httpAuth;
 
     private ArchivaConfiguration configuration;
 
@@ -141,10 +135,6 @@ public class RepositoryServlet
     public synchronized void initServers( ServletConfig servletConfig )
     {
         WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
-
-        securitySystem = (SecuritySystem) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySystem.ROLE ) );
-        httpAuth =
-            (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
 
         configuration = (ArchivaConfiguration) wac.getBean(
             PlexusToSpringUtils.buildSpringId( ArchivaConfiguration.class.getName() ) );
