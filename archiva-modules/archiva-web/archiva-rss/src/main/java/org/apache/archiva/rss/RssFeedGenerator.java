@@ -20,7 +20,6 @@ package org.apache.archiva.rss;
  */
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.slf4j.Logger;

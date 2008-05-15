@@ -36,16 +36,17 @@ public class ArtifactVersionsConstraint
     private String sortColumn = "repositoryId";
     
     public ArtifactVersionsConstraint( String repoId, String groupId, String artifactId )
-    {
+    {        
         if( repoId != null )
-        {
-            whereClause = "repositoryId.equals(selectedRepoId) && groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId)";
+        {   
+            whereClause = "repositoryId.equals(selectedRepoId) && groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId) " +
+            		"&& whenGathered != null";
             declParams = new String[] { "String selectedRepoId", "String selectedGroupId", "String selectedArtifactId" };
             params = new Object[] { repoId, groupId, artifactId };
         }
         else
         {
-            whereClause = "groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId)";
+            whereClause = "groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId) && this.whenGathered != null";            
             declParams = new String[] { "String selectedGroupId", "String selectedArtifactId" };
             params = new Object[] { groupId, artifactId };
         }
