@@ -62,7 +62,7 @@ public class RssFeedGenerator
         feed.setLink( DEFAULT_LINK + queryString );
         feed.setDescription( description );
         feed.setLanguage( DEFAULT_LANGUAGE );
-        feed.setPublishedDate( Calendar.getInstance().getTime() );
+        feed.setPublishedDate( dataEntries.get( dataEntries.size() - 1 ).getPublishedDate() );
         feed.setFeedType( DEFAULT_FEEDTYPE );
         feed.setEntries( getEntries( dataEntries ) );
 
@@ -82,7 +82,7 @@ public class RssFeedGenerator
         {
             entry = new SyndEntryImpl();
             entry.setTitle( dataEntry.getTitle() );
-            entry.setPublishedDate( Calendar.getInstance().getTime() );
+            entry.setPublishedDate( dataEntry.getPublishedDate() );
 
             description = new SyndContentImpl();
             description.setType( "text/plain" );

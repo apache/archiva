@@ -1,5 +1,7 @@
 package org.apache.archiva.rss;
 
+import java.util.Date;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -44,6 +46,8 @@ public class RssFeedEntry
     private String guid;
     
     private String source;
+    
+    private Date publishedDate;
     
     public RssFeedEntry()
     {
@@ -143,5 +147,15 @@ public class RssFeedEntry
     public void setSource( String source )
     {
         this.source = source;
+    }
+
+    public Date getPublishedDate()
+    {
+        return publishedDate;
+    }
+
+    public void setPublishedDate( Date publishedDate )
+    {
+        this.publishedDate = publishedDate;
     }
 }

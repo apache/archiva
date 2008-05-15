@@ -48,13 +48,14 @@ public abstract class AbstractArtifactsRssFeedProcessor
         for ( ArchivaArtifact artifact : artifacts )
         {
             long whenGathered = artifact.getModel().getWhenGathered().getTime();
-
+            
             if ( tmp != whenGathered )
             {
                 if ( entry != null )
-                {
+                {                    
                     entry.setDescription( description );
                     entries.add( entry );
+                    entry = null;
                 }
                 
                 if ( !isRepoLevel )
@@ -62,6 +63,7 @@ public abstract class AbstractArtifactsRssFeedProcessor
                     entry =
                         new RssFeedEntry( getTitle() + "\'" + artifact.getGroupId() + ":" + artifact.getArtifactId() +
                             "\'" + " as of " + new Date( whenGathered ) );
+                    entry.setPublishedDate( artifact.getModel().getWhenGathered() );
                     description = getDescription() + "\'" + artifact.getGroupId() + ":" + artifact.getArtifactId() +
                         "\'" + ": \n" + artifact.toString() + " | ";
                 }
@@ -69,6 +71,7 @@ public abstract class AbstractArtifactsRssFeedProcessor
                 {
                     String repoId = artifact.getModel().getRepositoryId();
                     entry = new RssFeedEntry( getTitle() + "\'" + repoId + "\'" + " as of " + new Date( whenGathered ) );
+                    entry.setPublishedDate( artifact.getModel().getWhenGathered() );
                     description = getDescription() + "\'" + repoId + "\'" + ": \n" + artifact.toString() + " | ";
                 }
             }
@@ -78,7 +81,7 @@ public abstract class AbstractArtifactsRssFeedProcessor
             }
 
             if ( idx == ( artifacts.size() - 1 ) )
-            {
+            {                
                 entry.setDescription( description );
                 entries.add( entry );
             }

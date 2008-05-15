@@ -309,18 +309,21 @@ public class RepositoryContentConsumers
     {
         this.selectedInvalidConsumers = selectedInvalidConsumers;
     }
-    
+        
     public void setStartTime( Date startTime )
     {
         this.startTime = startTime;
     }
     
     public Date getStartTime()
-    {
-        if( startTime == null )
-        {
-            startTime = new Date( System.currentTimeMillis() );
-        }
+    {        
+        startTime = new Date( System.currentTimeMillis() );
+        
         return startTime;
+    }
+    
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }

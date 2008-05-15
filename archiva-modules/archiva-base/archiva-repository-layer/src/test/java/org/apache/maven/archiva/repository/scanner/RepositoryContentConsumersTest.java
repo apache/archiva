@@ -20,6 +20,7 @@ package org.apache.maven.archiva.repository.scanner;
  */
 
 import org.apache.commons.lang.SystemUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -45,10 +46,21 @@ public class RepositoryContentConsumersTest
     private RepositoryContentConsumers lookupRepositoryConsumers()
         throws Exception
     {
+        RepositoryContentConsumers consumerUtilStub = (RepositoryContentConsumers) lookup( RepositoryContentConsumers.class
+            .getName(), "test" );
+        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.ROLE );        
         RepositoryContentConsumers consumerUtil = (RepositoryContentConsumers) lookup( RepositoryContentConsumers.class
-            .getName() );
-        assertNotNull( "RepositoryContentConsumers should not be null.", consumerUtil );
-        return consumerUtil;
+                                                                                           .getName() );
+        
+        consumerUtilStub.setAvailableKnownConsumers( consumerUtil.getAvailableKnownConsumers() );
+        consumerUtilStub.setAvailableInvalidConsumers( consumerUtil.getAvailableInvalidConsumers() );
+        consumerUtilStub.setSelectedInvalidConsumers( consumerUtil.getSelectedInvalidConsumers() );
+        consumerUtilStub.setSelectedKnownConsumers( consumerUtil.getSelectedKnownConsumers() );        
+        consumerUtilStub.setArchivaConfiguration( archivaConfiguration );
+        
+        assertNotNull( "RepositoryContentConsumers should not be null.", consumerUtilStub );
+        
+        return consumerUtilStub;
     }
 
     public void testGetSelectedKnownIds()

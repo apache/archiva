@@ -119,9 +119,11 @@ public class NewArtifactsRssFeedProcessorTest
         assertTrue( feed.getDescription().equals(
                                                   "New artifacts found in repository 'test-repo' during repository scan." ) );
         assertTrue( feed.getLanguage().equals( "en-us" ) );
+        assertTrue( feed.getPublishedDate().equals( whenGathered ) );
 
         List<SyndEntry> entries = feed.getEntries();
         assertEquals( entries.size(), 1 );
         assertTrue( entries.get( 0 ).getTitle().equals( "New Artifacts in Repository 'test-repo' as of " + whenGathered ) );
+        assertTrue( entries.get( 0 ).getPublishedDate().equals( whenGathered ) );
     }
 }

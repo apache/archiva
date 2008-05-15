@@ -20,6 +20,7 @@ package org.apache.archiva.rss;
  */
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -49,16 +50,21 @@ public class RssFeedGeneratorTest
     {
         List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
         RssFeedEntry entry = new RssFeedEntry( "Item 1" );
+        
+        Date whenGathered = new Date( System.currentTimeMillis() );
 
         entry.setDescription( "RSS 2.0 feed item 1." );
+        entry.setPublishedDate( whenGathered );
         entries.add( entry );
 
         entry = new RssFeedEntry( "Item 2" );
         entry.setDescription( "RSS 2.0 feed item 2." );
+        entry.setPublishedDate( whenGathered );
         entries.add( entry );
 
         entry = new RssFeedEntry( "Item 3" );
         entry.setDescription( "RSS 2.0 feed item 3." );
+        entry.setPublishedDate( whenGathered );
         entries.add( entry );
 
         SyndFeed feed =
@@ -68,6 +74,7 @@ public class RssFeedGeneratorTest
         assertEquals( "http://localhost:8080/archiva/rss/generated-rss2.0-feed.xml", feed.getLink() );
         assertEquals( "The test feed from Archiva.", feed.getDescription() );
         assertEquals( "en-us", feed.getLanguage() );
+        assertEquals( entries.get( 2 ).getPublishedDate(), feed.getPublishedDate() );
 
         List<SyndEntry> syndEntries = feed.getEntries();
         assertEquals( 3, syndEntries.size() );

@@ -134,6 +134,11 @@
         <id>move-to-trash-then-notify</id>
       </configuration>
     </component>
+    <component>
+      <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
+      <role-hint>test</role-hint>
+      <implementation>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumersStub</implementation>  
+    </component>
   </components>
 
 </component-set>

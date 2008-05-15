@@ -64,7 +64,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
 
         Date whenGathered = Calendar.getInstance().getTime();
         whenGathered.setTime( 123456789 );
-
+ 
         ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
@@ -76,7 +76,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         artifacts.add( artifact );
 
         Date whenGatheredNext = Calendar.getInstance().getTime();
-        whenGatheredNext.setTime( 345678912 );
+        whenGatheredNext.setTime( 345678912 );      
 
         artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar" );
         artifact.getModel().setRepositoryId( "test-repo" );
@@ -99,14 +99,19 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
                       "New versions of artifact 'org.apache.archiva:artifact-two' found in repository 'test-repo' during repository scan.",
                       feed.getDescription() );
         assertEquals( "en-us", feed.getLanguage() );
+        assertEquals( artifacts.get( 2 ).getModel().getWhenGathered(), feed.getPublishedDate() );
 
         List<SyndEntry> entries = feed.getEntries();
 
         assertEquals( 2, entries.size() );
+        
         assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGathered,
                       entries.get( 0 ).getTitle() );
+        assertEquals( whenGathered, entries.get( 0 ).getPublishedDate() );
+        
         assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGatheredNext,
                       entries.get( 1 ).getTitle() );
+        assertEquals( whenGatheredNext, entries.get( 1 ).getPublishedDate() );
     }
 
 }
