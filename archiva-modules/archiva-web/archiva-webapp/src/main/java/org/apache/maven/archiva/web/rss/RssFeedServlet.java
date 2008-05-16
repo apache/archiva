@@ -270,7 +270,7 @@ public class RssFeedServlet
                 AuthenticationResult result = httpAuth.getAuthenticationResult( req, null );
                 SecuritySession securitySession = httpAuth.getSecuritySession();
 
-                if ( servletAuth.isAuthenticated( req, result, repoId ) &&
+                if ( servletAuth.isAuthenticated( req, result ) &&
                     servletAuth.isAuthorized( req, securitySession, repoId, false ) )
                 {
                     return true;

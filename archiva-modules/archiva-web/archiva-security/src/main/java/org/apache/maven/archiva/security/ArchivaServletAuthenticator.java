@@ -48,7 +48,7 @@ public class ArchivaServletAuthenticator
      */
     private SecuritySystem securitySystem;
 
-    public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result, String repositoryId )
+    public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException
     {
         if ( result != null && !result.isAuthenticated() )
@@ -63,6 +63,8 @@ public class ArchivaServletAuthenticator
                                  boolean isWriteRequest )
         throws AuthorizationException, UnauthorizedException
     {
+        // also check for permission to proxy the resource when MRM-579 is implemented
+        
         String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
 
         if ( isWriteRequest )

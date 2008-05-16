@@ -110,6 +110,45 @@
       <role-hint>default</role-hint>
       <implementation>org.apache.maven.archiva.web.repository.BypassSecuritySystem</implementation>
     </component>
-
+	
+	<component>
+      <role>org.apache.maven.archiva.webdav.ArchivaDavResourceFactory</role>
+      <implementation>org.apache.maven.archiva.web.repository.UnauthenticatedDavResourceFactory</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+          <field-name>archivaConfiguration</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+          <field-name>repositoryFactory</field-name>
+        </requirement>        
+        <requirement>
+          <role>org.apache.maven.archiva.repository.content.RepositoryRequest</role>
+          <field-name>repositoryRequest</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.proxy.RepositoryProxyConnectors</role>
+          <field-name>connectors</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>
+          <field-name>metadataTools</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.security.ServletAuthenticator</role>
+          <field-name>servletAuth</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.webdav.util.MimeTypes</role>
+          <field-name>mimeTypes</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator</role>
+          <role-hint>basic</role-hint>
+          <field-name>httpAuth</field-name>
+        </requirement>
+      </requirements>
+    </component>
   </components>
 </plexus>

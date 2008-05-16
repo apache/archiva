@@ -93,7 +93,7 @@ public class RepositoryServlet
         WebdavResponse webdavResponse = new WebdavResponseImpl( response, noCache );
         
         try
-        {
+        {   
             // make sure there is a authenticated user
             if ( !getDavSessionProvider().attachSession( webdavRequest ) )
             {
@@ -174,7 +174,7 @@ public class RepositoryServlet
         }
 
         resourceFactory =
-            (DavResourceFactory) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaDavResourceFactory.class ) );
+            (DavResourceFactory) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaDavResourceFactory.class ) );        
         locatorFactory = new ArchivaDavLocatorFactory();
         sessionProvider = new ArchivaDavSessionProvider( wac );
     }
@@ -217,6 +217,8 @@ public class RepositoryServlet
 
     protected boolean isPreconditionValid( final WebdavRequest request, final DavResource davResource )
     {
+        // check for read or write access to the resource when resource-based permission is implemented
+        
         return true;
     }
 

@@ -35,7 +35,7 @@ import org.codehaus.plexus.redback.system.SecuritySession;
  */
 public interface ServletAuthenticator
 {
-    public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result, String repositoryId )
+    public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException;
 
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
