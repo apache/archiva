@@ -29,41 +29,45 @@ import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
-public class ArchivaDavLocatorFactory implements DavLocatorFactory
+public class ArchivaDavLocatorFactory
+    implements DavLocatorFactory
 {
-    public DavResourceLocator createResourceLocator(String prefix, String href)
+    public DavResourceLocator createResourceLocator( String prefix, String href )
     {
         // build prefix string and remove all prefixes from the given href.
         StringBuilder b = new StringBuilder();
-        if (prefix != null && prefix.length() > 0) {
-            b.append(prefix);
-            if (!prefix.endsWith("/"))
+        if ( prefix != null && prefix.length() > 0 )
+        {
+            b.append( prefix );
+            if ( !prefix.endsWith( "/" ) )
             {
-                b.append('/');
+                b.append( '/' );
             }
-            if (href.startsWith(prefix)) {
-                href = href.substring(prefix.length());
+            if ( href.startsWith( prefix ) )
+            {
+                href = href.substring( prefix.length() );
             }
         }
 
         // special treatment for root item, that has no name but '/' path.
-        if (href == null || "".equals(href)) {
+        if ( href == null || "".equals( href ) )
+        {
             href = "/";
         }
 
-        final String repository = RepositoryPathUtil.getRepositoryName(href);
-        return new ArchivaDavResourceLocator(b.toString(), Text.unescape(href), repository,  this);
+        final String repository = RepositoryPathUtil.getRepositoryName( href );
+        return new ArchivaDavResourceLocator( b.toString(), Text.unescape( href ), repository, this );
     }
 
-    public DavResourceLocator createResourceLocator(String prefix, String workspacePath, String resourcePath)
+    public DavResourceLocator createResourceLocator( String prefix, String workspacePath, String resourcePath )
     {
-        return createResourceLocator(prefix, workspacePath, resourcePath, true);
+        return createResourceLocator( prefix, workspacePath, resourcePath, true );
     }
 
-    public DavResourceLocator createResourceLocator(String prefix, String workspacePath,
-                                                    String path, boolean isResourcePath)
+    public DavResourceLocator createResourceLocator( String prefix, String workspacePath, String path,
+                                                     boolean isResourcePath )
     {
-        final String repository = RepositoryPathUtil.getRepositoryName(path);
-        return new ArchivaDavResourceLocator(prefix, path, repository, this);
+        final String repository = RepositoryPathUtil.getRepositoryName( path );
+        return new ArchivaDavResourceLocator( prefix, path, repository, this );
     }
 }

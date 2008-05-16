@@ -42,7 +42,7 @@ import java.util.Map;
 
 /**
  * RepositoryServlet
- *
+ * 
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
@@ -50,7 +50,7 @@ public class RepositoryServlet
     extends AbstractWebdavServlet
     implements ConfigurationListener
 {
-    private Logger log = LoggerFactory.getLogger(RepositoryServlet.class);
+    private Logger log = LoggerFactory.getLogger( RepositoryServlet.class );
 
     private ArchivaConfiguration configuration;
 
@@ -64,80 +64,96 @@ public class RepositoryServlet
 
     private final Object reloadLock = new Object();
 
-    public void init(javax.servlet.ServletConfig servletConfig)
+    public void init( javax.servlet.ServletConfig servletConfig )
         throws ServletException
     {
-        super.init(servletConfig);
-        initServers(servletConfig);
+        super.init( servletConfig );
+        initServers( servletConfig );
     }
 
     /**
-     * Service the given request.
-     * This method has been overridden and copy/pasted to allow better exception handling
-     * and to support different realms
-     *
+     * Service the given request. This method has been overridden and copy/pasted to allow better exception handling and
+     * to support different realms
+     * 
      * @param request
      * @param response
      * @throws ServletException
      * @throws java.io.IOException
      */
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
+    protected void service( HttpServletRequest request, HttpServletResponse response )
+        throws ServletException, IOException
     {
-        WebdavRequest webdavRequest = new WebdavRequestImpl(request, getLocatorFactory());
+        WebdavRequest webdavRequest = new WebdavRequestImpl( request, getLocatorFactory() );
         // DeltaV requires 'Cache-Control' header for all methods except 'VERSION-CONTROL' and 'REPORT'.
-        int methodCode = DavMethods.getMethodCode(request.getMethod());
-        boolean noCache = DavMethods.isDeltaVMethod(webdavRequest) && !(DavMethods.DAV_VERSION_CONTROL == methodCode || DavMethods.DAV_REPORT == methodCode);
-        WebdavResponse webdavResponse = new WebdavResponseImpl(response, noCache);
-        try {
+        int methodCode = DavMethods.getMethodCode( request.getMethod() );
+        boolean noCache =
+            DavMethods.isDeltaVMethod( webdavRequest ) &&
+                !( DavMethods.DAV_VERSION_CONTROL == methodCode || DavMethods.DAV_REPORT == methodCode );
+        WebdavResponse webdavResponse = new WebdavResponseImpl( response, noCache );
+        
+        try
+        {
             // make sure there is a authenticated user
-            if (!getDavSessionProvider().attachSession(webdavRequest)) {
+            if ( !getDavSessionProvider().attachSession( webdavRequest ) )
+            {
                 return;
             }
 
             // check matching if=header for lock-token relevant operations
-            DavResource resource = getResourceFactory().createResource(webdavRequest.getRequestLocator(), webdavRequest, webdavResponse);
-            if (!isPreconditionValid(webdavRequest, resource)) {
-                webdavResponse.sendError(DavServletResponse.SC_PRECONDITION_FAILED);
+            DavResource resource =
+                getResourceFactory().createResource( webdavRequest.getRequestLocator(), webdavRequest, webdavResponse );
+            
+            if ( !isPreconditionValid( webdavRequest, resource ) )
+            {
+                webdavResponse.sendError( DavServletResponse.SC_PRECONDITION_FAILED );
                 return;
             }
-            if (!execute(webdavRequest, webdavResponse, methodCode, resource)) {
-                super.service(request, response);
+            if ( !execute( webdavRequest, webdavResponse, methodCode, resource ) )
+            {
+                super.service( request, response );
             }
 
         }
-        catch (UnauthorizedDavException e)
+        catch ( UnauthorizedDavException e )
         {
-            webdavResponse.setHeader("WWW-Authenticate", getAuthenticateHeaderValue(e.getRepositoryName()));
-            webdavResponse.sendError(e.getErrorCode(), e.getStatusPhrase());
+            webdavResponse.setHeader( "WWW-Authenticate", getAuthenticateHeaderValue( e.getRepositoryName() ) );
+            webdavResponse.sendError( e.getErrorCode(), e.getStatusPhrase() );
         }
-        catch (BrowserRedirectException e)
+        catch ( BrowserRedirectException e )
         {
-            response.sendRedirect(e.getLocation());
+            response.sendRedirect( e.getLocation() );
         }
-        catch (DavException e)
+        catch ( DavException e )
         {
-            if (e.getErrorCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+            if ( e.getErrorCode() == HttpServletResponse.SC_UNAUTHORIZED )
+            {
                 final String msg = "Should throw " + UnauthorizedDavException.class.getName();
-                log.error(msg);
-                webdavResponse.sendError(e.getErrorCode(), msg);
-            } else if ( e.getCause() != null ) {
-                webdavResponse.sendError(e.getErrorCode(), e.getCause().getMessage());
-            } else {
-                webdavResponse.sendError(e.getErrorCode(), e.getMessage());
+                log.error( msg );
+                webdavResponse.sendError( e.getErrorCode(), msg );
             }
-        } finally {
-            getDavSessionProvider().releaseSession(webdavRequest);
+            else if ( e.getCause() != null )
+            {
+                webdavResponse.sendError( e.getErrorCode(), e.getCause().getMessage() );
+            }
+            else
+            {
+                webdavResponse.sendError( e.getErrorCode(), e.getMessage() );
+            }
+        }
+        finally
+        {
+            getDavSessionProvider().releaseSession( webdavRequest );
         }
     }
 
     public synchronized void initServers( ServletConfig servletConfig )
     {
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
+        WebApplicationContext wac =
+            WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
 
-        configuration = (ArchivaConfiguration) wac.getBean(
-            PlexusToSpringUtils.buildSpringId( ArchivaConfiguration.class.getName() ) );
+        configuration =
+            (ArchivaConfiguration) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaConfiguration.class.getName() ) );
         configuration.addListener( this );
 
         repositoryMap = configuration.getConfiguration().getManagedRepositoriesAsMap();
@@ -157,14 +173,15 @@ public class RepositoryServlet
             }
         }
 
-        resourceFactory = (DavResourceFactory)wac.getBean(PlexusToSpringUtils.buildSpringId(ArchivaDavResourceFactory.class));
+        resourceFactory =
+            (DavResourceFactory) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaDavResourceFactory.class ) );
         locatorFactory = new ArchivaDavLocatorFactory();
-        sessionProvider = new ArchivaDavSessionProvider(wac);
+        sessionProvider = new ArchivaDavSessionProvider( wac );
     }
-    
+
     public void configurationEvent( ConfigurationEvent event )
     {
-        if( event.getType() == ConfigurationEvent.SAVED )
+        if ( event.getType() == ConfigurationEvent.SAVED )
         {
             initRepositories();
         }
@@ -198,7 +215,7 @@ public class RepositoryServlet
         return configuration;
     }
 
-    protected boolean isPreconditionValid(final WebdavRequest request, final DavResource davResource)
+    protected boolean isPreconditionValid( final WebdavRequest request, final DavResource davResource )
     {
         return true;
     }
@@ -208,7 +225,7 @@ public class RepositoryServlet
         return sessionProvider;
     }
 
-    public void setDavSessionProvider(final DavSessionProvider davSessionProvider)
+    public void setDavSessionProvider( final DavSessionProvider davSessionProvider )
     {
         this.sessionProvider = davSessionProvider;
     }
@@ -218,7 +235,7 @@ public class RepositoryServlet
         return locatorFactory;
     }
 
-    public void setLocatorFactory(final DavLocatorFactory davLocatorFactory)
+    public void setLocatorFactory( final DavLocatorFactory davLocatorFactory )
     {
         locatorFactory = davLocatorFactory;
     }
@@ -228,7 +245,7 @@ public class RepositoryServlet
         return resourceFactory;
     }
 
-    public void setResourceFactory(final DavResourceFactory davResourceFactory)
+    public void setResourceFactory( final DavResourceFactory davResourceFactory )
     {
         resourceFactory = davResourceFactory;
     }
@@ -238,7 +255,7 @@ public class RepositoryServlet
         throw new UnsupportedOperationException();
     }
 
-    public String getAuthenticateHeaderValue(String repository)
+    public String getAuthenticateHeaderValue( String repository )
     {
         return "Basic realm=\"Repository Archiva Managed " + repository + " Repository\"";
     }

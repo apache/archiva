@@ -26,7 +26,8 @@ import org.apache.jackrabbit.util.Text;
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
-public class ArchivaDavResourceLocator implements DavResourceLocator, RepositoryLocator
+public class ArchivaDavResourceLocator
+    implements DavResourceLocator, RepositoryLocator
 {
     private String prefix;
 
@@ -38,20 +39,21 @@ public class ArchivaDavResourceLocator implements DavResourceLocator, Repository
 
     private DavLocatorFactory davLocatorFactory;
 
-    public ArchivaDavResourceLocator(String prefix, String resourcePath, String repositoryId, DavLocatorFactory davLocatorFactory)
+    public ArchivaDavResourceLocator( String prefix, String resourcePath, String repositoryId,
+                                      DavLocatorFactory davLocatorFactory )
     {
         this.prefix = prefix;
         this.repositoryId = repositoryId;
         this.davLocatorFactory = davLocatorFactory;
         this.resourcePath = resourcePath;
 
-        String escapedPath = Text.escapePath(resourcePath);
+        String escapedPath = Text.escapePath( resourcePath );
         String hrefPrefix = prefix;
 
-        //Ensure no extra slashes when href is joined
-        if (hrefPrefix.endsWith("/") && escapedPath.startsWith("/"))
+        // Ensure no extra slashes when href is joined
+        if ( hrefPrefix.endsWith( "/" ) && escapedPath.startsWith( "/" ) )
         {
-            hrefPrefix = hrefPrefix.substring(0, hrefPrefix.length()-1);
+            hrefPrefix = hrefPrefix.substring( 0, hrefPrefix.length() - 1 );
         }
 
         href = hrefPrefix + escapedPath;
@@ -82,26 +84,26 @@ public class ArchivaDavResourceLocator implements DavResourceLocator, Repository
         return "";
     }
 
-    public boolean isSameWorkspace(DavResourceLocator locator)
+    public boolean isSameWorkspace( DavResourceLocator locator )
     {
-        return isSameWorkspace(locator.getWorkspaceName());
+        return isSameWorkspace( locator.getWorkspaceName() );
     }
 
-    public boolean isSameWorkspace(String workspaceName)
+    public boolean isSameWorkspace( String workspaceName )
     {
-        return getWorkspaceName().equals(workspaceName);
+        return getWorkspaceName().equals( workspaceName );
     }
 
-    public String getHref(boolean isCollection)
+    public String getHref( boolean isCollection )
     {
         // avoid doubled trailing '/' for the root item
-        String suffix = (isCollection && !isRootLocation()) ? "/" : "";
+        String suffix = ( isCollection && !isRootLocation() ) ? "/" : "";
         return href + suffix;
     }
 
     public boolean isRootLocation()
     {
-        return "/".equals(resourcePath);
+        return "/".equals( resourcePath );
     }
 
     public DavLocatorFactory getFactory()
@@ -115,9 +117,8 @@ public class ArchivaDavResourceLocator implements DavResourceLocator, Repository
     }
 
     /**
-     * Computes the hash code from the href, which is built using the final
-     * fields prefix and resourcePath.
-     *
+     * Computes the hash code from the href, which is built using the final fields prefix and resourcePath.
+     * 
      * @return the hash code
      */
     public int hashCode()
@@ -126,16 +127,15 @@ public class ArchivaDavResourceLocator implements DavResourceLocator, Repository
     }
 
     /**
-     * Equality of path is achieved if the specified object is a <code>DavResourceLocator</code>
-     * object with the same hash code.
-     *
+     * Equality of path is achieved if the specified object is a <code>DavResourceLocator</code> object with the same
+     * hash code.
+     * 
      * @param obj the object to compare to
-     * @return <code>true</code> if the 2 objects are equal;
-     *         <code>false</code> otherwise
+     * @return <code>true</code> if the 2 objects are equal; <code>false</code> otherwise
      */
-    public boolean equals(Object obj)
+    public boolean equals( Object obj )
     {
-        if (obj instanceof DavResourceLocator)
+        if ( obj instanceof DavResourceLocator )
         {
             DavResourceLocator other = (DavResourceLocator) obj;
             return hashCode() == other.hashCode();
