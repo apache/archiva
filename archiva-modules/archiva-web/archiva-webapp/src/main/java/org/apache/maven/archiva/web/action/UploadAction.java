@@ -353,8 +353,14 @@ public class UploadAction
 
             updateMetadata( getMetadata( targetPath.getAbsolutePath() ) );
 
-            addActionMessage( "Artifact \'" + groupId + ":" + artifactId + ":" + version +
-                "\' was successfully deployed to repository \'" + repositoryId + "\'!" );
+            String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
+                "\' was successfully deployed to repository \'" + repositoryId + "\'";
+
+            //TODO: MRM-810 (this writes to archiva.log, should be audit.log)
+            getLogger().info( msg + " by " + getPrincipal() );
+
+            //TODO: MRM-785 (success message does not display on web page)
+            addActionMessage( msg );
 
             return SUCCESS;
         }
