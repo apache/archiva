@@ -316,6 +316,7 @@ public class UploadAction
             try
             {
                 copyFile( artifactFile, targetPath, artifactPath.substring( lastIndex + 1 ) );
+                consumers.executeConsumers( repoConfig, repository.toFile( artifactReference ) );
             }
             catch ( IOException ie )
             {
@@ -327,7 +328,8 @@ public class UploadAction
             {
                 try
                 {
-                    createPom( targetPath, artifactPath.substring( lastIndex + 1 ) );
+                    File generatedPomFile = createPom( targetPath, artifactPath.substring( lastIndex + 1 ) );
+                    consumers.executeConsumers( repoConfig, generatedPomFile );
                 }
                 catch ( IOException ie )
                 {
@@ -348,6 +350,7 @@ public class UploadAction
                 {
                     String targetFilename = artifactPath.substring( lastIndex + 1 ).replaceAll( packaging, "pom" );
                     copyFile( pomFile, targetPath, targetFilename );
+                    consumers.executeConsumers( repoConfig, new File( targetPath, targetFilename ) );
                 }
                 catch ( IOException ie )
                 {
@@ -368,8 +371,6 @@ public class UploadAction
             //TODO: MRM-785 (success message does not display on web page)
             addActionMessage( msg );
 
-            consumers.executeConsumers( repoConfig, repository.toFile( artifactReference ) );
-            
             return SUCCESS;
         }
         catch ( RepositoryNotFoundException re )
@@ -410,7 +411,7 @@ public class UploadAction
         }
     }
 
-    private void createPom( File targetPath, String filename )
+    private File createPom( File targetPath, String filename )
         throws IOException, ProjectModelException
     {
         ArchivaProjectModel projectModel = new ArchivaProjectModel();
@@ -422,6 +423,8 @@ public class UploadAction
         File pomFile = new File( targetPath, filename.replaceAll( packaging, "pom" ) );
 
         pomWriter.write( projectModel, pomFile );
+
+        return pomFile;
     }
 
     private File getMetadata( String targetPath )
