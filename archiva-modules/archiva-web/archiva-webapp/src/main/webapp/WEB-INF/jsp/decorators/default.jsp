@@ -95,10 +95,6 @@
       <li class="none">
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
       </li>
-      
-      <li class="none">
-        <my:currentWWUrl action="upload" namespace="/">Upload Artifact</my:currentWWUrl>
-      </li>
     </ul>
 
     <redback:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
@@ -122,6 +118,9 @@
         <redback:ifAuthorized permission="archiva-manage-configuration">
           <li class="none">
             <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>
+          </li>
+          <li class="none">
+            <my:currentWWUrl action="upload" namespace="/">Upload Artifact</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
           <%-- TODO: future options here.
