@@ -41,6 +41,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
@@ -70,6 +71,11 @@ public class UploadAction
     extends PlexusActionSupport
     implements Validateable, Preparable
 {
+    /**
+      * @plexus.requirement
+      */
+     private RepositoryContentConsumers consumers;
+    
     /**
      * The groupId of the artifact to be deployed.
      */
@@ -362,6 +368,8 @@ public class UploadAction
             //TODO: MRM-785 (success message does not display on web page)
             addActionMessage( msg );
 
+            consumers.executeConsumers( repoConfig, repository.toFile( artifactReference ) );
+            
             return SUCCESS;
         }
         catch ( RepositoryNotFoundException re )
