@@ -125,20 +125,7 @@ public class RepositoryServletRepositoryGroupTest
         
         super.tearDown();
     }
-    
-    
-    /*
-     * Test Case 1
-     */
-    public void testGetValidRepositoryGroupRootPathReturnBadRequest()
-        throws Exception
-    {
-        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS );
-        WebResponse response = sc.getResponse( request );
         
-        assertResponseBadRequest( response );
-    }
-    
     /*
      * Test Case 3.c
      */
@@ -217,11 +204,20 @@ public class RepositoryServletRepositoryGroupTest
         
         WebRequest request = new PutMethodWebRequest( putUrl, is, "text/plain" );
         WebResponse response = sc.getResponse( request );
-        
+         
         assertResponseBadRequest( response );
     }
     
-    
+    public void testBrowseRepositoryGroup()
+        throws Exception
+    {
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS );
+        WebResponse response = sc.getResponse( request );
+                
+        assertNotNull( "Should have received a response", response );
+        assertResponseOK( response );
+    }
+        
     protected void assertResponseBadRequest( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );

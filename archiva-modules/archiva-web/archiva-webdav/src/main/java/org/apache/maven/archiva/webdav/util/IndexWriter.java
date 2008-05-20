@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.io.PrintWriter;
 import java.io.File;
 
@@ -37,19 +39,31 @@ public class IndexWriter
 {
     private final DavResource resource;
 
-    private final File localResource;
-
     private final String logicalResource;
-
+    
+    private final List<File> localResources;
+    
+    private final boolean isVirtual;
+    
     public IndexWriter(DavResource resource, File localResource, String logicalResource)
     {
         this.resource = resource;
-        this.localResource = localResource;
+        this.localResources = new ArrayList<File>();
+        this.localResources.add( localResource );
         this.logicalResource = logicalResource;
+        this.isVirtual = false;
+    }
+    
+    public IndexWriter( DavResource resource, List<File> localResources, String logicalResource )
+    {
+        this.resource = resource;
+        this.logicalResource = logicalResource;
+        this.localResources = localResources;
+        this.isVirtual = true;
     }
 
     public void write(OutputContext outputContext)
-    {
+    {   
         outputContext.setModificationTime(new Date().getTime());
         outputContext.setContentType("text/html");
         outputContext.setETag("");
@@ -94,18 +108,50 @@ public class IndexWriter
     }
 
     private void writeHyperlinks(PrintWriter writer)
-    {
-        List<File> files = new ArrayList<File>( Arrays.asList( localResource.listFiles() ) ); 
-        Collections.sort( files );
-        
-        for ( File file : files )
+    {   
+        if( !isVirtual )
         {
-            writeHyperlink(writer, file.getName(), file.isDirectory());
+            for( File localResource : localResources )
+            {
+                List<File> files = new ArrayList<File>( Arrays.asList( localResource.listFiles() ) ); 
+                Collections.sort( files );
+                
+                for ( File file : files )
+                {
+                    writeHyperlink( writer, file.getName(), file.isDirectory(), false );
+                }
+            }
+        }
+        else 
+        {            
+            // virtual repository - filter unique directories
+            Map<String, File> uniqueChildFiles = new HashMap<String, File>();                        
+            for( File resource : localResources )
+            {
+                List<File> files = new ArrayList<File>( Arrays.asList( resource.listFiles() ) ); 
+                Collections.sort( files );
+                                
+                for ( File file : files )
+                {   
+                    if( uniqueChildFiles.get( file.getName() ) == null )
+                    {
+                        uniqueChildFiles.put( file.getName(), file );
+                    }                    
+                }
+            }
+            
+            List<File> uniqueChildFilesInList = new ArrayList<File>();
+            uniqueChildFilesInList.addAll( uniqueChildFiles.values() );
+            
+            for ( File file : uniqueChildFilesInList )
+            {   
+                writeHyperlink( writer, file.getName(), file.isDirectory(), true );
+            }
         }
     }
 
-    private void writeHyperlink(PrintWriter writer, String resourceName, boolean directory)
-    {
+    private void writeHyperlink(PrintWriter writer, String resourceName, boolean directory, boolean isBrowse )
+    {        
         if (directory)
         {
             writer.println("<li><a href=\"./" + resourceName + "/\">" + resourceName + "</a></li>");
@@ -114,5 +160,5 @@ public class IndexWriter
         {
             writer.println("<li><a href=\"./" + resourceName + "\">" + resourceName + "</a></li>");
         }
-    }
+    }    
 }

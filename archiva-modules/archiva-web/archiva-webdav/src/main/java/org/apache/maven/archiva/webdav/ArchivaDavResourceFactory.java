@@ -123,7 +123,7 @@ public class ArchivaDavResourceFactory
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
-    {
+    {        
         checkLocatorIsInstanceOfRepositoryLocator( locator );
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
         
@@ -134,23 +134,21 @@ public class ArchivaDavResourceFactory
 
         boolean isGet = WebdavMethodUtil.isReadMethod( request.getMethod() );
         boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
-        
+                
         if ( repoGroupConfig != null )
-        {
-            if ( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ).equals( "/" ) ||
-                WebdavMethodUtil.isWriteMethod( request.getMethod() ) )
+        {   
+            if( WebdavMethodUtil.isWriteMethod( request.getMethod() ) )
             {
                 throw new DavException( HttpServletResponse.SC_BAD_REQUEST, "Bad request to repository group <" +
                     repoGroupConfig.getId() + ">" );
             }
             repositories.addAll( repoGroupConfig.getRepositories() );
             
-            // do not allow write request for repo groups
-            if( isPut )
-            {
-                throw new DavException( HttpServletResponse.SC_FORBIDDEN, "Write request is not allowed for <" +
-                    repoGroupConfig.getId() + ">" );
-            }
+            // handle browse requests for virtual repos
+            if ( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ).endsWith( "/" ) )                
+            {                    
+                return getResource( repositories, archivaLocator );                
+            }            
         }
         else
         {
@@ -231,7 +229,7 @@ public class ArchivaDavResourceFactory
     
     public DavResource createResource( final DavResourceLocator locator, final DavSession davSession )
         throws DavException
-    {
+    {        
         checkLocatorIsInstanceOfRepositoryLocator( locator );
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
 
@@ -664,6 +662,46 @@ public class ArchivaDavResourceFactory
         {         
             throw new UnauthorizedDavException( repositoryId, e.getMessage() );
         }
+    }
+    
+    private DavResource getResource( List<String> repositories, ArchivaDavResourceLocator locator )
+        throws DavException
+    {
+        List<File> mergedRepositoryContents = new ArrayList<File>();        
+        LogicalResource logicalResource =
+            new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
+        
+        for( String repository : repositories )
+        {
+            ManagedRepositoryContent managedRepository = null;
+
+            try
+            {
+                managedRepository = getManagedRepository( repository );
+            }
+            catch ( DavException de )
+            {
+                throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Invalid managed repository <" +
+                    repository + ">" );
+            }
+            
+            if ( !locator.getResourcePath().startsWith( ArchivaVirtualDavResource.HIDDEN_PATH_PREFIX ) )
+            {
+                if( managedRepository != null )
+                {   
+                    File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
+                    if( resourceFile.exists() )
+                    {
+                        mergedRepositoryContents.add( resourceFile );
+                    }                    
+                }
+            }
+        }      
+                
+        ArchivaVirtualDavResource resource =
+            new ArchivaVirtualDavResource( mergedRepositoryContents, logicalResource.getPath(), mimeTypes, locator, this );
+                
+        return resource;
     }
     
 }

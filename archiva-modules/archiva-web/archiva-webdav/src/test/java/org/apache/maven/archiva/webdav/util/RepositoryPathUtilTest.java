@@ -45,5 +45,8 @@ public class RepositoryPathUtilTest extends TestCase
 
         href = "repository/internal/org/apache/maven/someartifact.jar";
         assertEquals("/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource(href));
+        
+        href = "repository/internal/org/apache/maven/";
+        assertEquals( "/org/apache/maven/", RepositoryPathUtil.getLogicalResource( href ) );
     }
 }

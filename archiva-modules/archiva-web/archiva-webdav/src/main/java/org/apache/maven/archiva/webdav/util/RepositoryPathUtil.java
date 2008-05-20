@@ -21,7 +21,6 @@ package org.apache.maven.archiva.webdav.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
@@ -44,19 +43,19 @@ public class RepositoryPathUtil
 
         int slash = requestPathInfo.indexOf( '/' );
         if ( slash > 0 )
-        {
+        {   
             logicalResource = requestPathInfo.substring( slash );
-
+         
             if (logicalResource.endsWith( "/.." ) )
             {
                 logicalResource += "/";
             }
-
+            
             if ( logicalResource != null && logicalResource.startsWith( "//" ) )
             {
                 logicalResource = logicalResource.substring( 1 );
             }
-
+            
             if ( logicalResource == null )
             {
                 logicalResource = "/";
@@ -100,6 +99,13 @@ public class RepositoryPathUtil
         {
             return "/";
         }
-        return StringUtils.join(parts, '/');
+        
+        String joinedString = StringUtils.join(parts, '/');        
+        if( href.endsWith( "/" ) )
+        {
+            joinedString = joinedString + "/";
+        }
+        
+        return joinedString;
     }
 }
