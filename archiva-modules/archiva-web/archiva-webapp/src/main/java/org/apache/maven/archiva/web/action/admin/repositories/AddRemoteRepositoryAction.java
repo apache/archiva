@@ -59,6 +59,9 @@ public class AddRemoteRepositoryAction
     {
         Configuration configuration = archivaConfiguration.getConfiguration();
         
+        //MRM-752 - url needs trimming
+        repository.setUrl(repository.getUrl().trim());
+        
         // Save the repository configuration.
         String result;
         try

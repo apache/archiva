@@ -102,11 +102,15 @@ public class AddRemoteRepositoryActionTest
         action.prepare();
         RemoteRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
+        
+        assertEquals("url ", repository.getUrl());
 
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
 
         assertEquals( Collections.singletonList( repository ), configuration.getRemoteRepositories() );
+        
+        assertEquals("url", repository.getUrl());
 
         archivaConfigurationControl.verify();
     }
@@ -115,7 +119,7 @@ public class AddRemoteRepositoryActionTest
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
-        repository.setUrl( "url" );
+        repository.setUrl( "url " );
         repository.setLayout( "default" );
     }
     
