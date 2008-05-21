@@ -129,8 +129,7 @@ public class IndexWriter
             for( File resource : localResources )
             {
                 List<File> files = new ArrayList<File>( Arrays.asList( resource.listFiles() ) ); 
-                Collections.sort( files );
-                                
+                                                
                 for ( File file : files )
                 {   
                     if( uniqueChildFiles.get( file.getName() ) == null )
@@ -142,6 +141,7 @@ public class IndexWriter
             
             List<File> uniqueChildFilesInList = new ArrayList<File>();
             uniqueChildFilesInList.addAll( uniqueChildFiles.values() );
+            Collections.sort( uniqueChildFilesInList );
             
             for ( File file : uniqueChildFilesInList )
             {   

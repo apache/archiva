@@ -147,7 +147,7 @@ public class ArchivaDavResourceFactory
             // handle browse requests for virtual repos
             if ( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ).endsWith( "/" ) )                
             {                    
-                return getResource( repositories, archivaLocator );                
+                return getResource( request, repositories, archivaLocator );                
             }            
         }
         else
@@ -664,7 +664,7 @@ public class ArchivaDavResourceFactory
         }
     }
     
-    private DavResource getResource( List<String> repositories, ArchivaDavResourceLocator locator )
+    private DavResource getResource( DavServletRequest request, List<String> repositories, ArchivaDavResourceLocator locator )
         throws DavException
     {
         List<File> mergedRepositoryContents = new ArrayList<File>();        
@@ -685,15 +685,18 @@ public class ArchivaDavResourceFactory
                     repository + ">" );
             }
             
-            if ( !locator.getResourcePath().startsWith( ArchivaVirtualDavResource.HIDDEN_PATH_PREFIX ) )
+            if( isAuthorized( request, repository ) )
             {
-                if( managedRepository != null )
-                {   
-                    File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
-                    if( resourceFile.exists() )
-                    {
-                        mergedRepositoryContents.add( resourceFile );
-                    }                    
+                if ( !locator.getResourcePath().startsWith( ArchivaVirtualDavResource.HIDDEN_PATH_PREFIX ) )
+                {
+                    if( managedRepository != null )
+                    {   
+                        File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
+                        if( resourceFile.exists() )
+                        {
+                            mergedRepositoryContents.add( resourceFile );
+                        }                    
+                    }
                 }
             }
         }      
