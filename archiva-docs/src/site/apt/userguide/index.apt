@@ -17,6 +17,10 @@ Users Guide
 
     * {{{deploy.html} Deploying artifacts to the repository}}
 
+    * {{{virtual-repositories.html} Configuring Virtual Repositories}}
+
+    * {{{rss.html}RSS Feeds in Archiva}}
+
     []
 
 
