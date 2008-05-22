@@ -205,7 +205,7 @@ public class RepositoryServletRepositoryGroupTest
         WebRequest request = new PutMethodWebRequest( putUrl, is, "text/plain" );
         WebResponse response = sc.getResponse( request );
          
-        assertResponseBadRequest( response );
+        assertResponseMethodNotAllowed( response );
     }
     
     public void testBrowseRepositoryGroup()
@@ -218,10 +218,10 @@ public class RepositoryServletRepositoryGroupTest
         assertEquals( "Should have been an 401 response code.", HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode() );
     }
         
-    protected void assertResponseBadRequest( WebResponse response )
+    protected void assertResponseMethodNotAllowed( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
-        assertEquals( "Should have been an 400/Bad Request response code.", HttpServletResponse.SC_BAD_REQUEST, response.getResponseCode() );
+        assertEquals( "Should have been an 405/Method Not Allowed response code.", HttpServletResponse.SC_METHOD_NOT_ALLOWED, response.getResponseCode() );
     }
 
     protected RepositoryGroupConfiguration createRepositoryGroup( String id, List<String> repositories )

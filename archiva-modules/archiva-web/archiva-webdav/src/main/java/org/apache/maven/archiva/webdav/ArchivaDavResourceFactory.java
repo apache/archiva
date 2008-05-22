@@ -142,8 +142,8 @@ public class ArchivaDavResourceFactory
         {   
             if( WebdavMethodUtil.isWriteMethod( request.getMethod() ) )
             {
-                throw new DavException( HttpServletResponse.SC_BAD_REQUEST, "Bad request to repository group <" +
-                    repoGroupConfig.getId() + ">" );
+                throw new DavException( HttpServletResponse.SC_METHOD_NOT_ALLOWED,
+                                        "Write method not allowed for repository groups." );
             }
             repositories.addAll( repoGroupConfig.getRepositories() );
             
