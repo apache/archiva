@@ -56,6 +56,7 @@ import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
@@ -63,7 +64,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.io.*;
 
 /**
@@ -123,7 +126,7 @@ public class ArchivaDavResourceFactory
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
-    {        
+    {   
         checkLocatorIsInstanceOfRepositoryLocator( locator );
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
         
@@ -636,7 +639,7 @@ public class ArchivaDavResourceFactory
         {
             AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );            
             SecuritySession securitySession = httpAuth.getSecuritySession();
-            
+                       
             return servletAuth.isAuthenticated( request, result ) &&
                 servletAuth.isAuthorized( request, securitySession, repositoryId,
                                           WebdavMethodUtil.isWriteMethod( request.getMethod() ) );
@@ -671,36 +674,63 @@ public class ArchivaDavResourceFactory
         LogicalResource logicalResource =
             new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
         
-        for( String repository : repositories )
+        // flow: 
+        // if the current user logged in has permission to any of the repositories, allow user to
+        // browse the repo group but displaying only the repositories which the user has permission to access.
+        // otherwise, prompt for authentication.
+        
+        // put the current session in the session map which will be passed to ArchivaXworkUser
+        Map<String, Object> sessionMap = new HashMap<String, Object>();
+        if( request.getSession().getAttribute( SecuritySystemConstants.SECURITY_SESSION_KEY ) != null )
         {
-            ManagedRepositoryContent managedRepository = null;
-
-            try
-            {
-                managedRepository = getManagedRepository( repository );
-            }
-            catch ( DavException de )
-            {
-                throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Invalid managed repository <" +
-                    repository + ">" );
-            }
-            
-            if( isAuthorized( request, repository ) )
-            {
-                if ( !locator.getResourcePath().startsWith( ArchivaVirtualDavResource.HIDDEN_PATH_PREFIX ) )
+            sessionMap.put( SecuritySystemConstants.SECURITY_SESSION_KEY, 
+                            request.getSession().getAttribute( SecuritySystemConstants.SECURITY_SESSION_KEY ) );
+        }
+        
+        String activePrincipal = ArchivaXworkUser.getActivePrincipal( sessionMap );        
+        boolean allow = isAllowedToContinue( request, repositories, activePrincipal );
+              
+        if( allow )
+        {            
+            for( String repository : repositories )
+            {    
+                // for prompted authentication
+                if( httpAuth.getSecuritySession() != null )
                 {
-                    if( managedRepository != null )
+                    try
                     {   
-                        File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
-                        if( resourceFile.exists() )
+                        if( isAuthorized( request, repository ) )                        
                         {
-                            mergedRepositoryContents.add( resourceFile );
-                        }                    
+                            getResource( locator, mergedRepositoryContents, logicalResource, repository );
+                        }
+                    }                    
+                    catch ( DavException e )
+                    {                        
+                        continue;
                     }
                 }
+                else
+                {
+                    // for the current user logged in 
+                    try
+                    {
+                        if( servletAuth.isAuthorizedToAccessVirtualRepository( activePrincipal, repository ) )
+                        {
+                            getResource( locator, mergedRepositoryContents, logicalResource, repository );
+                        }
+                    }
+                    catch ( UnauthorizedException e )                    
+                    {                        
+                        continue;
+                    }
+                }                
             }
-        }      
-                
+        }
+        else
+        {
+            throw new UnauthorizedDavException( locator.getRepositoryId(), "User not authorized." );
+        }
+        
         ArchivaVirtualDavResource resource =
             new ArchivaVirtualDavResource( mergedRepositoryContents, logicalResource.getPath(), mimeTypes, locator, this );
        
@@ -712,5 +742,88 @@ public class ArchivaDavResourceFactory
         
         return resource;
     }
+
+    private void getResource( ArchivaDavResourceLocator locator, List<File> mergedRepositoryContents,
+                              LogicalResource logicalResource, String repository )
+        throws DavException
+    {
+        ManagedRepositoryContent managedRepository = null;
+
+        try
+        {
+            managedRepository = getManagedRepository( repository );
+        }
+        catch ( DavException de )
+        {
+            throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Invalid managed repository <" +
+                repository + ">" );
+        }                            
+        
+        if ( !locator.getResourcePath().startsWith( ArchivaVirtualDavResource.HIDDEN_PATH_PREFIX ) )
+        {
+            if( managedRepository != null )
+            {   
+                File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
+                if( resourceFile.exists() )
+                {                    
+                    mergedRepositoryContents.add( resourceFile );
+                }                    
+            }
+        }
+    }
     
+    /**
+     * Check if the current user is authorized to access any of the repos
+     *  
+     * @param request
+     * @param repositories
+     * @param activePrincipal
+     * @return
+     */
+    private boolean isAllowedToContinue( DavServletRequest request, List<String> repositories, String activePrincipal )    
+    {
+        boolean allow = false;
+        
+              
+        // if securitySession != null, it means that the user was prompted for authentication
+        if( httpAuth.getSecuritySession() != null )
+        {
+            for( String repository : repositories )
+            {
+                try
+                {
+                    if( isAuthorized( request, repository ) )
+                    {
+                        allow = true;
+                        break;
+                    }
+                }
+                catch( DavException e )
+                {                    
+                    continue;
+                }
+            }  
+        }
+        else
+        {   
+            for( String repository : repositories )
+            {
+                try
+                {
+                    if( servletAuth.isAuthorizedToAccessVirtualRepository( activePrincipal, repository ) )
+                    {
+                        allow = true;
+                        break;
+                    }
+                }
+                catch ( UnauthorizedException e )
+                {                    
+                    continue;
+                }
+            }  
+        }
+        
+        return allow;
+    }
+        
 }

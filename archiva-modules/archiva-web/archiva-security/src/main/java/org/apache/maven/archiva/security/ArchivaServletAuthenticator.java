@@ -29,8 +29,11 @@ import org.codehaus.plexus.redback.authorization.AuthorizationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.codehaus.plexus.redback.users.User;
+import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +66,8 @@ public class ArchivaServletAuthenticator
                                  boolean isWriteRequest )
         throws AuthorizationException, UnauthorizedException
     {
-        // also check for permission to proxy the resource when MRM-579 is implemented
-        
+        // TODO: also check for permission to proxy the resource when MRM-579 is implemented
+
         String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
 
         if ( isWriteRequest )
@@ -88,5 +91,32 @@ public class ArchivaServletAuthenticator
         }
 
         return true;
+    }
+
+    public boolean isAuthorizedToAccessVirtualRepository( String principal, String repoId )
+        throws UnauthorizedException
+    {
+        try
+        {
+            User user = securitySystem.getUserManager().findUser( principal );
+            if ( user.isLocked() )
+            {
+                throw new UnauthorizedException( "User account is locked." );
+            }
+
+            AuthenticationResult authn = new AuthenticationResult( true, principal, null );
+            SecuritySession securitySession = new DefaultSecuritySession( authn, user );
+
+            return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
+                                                repoId );
+        }
+        catch ( UserNotFoundException e )
+        {
+            throw new UnauthorizedException( e.getMessage() );
+        }
+        catch ( AuthorizationException e )
+        {
+            throw new UnauthorizedException( e.getMessage() );
+        }
     }
 }

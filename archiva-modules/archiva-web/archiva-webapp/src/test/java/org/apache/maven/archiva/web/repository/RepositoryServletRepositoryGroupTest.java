@@ -215,7 +215,7 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = sc.getResponse( request );
                 
         assertNotNull( "Should have received a response", response );
-        assertResponseOK( response );
+        assertEquals( "Should have been an 401 response code.", HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode() );
     }
         
     protected void assertResponseBadRequest( WebResponse response )
