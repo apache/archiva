@@ -80,6 +80,7 @@
     
     <img src="<c:url value="/images/archiva-splat-32.gif"/>"/>
     <p class="id">${repositoryGroup.key}</p>
+    <p><a href="${baseUrl}/${repositoryGroup.key}/">${baseUrl}/${repositoryGroup.key}/</a></p>
   </div>
 
   <c:if test="${!empty(groupToRepositoryMap[repositoryGroup.key])}">
