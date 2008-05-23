@@ -55,6 +55,11 @@ public class EditManagedRepositoryAction
         {
             repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid );
         }
+        else if ( repository != null )
+        {
+            repository.setReleases( false );
+            repository.setScanned( false );
+        }
     }
 
     public String input()
