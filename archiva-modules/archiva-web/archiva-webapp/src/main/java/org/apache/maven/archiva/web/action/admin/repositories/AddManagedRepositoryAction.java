@@ -104,7 +104,12 @@ public class AddManagedRepositoryAction
             addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
                 + "], that id already exists as a remote repository." );
         }
-
+        else if( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
+        {
+            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
+               + "], that id already exists as a repository group." );
+        }
+        
         if ( !validator.validate( repository.getRefreshCronExpression() ) )
         {
             addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );

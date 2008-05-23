@@ -93,7 +93,19 @@ public class RepositoryGroupsAction
         if ( configuration.getRepositoryGroupsAsMap().containsKey( repoGroupId ) )
         {
             addActionError( "Unable to add new repository group with id [" + repoGroupId
-                    + "], that id already exists." );
+                    + "], that id already exists as a repository group." );
+            return ERROR;
+        }
+        else if ( configuration.getManagedRepositoriesAsMap().containsKey( repoGroupId ) )
+        {
+            addActionError( "Unable to add new repository group with id [" + repoGroupId
+                    + "], that id already exists as a managed repository." );
+            return ERROR;
+        }
+        else if ( configuration.getRemoteRepositoriesAsMap().containsKey( repoGroupId ) )
+        {
+            addActionError( "Unable to add new repository group with id [" + repoGroupId
+                    + "], that id already exists as a remote repository." );
             return ERROR;
         }
         
