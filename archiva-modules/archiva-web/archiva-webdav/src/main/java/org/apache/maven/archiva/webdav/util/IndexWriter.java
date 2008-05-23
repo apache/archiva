@@ -125,7 +125,8 @@ public class IndexWriter
         else 
         {            
             // virtual repository - filter unique directories
-            Map<String, File> uniqueChildFiles = new HashMap<String, File>();                        
+            Map<String, File> uniqueChildFiles = new HashMap<String, File>();
+            List<String> sortedList = new ArrayList<String>();
             for( File resource : localResources )
             {
                 List<File> files = new ArrayList<File>( Arrays.asList( resource.listFiles() ) ); 
@@ -135,17 +136,15 @@ public class IndexWriter
                     if( uniqueChildFiles.get( file.getName() ) == null )
                     {
                         uniqueChildFiles.put( file.getName(), file );
+                        sortedList.add( file.getName() );
                     }                    
                 }
             }
-            
-            List<File> uniqueChildFilesInList = new ArrayList<File>();
-            uniqueChildFilesInList.addAll( uniqueChildFiles.values() );
-            Collections.sort( uniqueChildFilesInList );
-            
-            for ( File file : uniqueChildFilesInList )
-            {   
-                writeHyperlink( writer, file.getName(), file.isDirectory(), true );
+             
+            Collections.sort( sortedList );
+            for ( String fileName : sortedList )
+            {
+                writeHyperlink( writer, fileName, ( (File) uniqueChildFiles.get( fileName ) ).isDirectory(), true );
             }
         }
     }
