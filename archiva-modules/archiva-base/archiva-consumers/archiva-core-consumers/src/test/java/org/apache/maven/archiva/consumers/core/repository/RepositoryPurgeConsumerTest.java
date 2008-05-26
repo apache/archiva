@@ -88,7 +88,7 @@ public class RepositoryPurgeConsumerTest
         File[] contents = dir.listFiles();
         for ( int i = 0; i < contents.length; i++ )
         {
-            contents[i].setLastModified( 1179382029 );
+            contents[i].setLastModified( 1179382029 ); 
         }
     }
 
@@ -106,14 +106,14 @@ public class RepositoryPurgeConsumerTest
 
         populateDbForRetentionCountTest();
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
+        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDaysOlder( 0 ); // force days older off to allow retention count purge to execute.
         repoConfiguration.setRetentionCount( TEST_RETENTION_COUNT );
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
         repoPurgeConsumer.processFile( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
 
@@ -174,13 +174,13 @@ public class RepositoryPurgeConsumerTest
 
         ( (RepositoryPurgeConsumer) repoPurgeConsumer ).setRepositoryContentIndexFactory( indexFactory );
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
+        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDaysOlder( TEST_DAYS_OLDER );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-install-plugin";
 
         setLastModified( projectRoot + "/2.2-SNAPSHOT" );
@@ -224,15 +224,15 @@ public class RepositoryPurgeConsumerTest
 
         populateDbForReleasedSnapshotsTest();
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
+        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
-        repoPurgeConsumer.processFile( PATH_TO_RELEASED_SNAPSHOT );
+        repoPurgeConsumer.processFile( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
         // check if the snapshot wasn't removed
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
@@ -267,15 +267,15 @@ public class RepositoryPurgeConsumerTest
 
         populateDbForReleasedSnapshotsTest();
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
+        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
-        repoPurgeConsumer.processFile( PATH_TO_RELEASED_SNAPSHOT );
+        repoPurgeConsumer.processFile( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
 
@@ -307,7 +307,7 @@ public class RepositoryPurgeConsumerTest
     {
         List<String> versions = new ArrayList<String>();
         versions.add( "1.0RC1-20070504.153317-1" );
-        versions.add( "1.0RC1-20070504.160758-2" );
+        versions.add( "1.0RC1-20070504.160758-2" ); 
         versions.add( "1.0RC1-20070505.090015-3" );
         versions.add( "1.0RC1-20070506.090132-4" );
 

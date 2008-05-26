@@ -64,11 +64,11 @@ public abstract class AbstractRepositoryPurgeTest
 
     public static final String PATH_TO_BY_RETENTION_COUNT_POM = "org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.pom";
 
-    public static final String PATH_TO_RELEASED_SNAPSHOT = "org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar";
-
-    public static final String PATH_TO_HIGHER_SNAPSHOT_EXISTS = "org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar";
-    
     public static final String PATH_TO_TEST_ORDER_OF_DELETION = "org/apache/maven/plugins/maven-assembly-plugin/1.1.2-SNAPSHOT/maven-assembly-plugin-1.1.2-20070615.105019-3.jar";
+
+    protected static final String RELEASES_TEST_REPO_ID = "releases-test-repo-one";
+
+    protected static final String RELEASES_TEST_REPO_NAME = "Releases Test Repo One";
 
     private ManagedRepositoryConfiguration config;
 
@@ -153,22 +153,18 @@ public abstract class AbstractRepositoryPurgeTest
         repo = null;
     }
 
-    public ManagedRepositoryConfiguration getRepoConfiguration()
+    public ManagedRepositoryConfiguration getRepoConfiguration( String repoId, String repoName )
     {
-        if ( config == null )
-        {
-            config = new ManagedRepositoryConfiguration();
-        }
-
-        config.setId( TEST_REPO_ID );
-        config.setName( TEST_REPO_NAME );
+        config = new ManagedRepositoryConfiguration();
+        config.setId( repoId );
+        config.setName( repoName );
         config.setDaysOlder( TEST_DAYS_OLDER );
-        config.setLocation( getTestRepoRoot().getAbsolutePath() );
+        config.setLocation( getTestFile( "target/test-" + getName() + "/" + repoId ).getAbsolutePath() );
         config.setReleases( true );
         config.setSnapshots( true );
         config.setDeleteReleasedSnapshots( true );
         config.setRetentionCount( TEST_RETENTION_COUNT );
-
+        
         return config;
     }
 
@@ -177,8 +173,8 @@ public abstract class AbstractRepositoryPurgeTest
     {
         if ( repo == null )
         {
-            repo = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
-            repo.setRepository( getRepoConfiguration() );
+            repo = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );            
+            repo.setRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
         }
 
         return repo;
@@ -218,15 +214,19 @@ public abstract class AbstractRepositoryPurgeTest
     
     protected File getTestRepoRoot()
     {
-        return getTestFile( "target/test-" + getName() + "/test-repo" );
+        return getTestFile( "target/test-" + getName() + "/" + TEST_REPO_ID );
     }
 
-    protected String prepareTestRepo()
+    protected String prepareTestRepos()
         throws IOException
     {
         File testDir = getTestRepoRoot();
         FileUtils.deleteDirectory( testDir );
-        FileUtils.copyDirectory( getTestFile( "target/test-classes/test-repo" ), testDir );
+        FileUtils.copyDirectory( getTestFile( "target/test-classes/" + TEST_REPO_ID ), testDir );
+        
+        File releasesTestDir = getTestFile( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID );
+        FileUtils.deleteDirectory( releasesTestDir );
+        FileUtils.copyDirectory( getTestFile( "target/test-classes/" + RELEASES_TEST_REPO_ID ), releasesTestDir );
         
         return testDir.getAbsolutePath();
     }

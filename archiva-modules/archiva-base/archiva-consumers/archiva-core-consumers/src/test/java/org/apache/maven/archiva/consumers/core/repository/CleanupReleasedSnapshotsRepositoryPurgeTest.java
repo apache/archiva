@@ -20,9 +20,12 @@ package org.apache.maven.archiva.consumers.core.repository;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexStub;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.custommonkey.xmlunit.XMLAssert;
 
@@ -37,11 +40,20 @@ import java.util.Map;
  */
 public class CleanupReleasedSnapshotsRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
-{   
+{  
+    private ArchivaConfiguration archivaConfiguration;
+    
+    public static final String PATH_TO_RELEASED_SNAPSHOT_IN_DIFF_REPO =
+        "org/apache/archiva/released-artifact-in-diff-repo/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.jar";
+    
+    public static final String PATH_TO_HIGHER_SNAPSHOT_EXISTS_IN_SAME_REPO = "org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar";
+
+    public static final String PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO = "org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar";
+    
     protected void setUp()
         throws Exception
     {
-        super.setUp();
+        super.setUp(); 
 
         Map<String, RepositoryContentIndex> map = new HashMap<String, RepositoryContentIndex>();
         map.put( "filecontent", new LuceneRepositoryContentIndexStub() );
@@ -49,19 +61,28 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         map.put( "bytecode", new LuceneRepositoryContentIndexStub() );
         
         MetadataTools metadataTools = (MetadataTools) lookup( MetadataTools.class );
+        RepositoryContentFactory factory = (RepositoryContentFactory) lookup( RepositoryContentFactory.class, "cleanup-released-snapshots");
         
-        repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), dao, metadataTools, map );
+        archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "cleanup-released-snapshots" );
+                
+        repoPurge =
+            new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), dao, metadataTools, map, archivaConfiguration, factory );
     }
 
-    public void testReleasedSnapshots()
+    public void testReleasedSnapshotsExistsInSameRepo()
         throws Exception
     {
+        
+        Configuration config = archivaConfiguration.getConfiguration();
+        config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
+        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+      
         populateReleasedSnapshotsTest();
 
-        String repoRoot = prepareTestRepo();
-        
+        String repoRoot = prepareTestRepos();        
 
-        repoPurge.process( PATH_TO_RELEASED_SNAPSHOT );
+        repoPurge.process( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
         
@@ -100,15 +121,58 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
                                      "//metadata/versioning/versions/version", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
     }
-
-    public void testHigherSnapshotExists()
+    
+    public void testReleasedSnapshotsExistsInDifferentRepo()
         throws Exception
-    {
+    {   
+        Configuration config = archivaConfiguration.getConfiguration();
+        config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
+        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+        config.addManagedRepository( getRepoConfiguration( RELEASES_TEST_REPO_ID, RELEASES_TEST_REPO_NAME ) );
+        
+        populateReleasedSnapshotsTestInDiffRepo();
+
+        String repoRoot = prepareTestRepos();        
+
+        repoPurge.process( PATH_TO_RELEASED_SNAPSHOT_IN_DIFF_REPO );
+
+        String projectRoot = repoRoot + "/org/apache/archiva/released-artifact-in-diff-repo";
+        
+        // check if the snapshot was removed
+        assertDeleted( projectRoot + "/1.0-SNAPSHOT" );
+        assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.jar" );
+        assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.jar.md5" );
+        assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.jar.sha1" );
+        assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.pom" );
+        assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.pom.md5" );
+        assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.pom.sha1" );
+
+        String releasesProjectRoot =
+            getTestFile( "target/test-" + getName() + "/releases-test-repo-one" ).getAbsolutePath() +
+                "/org/apache/archiva/released-artifact-in-diff-repo";
+        
+        // check if the released version was not removed
+        assertExists( releasesProjectRoot + "/1.0" );        
+        assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.jar" );
+        assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.jar.md5" );
+        assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.jar.sha1" );
+        assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.pom" );
+        assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.pom.md5" );
+        assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.pom.sha1" );        
+    }
+
+    public void testHigherSnapshotExistsInSameRepo()
+        throws Exception
+    {   
+        Configuration config = archivaConfiguration.getConfiguration();
+        config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
+        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+        
         populateHigherSnapshotExistsTest();
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
-        repoPurge.process( PATH_TO_HIGHER_SNAPSHOT_EXISTS );
+        repoPurge.process( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_HIGHER_SNAPSHOT_EXISTS_IN_SAME_REPO );
         
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-source-plugin";
         
@@ -143,7 +207,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
                                      "//metadata/versioning/versions/version", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "20070427033345", "//metadata/versioning/lastUpdated", metadataXml );
     }
-    
+   
     private void populateReleasedSnapshotsTest()
         throws ArchivaDatabaseException
     {
@@ -160,6 +224,15 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         versions.add( "2.0.3-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-source-plugin", versions );
+    }
+    
+    private void populateReleasedSnapshotsTestInDiffRepo()
+        throws ArchivaDatabaseException
+    {
+        List<String> versions = new ArrayList<String>();
+        versions.add( "1.0-SNAPSHOT" );
+        
+        populateDb( "org.apache.archiva", "released-artifact-in-diff-repo", versions );
     }
 
 }

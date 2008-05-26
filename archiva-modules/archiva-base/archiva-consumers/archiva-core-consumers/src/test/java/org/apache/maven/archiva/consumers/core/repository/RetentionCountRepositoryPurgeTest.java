@@ -47,7 +47,7 @@ public class RetentionCountRepositoryPurgeTest
         map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
         
         repoPurge = new RetentionCountRepositoryPurge( getRepository(), dao,
-                                                       getRepoConfiguration().getRetentionCount(), map );
+                                                       getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), map );
     }
 
     /**
@@ -60,7 +60,7 @@ public class RetentionCountRepositoryPurgeTest
     {
         populateIfJarWasFoundDb();
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
         
@@ -107,7 +107,7 @@ public class RetentionCountRepositoryPurgeTest
     {
         populateIfPomWasFoundDb();
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_POM );
 
@@ -148,7 +148,7 @@ public class RetentionCountRepositoryPurgeTest
     {
         populateDbForTestOrderOfDeletion();
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
 

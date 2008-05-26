@@ -21,6 +21,8 @@ package org.apache.maven.archiva.consumers.core.repository;
 
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -28,6 +30,9 @@ import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
@@ -68,12 +73,19 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     extends AbstractRepositoryPurge
 {
     private MetadataTools metadataTools;
+    
+    private ArchivaConfiguration archivaConfig;
+    
+    private RepositoryContentFactory repoContentFactory;
 
     public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
-                    MetadataTools metadataTools, Map<String, RepositoryContentIndex> indices )
+                    MetadataTools metadataTools, Map<String, RepositoryContentIndex> indices, 
+                    ArchivaConfiguration archivaConfig, RepositoryContentFactory repoContentFactory )
     {
         super( repository, artifactDao, indices );
         this.metadataTools = metadataTools;
+        this.archivaConfig = archivaConfig;
+        this.repoContentFactory = repoContentFactory;
     }
 
     public void process( String path )
@@ -100,16 +112,37 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             ProjectReference reference = new ProjectReference();
             reference.setGroupId( artifact.getGroupId() );
             reference.setArtifactId( artifact.getArtifactId() );
-
+            
             // Gather up all of the versions.
             List<String> allVersions = new ArrayList<String>( repository.getVersions( reference ) );
+
+            List<ManagedRepositoryConfiguration> repos = archivaConfig.getConfiguration().getManagedRepositories();
+            for( ManagedRepositoryConfiguration repo : repos )
+            {   
+                if( repo.isReleases() && !repo.getId().equals( repository.getId() ) )
+                {   
+                    try
+                    {   
+                        ManagedRepositoryContent repoContent = repoContentFactory.getManagedRepositoryContent( repo.getId() );                        
+                        allVersions.addAll( repoContent.getVersions( reference ) );
+                    }
+                    catch( RepositoryNotFoundException  e )
+                    {
+                        // swallow
+                    }
+                    catch( RepositoryException  e )
+                    {
+                        // swallow
+                    }
+                }
+            }
 
             // Split the versions into released and snapshots.
             List<String> releasedVersions = new ArrayList<String>();
             List<String> snapshotVersions = new ArrayList<String>();
 
             for ( String version : allVersions )
-            {
+            {   
                 if ( VersionUtil.isSnapshot( version ) )
                 {
                     snapshotVersions.add( version );
@@ -123,10 +156,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             Collections.sort( allVersions, VersionComparator.getInstance() );
             Collections.sort( releasedVersions, VersionComparator.getInstance() );
             Collections.sort( snapshotVersions, VersionComparator.getInstance() );
-
-            // Find out the highest released version.
-            String highestReleasedVersion = allVersions.get( allVersions.size() - 1 );
-
+            
             // Now clean out any version that is earlier than the highest released version.
             boolean needsMetadataUpdate = false;
 
@@ -137,7 +167,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             for ( String version : snapshotVersions )
             {   
                 if( releasedVersions.contains( VersionUtil.getReleaseVersion( version ) ) )
-                {
+                {                    
                     versionRef.setVersion( version );
                     repository.deleteVersion( versionRef );
                     needsMetadataUpdate = true;

@@ -157,9 +157,9 @@ public class RepositoryPurgeConsumer
                 repoPurge = new RetentionCountRepositoryPurge( repositoryContent, dao.getArtifactDAO(), repository
                     .getRetentionCount(), indices );
             }
-
+            
             cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, dao.getArtifactDAO(),
-                                                                   metadataTools, indices );
+                                   metadataTools, indices, configuration, repositoryFactory );
 
             deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
         }

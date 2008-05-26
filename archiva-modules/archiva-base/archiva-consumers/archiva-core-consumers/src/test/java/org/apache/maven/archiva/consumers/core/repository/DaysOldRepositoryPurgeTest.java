@@ -80,10 +80,10 @@ public class DaysOldRepositoryPurgeTest
         map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
 
         repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(),
-                                        getRepoConfiguration().getRetentionCount(), map );
+            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), map );
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-install-plugin";
 
@@ -125,10 +125,10 @@ public class DaysOldRepositoryPurgeTest
         map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
 
         repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(),
-                                        getRepoConfiguration().getRetentionCount(), map );
+            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), map );
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-assembly-plugin";
 
@@ -170,10 +170,10 @@ public class DaysOldRepositoryPurgeTest
         map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
 
         repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(),
-                                        getRepoConfiguration().getRetentionCount(), map );
+            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), map );
 
-        String repoRoot = prepareTestRepo();
+        String repoRoot = prepareTestRepos();
 
         String versionRoot = repoRoot + "/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT";
 

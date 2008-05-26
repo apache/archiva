@@ -53,6 +53,52 @@
         </otherProperties>
       </configuration>
     </component>
+    
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>cleanup-released-snapshots</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>cleanup-released-snapshots</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    
+     <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>cleanup-released-snapshots</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/src/test/conf/repository-manager.xml"
+               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+      <role-hint>cleanup-released-snapshots</role-hint>
+      <implementation>org.apache.maven.archiva.repository.RepositoryContentFactory</implementation>
+      <description>RepositoryContentRequest</description>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+          <role-hint>cleanup-released-snapshots</role-hint>
+          <field-name>archivaConfiguration</field-name>
+        </requirement>
+      </requirements>
+    </component>
 
   </components>
 </component-set>
