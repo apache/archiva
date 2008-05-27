@@ -19,7 +19,6 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -28,11 +27,9 @@ import com.opensymphony.webwork.interceptor.ServletRequestAware;
 import com.opensymphony.xwork.Preparable;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.util.ContextUtils;
 
 /**
