@@ -21,6 +21,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.opensymphony.webwork.interceptor.ServletRequestAware;
@@ -60,6 +63,8 @@ public class RepositoryGroupsAction
      */
     private String baseUrl;
     
+    private static final Pattern REPO_GROUP_ID_PATTERN = Pattern.compile( "[A-Za-z0-9\\._\\-]+" ); 
+    
     public void setServletRequest( HttpServletRequest request )
     {
         this.baseUrl = ContextUtils.getBaseURL( request, "repository" );
@@ -80,6 +85,25 @@ public class RepositoryGroupsAction
         Configuration configuration = archivaConfiguration.getConfiguration();
 
         String repoGroupId = repositoryGroup.getId();
+        
+        if( repoGroupId == null || "".equals( repoGroupId.trim() ) )
+        {
+            addActionError( "Identifier field is required." );
+            return ERROR;
+        }
+        
+        if( repoGroupId.length() > 100 )
+        {
+            addActionError( "Identifier [" + repoGroupId + "] is over the maximum limit of 100 characters" );
+            return ERROR;
+        }
+                
+        Matcher matcher = REPO_GROUP_ID_PATTERN.matcher( repoGroupId );        
+        if( !matcher.matches() )
+        {
+            addActionError( "Invalid character(s) found in identifier. Only the following characters are allowed: alphanumeric, '.', '-' and '_'" );
+            return ERROR;
+        }
         
         if ( StringUtils.isBlank( repoGroupId ) )
         {
@@ -103,12 +127,6 @@ public class RepositoryGroupsAction
         {
             addActionError( "Unable to add new repository group with id [" + repoGroupId
                     + "], that id already exists as a remote repository." );
-            return ERROR;
-        }
-        
-        if( repoGroupId.length() > 100 )
-        {
-            addActionError( "Identifier [" + repoGroupId + "] is over the maximum limit of 100 characters" );
             return ERROR;
         }
             
