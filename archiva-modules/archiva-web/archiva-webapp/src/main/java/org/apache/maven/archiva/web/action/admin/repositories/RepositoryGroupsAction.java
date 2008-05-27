@@ -109,6 +109,12 @@ public class RepositoryGroupsAction
             return ERROR;
         }
         
+        if( repoGroupId.length() > 100 )
+        {
+            addActionError( "Identifier [" + repoGroupId + "] is over the maximum limit of 100 characters" );
+            return ERROR;
+        }
+            
         configuration.addRepositoryGroup( repositoryGroup );
         return saveConfiguration( configuration );
     }
