@@ -16,9 +16,9 @@
           configuration files so that they can also be hand-edited if necessary.
         </p>
         <p>
-          <a href="proxy.html">Previous: Remote Proxying Cache</a> |
+          <a href="upload.html">Previous: Artifact Upload</a> |
           <strong>Graphical Administration</strong> |
-          <a href="security.html">Next: Role-based Security</a>
+          <a href="virtual-repos.html">Next: Virtual Repositories</a>
         </p>
       </div>
     </section>
