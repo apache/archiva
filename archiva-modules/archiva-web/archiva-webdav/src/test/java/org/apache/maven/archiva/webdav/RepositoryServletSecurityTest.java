@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.repository;
+package org.apache.maven.archiva.webdav;
 
 /**
  * RepositoryServletSecurityTest 
