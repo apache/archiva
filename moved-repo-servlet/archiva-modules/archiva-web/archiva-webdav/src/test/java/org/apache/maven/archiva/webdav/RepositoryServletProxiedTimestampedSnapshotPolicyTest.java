@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.repository;
+package org.apache.maven.archiva.webdav;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -34,7 +34,7 @@ import java.io.File;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryServletProxiedPluginSnapshotPolicyTest
+public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
     extends AbstractRepositoryServletProxiedTestCase
 {
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysManagedNewer()
@@ -150,14 +150,14 @@ public class RepositoryServletProxiedPluginSnapshotPolicyTest
         setupSnapshotsRemoteRepo();
         setupCleanInternalRepo();
 
-        String resourcePath = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-1-SNAPSHOT/archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42.jar";
-        String expectedRemoteContents = "archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42|jar-remote-contents";
+        String resourcePath = "org/apache/archiva/test/3.0-SNAPSHOT/test-3.0-20070822.033400-42.jar";
+        String expectedRemoteContents = "archiva-test-3.0-20070822.033400-42|jar-remote-contents";
         String expectedManagedContents = null;
         File remoteFile = populateRepo( remoteSnapshots, resourcePath, expectedRemoteContents );
 
         if ( hasManagedCopy )
         {
-            expectedManagedContents = "archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42|jar-managed-contents";
+            expectedManagedContents = "archiva-test-3.0-20070822.033400-42|jar-managed-contents";
             File managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
             managedFile.setLastModified( remoteFile.lastModified() + deltaManagedToRemoteTimestamp );
         }

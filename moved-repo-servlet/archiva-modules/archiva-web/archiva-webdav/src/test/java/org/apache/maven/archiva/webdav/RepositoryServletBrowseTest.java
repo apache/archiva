@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.repository;
+package org.apache.maven.archiva.webdav;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,44 +19,44 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import com.meterware.httpunit.PutMethodWebRequest;
+import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
-import java.io.InputStream;
+import java.io.File;
 
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
- * Deploy / Put Test cases for RepositoryServlet.  
+ * RepositoryServletBrowseTest 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryServletDeployTest
+public class RepositoryServletBrowseTest
     extends AbstractRepositoryServletTestCase
 {
-    public void testPutWithMissingParentCollection()
+    public void testBrowse()
         throws Exception
     {
-        setupCleanRepo( repoRootInternal );
+        new File( repoRootInternal, "org/apache/archiva" ).mkdirs();
+        new File( repoRootInternal, "net/sourceforge" ).mkdirs();
+        new File( repoRootInternal, "commons-lang" ).mkdirs();
 
-        String putUrl = "http://machine.com/repository/internal/path/to/artifact.jar";
-        InputStream is = getClass().getResourceAsStream( "/artifact.jar" );
-        assertNotNull( "artifact.jar inputstream", is );
-
-        WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" );
         WebResponse response = sc.getResponse( request );
-        assertResponseCreated( response );
-        assertFileContents( "artifact.jar\n", repoRootInternal, "path/to/artifact.jar" );
-    }
-    
-    protected void assertResponseCreated( WebResponse response )
-    {
-        assertNotNull( "Should have recieved a response", response );
-        assertEquals( "Should have been a 201/CREATED response code.", HttpServletResponse.SC_CREATED, response
-            .getResponseCode() );
+        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
+
+        // dumpResponse( response );
+
+        WebLink links[] = response.getLinks();
+        String expectedLinks[] = new String[] { "./commons-lang/", "./net/", "./org/" };
+
+        assertEquals( "Links.length", expectedLinks.length, links.length );
+        for ( int i = 0; i < links.length; i++ )
+        {
+            assertEquals( "Link[" + i + "]", expectedLinks[i], links[i].getURLString() );
+        }
     }
 }

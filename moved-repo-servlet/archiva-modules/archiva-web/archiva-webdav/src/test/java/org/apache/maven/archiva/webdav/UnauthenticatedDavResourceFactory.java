@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.repository;
+package org.apache.maven.archiva.webdav;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

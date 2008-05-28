@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.repository;
+package org.apache.maven.archiva.webdav;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,12 +29,12 @@ import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import java.io.File;
 
 /**
- * RepositoryServlet Tests, Proxied, Get of Snapshot Artifacts, with varying policy settings. 
+ * RepositoryServlet Tests, Proxied, Get of Timestamped Snapshot Artifacts, with varying policy settings. 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryServletProxiedSnapshotPolicyTest
+public class RepositoryServletProxiedPluginSnapshotPolicyTest
     extends AbstractRepositoryServletProxiedTestCase
 {
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysManagedNewer()
@@ -150,14 +150,14 @@ public class RepositoryServletProxiedSnapshotPolicyTest
         setupSnapshotsRemoteRepo();
         setupCleanInternalRepo();
 
-        String resourcePath = "org/apache/archiva/test/2.0-SNAPSHOT/test-2.0-SNAPSHOT.jar";
-        String expectedRemoteContents = "archiva-test-2.0-SNAPSHOT|jar-remote-contents";
+        String resourcePath = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-1-SNAPSHOT/archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42.jar";
+        String expectedRemoteContents = "archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42|jar-remote-contents";
         String expectedManagedContents = null;
         File remoteFile = populateRepo( remoteSnapshots, resourcePath, expectedRemoteContents );
 
         if ( hasManagedCopy )
         {
-            expectedManagedContents = "archiva-test-2.0-SNAPSHOT|jar-managed-contents";
+            expectedManagedContents = "archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42|jar-managed-contents";
             File managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
             managedFile.setLastModified( remoteFile.lastModified() + deltaManagedToRemoteTimestamp );
         }
