@@ -205,7 +205,7 @@ public class ArchivaDavResourceFactory
                                         
                     if( resource == null )
                     {
-                        e = new DavException( HttpServletResponse.SC_NOT_FOUND, "Repository does not exist" );
+                        e = new DavException( HttpServletResponse.SC_NOT_FOUND, "Resource does not exist" );
                     }
                     else
                     {
