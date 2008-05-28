@@ -102,18 +102,18 @@
     <component>
       <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
       <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.web.repository.StubRepositoryContentConsumers</implementation>
+      <implementation>org.apache.maven.archiva.webdav.StubRepositoryContentConsumers</implementation>
     </component>
     
     <component>
       <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
       <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.web.repository.BypassSecuritySystem</implementation>
+      <implementation>org.apache.maven.archiva.webdav.BypassSecuritySystem</implementation>
     </component>
 	
 	<component>
       <role>org.apache.maven.archiva.webdav.ArchivaDavResourceFactory</role>
-      <implementation>org.apache.maven.archiva.web.repository.UnauthenticatedDavResourceFactory</implementation>
+      <implementation>org.apache.maven.archiva.webdav.UnauthenticatedDavResourceFactory</implementation>
       <requirements>
         <requirement>
           <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
