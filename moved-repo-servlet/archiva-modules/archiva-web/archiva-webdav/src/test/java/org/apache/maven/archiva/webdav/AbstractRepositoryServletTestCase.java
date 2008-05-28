@@ -193,6 +193,11 @@ public abstract class AbstractRepositoryServletTestCase
             sr.shutDown();
         }
         
+        if (repoRootInternal.exists())
+        {
+            FileUtils.deleteDirectory(repoRootInternal);
+        }
+        
         super.tearDown();
     }
 
