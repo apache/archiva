@@ -168,7 +168,7 @@ public abstract class AbstractRepositoryServletTestCase
 
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );                
 
-        sr = new ServletRunner( getTestFile( "src/test/webapp/WEB-INF/web.xml" ) );
+        sr = new ServletRunner( getTestFile( "src/test/resources/WEB-INF/web.xml" ) );
         sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
         sc = sr.newClient();
     }
