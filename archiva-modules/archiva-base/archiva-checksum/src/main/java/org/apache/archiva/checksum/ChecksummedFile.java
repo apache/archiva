@@ -292,6 +292,15 @@ public class ChecksummedFile
 
     private boolean isValidChecksumPattern( String filename, String path )
     {
+        // check if it is a remote metadata file
+        Pattern pattern = Pattern.compile( "maven-metadata-\\S*.xml" );
+        Matcher m = pattern.matcher( path );
+        if( m.matches() )
+        {
+            return filename.endsWith( path ) || ( "-".equals( filename ) ) 
+                || filename.endsWith( "maven-metadata.xml" );
+        }
+        
         return filename.endsWith( path ) || ( "-".equals( filename ) );
     }
 

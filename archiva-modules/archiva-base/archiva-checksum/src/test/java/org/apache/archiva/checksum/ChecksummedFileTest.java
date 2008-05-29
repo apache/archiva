@@ -36,9 +36,13 @@ public class ChecksummedFileTest
 {
     /**  SHA1 checksum from www.ibiblio.org/maven2, incuding file path */
     private static final String SERVLETAPI_SHA1 = "bcc82975c0f9c681fcb01cc38504c992553e93ba";
+    
+    private static final String REMOTE_METADATA_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+    
+    private static final String REMOTE_METADATA_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
 
     private File createTestableJar( String filename )
-        throws IOException
+        throws IOException 
     {
         File srcFile = getTestResource( filename );
         File destFile = new File( getTestOutputDir(), srcFile.getName() );
@@ -223,4 +227,43 @@ public class ChecksummedFileTest
         assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
     }
 
+    public void testRemoteMetadataChecksumFilePathSha1()
+        throws IOException
+    {
+        String expected = REMOTE_METADATA_SHA1 + "  /home/test/repository/examples/metadata/maven-metadata.xml";
+        File testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
+        ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
+        
+        try 
+        {
+            String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1,
+                "maven-metadata-remote.xml" );            
+            assertEquals( "Checksum doesn't match", REMOTE_METADATA_SHA1, s );
+        }
+        catch ( IOException e )
+        {   
+            e.printStackTrace();
+            fail( "IOException should not occur." );
+        }
+    }
+    
+    public void testRemoteMetadataChecksumFilePathMd5()
+        throws IOException
+    {
+        String expected = REMOTE_METADATA_MD5 + "  ./examples/metadata/maven-metadata.xml";
+        File testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
+        ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
+        
+        try
+        {
+            String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.MD5,
+                "maven-metadata-remote.xml" );     
+            assertEquals( "Checksum doesn't match", REMOTE_METADATA_MD5, s );
+        }
+        catch ( IOException e )
+        {   
+            e.printStackTrace();
+            fail( "IOException should not occur." );
+        }
+    }
 }
