@@ -778,7 +778,7 @@
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-rc1-SNAPSHOT</wagon.version>
-    <redback.version>1.0.1</redback.version>
+    <redback.version>1.0.2-SNAPSHOT</redback.version>
   </properties>
   <profiles>
     <profile>
