@@ -34,6 +34,7 @@ import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.events.SessionListener;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.proxy.ProxyInfo;
+import org.apache.maven.wagon.proxy.ProxyInfoProvider;
 import org.apache.maven.wagon.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +127,12 @@ public class WagonDelegate
         delegate.connect( source, proxyInfo );
     }
 
+    public void connect( Repository source, ProxyInfoProvider proxyInfoProvider )
+        throws ConnectionException, AuthenticationException
+    {
+        delegate.connect( source, proxyInfoProvider );
+    }
+
     public void connect( Repository source, AuthenticationInfo authenticationInfo )
         throws ConnectionException, AuthenticationException
     {
@@ -136,6 +143,12 @@ public class WagonDelegate
         throws ConnectionException, AuthenticationException
     {
         delegate.connect( source, authenticationInfo, proxyInfo );
+    }
+
+    public void connect( Repository source, AuthenticationInfo authenticationInfo, ProxyInfoProvider proxyInfoProvider )
+        throws ConnectionException, AuthenticationException
+    {
+        delegate.connect( source, authenticationInfo, proxyInfoProvider );
     }
 
     public void openConnection()

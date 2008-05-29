@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.repository;
+package org.apache.maven.archiva.webdav;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,11 +29,14 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.webdav.RepositoryServlet;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+
+import junit.framework.Assert;
 
 /**
  * AbstractRepositoryServletTestCase 
@@ -85,13 +88,13 @@ public abstract class AbstractRepositoryServletTestCase
     protected void assertResponseOK( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
-        assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
+        Assert.assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
     }
     
     protected void assertResponseNotFound( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
-        assertEquals( "Should have been an 404/Not Found response code.", HttpServletResponse.SC_NOT_FOUND, response
+        Assert.assertEquals( "Should have been an 404/Not Found response code.", HttpServletResponse.SC_NOT_FOUND, response
             .getResponseCode() );
     }
 
@@ -165,7 +168,7 @@ public abstract class AbstractRepositoryServletTestCase
 
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );                
 
-        sr = new ServletRunner( getTestFile( "src/test/webapp/WEB-INF/web.xml" ) );
+        sr = new ServletRunner( getTestFile( "src/test/resources/WEB-INF/web.xml" ) );
         sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
         sc = sr.newClient();
     }
@@ -173,7 +176,7 @@ public abstract class AbstractRepositoryServletTestCase
     @Override
     protected String getPlexusConfigLocation()
     {
-        return "org/apache/maven/archiva/web/repository/RepositoryServletTest.xml";
+        return "org/apache/maven/archiva/webdav/RepositoryServletTest.xml";
     }
 
     @Override
@@ -188,6 +191,11 @@ public abstract class AbstractRepositoryServletTestCase
         if ( sr != null )
         {
             sr.shutDown();
+        }
+        
+        if (repoRootInternal.exists())
+        {
+            FileUtils.deleteDirectory(repoRootInternal);
         }
         
         super.tearDown();
