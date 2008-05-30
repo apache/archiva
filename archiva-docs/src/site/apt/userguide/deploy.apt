@@ -13,23 +13,23 @@ Deploying to Repository
   [[3]] Define the server for deployment inside your 'settings.xml', use the newly created user for authentication
 
 +-------------------------------------------------------------------------+
-  <settings>
+<settings>
+  ...
+  <servers>
+    <server>
+      <id>archiva.internal</id>
+      <username>{archiva-deployment-user}</username>
+      <password>{archiva-deployment-pwd}</password>
+    </server>
+    <server>
+      <id>archiva.snapshots</id>
+      <username>{archiva-deployment-user}</username>
+      <password>{archiva-deployment-pwd}</password>
+    </server>
     ...
-    <servers>
-      <server>
-        <id>archiva.internal</id>
-        <username>{archiva-deployment-user}</username>
-        <password>{archiva-deployment-pwd}</password>
-      </server>
-      <server>
-        <id>archiva.snapshots</id>
-        <username>{archiva-deployment-user}</username>
-        <password>{archiva-deployment-pwd}</password>
-      </server>
-      ...
-    </servers>
-    ...
-  </settings>
+  </servers>
+  ...
+</settings>
 +-------------------------------------------------------------------------+
 
 * Deploying to Archiva using WebDAV
@@ -39,40 +39,40 @@ Deploying to Repository
         element in <<<settings.xml>>>.
  
 +-------------------------------------------------------------------------+
-  <project>
-    ...
-    <distributionManagement>
-      <repository>
-        <id>archiva.internal</id>
-        <name>Internal Release Repository</name>
-        <url>dav:http://reposerver.mycompany.com:8080/archiva/repository/internal/</url>
-      </repository>
-      <snapshotRepository>
-        <id>archiva.snapshots</id>
-        <name>Internal Snapshot Repository</name>
-        <url>dav:http://reposerver.mycompany.com:8080/archiva/repository/snapshots/</url>
-      </snapshotRepository>
-    </distributionManagement>
-    ...
-  </project>
+<project>
+  ...
+  <distributionManagement>
+    <repository>
+      <id>archiva.internal</id>
+      <name>Internal Release Repository</name>
+      <url>dav:http://reposerver.mycompany.com:8080/archiva/repository/internal/</url>
+    </repository>
+    <snapshotRepository>
+      <id>archiva.snapshots</id>
+      <name>Internal Snapshot Repository</name>
+      <url>dav:http://reposerver.mycompany.com:8080/archiva/repository/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+  ...
+</project>
 +-------------------------------------------------------------------------+
 
   [[2]] Add a build extension to your <<<pom.xml>>>
 
 +-------------------------------------------------------------------------+
-  <project>
-    ...
-    <build>
-      <extensions>
-        <extension>
-          <groupId>org.apache.maven.wagon</groupId>
-          <artifactId>wagon-webdav</artifactId>
-          <version>1.0-beta-2</version>
-        </extension>
-      </extensions>
-    </build>
-    ...
-  </project>
+<project>
+  ...
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+  </build>
+  ...
+</project>
 +-------------------------------------------------------------------------+
 
   [[3]] Finally the user that is running archiva (tomcat-user, plexus-user,..) must have write access to the deployment repository.   
@@ -92,22 +92,22 @@ Deploying to Repository
   
 +-------+
 <project>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>com.example</groupId>
-   <artifactId>webdav-deploy</artifactId>
-   <packaging>pom</packaging>
-   <version>1</version>
-   <name>Webdav Deployment POM</name>
-   
-   <build>
-      <extensions>
-         <extension>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-webdav</artifactId>
-            <version>1.0-beta-2</version>
-         </extension>
-      </extensions>
-   </build>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>webdav-deploy</artifactId>
+  <packaging>pom</packaging>
+  <version>1</version>
+  <name>Webdav Deployment POM</name>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+  </build>
 
 </project>
 +-------+
