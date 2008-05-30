@@ -157,7 +157,7 @@
 	<action name="upload" class="uploadAction" method="input">      
       <result name="input">/WEB-INF/jsp/upload.jsp</result>
       <result name="error">/WEB-INF/jsp/upload.jsp</result>
-      <result name="success" type="redirect-action">upload</result>
+      <result name="success">/WEB-INF/jsp/upload.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
       <interceptor-ref name="fileUpload"/>
     </action>

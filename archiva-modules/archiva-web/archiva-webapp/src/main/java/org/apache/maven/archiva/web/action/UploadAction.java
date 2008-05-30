@@ -286,6 +286,25 @@ public class UploadAction
         return INPUT;
     }
 
+    private void reset()
+    {
+        // reset the fields so the form is clear when 
+        // the action returns to the jsp page
+        groupId = "";
+        artifactId = "";
+        version = "";
+        packaging = "";
+        classifier = "";
+        artifactFile = null;
+        artifactContentType = "";
+        artifactFilename = "";
+        pomFile = null;
+        pomContentType = "";
+        pomFilename = "";
+        repositoryId = "";
+        generatePom = false;
+    }
+    
     public String doUpload()
     {
         try
@@ -367,10 +386,10 @@ public class UploadAction
 
             //TODO: MRM-810 (this writes to archiva.log, should be audit.log)
             getLogger().info( msg + " by " + getPrincipal() );
-
-            //TODO: MRM-785 (success message does not display on web page)
+            
             addActionMessage( msg );
 
+            reset();
             return SUCCESS;
         }
         catch ( RepositoryNotFoundException re )
