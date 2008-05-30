@@ -50,7 +50,7 @@ Configuring Maven 2 to use an Archiva repository
   
   You will need to add one entry for each repository that is setup in Archiva. If your repository contains plugins; remember to also include a \<pluginRepository\> setting.
 
-  [[1]] create a new profile to setup your repositories
+  [[1]] Create a new profile to setup your repositories
 
 +-------------------------------------------------------------------------+
 <settings>
@@ -86,21 +86,21 @@ Configuring Maven 2 to use an Archiva repository
 </settings>
 +-------------------------------------------------------------------------+
 
-  [[2]] add your repository configuration to the profile
+  [[2]] Add your repository configuration to the profile
 
   You can copy the repository configuration from the POM Snippet on the Archiva Administration Page for a normal repository. It should look much like:
 
 +-------------------------------------------------------------------------+
-<repository>
-  <id>repository-1</id>
-  <url>http://repo.mycompany.com:8080/archiva/repository/internal/</url>
-  <releases>
-    <enabled>true</enabled>
-  </releases>
-  <snapshots>
-    <enabled>false</enabled>
-  </snapshots>
-</repository>
+    <repository>
+      <id>repository-1</id>
+      <url>http://repo.mycompany.com:8080/archiva/repository/internal/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
 +-------------------------------------------------------------------------+
 
   [[3]] Add the necessary security configuration
