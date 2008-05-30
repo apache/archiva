@@ -56,23 +56,27 @@ public class ArchivaDavResource
 
     private final String logicalResource;
 
-    private static final String METHODS =
-        "OPTIONS, GET, HEAD, POST, TRACE, PROPFIND, PROPPATCH, MKCOL, COPY, PUT, DELETE, MOVE";
-
-    private static final String COMPLIANCE_CLASS = "1";
-
     private DavPropertySet properties;
 
     private boolean propsInitialized = false;
+    
+    private LockManager lockManager;
+    
+    private final DavSession session;
 
-    public ArchivaDavResource( String localResource, String logicalResource, MimeTypes mimeTypes,
-                               ArchivaDavResourceLocator locator, DavResourceFactory factory )
+    public ArchivaDavResource( String localResource, 
+                               String logicalResource,
+                               MimeTypes mimeTypes,
+                               DavSession session,
+                               ArchivaDavResourceLocator locator, 
+                               DavResourceFactory factory )
     {
         this.mimeTypes = mimeTypes;
         this.localResource = new File( localResource );
         this.logicalResource = logicalResource;
         this.locator = locator;
         this.factory = factory;
+        this.session = session;
         this.properties = new DavPropertySet();
     }
 
@@ -218,7 +222,7 @@ public class ArchivaDavResource
             DavResourceLocator parentloc = locator.getFactory().createResourceLocator( locator.getPrefix(), parentPath );
             try
             {
-                parent = factory.createResource( parentloc, null );
+                parent = factory.createResource( parentloc, session );
             }
             catch ( DavException e )
             {
@@ -285,7 +289,7 @@ public class ArchivaDavResource
                         String path = locator.getResourcePath() + '/' + item;
                         DavResourceLocator resourceLocator =
                             locator.getFactory().createResourceLocator( locator.getPrefix(), path );
-                        DavResource resource = factory.createResource( resourceLocator, null );
+                        DavResource resource = factory.createResource( resourceLocator, session );
                         if ( resource != null )
                             list.add( resource );
                     }
@@ -302,20 +306,20 @@ public class ArchivaDavResource
     public void removeMember( DavResource member )
         throws DavException
     {
-        File localResource = checkDavResourceIsArchivaDavResource( member ).getLocalResource();
+        File resource = checkDavResourceIsArchivaDavResource( member ).getLocalResource();
 
-        if ( !localResource.exists() )
+        if ( !resource.exists() )
         {
             throw new DavException( HttpServletResponse.SC_NOT_FOUND, member.getResourcePath() );
         }
 
         boolean suceeded = false;
 
-        if ( localResource.isDirectory() )
+        if ( resource.isDirectory() )
         {
             try
             {
-                FileUtils.deleteDirectory( localResource );
+                FileUtils.deleteDirectory( resource );
                 suceeded = true;
             }
             catch ( IOException e )
@@ -324,9 +328,9 @@ public class ArchivaDavResource
             }
         }
 
-        if ( !suceeded && localResource.isFile() )
+        if ( !suceeded && resource.isFile() )
         {
-            suceeded = localResource.delete();
+            suceeded = resource.delete();
         }
 
         if ( !suceeded )
@@ -346,14 +350,14 @@ public class ArchivaDavResource
 
         try
         {
-            ArchivaDavResource localResource = checkDavResourceIsArchivaDavResource( destination );
+            ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( destination );
             if ( isCollection() )
             {
-                FileUtils.moveDirectory( getLocalResource(), localResource.getLocalResource() );
+                FileUtils.moveDirectory( getLocalResource(), resource.getLocalResource() );
             }
             else
             {
-                FileUtils.moveFile( getLocalResource(), localResource.getLocalResource() );
+                FileUtils.moveFile( getLocalResource(), resource.getLocalResource() );
             }
         }
         catch ( IOException e )
@@ -377,14 +381,14 @@ public class ArchivaDavResource
 
         try
         {
-            ArchivaDavResource localResource = checkDavResourceIsArchivaDavResource( destination );
+            ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( destination );
             if ( isCollection() )
             {
-                FileUtils.copyDirectory( getLocalResource(), localResource.getLocalResource() );
+                FileUtils.copyDirectory( getLocalResource(), resource.getLocalResource() );
             }
             else
             {
-                FileUtils.copyFile( getLocalResource(), localResource.getLocalResource() );
+                FileUtils.copyFile( getLocalResource(), resource.getLocalResource() );
             }
         }
         catch ( IOException e )
@@ -395,43 +399,82 @@ public class ArchivaDavResource
 
     public boolean isLockable( Type type, Scope scope )
     {
-        return false;
+        return Type.WRITE.equals(type) && Scope.EXCLUSIVE.equals(scope);
     }
 
     public boolean hasLock( Type type, Scope scope )
     {
-        return false;
+        return getLock(type, scope) != null;
     }
 
     public ActiveLock getLock( Type type, Scope scope )
     {
-        return null;
+        ActiveLock lock = null;
+        if (exists() && Type.WRITE.equals(type) && Scope.EXCLUSIVE.equals(scope)) 
+        {
+            lock = lockManager.getLock(type, scope, this);
+        }
+        return lock;
     }
 
     public ActiveLock[] getLocks()
     {
-        return new ActiveLock[0];
+        ActiveLock writeLock = getLock(Type.WRITE, Scope.EXCLUSIVE);
+        return (writeLock != null) ? new ActiveLock[]{writeLock} : new ActiveLock[0];
     }
 
-    public ActiveLock lock( LockInfo reqLockInfo )
+    public ActiveLock lock( LockInfo lockInfo )
         throws DavException
     {
-        return null;
+        ActiveLock lock = null;
+        if (isLockable(lockInfo.getType(), lockInfo.getScope())) 
+        {
+            lock = lockManager.createLock(lockInfo, this);
+        }
+        else 
+        {
+            throw new DavException(DavServletResponse.SC_PRECONDITION_FAILED, "Unsupported lock type or scope.");
+        }
+        return lock;
     }
 
-    public ActiveLock refreshLock( LockInfo reqLockInfo, String lockToken )
+    public ActiveLock refreshLock( LockInfo lockInfo, String lockToken )
         throws DavException
     {
-        return null;
+        if (!exists()) {
+            throw new DavException(DavServletResponse.SC_NOT_FOUND);
+        }
+        ActiveLock lock = getLock(lockInfo.getType(), lockInfo.getScope());
+        if (lock == null) {
+            throw new DavException(DavServletResponse.SC_PRECONDITION_FAILED, "No lock with the given type/scope present on resource " + getResourcePath());
+        }
+
+        lock = lockManager.refreshLock(lockInfo, lockToken, this);
+
+        return lock;
     }
 
     public void unlock( String lockToken )
         throws DavException
     {
+        ActiveLock lock = getLock(Type.WRITE, Scope.EXCLUSIVE);
+        if (lock == null)
+        {
+            throw new DavException(HttpServletResponse.SC_PRECONDITION_FAILED);
+        }
+        else if (lock.isLockedByToken(lockToken))
+        {
+            lockManager.releaseLock(lockToken, this);
+        }
+        else
+        {
+            throw new DavException(DavServletResponse.SC_LOCKED);
+        }
     }
 
-    public void addLockManager( LockManager lockmgr )
+    public void addLockManager( LockManager lockManager )
     {
+        this.lockManager = lockManager;
     }
 
     public DavResourceFactory getFactory()
@@ -441,7 +484,7 @@ public class ArchivaDavResource
 
     public DavSession getSession()
     {
-        return null;
+        return session;
     }
 
     /**

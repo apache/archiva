@@ -68,6 +68,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.*;
+import org.apache.jackrabbit.webdav.lock.LockManager;
+import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
@@ -122,6 +124,12 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement role-hint="basic"
      */
     private HttpAuthenticator httpAuth;
+    
+    
+    /**
+     * Lock Manager - use simple implementation from JackRabbit
+     */
+    private final LockManager lockManager = new SimpleLockManager();
     
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
@@ -216,7 +224,7 @@ public class ArchivaDavResourceFactory
                         {
                             throw new BrowserRedirectException( resource.getHref() );
                         }
-
+                        resource.addLockManager(lockManager);
                         return resource;
                     }
                 }
@@ -243,9 +251,10 @@ public class ArchivaDavResourceFactory
             String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
             File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource );
             resource =
-                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource, mimeTypes, archivaLocator,
+                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource, mimeTypes, davSession, archivaLocator,
                                         this );
         }
+        resource.addLockManager(lockManager);
         return resource;
     }
 
@@ -255,7 +264,7 @@ public class ArchivaDavResourceFactory
     {
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
         ArchivaDavResource resource =
-            new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator, this );
+            new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, request.getDavSession(), locator, this );
 
         if ( !resource.isCollection() )
         {
@@ -289,7 +298,7 @@ public class ArchivaDavResourceFactory
                                     resourceFile, " (proxied)" );
             }
             resource =
-                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator,
+                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, request.getDavSession(), locator,
                                         this );
 
             if ( !resourceFile.exists() )
@@ -326,7 +335,7 @@ public class ArchivaDavResourceFactory
         processAuditEvents( request, locator.getRepositoryId(), logicalResource.getPath(), previouslyExisted,
                             resourceFile, null );
 
-        return new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, locator,
+        return new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, request.getDavSession(), locator,
                                        this );
     }
 

@@ -46,6 +46,11 @@ public class ArchivaDavResourceLocator
         this.repositoryId = repositoryId;
         this.davLocatorFactory = davLocatorFactory;
         this.resourcePath = resourcePath;
+        
+        if (!resourcePath.startsWith("/"))
+        {
+            this.resourcePath = "/" + resourcePath;
+        }
 
         String escapedPath = Text.escapePath( resourcePath );
         String hrefPrefix = prefix;

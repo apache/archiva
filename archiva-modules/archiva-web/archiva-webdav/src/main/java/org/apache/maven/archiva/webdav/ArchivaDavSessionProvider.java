@@ -65,6 +65,9 @@ public class ArchivaDavSessionProvider
         {
             AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
             
+            //Create a dav session
+            request.setDavSession(new ArchivaDavSession());
+            
             return servletAuth.isAuthenticated( request, result );
         }
         catch ( AuthenticationException e )
@@ -81,9 +84,13 @@ public class ArchivaDavSessionProvider
         }        
     }
 
-    public void releaseSession( WebdavRequest webdavRequest )
+    public void releaseSession( WebdavRequest request )
     {
-
+        //Remove DavSession
+        if (request.getDavSession() != null)
+        {
+            request.setDavSession(null);
+        }
     }
     
     private String removeContextPath( final DavServletRequest request )
