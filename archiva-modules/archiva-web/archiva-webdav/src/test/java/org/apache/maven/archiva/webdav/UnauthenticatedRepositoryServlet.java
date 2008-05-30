@@ -19,10 +19,6 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.apache.maven.archiva.webdav.RepositoryServlet;
-
 import javax.servlet.ServletConfig;
 
 /**
@@ -38,10 +34,8 @@ public class UnauthenticatedRepositoryServlet
     public synchronized void initServers( ServletConfig servletConfig )
     {
         super.initServers(servletConfig);
-
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
-
-        UnauthenticatedDavSessionProvider sessionProvider = new UnauthenticatedDavSessionProvider(wac);
+        
+        UnauthenticatedDavSessionProvider sessionProvider = new UnauthenticatedDavSessionProvider();
         setDavSessionProvider(sessionProvider);
     }
 }

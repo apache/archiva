@@ -19,25 +19,24 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import org.apache.maven.archiva.webdav.ArchivaDavSessionProvider;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.WebdavRequest;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class UnauthenticatedDavSessionProvider extends ArchivaDavSessionProvider
 {
-    public UnauthenticatedDavSessionProvider(WebApplicationContext applicationContext)
+    public UnauthenticatedDavSessionProvider()
     {
-        super(applicationContext);
+        super(null, null);
     }
     
     @Override
     public boolean attachSession( WebdavRequest request )
         throws DavException
     {
+        request.setDavSession(new ArchivaDavSession());
         return true;
-    }    
+    }
 }

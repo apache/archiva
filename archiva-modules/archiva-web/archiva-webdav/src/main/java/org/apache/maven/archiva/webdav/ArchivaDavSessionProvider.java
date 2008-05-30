@@ -30,10 +30,9 @@ import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
-import org.springframework.web.context.WebApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
@@ -47,13 +46,10 @@ public class ArchivaDavSessionProvider
 
     private HttpAuthenticator httpAuth;
     
-    public ArchivaDavSessionProvider( WebApplicationContext applicationContext )
+    public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth )
     {
-        servletAuth =
-            (ServletAuthenticator) applicationContext.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
-        httpAuth =
-            (HttpAuthenticator) applicationContext.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE,
-                                                                                               "basic" ) );
+        this.servletAuth = servletAuth;
+        this.httpAuth = httpAuth;
     }
 
     public boolean attachSession( WebdavRequest request )
@@ -86,11 +82,7 @@ public class ArchivaDavSessionProvider
 
     public void releaseSession( WebdavRequest request )
     {
-        //Remove DavSession
-        if (request.getDavSession() != null)
-        {
-            request.setDavSession(null);
-        }
+        request.setDavSession(null);
     }
     
     private String removeContextPath( final DavServletRequest request )

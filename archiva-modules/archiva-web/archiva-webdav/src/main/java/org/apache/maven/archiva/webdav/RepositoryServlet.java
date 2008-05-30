@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import org.apache.maven.archiva.security.ServletAuthenticator;
+import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 
 /**
  * RepositoryServlet
@@ -175,7 +177,13 @@ public class RepositoryServlet
         resourceFactory =
             (DavResourceFactory) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaDavResourceFactory.class ) );        
         locatorFactory = new ArchivaDavLocatorFactory();
-        sessionProvider = new ArchivaDavSessionProvider( wac );
+        
+        ServletAuthenticator servletAuth =
+            (ServletAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
+        HttpAuthenticator httpAuth =
+            (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
+        
+        sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
     }
 
     public void configurationEvent( ConfigurationEvent event )
