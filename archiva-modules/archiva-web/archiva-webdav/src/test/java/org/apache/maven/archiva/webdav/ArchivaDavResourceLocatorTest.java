@@ -66,8 +66,8 @@ public class ArchivaDavResourceLocatorTest extends TestCase
         assertEquals("http://myproxy/", locator.getPrefix());
         assertEquals("http://myproxy/repository/internal", locator.getHref(false));
         assertEquals("http://myproxy/repository/internal/", locator.getHref(true));
-        assertEquals("repository/internal", locator.getResourcePath());
-        assertEquals("repository/internal", locator.getRepositoryPath());
+        assertEquals("/repository/internal", locator.getResourcePath());
+        assertEquals("/repository/internal", locator.getRepositoryPath());
     }
 
     public void testLocatorWithRootHref()
