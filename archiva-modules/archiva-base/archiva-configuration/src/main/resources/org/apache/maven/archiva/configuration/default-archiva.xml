@@ -67,6 +67,8 @@
       </policies>
       <whiteListPatterns>
         <whiteListPattern>javax/**</whiteListPattern>
+        <whiteListPattern>org/jvnet/**</whiteListPattern>
+        <whiteListPattern>com/sun/**</whiteListPattern>
       </whiteListPatterns>
     </proxyConnector>
   </proxyConnectors>
