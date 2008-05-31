@@ -34,8 +34,6 @@ import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
-import quicktime.std.qtcomponents.SCInfo;
-
 
 public class DavResourceTest extends PlexusInSpringTestCase
 {
