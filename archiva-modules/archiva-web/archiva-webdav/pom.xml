@@ -185,22 +185,4 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-  <!-- Required by it.could classes -->
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>${project.build.sourceDirectory}</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-          <exclude>**/package.html</exclude>
-          <exclude>**/url.gif</exclude>
-          <exclude>**/url.pdf</exclude>
-        </excludes>
-      </resource>
-    </resources>
-  </build>
 </project>
