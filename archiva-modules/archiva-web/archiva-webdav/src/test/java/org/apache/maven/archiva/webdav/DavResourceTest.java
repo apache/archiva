@@ -49,7 +49,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
     
     private final String REPOPATH = "/myresource.jar";
     
-    private final File myResource = new File(baseDir, REPOPATH);
+    private File myResource;
     
     private DavResource resource;
     
@@ -62,8 +62,9 @@ public class DavResourceTest extends PlexusInSpringTestCase
         super.setUp();
         session = new ArchivaDavSession();
         mimeTypes = (MimeTypes)getApplicationContext().getBean(PlexusToSpringUtils.buildSpringId(MimeTypes.class));
-        baseDir = new File("target/DavResourceTest");
+        baseDir = getTestFile("target/DavResourceTest");
         baseDir.mkdirs();
+        myResource = new File(baseDir, "myresource.jar");
         myResource.createNewFile();
         resourceLocator = (ArchivaDavResourceLocator)new ArchivaDavLocatorFactory().createResourceLocator("/", REPOPATH);
         resource = getDavResource(REPOPATH, myResource);
