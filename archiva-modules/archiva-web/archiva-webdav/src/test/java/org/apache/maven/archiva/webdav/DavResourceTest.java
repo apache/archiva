@@ -43,11 +43,9 @@ public class DavResourceTest extends PlexusInSpringTestCase
     
     private ArchivaDavResourceLocator resourceLocator;
     
-    private ArchivaDavResourceFactory factory;
-    
     private File baseDir;
     
-    private final String REPOPATH = "/myresource.jar";
+    private final String REPOPATH = "myresource.jar";
     
     private File myResource;
     
@@ -65,7 +63,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
         baseDir = getTestFile("target/DavResourceTest");
         baseDir.mkdirs();
         myResource = new File(baseDir, "myresource.jar");
-        myResource.createNewFile();
+        assertTrue("Could not create " + myResource.getAbsolutePath(), myResource.createNewFile());
         resourceLocator = (ArchivaDavResourceLocator)new ArchivaDavLocatorFactory().createResourceLocator("/", REPOPATH);
         resource = getDavResource(REPOPATH, myResource);
         lockManager = new SimpleLockManager();
