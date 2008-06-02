@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -37,7 +38,9 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * DeleteManagedRepositoryActionTest 
@@ -128,7 +131,7 @@ public class DeleteManagedRepositoryActionTest
     {    	
         prepareRoleManagerMock();
         
-        Configuration configuration = prepDeletionTest( createRepository(), 3 );                
+        Configuration configuration = prepDeletionTest( createRepository(), 4 );                
         
         String status = action.deleteEntry();        
                 
@@ -144,7 +147,7 @@ public class DeleteManagedRepositoryActionTest
     {
         prepareRoleManagerMock();
         
-        Configuration configuration = prepDeletionTest( createRepository(), 3 );              
+        Configuration configuration = prepDeletionTest( createRepository(), 4 );              
         
         String status = action.deleteContents();
                
@@ -158,7 +161,7 @@ public class DeleteManagedRepositoryActionTest
     public void testDeleteRepositoryAndAssociatedProxyConnectors()
         throws Exception
     {
-        Configuration configuration = prepDeletionTest( createRepository(), 4 );
+        Configuration configuration = prepDeletionTest( createRepository(), 5 );
         configuration.addRemoteRepository( createRemoteRepository( "codehaus", "http://repository.codehaus.org" ) );
         configuration.addRemoteRepository( createRemoteRepository( "java.net", "http://dev.java.net/maven2" ) );
         configuration.addProxyConnector( createProxyConnector( REPO_ID, "codehaus" ) );
@@ -189,6 +192,27 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
 
         assertTrue( location.exists() );
+    }
+    
+    public void testDeleteRepositoryAndReposUnderRepoGroup()
+        throws Exception
+    {
+        Configuration configuration = prepDeletionTest( createRepository(), 5 );
+        List<String> repoIds = new ArrayList<String>();
+        repoIds.add( REPO_ID );
+        configuration.addRepositoryGroup( createRepoGroup( repoIds, "repo.group" ) );
+
+        prepareRoleManagerMock();
+
+        assertEquals( 1, configuration.getRepositoryGroups().size() );
+        
+        String status = action.deleteContents();
+        assertEquals( Action.SUCCESS, status );
+
+        assertTrue( configuration.getManagedRepositories().isEmpty() );
+        assertEquals( 0, ( ( RepositoryGroupConfiguration ) configuration.getRepositoryGroups().get( 0 ) ).getRepositories().size() );
+
+        assertFalse( location.exists() );
     }
 
     private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, int expectCountGetConfig )
@@ -276,6 +300,15 @@ public class DeleteManagedRepositoryActionTest
         return connector;
     }
 
+    private RepositoryGroupConfiguration createRepoGroup( List<String> repoIds, String repoGroupId )
+    {
+        RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration();
+        repoGroup.setId( repoGroupId );
+        repoGroup.setRepositories( repoIds );
+        
+        return repoGroup;
+    }
+    
     private void prepareRoleManagerMock()
         throws RoleManagerException
     {

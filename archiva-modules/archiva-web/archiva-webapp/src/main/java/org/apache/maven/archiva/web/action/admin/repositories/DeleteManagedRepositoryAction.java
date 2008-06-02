@@ -41,6 +41,7 @@ import org.codehaus.plexus.redback.role.RoleManagerException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DeleteManagedRepositoryAction
@@ -140,14 +141,9 @@ public class DeleteManagedRepositoryAction
         throws RoleManagerException, ArchivaDatabaseException
     {
         removeRepositoryRoles( cleanupRepository );
-
-        // TODO: [MRM-382] Remove index from artifacts of deleted managed repositories.
-
-        // [MRM-265] After removing a managed repository - Browse/Search still see it
         cleanupDatabase( cleanupRepository.getId() );
         cleanupScanStats( cleanupRepository.getId() );
-
-        // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
+        
         List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
@@ -155,6 +151,19 @@ public class DeleteManagedRepositoryAction
             {
                 archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
             }
+        }
+
+        Map<String, List<String>> repoToGroupMap = archivaConfiguration.getConfiguration().getRepositoryToGroupMap();
+        if( repoToGroupMap != null )
+        {
+            if( repoToGroupMap.containsKey( cleanupRepository.getId() ) )
+            {
+                List<String> repoGroups = repoToGroupMap.get( cleanupRepository.getId() );
+                for( String repoGroup : repoGroups )
+                {
+                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository( cleanupRepository.getId() );
+                }
+            }            
         }
     }
 
