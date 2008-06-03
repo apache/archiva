@@ -214,6 +214,26 @@ public class DeleteManagedRepositoryActionTest
 
         assertFalse( location.exists() );
     }
+    
+    public void testDeleteRepositoryLocationReferencedInSysPropertiesError()
+        throws Exception
+    {
+        System.setProperty( "test.property", getTestFile( "target/test/location" ).getAbsolutePath() );
+        
+        prepareRoleManagerMock();
+        
+        Configuration configuration = prepDeletionTest( createRepository(), 4 );              
+        
+        String status = action.deleteContents();
+        
+        assertEquals( Action.ERROR, status );
+
+        assertFalse( configuration.getManagedRepositories().isEmpty() );
+
+        assertTrue( location.exists() );
+        
+        System.clearProperty( "test.property" );
+    }
 
     private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, int expectCountGetConfig )
         throws RegistryException, IndeterminateConfigurationException
