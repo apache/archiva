@@ -307,36 +307,27 @@ public class ArchivaDavResource
         throws DavException
     {
         File resource = checkDavResourceIsArchivaDavResource( member ).getLocalResource();
-
-        if ( !resource.exists() )
-        {
-            throw new DavException( HttpServletResponse.SC_NOT_FOUND, member.getResourcePath() );
-        }
-
-        boolean suceeded = false;
-
-        if ( resource.isDirectory() )
+        
+        if ( resource.exists() )
         {
             try
             {
-                FileUtils.deleteDirectory( resource );
-                suceeded = true;
+                if ( resource.isDirectory() )
+                {
+                    FileUtils.deleteDirectory(resource);
+                }
+                else
+                {
+                    if (!resource.delete())
+                    {
+                        throw new IOException("Could not remove file");
+                    }
+                }
             }
             catch ( IOException e )
             {
-                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
             }
-        }
-
-        if ( !suceeded && resource.isFile() )
-        {
-            suceeded = resource.delete();
-        }
-
-        if ( !suceeded )
-        {
-            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not delete resource " +
-                member.getResourcePath() );
         }
     }
 

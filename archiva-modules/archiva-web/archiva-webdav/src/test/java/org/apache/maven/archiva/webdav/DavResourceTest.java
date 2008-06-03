@@ -23,6 +23,9 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.DavResourceFactory;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
+import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.apache.jackrabbit.webdav.DavSession;
 import org.apache.jackrabbit.webdav.lock.ActiveLock;
@@ -42,6 +45,8 @@ public class DavResourceTest extends PlexusInSpringTestCase
     private MimeTypes mimeTypes;
     
     private ArchivaDavResourceLocator resourceLocator;
+    
+    private DavResourceFactory resourceFactory;
     
     private File baseDir;
     
@@ -64,6 +69,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
         baseDir.mkdirs();
         myResource = new File(baseDir, "myresource.jar");
         assertTrue("Could not create " + myResource.getAbsolutePath(), myResource.createNewFile());
+        resourceFactory = new RootContextDavResourceFactory();
         resourceLocator = (ArchivaDavResourceLocator)new ArchivaDavLocatorFactory().createResourceLocator("/", REPOPATH);
         resource = getDavResource(resourceLocator.getHref(false), myResource);
         lockManager = new SimpleLockManager();
@@ -81,7 +87,32 @@ public class DavResourceTest extends PlexusInSpringTestCase
     
     private DavResource getDavResource(String logicalPath, File file)
     {
-        return new ArchivaDavResource(file.getAbsolutePath(), logicalPath, mimeTypes, session, resourceLocator, null);
+        return new ArchivaDavResource(file.getAbsolutePath(), logicalPath, mimeTypes, session, resourceLocator, resourceFactory);
+    }
+    
+    public void testDeleteCollection()
+        throws Exception
+    {
+        File dir = new File(baseDir, "testdir");
+        try
+        {
+            assertTrue(dir.mkdir());
+            DavResource directoryResource = getDavResource("/testdir", dir);
+            directoryResource.getCollection().removeMember(directoryResource);
+            assertFalse(dir.exists());
+        }
+        finally
+        {
+            FileUtils.deleteDirectory(dir);
+        }
+    }
+    
+    public void testDeleteResource()
+        throws Exception
+    {
+        assertTrue(myResource.exists());
+        resource.getCollection().removeMember(resource);
+        assertFalse(myResource.exists());
     }
     
     public void testIsLockable()
@@ -231,5 +262,16 @@ public class DavResourceTest extends PlexusInSpringTestCase
         }
         
         assertEquals(0, resource.getLocks().length);      
+    }
+    
+    private class RootContextDavResourceFactory implements DavResourceFactory
+    {
+        public DavResource createResource(DavResourceLocator locator, DavServletRequest request, DavServletResponse response) throws DavException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public DavResource createResource(DavResourceLocator locator, DavSession session) throws DavException {
+            return new ArchivaDavResource(baseDir.getAbsolutePath(), "/", mimeTypes, session, resourceLocator, resourceFactory);
+        }
     }
 }
