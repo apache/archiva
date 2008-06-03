@@ -60,6 +60,12 @@ public class ArchivaDavResourceLocator
         {
             hrefPrefix = hrefPrefix.substring( 0, hrefPrefix.length() - 1 );
         }
+        
+        //Remove trailing slashes otherwise Text.getRelativeParent fails
+        if (resourcePath.endsWith("/") && resourcePath.length() > 1)
+        {
+            this.resourcePath = resourcePath.substring( 0, resourcePath.length() - 1 );
+        }
 
         href = hrefPrefix + escapedPath;
     }
