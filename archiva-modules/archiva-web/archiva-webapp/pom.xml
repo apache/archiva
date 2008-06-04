@@ -255,6 +255,11 @@
       <artifactId>commons-codec</artifactId>
       <version>1.3</version>
     </dependency>
+    <dependency>
+      <groupId>stax</groupId>
+      <artifactId>stax</artifactId>
+      <version>1.2.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -326,6 +331,7 @@
                Specifically setting this to false to avoid accidental jar file creation. -->
           <archiveClasses>false</archiveClasses>
           <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml</dependentWarExcludes>
+          <warSourceExcludes>WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar</warSourceExcludes>
         </configuration>
         <!-- TODO: would be good to make the jetty plugin aware of these and remove the below -->
         <executions>
@@ -335,7 +341,7 @@
               <!-- Needed to get the plexus-security war overlay to do its thing before jetty:run -->
               <goal>inplace</goal>
             </goals>
-          </execution>
+          </execution>  
         </executions>
       </plugin>
       <plugin>
