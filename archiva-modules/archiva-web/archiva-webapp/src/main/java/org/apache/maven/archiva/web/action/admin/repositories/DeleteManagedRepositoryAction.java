@@ -42,7 +42,6 @@ import org.codehaus.plexus.redback.role.RoleManagerException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * DeleteManagedRepositoryAction
@@ -102,20 +101,6 @@ public class DeleteManagedRepositoryAction
             return ERROR;
         }
 
-        if( deleteContents )
-        {
-            // [MRM-789] Archiva may delete your app server installation
-            Properties props = System.getProperties();
-            for( Object value : props.values() )
-            {
-                if( StringUtils.equalsIgnoreCase( ( (String) value ).trim(), existingRepository.getLocation().trim() ) )
-                {
-                    addActionError( "Unable to delete repository. The location is being referenced in the system properties." );
-                    return ERROR;
-                }
-            }
-        }
-        
         String result = SUCCESS;
 
         try
