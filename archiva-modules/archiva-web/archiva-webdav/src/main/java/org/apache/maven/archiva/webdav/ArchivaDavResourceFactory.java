@@ -222,7 +222,7 @@ public class ArchivaDavResourceFactory
                         setHeaders( locator, response );
 
                         // compatibility with MRM-440 to ensure browsing the repository works ok
-                        if ( resource.isCollection() && !resource.getLocator().getResourcePath().endsWith( "/" ) )
+                        if ( resource.isCollection() && !resource.getLocator().getHref(true).endsWith("/" ) )
                         {
                             throw new BrowserRedirectException( resource.getHref() );
                         }

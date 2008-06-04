@@ -60,14 +60,14 @@ public class ArchivaDavResourceLocator
         {
             hrefPrefix = hrefPrefix.substring( 0, hrefPrefix.length() - 1 );
         }
+
+        href = hrefPrefix + escapedPath;
         
         //Remove trailing slashes otherwise Text.getRelativeParent fails
         if (resourcePath.endsWith("/") && resourcePath.length() > 1)
         {
             this.resourcePath = resourcePath.substring( 0, resourcePath.length() - 1 );
         }
-
-        href = hrefPrefix + escapedPath;
     }
 
     public String getRepositoryId()
@@ -108,7 +108,7 @@ public class ArchivaDavResourceLocator
     public String getHref( boolean isCollection )
     {
         // avoid doubled trailing '/' for the root item
-        String suffix = ( isCollection && !isRootLocation() ) ? "/" : "";
+        String suffix = ( isCollection && !isRootLocation() && !href.endsWith("/") ) ? "/" : "";
         return href + suffix;
     }
 
