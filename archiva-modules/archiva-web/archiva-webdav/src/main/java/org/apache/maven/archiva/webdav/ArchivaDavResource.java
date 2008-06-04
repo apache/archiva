@@ -329,6 +329,10 @@ public class ArchivaDavResource
                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
             }
         }
+        else
+        {
+            throw new DavException( HttpServletResponse.SC_NOT_FOUND );
+        }
     }
 
     public void move( DavResource destination )

@@ -90,6 +90,22 @@ public class DavResourceTest extends PlexusInSpringTestCase
         return new ArchivaDavResource(file.getAbsolutePath(), logicalPath, mimeTypes, session, resourceLocator, resourceFactory);
     }
     
+    public void testDeleteNonExistantResourceShould404()
+        throws Exception
+    {
+        File dir = new File(baseDir, "testdir");
+        try
+        {
+            DavResource directoryResource = getDavResource("/testdir", dir);
+            directoryResource.getCollection().removeMember(directoryResource);
+            fail("Did not throw DavException");
+        }
+        catch (DavException e)
+        {
+            assertEquals(DavServletResponse.SC_NOT_FOUND, e.getErrorCode());
+        }
+    }
+    
     public void testDeleteCollection()
         throws Exception
     {
