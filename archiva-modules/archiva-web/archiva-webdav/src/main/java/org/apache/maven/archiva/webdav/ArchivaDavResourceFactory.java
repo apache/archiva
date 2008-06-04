@@ -78,6 +78,8 @@ import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
+    private static final String HTTP_PUT_METHOD = "PUT";
+    
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
     /**
@@ -321,7 +323,7 @@ public class ArchivaDavResourceFactory
 
         File rootDirectory = new File( managedRepository.getRepoRoot() );
         File destDir = new File( rootDirectory, logicalResource.getPath() ).getParentFile();
-        if ( !destDir.exists() )
+        if ( request.getMethod().equals(HTTP_PUT_METHOD) && !destDir.exists() )
         {
             destDir.mkdirs();
             String relPath = PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
