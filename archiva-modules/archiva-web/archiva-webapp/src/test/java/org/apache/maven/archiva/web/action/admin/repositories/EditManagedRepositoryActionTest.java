@@ -134,6 +134,7 @@ public class EditManagedRepositoryActionTest
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration );
 
         archivaConfiguration.save( configuration );
 
@@ -157,7 +158,7 @@ public class EditManagedRepositoryActionTest
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
     }
-
+    
     private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
                                          ManagedRepositoryConfiguration actualRepository )
     {

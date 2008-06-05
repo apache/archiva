@@ -45,6 +45,8 @@ public abstract class AbstractManagedRepositoriesAction
      */
     protected RoleManager roleManager;
     
+    public static final String CONFIRM = "confirm";
+    
     public RoleManager getRoleManager()
     {
         return roleManager;

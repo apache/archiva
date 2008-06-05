@@ -291,6 +291,7 @@
     <action name="addRepository" class="addManagedRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/addRepository.jsp</result>
+      <result name="confirm">/WEB-INF/jsp/admin/confirmAddRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
@@ -299,6 +300,7 @@
       <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/editRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
+      <result name="confirm">/WEB-INF/jsp/admin/confirmAddRepository.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 

@@ -28,6 +28,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -48,6 +49,8 @@ public class EditManagedRepositoryAction
     private ManagedRepositoryConfiguration repository;
 
     private String repoid;
+    
+    private final String action = "editRepository";
 
     public void prepare()
     {
@@ -73,11 +76,34 @@ public class EditManagedRepositoryAction
         return INPUT;
     }
 
+    public String confirmUpdate()
+    {
+        return save();
+    }
+    
     public String commit()
+    {   
+        ManagedRepositoryConfiguration existingConfig =
+            archivaConfiguration.getConfiguration().findManagedRepositoryById( repository.getId() );
+        
+        // check if the location was changed
+        if( !StringUtils.equalsIgnoreCase( existingConfig.getLocation().trim(), repository.getLocation().trim() ) )
+        {
+            File dir = new File( repository.getLocation() );
+            if( dir.exists() )
+            {
+                return CONFIRM;
+            }
+        }
+        
+        return save();
+    }
+    
+    private String save()
     {
         // Ensure that the fields are valid.
         Configuration configuration = archivaConfiguration.getConfiguration();
-
+        
         // We are in edit mode, remove the old repository configuration.
         removeRepository( repository.getId(), configuration );
 
@@ -132,5 +158,10 @@ public class EditManagedRepositoryAction
     public void setRepository( ManagedRepositoryConfiguration repository )
     {
         this.repository = repository;
+    }
+    
+    public String getAction()
+    {
+        return action;
     }
 }

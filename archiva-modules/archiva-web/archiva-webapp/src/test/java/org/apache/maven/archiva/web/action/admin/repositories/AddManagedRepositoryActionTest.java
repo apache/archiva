@@ -159,6 +159,24 @@ public class AddManagedRepositoryActionTest
         archivaConfigurationControl.verify();
     }
     
+    
+    public void testAddRepositoryExistingLocation()
+        throws Exception
+    {
+        if( !location.exists() )
+        {
+            location.mkdirs();
+        }        
+    
+        action.prepare();
+        ManagedRepositoryConfiguration repository = action.getRepository();
+        populateRepository( repository );
+    
+        assertTrue( location.exists() );
+        String status = action.commit();
+        assertEquals( AddManagedRepositoryAction.CONFIRM, status );
+    }
+    
     private void populateRepository( ManagedRepositoryConfiguration repository )
     {
         repository.setId( REPO_ID );

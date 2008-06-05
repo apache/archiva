@@ -26,7 +26,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
-
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -45,6 +45,8 @@ public class AddManagedRepositoryAction
      * The model for this action.
      */
     private ManagedRepositoryConfiguration repository;
+    
+    private String action = "addRepository";
 
     public void prepare()
     {
@@ -60,11 +62,27 @@ public class AddManagedRepositoryAction
 
         return INPUT;
     }
-
+     
+    public String confirmAdd()
+    {
+        return save();
+    }
+    
     public String commit()
     {
+        File location = new File( repository.getLocation() );
+        if( location.exists() )
+        {   
+            return CONFIRM;
+        }
+        
+        return save();
+    }
+    
+    private String save()
+    {
         Configuration configuration = archivaConfiguration.getConfiguration();
-
+                
         String result;
         try
         {
@@ -73,12 +91,12 @@ public class AddManagedRepositoryAction
             result = saveConfiguration( configuration );
         }
         catch ( RoleManagerException e )
-        {
+        {            
             addActionError( "Role Manager Exception: " + e.getMessage() );
             result = INPUT;
         }
         catch ( IOException e )
-        {
+        {         
             addActionError( "Role Manager Exception: " + e.getMessage() );
             result = INPUT;
         }
@@ -124,5 +142,10 @@ public class AddManagedRepositoryAction
     public void setRepository( ManagedRepositoryConfiguration repository )
     {
         this.repository = repository;
+    }
+    
+    public String getAction()
+    {
+        return action;
     }
 }
