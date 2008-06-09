@@ -21,16 +21,11 @@ package org.apache.maven.archiva.web.startup;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
