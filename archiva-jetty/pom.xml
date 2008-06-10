@@ -186,6 +186,18 @@
                       <name>app.base.envvar</name>
                       <value>ARCHIVA_BASE</value>
                     </property>
+                    <property>
+                      <name>wrapper.on_exit.default</name>
+                      <value>RESTART</value>
+                    </property>
+                    <property>
+                      <name>wrapper.on_exit.0</name>
+                      <value>SHUTDOWN</value>
+                    </property>
+                    <property>
+                      <name>wrapper.restart.delay</name>
+                      <value>30</value>
+                    </property>
                   </configuration>
                 </generatorConfiguration>
               </generatorConfigurations>
