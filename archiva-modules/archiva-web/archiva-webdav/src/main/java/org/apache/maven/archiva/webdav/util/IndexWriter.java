@@ -84,6 +84,7 @@ public class IndexWriter
         writer.println("<head>");
         writer.println("<title>Collection: " + logicalResource + "<title>");
         writer.println("</head>");
+        writer.println("<body>");
         writer.println("<h3>Collection: " + logicalResource + "</h3>");
 
         //Check if not root
