@@ -37,26 +37,48 @@ import javax.servlet.http.HttpServletResponse;
 public class RepositoryServletBrowseTest
     extends AbstractRepositoryServletTestCase
 {
+    @Override
+    protected void setUp()
+        throws Exception 
+    {
+        super.setUp();
+        
+        new File( repoRootInternal, "org/apache/archiva" ).mkdirs();
+        new File( repoRootInternal, "org/codehaus/mojo/" ).mkdirs();
+        new File( repoRootInternal, "net/sourceforge" ).mkdirs();
+        new File( repoRootInternal, "commons-lang" ).mkdirs();
+    }
+    
     public void testBrowse()
         throws Exception
     {
-        new File( repoRootInternal, "org/apache/archiva" ).mkdirs();
-        new File( repoRootInternal, "net/sourceforge" ).mkdirs();
-        new File( repoRootInternal, "commons-lang" ).mkdirs();
-
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" );
         WebResponse response = sc.getResponse( request );
         assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
 
         // dumpResponse( response );
 
-        WebLink links[] = response.getLinks();
         String expectedLinks[] = new String[] { "./commons-lang/", "./net/", "./org/" };
-
-        assertEquals( "Links.length", expectedLinks.length, links.length );
-        for ( int i = 0; i < links.length; i++ )
+        assertLinks(expectedLinks, response.getLinks());
+    }
+    
+    public void testBrowseSubdirectory()
+        throws Exception
+    {
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/org" );
+        WebResponse response = sc.getResponse( request );
+        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
+        
+        String expectedLinks[] = new String[] { "../", "./apache/", "./codehaus/" };
+        assertLinks(expectedLinks, response.getLinks());
+    }
+    
+    private void assertLinks(String expectedLinks[], WebLink actualLinks[])
+    {
+        assertEquals( "Links.length", expectedLinks.length, actualLinks.length );
+        for ( int i = 0; i < actualLinks.length; i++ )
         {
-            assertEquals( "Link[" + i + "]", expectedLinks[i], links[i].getURLString() );
-        }
+            assertEquals( "Link[" + i + "]", expectedLinks[i], actualLinks[i].getURLString() );
+        }        
     }
 }
