@@ -119,7 +119,7 @@ public class IndexWriter
                 
                 for ( File file : files )
                 {
-                    writeHyperlink( writer, file.getName(), file.isDirectory(), false );
+                    writeHyperlink( writer, file.getName(), file.isDirectory() );
                 }
             }
         }
@@ -145,12 +145,12 @@ public class IndexWriter
             Collections.sort( sortedList );
             for ( String fileName : sortedList )
             {
-                writeHyperlink( writer, fileName, ( (File) uniqueChildFiles.get( fileName ) ).isDirectory(), true );
+                writeHyperlink( writer, fileName, ( (File) uniqueChildFiles.get( fileName ) ).isDirectory());
             }
         }
     }
 
-    private void writeHyperlink(PrintWriter writer, String resourceName, boolean directory, boolean isBrowse )
+    private void writeHyperlink(PrintWriter writer, String resourceName, boolean directory )
     {        
         if (directory)
         {
