@@ -113,28 +113,15 @@
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-app-configuration-web</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-slf4j-logging</artifactId>
       <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.4.3</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -147,12 +134,6 @@
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-api</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
@@ -161,12 +142,6 @@
     <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
       <artifactId>plexus-cache-api</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
@@ -186,22 +161,10 @@
     <dependency>
       <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-xwork-integration</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-taglib</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <!-- Other dependencies -->
     <dependency>
@@ -215,7 +178,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>2.5.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
@@ -235,12 +197,6 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-quartz</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -253,12 +209,10 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.3</version>
     </dependency>
     <dependency>
       <groupId>stax</groupId>
       <artifactId>stax</artifactId>
-      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
@@ -277,7 +231,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.2</version>
         <configuration>
           <argLine>-agentlib:yjpagent</argLine>
           <excludes>

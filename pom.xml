@@ -62,7 +62,9 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.0-alpha-3</version>
         <executions>
           <execution>
             <goals>
@@ -73,6 +75,17 @@
                 <bannedDependencies>
                   <excludes>
                     <exclude>org.codehaus.plexus:plexus-container-default</exclude>
+                    <exclude>commons-logging:commons-logging-api</exclude>
+                    <exclude>commons-logging:commons-logging</exclude>
+                    <exclude>velocity:velocity-dep</exclude>
+                    <exclude>classworlds:classworlds</exclude>
+                    <exclude>javax.transaction:jta</exclude>
+                    <exclude>xerces:xercesImpl</exclude>
+                    <exclude>xerces:xmlParserAPIs</exclude>
+                    <exclude>javax.sql:jdbc-stdext</exclude>
+                    <exclude>ant:ant-optional</exclude>
+                    <!-- exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude -->
+                    <exclude>xom:xom</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -166,11 +179,6 @@
             <jdkLevel>1.5</jdkLevel>
           </configuration>
         </plugin>
-		<plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-enforcer-plugin</artifactId>
-		  <version>1.0-alpha-3</version>
-		</plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -201,6 +209,11 @@
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
+      <artifactId>jcl104-over-slf4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>
     </dependency>
@@ -211,6 +224,16 @@
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-webdav</artifactId>
         <version>1.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
@@ -369,16 +392,22 @@
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-spring</artifactId>
         <version>1.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>2.5.1</version>
+        <groupId>stax</groupId>
+        <artifactId>stax</artifactId>
+        <version>1.2.0</version>
       </dependency>
       <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
-        <version>2.5.1</version>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.3</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -401,11 +430,6 @@
         <version>2.2</version>
       </dependency>
       <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging-api</artifactId>
-        <version>1.0.4</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derby</artifactId>
         <version>10.1.3.1</version>
@@ -424,12 +448,21 @@
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>1.8.0.7</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
         <version>1.1</version>
         <exclusions>
+          <exclusion>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
@@ -440,11 +473,6 @@
         <groupId>javax.jdo</groupId>
         <artifactId>jdo2-api</artifactId>
         <version>2.0</version>
-      </dependency>
-      <dependency>
-        <groupId>jdom</groupId>
-        <artifactId>jdom</artifactId>
-        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>jpox</groupId>
@@ -485,22 +513,18 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
-        <artifactId>maven-artifact</artifactId>
-        <version>${maven.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact-manager</artifactId>
         <version>${maven.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
-        <version>${maven.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-project</artifactId>
         <version>${maven.version}</version>
       </dependency>
       <dependency>
@@ -525,32 +549,6 @@
         </exclusions>		
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.shared</groupId>
-        <artifactId>maven-model-converter</artifactId>
-        <version>2.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-appserver-host</artifactId>
-        <version>2.0-alpha-8</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-appserver-service-jetty</artifactId>
-        <version>2.0-alpha-8</version>
-        <type>plexus-service</type>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-cli</artifactId>
-        <version>1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-command-line</artifactId>
-        <version>1.0-alpha-2</version>
-      </dependency>
-      <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-api</artifactId>
         <version>1.0-alpha-22</version>
@@ -564,26 +562,49 @@
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-expression-evaluator</artifactId>
         <version>1.0-rc1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-i18n</artifactId>
         <version>1.0-beta-6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-jdo2</artifactId>
         <version>1.0-alpha-8</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-naming</artifactId>
-        <version>1.0-alpha-3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-quartz</artifactId>
         <version>1.0-alpha-3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -593,6 +614,10 @@
           <exclusion>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -607,73 +632,117 @@
         <version>1.4.5</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-xwork-integration</artifactId>
-        <version>1.0-alpha-7</version>
+        <groupId>org.codehaus.plexus.cache</groupId>
+        <artifactId>plexus-cache-api</artifactId>
+        <version>1.0-alpha-2</version>
         <exclusions>
           <exclusion>
-            <groupId>velocity</groupId>
-            <artifactId>velocity-dep</artifactId>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.cache</groupId>
-        <artifactId>plexus-cache-api</artifactId>
-        <version>1.0-alpha-2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus.cache</groupId>
         <artifactId>plexus-cache-ehcache</artifactId>
         <version>1.0-alpha-2</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
-        <version>1.3.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-users-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-keys-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-model</artifactId>
         <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-authorization-rbac</artifactId>
         <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-role-manager</artifactId>
         <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-system</artifactId>
         <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-taglib</artifactId>
         <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
@@ -691,11 +760,35 @@
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-xwork-integration</artifactId>
         <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>classworlds</groupId>
+            <artifactId>classworlds</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>velocity</groupId>
+            <artifactId>velocity-dep</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.registry</groupId>
         <artifactId>plexus-registry-api</artifactId>
         <version>1.0-alpha-2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.registry</groupId>
@@ -714,6 +807,10 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging-api</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -728,7 +825,17 @@
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
+        <artifactId>jcl104-over-slf4j</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
         <version>1.5.0</version>
       </dependency>
       <dependency>
@@ -757,14 +864,15 @@
         <version>${wagon.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ssh</artifactId>
-        <version>${wagon.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.opensymphony</groupId>
         <artifactId>webwork</artifactId>
         <version>2.2.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
@@ -776,12 +884,96 @@
         <artifactId>joda-time</artifactId>
         <version>1.5.2</version>
       </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+
+      <!-- Transitive versions to manage -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>2.5.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>2.5.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-project</artifactId>
+        <version>${maven.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-model-converter</artifactId>
+        <version>2.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-xwork-integration</artifactId>
+        <version>1.0-alpha-7</version>
+        <exclusions>
+          <exclusion>
+            <groupId>velocity</groupId>
+            <artifactId>velocity-dep</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>1.3.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-3</wagon.version>
     <redback.version>1.0.2-SNAPSHOT</redback.version>
+    <jetty.version>6.1.6</jetty.version>
   </properties>
   <profiles>
     <profile>

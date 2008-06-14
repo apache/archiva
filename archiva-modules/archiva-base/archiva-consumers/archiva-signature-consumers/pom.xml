@@ -26,9 +26,4 @@
 
   <artifactId>archiva-signature-consumers</artifactId>
   <name>Archiva Consumers :: GPG Signature Consumers</name>
-  <packaging>jar</packaging>
-
-  <dependencies>
-    
-  </dependencies>
 </project>

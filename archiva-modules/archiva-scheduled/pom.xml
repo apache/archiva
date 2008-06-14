@@ -26,7 +26,6 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-scheduled</artifactId>
-  <version>1.1-SNAPSHOT</version>
   <name>Archiva Base :: Scheduled Tasks</name>
   <dependencies>
     <dependency>
@@ -48,12 +47,6 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-quartz</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -71,12 +64,6 @@
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-api</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <!-- Test Dependencies -->
     <dependency>

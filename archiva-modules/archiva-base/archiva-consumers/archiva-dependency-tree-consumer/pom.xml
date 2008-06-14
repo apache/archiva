@@ -21,7 +21,6 @@
     <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -37,7 +36,7 @@
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http-lightweight</artifactId>
-      <version>1.0-beta-2</version>
+      <version>${wagon.version}</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

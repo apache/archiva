@@ -26,7 +26,6 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-database</artifactId>
-  <version>1.1-SNAPSHOT</version>
   <name>Archiva Database</name>
   <dependencies>
     <dependency>
@@ -57,32 +56,11 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-jdo2</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>jpox</groupId>
       <artifactId>jpox</artifactId>
       <scope>compile</scope>
-      <exclusions>
-        <!-- targeting JDK 1.4 we don't need this -->
-        <exclusion>
-          <groupId>javax.sql</groupId>
-          <artifactId>jdbc-stdext</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
