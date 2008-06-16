@@ -1,3 +1,5 @@
+package org.apache.maven.archiva.webdav.util;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +18,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.maven.archiva.webdav.util;
 
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
