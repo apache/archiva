@@ -746,7 +746,7 @@ public class ArchivaDavResourceFactory
             new ArchivaVirtualDavResource( mergedRepositoryContents, logicalResource.getPath(), mimeTypes, locator, this );
        
         // compatibility with MRM-440 to ensure browsing the repository group works ok
-        if ( resource.isCollection() && !resource.getLocator().getResourcePath().endsWith( "/" ) )
+        if ( resource.isCollection() && !request.getRequestURI().endsWith("/" ) )
         {
             throw new BrowserRedirectException( resource.getHref() );
         }
