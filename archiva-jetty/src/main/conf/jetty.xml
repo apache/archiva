@@ -296,26 +296,33 @@
   </New>
 
   <!-- Archiva database -->
-   
   <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/archiva</Arg>
-    <Arg>
-      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName"><SystemProperty name="appserver.base" default=".."/>/data/databases/archiva</Set>
-        <Set name="user">sa</Set>
-        <Set name="createDatabase">create</Set>
-      </New>
-    </Arg>
+      <Arg>jdbc/archiva</Arg>
+      <Arg>
+       <New class="org.apache.commons.dbcp.BasicDataSource">
+             <Set name="driverClassName">org.apache.derby.jdbc.EmbeddedDataSource</Set>
+             <Set name="url">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/archiva</Set>
+             <Set name="username">sa</Set>
+             <Call name="addConnectionProperty">
+               <Arg>create</Arg>
+               <Arg>true</Arg>
+             </Call>
+       </New>
+      </Arg>
   </New>
 
   <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/archivaShutdown</Arg>
     <Arg>
-      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName"><SystemProperty name="appserver.base" default=".."/>/data/databases/archiva</Set>
-        <Set name="user">sa</Set>
-        <Set name="shutdownDatabase">shutdown</Set>
-      </New>
+      <New class="org.apache.commons.dbcp.BasicDataSource">
+             <Set name="driverClassName">org.apache.derby.jdbc.EmbeddedDataSource</Set>
+             <Set name="url">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/archiva</Set>
+             <Set name="username">sa</Set>
+              <Call name="addConnectionProperty">
+               <Arg>shutdown</Arg>
+               <Arg>true</Arg>
+             </Call>
+       </New>
     </Arg>
   </New>
  
