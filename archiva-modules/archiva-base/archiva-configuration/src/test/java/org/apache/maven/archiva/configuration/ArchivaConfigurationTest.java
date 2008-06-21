@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -87,7 +88,42 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isScanned() );
     }
+    
+    // test for [MRM-789]
+    public void testGetConfigurationFromDefaultsWithDefaultRepoLocationAlreadyExisting()
+        throws Exception
+    {
+        File repo = new File( getBasedir(), "/target/test-classes/existing_snapshots" );
+        repo.mkdirs();
+        
+        repo = new File( getBasedir(), "/target/test-classes/existing_internal" );
+        repo.mkdirs();
+        
+        String existingTestDefaultArchivaConfigFile = "<configuration>" +
+            FileUtils.readFileToString( getTestFile( "target/test-classes/org/apache/maven/archiva/configuration/test-default-archiva.xml" ) ) 
+            + "</configuration>";        
+        existingTestDefaultArchivaConfigFile = StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", getBasedir() );
+        
+        File generatedTestDefaultArchivaConfigFile =
+            new File( getBasedir(), "target/test-classes/org/apache/maven/archiva/configuration/default-archiva.xml" );
+                
+        FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile, existingTestDefaultArchivaConfigFile, null );
+                
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), 
+                                           "test-defaults-default-repo-location-exists" );
 
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        assertConfiguration( configuration );
+        
+        ManagedRepositoryConfiguration repository =
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );        
+        assertTrue( "check managed repositories", repository.getLocation().endsWith( "data/repositories/internal" ) );
+        
+        generatedTestDefaultArchivaConfigFile.delete();
+        assertFalse( generatedTestDefaultArchivaConfigFile.exists() );
+    }
+    
     /**
      * Ensures that the provided configuration matches the details present in the archiva-default.xml file.
      */

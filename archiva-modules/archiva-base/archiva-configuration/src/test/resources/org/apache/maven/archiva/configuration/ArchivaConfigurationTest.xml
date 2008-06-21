@@ -20,6 +20,27 @@
 
 <component-set>
   <components>
+  
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-defaults-default-repo-location-exists</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>empty</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <role-hint>test-defaults</role-hint>

@@ -138,7 +138,7 @@ public class DefaultArchivaConfiguration
      */
     private boolean isConfigurationDefaulted = false;
 
-    private static final String KEY = "org.apache.maven.archiva";
+    private static final String KEY = "org.apache.maven.archiva";   
 
     public synchronized Configuration getConfiguration()
     {
@@ -146,13 +146,17 @@ public class DefaultArchivaConfiguration
         {
             configuration = load();
             configuration = unescapeExpressions( configuration );
+            if( isConfigurationDefaulted )
+            {
+                configuration = checkRepositoryLocations( configuration );
+            }
         }
 
         return configuration;
     }
 
     private Configuration load()
-    {
+    {   
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
         Registry subset = registry.getSubset( KEY );
         if ( subset.getString( "version" ) == null )
@@ -164,8 +168,8 @@ public class DefaultArchivaConfiguration
                 subset = readDefaultConfiguration();
             }
         }
-
-        Configuration config = new ConfigurationRegistryReader().read( subset );
+        
+        Configuration config = new ConfigurationRegistryReader().read( subset );        
 
         if ( !config.getRepositories().isEmpty() )
         {
@@ -173,7 +177,7 @@ public class DefaultArchivaConfiguration
             {
                 V1RepositoryConfiguration r = i.next();
                 r.setScanned( r.isIndexed() );
-
+                
                 if ( r.getUrl().startsWith( "file://" ) )
                 {
                     r.setLocation( r.getUrl().substring( 7 ) );
@@ -694,6 +698,24 @@ public class DefaultArchivaConfiguration
             databaseScanning.setCronExpression( unescapeCronExpression( cron ) );
         }
 
+        return config;
+    }
+    
+    private Configuration checkRepositoryLocations( Configuration config )
+    {
+        // additional check for [MRM-789], ensure that the location of the default repositories 
+        // are not installed in the server installation        
+        for( ManagedRepositoryConfiguration repo : (List<ManagedRepositoryConfiguration>) config.getManagedRepositories() )
+        {
+            String repoPath = repo.getLocation();
+            File repoLocation = new File( repoPath );            
+            
+            if( repoLocation.exists() && repoLocation.isDirectory() && !repoPath.endsWith( "data/repositories/" + repo.getId() ) )
+            {
+                repo.setLocation( repoPath + "/data/repositories/" + repo.getId() );
+            }
+        }
+        
         return config;
     }
 
