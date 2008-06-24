@@ -22,6 +22,8 @@ package org.apache.archiva.consumers.dependencytree;
 import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -30,6 +32,8 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.profiles.DefaultProfileManager;
 import org.codehaus.plexus.spring.PlexusContainerAdapter;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.xml.sax.SAXException;
 
 public class DependencyTreeGeneratorConsumerTest
     extends PlexusInSpringTestCase
@@ -65,7 +69,7 @@ public class DependencyTreeGeneratorConsumerTest
     }
 
     public void testGenerateBasicTree()
-        throws IOException, ConsumerException
+        throws IOException, ConsumerException, ParserConfigurationException, SAXException
     {
         consumer.beginScan( repository, null );
 
@@ -73,7 +77,7 @@ public class DependencyTreeGeneratorConsumerTest
         consumer.processFile( path );
 
         File generatedFile = new File( generatedRepositoryLocation, path + ".xml" );
-        assertEquals( IOUtils.toString( getClass().getResourceAsStream( "/test-data/maven-core-2.0-tree.xml" ) ),
+        XMLAssert.assertXMLEqual( IOUtils.toString( getClass().getResourceAsStream( "/test-data/maven-core-2.0-tree.xml" ) ),
                       FileUtils.readFileToString( generatedFile ) );
 
         consumer.completeScan();
@@ -101,7 +105,7 @@ public class DependencyTreeGeneratorConsumerTest
     }
 
     public void testProfiles()
-        throws IOException, ConsumerException
+        throws IOException, ConsumerException, ParserConfigurationException, SAXException
     {
         PlexusContainerAdapter container = new PlexusContainerAdapter();
         container.setApplicationContext( getApplicationContext() );
@@ -114,7 +118,7 @@ public class DependencyTreeGeneratorConsumerTest
         consumer.processFile( path );
 
         File generatedFile = new File( generatedRepositoryLocation, path + ".xml" );
-        assertEquals( IOUtils.toString( getClass().getResourceAsStream( "/test-data/surefire-testng-2.0-tree.xml" ) ),
+        XMLAssert.assertXMLEqual( IOUtils.toString( getClass().getResourceAsStream( "/test-data/surefire-testng-2.0-tree.xml" ) ),
                       FileUtils.readFileToString( generatedFile ) );
 
         consumer.completeScan();

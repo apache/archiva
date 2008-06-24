@@ -39,5 +39,10 @@
       <version>${wagon.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
