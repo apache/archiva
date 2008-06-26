@@ -35,6 +35,7 @@ import org.apache.archiva.rss.processor.RssFeedProcessor;
 import org.apache.commons.codec.Decoder;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
@@ -163,35 +164,37 @@ public class RssFeedServlet
             SyndFeedOutput output = new SyndFeedOutput();
             output.output( feed, res.getWriter() );
         }
+        catch ( ArchivaDatabaseException e )
+        {
+            log.debug( COULD_NOT_GENERATE_FEED_ERROR, e );
+            res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, COULD_NOT_GENERATE_FEED_ERROR );
+        }
         catch ( UserNotFoundException unfe )
         {
-            log.error( COULD_NOT_AUTHENTICATE_USER, unfe );
+            log.debug( COULD_NOT_AUTHENTICATE_USER, unfe );
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, COULD_NOT_AUTHENTICATE_USER );
         }
         catch ( AccountLockedException acce )
-        {
-            log.error( COULD_NOT_AUTHENTICATE_USER, acce );
+        {            
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, COULD_NOT_AUTHENTICATE_USER );
         }
         catch ( AuthenticationException authe )
-        {
-            authe.printStackTrace();
-            log.error( COULD_NOT_AUTHENTICATE_USER, authe );
+        {   
+            log.debug( COULD_NOT_AUTHENTICATE_USER, authe );
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, COULD_NOT_AUTHENTICATE_USER );
         }
         catch ( FeedException ex )
         {
-            log.error( COULD_NOT_GENERATE_FEED_ERROR, ex );
+            log.debug( COULD_NOT_GENERATE_FEED_ERROR, ex );
             res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, COULD_NOT_GENERATE_FEED_ERROR );
         }
         catch ( MustChangePasswordException e )
-        {
-            log.error( COULD_NOT_AUTHENTICATE_USER, e );
+        {            
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, COULD_NOT_AUTHENTICATE_USER );
         }
         catch ( UnauthorizedException e )
         {
-            log.error( e.getMessage() );
+            log.debug( e.getMessage() );
             if ( repoId != null )
             {
                 res.setHeader("WWW-Authenticate", "Basic realm=\"Repository Archiva Managed " + repoId + " Repository" );
@@ -240,7 +243,7 @@ public class RssFeedServlet
                 }
                 catch ( DecoderException ie )
                 {
-                    log.error( "Error decoding username and password.", ie.getMessage() );
+                    log.warn( "Error decoding username and password.", ie.getMessage() );
                 }
 
                 if ( usernamePassword == null || usernamePassword.trim().equals( "" ) )
@@ -278,11 +281,11 @@ public class RssFeedServlet
             }
             catch ( AuthorizationException e )
             {
-                log.error( "Fatal Authorization Subsystem Error." );
+                
             }
             catch ( UnauthorizedException e )
             {
-                log.error( e.getMessage() );
+             
             }
         }
 

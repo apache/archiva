@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.archiva.rss.RssFeedEntry;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -36,7 +37,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 public abstract class AbstractArtifactsRssFeedProcessor
     implements RssFeedProcessor
 {
-    public abstract SyndFeed process( Map<String, String> reqParams );
+    public abstract SyndFeed process( Map<String, String> reqParams ) throws ArchivaDatabaseException;
 
     protected List<RssFeedEntry> processData( List<ArchivaArtifact> artifacts, boolean isRepoLevel )
     {

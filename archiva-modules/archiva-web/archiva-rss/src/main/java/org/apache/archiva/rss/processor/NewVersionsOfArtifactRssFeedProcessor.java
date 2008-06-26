@@ -27,7 +27,6 @@ import org.apache.archiva.rss.RssFeedGenerator;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.slf4j.Logger;
@@ -47,9 +46,9 @@ import com.sun.syndication.feed.synd.SyndFeed;
 public class NewVersionsOfArtifactRssFeedProcessor
     extends AbstractArtifactsRssFeedProcessor
 {
-    private String title = "New Versions of Artifact ";
+    private static final String title = "New Versions of Artifact ";
 
-    private String desc = "These are the new versions of artifact ";
+    private static final String desc = "These are the new versions of artifact ";
 
     /**
      * @plexus.requirement
@@ -66,7 +65,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
     /**
      * Process all versions of the artifact which had a rss feed request.
      */
-    public SyndFeed process( Map<String, String> reqParams )
+    public SyndFeed process( Map<String, String> reqParams ) throws ArchivaDatabaseException
     {
         String repoId = reqParams.get( RssFeedProcessor.KEY_REPO_ID );
         String groupId = reqParams.get( RssFeedProcessor.KEY_GROUP_ID );
@@ -81,30 +80,17 @@ public class NewVersionsOfArtifactRssFeedProcessor
     }
 
     private SyndFeed processNewVersionsOfArtifact( String repoId, String groupId, String artifactId )
+        throws ArchivaDatabaseException
     {
-        try
-        {            
-            Constraint artifactVersions = new ArtifactVersionsConstraint( repoId, groupId, artifactId, "whenGathered" );
-            List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactVersions );
-            
-            List<RssFeedEntry> entries = processData( artifacts, false );
-            String key = groupId + ":" + artifactId;
-            return generator.generateFeed( getTitle() + "\'" + key + "\'", "New versions of artifact " + "\'" + key +
-                "\' found in repository " + "\'" + repoId + "\'" + " during repository scan.", entries,
-                                           "rss_feeds?groupId=" + groupId + "&artifactId=" + artifactId );
-        }
-        catch ( ObjectNotFoundException oe )
-        {
-            oe.printStackTrace();
-            log.error( oe.getMessage() );
-        }
-        catch ( ArchivaDatabaseException ae )
-        {
-            ae.printStackTrace();
-            log.error( ae.getMessage() );
-        }
-
-        return null;
+                    
+        Constraint artifactVersions = new ArtifactVersionsConstraint( repoId, groupId, artifactId, "whenGathered" );
+        List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactVersions );
+        
+        List<RssFeedEntry> entries = processData( artifacts, false );
+        String key = groupId + ":" + artifactId;
+        
+        return generator.generateFeed( getTitle() + "\'" + key + "\'", "New versions of artifact " + "\'" + key +
+            "\' found in repository " + "\'" + repoId + "\'" + " during repository scan.", entries );
     }
 
     public String getTitle()

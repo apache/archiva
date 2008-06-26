@@ -48,11 +48,11 @@ import com.sun.syndication.feed.synd.SyndFeed;
 public class NewArtifactsRssFeedProcessor
     extends AbstractArtifactsRssFeedProcessor
 {
-    public static int numberOfDaysBeforeNow = 100;
+    private int numberOfDaysBeforeNow = 30;
     
-    private String title = "New Artifacts in Repository ";
+    private static final String title = "New Artifacts in Repository ";
 
-    private String desc = "These are the new artifacts found in the repository ";
+    private static final String desc = "These are the new artifacts found in the repository ";
 
     /**
      * @plexus.requirement
@@ -70,7 +70,7 @@ public class NewArtifactsRssFeedProcessor
      * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
      * new versions of artifact.
      */
-    public SyndFeed process( Map<String, String> reqParams )
+    public SyndFeed process( Map<String, String> reqParams ) throws ArchivaDatabaseException
     {
         log.debug( "Process new artifacts into rss feeds." );
 
@@ -83,27 +83,19 @@ public class NewArtifactsRssFeedProcessor
         return null;
     }
 
-    private SyndFeed processNewArtifactsInRepo( String repoId )
+    private SyndFeed processNewArtifactsInRepo( String repoId ) throws ArchivaDatabaseException
     {
-        try
-        {
-            Calendar greaterThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
-            greaterThanThisDate.add( Calendar.DATE, -numberOfDaysBeforeNow );
-            
-            Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, greaterThanThisDate.getTime(), "whenGathered" );
-            List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactsByRepo );
+        
+        Calendar greaterThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+        greaterThanThisDate.add( Calendar.DATE, -( getNumberOfDaysBeforeNow() ) );
+        
+        Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, greaterThanThisDate.getTime(), "whenGathered" );
+        List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactsByRepo );
 
-            List<RssFeedEntry> entries = processData( artifacts, true );
+        List<RssFeedEntry> entries = processData( artifacts, true );
 
-            return generator.generateFeed( getTitle() + "\'" + repoId + "\'", "New artifacts found in repository " +
-                "\'" + repoId + "\'" + " during repository scan.", entries, "rss_feeds?repoId=" + repoId );
-        }
-        catch ( ArchivaDatabaseException ae )
-        {
-            log.error( ae.getMessage() );
-        }
-
-        return null;
+        return generator.generateFeed( getTitle() + "\'" + repoId + "\'", "New artifacts found in repository " +
+            "\'" + repoId + "\'" + " during repository scan.", entries );
     }
 
     public String getTitle()
@@ -135,4 +127,15 @@ public class NewArtifactsRssFeedProcessor
     {
         this.artifactDAO = artifactDAO;
     }
+
+    public int getNumberOfDaysBeforeNow()
+    {
+        return numberOfDaysBeforeNow;
+    }
+
+    public void setNumberOfDaysBeforeNow( int numberOfDaysBeforeNow )
+    {
+        this.numberOfDaysBeforeNow = numberOfDaysBeforeNow;
+    }
+    
 }

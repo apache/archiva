@@ -105,16 +105,19 @@ public class ArtifactsByRepositoryConstraintTest
         artifact.getModel().setWhenGathered( whenGathered );
         artifactDao.saveArtifact( artifact );
 
+        Date olderWhenGathered = Calendar.getInstance().getTime();
+        olderWhenGathered.setTime( 123456789 );
+        
         artifact = createArtifact( "org.apache.archiva", "artifact-two", "1.1-SNAPSHOT" );
-        artifact.getModel().setWhenGathered( whenGathered );
+        artifact.getModel().setWhenGathered( olderWhenGathered );
         artifactDao.saveArtifact( artifact );
 
         artifact = createArtifact( "org.apache.archiva", "artifact-three", "2.0-beta-1" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifactDao.saveArtifact( artifact );
 
-        assertConstraint( "Artifacts By Repository and When Gathered", 5,
-                          new ArtifactsByRepositoryConstraint( "test-repo" ) );
+        assertConstraint( "Artifacts By Repository and When Gathered", 4,
+                          new ArtifactsByRepositoryConstraint( "test-repo", whenGathered, "repositoryId" ) );
     }
 
     private void assertConstraint( String msg, int count, ArtifactsByRepositoryConstraint constraint )

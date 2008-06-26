@@ -50,15 +50,14 @@ public class RssFeedGenerator
 
     public static String DEFAULT_LANGUAGE = "en-us";
 
-    private String DEFAULT_LINK = "http://localhost:8080/archiva/rss/";
+    //private String DEFAULT_LINK = "http://localhost:8080/archiva/rss/";
 
-    public SyndFeed generateFeed( String title, String description, List<RssFeedEntry> dataEntries,
-                                  String queryString )
+    public SyndFeed generateFeed( String title, String description, List<RssFeedEntry> dataEntries )
     {
         SyndFeed feed = new SyndFeedImpl();
 
         feed.setTitle( title );
-        feed.setLink( DEFAULT_LINK + queryString );
+        //feed.setLink( DEFAULT_LINK + queryString );
         feed.setDescription( description );
         feed.setLanguage( DEFAULT_LANGUAGE );
         feed.setPublishedDate( dataEntries.get( dataEntries.size() - 1 ).getPublishedDate() );

@@ -68,10 +68,10 @@ public class RssFeedGeneratorTest
         entries.add( entry );
 
         SyndFeed feed =
-            generator.generateFeed( "Test Feed", "The test feed from Archiva.", entries, "generated-rss2.0-feed.xml" );
+            generator.generateFeed( "Test Feed", "The test feed from Archiva.", entries );
 
         assertEquals( "Test Feed", feed.getTitle() );
-        assertEquals( "http://localhost:8080/archiva/rss/generated-rss2.0-feed.xml", feed.getLink() );
+        //assertEquals( "http://localhost:8080/archiva/rss/generated-rss2.0-feed.xml", feed.getLink() );
         assertEquals( "The test feed from Archiva.", feed.getDescription() );
         assertEquals( "en-us", feed.getLanguage() );
         assertEquals( entries.get( 2 ).getPublishedDate(), feed.getPublishedDate() );
