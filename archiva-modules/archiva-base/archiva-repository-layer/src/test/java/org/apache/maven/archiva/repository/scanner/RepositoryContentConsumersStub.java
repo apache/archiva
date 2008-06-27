@@ -4,16 +4,12 @@ import java.util.Date;
 
 public class RepositoryContentConsumersStub
     extends RepositoryContentConsumers
-{
-    private Date startTimeForTest;
-    
-    public void setStartTime( Date startTimeForTest )
-    {
-        this.startTimeForTest = startTimeForTest;
-    }
-    
+{       
     public Date getStartTime()
     {
+        Date startTimeForTest = new Date( System.currentTimeMillis() );
+        startTimeForTest.setTime( 12345678 );
+        
         return startTimeForTest;
     }
 }

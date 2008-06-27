@@ -72,8 +72,6 @@ public class RepositoryContentConsumers
 
     private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
     
-    private Date startTime;
-
     /**
      * <p>
      * Get the list of Ids associated with those {@link KnownRepositoryContentConsumer} that have
@@ -309,17 +307,10 @@ public class RepositoryContentConsumers
     {
         this.selectedInvalidConsumers = selectedInvalidConsumers;
     }
-        
-    public void setStartTime( Date startTime )
-    {
-        this.startTime = startTime;
-    }
     
-    public Date getStartTime()
-    {        
-        startTime = new Date( System.currentTimeMillis() );
-        
-        return startTime;
+    protected Date getStartTime()
+    {   
+        return new Date( System.currentTimeMillis() );
     }
     
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )

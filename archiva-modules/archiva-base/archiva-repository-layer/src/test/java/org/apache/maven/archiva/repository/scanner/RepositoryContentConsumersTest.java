@@ -223,6 +223,7 @@ public class RepositoryContentConsumersTest
         File testFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
 
         Date startTime = new Date( System.currentTimeMillis() );
+        startTime.setTime( 12345678 );
         
         selectedKnownConsumer.beginScan( repo, startTime );
         selectedKnownConsumer.getExcludes();
@@ -236,8 +237,7 @@ public class RepositoryContentConsumersTest
         selectedInvalidConsumer.beginScan( repo, startTime );
         //        invalidConsumer.completeScan();
         invalidControl.replay();
-
-        consumers.setStartTime( startTime );
+        
         consumers.executeConsumers( repo, testFile );
 
         knownControl.verify();
