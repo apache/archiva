@@ -92,9 +92,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
 
         SyndFeed feed = newVersionsProcessor.process( reqParams );
 
-        assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two'", feed.getTitle() );
-        //assertEquals( "http://localhost:8080/archiva/rss/rss_feeds?groupId=org.apache.archiva&artifactId=artifact-two",
-        //              feed.getLink() );
+        assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two'", feed.getTitle() );        
         assertEquals(
                       "New versions of artifact 'org.apache.archiva:artifact-two' found in repository 'test-repo' during repository scan.",
                       feed.getDescription() );
