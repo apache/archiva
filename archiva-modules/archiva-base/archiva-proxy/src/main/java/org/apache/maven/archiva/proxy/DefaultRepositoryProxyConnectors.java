@@ -651,6 +651,7 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( NotFoundException e )
         {
+            urlFailureCache.cacheFailure( url + type );
             log.debug( "Transfer failed, checksum not found: " + url );
             // Consume it, do not pass this on.
         }
@@ -1081,8 +1082,7 @@ public class DefaultRepositoryProxyConnectors
         {
             this.networkProxyMap.clear();
 
-            List<NetworkProxyConfiguration> networkProxies = archivaConfiguration.getConfiguration()
-                .getNetworkProxies();
+            List<NetworkProxyConfiguration> networkProxies = archivaConfiguration.getConfiguration().getNetworkProxies();
             for ( NetworkProxyConfiguration networkProxyConfig : networkProxies )
             {
                 String key = networkProxyConfig.getId();
