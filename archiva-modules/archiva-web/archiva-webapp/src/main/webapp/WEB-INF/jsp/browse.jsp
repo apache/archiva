@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
+<%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 
 <html>

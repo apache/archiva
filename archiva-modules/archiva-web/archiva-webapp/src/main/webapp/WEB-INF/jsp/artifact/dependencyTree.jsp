@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="page" uri="http://www.opensymphony.com/sitemesh/page" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
+<%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
 
 <archiva:dependency-tree groupId="${groupId}" artifactId="${artifactId}" version="${version}"
                          modelVersion="${model.version}">

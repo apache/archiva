@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
+<%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
 
 <%@ attribute name="groupId" required="true" %>
 <%@ attribute name="artifactId" %>
