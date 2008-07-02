@@ -5,7 +5,7 @@
 
    <tlib-version>2.2.3</tlib-version>
    <jsp-version>1.2</jsp-version>
-   <short-name>Archiva Taglib</short-name>
+   <short-name>ArchivaTaglib</short-name>
 
    <uri>http://maven.apache.org/archiva</uri>
 
