@@ -32,7 +32,6 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>

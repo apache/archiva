@@ -80,8 +80,6 @@
                     <exclude>velocity:velocity-dep</exclude>
                     <exclude>classworlds:classworlds</exclude>
                     <exclude>javax.transaction:jta</exclude>
-                    <exclude>xerces:xercesImpl</exclude>
-                    <exclude>xerces:xmlParserAPIs</exclude>
                     <exclude>javax.sql:jdbc-stdext</exclude>
                     <exclude>ant:ant-optional</exclude>
                     <!-- exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude -->
@@ -224,16 +222,6 @@
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-webdav</artifactId>
         <version>1.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
@@ -458,14 +446,6 @@
           <exclusion>
             <groupId>xom</groupId>
             <artifactId>xom</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xerces</groupId>
-            <artifactId>xmlParserAPIs</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

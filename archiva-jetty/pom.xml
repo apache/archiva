@@ -136,12 +136,6 @@
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <version>1.2.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
   <build>

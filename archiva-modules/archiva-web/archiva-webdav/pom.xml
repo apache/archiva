@@ -123,6 +123,10 @@
           <groupId>nekohtml</groupId>
           <artifactId>nekohtml</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>nekohtml</groupId>
+          <artifactId>xercesMinimal</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
   </dependencies>

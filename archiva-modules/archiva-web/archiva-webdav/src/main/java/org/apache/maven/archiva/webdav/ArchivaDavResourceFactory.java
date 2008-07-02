@@ -68,6 +68,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 
@@ -166,6 +167,12 @@ public class ArchivaDavResourceFactory
         else
         {
             repositories.add( ( (RepositoryLocator) locator ).getRepositoryId() );
+        }
+       
+        //MRM-419 - Windows Webdav support. Should not 404 if there is no content.
+        if (StringUtils.isEmpty(archivaLocator.getRepositoryId()))
+        {
+            throw new DavException(HttpServletResponse.SC_NO_CONTENT);
         }
 
         DavResource resource = null;
