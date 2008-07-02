@@ -42,6 +42,9 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.AuditListener;
+import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
@@ -55,6 +58,7 @@ import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
+import com.opensymphony.webwork.ServletActionContext;
 import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
@@ -69,7 +73,7 @@ import com.opensymphony.xwork.Validateable;
  */
 public class UploadAction
     extends PlexusActionSupport
-    implements Validateable, Preparable
+    implements Validateable, Preparable, Auditable
 {
     /**
       * @plexus.requirement
@@ -160,6 +164,11 @@ public class UploadAction
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
+    
+    /**
+     * @plexus.requirement role="org.apache.maven.archiva.repository.audit.AuditListener"
+     */
+    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
     
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -383,9 +392,8 @@ public class UploadAction
 
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deployed to repository \'" + repositoryId + "\'";
-
-            //TODO: MRM-810 (this writes to archiva.log, should be audit.log)
-            getLogger().info( msg + " by " + getPrincipal() );
+                        
+            triggerAuditEvent( getPrincipal(), repositoryId, groupId + ":" + artifactId + ":" + version, AuditEvent.UPLOAD_FILE );
             
             addActionMessage( msg );
 
@@ -534,6 +542,32 @@ public class UploadAction
         catch ( ArchivaSecurityException ae )
         {
             addActionError( ae.getMessage() );
+        }
+    }
+    
+    public void addAuditListener( AuditListener listener )
+    {
+        this.auditListeners.add( listener );
+    }
+
+    public void clearAuditListeners()
+    {
+        this.auditListeners.clear();
+    }
+
+    public void removeAuditListener( AuditListener listener )
+    {
+        this.auditListeners.remove( listener );
+    }
+    
+    private void triggerAuditEvent( String user, String repositoryId, String resource, String action )
+    {
+        AuditEvent event = new AuditEvent( repositoryId, user, resource, action );
+        event.setRemoteIP( ServletActionContext.getRequest().getRemoteAddr() );
+        
+        for ( AuditListener listener : auditListeners )
+        {
+            listener.auditEvent( event );
         }
     }
 }

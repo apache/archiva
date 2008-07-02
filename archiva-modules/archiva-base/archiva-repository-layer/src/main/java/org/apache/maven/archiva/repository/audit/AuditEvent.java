@@ -37,6 +37,8 @@ public class AuditEvent
 
     public static final String MODIFY_FILE = "Modify File";
     
+    public static final String UPLOAD_FILE = "Uploaded File";
+    
     private String repositoryId;
 
     private String userId;
