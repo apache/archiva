@@ -342,8 +342,7 @@ public class DefaultArchivaTaskScheduler
             }
             jobs.clear();
 
-            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration()
-            .getManagedRepositories();
+            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration().getManagedRepositories();
 
             for ( ManagedRepositoryConfiguration repoConfig : repositories )
             {
