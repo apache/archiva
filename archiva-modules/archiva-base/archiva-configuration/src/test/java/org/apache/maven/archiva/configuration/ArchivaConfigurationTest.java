@@ -99,9 +99,8 @@ public class ArchivaConfigurationTest
         repo = new File( getBasedir(), "/target/test-classes/existing_internal" );
         repo.mkdirs();
         
-        String existingTestDefaultArchivaConfigFile = "<configuration>" +
-            FileUtils.readFileToString( getTestFile( "target/test-classes/org/apache/maven/archiva/configuration/test-default-archiva.xml" ) ) 
-            + "</configuration>";        
+        String existingTestDefaultArchivaConfigFile = 
+            FileUtils.readFileToString( getTestFile( "target/test-classes/org/apache/maven/archiva/configuration/test-default-archiva.xml" ) ) ;        
         existingTestDefaultArchivaConfigFile = StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", getBasedir() );
         
         File generatedTestDefaultArchivaConfigFile =

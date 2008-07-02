@@ -1,3 +1,4 @@
+<configuration>
   <version>2</version>
   <managedRepositories>
     <managedRepository>
@@ -172,3 +173,4 @@
       <appletFindEnabled>true</appletFindEnabled>
     </ui>
   </webapp>
+</configuration>
