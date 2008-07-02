@@ -62,6 +62,7 @@ import com.opensymphony.webwork.ServletActionContext;
 import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
@@ -446,9 +447,10 @@ public class UploadAction
         projectModel.setArtifactId( artifactId );
         projectModel.setVersion( version );
         projectModel.setPackaging( packaging );
-
-        File pomFile = new File( targetPath, filename.replaceAll( packaging, "pom" ) );
-
+        
+        filename = FilenameUtils.removeExtension(filename) + ".pom";
+        File pomFile = new File( targetPath, filename);
+        
         pomWriter.write( projectModel, pomFile );
 
         return pomFile;
