@@ -1,0 +1,168 @@
+ ------
+ Installing Standalone Distribution of Apache Archiva
+ ------
+
+Installing Standalone Distribution of Apache Archiva
+
+  Installing the standalone distribution of Archiva is quite simple - for an example, see the {{{../quick-start.html} Quick Start}} guide.
+
+  However, the best way to use this installation technique is to separate the configuration from the installation to make it easy to
+  upgrade to newer versions in the future.
+
+* Running Archiva
+
+  Archiva can be run by executing:
+
+    * <<<bin/archiva>>>, or <<<bin\archiva.bat>>> for windows (select the one for your environment). The argument can be <<<console>>> to run
+      interactively, or <<<start>>> to run in the background (in this case, run the script with <<<stop>>> to later stop the server). The logs
+      are available in the <<<logs>>> directory where Archiva is installed.
+
+    []
+
+* Installing as a Service on Windows
+
+  On Windows, to use the <<<start>>> and <<<stop>>> commands you must first install it as a service. This is done by running:
+
+----
+.\bin\archiva install
+----
+
+  You can then use the <<<start>>> and <<<stop>>> commands as well as the traditional Windows service management console to manage the Archiva
+  service.
+
+  This procedure installs the service to run as the local system user. You must ensure that it has access to read the installation, and to write
+  to the logs and data directories.
+
+  You can later remove the service with:
+
+----
+.\bin\archiva remove
+----
+
+* Separating the base from the installation
+
+  The standalone instance of Archiva uses the Plexus application server, which is capable of separating it's configuration from installation,
+  in much the same way Tomcat does for example.
+
+  This is achieved by the following steps:
+
+   [[1]] Creating the base location. For example, you might install Archiva in <<</opt/archiva-1.0>>> and the data in <<</var/archiva>>>. Create the directories <<</var/archiva/logs>>>, <<</var/archiva/data>>> and <<</var/archiva/conf>>>.
+
+   [[2]] Copy the configuration files from the Archiva installation (eg <<</opt/archiva-1.0/conf>>> to the new location (eg. <<</var/archiva/conf>>>). If you've previously run Archiva, you may need to edit <<<conf/archiva.xml>>> to change the location of the repositories
+
+   [[3]] Set the environment variable <<<ARCHIVA_BASE>>> to the data location (eg. <<</var/archiva>>>). In bash, be sure to export the variable.
+
+   [[4]] Start Archiva standalone as described above from the installation location
+
+* Configuring Archiva
+
+  Archiva's configuration is loaded from the following files, in order of most precedent:
+
+    * <<<~/.m2/archiva.xml>>>
+
+    * <<<$ARCHIVA_BASE/conf/archiva.xml>>>
+
+    * <<<conf/archiva.xml>>> in the Archiva installation
+
+  When Archiva saves it's configuration, all configuration is stored to a single file. The file chosen is by the following rules:
+
+    * If <<<~/.m2/archiva.xml>>> exists, it is saved there
+
+    * Otherwise, it is saved to <<<$ARCHIVA_BASE/conf/archiva.xml>>>, regardless of whether it previously existed.
+
+  The configuration will never be saved in the Archiva installation directory if you are using a separate base directory.
+
+  Note that the configuration can be edited, but only when Archiva is not running as it will not reload a changed configuration file, and will save over it
+  if something is changed in the web interface.
+
+* Database
+
+ By default, Archiva uses embedded {{{http://db.apache.org/derby}Apache Derby}}
+ to store the user information. It can be configured to use an external database
+ by providing a JDBC driver and editing the <<<jetty.xml>>> file.
+
+ [[1]] Place the jar containing the JDBC driver in the <<<lib>>> directory of the Archiva installation.
+
+ [[2]] Edit <<<conf/jetty.xml>>>, providing the JDBC driver class
+ name, database url, username, and password.
+
+ []
+
+ The example below uses Mysql for the database server. You can take a look at
+ {{{http://cwiki.apache.org/confluence/display/ARCHIVA/Archiva+with+MySQL}Archiva with MySQL}}
+ for more details.
+
++------+
+  ...
+  <!-- Archiva Database -->
+
+  <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/archiva</Arg>
+    <Arg>
+      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
+        <Set name="serverName">localhost</Set>
+        <Set name="databaseName">archiva</Set>
+        <Set name="user">archiva</Set>
+        <Set name="password">sa</Set>
+      </New>
+    </Arg>
+  </New>
+
+  <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/archivaShutdown</Arg>
+    <Arg>
+      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
+        <Set name="serverName">localhost</Set>
+        <Set name="databaseName">archiva</Set>
+        <Set name="user">archiva</Set>
+        <Set name="password">sa</Set>
+      </New>
+    </Arg>
+  </New>
+
+  <!-- Users / Security Database -->
+
+  <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/users</Arg>
+    <Arg>
+      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
+        <Set name="serverName">localhost</Set>
+        <Set name="databaseName">redback</Set>
+        <Set name="user">archiva</Set>
+        <Set name="password">sa</Set>
+      </New>
+    </Arg>
+  </New>
+
+  <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/usersShutdown</Arg>
+    <Arg>
+      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
+        <Set name="url">jdbc:mysql://localhost/redback</Set>
+        <Set name="user">archiva</Set>
+        <Set name="password">sa</Set>
+      </New>
+    </Arg>
+  </New>
+  ...
++------+
+
+ More information about using Derby Network Server as an external user database
+ for Archiva can be found on the wiki:
+ {{{http://cwiki.apache.org/confluence/display/ARCHIVA/Archiva+User+DB+on+Derby+Network+Server}
+ Archiva User DB on Derby Network Server}}
+
+
+{Upgrading Archiva}
+
+   Upgrading Archiva is straightforward if the directions for separating the base from the installation above are followed. Simply retain the data directories (the repositories and database),
+   and the configuration files (in the conf directory, or the other locations specified above) and use a new extracted installation of Archiva.
+
+   Note that the <<<users>>> database must always be retained as it contains the permissions and user information across versions. However, should it be necessary, the <<<archiva>>> database can
+   be removed at any time and re-created by scanning the repositories again.
+
+   The repository data is portable across versions, and multiple versions can be configured to look at the same repositories (though not run simultaneously). When scanned, an index is also created
+   in the root directory - while this shold remain portable across versions, it can also be removed and regenerated by scanning the given repository again from the web interface.
+
+
+

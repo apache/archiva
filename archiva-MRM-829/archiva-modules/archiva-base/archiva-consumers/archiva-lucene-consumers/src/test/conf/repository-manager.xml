@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<configuration>
+  <version>1</version>
+  <repositories>
+    <repository>
+      <id>test-repo</id>
+      <name>Test Repository</name>
+      <url>file://src/test/resources/test-repo</url>
+      <layout>default</layout>
+      <releases>true</releases>
+      <snapshots>true</snapshots>
+      <indexed>true</indexed>
+      <refreshCronExpression>0 0 * * * ?</refreshCronExpression>
+      <daysOlder>0</daysOlder>
+      <retentionCount>2</retentionCount>
+    </repository>
+  </repositories>
+
+  <proxyConnectors/>
+
+  <networkProxies>
+    <networkProxy>
+      <id>example</id>
+      <protocol>http</protocol>
+      <host>proxy.mycompany.com</host>
+      <port>8080</port>
+      <username>myself</username>
+      <password>mypass</password>
+    </networkProxy>
+  </networkProxies>
+
+  <repositoryScanning>
+    <fileTypes>
+      <fileType>
+        <id>artifacts</id>
+        <patterns>
+          <pattern>**/*.pom</pattern>
+          <pattern>**/*.jar</pattern>
+          <pattern>**/*.ear</pattern>
+          <pattern>**/*.war</pattern>
+        </patterns>
+      </fileType>
+      <fileType>
+        <id>indexable-content</id>
+        <patterns>
+          <pattern>**/*.txt</pattern>
+          <pattern>**/*.TXT</pattern>
+        </patterns>
+      </fileType>
+      <fileType>
+        <id>auto-remove</id>
+        <patterns>
+          <pattern>**/*.bak</pattern>
+          <pattern>**/*~</pattern>
+          <pattern>**/*-</pattern>
+        </patterns>
+      </fileType>
+      <fileType>
+        <id>ignored</id>
+        <patterns>
+          <pattern>**/.htaccess</pattern>
+          <pattern>**/KEYS</pattern>
+          <pattern>**/*.rb</pattern>
+          <pattern>**/*.sh</pattern>
+          <pattern>**/.svn/**</pattern>
+          <pattern>**/.DAV/**</pattern>
+        </patterns>
+      </fileType>
+    </fileTypes>
+    <knownContentConsumers>
+      <knownContentConsumer>update-db-artifact</knownContentConsumer>
+      <knownContentConsumer>create-missing-checksums</knownContentConsumer>
+      <knownContentConsumer>update-db-repository-metadata</knownContentConsumer>
+      <knownContentConsumer>validate-checksum</knownContentConsumer>
+      <knownContentConsumer>validate-signature</knownContentConsumer>
+      <knownContentConsumer>index-content</knownContentConsumer>
+      <knownContentConsumer>auto-remove</knownContentConsumer>
+      <knownContentConsumer>auto-rename</knownContentConsumer>
+      <knownContentConsumer>repository-purge</knownContentConsumer>
+    </knownContentConsumers>
+    <invalidContentConsumers>
+      <invalidContentConsumer>update-db-bad-content</invalidContentConsumer>
+    </invalidContentConsumers>
+  </repositoryScanning>
+
+  <databaseScanning>
+    <cronExpression>0 0 * * * ?</cronExpression>
+    <unprocessedConsumers>
+      <unprocessedConsumer>index-artifact</unprocessedConsumer>
+      <unprocessedConsumer>update-db-project</unprocessedConsumer>
+      <unprocessedConsumer>validate-repository-metadata</unprocessedConsumer>
+      <unprocessedConsumer>index-archive-toc</unprocessedConsumer>
+      <unprocessedConsumer>update-db-bytecode-stats</unprocessedConsumer>
+      <unprocessedConsumer>index-public-methods</unprocessedConsumer>
+    </unprocessedConsumers>
+    <cleanupConsumers>
+      <cleanupConsumer>not-present-remove-db-artifact</cleanupConsumer>
+      <cleanupConsumer>not-present-remove-db-project</cleanupConsumer>
+      <cleanupConsumer>not-present-remove-indexed</cleanupConsumer>
+    </cleanupConsumers>
+  </databaseScanning>
+
+  <webapp>
+    <ui>
+      <showFindArtifacts>true</showFindArtifacts>
+      <appletFindEnabled>true</appletFindEnabled>
+    </ui>
+  </webapp>
+
+</configuration>

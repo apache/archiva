@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<!-- =============================================================== -->
+<!-- Configure the Jetty Server                                      -->
+<!--                                                                 -->
+<!-- Documentation of this file format can be found at:              -->
+<!-- http://docs.codehaus.org/display/JETTY/jetty.xml                -->
+<!--                                                                 -->
+<!-- =============================================================== -->
+
+
+<Configure id="Server" class="org.mortbay.jetty.Server">
+
+    <!-- =========================================================== -->
+    <!-- Server Thread Pool                                          -->
+    <!-- =========================================================== -->
+    <Set name="ThreadPool">
+      <!-- Default bounded blocking threadpool 
+      -->
+      <New class="org.mortbay.thread.BoundedThreadPool">
+        <Set name="minThreads">10</Set>
+        <Set name="maxThreads">250</Set>
+        <Set name="lowThreads">25</Set>
+      </New>
+
+      <!-- Optional Java 5 bounded threadpool with job queue 
+      <New class="org.mortbay.thread.concurrent.ThreadPool">
+        <Set name="corePoolSize">250</Set>
+        <Set name="maximumPoolSize">250</Set>
+      </New>
+      -->
+    </Set>
+
+
+    <Call class="java.lang.System" name="setProperty">
+      <Arg>jetty.port</Arg>
+      <Arg>8080</Arg>
+    </Call>
+
+    <Call class="java.lang.System" name="setProperty">
+      <Arg>jetty.host</Arg>
+      <Arg>localhost</Arg>
+    </Call>
+
+    <!-- =========================================================== -->
+    <!-- Set connectors                                              -->
+    <!-- =========================================================== -->
+    <!-- One of each type!                                           -->
+    <!-- =========================================================== -->
+
+    <!-- Use this connector for many frequently idle connections
+         and for threadless continuations.
+    -->    
+    <Call name="addConnector">
+      <Arg>
+          <New class="org.mortbay.jetty.nio.SelectChannelConnector">
+            <Set name="host"><SystemProperty name="jetty.host"/></Set>
+            <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
+            <Set name="maxIdleTime">30000</Set>
+            <Set name="Acceptors">2</Set>
+            <Set name="statsOn">false</Set>
+            <Set name="confidentialPort">8443</Set>
+	    <Set name="lowResourcesConnections">5000</Set>
+	    <Set name="lowResourcesMaxIdleTime">5000</Set>
+          </New>
+      </Arg>
+    </Call>
+
+    <!-- Use this connector if NIO is not available. 
+    <Call name="addConnector">
+      <Arg>
+          <New class="org.mortbay.jetty.bio.SocketConnector">
+            <Set name="port">8081</Set>
+            <Set name="maxIdleTime">50000</Set>
+            <Set name="lowResourceMaxIdleTime">1500</Set>
+          </New>
+      </Arg>
+    </Call>
+    -->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- To add a HTTPS SSL listener                                     -->
+    <!-- see jetty-ssl.xml to add an ssl connector. use                  -->
+    <!-- java -jar start.jar etc/jetty.xml etc/jetty-ssl.xml             -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    
+    <!-- =========================================================== -->
+    <!-- Set up global session ID manager                            -->
+    <!-- =========================================================== -->
+    <!--
+    <Set name="sessionIdManager">
+      <New class="org.mortbay.jetty.servlet.HashSessionIdManager">
+        <Set name="workerName">node1</Set>
+      </New>
+    </Set>
+    -->
+
+    <!-- =========================================================== -->
+    <!-- Set handler Collection Structure                            --> 
+    <!-- =========================================================== -->
+    <Set name="handler">
+      <New id="Handlers" class="org.mortbay.jetty.handler.HandlerCollection">
+        <Set name="handlers">
+         <Array type="org.mortbay.jetty.Handler">
+           <Item>
+             <New id="Contexts" class="org.mortbay.jetty.handler.ContextHandlerCollection"/>
+           </Item>
+           <Item>
+             <New id="DefaultHandler" class="org.mortbay.jetty.handler.DefaultHandler"/>
+           </Item>
+           <Item>
+             <New id="RequestLog" class="org.mortbay.jetty.handler.RequestLogHandler"/>
+           </Item>
+         </Array>
+        </Set>
+      </New>
+    </Set>
+    
+    <!-- =========================================================== -->
+    <!-- Configure the context deployer                              -->
+    <!-- A context deployer will deploy contexts described in        -->
+    <!-- configuration files discovered in a directory.              -->
+    <!-- The configuration directory can be scanned for hot          -->
+    <!-- deployments at the configured scanInterval.                 -->
+    <!--                                                             -->
+    <!-- This deployer is configured to deploy contexts configured   -->
+    <!-- in the $JETTY_HOME/contexts directory                       -->
+    <!--                                                             -->
+    <!-- =========================================================== -->
+    <Call name="addLifeCycle">
+      <Arg>
+        <New class="org.mortbay.jetty.deployer.ContextDeployer">
+          <Set name="contexts"><Ref id="Contexts"/></Set>
+          <Set name="configurationDir"><SystemProperty name="jetty.home" default="."/>/contexts</Set>
+          <Set name="scanInterval">1</Set>
+        </New>
+      </Arg>
+    </Call>
+
+    <!-- =========================================================== -->
+    <!-- Configure the webapp deployer.                              -->
+    <!-- A webapp  deployer will deploy standard webapps discovered  -->
+    <!-- in a directory at startup, without the need for additional  -->
+    <!-- configuration files.    It does not support hot deploy or   -->
+    <!-- non standard contexts (see ContextDeployer above).          -->
+    <!--                                                             -->
+    <!-- This deployer is configured to deploy webapps from the      -->
+    <!-- $JETTY_HOME/webapps directory                               -->
+    <!--                                                             -->
+    <!-- Normally only one type of deployer need be used.            -->
+    <!--                                                             -->
+    <!-- =========================================================== -->
+    <Call name="addLifeCycle">
+      <Arg>
+        <New class="org.mortbay.jetty.deployer.WebAppDeployer">
+          <Set name="contexts"><Ref id="Contexts"/></Set>
+          <Set name="webAppDir"><SystemProperty name="jetty.home" default="."/>/apps</Set>
+	  <Set name="parentLoaderPriority">false</Set>
+	  <Set name="extract">true</Set>
+	  <Set name="allowDuplicates">false</Set>
+        </New>
+      </Arg>
+    </Call>
+
+    <!-- =========================================================== -->
+    <!-- Configure Request Log                                       -->
+    <!-- Request logs  may be configured for the entire server here, -->
+    <!-- or they can be configured for a specific web app in a       -->
+    <!-- contexts configuration (see $(jetty.home)/contexts/test.xml -->
+    <!-- for an example).                                            -->
+    <!-- =========================================================== -->
+    <Ref id="RequestLog">
+      <Set name="requestLog">
+        <New id="RequestLogImpl" class="org.mortbay.jetty.NCSARequestLog">
+          <Set name="filename"><SystemProperty name="jetty.logs" default="./logs"/>/yyyy_mm_dd.request.log</Set>
+          <Set name="filenameDateFormat">yyyy_MM_dd</Set>
+          <Set name="retainDays">90</Set>
+          <Set name="append">true</Set>
+          <Set name="extended">true</Set>
+          <Set name="logCookies">false</Set>
+          <Set name="LogTimeZone">GMT</Set>
+        </New>
+      </Set>
+    </Ref>
+
+    <!-- =========================================================== -->
+    <!-- extra options                                               -->
+    <!-- =========================================================== -->
+    <Set name="stopAtShutdown">true</Set>
+    <Set name="sendServerVersion">true</Set>
+    <Set name="sendDateHeader">true</Set>
+    <Set name="gracefulShutdown">1000</Set>
+
+
+ 
+ <!-- =========================================================== -->
+  <!-- JNDI java:comp/env                                          -->
+  <!-- To use JNDI with Jetty, you will need to tell your          -->
+  <!-- WebAppContext to process the naming related items in        -->
+  <!-- web.xml. For an example of how to do that, see the test     -->
+  <!-- webapp below. More information can be found at              -->
+  <!-- http://docs.codehaus.org/display/JETTY/Jetty+Wiki           -->
+  <!-- =========================================================== -->
+
+
+  <!-- Configuring <resource-ref> and <resource-env-ref>s          -->
+  <!--                                                             -->
+  <!-- The following are examples of setting up a resource that   -->
+  <!-- can be referenced in a web.xml file as a <resource-ref> or  -->
+  <!-- a <resource-env-ref>. The first argument is the name of the -->
+  <!-- resource relative to java:comp/env and must be the SAME as  -->
+  <!-- the <res-ref-name> or <resource-env-ref-name> in web.xml.   -->
+  <!-- The second argument is the construction of the resource     -->
+  <!-- object. Any object at all can be configured.                -->
+
+
+  <!-- These examples set up a javax.sql.DataSource around an      -->
+  <!-- XADataSource that is provided by the Derby relational db.   -->
+  <!-- The DataSource wrapper that is registered in JNDI is        -->
+  <!--  provided by Atomikos, and works with the Atomikos          -->
+  <!-- transaction manager configured further below. To use these  -->
+  <!-- examples, download Atomikos http://www.atomikos.com and     -->
+  <!-- Derby http://db.apache.org/derby                            -->
+
+
+  <!-- Configuring Transactions                                    -->
+  <!--                                                             -->
+  <!-- The following is a example of a setting up a JTA            -->
+  <!-- transaction manager that can be referenced by looking up    -->
+  <!-- java:comp/UserTransaction. Note that this is just an        -->
+  <!-- example and if you uncomment it, you will need to download  -->
+  <!-- the atomikos jar (see http://www.atomikos.com/download.html)-->
+  <!-- You can configure any transaction manager that implements   -->
+  <!-- javax.transaction.UserTransaction.                          -->
+
+
+
+  <!-- =========================================================== -->
+  <!-- Configurations for WebAppContexts                           -->
+  <!-- Sequence of configurations to be applied to a webapp.       -->
+  <!-- =========================================================== -->
+  <Array id="plusConfig" type="java.lang.String">
+    <Item>org.mortbay.jetty.webapp.WebInfConfiguration</Item>
+    <Item>org.mortbay.jetty.plus.webapp.EnvConfiguration</Item>
+    <Item>org.mortbay.jetty.plus.webapp.Configuration</Item>
+    <Item>org.mortbay.jetty.webapp.JettyWebXmlConfiguration</Item>
+    <Item>org.mortbay.jetty.webapp.TagLibConfiguration</Item>
+  </Array>
+
+  <!-- =========================================================== -->
+  <!-- Deploy all webapps in webapps-plus                          -->
+  <!-- =========================================================== -->
+  <Call class="org.mortbay.jetty.webapp.WebAppContext" name="addWebApplications">
+    <Arg><Ref id="Contexts"/></Arg>
+    <Arg>./apps</Arg>
+    <Arg>org/mortbay/jetty/webapp/webdefault.xml</Arg>
+    <Arg><Ref id="plusConfig"/></Arg>
+    <Arg type="boolean">True</Arg>
+    <Arg type="boolean">False</Arg>
+  </Call>
+
+  <!-- ARCHIVA CONFIG -->
+	
+  <New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>mail/Session</Arg>
+    <Arg>
+      <New class="org.mortbay.naming.factories.MailSessionReference">
+        <Set name="user"></Set>
+        <Set name="password"></Set>
+        <Set name="properties">
+          <New class="java.util.Properties">
+            <Put name="mail.smtp.host">localhost</Put>
+          </New>
+        </Set>
+      </New>
+    </Arg>
+  </New>
+
+  <!-- Archiva database -->
+  <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
+      <Arg>jdbc/archiva</Arg>
+      <Arg>
+       <New class="org.apache.commons.dbcp.BasicDataSource">
+             <Set name="driverClassName">org.apache.derby.jdbc.EmbeddedDataSource</Set>
+             <Set name="url">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/archiva</Set>
+             <Set name="username">sa</Set>
+             <Call name="addConnectionProperty">
+               <Arg>create</Arg>
+               <Arg>true</Arg>
+             </Call>
+       </New>
+      </Arg>
+  </New>
+
+  <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/archivaShutdown</Arg>
+    <Arg>
+      <New class="org.apache.commons.dbcp.BasicDataSource">
+             <Set name="driverClassName">org.apache.derby.jdbc.EmbeddedDataSource</Set>
+             <Set name="url">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/archiva</Set>
+             <Set name="username">sa</Set>
+              <Call name="addConnectionProperty">
+               <Arg>shutdown</Arg>
+               <Arg>true</Arg>
+             </Call>
+       </New>
+    </Arg>
+  </New>
+ 
+  <!-- Users / Security Database -->
+  
+  <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/users</Arg>
+    <Arg>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="DatabaseName"><SystemProperty name="appserver.base" default=".."/>/data/databases/users</Set>
+        <Set name="user">sa</Set>
+        <Set name="createDatabase">create</Set>
+      </New>
+    </Arg>
+  </New>
+
+  <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/usersShutdown</Arg>
+    <Arg>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="DatabaseName"><SystemProperty name="appserver.base" default=".."/>/data/databases/users</Set>
+        <Set name="user">sa</Set>
+        <Set name="shutdownDatabase">shutdown</Set>
+      </New>
+    </Arg>
+  </New>
+</Configure>

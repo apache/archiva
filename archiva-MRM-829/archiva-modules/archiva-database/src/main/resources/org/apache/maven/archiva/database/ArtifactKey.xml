@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ArtifactKey">
+
+<select id="getArtifactKey" resultClass="org.apache.maven.archiva.database.artifact.ArtifactKey">
+  SELECT 
+    ARTIFACT_KEY as id    
+    GROUP_ID 	as groupId,
+    ARTIFACT_ID as artifactId,
+    VERSION 	as version,
+    CLASSIFER   as classifier,
+    TYPE        as type, 
+  FROM ARTIFACT_KEYS 
+  WHERE ARTIFACT_KEY = #value# 
+</select> 
+
+<insert id="addArtifactKey" parameterClass="org.apache.maven.archiva.database.artifact.ArtifactKey"> 
+  INSERT INTO 
+  ARTIFACT_KEYS  ( GROUP_ID, ARTIFACT_ID, VERSION_ID, CLASSIFIER, TYPE ) 
+  VALUES (#groupId#, #artifactId#, #version# ) 
+</insert> 
+
+</sqlMap>
