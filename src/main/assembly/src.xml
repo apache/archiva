@@ -26,6 +26,14 @@
   </formats>
   <fileSets>
     <fileSet>
+      <useDefaultExcludes>false</useDefaultExcludes>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>**/CVS/**</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>.</directory>
       <outputDirectory>/</outputDirectory>
       <excludes>
