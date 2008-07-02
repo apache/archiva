@@ -19,24 +19,52 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import org.apache.jackrabbit.webdav.*;
-import org.apache.jackrabbit.webdav.property.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.util.Text;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.DavResourceFactory;
+import org.apache.jackrabbit.webdav.DavResourceIterator;
+import org.apache.jackrabbit.webdav.DavResourceIteratorImpl;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
+import org.apache.jackrabbit.webdav.DavServletResponse;
+import org.apache.jackrabbit.webdav.DavSession;
+import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.io.InputContext;
 import org.apache.jackrabbit.webdav.io.OutputContext;
-import org.apache.jackrabbit.webdav.lock.*;
-import org.apache.jackrabbit.util.Text;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.webdav.util.MimeTypes;
+import org.apache.jackrabbit.webdav.lock.ActiveLock;
+import org.apache.jackrabbit.webdav.lock.LockInfo;
+import org.apache.jackrabbit.webdav.lock.LockManager;
+import org.apache.jackrabbit.webdav.lock.Scope;
+import org.apache.jackrabbit.webdav.lock.Type;
+import org.apache.jackrabbit.webdav.property.DavProperty;
+import org.apache.jackrabbit.webdav.property.DavPropertyName;
+import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
+import org.apache.jackrabbit.webdav.property.DavPropertySet;
+import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
+import org.apache.jackrabbit.webdav.property.ResourceType;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.AuditListener;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.webdav.util.IndexWriter;
+import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.*;
+import com.opensymphony.xwork.ActionContext;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a> Portions from the Apache Jackrabbit Project
@@ -46,8 +74,6 @@ public class ArchivaDavResource
 {
     public static final String HIDDEN_PATH_PREFIX = ".";
 
-    private final MimeTypes mimeTypes;
-
     private final ArchivaDavResourceLocator locator;
 
     private final DavResourceFactory factory;
@@ -56,33 +82,51 @@ public class ArchivaDavResource
 
     private final String logicalResource;
 
-    private DavPropertySet properties;
+    private DavPropertySet properties = null;
 
-    private boolean propsInitialized = false;
-    
     private LockManager lockManager;
     
     private final DavSession session;
+    
+    private String remoteAddr;
 
-    public ArchivaDavResource( String localResource, 
-                               String logicalResource,
-                               MimeTypes mimeTypes,
-                               DavSession session,
-                               ArchivaDavResourceLocator locator, 
-                               DavResourceFactory factory )
+    private final ManagedRepositoryConfiguration repository;
+
+    private final RepositoryContentConsumers consumers;
+
+    private final MimeTypes mimeTypes;
+
+    private List<AuditListener> auditListeners;
+
+    public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
+                               DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
+                               MimeTypes mimeTypes, List<AuditListener> auditListeners,
+                               RepositoryContentConsumers consumers )
     {
-        this.mimeTypes = mimeTypes;
-        this.localResource = new File( localResource );
+        this.localResource = new File( localResource ); 
         this.logicalResource = logicalResource;
         this.locator = locator;
         this.factory = factory;
         this.session = session;
-        this.properties = new DavPropertySet();
+        
+        // TODO: push into locator as well as moving any references out of the resource factory
+        this.repository = repository;
+        
+        // TODO: these should be pushed into the repository layer, along with the physical file operations in this class
+        this.mimeTypes = mimeTypes;
+        this.consumers = consumers;
+        this.auditListeners = auditListeners;
     }
 
-    public String getContentType()
+    public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
+                               String remoteAddr, DavSession session, ArchivaDavResourceLocator locator,
+                               DavResourceFactory factory, MimeTypes mimeTypes, List<AuditListener> auditListeners,
+                               RepositoryContentConsumers consumers )
     {
-        return mimeTypes.getMimeType( localResource.getName() );
+        this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
+              consumers );
+
+        this.remoteAddr = remoteAddr;
     }
 
     public String getComplianceClass()
@@ -133,14 +177,7 @@ public class ArchivaDavResource
 
     public long getModificationTime()
     {
-        initProperties();
         return localResource.lastModified();
-    }
-
-    public long getContentLength()
-    {
-        initProperties();
-        return localResource.length();
     }
 
     public void spool( OutputContext outputContext )
@@ -151,8 +188,8 @@ public class ArchivaDavResource
             FileInputStream is = null;
             try
             {
-                outputContext.setContentLength( getContentLength() );
-                outputContext.setContentType( getContentType() );
+                outputContext.setContentLength( localResource.length() );
+                outputContext.setContentType( mimeTypes.getMimeType( localResource.getName() ) );
 
                 // Write content to stream
                 is = new FileInputStream( localResource );
@@ -177,14 +214,12 @@ public class ArchivaDavResource
 
     public DavProperty getProperty( DavPropertyName name )
     {
-        initProperties();
-        return properties.get( name );
+        return getProperties().get( name );
     }
 
     public DavPropertySet getProperties()
     {
-        initProperties();
-        return properties;
+        return initProperties();
     }
 
     public void setProperty( DavProperty property )
@@ -203,6 +238,7 @@ public class ArchivaDavResource
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public MultiStatusResponse alterProperties( List changeList )
         throws DavException
     {
@@ -236,20 +272,15 @@ public class ArchivaDavResource
         throws DavException
     {
         File localFile = new File( localResource, resource.getDisplayName() );
+        boolean exists = localFile.exists();
+
         if ( isCollection() && inputContext.hasStream() ) // New File
         {
-            boolean deleteFile = false;
             FileOutputStream stream = null;
             try
             {
                 stream = new FileOutputStream( localFile );
                 IOUtils.copy( inputContext.getInputStream(), stream );
-                if ( inputContext.getContentLength() != localFile.length() )
-                {
-                    deleteFile = true;
-                    throw new DavException( HttpServletResponse.SC_BAD_REQUEST, "Content Header length was " +
-                        inputContext.getContentLength() + " but was " + localFile.length() );
-                }
             }
             catch ( IOException e )
             {
@@ -258,15 +289,26 @@ public class ArchivaDavResource
             finally
             {
                 IOUtils.closeQuietly( stream );
-                if ( deleteFile )
-                {
-                    FileUtils.deleteQuietly( localFile );
-                }
             }
+            
+            if ( inputContext.getContentLength() != localFile.length() )
+            {
+                FileUtils.deleteQuietly( localFile );
+                
+                throw new DavException( HttpServletResponse.SC_BAD_REQUEST, "Content Header length was " +
+                    inputContext.getContentLength() + " but was " + localFile.length() );
+            }
+            
+            // Just-in-time update of the index and database by executing the consumers for this artifact
+            consumers.executeConsumers( repository, localFile );
+            
+            triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
         else if ( !inputContext.hasStream() && isCollection() ) // New directory
         {
             localFile.mkdir();
+            
+            triggerAuditEvent( resource, AuditEvent.CREATE_DIR );
         }
         else
         {
@@ -277,7 +319,7 @@ public class ArchivaDavResource
 
     public DavResourceIterator getMembers()
     {
-        ArrayList list = new ArrayList();
+        List<DavResource> list = new ArrayList<DavResource>();
         if ( exists() && isCollection() )
         {
             for ( String item : localResource.list() )
@@ -291,7 +333,9 @@ public class ArchivaDavResource
                             locator.getFactory().createResourceLocator( locator.getPrefix(), path );
                         DavResource resource = factory.createResource( resourceLocator, session );
                         if ( resource != null )
+                        {
                             list.add( resource );
+                        }
                     }
                 }
                 catch ( DavException e )
@@ -314,14 +358,18 @@ public class ArchivaDavResource
             {
                 if ( resource.isDirectory() )
                 {
-                    FileUtils.deleteDirectory(resource);
+                    FileUtils.deleteDirectory( resource );
+
+                    triggerAuditEvent( member, AuditEvent.REMOVE_DIR );
                 }
                 else
                 {
-                    if (!resource.delete())
+                    if ( !resource.delete() )
                     {
-                        throw new IOException("Could not remove file");
+                        throw new IOException( "Could not remove file" );
                     }
+
+                    triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
             }
             catch ( IOException e )
@@ -333,6 +381,14 @@ public class ArchivaDavResource
         {
             throw new DavException( HttpServletResponse.SC_NOT_FOUND );
         }
+    }
+
+    private void triggerAuditEvent( DavResource member, String event ) throws DavException
+    {
+        String path = logicalResource + "/" + member.getDisplayName();
+        
+        triggerAuditEvent( checkDavResourceIsArchivaDavResource( member ).remoteAddr, locator.getRepositoryId(), path,
+                           event );
     }
 
     public void move( DavResource destination )
@@ -349,10 +405,14 @@ public class ArchivaDavResource
             if ( isCollection() )
             {
                 FileUtils.moveDirectory( getLocalResource(), resource.getLocalResource() );
+
+                triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_DIRECTORY );
             }
             else
             {
                 FileUtils.moveFile( getLocalResource(), resource.getLocalResource() );
+
+                triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
         }
         catch ( IOException e )
@@ -380,10 +440,14 @@ public class ArchivaDavResource
             if ( isCollection() )
             {
                 FileUtils.copyDirectory( getLocalResource(), resource.getLocalResource() );
+
+                triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_DIRECTORY );
             }
             else
             {
                 FileUtils.copyFile( getLocalResource(), resource.getLocalResource() );
+
+                triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
         }
         catch ( IOException e )
@@ -485,13 +549,20 @@ public class ArchivaDavResource
     /**
      * Fill the set of properties
      */
-    protected void initProperties()
+    protected DavPropertySet initProperties()
     {
-        if ( !exists() || propsInitialized )
+        if ( !exists() )
         {
-            return;
+            properties = new DavPropertySet();
+        }
+        
+        if ( properties != null )
+        {
+            return properties;
         }
 
+        DavPropertySet properties = new DavPropertySet();
+        
         // set (or reset) fundamental properties
         if ( getDisplayName() != null )
         {
@@ -521,8 +592,10 @@ public class ArchivaDavResource
         properties.add( new DefaultDavProperty( DavPropertyName.CREATIONDATE, modifiedDate ) );
 
         properties.add( new DefaultDavProperty( DavPropertyName.GETCONTENTLENGTH, localResource.length() ) );
-
-        propsInitialized = true;
+        
+        this.properties = properties;
+        
+        return properties;
     }
 
     private ArchivaDavResource checkDavResourceIsArchivaDavResource( DavResource resource )
@@ -534,5 +607,17 @@ public class ArchivaDavResource
                                     "DavResource is not instance of ArchivaDavResource" );
         }
         return (ArchivaDavResource) resource;
+    }
+
+    private void triggerAuditEvent( String remoteIP, String repositoryId, String resource, String action )
+    {
+        String activePrincipal = ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        AuditEvent event = new AuditEvent( repositoryId, activePrincipal, resource, action );
+        event.setRemoteIP( remoteIP );
+
+        for ( AuditListener listener : auditListeners )
+        {
+            listener.auditEvent( event );
+        }
     }
 }

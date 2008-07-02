@@ -19,27 +19,39 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.DavLocatorFactory;
+import org.apache.jackrabbit.webdav.DavMethods;
+import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.DavResourceFactory;
+import org.apache.jackrabbit.webdav.DavServletResponse;
+import org.apache.jackrabbit.webdav.DavSessionProvider;
+import org.apache.jackrabbit.webdav.WebdavRequest;
+import org.apache.jackrabbit.webdav.WebdavRequestImpl;
+import org.apache.jackrabbit.webdav.WebdavResponse;
+import org.apache.jackrabbit.webdav.WebdavResponseImpl;
+import org.apache.jackrabbit.webdav.server.AbstractWebdavServlet;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.jackrabbit.webdav.server.AbstractWebdavServlet;
-import org.apache.jackrabbit.webdav.*;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
+import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * RepositoryServlet

@@ -19,23 +19,27 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import com.opensymphony.xwork.ActionContext;
-import org.apache.jackrabbit.webdav.*;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.content.RepositoryRequest;
-import org.apache.maven.archiva.repository.audit.AuditListener;
-import org.apache.maven.archiva.repository.audit.Auditable;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
-import org.apache.maven.archiva.repository.metadata.MetadataTools;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
-import org.apache.maven.archiva.webdav.util.MimeTypes;
-import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
-import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.DavResourceFactory;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
+import org.apache.jackrabbit.webdav.DavServletRequest;
+import org.apache.jackrabbit.webdav.DavServletResponse;
+import org.apache.jackrabbit.webdav.DavSession;
+import org.apache.jackrabbit.webdav.lock.LockManager;
+import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
@@ -43,8 +47,24 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
+import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.AuditListener;
+import org.apache.maven.archiva.repository.audit.Auditable;
+import org.apache.maven.archiva.repository.content.RepositoryRequest;
+import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.metadata.MetadataTools;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
+import org.apache.maven.archiva.webdav.util.MimeTypes;
+import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
+import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
@@ -62,15 +82,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.io.*;
-import org.apache.commons.lang.StringUtils;
-import org.apache.jackrabbit.webdav.lock.LockManager;
-import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
+import com.opensymphony.xwork.ActionContext;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
@@ -79,6 +91,8 @@ import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
+    private static final String PROXIED_SUFFIX = " (proxied)";
+
     private static final String HTTP_PUT_METHOD = "PUT";
     
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
@@ -133,6 +147,9 @@ public class ArchivaDavResourceFactory
      * Lock Manager - use simple implementation from JackRabbit
      */
     private final LockManager lockManager = new SimpleLockManager();
+
+    /** @plexus.requirement */
+    private RepositoryContentConsumers consumers;
     
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
@@ -142,8 +159,7 @@ public class ArchivaDavResourceFactory
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
         
         RepositoryGroupConfiguration repoGroupConfig =
-            archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get(
-                                                                                    ( (RepositoryLocator) locator ).getRepositoryId() );
+            archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( archivaLocator.getRepositoryId() );
         List<String> repositories = new ArrayList<String>();
 
         boolean isGet = WebdavMethodUtil.isReadMethod( request.getMethod() );
@@ -166,7 +182,7 @@ public class ArchivaDavResourceFactory
         }
         else
         {
-            repositories.add( ( (RepositoryLocator) locator ).getRepositoryId() );
+            repositories.add( archivaLocator.getRepositoryId() );
         }
        
         //MRM-419 - Windows Webdav support. Should not 404 if there is no content.
@@ -260,8 +276,9 @@ public class ArchivaDavResourceFactory
             String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
             File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource );
             resource =
-                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource, mimeTypes, davSession, archivaLocator,
-                                        this );
+                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource,
+                                        managedRepository.getRepository(), davSession, archivaLocator, this, mimeTypes,
+                                        auditListeners, consumers );
         }
         resource.addLockManager(lockManager);
         return resource;
@@ -273,15 +290,17 @@ public class ArchivaDavResourceFactory
     {
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
         ArchivaDavResource resource =
-            new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, request.getDavSession(), locator, this );
+            new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
+                                    managedRepository.getRepository(), request.getRemoteAddr(),
+                                    request.getDavSession(), locator, this, mimeTypes, auditListeners, consumers );
 
         if ( !resource.isCollection() )
         {
+            boolean previouslyExisted = resourceFile.exists();
+
             // At this point the incoming request can either be in default or
             // legacy layout format.
             boolean fromProxy = fetchContentFromProxies( managedRepository, request, logicalResource );
-
-            boolean previouslyExisted = resourceFile.exists();
 
             try
             {
@@ -303,16 +322,22 @@ public class ArchivaDavResourceFactory
             // Attempt to fetch the resource from any defined proxy.
             if ( fromProxy )
             {
-                processAuditEvents( request, locator.getWorkspaceName(), logicalResource.getPath(), previouslyExisted,
-                                    resourceFile, " (proxied)" );
+                String repositoryId = locator.getRepositoryId();
+                String event = ( previouslyExisted ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE ) + PROXIED_SUFFIX;
+                triggerAuditEvent( request.getRemoteAddr(), repositoryId, logicalResource.getPath(), event );
             }
-            resource =
-                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, request.getDavSession(), locator,
-                                        this );
 
             if ( !resourceFile.exists() )
             {
                 resource = null;
+            }
+            else
+            {
+                resource =
+                    new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
+                                            managedRepository.getRepository(), request.getRemoteAddr(),
+                                            request.getDavSession(), locator, this, mimeTypes, auditListeners,
+                                            consumers );
             }
         }
         return resource;
@@ -334,18 +359,14 @@ public class ArchivaDavResourceFactory
         {
             destDir.mkdirs();
             String relPath = PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
-            triggerAuditEvent( request, logicalResource.getPath(), relPath, AuditEvent.CREATE_DIR );
+            triggerAuditEvent( request.getRemoteAddr(), logicalResource.getPath(), relPath, AuditEvent.CREATE_DIR );
         }
 
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
 
-        boolean previouslyExisted = resourceFile.exists();
-
-        processAuditEvents( request, locator.getRepositoryId(), logicalResource.getPath(), previouslyExisted,
-                            resourceFile, null );
-
-        return new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), mimeTypes, request.getDavSession(), locator,
-                                       this );
+        return new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
+                                       managedRepository.getRepository(), request.getRemoteAddr(),
+                                       request.getDavSession(), locator, this, mimeTypes, auditListeners, consumers );
     }
 
     private boolean fetchContentFromProxies( ManagedRepositoryContent managedRepository, DavServletRequest request,
@@ -507,68 +528,17 @@ public class ArchivaDavResourceFactory
         }
     }
 
-    private void processAuditEvents( DavServletRequest request, String repositoryId, String resource,
-                                     boolean previouslyExisted, File resourceFile, String suffix )
+    // TODO: remove?
+    private void triggerAuditEvent( String remoteIP, String repositoryId, String resource, String action )
     {
-        if ( suffix == null )
-        {
-            suffix = "";
-        }
-
-        // Process Create Audit Events.
-        if ( !previouslyExisted && resourceFile.exists() )
-        {
-            if ( resourceFile.isFile() )
-            {
-                triggerAuditEvent( request, repositoryId, resource, AuditEvent.CREATE_FILE + suffix );
-            }
-            else if ( resourceFile.isDirectory() )
-            {
-                triggerAuditEvent( request, repositoryId, resource, AuditEvent.CREATE_DIR + suffix );
-            }
-        }
-        // Process Remove Audit Events.
-        else if ( previouslyExisted && !resourceFile.exists() )
-        {
-            if ( resourceFile.isFile() )
-            {
-                triggerAuditEvent( request, repositoryId, resource, AuditEvent.REMOVE_FILE + suffix );
-            }
-            else if ( resourceFile.isDirectory() )
-            {
-                triggerAuditEvent( request, repositoryId, resource, AuditEvent.REMOVE_DIR + suffix );
-            }
-        }
-        // Process modify events.
-        else
-        {
-            if ( resourceFile.isFile() )
-            {
-                triggerAuditEvent( request, repositoryId, resource, AuditEvent.MODIFY_FILE + suffix );
-            }
-        }
-    }
-
-    private void triggerAuditEvent( String user, String remoteIP, String repositoryId, String resource, String action )
-    {
-        AuditEvent event = new AuditEvent( repositoryId, user, resource, action );
+        String activePrincipal = ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        AuditEvent event = new AuditEvent( repositoryId, activePrincipal, resource, action );
         event.setRemoteIP( remoteIP );
 
         for ( AuditListener listener : auditListeners )
         {
             listener.auditEvent( event );
         }
-    }
-
-    private void triggerAuditEvent( DavServletRequest request, String repositoryId, String resource, String action )
-    {
-        triggerAuditEvent( ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() ),
-                           getRemoteIP( request ), repositoryId, resource, action );
-    }
-
-    private String getRemoteIP( DavServletRequest request )
-    {
-        return request.getRemoteAddr();
     }
 
     public void addAuditListener( AuditListener listener )

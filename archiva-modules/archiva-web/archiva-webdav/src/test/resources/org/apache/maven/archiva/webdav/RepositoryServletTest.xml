@@ -148,6 +148,10 @@
           <role-hint>basic</role-hint>
           <field-name>httpAuth</field-name>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
+          <role-hint>default</role-hint>
+        </requirement>
       </requirements>
     </component>
   </components>

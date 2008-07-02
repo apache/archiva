@@ -29,15 +29,15 @@ import org.apache.jackrabbit.util.Text;
 public class ArchivaDavResourceLocator
     implements DavResourceLocator, RepositoryLocator
 {
-    private String prefix;
+    private final String prefix;
 
-    private String resourcePath;
+    private final String resourcePath;
 
-    private String href;
+    private final String href;
 
-    private String repositoryId;
+    private final String repositoryId;
 
-    private DavLocatorFactory davLocatorFactory;
+    private final DavLocatorFactory davLocatorFactory;
 
     public ArchivaDavResourceLocator( String prefix, String resourcePath, String repositoryId,
                                       DavLocatorFactory davLocatorFactory )
@@ -45,11 +45,12 @@ public class ArchivaDavResourceLocator
         this.prefix = prefix;
         this.repositoryId = repositoryId;
         this.davLocatorFactory = davLocatorFactory;
-        this.resourcePath = resourcePath;
+        
+        String path = resourcePath;
         
         if (!resourcePath.startsWith("/"))
         {
-            this.resourcePath = "/" + resourcePath;
+            path = "/" + resourcePath;
         }
 
         String escapedPath = Text.escapePath( resourcePath );
@@ -66,8 +67,10 @@ public class ArchivaDavResourceLocator
         //Remove trailing slashes otherwise Text.getRelativeParent fails
         if (resourcePath.endsWith("/") && resourcePath.length() > 1)
         {
-            this.resourcePath = resourcePath.substring( 0, resourcePath.length() - 1 );
+            path = resourcePath.substring( 0, resourcePath.length() - 1 );
         }
+        
+        this.resourcePath = path;
     }
 
     public String getRepositoryId()

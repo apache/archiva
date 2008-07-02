@@ -35,7 +35,15 @@ public class AuditEvent
 
     public static final String REMOVE_FILE = "Removed File";
 
-    public static final String MODIFY_FILE = "Modify File";
+    public static final String MODIFY_FILE = "Modified File";
+
+    public static final String MOVE_FILE = "Moved File";
+
+    public static final String MOVE_DIRECTORY = "Moved Directory";
+
+    public static final String COPY_DIRECTORY = "Copied Directory";
+
+    public static final String COPY_FILE = "Copied File";
     
     public static final String UPLOAD_FILE = "Uploaded File";
     
