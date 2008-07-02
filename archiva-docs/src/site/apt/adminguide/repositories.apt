@@ -117,6 +117,11 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
   the repository. What if the artifact is large? Then disk space will definitely be a problem. That's where Archiva's repository 
   purge feature comes in. Given a criteria to use -- by the number of days old and by retention count, it would clean up the 
   repository by removing old snapshots.
+
+  Please take note that the by number of days old criteria is activated by default (set to 100 days). In order to de-activate it and
+  use the by retention count criteria, you must set the Repository Purge By Days Older field to 0. Another thing to note here is that
+  if the by number of days old criteria is activated, the retention count would still be respected (See the Repository Purge By Days Older
+  section below for more details) but not the other way around.
   
   Let's take a look at different behaviours for repository purge using the following scenario:
 
@@ -162,7 +167,7 @@ Artifacts in the repository:
   If the repository purge by retention count field is set to 2, then only the artifacts artifact-x-20070113.034619-3.jar,
   artifact-x-20070113.034619-3.pom, artifact-x-20070203.028902-4.jar and artifact-x-20070203.028902-4.pom will be retained 
   in the repository. The oldest snapshots will be deleted maintaining only a number of snapshots equivalent to the set 
-  retention count. 
+  retention count (regardless of how old or new the artifact is).
 
 * Scanning a Database
 
