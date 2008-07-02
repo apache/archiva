@@ -448,7 +448,7 @@ public class UploadAction
 
     private File getMetadata( String targetPath )
     {
-        String artifactPath = targetPath.substring( 0, targetPath.lastIndexOf( '/' ) );
+        String artifactPath = targetPath.substring( 0, targetPath.lastIndexOf( File.separatorChar ) );
 
         return new File( artifactPath, MetadataTools.MAVEN_METADATA );
     }
