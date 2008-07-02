@@ -27,7 +27,7 @@
 <body>
 <h1>Appearance</h1>
 
-<h2>Company Details</h2>
+<h2>Organisation Details</h2>
 
 <p>
   Enter the details of the company super POM below. If it exists, the organization name, URL and logo will be read
@@ -35,9 +35,10 @@
 </p>
 
 <ww:actionmessage/>
-<ww:form method="post" action="saveAppearance" namespace="/admin" validate="true" theme="xhtml">
-  <ww:textfield name="companyPom.groupId" label="Group ID"/>
-  <ww:textfield name="companyPom.artifactId" label="Artifact ID"/>
+<ww:form method="post" action="editAppearance" namespace="/admin" validate="true" theme="xhtml">
+  <ww:textfield name="editAppearance.organisationName" label="Organisation Name"/>
+  <ww:textfield name="editAppearance.organisationUrl" label="Organisation Url"/>
+  <ww:textfield name="editAppearance.organisationLogo" label="Orgnaisation Logo"/>
   <ww:submit value="Save"/>
 </ww:form>
 </body>

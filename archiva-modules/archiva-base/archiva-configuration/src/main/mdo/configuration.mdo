@@ -158,6 +158,17 @@
             The webapp configuration.
           </description>
         </field>
+        <field>
+          <name>organisationInfo</name>
+          <version>1.1.0+</version>
+          <association>
+            <type>OrganisationInformation</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>
+            The organisation info.
+          </description>
+        </field>  
       </fields>
       <codeSegments>
         <codeSegment>
@@ -1033,6 +1044,40 @@
        \_/\_/  |_____|____/_/   \_\_|   |_|
 
     -->
+
+    <class>
+      <name>OrganisationInformation</name>
+      <version>1.1.0+</version>
+      <description>
+        The organisation information settings.
+      </description>
+      <fields>
+        <field>
+          <name>name</name>
+          <description>name of the organisation</description>
+          <version>1.1.0+</version>
+          <association>
+            <type>String</type>
+          </association>
+        </field>
+        <field>
+          <name>url</name>
+          <description>name of the organisation</description>
+          <version>1.1.0+</version>
+          <association>
+            <type>String</type>
+          </association>
+        </field>
+        <field>
+          <name>logoLocation</name>
+          <description>name of the organisation</description>
+          <version>1.1.0+</version>
+          <association>
+            <type>String</type>
+          </association>
+        </field>
+      </fields>
+    </class>
 
     <class>
       <name>WebappConfiguration</name>
