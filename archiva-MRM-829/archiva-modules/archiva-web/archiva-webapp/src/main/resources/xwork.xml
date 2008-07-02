@@ -212,7 +212,7 @@
 
   <package name="components" namespace="/components" extends="webwork-default">
     <default-interceptor-ref name="basicStack"/>
-    <action name="companyInfo" class="companyInfo">
+    <action name="companyInfo" class="organisationInfo">
       <result>/WEB-INF/jsp/components/companyLogo.jsp</result>
     </action>
   </package>
@@ -434,28 +434,16 @@
 
     <!-- The following are needed by the maven-app-configuration-web artifact -->
 
-    <action name="configureAppearance" class="configureAppearance" method="input">
+    <action name="configureAppearance" class="organisationInfo" method="input">
       <result name="input">/WEB-INF/jsp/admin/appearance.jsp</result>
     </action>
 
-    <action name="editAppearance" class="configureAppearance" method="input">
+    <action name="editAppearance" class="editOrganisationInfo" method="input">
       <result name="input">/WEB-INF/jsp/admin/editAppearance.jsp</result>
     </action>
 
-    <action name="saveAppearance" class="configureAppearance">
+    <action name="saveAppearance" class="editOrganisationInfo">
       <result name="input">/WEB-INF/jsp/admin/editAppearance.jsp</result>
-      <result type="redirect-action">
-        <param name="actionName">configureAppearance</param>
-        <param name="namespace">/admin</param>
-      </result>
-    </action>
-
-    <action name="editCompanyPom" class="editPom" method="input">
-      <result name="input">/WEB-INF/jsp/admin/editPom.jsp</result>
-    </action>
-
-    <action name="saveCompanyPom" class="editPom">
-      <result name="input">/WEB-INF/jsp/admin/editPom.jsp</result>
       <result type="redirect-action">
         <param name="actionName">configureAppearance</param>
         <param name="namespace">/admin</param>

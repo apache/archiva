@@ -22,14 +22,14 @@
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
 <validators>
-  <field name="companyPom.groupId">
-    <field-validator type="requiredstring">
-      <message key="appearance.groupId.required"/>
+  <field name="organisationUrl">
+    <field-validator type="url">
+      <message key="appearance.organisation.url"/>
     </field-validator>
   </field>
-  <field name="companyPom.artifactId">
-    <field-validator type="requiredstring">
-      <message key="appearance.artifactId.required"/>
+  <field name="organisationLogo">
+    <field-validator type="url">
+      <message key="appearance.organisation.logourl"/>
     </field-validator>
   </field>
 </validators>

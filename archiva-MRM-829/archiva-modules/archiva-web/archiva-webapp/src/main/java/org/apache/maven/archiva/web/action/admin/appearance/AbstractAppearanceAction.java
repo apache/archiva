@@ -19,14 +19,8 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
-
-import java.io.File;
-import java.util.Map;
 
 /**
  * AbstractAppearanceAction 
@@ -38,33 +32,44 @@ public abstract class AbstractAppearanceAction
     extends PlexusActionSupport
 {
     /**
-     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
-     */
-    private Map<String, ArtifactRepositoryLayout> repositoryLayouts;
-
-    /**
+     * Archiva Application Configuration
      * @plexus.requirement
      */
-    private ArtifactRepositoryFactory repoFactory;
+    protected ArchivaConfiguration configuration;
+    
+    private String organisationLogo;
 
-    protected ArtifactRepository createLocalRepository()
+    private String organisationUrl;
+
+    private String organisationName;
+    
+    public String getOrganisationLogo() 
     {
-        String id = "archiva-local-repo";
-        String layout = "default";
-        String directory = System.getProperty( "user.home" ) + "/.m2/archiva";
+        return organisationLogo;
+    }
 
-        ArtifactRepositoryLayout repositoryLayout = (ArtifactRepositoryLayout) repositoryLayouts.get( layout );
-        File repository = new File( directory );
-        repository.mkdirs();
+    public String getOrganisationName() 
+    {
+        return organisationName;
+    }
 
-        String repoDir = repository.toURI().toString();
-        //workaround for spaces non converted by PathUtils in wagon
-        //TODO: remove it when PathUtils will be fixed
-        if ( repoDir.indexOf( "%20" ) >= 0 )
-        {
-            repoDir = StringUtils.replace( repoDir, "%20", " " );
-        }
+    public String getOrganisationUrl() 
+    {
+        return organisationUrl;
+    }
 
-        return repoFactory.createArtifactRepository( id, repoDir, repositoryLayout, null, null );
+    public void setOrganisationLogo(String organisationLogo) 
+    {
+        this.organisationLogo = organisationLogo;
+    }
+
+    public void setOrganisationName(String organisationName) 
+    {
+        this.organisationName = organisationName;
+    }
+
+    public void setOrganisationUrl(String organisationUrl) 
+    {
+        this.organisationUrl = organisationUrl;
     }
 }

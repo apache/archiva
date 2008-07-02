@@ -19,84 +19,56 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-import com.opensymphony.xwork.ModelDriven;
-import com.opensymphony.xwork.Preparable;
-
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
-import org.apache.maven.model.Model;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.shared.app.company.CompanyPomHandler;
-import org.apache.maven.shared.app.configuration.Configuration;
-import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
-import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
+
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.maven.archiva.configuration.OrganisationInformation;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
 
-import java.io.IOException;
-
 /**
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id: ConfigurationAction.java 480950 2006-11-30 14:58:35Z evenisse $
+ * 
  * @plexus.component role="com.opensymphony.xwork.Action"
- *                   role-hint="configureAppearance"
+ *                   role-hint="editOrganisationInfo"
  */
-public class ConfigureAppearanceAction
+public class EditOrganisationInfoAction
     extends AbstractAppearanceAction
-    implements ModelDriven, SecureAction, Preparable
+    implements SecureAction
 {
-    /**
-     * @plexus.requirement
-     */
-    private MavenAppConfiguration appConfigurationStore;
-
-    /**
-     * The configuration.
-     */
-    private Configuration configuration;
-
-    private Model companyModel;
-
-    /**
-     * @plexus.requirement
-     */
-    private CompanyPomHandler companyPomHandler;
-
+    @Override
     public String execute()
-        throws IOException, RegistryException
+        throws RegistryException, IndeterminateConfigurationException
     {
-        appConfigurationStore.save( configuration );
-
+        Configuration config = configuration.getConfiguration();
+        if (config != null)
+        {
+            OrganisationInformation orgInfo = config.getOrganisationInfo();
+            if (orgInfo == null)
+            {
+                config.setOrganisationInfo(orgInfo);
+            }
+            
+            orgInfo.setLogoLocation(getOrganisationLogo());
+            orgInfo.setName(getOrganisationName());
+            orgInfo.setUrl(getOrganisationUrl());
+            
+            configuration.save(config);
+        }
         return SUCCESS;
     }
-
-    public Object getModel()
-    {
-        return configuration;
-    }
-
-    public void prepare()
-        throws ProjectBuildingException, ArtifactMetadataRetrievalException
-    {
-        configuration = appConfigurationStore.getConfiguration();
-
-        companyModel = companyPomHandler.getCompanyPomModel( configuration.getCompanyPom(), createLocalRepository() );
-    }
-
+    
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
         SecureActionBundle bundle = new SecureActionBundle();
         bundle.setRequiresAuthentication( true );
         bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
-
         return bundle;
-    }
-
-    public Model getCompanyModel()
-    {
-        return companyModel;
     }
 }
