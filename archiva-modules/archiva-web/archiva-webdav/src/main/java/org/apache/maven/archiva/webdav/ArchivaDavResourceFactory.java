@@ -242,7 +242,7 @@ public class ArchivaDavResourceFactory
                     }
                     else
                     {
-                        setHeaders( locator, response );
+                        setHeaders(response, locator, resource );
 
                         // compatibility with MRM-440 to ensure browsing the repository works ok
                         if ( resource.isCollection() && !request.getRequestURI().endsWith("/" ) )
@@ -556,7 +556,7 @@ public class ArchivaDavResourceFactory
         this.auditListeners.remove( listener );
     }
 
-    private void setHeaders( DavResourceLocator locator, DavServletResponse response )
+    private void setHeaders( DavServletResponse response, DavResourceLocator locator, DavResource resource )
     {
         // [MRM-503] - Metadata file need Pragma:no-cache response
         // header.
@@ -566,6 +566,9 @@ public class ArchivaDavResourceFactory
             response.addHeader( "Cache-Control", "no-cache" );
         }
 
+        //We need to specify this so connecting wagons can work correctly
+        response.addDateHeader("last-modified", resource.getModificationTime());
+        
         // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
     }
 

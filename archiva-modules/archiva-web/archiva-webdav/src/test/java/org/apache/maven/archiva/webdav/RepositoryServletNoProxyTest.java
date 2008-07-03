@@ -35,6 +35,22 @@ import java.io.File;
 public class RepositoryServletNoProxyTest
     extends AbstractRepositoryServletTestCase
 {
+    public void testLastModifiedHeaderExists()
+        throws Exception
+    {
+        String commonsLangSha1 = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar.sha1";
+
+        File checksumFile = new File( repoRootInternal, commonsLangSha1 );
+        checksumFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangSha1 );
+        WebResponse response = sc.getResponse( request );
+        
+        assertNotNull(response.getHeaderField("last-modified"));
+    }
+    
     public void testGetNoProxyChecksumDefaultLayout()
         throws Exception
     {
