@@ -67,6 +67,7 @@
 
   <div class="xright">
     <a href="http://archiva.apache.org">Archiva</a> |
+    <a href="http://maven.apache.org/">Maven</a> |
     <a href="http://www.apache.org/">Apache</a>
   </div>
 
