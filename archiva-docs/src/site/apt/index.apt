@@ -1,11 +1,11 @@
  -----
- Welcome to Maven Archiva
+ Welcome to Archiva
  -----
  -----
  -----
 
   Archiva is a build artifact repository manager for use with
-  build tools such as {{{http://maven.apache.org} Maven}}, {{{http://maven.apache.org/continuum/} Continuum}}, and {{{http://ant.apache.org/} ANT}}.
+  build tools such as {{{http://maven.apache.org} Maven}}, {{{http://continuum.apache.org} Continuum}}, and {{{http://ant.apache.org/} ANT}}.
 
   With Archiva, you can share artifacts with other developers and manage the associated
   security required, aggregate (proxy) content from remote artifact repositories, visualise
