@@ -266,6 +266,14 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <configuration>
+          <supplementalModels>
+            <supplementalModel>notice-supplements.xml</supplementalModel>
+          </supplementalModels>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <pluginRepositories>
