@@ -208,12 +208,12 @@ public class Banner
     public static String getBanner( String version )
     {
         String encodedBanner = "$26 $34_$n$15 /$._$7 /$34 $.$n$14 /`/@),$4 |  Ba" +
-                " orunys bs nyy bs gur nycnpn'f  |$n$14 |  (~'  __|  gbvyvat njnl ba " +
-                "gur Ncnpur Znira  |$n$6 _,--.$3_/  |$4 $.$5 cebwrpg grnzf, V jbhyq y" +
-                "vxr gb$3 |$n$4 ,' ,$5 ($3 |$5 $.$5 jrypbzr lbh gb Znira Nepuvin$4 |$" +
+                " orunys bs nyy bs gur nycnpn'f  |$n$14 |  (~'  __| gbvyvat njnl ba " +
+                "gur Ncnpur Nepuvin |$n$6 _,--.$3_/  |$4 $.$5  cebwrpg grnz, V jbhyq y" +
+                "vxr gb$3 |$n$4 ,' ,$5 ($3 |$5 $.$5     jrypbzr lbh gb Nepuvin$6 |$" +
                 "n$4 |  ($6 $.  /$6 |  $32#  |$n$5 $.  )$._/  ,_/$7 |$36 |$n$5 / /$3 " +
-                "( |/$9 |  uggc://znira.ncnpur.bet/nepuvin/  |$n$4 ( |$4 ( |$10 |  ne" +
-                "puvin-hfref@znira.ncnpur.bet$4 |$n$5 $.|$5 $.|$11 $.$34_/$n$n";
+                "( |/$9 |     uggc://nepuvin.ncnpur.bet/     |$n$4 ( |$4 ( |$10 |     hf" +
+                "ref@nepuvin.ncnpur.bet$7 |$n$5 $.|$5 $.|$11 $.$34_/$n$n";
 
         return injectVersion( decode( encodedBanner ), version );
     }
