@@ -537,6 +537,7 @@ public class ErrorHandlingTest
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         wagonMock.get( path, createExpectedTempFile( expectedFile ) );
+        wagonMockControl.setMatcher(customWagonGetMatcher);
         wagonMockControl.setThrowable( throwable, 1 );
     }
 
@@ -544,6 +545,7 @@ public class ErrorHandlingTest
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         wagonMock.getIfNewer( path, createExpectedTempFile( expectedFile ), expectedFile.lastModified() );
+        wagonMockControl.setMatcher(customWagonGetIfNewerMatcher);
         wagonMockControl.setThrowable( exception, 1 );
     }
 

@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
@@ -43,10 +44,9 @@ import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.wagon.Wagon;
-import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.easymock.ArgumentsMatcher;
 import org.easymock.MockControl;
-import org.springframework.beans.factory.BeanFactory;
 
 /**
  * AbstractProxyTestCase
@@ -88,6 +88,53 @@ public abstract class AbstractProxyTestCase
     protected static final String REPOPATH_LEGACY_MANAGED = "src/test/repositories/legacy-managed";
 
     protected static final String REPOPATH_LEGACY_MANAGED_TARGET = "target/test-repository/legacy-managed";
+    
+    protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher() {
+
+        public boolean matches(Object[] expected, Object[] actual) {
+            if (expected.length < 1 || actual.length < 1)
+            {
+                return false;
+            }
+            return MockControl.ARRAY_MATCHER.matches(ArrayUtils.remove(expected, 1), ArrayUtils.remove(actual, 1));
+        }
+
+        public String toString(Object[] arguments) {
+            return ArrayUtils.toString(arguments);
+        }
+    };
+    
+    protected static final ArgumentsMatcher customWagonGetMatcher = new ArgumentsMatcher() {
+
+            public boolean matches(Object[] expected, Object[] actual) 
+            {
+                if (expected.length == 2 && actual.length == 2)
+                {
+                    if (expected[0] == null && actual[0] == null)
+                    {
+                        return true;
+                    }
+                    
+                    if (expected[0] == null)
+                    {
+                        return actual[0] == null;
+                    }
+                    
+                    if (actual[0] == null)
+                    {
+                        return expected[0] == null;
+                    }
+                    
+                    return expected[0].equals(actual[0]);
+                }
+                return false;
+            }
+
+            public String toString(Object[] arguments) 
+            {
+                return ArrayUtils.toString(arguments);
+            }
+        };
 
     protected MockControl wagonMockControl;
 

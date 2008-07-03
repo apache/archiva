@@ -691,8 +691,9 @@ public class DefaultRepositoryProxyConnectors
 
         try
         {
-            temp = new File( localFile.getAbsolutePath() + ".tmp" );
-
+            localFile.getParentFile().mkdirs();
+            temp = File.createTempFile(localFile.getName() + ".", null, localFile.getParentFile());
+            
             boolean success = false;
 
             if ( !localFile.exists() )
@@ -729,6 +730,10 @@ public class DefaultRepositoryProxyConnectors
 
             return localFile;
         }
+        catch (IOException e)
+        {
+            throw new ProxyException("Could not create temporary file at " + localFile.getAbsolutePath(), e);
+        }
         catch ( ResourceDoesNotExistException e )
         {
             throw new NotFoundException(
@@ -743,10 +748,7 @@ public class DefaultRepositoryProxyConnectors
         }
         finally
         {
-            if ( temp != null )
-            {
-                temp.delete();
-            }
+            FileUtils.deleteQuietly(temp);
         }
     }
 
@@ -857,11 +859,18 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( IOException e )
             {
-                throw new ProxyException( "Cannot copy tmp file to its final location", e );
+                if (target.exists())
+                {
+                    log.debug("Tried to copy file " + temp.getName() + " to " + target.getAbsolutePath() + " but file with this name already exists.");
+                }
+                else
+                {
+                    throw new ProxyException( "Cannot copy tmp file " + temp.getAbsolutePath() + " to its final location", e );
+                }
             }
             finally
             {
-                temp.delete();
+                FileUtils.deleteQuietly(temp);
             }
         }
     }

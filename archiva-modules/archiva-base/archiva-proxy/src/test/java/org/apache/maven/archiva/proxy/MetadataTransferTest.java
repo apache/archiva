@@ -120,6 +120,9 @@ public class MetadataTransferTest
         File expectedFile = new File( managedDefaultDir.getAbsoluteFile(),
                                       metadataTools.getRepositorySpecificName( "badproxied1", requestedResource ) );
         wagonMock.get( requestedResource, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+        
+        wagonMockControl.setMatcher(customWagonGetMatcher);
+        
         wagonMockControl.setThrowable( new TransferFailedException( "can't connect" ) );
 
         wagonMockControl.replay();

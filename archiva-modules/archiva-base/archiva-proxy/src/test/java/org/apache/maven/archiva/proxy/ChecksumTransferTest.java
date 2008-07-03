@@ -397,10 +397,13 @@ public class ChecksumTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
+        wagonMockControl.setMatcher(customWagonGetMatcher);
         wagonMockControl.setVoidCallable();
         wagonMock.get( path + ".sha1", new File( expectedFile.getAbsolutePath() + ".sha1.tmp" ) );
+        wagonMockControl.setMatcher(customWagonGetMatcher);
         wagonMockControl.setVoidCallable();
         wagonMock.get( path + ".md5", new File( expectedFile.getAbsolutePath() + ".md5.tmp" ) );
+        wagonMockControl.setMatcher(customWagonGetMatcher);
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Resource does not exist." ) );
         wagonMockControl.replay();
 
