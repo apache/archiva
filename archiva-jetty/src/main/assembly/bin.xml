@@ -87,6 +87,12 @@
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>NOTICE</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
         <include>LICENSE</include>
       </includes>
     </fileSet>
