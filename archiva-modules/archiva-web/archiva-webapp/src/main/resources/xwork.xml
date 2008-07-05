@@ -432,8 +432,6 @@
 
     <!-- .\ CONFIGURATION \.___________________________________________ -->
 
-    <!-- The following are needed by the maven-app-configuration-web artifact -->
-
     <action name="configureAppearance" class="organisationInfo" method="input">
       <result name="input">/WEB-INF/jsp/admin/appearance.jsp</result>
     </action>
