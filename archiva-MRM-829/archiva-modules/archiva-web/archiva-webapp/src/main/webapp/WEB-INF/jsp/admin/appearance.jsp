@@ -19,6 +19,8 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<ww:set name="organisationInfo" value="organisationInfo"/>
+
 <html>
 <head>
   <title>Configure Appearance</title>
@@ -31,12 +33,31 @@
 <div style="float: right">
   <a href="<ww:url action='editAppearance' />">Edit</a>
 </div>
-<h2>Organisation Details</h2>
+<h2>Organization Details</h2>
 
 <p>
   The logo in the top right of the screen is controlled by the following settings.
   <a href="<ww:url action='editAppearance' />">Change your appearence</a>
 </p>
 
+<h3>Organization Information</h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <td>${organisationName}</td>
+        </tr>
+        <tr>
+          <th>URL</th>
+          <td><a href="${organisationUrl}">
+            <code>${organisationUrl}</code>
+          </a></td>
+        </tr>
+        <tr>
+          <th>Logo URL</th>
+          <td>
+            <code>${organisationLogo}</code>
+          </td>
+        </tr>
+      </table>
 </body>
 </html>

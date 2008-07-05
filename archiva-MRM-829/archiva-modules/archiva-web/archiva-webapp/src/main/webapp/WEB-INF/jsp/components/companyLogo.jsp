@@ -20,16 +20,16 @@
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <ww:set name="organisationInfo" value="organisationInfo"/>
-<c:if test="${!empty(companyLogo)}">
-  <ww:set name="companyUrl" value="companyUrl"/>
+<c:if test="${!empty(organisationLogo)}">
+  <ww:set name="organisationUrl" value="organisationUrl"/>
   <c:choose>
-    <c:when test="${!empty(companyUrl)}">
+    <c:when test="${!empty(organisationUrl)}">
       <a href="${companyUrl}">
-        <img src="${companyLogo}" title="${companyName}" border="0" alt=""/>
+        <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
       </a>
     </c:when>
     <c:otherwise>
-      <img src="${companyLogo}" title="${companyName}" border="0" alt=""/>
+      <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
     </c:otherwise>
   </c:choose>
 </c:if>
