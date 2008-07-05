@@ -1,4 +1,5 @@
-<%--
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
   ~ distributed with this work for additional information
@@ -15,32 +16,25 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  --%>
+  -->
 
-<%@ taglib prefix="ww" uri="/webwork" %>
-<html>
-<head>
-  <title>Configure Appearance</title>
-  <ww:head/>
-</head>
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
-<body>
-<h1>Appearance</h1>
-
-<h2>Organization Details</h2>
-
-<p>
-  Enter the details of your organization below.
-</p>
-
-<ww:set name="editOrganisationInfo" value="editOrganisationInfo"/>
-<ww:actionmessage/>
-<ww:form method="post" action="saveAppearance" namespace="/admin" validate="true" theme="xhtml">
-    <ww:textfield name="organisationName" value="${organisationName}" label="Name" size="50"  />
-    <ww:textfield name="organisationUrl" value="${organisationUrl}" label="URL" size="50"/>
-    <ww:textfield name="organisationLogo" value="${organisationLogo}" label="Logo URL" size="50" />
-  <ww:submit value="Save"/>
-</ww:form>
-</body>
-
-</html>
+<validators>
+    <field name="organisationName">
+        <field-validator type="requiredstring">
+            <message>You must enter a name</message>
+        </field-validator>
+    </field>
+    <field name="organisationUrl">
+        <field-validator type="url">
+            <message>You must enter a URL</message>
+        </field-validator>
+    </field>
+    <field name="organisationLogo">
+        <field-validator type="url">
+            <message>You must enter a URL</message>
+        </field-validator>
+    </field>
+</validators>
