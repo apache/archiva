@@ -432,8 +432,8 @@
 
     <!-- .\ CONFIGURATION \.___________________________________________ -->
 
-    <action name="configureAppearance" class="organisationInfo" method="input">
-      <result name="input">/WEB-INF/jsp/admin/appearance.jsp</result>
+    <action name="configureAppearance" class="organisationInfo">
+      <result name="success">/WEB-INF/jsp/admin/appearance.jsp</result>
     </action>
 
     <action name="editAppearance" class="editOrganisationInfo" method="input">

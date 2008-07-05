@@ -19,9 +19,6 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.OrganisationInformation;
-
 /**
  * Stores the organisation information for displaying on the page.
  *
@@ -30,21 +27,4 @@ import org.apache.maven.archiva.configuration.OrganisationInformation;
 public class OrganisationInfoAction
     extends AbstractAppearanceAction
 {
-    @Override
-    public String execute()
-        throws Exception
-    {        
-        Configuration config = configuration.getConfiguration();
-        if (config != null)
-        {
-            OrganisationInformation orgInfo = config.getOrganisationInfo();
-            if (orgInfo != null)
-            {
-                setOrganisationLogo(orgInfo.getLogoLocation());
-                setOrganisationName(orgInfo.getName());
-                setOrganisationUrl(orgInfo.getUrl());
-            }
-        }
-        return SUCCESS;
-    }
 }

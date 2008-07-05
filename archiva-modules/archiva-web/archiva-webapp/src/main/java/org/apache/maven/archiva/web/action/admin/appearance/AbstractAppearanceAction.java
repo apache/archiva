@@ -20,7 +20,11 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.OrganisationInformation;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+
+import com.opensymphony.xwork.Preparable;
 
 /**
  * AbstractAppearanceAction 
@@ -30,6 +34,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
  */
 public abstract class AbstractAppearanceAction
     extends PlexusActionSupport
+    implements Preparable
 {
     /**
      * Archiva Application Configuration
@@ -71,5 +76,21 @@ public abstract class AbstractAppearanceAction
     public void setOrganisationUrl(String organisationUrl) 
     {
         this.organisationUrl = organisationUrl;
+    }
+
+    public void prepare()
+        throws Exception
+    {        
+        Configuration config = configuration.getConfiguration();
+        if (config != null)
+        {
+            OrganisationInformation orgInfo = config.getOrganisationInfo();
+            if (orgInfo != null)
+            {
+                setOrganisationLogo(orgInfo.getLogoLocation());
+                setOrganisationName(orgInfo.getName());
+                setOrganisationUrl(orgInfo.getUrl());
+            }
+        }
     }
 }
