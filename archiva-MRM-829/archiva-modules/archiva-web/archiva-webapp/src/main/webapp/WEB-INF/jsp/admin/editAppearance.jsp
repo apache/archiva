@@ -36,9 +36,9 @@
 <ww:set name="editOrganisationInfo" value="editOrganisationInfo"/>
 <ww:actionmessage/>
 <ww:form method="post" action="saveAppearance" namespace="/admin" validate="true" theme="xhtml">
-    <ww:textfield name="organisationName" value="${organisationName}" label="Name"/>
-    <ww:textfield name="organisationUrl" value="${organisationUrl}" label="URL"/>
-    <ww:textfield name="organisationLogo" value="${organisationLogo}" label="Logo URL"/>
+    <ww:textfield name="organisationName" value="${organisationName}" label="Name" size="50" />
+    <ww:textfield name="organisationUrl" value="${organisationUrl}" label="URL" size="50"/>
+    <ww:textfield name="organisationLogo" value="${organisationLogo}" label="Logo URL" size="50" />
   <ww:submit value="Save"/>
 </ww:form>
 </body>

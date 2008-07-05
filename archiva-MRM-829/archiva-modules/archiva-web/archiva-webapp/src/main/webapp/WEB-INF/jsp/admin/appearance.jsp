@@ -19,7 +19,6 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<ww:set name="organisationInfo" value="organisationInfo"/>
 
 <html>
 <head>
@@ -56,6 +55,12 @@
           <th>Logo URL</th>
           <td>
             <code>${organisationLogo}</code>
+          </td>
+        </tr>
+        <tr>
+          <th>&nbsp;</th>
+          <td>
+      <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
           </td>
         </tr>
       </table>
