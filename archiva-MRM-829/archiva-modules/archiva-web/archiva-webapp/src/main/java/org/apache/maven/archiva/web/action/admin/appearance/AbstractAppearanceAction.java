@@ -47,6 +47,11 @@ public abstract class AbstractAppearanceAction
     private String organisationUrl;
 
     private String organisationName;
+
+    public void setConfiguration(ArchivaConfiguration configuration) 
+    {
+        this.configuration = configuration;
+    }
     
     public String getOrganisationLogo() 
     {
