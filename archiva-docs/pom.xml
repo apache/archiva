@@ -35,6 +35,7 @@
         <artifactId>maven-site-plugin</artifactId>
         <executions>
           <execution>
+            <id>site</id>
             <phase>package</phase>
             <goals>
               <goal>site</goal>
@@ -97,6 +98,7 @@
             <artifactId>maven-site-plugin</artifactId>
             <executions>
               <execution>
+                <id>deploy</id>
                 <phase>deploy</phase>
                 <goals>
                   <goal>deploy</goal>
