@@ -81,9 +81,9 @@
                     <exclude>classworlds:classworlds</exclude>
                     <exclude>javax.transaction:jta</exclude>
                     <exclude>javax.sql:jdbc-stdext</exclude>
-                    <exclude>ant:ant-optional</exclude>
+                    <exclude>ant:ant-optional</exclude-->
                     <!-- exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude -->
-                    <exclude>xom:xom</exclude>
+                    <!--exclude>xom:xom</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
