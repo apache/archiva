@@ -23,10 +23,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
@@ -37,6 +41,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
@@ -337,14 +342,44 @@ public class UploadAction
 
             File targetPath = new File( repoConfig.getLocation(), artifactPath.substring( 0, lastIndex ) );
 
+            Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
+            int newBuildNumber = -1;
+            String timestamp = null;
+            
+            File metadataFile = getMetadata( targetPath.getAbsolutePath() );
+            ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
+
+            if (VersionUtil.isSnapshot(version))
+            {
+                TimeZone timezone = TimeZone.getTimeZone( "UTC" );
+                DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
+                fmt.setTimeZone( timezone );
+                timestamp = fmt.format( lastUpdatedTimestamp );
+                if ( metadata.getSnapshotVersion() != null )
+                {
+                    newBuildNumber = metadata.getSnapshotVersion().getBuildNumber() + 1;
+                }
+                else
+                {
+                	metadata.setSnapshotVersion( new SnapshotVersion() );
+                	newBuildNumber = 1;
+                }
+            }
+
             if ( !targetPath.exists() )
             {
                 targetPath.mkdirs();
             }
 
+            String filename = artifactPath.substring( lastIndex + 1 );
+            if ( VersionUtil.isSnapshot( version ) )
+            {
+                filename = filename.replaceAll( "SNAPSHOT", timestamp + "-" + newBuildNumber );
+            }
+
             try
             {
-                copyFile( artifactFile, targetPath, artifactPath.substring( lastIndex + 1 ) );
+                copyFile( artifactFile, targetPath, filename );
                 consumers.executeConsumers( repoConfig, repository.toFile( artifactReference ) );
             }
             catch ( IOException ie )
@@ -357,7 +392,7 @@ public class UploadAction
             {
                 try
                 {
-                    File generatedPomFile = createPom( targetPath, artifactPath.substring( lastIndex + 1 ) );
+                    File generatedPomFile = createPom( targetPath, filename );
                     consumers.executeConsumers( repoConfig, generatedPomFile );
                 }
                 catch ( IOException ie )
@@ -374,10 +409,9 @@ public class UploadAction
             
             if ( pomFile != null && pomFile.length() > 0 ) 
             {
-            	
                 try
                 {
-                    String targetFilename = artifactPath.substring( lastIndex + 1 ).replaceAll( packaging, "pom" );
+                    String targetFilename = filename.replaceAll( packaging, "pom" );
                     copyFile( pomFile, targetPath, targetFilename );
                     consumers.executeConsumers( repoConfig, new File( targetPath, targetFilename ) );
                 }
@@ -389,7 +423,7 @@ public class UploadAction
                 
             }
 
-            updateMetadata( getMetadata( targetPath.getAbsolutePath() ) );
+            updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, timestamp, newBuildNumber );
 
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deployed to repository \'" + repositoryId + "\'";
@@ -463,20 +497,31 @@ public class UploadAction
         return new File( artifactPath, MetadataTools.MAVEN_METADATA );
     }
 
-    /**
-     * Update artifact level metadata. If it does not exist, create the metadata.
-     * 
-     * @param metadataFile
-     */
-    private void updateMetadata( File metadataFile )
+    private ArchivaRepositoryMetadata getMetadata( File metadataFile )
         throws RepositoryMetadataException
     {
-        List<String> availableVersions = new ArrayList<String>();
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-
         if ( metadataFile.exists() )
         {
             metadata = RepositoryMetadataReader.read( metadataFile );
+        }
+        return metadata;
+    }
+
+    /**
+     * Update artifact level metadata. If it does not exist, create the metadata.
+     * 
+     * @param metadata
+     */
+    private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp,
+                                 String timestamp, int buildNumber )
+        throws RepositoryMetadataException
+    {
+        List<String> availableVersions = new ArrayList<String>();
+        String latestVersion = version;
+
+        if ( metadataFile.exists() )
+        {
             availableVersions = metadata.getAvailableVersions();
 
             Collections.sort( availableVersions, VersionComparator.getInstance() );
@@ -486,15 +531,7 @@ public class UploadAction
                 availableVersions.add( version );
             }
 
-            String latestVersion = availableVersions.get( availableVersions.size() - 1 );
-            metadata.setLatestVersion( latestVersion );
-            metadata.setAvailableVersions( availableVersions );
-            metadata.setLastUpdatedTimestamp( Calendar.getInstance().getTime() );
-
-            if ( !VersionUtil.isSnapshot( version ) )
-            {
-                metadata.setReleasedVersion( latestVersion );
-            }
+            latestVersion = availableVersions.get( availableVersions.size() - 1 );
         }
         else
         {
@@ -502,21 +539,37 @@ public class UploadAction
 
             metadata.setGroupId( groupId );
             metadata.setArtifactId( artifactId );
-            metadata.setLatestVersion( version );
-            metadata.setLastUpdatedTimestamp( Calendar.getInstance().getTime() );
-            metadata.setAvailableVersions( availableVersions );
+        }
 
-            if ( !VersionUtil.isSnapshot( version ) )
-            {
-                metadata.setReleasedVersion( version );
-            }
+        if ( metadata.getGroupId() == null )
+        {
+        	metadata.setGroupId( groupId );
+        }
+        if ( metadata.getArtifactId() == null )
+        {
+        	metadata.setArtifactId( artifactId );
+        }
+
+        metadata.setLatestVersion( latestVersion );
+        metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
+        metadata.setAvailableVersions( availableVersions );
+
+        if ( !VersionUtil.isSnapshot( version ) )
+        {
+            metadata.setReleasedVersion( latestVersion );
+        }
+        else
+        {
+            metadata.getSnapshotVersion().setBuildNumber( buildNumber );
+
+            metadata.getSnapshotVersion().setTimestamp( timestamp );
         }
 
         RepositoryMetadataWriter.write( metadata, metadataFile );
         ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
     }
-    
+
     public void validate()
     {
         try
