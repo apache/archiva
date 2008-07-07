@@ -75,7 +75,6 @@
                 <bannedDependencies>
                   <excludes>
                     <exclude>org.codehaus.plexus:plexus-container-default</exclude>
-                    <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>velocity:velocity-dep</exclude>
                     <exclude>classworlds:classworlds</exclude>
