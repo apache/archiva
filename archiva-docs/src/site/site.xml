@@ -21,7 +21,7 @@
 <project>
   <body>
     <breadcrumbs>
-      <item name="1.1-SNAPSHOT" href="/docs/1.1-SNAPSHOT/" />
+      <item name="1.1" href="/docs/1.1/" />
 <!-- TODO in beta-6
       <item name="${project.version}" href="/docs/${project.version}" />
 -->
