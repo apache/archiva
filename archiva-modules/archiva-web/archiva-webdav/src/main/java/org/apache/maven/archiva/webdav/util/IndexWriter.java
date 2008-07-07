@@ -82,7 +82,7 @@ public class IndexWriter
     {
         writer.println("<html>");
         writer.println("<head>");
-        writer.println("<title>Collection: " + logicalResource + "<title>");
+        writer.println("<title>Collection: " + logicalResource + "</title>");
         writer.println("</head>");
         writer.println("<body>");
         writer.println("<h3>Collection: " + logicalResource + "</h3>");
