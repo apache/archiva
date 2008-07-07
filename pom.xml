@@ -61,7 +61,7 @@
           </execution>
         </executions>
       </plugin>
-      <!--plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>1.0-alpha-3</version>
@@ -81,16 +81,16 @@
                     <exclude>classworlds:classworlds</exclude>
                     <exclude>javax.transaction:jta</exclude>
                     <exclude>javax.sql:jdbc-stdext</exclude>
-                    <exclude>ant:ant-optional</exclude-->
+                    <exclude>ant:ant-optional</exclude>
                     <!-- exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude -->
-                    <!--exclude>xom:xom</exclude>
+                    <exclude>xom:xom</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
             </configuration>
           </execution>
         </executions>
-      </plugin-->
+      </plugin>
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
