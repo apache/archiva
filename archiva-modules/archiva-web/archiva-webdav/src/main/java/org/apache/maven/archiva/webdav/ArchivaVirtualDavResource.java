@@ -94,19 +94,22 @@ public class ArchivaVirtualDavResource
     public void spool( OutputContext outputContext )
         throws IOException
     {
-        Collections.sort( localResources );
-        List<File> localResourceFiles = new ArrayList<File>();
-
-        for ( File resourceFile : localResources )
+        if (outputContext.hasStream())
         {
-            if ( resourceFile.exists() )
-            {
-                localResourceFiles.add( resourceFile );
-            }
-        }
+            Collections.sort( localResources );
+            List<File> localResourceFiles = new ArrayList<File>();
 
-        IndexWriter writer = new IndexWriter( this, localResourceFiles, logicalResource );
-        writer.write( outputContext );
+            for ( File resourceFile : localResources )
+            {
+                if ( resourceFile.exists() )
+                {
+                    localResourceFiles.add( resourceFile );
+                }
+            }
+
+            IndexWriter writer = new IndexWriter( this, localResourceFiles, logicalResource );
+            writer.write( outputContext );
+        }
     }
 
     public void addLockManager( LockManager arg0 )

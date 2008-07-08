@@ -183,14 +183,17 @@ public class ArchivaDavResource
     public void spool( OutputContext outputContext )
         throws IOException
     {
-        if ( !isCollection() )
+        if ( !isCollection())
+        {
+            outputContext.setContentLength( localResource.length() );
+            outputContext.setContentType( mimeTypes.getMimeType( localResource.getName() ) );
+        }
+        
+        if ( !isCollection() && outputContext.hasStream() )
         {
             FileInputStream is = null;
             try
             {
-                outputContext.setContentLength( localResource.length() );
-                outputContext.setContentType( mimeTypes.getMimeType( localResource.getName() ) );
-
                 // Write content to stream
                 is = new FileInputStream( localResource );
                 IOUtils.copy( is, outputContext.getOutputStream() );
@@ -200,7 +203,7 @@ public class ArchivaDavResource
                 IOUtils.closeQuietly( is );
             }
         }
-        else
+        else if (outputContext.hasStream())
         {
             IndexWriter writer = new IndexWriter( this, localResource, logicalResource );
             writer.write( outputContext );
