@@ -39,28 +39,28 @@ public class BytecodeRecord
 
     private String filename;
 
-    private List classes;
+    private List<String> classes;
 
-    private List methods;
+    private List<String> methods;
 
-    private List files;
+    private List<String> files;
 
     public ArchivaArtifact getArtifact()
     {
         return artifact;
     }
 
-    public List getClasses()
+    public List<String> getClasses()
     {
         return classes;
     }
 
-    public List getFiles()
+    public List<String> getFiles()
     {
         return files;
     }
 
-    public List getMethods()
+    public List<String> getMethods()
     {
         return methods;
     }
@@ -92,17 +92,17 @@ public class BytecodeRecord
         this.artifact = artifact;
     }
 
-    public void setClasses( List classes )
+    public void setClasses( List<String> classes )
     {
         this.classes = classes;
     }
 
-    public void setFiles( List files )
+    public void setFiles( List<String> files )
     {
         this.files = files;
     }
 
-    public void setMethods( List methods )
+    public void setMethods( List<String> methods )
     {
         this.methods = methods;
     }
