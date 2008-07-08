@@ -100,7 +100,7 @@ public class DefaultCrossRepositorySearch
 
     public SearchResults searchForBytecode( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
     {
-        List<RepositoryContentIndex> indexes = getHashcodeIndexes( principal, selectedRepos );
+        List<RepositoryContentIndex> indexes = getBytecodeIndexes( principal, selectedRepos );
 
         try
         {
@@ -130,6 +130,11 @@ public class DefaultCrossRepositorySearch
             LuceneQuery query = new LuceneQuery( parser.parse( term ) );
             SearchResults results = searchAll( query, limits, indexes );
             results.getRepositories().addAll( this.localIndexedRepositories );
+            
+            if( results.getTotalHits() == 0 )
+            {
+                results = searchForBytecode( principal, selectedRepos, term, limits );             
+            }
 
             return results;
         }
