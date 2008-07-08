@@ -171,6 +171,10 @@ Release Notes for Archiva 1.1
 
     * [MRM-858] - last-modified header is missing
 
+    * [MRM-865] - Upload snapshot should work like a deploy
+
+    * [MRM-867] - 500 on HEAD method
+
 ** Improvement
 
     * [MRM-591] - Reports should show from which repository the defective artifact was found.
