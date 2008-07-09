@@ -63,11 +63,11 @@ public class CacheFailuresTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
-        
+
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
-        
+
         wagonMockControl.setMatcher(customWagonGetMatcher);
-        
+
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
 
         wagonMockControl.replay();
@@ -75,11 +75,11 @@ public class CacheFailuresTransferTest
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
-        
-		// Second attempt to download same artifact use cache
+
+        // Second attempt to download same artifact use cache
         wagonMockControl.reset();
         wagonMockControl.replay();
-		downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         wagonMockControl.verify();
 
         assertNotDownloaded( downloadedFile );
@@ -108,7 +108,7 @@ public class CacheFailuresTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
-        
+
         wagonMockControl.setMatcher(customWagonGetMatcher);
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
 
@@ -118,15 +118,15 @@ public class CacheFailuresTransferTest
 
         wagonMockControl.verify();
 
-		// Second attempt to download same artifact DOES NOT use cache
+        // Second attempt to download same artifact DOES NOT use cache
         wagonMockControl.reset();
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
-        
+
         wagonMockControl.setMatcher(customWagonGetMatcher);
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
         wagonMockControl.replay();
 
-	downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
 
@@ -138,6 +138,7 @@ public class CacheFailuresTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
+        setupTestableManagedRepository( path );
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
