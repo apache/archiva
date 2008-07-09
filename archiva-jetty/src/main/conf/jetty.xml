@@ -50,17 +50,6 @@
       -->
     </Set>
 
-
-    <Call class="java.lang.System" name="setProperty">
-      <Arg>jetty.port</Arg>
-      <Arg>8080</Arg>
-    </Call>
-
-    <Call class="java.lang.System" name="setProperty">
-      <Arg>jetty.host</Arg>
-      <Arg>localhost</Arg>
-    </Call>
-
     <!-- =========================================================== -->
     <!-- Set connectors                                              -->
     <!-- =========================================================== -->
