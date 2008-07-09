@@ -37,7 +37,6 @@ import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.slf4j.Logger;
@@ -49,20 +48,14 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
-public class IndexJavaPublicMethodsCrossRepositorySearch
-    implements CrossRepositorySearch
+public class IndexJavaPublicMethodsCrossRepositorySearch    
 {
     private Logger log = LoggerFactory.getLogger( IndexJavaPublicMethodsCrossRepositorySearch.class );
     
     private ManagedRepositoryConfiguration localIndexedRepo;
     
     private RepositoryContentIndexFactory indexFactory;
-    
-    public IndexJavaPublicMethodsCrossRepositorySearch()
-    {
-        
-    }
-    
+            
     public IndexJavaPublicMethodsCrossRepositorySearch( ManagedRepositoryConfiguration localIndexedRepo, RepositoryContentIndexFactory indexFactory )
     {
         this.localIndexedRepo = localIndexedRepo;
@@ -70,40 +63,17 @@ public class IndexJavaPublicMethodsCrossRepositorySearch
     }
     
     public SearchResults searchForBytecode( String principal, List<String> selectedRepos, String term,
-                                            SearchResultLimits limits )
+                                            SearchResultLimits limits ) throws ParseException
     {   
         List<RepositoryContentIndex> indexes = new ArrayList<RepositoryContentIndex>();
         indexes.add( indexFactory.createBytecodeIndex( localIndexedRepo ) );
         
-        try
-        {
-            QueryParser parser = new BytecodeHandlers().getQueryParser();
-            LuceneQuery query = new LuceneQuery( parser.parse( term ) );
-            SearchResults results = searchAll( query, limits, indexes );
-            results.getRepositories().add( localIndexedRepo );
-            
-            return results;
-        }
-        catch ( ParseException e )
-        {   
-            log.error( e.getMessage() );
-        }
-       
-        return new SearchResults();
-    }
-
-    public SearchResults searchForChecksum( String principal, List<String> selectedRepos, String checksum,
-                                            SearchResultLimits limits )
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term,
-                                        SearchResultLimits limits )
-    {
-        // TODO Auto-generated method stub
-        return null;
+        QueryParser parser = new BytecodeHandlers().getQueryParser();
+        LuceneQuery query = new LuceneQuery( parser.parse( term ) );
+        SearchResults results = searchAll( query, limits, indexes );
+        results.getRepositories().add( localIndexedRepo );
+        
+        return results;       
     }
     
     private SearchResults searchAll( LuceneQuery luceneQuery, SearchResultLimits limits, List<RepositoryContentIndex> indexes )
