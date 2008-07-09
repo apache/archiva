@@ -76,6 +76,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+
 /**
  * DefaultRepositoryProxyConnectors
  *
@@ -88,7 +89,7 @@ public class DefaultRepositoryProxyConnectors
     implements RepositoryProxyConnectors, RegistryListener, Initializable
 {
     private Logger log = LoggerFactory.getLogger( DefaultRepositoryProxyConnectors.class );
-    
+
     /**
      * @plexus.requirement
      */
@@ -169,7 +170,7 @@ public class DefaultRepositoryProxyConnectors
             try
             {
                 File downloadedFile =
-                    transferFile( connector, targetRepository, targetPath, localFile, requestProperties );
+                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties );
 
                 if ( fileExists( downloadedFile ) )
                 {
@@ -230,7 +231,7 @@ public class DefaultRepositoryProxyConnectors
 
             try
             {
-                transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
+                transferFile( connector, targetRepository, targetPath, repository, localRepoFile, requestProperties );
 
                 if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
                 {
@@ -348,7 +349,7 @@ public class DefaultRepositoryProxyConnectors
             long originalMetadataTimestamp = getLastModified( localRepoFile );
             try
             {
-                transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
+                transferFile( connector, targetRepository, targetPath, repository, localRepoFile, requestProperties );
 
                 if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
                 {
@@ -484,19 +485,20 @@ public class DefaultRepositoryProxyConnectors
     /**
      * Perform the transfer of the file.
      *
-     * @param connector         the connector configuration to use.
-     * @param remoteRepository  the remote repository get the resource from.
-     * @param remotePath        the path in the remote repository to the resource to get.
-     * @param localFile         the local file to place the downloaded resource into
+     * @param connector the connector configuration to use.
+     * @param remoteRepository the remote repository get the resource from.
+     * @param remotePath the path in the remote repository to the resource to get.
+     * @param repository the managed repository that will hold the transfered file
+     * @param localFile the local file to place the downloaded resource into
      * @param requestProperties the request properties to utilize for policy handling.
      * @return the local file that was downloaded, or null if not downloaded.
-     * @throws NotFoundException    if the file was not found on the remote repository.
-     * @throws NotModifiedException if the localFile was present, and the resource was present on remote repository,
-     *                              but the remote resource is not newer than the local File.
-     * @throws ProxyException       if transfer was unsuccessful.
+     * @throws NotFoundException if the file was not found on the remote repository.
+     * @throws NotModifiedException if the localFile was present, and the resource was present on remote repository, but
+     * the remote resource is not newer than the local File.
+     * @throws ProxyException if transfer was unsuccessful.
      */
     private File transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
-                               File localFile, Properties requestProperties )
+                               ManagedRepositoryContent repository, File localFile, Properties requestProperties )
         throws ProxyException, NotModifiedException
     {
         String url = remoteRepository.getURL().getUrl();
@@ -560,10 +562,10 @@ public class DefaultRepositoryProxyConnectors
             boolean connected = connectToRepository( connector, wagon, remoteRepository );
             if ( connected )
             {
-                localFile = transferSimpleFile( wagon, remoteRepository, remotePath, localFile );
+                localFile = transferSimpleFile( wagon, remoteRepository, remotePath, repository, localFile );
 
-                transferChecksum( wagon, remoteRepository, remotePath, localFile, ".sha1" );
-                transferChecksum( wagon, remoteRepository, remotePath, localFile, ".md5" );
+                transferChecksum( wagon, remoteRepository, remotePath, repository, localFile, ".sha1" );
+                transferChecksum( wagon, remoteRepository, remotePath, repository, localFile, ".md5" );
             }
         }
         catch ( NotFoundException e )
@@ -627,12 +629,13 @@ public class DefaultRepositoryProxyConnectors
      * @param wagon            the wagon instance (should already be connected) to use.
      * @param remoteRepository the remote repository to transfer from.
      * @param remotePath       the remote path to the resource to get.
+     * @param repository       the managed repository that will hold the transfered file
      * @param localFile        the local file that should contain the downloaded contents
      * @param type             the type of checksum to transfer (example: ".md5" or ".sha1")
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
     private void transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                   File localFile, String type )
+                                   ManagedRepositoryContent repository, File localFile, String type )
         throws ProxyException
     {
         String url = remoteRepository.getURL().getUrl() + remotePath;
@@ -646,7 +649,7 @@ public class DefaultRepositoryProxyConnectors
         try
         {
             File hashFile = new File( localFile.getAbsolutePath() + type );
-            transferSimpleFile( wagon, remoteRepository, remotePath + type, hashFile );
+            transferSimpleFile( wagon, remoteRepository, remotePath + type, repository, hashFile );
             log.debug( "Checksum" + type + " Downloaded: " + hashFile );
         }
         catch ( NotFoundException e )
@@ -672,16 +675,17 @@ public class DefaultRepositoryProxyConnectors
     /**
      * Perform the transfer of the remote file to the local file specified.
      *
-     * @param wagon            the wagon instance to use.
+     * @param wagon the wagon instance to use.
      * @param remoteRepository the remote repository to use
-     * @param remotePath       the remote path to attempt to get
-     * @param localFile        the local file to save to
+     * @param remotePath the remote path to attempt to get
+     * @param repository the managed repository that will hold the transfered file
+     * @param localFile the local file to save to
      * @return The local file that was transfered.
      * @throws ProxyException if there was a problem moving the downloaded file into place.
      * @throws WagonException if there was a problem tranfering the file.
      */
     private File transferSimpleFile( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                     File localFile )
+                                     ManagedRepositoryContent repository, File localFile )
         throws ProxyException
     {
         assert ( remotePath != null );
@@ -691,9 +695,8 @@ public class DefaultRepositoryProxyConnectors
 
         try
         {
-            localFile.getParentFile().mkdirs();
-            temp = File.createTempFile(localFile.getName() + ".", null, localFile.getParentFile());
-            
+            temp = File.createTempFile( localFile.getName() + ".", null, new File( repository.getRepoRoot() ) );
+
             boolean success = false;
 
             if ( !localFile.exists() )
@@ -849,6 +852,7 @@ public class DefaultRepositoryProxyConnectors
             throw new ProxyException( "Unable to overwrite existing target file: " + target.getAbsolutePath() );
         }
 
+        target.getParentFile().mkdirs();
         if ( !temp.renameTo( target ) )
         {
             log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
@@ -1004,15 +1008,15 @@ public class DefaultRepositoryProxyConnectors
     {
         /* do nothing */
     }
-    
+
     private void logProcess( String managedRepoId, String resource, String event )
     {
-        
+
     }
-    
+
     private void logRejection( String managedRepoId, String remoteRepoId, String resource, String reason )
     {
-        
+
     }
 
     private void initConnectorsAndNetworkProxies()
