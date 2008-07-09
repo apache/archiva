@@ -40,6 +40,8 @@ import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Searcher used for testing purposes only.
@@ -50,6 +52,8 @@ import org.apache.maven.archiva.indexer.search.SearchResults;
 public class IndexJavaPublicMethodsCrossRepositorySearch
     implements CrossRepositorySearch
 {
+    private Logger log = LoggerFactory.getLogger( IndexJavaPublicMethodsCrossRepositorySearch.class );
+    
     private ManagedRepositoryConfiguration localIndexedRepo;
     
     private RepositoryContentIndexFactory indexFactory;
@@ -82,6 +86,7 @@ public class IndexJavaPublicMethodsCrossRepositorySearch
         }
         catch ( ParseException e )
         {   
+            log.error( e.getMessage() );
         }
        
         return new SearchResults();
@@ -169,7 +174,7 @@ public class IndexJavaPublicMethodsCrossRepositorySearch
                     }
                     catch ( java.text.ParseException e )
                     {
-                        
+                        log.error( e.getMessage() );
                     }
                 }
             }
@@ -177,7 +182,7 @@ public class IndexJavaPublicMethodsCrossRepositorySearch
         }
         catch ( IOException e )
         {
-            
+            log.error( e.getMessage() );
         }
         finally
         {
@@ -190,7 +195,7 @@ public class IndexJavaPublicMethodsCrossRepositorySearch
             }
             catch ( IOException ie )
             {
-                
+                log.error( ie.getMessage() );
             }
         }
 
@@ -208,7 +213,7 @@ public class IndexJavaPublicMethodsCrossRepositorySearch
             }
             catch ( RepositoryIndexSearchException e )
             {
-                
+                log.error( e.getMessage() );
             }
         }
         return searchableList;
