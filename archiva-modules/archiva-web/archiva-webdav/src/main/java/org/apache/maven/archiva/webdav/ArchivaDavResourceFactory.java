@@ -261,6 +261,9 @@ public class ArchivaDavResourceFactory
         if ( request.getRequestURI().endsWith( "metadata.xml" ) )
         {
             // TODO MRM-872 : must merge all available metadatas
+            // use RepositoryMetadataMerge for the merging of the versions 
+            // 
+            // Deng: I'll continue this tomorrow, everything is getting blurry now
         }
 
         DavResource resource = availableResources.get( 0 );
