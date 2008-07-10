@@ -94,7 +94,7 @@ public class ArchivaDavResourceFactory
     private static final String PROXIED_SUFFIX = " (proxied)";
 
     private static final String HTTP_PUT_METHOD = "PUT";
-    
+
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
     /**
@@ -131,7 +131,7 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-    
+
     /**
      * @plexus.requirement
      */
@@ -141,8 +141,8 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement role-hint="basic"
      */
     private HttpAuthenticator httpAuth;
-    
-    
+
+
     /**
      * Lock Manager - use simple implementation from JackRabbit
      */
@@ -150,48 +150,48 @@ public class ArchivaDavResourceFactory
 
     /** @plexus.requirement */
     private RepositoryContentConsumers consumers;
-    
+
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
-    {   
+    {
         checkLocatorIsInstanceOfRepositoryLocator( locator );
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
-        
+
         RepositoryGroupConfiguration repoGroupConfig =
             archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( archivaLocator.getRepositoryId() );
         List<String> repositories = new ArrayList<String>();
 
         boolean isGet = WebdavMethodUtil.isReadMethod( request.getMethod() );
         boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
-                
+
         if ( repoGroupConfig != null )
-        {   
+        {
             if( WebdavMethodUtil.isWriteMethod( request.getMethod() ) )
             {
                 throw new DavException( HttpServletResponse.SC_METHOD_NOT_ALLOWED,
                                         "Write method not allowed for repository groups." );
             }
             repositories.addAll( repoGroupConfig.getRepositories() );
-            
+
             // handle browse requests for virtual repos
-            if ( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ).endsWith( "/" ) )                
-            {                    
-                return getResource( request, repositories, archivaLocator );                
-            }            
+            if ( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ).endsWith( "/" ) )
+            {
+                return getResource( request, repositories, archivaLocator );
+            }
         }
         else
         {
             repositories.add( archivaLocator.getRepositoryId() );
         }
-       
+
         //MRM-419 - Windows Webdav support. Should not 404 if there is no content.
         if (StringUtils.isEmpty(archivaLocator.getRepositoryId()))
         {
             throw new DavException(HttpServletResponse.SC_NO_CONTENT);
         }
 
-        DavResource resource = null;
+        List<DavResource> availableResources = new ArrayList<DavResource>();
         DavException e = null;
 
         for ( String repositoryId : repositories )
@@ -208,6 +208,7 @@ public class ArchivaDavResourceFactory
                     repositoryId + ">" );
             }
 
+            DavResource resource = null;
             if ( !locator.getResourcePath().startsWith( ArchivaDavResource.HIDDEN_PATH_PREFIX ) )
             {
                 if ( managedRepository != null )
@@ -215,15 +216,15 @@ public class ArchivaDavResourceFactory
                     try
                     {
                         if( isAuthorized( request, repositoryId ) )
-                        {                        
+                        {
                             LogicalResource logicalResource =
                                 new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
-                                                
+
                             if ( isGet )
                             {
                                 resource = doGet( managedRepository, request, archivaLocator, logicalResource );
                             }
-        
+
                             if ( isPut )
                             {
                                 resource = doPut( managedRepository, request, archivaLocator, logicalResource );
@@ -231,26 +232,18 @@ public class ArchivaDavResourceFactory
                         }
                     }
                     catch ( DavException de )
-                    {   
+                    {
                         e = de;
                         continue;
                     }
-                                        
+
                     if( resource == null )
                     {
                         e = new DavException( HttpServletResponse.SC_NOT_FOUND, "Resource does not exist" );
                     }
                     else
                     {
-                        setHeaders(response, locator, resource );
-
-                        // compatibility with MRM-440 to ensure browsing the repository works ok
-                        if ( resource.isCollection() && !request.getRequestURI().endsWith("/" ) )
-                        {
-                            throw new BrowserRedirectException( resource.getHref() );
-                        }
-                        resource.addLockManager(lockManager);
-                        return resource;
+                        availableResources.add( resource );
                     }
                 }
                 else
@@ -260,12 +253,31 @@ public class ArchivaDavResourceFactory
             }
         }
 
-        throw e;
+        if (availableResources.isEmpty())
+        {
+            throw e;
+        }
+
+        if ( request.getRequestURI().endsWith( "metadata.xml" ) )
+        {
+            // TODO MRM-872 : must merge all available metadatas
+        }
+
+        DavResource resource = availableResources.get( 0 );
+        setHeaders(response, locator, resource );
+
+        // compatibility with MRM-440 to ensure browsing the repository works ok
+        if ( resource.isCollection() && !request.getRequestURI().endsWith("/" ) )
+        {
+            throw new BrowserRedirectException( resource.getHref() );
+        }
+        resource.addLockManager(lockManager);
+        return resource;
     }
-    
+
     public DavResource createResource( final DavResourceLocator locator, final DavSession davSession )
         throws DavException
-    {        
+    {
         checkLocatorIsInstanceOfRepositoryLocator( locator );
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
 
@@ -568,7 +580,7 @@ public class ArchivaDavResourceFactory
 
         //We need to specify this so connecting wagons can work correctly
         response.addDateHeader("last-modified", resource.getModificationTime());
-        
+
         // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
     }
 
@@ -622,87 +634,87 @@ public class ArchivaDavResourceFactory
             this.path = path;
         }
     }
-    
+
     protected boolean isAuthorized( DavServletRequest request, String repositoryId )
         throws DavException
     {
         try
         {
-            AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );            
+            AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
             SecuritySession securitySession = httpAuth.getSecuritySession();
-                       
+
             return servletAuth.isAuthenticated( request, result ) &&
                 servletAuth.isAuthorized( request, securitySession, repositoryId,
                                           WebdavMethodUtil.isWriteMethod( request.getMethod() ) );
         }
         catch ( AuthenticationException e )
-        {            
+        {
             throw new UnauthorizedDavException( repositoryId, "You are not authenticated" );
         }
         catch ( MustChangePasswordException e )
-        {         
+        {
             throw new UnauthorizedDavException( repositoryId, "You must change your password." );
         }
         catch ( AccountLockedException e )
-        {            
+        {
             throw new UnauthorizedDavException( repositoryId, "User account is locked." );
         }
         catch ( AuthorizationException e )
-        {         
+        {
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                     "Fatal Authorization Subsystem Error." );
         }
         catch ( UnauthorizedException e )
-        {         
+        {
             throw new UnauthorizedDavException( repositoryId, e.getMessage() );
         }
     }
-    
+
     private DavResource getResource( DavServletRequest request, List<String> repositories, ArchivaDavResourceLocator locator )
         throws DavException
     {
-        List<File> mergedRepositoryContents = new ArrayList<File>();        
+        List<File> mergedRepositoryContents = new ArrayList<File>();
         LogicalResource logicalResource =
             new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
-        
-        // flow: 
+
+        // flow:
         // if the current user logged in has permission to any of the repositories, allow user to
         // browse the repo group but displaying only the repositories which the user has permission to access.
         // otherwise, prompt for authentication.
-        
+
         // put the current session in the session map which will be passed to ArchivaXworkUser
         Map<String, Object> sessionMap = new HashMap<String, Object>();
         if( request.getSession().getAttribute( SecuritySystemConstants.SECURITY_SESSION_KEY ) != null )
         {
-            sessionMap.put( SecuritySystemConstants.SECURITY_SESSION_KEY, 
+            sessionMap.put( SecuritySystemConstants.SECURITY_SESSION_KEY,
                             request.getSession().getAttribute( SecuritySystemConstants.SECURITY_SESSION_KEY ) );
         }
-        
-        String activePrincipal = ArchivaXworkUser.getActivePrincipal( sessionMap );        
+
+        String activePrincipal = ArchivaXworkUser.getActivePrincipal( sessionMap );
         boolean allow = isAllowedToContinue( request, repositories, activePrincipal );
-              
+
         if( allow )
-        {            
+        {
             for( String repository : repositories )
-            {    
+            {
                 // for prompted authentication
                 if( httpAuth.getSecuritySession() != null )
                 {
                     try
-                    {   
-                        if( isAuthorized( request, repository ) )                        
+                    {
+                        if( isAuthorized( request, repository ) )
                         {
                             getResource( locator, mergedRepositoryContents, logicalResource, repository );
                         }
-                    }                    
+                    }
                     catch ( DavException e )
-                    {                        
+                    {
                         continue;
                     }
                 }
                 else
                 {
-                    // for the current user logged in 
+                    // for the current user logged in
                     try
                     {
                         if( servletAuth.isAuthorizedToAccessVirtualRepository( activePrincipal, repository ) )
@@ -710,27 +722,27 @@ public class ArchivaDavResourceFactory
                             getResource( locator, mergedRepositoryContents, logicalResource, repository );
                         }
                     }
-                    catch ( UnauthorizedException e )                    
-                    {                        
+                    catch ( UnauthorizedException e )
+                    {
                         continue;
                     }
-                }                
+                }
             }
         }
         else
         {
             throw new UnauthorizedDavException( locator.getRepositoryId(), "User not authorized." );
         }
-        
+
         ArchivaVirtualDavResource resource =
             new ArchivaVirtualDavResource( mergedRepositoryContents, logicalResource.getPath(), mimeTypes, locator, this );
-       
+
         // compatibility with MRM-440 to ensure browsing the repository group works ok
         if ( resource.isCollection() && !request.getRequestURI().endsWith("/" ) )
         {
             throw new BrowserRedirectException( resource.getHref() );
         }
-        
+
         return resource;
     }
 
@@ -748,34 +760,34 @@ public class ArchivaDavResourceFactory
         {
             throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Invalid managed repository <" +
                 repository + ">" );
-        }                            
-        
+        }
+
         if ( !locator.getResourcePath().startsWith( ArchivaVirtualDavResource.HIDDEN_PATH_PREFIX ) )
         {
             if( managedRepository != null )
-            {   
+            {
                 File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
                 if( resourceFile.exists() )
-                {                    
+                {
                     mergedRepositoryContents.add( resourceFile );
-                }                    
+                }
             }
         }
     }
-    
+
     /**
      * Check if the current user is authorized to access any of the repos
-     *  
+     *
      * @param request
      * @param repositories
      * @param activePrincipal
      * @return
      */
-    private boolean isAllowedToContinue( DavServletRequest request, List<String> repositories, String activePrincipal )    
+    private boolean isAllowedToContinue( DavServletRequest request, List<String> repositories, String activePrincipal )
     {
         boolean allow = false;
-        
-              
+
+
         // if securitySession != null, it means that the user was prompted for authentication
         if( httpAuth.getSecuritySession() != null )
         {
@@ -790,13 +802,13 @@ public class ArchivaDavResourceFactory
                     }
                 }
                 catch( DavException e )
-                {                    
+                {
                     continue;
                 }
-            }  
+            }
         }
         else
-        {   
+        {
             for( String repository : repositories )
             {
                 try
@@ -808,13 +820,13 @@ public class ArchivaDavResourceFactory
                     }
                 }
                 catch ( UnauthorizedException e )
-                {                    
+                {
                     continue;
                 }
-            }  
+            }
         }
-        
+
         return allow;
     }
-        
+
 }
