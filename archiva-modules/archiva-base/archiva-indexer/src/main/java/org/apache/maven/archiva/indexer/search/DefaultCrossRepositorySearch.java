@@ -199,7 +199,7 @@ public class DefaultCrossRepositorySearch
             if ( offset < hitCount )
             {
                 // only process if the offset is within the hit count.
-                for ( int i = 0; i <= fetchCount; i++ )
+                for ( int i = 0; i < fetchCount; i++ )
                 {
                     // Stop fetching if we are past the total # of available hits.
                     if ( offset + i >= hitCount )

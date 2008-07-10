@@ -49,8 +49,8 @@
 
       <%-- search was made from the indices --%>
       <c:when test="${databaseResults == null}">
-        <c:set var="hitsNum">${fn:length(results.hits) + (currentPage * 31)}</c:set>
-        <p>Hits: ${hitsNum - 30} to ${hitsNum} of ${results.totalHits}</p>
+        <c:set var="hitsNum">${fn:length(results.hits) + (currentPage * results.limits.pageSize)}</c:set>
+        <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
         
         <c:choose>
           <c:when test="${empty results.hits}">

@@ -64,7 +64,7 @@ public class FileContentRecord
 
     public String getPrimaryKey()
     {
-        return filename;
+        return repositoryId + ":" + filename;
     }
 
     public int hashCode()

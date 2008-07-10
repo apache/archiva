@@ -34,8 +34,11 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
-import org.apache.maven.archiva.security.*;
+import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
+import org.apache.maven.archiva.security.PrincipalNotFoundException;
+import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
@@ -45,7 +48,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
  */
 public class SearchAction
     extends PlexusActionSupport
-{   
+{           
     /**
      * Query string.
      */
@@ -101,7 +104,7 @@ public class SearchAction
         }
 
         results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
-
+        
         if ( results.isEmpty() )
         {
             addActionError( "No results found" );
@@ -110,6 +113,10 @@ public class SearchAction
         
         totalPages = results.getTotalHits() / limits.getPageSize();
         
+        if( (results.getTotalHits() % limits.getPageSize()) != 0 )
+        {
+            totalPages = totalPages + 1;
+        }
         // TODO: filter / combine the artifacts by version? (is that even possible with non-artifact hits?)
 
         /* I don't think that we should, as I expect us to utilize the 'score' system in lucene in 
