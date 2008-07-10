@@ -36,10 +36,13 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +63,8 @@ public class IndexContentConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( IndexContentConsumer.class );
+    
     private static final String READ_CONTENT = "read_content";
 
     private static final String INDEX_ERROR = "indexing_error";
@@ -147,6 +152,12 @@ public class IndexContentConsumer
     public void processFile( String path )
         throws ConsumerException
     {
+        if ( path.endsWith( "/" + MetadataTools.MAVEN_METADATA ) )
+        {
+            log.debug( "File is a metadata file. Not indexing." );
+            return;
+        }
+        
         FileContentRecord record = new FileContentRecord();
         try
         {
