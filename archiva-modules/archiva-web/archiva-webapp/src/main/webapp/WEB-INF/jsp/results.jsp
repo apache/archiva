@@ -124,7 +124,7 @@
                   </h3>
                   <p>
                     <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                         version="${record.version}" versions="${record.versions}"/>
+                                         version="${record.version}" versions="${record.versions}" repositoryId="${record.repositoryId}"/>
                   </p>
                 </c:when>
                 <c:otherwise>

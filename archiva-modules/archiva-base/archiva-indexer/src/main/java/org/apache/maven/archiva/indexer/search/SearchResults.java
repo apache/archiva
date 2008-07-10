@@ -126,6 +126,7 @@ public class SearchResults
             // Only need to worry about this hit if it is truely new.
             hit = new SearchResultHit();
 
+            hit.setRepositoryId( filecontent.getRepositoryId() );
             hit.setUrl( filecontent.getRepositoryId() + "/" + filecontent.getFilename() );
             hit.setContext( null ); // TODO: handle context + highlight later.
             
