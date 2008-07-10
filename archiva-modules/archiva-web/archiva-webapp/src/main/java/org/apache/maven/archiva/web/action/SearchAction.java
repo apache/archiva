@@ -45,7 +45,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
  */
 public class SearchAction
     extends PlexusActionSupport
-{
+{   
     /**
      * Query string.
      */
@@ -76,6 +76,10 @@ public class SearchAction
     private static final String ARTIFACT = "artifact";
 
     private List databaseResults;
+    
+    private int currentPage = 0;
+    
+    private int totalPages;
 
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -87,8 +91,8 @@ public class SearchAction
          */
 
         assert q != null && q.length() != 0;
-
-        SearchResultLimits limits = new SearchResultLimits( 0 );
+        
+        SearchResultLimits limits = new SearchResultLimits( currentPage );
         
         List<String> selectedRepos = getObservableRepos();
         if ( CollectionUtils.isEmpty( selectedRepos ) )
@@ -103,7 +107,9 @@ public class SearchAction
             addActionError( "No results found" );
             return INPUT;
         }
-
+        
+        totalPages = results.getTotalHits() / limits.getPageSize();
+        
         // TODO: filter / combine the artifacts by version? (is that even possible with non-artifact hits?)
 
         /* I don't think that we should, as I expect us to utilize the 'score' system in lucene in 
@@ -196,5 +202,25 @@ public class SearchAction
     public List getDatabaseResults()
     {
         return databaseResults;
+    }
+    
+    public void setCurrentPage( int page )
+    {
+        this.currentPage = page;
+    }
+    
+    public int getCurrentPage()
+    {
+        return currentPage;
+    }
+
+    public int getTotalPages()
+    {
+        return totalPages;
+    }
+
+    public void setTotalPages( int totalPages )
+    {
+        this.totalPages = totalPages;
     }
 }
