@@ -50,8 +50,14 @@
       <%-- search was made from the indices --%>
       <c:when test="${databaseResults == null}">
         <c:set var="hitsNum">${fn:length(results.hits) + (currentPage * results.limits.pageSize)}</c:set>
-        <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
-        
+        <c:choose>
+          <c:when test="${results.totalHits > results.limits.pageSize}">
+            <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
+          </c:when>
+          <c:otherwise>
+            <p>Hits: 1 to ${hitsNum} of ${results.totalHits}</p>
+          </c:otherwise>        
+        </c:choose>
         <c:choose>
           <c:when test="${empty results.hits}">
             <p>No results</p>
@@ -84,10 +90,34 @@
 	            </a>      
 	          </c:otherwise>
             </c:choose>
-                         
-            <c:forEach var="i" begin="0" end="${totalPages - 1}">
-			  <c:choose>			    			    
-				<c:when test="${ (i != currentPage) }">
+			
+			<%-- Google-style pagination --%>
+			<c:choose>
+			  <c:when test="${totalPages > 11}">
+			    <c:choose>
+			      <c:when test="${(currentPage - 5) < 0}">
+			        <c:set var="beginVal">0</c:set>
+			        <c:set var="endVal">10</c:set> 
+			      </c:when>			        
+			      <c:when test="${(currentPage + 5) > (totalPages - 1)}">
+			        <c:set var="beginVal">${(totalPages -1) - 10}</c:set>
+			        <c:set var="endVal">${totalPages - 1}</c:set>
+			      </c:when>
+			      <c:otherwise>
+			        <c:set var="beginVal">${currentPage - 5}</c:set>
+			        <c:set var="endVal">${currentPage + 5}</c:set>
+			      </c:otherwise>
+			    </c:choose>  
+			  </c:when>
+			  <c:otherwise>
+			    <c:set var="beginVal">0</c:set>
+			    <c:set var="endVal">${totalPages - 1}</c:set> 
+			  </c:otherwise>
+			</c:choose>
+						
+			<c:forEach var="i" begin="${beginVal}" end="${endVal}">
+              <c:choose>                   			    
+				<c:when test="${i != currentPage}">
 				   <c:set var="specificPageUrl">
 		              <ww:url action="quickSearch" namespace="/">
 		                <ww:param name="q" value="%{'${q}'}"/>
@@ -98,12 +128,12 @@
 				</c:when>
 				<c:otherwise>		
 					<b>${i + 1}</b>   
-				</c:otherwise>
-			  </c:choose> 
+				</c:otherwise>				  			    
+              </c:choose> 
 			</c:forEach>
-			
+				
 			<c:choose>
-			  <c:when test="${ currentPage eq ( totalPages - 1 ) }">
+			  <c:when test="${currentPage == (totalPages - 1)}">
 			    <img src="${imgNextPageDisabledUrl}"/>
               </c:when>
               <c:otherwise>
