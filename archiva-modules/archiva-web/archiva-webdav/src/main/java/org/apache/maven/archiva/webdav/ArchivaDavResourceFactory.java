@@ -43,6 +43,7 @@ import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -59,6 +60,9 @@ import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataMerge;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
@@ -69,6 +73,10 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
+import org.codehaus.plexus.evaluator.EvaluatorException;
+import org.codehaus.plexus.evaluator.ExpressionEvaluator;
+import org.codehaus.plexus.evaluator.sources.SystemPropertyExpressionSource;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
@@ -90,7 +98,7 @@ import com.opensymphony.xwork.ActionContext;
  */
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
-{
+{   
     private static final String PROXIED_SUFFIX = " (proxied)";
 
     private static final String HTTP_PUT_METHOD = "PUT";
@@ -142,7 +150,6 @@ public class ArchivaDavResourceFactory
      */
     private HttpAuthenticator httpAuth;
 
-
     /**
      * Lock Manager - use simple implementation from JackRabbit
      */
@@ -150,7 +157,9 @@ public class ArchivaDavResourceFactory
 
     /** @plexus.requirement */
     private RepositoryContentConsumers consumers;
-
+        
+    private String defaultMergedMetadataLocation = "${appserver.base}/data/maven-metadata.xml";
+    
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
@@ -192,8 +201,9 @@ public class ArchivaDavResourceFactory
         }
 
         List<DavResource> availableResources = new ArrayList<DavResource>();
+        List<String> resourcesInAbsolutePath = new ArrayList<String>();
         DavException e = null;
-
+        
         for ( String repositoryId : repositories )
         {
             ManagedRepositoryContent managedRepository = null;
@@ -207,8 +217,9 @@ public class ArchivaDavResourceFactory
                 throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Invalid managed repository <" +
                     repositoryId + ">" );
             }
-
+            
             DavResource resource = null;
+            
             if ( !locator.getResourcePath().startsWith( ArchivaDavResource.HIDDEN_PATH_PREFIX ) )
             {
                 if ( managedRepository != null )
@@ -242,8 +253,11 @@ public class ArchivaDavResourceFactory
                         e = new DavException( HttpServletResponse.SC_NOT_FOUND, "Resource does not exist" );
                     }
                     else
-                    {
+                    {   
                         availableResources.add( resource );
+
+                        String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
+                        resourcesInAbsolutePath.add( managedRepository.getRepoRoot() + logicalResource );
                     }
                 }
                 else
@@ -251,22 +265,63 @@ public class ArchivaDavResourceFactory
                     e = new DavException( HttpServletResponse.SC_NOT_FOUND, "Repository does not exist" );
                 }
             }
-        }
-
-        if (availableResources.isEmpty())
+        }        
+        
+        if ( availableResources.isEmpty() )
         {
             throw e;
         }
 
-        if ( request.getRequestURI().endsWith( "metadata.xml" ) )
-        {
+        // merge metadata only when requested via the repo group
+        if ( request.getRequestURI().endsWith( "metadata.xml" ) && repoGroupConfig != null )
+        {   
             // TODO MRM-872 : must merge all available metadatas
-            // use RepositoryMetadataMerge for the merging of the versions 
-            // 
-            // Deng: I'll continue this tomorrow, everything is getting blurry now
+            ArchivaRepositoryMetadata mergedMetadata = new ArchivaRepositoryMetadata();
+            for ( String resourceAbsPath : resourcesInAbsolutePath )    
+            {   
+                try
+                {   
+                    File metadataFile = new File( resourceAbsPath );
+                    ArchivaRepositoryMetadata repoMetadata = RepositoryMetadataReader.read( metadataFile );
+                    mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
+                }
+                catch ( RepositoryMetadataException r )
+                {
+                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                            "Error occurred while reading metadata file." );
+                }                
+            }        
+            
+            try
+            {                
+                if( StringUtils.contains( defaultMergedMetadataLocation, "${" ) )
+                {
+                    defaultMergedMetadataLocation =
+                        evaluateExpressions( defaultMergedMetadataLocation );
+                }                
+                File resourceFile = writeMergedMetadataToFile( mergedMetadata, defaultMergedMetadataLocation );   
+                
+                LogicalResource logicalResource =
+                    new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
+                                
+                ArchivaDavResource metadataResource =
+                    new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), null,
+                                            request.getRemoteAddr(), request.getDavSession(), archivaLocator, this,
+                                            mimeTypes, auditListeners, consumers );
+                availableResources.add( 0, metadataResource );
+            }
+            catch ( EvaluatorException ee )
+            {             
+                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ee.getMessage() );
+            }
+            catch ( RepositoryMetadataException r )
+            {                
+                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                        "Error occurred while writing metadata file." );
+            }
         }
-
-        DavResource resource = availableResources.get( 0 );
+        
+        DavResource resource = availableResources.get( 0 );               
         setHeaders(response, locator, resource );
 
         // compatibility with MRM-440 to ensure browsing the repository works ok
@@ -832,4 +887,32 @@ public class ArchivaDavResourceFactory
         return allow;
     }
 
+    private File writeMergedMetadataToFile( ArchivaRepositoryMetadata mergedMetadata, String outputFilename )
+        throws EvaluatorException, RepositoryMetadataException
+    {   
+        File outputFile = new File( outputFilename );
+        outputFile.getParentFile().mkdirs();
+        RepositoryMetadataWriter.write( mergedMetadata, outputFile );
+        
+        return outputFile;
+    }
+    
+    private String evaluateExpressions( String outputFilename )
+        throws EvaluatorException
+    {
+        ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
+        expressionEvaluator.addExpressionSource( new SystemPropertyExpressionSource() );
+     
+        return expressionEvaluator.expand( outputFilename );
+    }
+
+    public String getDefaultMergedMetadataLocation()
+    {
+        return defaultMergedMetadataLocation;
+    }
+
+    public void setDefaultMergedMetadataLocation( String defaultMergedMetadataLocation )
+    {
+        this.defaultMergedMetadataLocation = defaultMergedMetadataLocation;
+    }    
 }

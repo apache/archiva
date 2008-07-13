@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.webdav.DavMethods;
@@ -104,6 +105,7 @@ public class RepositoryServlet
             DavMethods.isDeltaVMethod( webdavRequest ) &&
                 !( DavMethods.DAV_VERSION_CONTROL == methodCode || DavMethods.DAV_REPORT == methodCode );
         WebdavResponse webdavResponse = new WebdavResponseImpl( response, noCache );
+        DavResource resource = null;
         
         try
         {   
@@ -114,7 +116,7 @@ public class RepositoryServlet
             }
 
             // check matching if=header for lock-token relevant operations
-            DavResource resource =
+            resource =
                 getResourceFactory().createResource( webdavRequest.getRequestLocator(), webdavRequest, webdavResponse );
             
             if ( !isPreconditionValid( webdavRequest, resource ) )
@@ -156,6 +158,11 @@ public class RepositoryServlet
         }
         finally
         {
+            if( resource != null && resource.getResourcePath().endsWith( "metadata.xml" ) );
+            {
+                 String tmpFile = ( (ArchivaDavResourceFactory) getResourceFactory() ).getDefaultMergedMetadataLocation();
+                 FileUtils.deleteQuietly( new File( tmpFile ) );
+            }
             getDavSessionProvider().releaseSession( webdavRequest );
         }
     }
