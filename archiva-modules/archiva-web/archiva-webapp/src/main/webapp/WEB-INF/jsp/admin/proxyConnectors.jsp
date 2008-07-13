@@ -73,6 +73,8 @@
     <p class="name">${repoMap[repository.key].name}</p>
   </div>
 
+  <c:set var="numberOfRepos" value="${fn:length(repository.value)}" />
+
   <c:forEach items="${repository.value}" var="connector" varStatus="pc">
   
   <c:choose>
@@ -103,12 +105,16 @@
           <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
           <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
         </ww:url>
-        <ww:a href="%{sortUpProxyConnectorUrl}" cssClass="up" title="Move Proxy Connector Up">
-          <img src="${iconUpUrl}"/>
-        </ww:a>
-        <ww:a href="%{sortDownProxyConnectorUrl}" cssClass="down" title="Move Proxy Connector Down">
-          <img src="${iconDownUrl}"/>
-        </ww:a>
+        <c:if test="${pc.count > 1}">
+          <ww:a href="%{sortUpProxyConnectorUrl}" cssClass="up" title="Move Proxy Connector Up">
+            <img src="${iconUpUrl}"/>
+          </ww:a>
+        </c:if>
+        <c:if test="${pc.count < numberOfRepos}">
+          <ww:a href="%{sortDownProxyConnectorUrl}" cssClass="down" title="Move Proxy Connector Down">
+            <img src="${iconDownUrl}"/>
+          </ww:a>
+        </c:if>
         <ww:a href="%{editProxyConnectorUrl}" cssClass="edit" title="Edit Proxy Connector">
           <img src="${iconEditUrl}"/>
         </ww:a>
