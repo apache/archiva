@@ -175,8 +175,6 @@ public class ArchivaDavResourceFactory
      */
     private Digester digestMd5;
         
-    private static final String mergedMetadataFilename = "/merged-maven-metadata.xml";
-        
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
@@ -303,9 +301,9 @@ public class ArchivaDavResourceFactory
                 artifactId = StringUtils.substringAfterLast( artifactId, "/" );
                 
                 ArchivaDavResource res = ( ArchivaDavResource ) availableResources.get( 0 );
-                String filePath = StringUtils.substringBeforeLast( res.getLocalResource().getAbsolutePath().replace( '\\', '/' ), "/" );
-                filePath = filePath + mergedMetadataFilename;
-                   
+                String filePath = StringUtils.substringBeforeLast( res.getLocalResource().getAbsolutePath().replace( '\\', '/' ), "/" );                                
+                filePath = filePath + "/maven-metadata-" + repoGroupConfig.getId() + ".xml";
+                
                 // for MRM-872 handle checksums of the merged metadata files 
                 if( repositoryRequest.isSupportFile( requestedResource ) )
                 {

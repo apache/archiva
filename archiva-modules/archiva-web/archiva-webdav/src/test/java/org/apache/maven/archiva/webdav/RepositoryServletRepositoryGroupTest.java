@@ -276,7 +276,7 @@ public class RepositoryServletRepositoryGroupTest
         response = sc.getResource( request );
         
         assertResponseOK( response );
-        assertEquals( "d2321a573e0488bca571b624f891104009408dd8  merged-maven-metadata.xml", response.getText() );
+        assertEquals( "d2321a573e0488bca571b624f891104009408dd8  maven-metadata-group-with-valid-repos.xml", response.getText() );
         
         // request the md5 checksum of the metadata
         request =
@@ -285,7 +285,7 @@ public class RepositoryServletRepositoryGroupTest
         response = sc.getResource( request );
                 
         assertResponseOK( response );
-        assertEquals( "79d271fbe8bd1d17b23273937750d407  merged-maven-metadata.xml", response.getText().trim() );
+        assertEquals( "79d271fbe8bd1d17b23273937750d407  maven-metadata-group-with-valid-repos.xml", response.getText().trim() );
     }
         
     protected void assertResponseMethodNotAllowed( WebResponse response )
