@@ -252,13 +252,40 @@ public class RepositoryServletRepositoryGroupTest
         File returnedMetadata = new File( getBasedir(), "/target/test-classes/retrievedMetadataFile.xml");
         FileUtils.writeStringToFile( returnedMetadata, response.getText() );
         ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( returnedMetadata );        
-                   
+        
         assertResponseOK( response );
         assertEquals( "Versions list size", 4, metadata.getAvailableVersions().size() );
         assertTrue( "Versions list contains version 1.0", metadata.getAvailableVersions().contains( "1.0" ) );
         assertTrue( "Versions list contains version 1.5", metadata.getAvailableVersions().contains( "1.5" ) );
         assertTrue( "Versions list contains version 2.0", metadata.getAvailableVersions().contains( "2.0" ) );
         assertTrue( "Versions list contains version 2.5", metadata.getAvailableVersions().contains( "2.5" ) );
+        
+        //check if the checksum files were generated
+        File checksumFileSha1 = new File( repoRootFirst, resourceName + ".sha1" );
+        checksumFileSha1.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( checksumFileSha1, "3290853214d3687134", null );
+        
+        File checksumFileMd5 = new File( repoRootFirst, resourceName + ".md5" );
+        checksumFileMd5.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( checksumFileMd5, "98745897234eda12836423", null );
+        
+        // request the sha1 checksum of the metadata
+        request =
+            new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/" +
+                "dummy-merged-metadata-resource/maven-metadata.xml.sha1" );
+        response = sc.getResource( request );
+        
+        assertResponseOK( response );
+        assertEquals( "d2321a573e0488bca571b624f891104009408dd8  merged-maven-metadata.xml", response.getText() );
+        
+        // request the md5 checksum of the metadata
+        request =
+            new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/" +
+                "dummy-merged-metadata-resource/maven-metadata.xml.md5" );
+        response = sc.getResource( request );
+                
+        assertResponseOK( response );
+        assertEquals( "79d271fbe8bd1d17b23273937750d407  merged-maven-metadata.xml", response.getText().trim() );
     }
         
     protected void assertResponseMethodNotAllowed( WebResponse response )

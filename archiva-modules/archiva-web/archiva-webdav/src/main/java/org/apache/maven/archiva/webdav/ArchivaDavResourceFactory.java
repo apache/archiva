@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
@@ -73,10 +74,9 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
-import org.codehaus.plexus.evaluator.EvaluatorException;
-import org.codehaus.plexus.evaluator.ExpressionEvaluator;
-import org.codehaus.plexus.evaluator.sources.SystemPropertyExpressionSource;
+import org.codehaus.plexus.digest.ChecksumFile;
+import org.codehaus.plexus.digest.Digester;
+import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
@@ -155,11 +155,28 @@ public class ArchivaDavResourceFactory
      */
     private final LockManager lockManager = new SimpleLockManager();
 
-    /** @plexus.requirement */
+    /** 
+     * @plexus.requirement 
+     */
     private RepositoryContentConsumers consumers;
-        
-    private String defaultMergedMetadataLocation = "${appserver.base}/data/maven-metadata.xml";
     
+    /**
+     * @plexus.requirement
+     */
+    private ChecksumFile checksum;
+        
+    /**
+     * @plexus.requirement role-hint="sha1"
+     */
+    private Digester digestSha1;
+
+    /**
+     * @plexus.requirement role-hint="md5";
+     */
+    private Digester digestMd5;
+        
+    private static final String mergedMetadataFilename = "/merged-maven-metadata.xml";
+        
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
@@ -242,7 +259,7 @@ public class ArchivaDavResourceFactory
                             }
                         }
                     }
-                    catch ( DavException de )
+                    catch ( DavException de ) 
                     {
                         e = de;
                         continue;
@@ -271,56 +288,91 @@ public class ArchivaDavResourceFactory
         {
             throw e;
         }
-
-        // merge metadata only when requested via the repo group
-        if ( request.getRequestURI().endsWith( "metadata.xml" ) && repoGroupConfig != null )
+        
+        String requestedResource = request.getRequestURI();
+        
+        // MRM-872 : merge all available metadata
+        // merge metadata only when requested via the repo group        
+        if ( ( repositoryRequest.isMetadata( requestedResource ) || ( requestedResource.endsWith( "metadata.xml.sha1" ) || requestedResource.endsWith( "metadata.xml.md5" ) ) ) &&
+            repoGroupConfig != null )
         {   
-            // TODO MRM-872 : must merge all available metadatas
-            ArchivaRepositoryMetadata mergedMetadata = new ArchivaRepositoryMetadata();
-            for ( String resourceAbsPath : resourcesInAbsolutePath )    
-            {   
-                try
-                {   
-                    File metadataFile = new File( resourceAbsPath );
-                    ArchivaRepositoryMetadata repoMetadata = RepositoryMetadataReader.read( metadataFile );
-                    mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
-                }
-                catch ( RepositoryMetadataException r )
-                {
-                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                            "Error occurred while reading metadata file." );
-                }                
-            }        
-            
-            try
-            {                
-                if( StringUtils.contains( defaultMergedMetadataLocation, "${" ) )
-                {
-                    defaultMergedMetadataLocation =
-                        evaluateExpressions( defaultMergedMetadataLocation );
-                }                
-                File resourceFile = writeMergedMetadataToFile( mergedMetadata, defaultMergedMetadataLocation );   
+            // this should only be at the project level not version level!
+            if( isProjectReference( requestedResource ) )
+            {
+                String artifactId = StringUtils.substringBeforeLast( requestedResource.replace( '\\', '/' ), "/" );
+                artifactId = StringUtils.substringAfterLast( artifactId, "/" );
                 
-                LogicalResource logicalResource =
-                    new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
-                                
-                ArchivaDavResource metadataResource =
-                    new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), null,
-                                            request.getRemoteAddr(), request.getDavSession(), archivaLocator, this,
-                                            mimeTypes, auditListeners, consumers );
-                availableResources.add( 0, metadataResource );
-            }
-            catch ( EvaluatorException ee )
-            {             
-                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ee.getMessage() );
-            }
-            catch ( RepositoryMetadataException r )
-            {                
-                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                        "Error occurred while writing metadata file." );
+                ArchivaDavResource res = ( ArchivaDavResource ) availableResources.get( 0 );
+                String filePath = StringUtils.substringBeforeLast( res.getLocalResource().getAbsolutePath().replace( '\\', '/' ), "/" );
+                filePath = filePath + mergedMetadataFilename;
+                   
+                // for MRM-872 handle checksums of the merged metadata files 
+                if( repositoryRequest.isSupportFile( requestedResource ) )
+                {
+                    File metadataChecksum = new File( filePath + "." 
+                              + StringUtils.substringAfterLast( requestedResource, "." ) );                    
+                    if( metadataChecksum.exists() )
+                    {
+                        LogicalResource logicalResource =
+                            new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
+                                        
+                        ArchivaDavResource metadataChecksumResource =
+                            new ArchivaDavResource( metadataChecksum.getAbsolutePath(), logicalResource.getPath(), null,
+                                                    request.getRemoteAddr(), request.getDavSession(), archivaLocator, this,
+                                                    mimeTypes, auditListeners, consumers );
+                        availableResources.add( 0, metadataChecksumResource );
+                    }
+                }
+                else
+                {   // merge the metadata of all repos under group
+                    ArchivaRepositoryMetadata mergedMetadata = new ArchivaRepositoryMetadata();
+                    for ( String resourceAbsPath : resourcesInAbsolutePath )    
+                    {   
+                        try
+                        {   
+                            File metadataFile = new File( resourceAbsPath );
+                            ArchivaRepositoryMetadata repoMetadata = RepositoryMetadataReader.read( metadataFile );
+                            mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
+                        }
+                        catch ( RepositoryMetadataException r )
+                        {
+                            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                                    "Error occurred while reading metadata file." );
+                        }                
+                    }        
+                    
+                    try
+                    {   
+                        File resourceFile = writeMergedMetadataToFile( mergedMetadata, filePath );   
+                        
+                        LogicalResource logicalResource =
+                            new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
+                                        
+                        ArchivaDavResource metadataResource =
+                            new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), null,
+                                                    request.getRemoteAddr(), request.getDavSession(), archivaLocator, this,
+                                                    mimeTypes, auditListeners, consumers );
+                        availableResources.add( 0, metadataResource );
+                    }
+                    catch ( RepositoryMetadataException r )
+                    {                
+                        throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                                "Error occurred while writing metadata file." );
+                    }
+                    catch ( IOException ie )
+                    {
+                        throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            "Error occurred while generating checksum files." );
+                    }
+                    catch ( DigesterException de )
+                    {
+                        throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            "Error occurred while generating checksum files." );
+                    }
+                }
             }
         }
-        
+                
         DavResource resource = availableResources.get( 0 );               
         setHeaders(response, locator, resource );
 
@@ -888,31 +940,48 @@ public class ArchivaDavResourceFactory
     }
 
     private File writeMergedMetadataToFile( ArchivaRepositoryMetadata mergedMetadata, String outputFilename )
-        throws EvaluatorException, RepositoryMetadataException
-    {   
-        File outputFile = new File( outputFilename );
+        throws RepositoryMetadataException, DigesterException, IOException
+    {  
+        File outputFile = new File( outputFilename );        
+        if( outputFile.exists() )
+        {
+            FileUtils.deleteQuietly( outputFile );
+        }
+        
         outputFile.getParentFile().mkdirs();
         RepositoryMetadataWriter.write( mergedMetadata, outputFile );
+        
+        createChecksumFile( outputFilename, digestSha1 );
+        createChecksumFile( outputFilename, digestMd5 );
         
         return outputFile;
     }
     
-    private String evaluateExpressions( String outputFilename )
-        throws EvaluatorException
-    {
-        ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
-        expressionEvaluator.addExpressionSource( new SystemPropertyExpressionSource() );
-     
-        return expressionEvaluator.expand( outputFilename );
+    private void createChecksumFile( String path, Digester digester )
+        throws DigesterException, IOException
+    {   
+        File checksumFile = new File( path + digester.getFilenameExtension() );        
+        if ( !checksumFile.exists() )
+        {
+            FileUtils.deleteQuietly( checksumFile );
+            checksum.createChecksum( new File( path ), digester );            
+        }
+        else if ( !checksumFile.isFile() )
+        {
+            log.error( "Checksum file is not a file." );
+        }
     }
-
-    public String getDefaultMergedMetadataLocation()
-    {
-        return defaultMergedMetadataLocation;
+    
+    private boolean isProjectReference( String requestedResource )
+    {  
+       try
+       {           
+           VersionedReference versionRef = metadataTools.toVersionedReference( requestedResource );           
+           return false;
+       }
+       catch ( RepositoryMetadataException re )
+       {
+           return true;
+       }
     }
-
-    public void setDefaultMergedMetadataLocation( String defaultMergedMetadataLocation )
-    {
-        this.defaultMergedMetadataLocation = defaultMergedMetadataLocation;
-    }    
 }

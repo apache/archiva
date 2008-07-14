@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.webdav.DavMethods;
@@ -45,7 +46,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
@@ -157,12 +157,7 @@ public class RepositoryServlet
             }
         }
         finally
-        {
-            if( resource != null && resource.getResourcePath().endsWith( "metadata.xml" ) );
-            {
-                 String tmpFile = ( (ArchivaDavResourceFactory) getResourceFactory() ).getDefaultMergedMetadataLocation();
-                 FileUtils.deleteQuietly( new File( tmpFile ) );
-            }
+        {  
             getDavSessionProvider().releaseSession( webdavRequest );
         }
     }
