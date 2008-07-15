@@ -123,6 +123,8 @@ public class DefaultCrossRepositorySearch
     public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
     {
         List<RepositoryContentIndex> indexes = getFileContentIndexes( principal, selectedRepos );
+        List<RepositoryContentIndex> bytecodeIndices = getBytecodeIndexes( principal, selectedRepos );        
+        indexes.addAll( bytecodeIndices );
 
         try
         {
@@ -131,11 +133,6 @@ public class DefaultCrossRepositorySearch
             SearchResults results = searchAll( query, limits, indexes );
             results.getRepositories().addAll( this.localIndexedRepositories );
             
-            if( results.getTotalHits() == 0 )
-            {
-                results = searchForBytecode( principal, selectedRepos, term, limits );             
-            }
-
             return results;
         }
         catch ( ParseException e )
