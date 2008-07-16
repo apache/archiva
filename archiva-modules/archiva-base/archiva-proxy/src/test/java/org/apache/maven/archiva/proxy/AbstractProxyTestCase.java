@@ -88,7 +88,7 @@ public abstract class AbstractProxyTestCase
     protected static final String REPOPATH_LEGACY_MANAGED = "src/test/repositories/legacy-managed";
 
     protected static final String REPOPATH_LEGACY_MANAGED_TARGET = "target/test-repository/legacy-managed";
-    
+
     protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher() {
 
         public boolean matches(Object[] expected, Object[] actual) {
@@ -103,10 +103,10 @@ public abstract class AbstractProxyTestCase
             return ArrayUtils.toString(arguments);
         }
     };
-    
+
     protected static final ArgumentsMatcher customWagonGetMatcher = new ArgumentsMatcher() {
 
-            public boolean matches(Object[] expected, Object[] actual) 
+            public boolean matches(Object[] expected, Object[] actual)
             {
                 if (expected.length == 2 && actual.length == 2)
                 {
@@ -114,23 +114,23 @@ public abstract class AbstractProxyTestCase
                     {
                         return true;
                     }
-                    
+
                     if (expected[0] == null)
                     {
                         return actual[0] == null;
                     }
-                    
+
                     if (actual[0] == null)
                     {
                         return expected[0] == null;
                     }
-                    
+
                     return expected[0].equals(actual[0]);
                 }
                 return false;
             }
 
-            public String toString(Object[] arguments) 
+            public String toString(Object[] arguments)
             {
                 return ArrayUtils.toString(arguments);
             }
@@ -540,6 +540,9 @@ public abstract class AbstractProxyTestCase
             FileUtils.deleteDirectory( destDir );
         }
 
+        // Make the destination dir.
+        destDir.mkdirs();
+
         // Test the source dir.
         if ( !sourceDir.exists() )
         {
@@ -554,9 +557,6 @@ public abstract class AbstractProxyTestCase
         {
             fail( "Unable to setup testable managed repository, source is not a directory: " + sourceDir );
         }
-
-        // Make the destination dir.
-        destDir.mkdirs();
 
         // Copy directory structure.
         copyDirectoryStructure( sourceDir, destDir );

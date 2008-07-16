@@ -49,6 +49,11 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency> 
+    <dependency>
+      <groupId>org.apache.bcel</groupId>
+      <artifactId>bcel</artifactId>
+      <version>5.2</version>
+    </dependency>   
   </dependencies>
 </project>

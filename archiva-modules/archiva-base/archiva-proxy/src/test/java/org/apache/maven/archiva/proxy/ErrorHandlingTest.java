@@ -551,7 +551,7 @@ public class ErrorHandlingTest
 
     private File createExpectedTempFile( File expectedFile )
     {
-        return new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ).getAbsoluteFile();
+        return new File( managedDefaultDir, expectedFile.getName() + ".tmp" ).getAbsoluteFile();
     }
 
     private void confirmSingleFailure( String path, String id )

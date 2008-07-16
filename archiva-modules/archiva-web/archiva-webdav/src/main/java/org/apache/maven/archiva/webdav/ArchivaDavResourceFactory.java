@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
@@ -43,6 +44,7 @@ import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -59,6 +61,9 @@ import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataMerge;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
@@ -69,6 +74,9 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.digest.ChecksumFile;
+import org.codehaus.plexus.digest.Digester;
+import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
@@ -90,11 +98,11 @@ import com.opensymphony.xwork.ActionContext;
  */
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
-{
+{   
     private static final String PROXIED_SUFFIX = " (proxied)";
 
     private static final String HTTP_PUT_METHOD = "PUT";
-    
+
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
     /**
@@ -131,7 +139,7 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-    
+
     /**
      * @plexus.requirement
      */
@@ -141,59 +149,76 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement role-hint="basic"
      */
     private HttpAuthenticator httpAuth;
-    
-    
+
     /**
      * Lock Manager - use simple implementation from JackRabbit
      */
     private final LockManager lockManager = new SimpleLockManager();
 
-    /** @plexus.requirement */
+    /** 
+     * @plexus.requirement 
+     */
     private RepositoryContentConsumers consumers;
     
+    /**
+     * @plexus.requirement
+     */
+    private ChecksumFile checksum;
+        
+    /**
+     * @plexus.requirement role-hint="sha1"
+     */
+    private Digester digestSha1;
+
+    /**
+     * @plexus.requirement role-hint="md5";
+     */
+    private Digester digestMd5;
+        
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
-    {   
+    {
         checkLocatorIsInstanceOfRepositoryLocator( locator );
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
-        
+
         RepositoryGroupConfiguration repoGroupConfig =
             archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( archivaLocator.getRepositoryId() );
         List<String> repositories = new ArrayList<String>();
 
         boolean isGet = WebdavMethodUtil.isReadMethod( request.getMethod() );
         boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
-                
+
         if ( repoGroupConfig != null )
-        {   
+        {
             if( WebdavMethodUtil.isWriteMethod( request.getMethod() ) )
             {
                 throw new DavException( HttpServletResponse.SC_METHOD_NOT_ALLOWED,
                                         "Write method not allowed for repository groups." );
             }
             repositories.addAll( repoGroupConfig.getRepositories() );
-            
+
             // handle browse requests for virtual repos
-            if ( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ).endsWith( "/" ) )                
-            {                    
-                return getResource( request, repositories, archivaLocator );                
-            }            
+            if ( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ).endsWith( "/" ) )
+            {
+                return getResource( request, repositories, archivaLocator );
+            }
         }
         else
         {
             repositories.add( archivaLocator.getRepositoryId() );
         }
-       
+
         //MRM-419 - Windows Webdav support. Should not 404 if there is no content.
         if (StringUtils.isEmpty(archivaLocator.getRepositoryId()))
         {
             throw new DavException(HttpServletResponse.SC_NO_CONTENT);
         }
 
-        DavResource resource = null;
+        List<DavResource> availableResources = new ArrayList<DavResource>();
+        List<String> resourcesInAbsolutePath = new ArrayList<String>();
         DavException e = null;
-
+        
         for ( String repositoryId : repositories )
         {
             ManagedRepositoryContent managedRepository = null;
@@ -207,7 +232,9 @@ public class ArchivaDavResourceFactory
                 throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Invalid managed repository <" +
                     repositoryId + ">" );
             }
-
+            
+            DavResource resource = null;
+            
             if ( !locator.getResourcePath().startsWith( ArchivaDavResource.HIDDEN_PATH_PREFIX ) )
             {
                 if ( managedRepository != null )
@@ -215,42 +242,37 @@ public class ArchivaDavResourceFactory
                     try
                     {
                         if( isAuthorized( request, repositoryId ) )
-                        {                        
+                        {
                             LogicalResource logicalResource =
                                 new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
-                                                
+
                             if ( isGet )
                             {
                                 resource = doGet( managedRepository, request, archivaLocator, logicalResource );
                             }
-        
+
                             if ( isPut )
                             {
                                 resource = doPut( managedRepository, request, archivaLocator, logicalResource );
                             }
                         }
                     }
-                    catch ( DavException de )
-                    {   
+                    catch ( DavException de ) 
+                    {
                         e = de;
                         continue;
                     }
-                                        
+
                     if( resource == null )
                     {
                         e = new DavException( HttpServletResponse.SC_NOT_FOUND, "Resource does not exist" );
                     }
                     else
-                    {
-                        setHeaders(response, locator, resource );
+                    {   
+                        availableResources.add( resource );
 
-                        // compatibility with MRM-440 to ensure browsing the repository works ok
-                        if ( resource.isCollection() && !request.getRequestURI().endsWith("/" ) )
-                        {
-                            throw new BrowserRedirectException( resource.getHref() );
-                        }
-                        resource.addLockManager(lockManager);
-                        return resource;
+                        String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
+                        resourcesInAbsolutePath.add( managedRepository.getRepoRoot() + logicalResource );
                     }
                 }
                 else
@@ -258,14 +280,112 @@ public class ArchivaDavResourceFactory
                     e = new DavException( HttpServletResponse.SC_NOT_FOUND, "Repository does not exist" );
                 }
             }
+        }        
+        
+        if ( availableResources.isEmpty() )
+        {
+            throw e;
         }
+        
+        String requestedResource = request.getRequestURI();
+        
+        // MRM-872 : merge all available metadata
+        // merge metadata only when requested via the repo group        
+        if ( ( repositoryRequest.isMetadata( requestedResource ) || ( requestedResource.endsWith( "metadata.xml.sha1" ) || requestedResource.endsWith( "metadata.xml.md5" ) ) ) &&
+            repoGroupConfig != null )
+        {   
+            // this should only be at the project level not version level!
+            if( isProjectReference( requestedResource ) )
+            {
+                String artifactId = StringUtils.substringBeforeLast( requestedResource.replace( '\\', '/' ), "/" );
+                artifactId = StringUtils.substringAfterLast( artifactId, "/" );
+                
+                ArchivaDavResource res = ( ArchivaDavResource ) availableResources.get( 0 );
+                String filePath = StringUtils.substringBeforeLast( res.getLocalResource().getAbsolutePath().replace( '\\', '/' ), "/" );                                
+                filePath = filePath + "/maven-metadata-" + repoGroupConfig.getId() + ".xml";
+                
+                // for MRM-872 handle checksums of the merged metadata files 
+                if( repositoryRequest.isSupportFile( requestedResource ) )
+                {
+                    File metadataChecksum = new File( filePath + "." 
+                              + StringUtils.substringAfterLast( requestedResource, "." ) );                    
+                    if( metadataChecksum.exists() )
+                    {
+                        LogicalResource logicalResource =
+                            new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
+                                        
+                        ArchivaDavResource metadataChecksumResource =
+                            new ArchivaDavResource( metadataChecksum.getAbsolutePath(), logicalResource.getPath(), null,
+                                                    request.getRemoteAddr(), request.getDavSession(), archivaLocator, this,
+                                                    mimeTypes, auditListeners, consumers );
+                        availableResources.add( 0, metadataChecksumResource );
+                    }
+                }
+                else
+                {   // merge the metadata of all repos under group
+                    ArchivaRepositoryMetadata mergedMetadata = new ArchivaRepositoryMetadata();
+                    for ( String resourceAbsPath : resourcesInAbsolutePath )    
+                    {   
+                        try
+                        {   
+                            File metadataFile = new File( resourceAbsPath );
+                            ArchivaRepositoryMetadata repoMetadata = RepositoryMetadataReader.read( metadataFile );
+                            mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
+                        }
+                        catch ( RepositoryMetadataException r )
+                        {
+                            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                                    "Error occurred while reading metadata file." );
+                        }                
+                    }        
+                    
+                    try
+                    {   
+                        File resourceFile = writeMergedMetadataToFile( mergedMetadata, filePath );   
+                        
+                        LogicalResource logicalResource =
+                            new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
+                                        
+                        ArchivaDavResource metadataResource =
+                            new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), null,
+                                                    request.getRemoteAddr(), request.getDavSession(), archivaLocator, this,
+                                                    mimeTypes, auditListeners, consumers );
+                        availableResources.add( 0, metadataResource );
+                    }
+                    catch ( RepositoryMetadataException r )
+                    {                
+                        throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                                "Error occurred while writing metadata file." );
+                    }
+                    catch ( IOException ie )
+                    {
+                        throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            "Error occurred while generating checksum files." );
+                    }
+                    catch ( DigesterException de )
+                    {
+                        throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            "Error occurred while generating checksum files." );
+                    }
+                }
+            }
+        }
+                
+        DavResource resource = availableResources.get( 0 );               
+        setHeaders(response, locator, resource );
 
-        throw e;
+        // compatibility with MRM-440 to ensure browsing the repository works ok
+        if ( resource.isCollection() && !request.getRequestURI().endsWith("/" ) )
+        {
+            throw new BrowserRedirectException( resource.getHref() );
+        }
+        resource.addLockManager(lockManager);
+        return resource;
     }
-    
+
     public DavResource createResource( final DavResourceLocator locator, final DavSession davSession )
         throws DavException
-    {        
+    {
         checkLocatorIsInstanceOfRepositoryLocator( locator );
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
 
@@ -568,7 +688,7 @@ public class ArchivaDavResourceFactory
 
         //We need to specify this so connecting wagons can work correctly
         response.addDateHeader("last-modified", resource.getModificationTime());
-        
+
         // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
     }
 
@@ -622,87 +742,87 @@ public class ArchivaDavResourceFactory
             this.path = path;
         }
     }
-    
+
     protected boolean isAuthorized( DavServletRequest request, String repositoryId )
         throws DavException
     {
         try
         {
-            AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );            
+            AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
             SecuritySession securitySession = httpAuth.getSecuritySession();
-                       
+
             return servletAuth.isAuthenticated( request, result ) &&
                 servletAuth.isAuthorized( request, securitySession, repositoryId,
                                           WebdavMethodUtil.isWriteMethod( request.getMethod() ) );
         }
         catch ( AuthenticationException e )
-        {            
+        {
             throw new UnauthorizedDavException( repositoryId, "You are not authenticated" );
         }
         catch ( MustChangePasswordException e )
-        {         
+        {
             throw new UnauthorizedDavException( repositoryId, "You must change your password." );
         }
         catch ( AccountLockedException e )
-        {            
+        {
             throw new UnauthorizedDavException( repositoryId, "User account is locked." );
         }
         catch ( AuthorizationException e )
-        {         
+        {
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                     "Fatal Authorization Subsystem Error." );
         }
         catch ( UnauthorizedException e )
-        {         
+        {
             throw new UnauthorizedDavException( repositoryId, e.getMessage() );
         }
     }
-    
+
     private DavResource getResource( DavServletRequest request, List<String> repositories, ArchivaDavResourceLocator locator )
         throws DavException
     {
-        List<File> mergedRepositoryContents = new ArrayList<File>();        
+        List<File> mergedRepositoryContents = new ArrayList<File>();
         LogicalResource logicalResource =
             new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
-        
-        // flow: 
+
+        // flow:
         // if the current user logged in has permission to any of the repositories, allow user to
         // browse the repo group but displaying only the repositories which the user has permission to access.
         // otherwise, prompt for authentication.
-        
+
         // put the current session in the session map which will be passed to ArchivaXworkUser
         Map<String, Object> sessionMap = new HashMap<String, Object>();
         if( request.getSession().getAttribute( SecuritySystemConstants.SECURITY_SESSION_KEY ) != null )
         {
-            sessionMap.put( SecuritySystemConstants.SECURITY_SESSION_KEY, 
+            sessionMap.put( SecuritySystemConstants.SECURITY_SESSION_KEY,
                             request.getSession().getAttribute( SecuritySystemConstants.SECURITY_SESSION_KEY ) );
         }
-        
-        String activePrincipal = ArchivaXworkUser.getActivePrincipal( sessionMap );        
+
+        String activePrincipal = ArchivaXworkUser.getActivePrincipal( sessionMap );
         boolean allow = isAllowedToContinue( request, repositories, activePrincipal );
-              
+
         if( allow )
-        {            
+        {
             for( String repository : repositories )
-            {    
+            {
                 // for prompted authentication
                 if( httpAuth.getSecuritySession() != null )
                 {
                     try
-                    {   
-                        if( isAuthorized( request, repository ) )                        
+                    {
+                        if( isAuthorized( request, repository ) )
                         {
                             getResource( locator, mergedRepositoryContents, logicalResource, repository );
                         }
-                    }                    
+                    }
                     catch ( DavException e )
-                    {                        
+                    {
                         continue;
                     }
                 }
                 else
                 {
-                    // for the current user logged in 
+                    // for the current user logged in
                     try
                     {
                         if( servletAuth.isAuthorizedToAccessVirtualRepository( activePrincipal, repository ) )
@@ -710,27 +830,27 @@ public class ArchivaDavResourceFactory
                             getResource( locator, mergedRepositoryContents, logicalResource, repository );
                         }
                     }
-                    catch ( UnauthorizedException e )                    
-                    {                        
+                    catch ( UnauthorizedException e )
+                    {
                         continue;
                     }
-                }                
+                }
             }
         }
         else
         {
             throw new UnauthorizedDavException( locator.getRepositoryId(), "User not authorized." );
         }
-        
+
         ArchivaVirtualDavResource resource =
             new ArchivaVirtualDavResource( mergedRepositoryContents, logicalResource.getPath(), mimeTypes, locator, this );
-       
+
         // compatibility with MRM-440 to ensure browsing the repository group works ok
         if ( resource.isCollection() && !request.getRequestURI().endsWith("/" ) )
         {
             throw new BrowserRedirectException( resource.getHref() );
         }
-        
+
         return resource;
     }
 
@@ -748,34 +868,34 @@ public class ArchivaDavResourceFactory
         {
             throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Invalid managed repository <" +
                 repository + ">" );
-        }                            
-        
+        }
+
         if ( !locator.getResourcePath().startsWith( ArchivaVirtualDavResource.HIDDEN_PATH_PREFIX ) )
         {
             if( managedRepository != null )
-            {   
+            {
                 File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
                 if( resourceFile.exists() )
-                {                    
+                {
                     mergedRepositoryContents.add( resourceFile );
-                }                    
+                }
             }
         }
     }
-    
+
     /**
      * Check if the current user is authorized to access any of the repos
-     *  
+     *
      * @param request
      * @param repositories
      * @param activePrincipal
      * @return
      */
-    private boolean isAllowedToContinue( DavServletRequest request, List<String> repositories, String activePrincipal )    
+    private boolean isAllowedToContinue( DavServletRequest request, List<String> repositories, String activePrincipal )
     {
         boolean allow = false;
-        
-              
+
+
         // if securitySession != null, it means that the user was prompted for authentication
         if( httpAuth.getSecuritySession() != null )
         {
@@ -790,13 +910,13 @@ public class ArchivaDavResourceFactory
                     }
                 }
                 catch( DavException e )
-                {                    
+                {
                     continue;
                 }
-            }  
+            }
         }
         else
-        {   
+        {
             for( String repository : repositories )
             {
                 try
@@ -808,13 +928,58 @@ public class ArchivaDavResourceFactory
                     }
                 }
                 catch ( UnauthorizedException e )
-                {                    
+                {
                     continue;
                 }
-            }  
+            }
         }
-        
+
         return allow;
     }
+
+    private File writeMergedMetadataToFile( ArchivaRepositoryMetadata mergedMetadata, String outputFilename )
+        throws RepositoryMetadataException, DigesterException, IOException
+    {  
+        File outputFile = new File( outputFilename );        
+        if( outputFile.exists() )
+        {
+            FileUtils.deleteQuietly( outputFile );
+        }
         
+        outputFile.getParentFile().mkdirs();
+        RepositoryMetadataWriter.write( mergedMetadata, outputFile );
+        
+        createChecksumFile( outputFilename, digestSha1 );
+        createChecksumFile( outputFilename, digestMd5 );
+        
+        return outputFile;
+    }
+    
+    private void createChecksumFile( String path, Digester digester )
+        throws DigesterException, IOException
+    {   
+        File checksumFile = new File( path + digester.getFilenameExtension() );        
+        if ( !checksumFile.exists() )
+        {
+            FileUtils.deleteQuietly( checksumFile );
+            checksum.createChecksum( new File( path ), digester );            
+        }
+        else if ( !checksumFile.isFile() )
+        {
+            log.error( "Checksum file is not a file." );
+        }
+    }
+    
+    private boolean isProjectReference( String requestedResource )
+    {  
+       try
+       {           
+           VersionedReference versionRef = metadataTools.toVersionedReference( requestedResource );           
+           return false;
+       }
+       catch ( RepositoryMetadataException re )
+       {
+           return true;
+       }
+    }
 }

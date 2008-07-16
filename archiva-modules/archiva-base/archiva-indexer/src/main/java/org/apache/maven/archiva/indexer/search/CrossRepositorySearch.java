@@ -40,6 +40,19 @@ public interface CrossRepositorySearch
     public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term, SearchResultLimits limits );
     
     /**
+     * Search for a specific term from the previous search results.
+     * 
+     * @param principal the user doing the search.
+     * @param selectedRepos the repositories to search from.
+     * @param term the term to search for.
+     * @param limits the limits to apply to the search results.
+     * @param previousSearchTerms the list of the previous search terms.
+     * @return the results
+     */
+    public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term,
+                                        SearchResultLimits limits, List<String> previousSearchTerms );
+    
+    /**
      * Search for the specific bytecode across all repositories.
      * 
      * @param term the term to search for.

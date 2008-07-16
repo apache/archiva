@@ -30,6 +30,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.PutMethodWebRequest;
@@ -176,7 +178,7 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = sc.getResponse( request );
         
         assertResponseNotFound( response );
-    }
+    } 
     
     /*
      * Test Case 3.a
@@ -212,10 +214,78 @@ public class RepositoryServletRepositoryGroupTest
         throws Exception
     {
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = sc.getResponse( request ); 
                 
         assertNotNull( "Should have received a response", response );
         assertEquals( "Should have been an 401 response code.", HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode() );
+    }
+    
+    // MRM-872
+    public void testGetMergedMetadata()
+        throws Exception
+    {   
+        // first metadata file        
+        String resourceName = "dummy/dummy-merged-metadata-resource/maven-metadata.xml";  
+        
+        File dummyInternalResourceFile = new File( repoRootFirst, resourceName );
+        dummyInternalResourceFile.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( dummyInternalResourceFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        		"<metadata>\n<groupId>dummy</groupId>\n<artifactId>dummy-merged-metadata-resource</artifactId>\n" +
+        		"<versioning>\n<latest>1.0</latest>\n<release>1.0</release>\n<versions>\n<version>1.0</version>\n" +
+        		"<version>2.5</version>\n</versions>\n<lastUpdated>20080708095554</lastUpdated>\n</versioning>\n</metadata>", null );
+        
+        //second metadata file
+        resourceName = "dummy/dummy-merged-metadata-resource/maven-metadata.xml";        
+        dummyInternalResourceFile = new File( repoRootLast, resourceName );
+        dummyInternalResourceFile.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( dummyInternalResourceFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<metadata><groupId>dummy</groupId><artifactId>dummy-merged-metadata-resource</artifactId>" +
+                "<versioning><latest>2.0</latest><release>2.0</release><versions><version>1.0</version>" +
+                "<version>1.5</version><version>2.0</version></versions><lastUpdated>20080709095554</lastUpdated>" +
+                "</versioning></metadata>", null );
+        
+        WebRequest request =
+            new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/" +
+                "dummy-merged-metadata-resource/maven-metadata.xml" );
+        WebResponse response = sc.getResource( request );              
+        
+        File returnedMetadata = new File( getBasedir(), "/target/test-classes/retrievedMetadataFile.xml");
+        FileUtils.writeStringToFile( returnedMetadata, response.getText() );
+        ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( returnedMetadata );        
+        
+        assertResponseOK( response );
+        assertEquals( "Versions list size", 4, metadata.getAvailableVersions().size() );
+        assertTrue( "Versions list contains version 1.0", metadata.getAvailableVersions().contains( "1.0" ) );
+        assertTrue( "Versions list contains version 1.5", metadata.getAvailableVersions().contains( "1.5" ) );
+        assertTrue( "Versions list contains version 2.0", metadata.getAvailableVersions().contains( "2.0" ) );
+        assertTrue( "Versions list contains version 2.5", metadata.getAvailableVersions().contains( "2.5" ) );
+        
+        //check if the checksum files were generated
+        File checksumFileSha1 = new File( repoRootFirst, resourceName + ".sha1" );
+        checksumFileSha1.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( checksumFileSha1, "3290853214d3687134", null );
+        
+        File checksumFileMd5 = new File( repoRootFirst, resourceName + ".md5" );
+        checksumFileMd5.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( checksumFileMd5, "98745897234eda12836423", null );
+        
+        // request the sha1 checksum of the metadata
+        request =
+            new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/" +
+                "dummy-merged-metadata-resource/maven-metadata.xml.sha1" );
+        response = sc.getResource( request );
+        
+        assertResponseOK( response );
+        assertEquals( "d2321a573e0488bca571b624f891104009408dd8  maven-metadata-group-with-valid-repos.xml", response.getText() );
+        
+        // request the md5 checksum of the metadata
+        request =
+            new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/" +
+                "dummy-merged-metadata-resource/maven-metadata.xml.md5" );
+        response = sc.getResource( request );
+                
+        assertResponseOK( response );
+        assertEquals( "79d271fbe8bd1d17b23273937750d407  maven-metadata-group-with-valid-repos.xml", response.getText().trim() );
     }
         
     protected void assertResponseMethodNotAllowed( WebResponse response )

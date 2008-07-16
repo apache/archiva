@@ -22,14 +22,34 @@ package org.apache.maven.archiva.consumers.lucene;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
+import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
+import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
 
+import com.sun.org.apache.bcel.internal.classfile.ClassParser;
+import com.sun.org.apache.bcel.internal.classfile.JavaClass;
+import com.sun.org.apache.bcel.internal.classfile.Method;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * IndexJavaPublicMethodsConsumer 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ *         <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer"
@@ -49,11 +69,40 @@ public class IndexJavaPublicMethodsConsumer
      * @plexus.configuration default-value="Index the java public methods for Full Text Search."
      */
     private String description;
+    
+    /**
+     * @plexus.requirement role-hint="lucene"
+     */
+    private RepositoryContentIndexFactory repoIndexFactory;
 
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repoFactory;
+    
+    private static final String CLASSES = "classes";
+    
+    private static final String METHODS = "methods";
+    
+    private List<String> includes = new ArrayList<String>();
+
+    public IndexJavaPublicMethodsConsumer()
+    {
+        includes.add( "jar" );
+        includes.add( "war" );
+        includes.add( "ear" );
+        includes.add( "zip" );
+        includes.add( "tar.gz" );
+        includes.add( "tar.bz2" );
+        includes.add( "car" );
+        includes.add( "sar" );
+        includes.add( "mar" );
+        includes.add( "rar" );
+    }
+    
     public void beginScan()
     {
-        // TODO Auto-generated method stub
-
+        // TODO Auto-generated method stubx        
     }
 
     public void completeScan()
@@ -63,16 +112,58 @@ public class IndexJavaPublicMethodsConsumer
     }
 
     public List<String> getIncludedTypes()
-    {
-        // TODO Auto-generated method stub
-        return null;
+    {   
+        return includes;
     }
 
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
-    {
-        // TODO Auto-generated method stub
-
+    {   
+        try
+        {
+            ManagedRepositoryContent repoContent =
+                repoFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );    
+            File file = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
+            
+            if( file.getAbsolutePath().endsWith( ".jar" ) || file.getAbsolutePath().endsWith( ".war" ) || 
+                    file.getAbsolutePath().endsWith( ".ear" ) || file.getAbsolutePath().endsWith( ".zip" ) || 
+                    file.getAbsolutePath().endsWith( ".tar.gz" ) || file.getAbsolutePath().endsWith( ".tar.bz2" ) ||
+                    file.getAbsolutePath().endsWith( ".car" ) || file.getAbsolutePath().endsWith( ".sar" ) ||
+                    file.getAbsolutePath().endsWith( ".mar" ) || file.getAbsolutePath().endsWith( ".rar" ) )
+            {
+            
+                if( file.exists() )
+                {
+                    List<String> files = readFilesInArchive( file );
+                    Map<String, List<String>> mapOfClassesAndMethods =
+                        getPublicClassesAndMethodsFromFiles( file.getAbsolutePath(), files );
+                    
+                    // NOTE: what about public variables? should these be indexed too?
+                    RepositoryContentIndex bytecodeIndex = repoIndexFactory.createBytecodeIndex( repoContent.getRepository() );
+                    
+                    BytecodeRecord bytecodeRecord = new BytecodeRecord();
+                    bytecodeRecord.setFilename( file.getName() );
+                    bytecodeRecord.setClasses( mapOfClassesAndMethods.get( CLASSES ) );
+                    bytecodeRecord.setFiles( files );
+                    bytecodeRecord.setMethods( mapOfClassesAndMethods.get( METHODS ) );
+                    bytecodeRecord.setArtifact( artifact );
+                    bytecodeRecord.setRepositoryId( artifact.getModel().getRepositoryId() );
+                    bytecodeIndex.modifyRecord( bytecodeRecord );
+                }
+            }
+        } 
+        catch ( RepositoryException e )
+        {
+            throw new ConsumerException( "Can't run index cleanup consumer: " + e.getMessage() );
+        }
+        catch ( RepositoryIndexException e )
+        {
+            throw new ConsumerException( "Error encountered while adding artifact to index: " + e.getMessage() );
+        }
+        catch ( IOException e )
+        {
+            throw new ConsumerException( "Error encountered while getting file contents: " + e.getMessage() );
+        }
     }
 
     public String getDescription()
@@ -88,6 +179,90 @@ public class IndexJavaPublicMethodsConsumer
     public boolean isPermanent()
     {
         return false;
+    }
+    
+    private List<String> readFilesInArchive( File file )
+        throws IOException
+    {
+        ZipFile zipFile = new ZipFile( file );
+        List<String> files;
+        
+        try
+        {
+            files = new ArrayList<String>( zipFile.size() );    
+            for ( Enumeration entries = zipFile.entries(); entries.hasMoreElements(); )
+            {
+                ZipEntry entry = (ZipEntry) entries.nextElement();                
+                files.add( entry.getName() );
+            }
+        }
+        finally
+        {
+            closeQuietly( zipFile );
+        }
+        return files;
+    }
+    
+    private void closeQuietly( ZipFile zipFile )
+    {
+        try
+        {
+            if ( zipFile != null )
+            {
+                zipFile.close();
+            }
+        }
+        catch ( IOException e )
+        {
+            // ignored
+        }
+    }
+    
+    private static boolean isClass( String name )
+    {   
+        return name.endsWith( ".class" ) && name.lastIndexOf( "$" ) < 0;
+    }
+    
+    private Map<String, List<String>> getPublicClassesAndMethodsFromFiles( String zipFile, List<String> files )
+    {
+        Map<String, List<String>> map = new HashMap<String, List<String>>(); 
+        List<String> methods = new ArrayList<String>();
+        List<String> classes = new ArrayList<String>();
+                
+        for( String file : files )
+        {               
+            if( isClass( file ) )
+            {
+                try
+                {
+                    ClassParser parser = new ClassParser( zipFile, file );
+                    JavaClass javaClass = parser.parse();
+                    
+                    if( javaClass.isPublic() )
+                    {
+                        classes.add( javaClass.getClassName() );
+                    }                    
+                    
+                    Method[] methodsArr = javaClass.getMethods();
+                    for( Method method : methodsArr )
+                    {   
+                        if( method.isPublic() )
+                        {                            
+                            methods.add( method.getName() );
+                        }
+                    }
+                }
+                catch ( IOException e )
+                {   
+                    // ignore
+                }
+            }
+        }
+        
+        map.put( CLASSES, classes );
+        map.put( METHODS, methods );
+        
+        return map;
     }
 
 }

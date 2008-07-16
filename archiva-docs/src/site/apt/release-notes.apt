@@ -65,6 +65,8 @@ Release Notes for Archiva 1.1
 
     * [MRM-801] - Create documentation for virtual repositories
 
+    * [MRM-861] - Paginate Search Results page
+
 ** Bug
 
     * [MRM-234] - Moving files between repos through webdav doesn't work
@@ -74,6 +76,8 @@ Release Notes for Archiva 1.1
     * [MRM-523] - Appearance Actions do not work when ${user.home} is invalid.
 
     * [MRM-538] - Browse > Info not synchronised with updated POM contents
+
+    * [MRM-550] - proxy connectors - move up/down should not show when it's not possible
 
     * [MRM-584] - Newly created user cannot login
 
@@ -92,6 +96,8 @@ Release Notes for Archiva 1.1
     * [MRM-629] - NullPointer when setting corporate POM on a fresh archvia install
 
     * [MRM-638] - some developer reports are appearing in the archiva-docs module and need to be disabled
+
+    * [MRM-650] - Deleted metadata files still appear in search results
 
     * [MRM-652] - Invalid html links in "webdav" directory browsing
 
@@ -175,6 +181,14 @@ Release Notes for Archiva 1.1
 
     * [MRM-867] - 500 on HEAD method
 
+    * [MRM-869] - many empty folders created in managed repos with proxy connectors when used in a group
+
+    * [MRM-870] - addRepositoryToGroup.action => AbstractMethodError on DeferredDocumentImpl.getXmlStandalone()
+
+    * [MRM-871] - jetty.host and jetty.port properties are set by default in jetty.xml preventing user from using other hostname if user is not aware of these properties
+
+    * [MRM-872] - empty metadatas frmo a repository group
+
 ** Improvement
 
     * [MRM-591] - Reports should show from which repository the defective artifact was found.
@@ -186,6 +200,8 @@ Release Notes for Archiva 1.1
     * [MRM-667] - Timeout implementation for Archiva
 
     * [MRM-678] - 404 errors on proxies should be cached
+
+    * [MRM-737] - Don't list metadata files in the search results
 
     * [MRM-752] - Trim URL in Remote Repositories
 
@@ -217,9 +233,13 @@ Release Notes for Archiva 1.1
 
     * [MRM-694] - Virtual repositories or repository grouping
 
+    * [MRM-730] - Index/Search by class, method or package name
+
     * [MRM-751] - Support database connection pooling
 
     * [MRM-774] - Support inclusion of pom file when deploying an artifact via the web upload form
+
+    * [MRM-864] - Searching within search results
 
 ** Task
 
@@ -230,7 +250,7 @@ Release Notes for Archiva 1.1
     * [MRM-708] - Migrate from Plexus Logging to Slf4J
 
     * [MRM-754] - Update the screenshots in the docs
-
+    
 * Changes in Archiva 1.0.2
 
 ** Bug

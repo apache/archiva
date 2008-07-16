@@ -46,6 +46,8 @@ public class SearchResultHit
     private String artifactId;
 
     private String version = "";
+    
+    private String repositoryId = "";
 
     // Advanced hit, if artifact, all versions of artifact
     private List artifacts = new ArrayList();
@@ -137,5 +139,15 @@ public class SearchResultHit
     public List getVersions()
     {
         return versions;
+    }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
     }
 }

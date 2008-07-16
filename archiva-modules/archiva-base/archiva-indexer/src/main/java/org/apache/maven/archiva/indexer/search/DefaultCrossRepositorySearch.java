@@ -27,8 +27,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.Searchable;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -84,7 +88,7 @@ public class DefaultCrossRepositorySearch
             QueryParser parser = new MultiFieldQueryParser( new String[]{HashcodesKeys.MD5, HashcodesKeys.SHA1},
                                                             new HashcodesHandlers().getAnalyzer() );
             LuceneQuery query = new LuceneQuery( parser.parse( checksum ) );
-            SearchResults results = searchAll( query, limits, indexes );
+            SearchResults results = searchAll( query, limits, indexes, null );
             results.getRepositories().addAll( this.localIndexedRepositories );
 
             return results;
@@ -100,13 +104,13 @@ public class DefaultCrossRepositorySearch
 
     public SearchResults searchForBytecode( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
     {
-        List<RepositoryContentIndex> indexes = getHashcodeIndexes( principal, selectedRepos );
+        List<RepositoryContentIndex> indexes = getBytecodeIndexes( principal, selectedRepos );
 
         try
         {
             QueryParser parser = new BytecodeHandlers().getQueryParser();
             LuceneQuery query = new LuceneQuery( parser.parse( term ) );
-            SearchResults results = searchAll( query, limits, indexes );
+            SearchResults results = searchAll( query, limits, indexes, null );
             results.getRepositories().addAll( this.localIndexedRepositories );
 
             return results;
@@ -120,17 +124,44 @@ public class DefaultCrossRepositorySearch
         return new SearchResults();
     }
 
+    
     public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
     {
+        return searchForTerm( principal, selectedRepos, term, limits, null );        
+    }
+    
+    public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term,
+                                        SearchResultLimits limits, List<String> previousSearchTerms )
+    {
         List<RepositoryContentIndex> indexes = getFileContentIndexes( principal, selectedRepos );
+        List<RepositoryContentIndex> bytecodeIndices = getBytecodeIndexes( principal, selectedRepos );        
+        indexes.addAll( bytecodeIndices );
 
         try
         {
             QueryParser parser = new FileContentHandlers().getQueryParser();
-            LuceneQuery query = new LuceneQuery( parser.parse( term ) );
-            SearchResults results = searchAll( query, limits, indexes );
+            LuceneQuery query = null;
+            SearchResults results = null;
+            if( previousSearchTerms == null || previousSearchTerms.isEmpty() )
+            {
+                query = new LuceneQuery( parser.parse( term ) );
+                results = searchAll( query, limits, indexes, null );
+            }
+            else
+            {
+                // AND the previous search terms
+                BooleanQuery booleanQuery = new BooleanQuery();
+                for( String previousSearchTerm : previousSearchTerms )
+                {
+                    booleanQuery.add( parser.parse( previousSearchTerm ), BooleanClause.Occur.MUST );
+                }
+                
+                query = new LuceneQuery( booleanQuery );                
+                Filter filter = new QueryWrapperFilter( parser.parse( term ) );
+                results = searchAll( query, limits, indexes, filter );
+            }            
             results.getRepositories().addAll( this.localIndexedRepositories );
-
+            
             return results;
         }
         catch ( ParseException e )
@@ -139,10 +170,10 @@ public class DefaultCrossRepositorySearch
         }
 
         // empty results.
-        return new SearchResults();
+        return new SearchResults(); 
     }
-
-    private SearchResults searchAll( LuceneQuery luceneQuery, SearchResultLimits limits, List<RepositoryContentIndex> indexes )
+    
+    private SearchResults searchAll( LuceneQuery luceneQuery, SearchResultLimits limits, List<RepositoryContentIndex> indexes, Filter filter )
     {
         org.apache.lucene.search.Query specificQuery = luceneQuery.getLuceneQuery();
 
@@ -173,7 +204,15 @@ public class DefaultCrossRepositorySearch
             searcher = new MultiSearcher( searchables );
 
             // Perform the search.
-            Hits hits = searcher.search( specificQuery );
+            Hits hits = null;
+            if( filter != null )
+            {
+                hits = searcher.search( specificQuery, filter );
+            }
+            else
+            {
+                hits = searcher.search( specificQuery );
+            }
 
             int hitCount = hits.length();
 
@@ -194,7 +233,7 @@ public class DefaultCrossRepositorySearch
             if ( offset < hitCount )
             {
                 // only process if the offset is within the hit count.
-                for ( int i = 0; i <= fetchCount; i++ )
+                for ( int i = 0; i < fetchCount; i++ )
                 {
                     // Stop fetching if we are past the total # of available hits.
                     if ( offset + i >= hitCount )

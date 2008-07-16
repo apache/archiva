@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action;
  */
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,8 +35,11 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
-import org.apache.maven.archiva.security.*;
+import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
+import org.apache.maven.archiva.security.PrincipalNotFoundException;
+import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
@@ -45,7 +49,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
  */
 public class SearchAction
     extends PlexusActionSupport
-{
+{           
     /**
      * Query string.
      */
@@ -76,6 +80,16 @@ public class SearchAction
     private static final String ARTIFACT = "artifact";
 
     private List databaseResults;
+    
+    private int currentPage = 0;
+    
+    private int totalPages;
+    
+    private boolean searchResultsOnly; 
+    
+    private String completeQueryString;
+    
+    private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
 
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -87,8 +101,8 @@ public class SearchAction
          */
 
         assert q != null && q.length() != 0;
-
-        SearchResultLimits limits = new SearchResultLimits( 0 );
+        
+        SearchResultLimits limits = new SearchResultLimits( currentPage );
         
         List<String> selectedRepos = getObservableRepos();
         if ( CollectionUtils.isEmpty( selectedRepos ) )
@@ -96,14 +110,28 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
-
+        if( searchResultsOnly && !completeQueryString.equals( "" ) )
+        { 
+            results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
+        }
+        else
+        {
+            completeQueryString = "";
+            results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+        }
+        
         if ( results.isEmpty() )
         {
             addActionError( "No results found" );
             return INPUT;
         }
-
+        
+        totalPages = results.getTotalHits() / limits.getPageSize();
+        
+        if( (results.getTotalHits() % limits.getPageSize()) != 0 )
+        {
+            totalPages = totalPages + 1;
+        }
         // TODO: filter / combine the artifacts by version? (is that even possible with non-artifact hits?)
 
         /* I don't think that we should, as I expect us to utilize the 'score' system in lucene in 
@@ -112,7 +140,12 @@ public class SearchAction
          * to result in a higher score. 
          *   - Joakim
          */
-
+        
+        if( !isEqualToPreviousSearchTerm( q ) )
+        {
+            buildCompleteQueryString( q );
+        }
+        
         return SUCCESS;
     }
 
@@ -178,6 +211,46 @@ public class SearchAction
         return Collections.emptyList();
     }
 
+    private void buildCompleteQueryString( String searchTerm )
+    {
+        if( searchTerm.indexOf( COMPLETE_QUERY_STRING_SEPARATOR ) != -1 )
+        {
+            searchTerm = StringUtils.remove( searchTerm, COMPLETE_QUERY_STRING_SEPARATOR );
+        }
+        
+        if( completeQueryString == null || "".equals( completeQueryString ) )
+        {
+            completeQueryString = searchTerm;
+        }
+        else
+        {            
+            completeQueryString = completeQueryString + COMPLETE_QUERY_STRING_SEPARATOR + searchTerm;
+        }
+    }
+    
+    private List<String> parseCompleteQueryString()
+    {
+        List<String> parsedCompleteQueryString = new ArrayList<String>();        
+        String[] parsed = StringUtils.split( completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR );
+        CollectionUtils.addAll( parsedCompleteQueryString, parsed );
+        
+        return parsedCompleteQueryString;
+    }
+    
+    private boolean isEqualToPreviousSearchTerm( String searchTerm )
+    {
+        if( !"".equals( completeQueryString ) )
+        {
+            String[] parsed = StringUtils.split( completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR );
+            if( StringUtils.equalsIgnoreCase( searchTerm, parsed[ parsed.length - 1 ] ) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     public String getQ()
     {
         return q;
@@ -197,4 +270,44 @@ public class SearchAction
     {
         return databaseResults;
     }
+    
+    public void setCurrentPage( int page )
+    {
+        this.currentPage = page;
+    }
+    
+    public int getCurrentPage()
+    {
+        return currentPage;
+    }
+
+    public int getTotalPages()
+    {
+        return totalPages;
+    }
+
+    public void setTotalPages( int totalPages )
+    {
+        this.totalPages = totalPages;
+    }
+
+    public boolean isSearchResultsOnly()
+    {
+        return searchResultsOnly;
+    }
+
+    public void setSearchResultsOnly( boolean searchResultsOnly )
+    {
+        this.searchResultsOnly = searchResultsOnly;
+    }
+
+    public String getCompleteQueryString()
+    {
+        return completeQueryString;
+    }
+
+    public void setCompleteQueryString( String completeQueryString )
+    {
+        this.completeQueryString = completeQueryString;
+    }    
 }

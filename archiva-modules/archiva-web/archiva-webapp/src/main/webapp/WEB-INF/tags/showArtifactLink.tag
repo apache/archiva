@@ -27,11 +27,14 @@
 <%@ attribute name="classifier" %>
 <%@ attribute name="scope" %>
 <%@ attribute name="versions" type="java.util.List" %>
+<%@ attribute name="repositoryId" %>
 
 <span class="artifact-link">
+  <a href="${pageContext.request.contextPath}/repository/${repositoryId}">${repositoryId}</a>
+  <strong> : </strong>
   <archiva:groupIdLink var="${groupId}" includeTop="false" />
   
-  <c:if test="${!empty(artifactId)}">
+  <c:if test="${!empty(artifactId)}">    
     <c:set var="url">
       <ww:url action="browseArtifact" namespace="/">
         <ww:param name="groupId" value="%{'${groupId}'}"/>
@@ -73,5 +76,5 @@
   </c:if>
   <c:if test="${!empty(classifier)}">
     | <strong>Classifier:</strong> ${classifier}
-  </c:if>
+  </c:if>  
 </span>
