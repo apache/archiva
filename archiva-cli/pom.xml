@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-cli</artifactId>
@@ -35,7 +35,7 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-dependency-tree-consumer</artifactId>
-      <version>1.2-SNAPSHOT</version>
+      <version>1.1</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
