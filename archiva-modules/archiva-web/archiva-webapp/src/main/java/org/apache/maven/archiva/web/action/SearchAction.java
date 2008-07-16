@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action;
  */
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -83,6 +84,12 @@ public class SearchAction
     private int currentPage = 0;
     
     private int totalPages;
+    
+    private boolean searchResultsOnly; 
+    
+    private String completeQueryString;
+    
+    private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
 
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -103,7 +110,15 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+        if( searchResultsOnly && !completeQueryString.equals( "" ) )
+        { 
+            results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
+        }
+        else
+        {
+            completeQueryString = "";
+            results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+        }
         
         if ( results.isEmpty() )
         {
@@ -125,7 +140,12 @@ public class SearchAction
          * to result in a higher score. 
          *   - Joakim
          */
-
+        
+        if( !isEqualToPreviousSearchTerm( q ) )
+        {
+            buildCompleteQueryString( q );
+        }
+        
         return SUCCESS;
     }
 
@@ -191,6 +211,46 @@ public class SearchAction
         return Collections.emptyList();
     }
 
+    private void buildCompleteQueryString( String searchTerm )
+    {
+        if( searchTerm.indexOf( COMPLETE_QUERY_STRING_SEPARATOR ) != -1 )
+        {
+            searchTerm = StringUtils.remove( searchTerm, COMPLETE_QUERY_STRING_SEPARATOR );
+        }
+        
+        if( completeQueryString == null || "".equals( completeQueryString ) )
+        {
+            completeQueryString = searchTerm;
+        }
+        else
+        {            
+            completeQueryString = completeQueryString + COMPLETE_QUERY_STRING_SEPARATOR + searchTerm;
+        }
+    }
+    
+    private List<String> parseCompleteQueryString()
+    {
+        List<String> parsedCompleteQueryString = new ArrayList<String>();        
+        String[] parsed = StringUtils.split( completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR );
+        CollectionUtils.addAll( parsedCompleteQueryString, parsed );
+        
+        return parsedCompleteQueryString;
+    }
+    
+    private boolean isEqualToPreviousSearchTerm( String searchTerm )
+    {
+        if( !"".equals( completeQueryString ) )
+        {
+            String[] parsed = StringUtils.split( completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR );
+            if( StringUtils.equalsIgnoreCase( searchTerm, parsed[ parsed.length - 1 ] ) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     public String getQ()
     {
         return q;
@@ -230,4 +290,24 @@ public class SearchAction
     {
         this.totalPages = totalPages;
     }
+
+    public boolean isSearchResultsOnly()
+    {
+        return searchResultsOnly;
+    }
+
+    public void setSearchResultsOnly( boolean searchResultsOnly )
+    {
+        this.searchResultsOnly = searchResultsOnly;
+    }
+
+    public String getCompleteQueryString()
+    {
+        return completeQueryString;
+    }
+
+    public void setCompleteQueryString( String completeQueryString )
+    {
+        this.completeQueryString = completeQueryString;
+    }    
 }

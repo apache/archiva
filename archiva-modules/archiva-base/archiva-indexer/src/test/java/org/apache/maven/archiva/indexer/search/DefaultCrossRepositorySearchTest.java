@@ -140,7 +140,7 @@ public class DefaultCrossRepositorySearchTest
             "org","org2","org3","org4","org5","org6","org7"
         };
         
-        assertSearchResults( expectedRepos, expectedResults, search, "org" );
+        assertSearchResults( expectedRepos, expectedResults, search, "org", null );
     }
 
     public void testSearchTerm_Junit()
@@ -156,7 +156,7 @@ public class DefaultCrossRepositorySearchTest
             "junit","junit2","junit3"
         };
         
-        assertSearchResults( expectedRepos, expectedResults, search, "junit" );
+        assertSearchResults( expectedRepos, expectedResults, search, "junit", null );
     }
 
     public void testSearchInvalidTerm()
@@ -172,10 +172,49 @@ public class DefaultCrossRepositorySearchTest
             // Nothing.
         };
         
-        assertSearchResults( expectedRepos, expectedResults, search, "monosodium" );
+        assertSearchResults( expectedRepos, expectedResults, search, "monosodium", null );
     }
     
-    private void assertSearchResults( String expectedRepos[], String expectedResults[], CrossRepositorySearch search, String term )
+    public void testSearchWithinSearchResults()
+        throws Exception
+    {
+        CrossRepositorySearch search = lookupCrossRepositorySearch();
+
+        String expectedRepos[] = new String[] {
+            TEST_DEFAULT_REPO_ID
+        };
+        
+        String expectedResults[] = new String[] { 
+            "org","org2","org3","org4","org5","org6","org7"
+        };
+        
+        // first search
+        assertSearchResults( expectedRepos, expectedResults, search, "org", null );
+        
+        List<String> previousSearchTerms = new ArrayList<String>();
+        previousSearchTerms.add( "org" );        
+        String secondSearchExpectedResults[] = new String[] { 
+            "org.apache.maven.archiva.record", "org.apache.maven.archiva.record2",
+                "org.apache.maven.archiva.record3", "org.apache.maven.archiva.record4",
+                "org.apache.maven.archiva.record5", "org.apache.maven.archiva.record6",
+                "org.apache.maven.archiva.record7"
+        };
+        
+        //second search
+        assertSearchResults( expectedRepos, secondSearchExpectedResults, search, "org.apache.maven.archiva.record",
+                             previousSearchTerms );
+        
+        previousSearchTerms.add( "org.apache.maven.archiva.record" );
+        String thirdSearchExpectedResults[] = new String[] { 
+            "junit", "junit2", "junit3"
+        };
+        
+        //third search
+        assertSearchResults( expectedRepos, thirdSearchExpectedResults, search, "junit", previousSearchTerms );        
+    }
+    
+    private void assertSearchResults( String expectedRepos[], String expectedResults[], CrossRepositorySearch search,
+                                      String term, List<String> previousSearchTerms )
         throws Exception
     {
         SearchResultLimits limits = new SearchResultLimits( 0 );
@@ -184,7 +223,15 @@ public class DefaultCrossRepositorySearchTest
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.addAll( Arrays.asList( expectedRepos ) );
         
-        SearchResults results = search.searchForTerm( "guest", selectedRepos, term, limits );
+        SearchResults results = null;
+        if( previousSearchTerms == null )
+        {
+            results = search.searchForTerm( "guest", selectedRepos, term, limits );
+        }
+        else
+        {
+            results = search.searchForTerm( "guest", selectedRepos, term, limits, previousSearchTerms );
+        }
         
         assertNotNull( "Search Results should not be null.", results );
         assertEquals( "Repository Hits", expectedRepos.length, results.getRepositories().size() );

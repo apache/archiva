@@ -122,6 +122,8 @@
 		              <ww:url action="quickSearch" namespace="/">
 		                <ww:param name="q" value="%{'${q}'}"/>
 		                <ww:param name="currentPage" value="%{'${i}'}"/>
+		                <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+		                <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
 		              </ww:url>
 		      	  </c:set>
 				  <a href="${specificPageUrl}">${i + 1}</a>
