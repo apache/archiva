@@ -80,6 +80,11 @@ public class ChecksumPolicy
     public void applyPolicy( String policySetting, Properties request, File localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
+        if ( "resource".equals( request.getProperty( "filetype" ) ) )
+        {
+            return;
+        }
+        
         if ( !options.contains( policySetting ) )
         {
             // Not a valid code. 

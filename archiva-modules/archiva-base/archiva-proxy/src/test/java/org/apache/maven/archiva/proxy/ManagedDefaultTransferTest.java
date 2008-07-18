@@ -84,6 +84,9 @@ public class ManagedDefaultTransferTest
 
         File sourceFile = new File( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile, sourceFile );
+        assertFalse( new File( downloadedFile.getParentFile(), downloadedFile.getName() + ".sha1" ).exists() );
+        assertFalse( new File( downloadedFile.getParentFile(), downloadedFile.getName() + ".md5" ).exists() );
+        assertFalse( new File( downloadedFile.getParentFile(), downloadedFile.getName() + ".asc" ).exists() );
         assertNoTempFiles( expectedFile );
     }
 
@@ -114,6 +117,40 @@ public class ManagedDefaultTransferTest
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertFileEquals( expectedFile, downloadedFile, expectedFile );
+        assertNoTempFiles( expectedFile );
+    }
+
+    /**
+     * The attempt here should result in no file being transferred.
+     * <p/>
+     * The file exists locally, and the policy is ONCE.
+     *
+     * @throws Exception
+     */
+    public void testGetDefaultLayoutAlreadyPresentPassthrough()
+        throws Exception
+    {
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar.asc";
+        setupTestableManagedRepository( path );
+
+        File expectedFile = new File( managedDefaultDir, path );
+        File remoteFile = new File( REPOPATH_PROXIED1, path );
+
+        assertTrue( expectedFile.exists() );
+
+        // Set the managed File to be newer than local.
+        setManagedOlderThanRemote( expectedFile, remoteFile );
+        long originalModificationTime = expectedFile.lastModified();
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ONCE, SnapshotsPolicy.ONCE,
+                       CachedFailuresPolicy.NO );
+
+        // Attempt the proxy fetch.
+        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
+
+        assertNotDownloaded( downloadedFile );
+        assertNotModified( expectedFile, originalModificationTime );
         assertNoTempFiles( expectedFile );
     }
 

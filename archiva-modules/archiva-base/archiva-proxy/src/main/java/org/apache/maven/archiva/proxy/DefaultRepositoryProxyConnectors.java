@@ -160,7 +160,8 @@ public class DefaultRepositoryProxyConnectors
             try
             {
                 File downloadedFile =
-                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties );
+                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
+                                  true );
 
                 if ( fileExists( downloadedFile ) )
                 {
@@ -199,6 +200,12 @@ public class DefaultRepositoryProxyConnectors
     public File fetchFromProxies( ManagedRepositoryContent repository, String path )
     {
         File localFile = new File( repository.getRepoRoot(), path );
+        
+        // no update policies for these paths
+        if ( localFile.exists() )
+        {
+            return null;
+        }
 
         Properties requestProperties = new Properties();
         requestProperties.setProperty( "filetype", "resource" );
@@ -215,7 +222,8 @@ public class DefaultRepositoryProxyConnectors
             try
             {
                 File downloadedFile =
-                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties );
+                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
+                                  false );
 
                 if ( fileExists( downloadedFile ) )
                 {
@@ -266,7 +274,8 @@ public class DefaultRepositoryProxyConnectors
 
             try
             {
-                transferFile( connector, targetRepository, targetPath, repository, localRepoFile, requestProperties );
+                transferFile( connector, targetRepository, targetPath, repository, localRepoFile, requestProperties,
+                              true );
 
                 if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
                 {
@@ -378,7 +387,8 @@ public class DefaultRepositoryProxyConnectors
             long originalMetadataTimestamp = getLastModified( localRepoFile );
             try
             {
-                transferFile( connector, targetRepository, targetPath, repository, localRepoFile, requestProperties );
+                transferFile( connector, targetRepository, targetPath, repository, localRepoFile, requestProperties,
+                              true );
 
                 if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
                 {
@@ -520,6 +530,7 @@ public class DefaultRepositoryProxyConnectors
      * @param repository        the managed repository that will hold the file
      * @param localFile         the local file to place the downloaded resource into
      * @param requestProperties the request properties to utilize for policy handling.
+     * @param executeConsumers  whether to execute the consumers after proxying
      * @return the local file that was downloaded, or null if not downloaded.
      * @throws NotFoundException    if the file was not found on the remote repository.
      * @throws NotModifiedException if the localFile was present, and the resource was present on remote repository,
@@ -527,7 +538,8 @@ public class DefaultRepositoryProxyConnectors
      * @throws ProxyException       if transfer was unsuccessful.
      */
     private File transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
-                               ManagedRepositoryContent repository, File localFile, Properties requestProperties )
+                               ManagedRepositoryContent repository, File localFile, Properties requestProperties,
+                               boolean executeConsumers )
         throws ProxyException, NotModifiedException
     {
         String url = remoteRepository.getURL().getUrl();
@@ -593,6 +605,8 @@ public class DefaultRepositoryProxyConnectors
             {
                 localFile = transferSimpleFile( wagon, remoteRepository, remotePath, repository, localFile );
 
+                // TODO: these should be used to validate the download based on the policies, not always downloaded to
+                //   save on connections since md5 is rarely used
                 transferChecksum( wagon, remoteRepository, remotePath, repository, localFile, ".sha1" );
                 transferChecksum( wagon, remoteRepository, remotePath, repository, localFile, ".md5" );
             }
@@ -643,8 +657,11 @@ public class DefaultRepositoryProxyConnectors
             return null;
         }
 
-        // Just-in-time update of the index and database by executing the consumers for this artifact
-        consumers.executeConsumers( connector.getSourceRepository().getRepository(), localFile );
+        if ( executeConsumers )
+        {
+            // Just-in-time update of the index and database by executing the consumers for this artifact
+            consumers.executeConsumers( connector.getSourceRepository().getRepository(), localFile );
+        }
 
         // Everything passes.
         return localFile;
