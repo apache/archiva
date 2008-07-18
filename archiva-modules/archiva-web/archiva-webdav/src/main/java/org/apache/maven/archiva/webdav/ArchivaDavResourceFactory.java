@@ -495,10 +495,9 @@ public class ArchivaDavResourceFactory
     {
         if ( repositoryRequest.isSupportFile( resource.getPath() ) )
         {
-            // Checksums are fetched with artifact / metadata.
+            File proxiedFile = connectors.fetchFromProxies( managedRepository, resource.getPath() );
 
-            // Need to adjust the path for the checksum resource.
-            return false;
+            return ( proxiedFile != null );
         }
 
         // Is it a Metadata resource?

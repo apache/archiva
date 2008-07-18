@@ -64,6 +64,29 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    public void testGetDefaultLayoutNotPresentPassthrough()
+        throws Exception
+    {
+        String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar.asc";
+        setupTestableManagedRepository( path );
+
+        File expectedFile = new File( managedDefaultDir, path );
+
+        // Ensure file isn't present first.
+        assertNotExistsInManagedDefaultRepo( expectedFile );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ONCE, SnapshotsPolicy.ONCE,
+                       CachedFailuresPolicy.NO );
+
+        // Attempt the proxy fetch.
+        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
+
+        File sourceFile = new File( REPOPATH_PROXIED1, path );
+        assertFileEquals( expectedFile, downloadedFile, sourceFile );
+        assertNoTempFiles( expectedFile );
+    }
+
     /**
      * The attempt here should result in no file being transferred.
      * <p/>

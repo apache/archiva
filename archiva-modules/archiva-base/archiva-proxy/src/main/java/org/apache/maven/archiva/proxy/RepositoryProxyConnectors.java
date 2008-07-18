@@ -45,7 +45,7 @@ public interface RepositoryProxyConnectors
      * 
      * @param repository the source repository to use. (must be a managed repository)
      * @param artifact the artifact to fetch.
-     * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
+     * @return the file that was obtained, or null if no content was obtained
      * @throws ProxyDownloadException if there was a problem fetching the content from the target repositories.
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
@@ -60,7 +60,7 @@ public interface RepositoryProxyConnectors
      * 
      * @param repository the source repository to use. (must be a managed repository)
      * @param metadata the metadata to fetch.
-     * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
+     * @return the file that was obtained, or null if no content was obtained
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, VersionedReference metadata );
 
@@ -73,9 +73,19 @@ public interface RepositoryProxyConnectors
      * 
      * @param repository the source repository to use. (must be a managed repository)
      * @param metadata the metadata to fetch.
-     * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
+     * @return the file that was obtained, or null if no content was obtained
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata );
+
+    /**
+     * Performs the fetch operation against the target repositories
+     * of the provided source repository.
+     * 
+     * @param repository the source repository to use. (must be a managed repository)
+     * @param path the path of the resource to fetch
+     * @return the file that was obtained, or null if no content was obtained
+     */
+    public File fetchFromProxies( ManagedRepositoryContent managedRepository, String path );
 
     /**
      * Get the List of {@link ProxyConnector} objects of the source repository.

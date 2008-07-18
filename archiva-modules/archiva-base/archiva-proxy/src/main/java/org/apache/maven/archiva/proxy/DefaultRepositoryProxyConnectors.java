@@ -138,15 +138,6 @@ public class DefaultRepositoryProxyConnectors
      */
     private RepositoryContentConsumers consumers;
 
-    /**
-     * Fetch an artifact from a remote repository.
-     *
-     * @param repository the managed repository to utilize for the request.
-     * @param artifact   the artifact reference to fetch.
-     * @return the local file in the managed repository that was fetched, or null if the artifact was not (or
-     *         could not be) fetched.
-     * @throws PolicyViolationException if there was a problem fetching the artifact.
-     */
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
@@ -205,11 +196,56 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
-    /**
-     * Fetch, from the proxies, a metadata.xml file for the groupId:artifactId:version metadata contents.
-     *
-     * @return the (local) metadata file that was fetched/merged/updated, or null if no metadata file exists.
-     */
+    public File fetchFromProxies( ManagedRepositoryContent repository, String path )
+    {
+        File localFile = new File( repository.getRepoRoot(), path );
+
+        Properties requestProperties = new Properties();
+        requestProperties.setProperty( "filetype", "resource" );
+        requestProperties.setProperty( "managedRepositoryId", repository.getId() );
+
+        List<ProxyConnector> connectors = getProxyConnectors( repository );
+        for ( ProxyConnector connector : connectors )
+        {
+            RemoteRepositoryContent targetRepository = connector.getTargetRepository();
+            requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
+
+            String targetPath = path;
+
+            try
+            {
+                File downloadedFile =
+                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties );
+
+                if ( fileExists( downloadedFile ) )
+                {
+                    log.debug( "Successfully transferred: " + downloadedFile.getAbsolutePath() );
+                    return downloadedFile;
+                }
+            }
+            catch ( NotFoundException e )
+            {
+                log.debug( "Resource " + path + " not found on repository \""
+                                       + targetRepository.getRepository().getId() + "\"." );
+            }
+            catch ( NotModifiedException e )
+            {
+                log.debug( "Resource " + path + " not updated on repository \""
+                                       + targetRepository.getRepository().getId() + "\"." );
+            }
+            catch ( ProxyException e )
+            {
+                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId()
+                    + "\" for resource " + path + ", continuing to next repository. Error message: " + e.getMessage() );
+                log.debug( "Full stack trace", e );
+            }
+        }
+
+        log.debug( "Exhausted all target repositories, resource " + path + " not found." );
+
+        return null;
+    }
+
     public File fetchFromProxies( ManagedRepositoryContent repository, VersionedReference metadata )
     {
         File localFile = toLocalFile( repository, metadata );
@@ -323,12 +359,6 @@ public class DefaultRepositoryProxyConnectors
         return ( currentLastModified > originalLastModified );
     }
 
-    /**
-     * Fetch from the proxies a metadata.xml file for the groupId:artifactId metadata contents.
-     *
-     * @return the (local) metadata file that was fetched/merged/updated, or null if no metadata file exists.
-     * @throws ProxyException if there was a problem fetching the metadata file.
-     */
     public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata )
     {
         File localFile = toLocalFile( repository, metadata );
@@ -984,7 +1014,7 @@ public class DefaultRepositoryProxyConnectors
             List<ProxyConnector> ret = (List<ProxyConnector>) this.proxyConnectorMap.get( repository.getId() );
             if ( ret == null )
             {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
 
             Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
@@ -1008,16 +1038,7 @@ public class DefaultRepositoryProxyConnectors
         /* do nothing */
     }
 
-    private void logProcess( String managedRepoId, String resource, String event )
-    {
-
-    }
-
-    private void logRejection( String managedRepoId, String remoteRepoId, String resource, String reason )
-    {
-
-    }
-
+    @SuppressWarnings("unchecked")
     private void initConnectorsAndNetworkProxies()
     {
         synchronized ( this.proxyConnectorMap )
