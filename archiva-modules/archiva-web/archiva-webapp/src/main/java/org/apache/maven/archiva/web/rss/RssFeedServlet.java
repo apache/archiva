@@ -149,9 +149,15 @@ public class RssFeedServlet
                 return;
             }
 
-            feed = processor.process( map );
+            feed = processor.process( map );            
+            if( feed == null )
+            {
+                res.sendError( HttpServletResponse.SC_NO_CONTENT, "No information available." );
+                return;
+            }
+            
             res.setContentType( MIME_TYPE );
-
+            
             if ( repoId != null )
             {
                 feed.setLink( req.getRequestURL() + "?repoId=" + repoId );

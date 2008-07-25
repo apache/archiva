@@ -81,6 +81,16 @@ public class RssFeedGeneratorTest
         assertEquals( "Item 2", syndEntries.get( 1 ).getTitle() );
         assertEquals( "Item 3", syndEntries.get( 2 ).getTitle() );
     }
+    
+    public void testNoDataEntries()
+        throws Exception
+    {
+        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        SyndFeed feed =
+            generator.generateFeed( "Test Feed", "The test feed from Archiva.", entries );
+
+        assertNull( feed );
+    }
 
     /*
      * this test might need to be removed since
