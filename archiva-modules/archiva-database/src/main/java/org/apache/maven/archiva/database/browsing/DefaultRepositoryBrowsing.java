@@ -130,7 +130,17 @@ public class DefaultRepositoryBrowsing
 
         return model;
     }
+    
+    public String getRepositoryId( String principle, List<String> observableRepositoryIds, String groupId,
+                                   String artifactId, String version )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        ArchivaArtifact pomArchivaArtifact =
+            getArtifact( principle, observableRepositoryIds, groupId, artifactId, version );
 
+        return pomArchivaArtifact.getModel().getRepositoryId();
+    }
+    
     private ArchivaArtifact getArtifact( String principle, List<String> observableRepositoryIds, String groupId,
                                          String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
@@ -295,5 +305,5 @@ public class DefaultRepositoryBrowsing
             throw e;
         }
     }
-
+    
 }

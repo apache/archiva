@@ -45,6 +45,10 @@
 
 <table class="infoTable">
   <tr>
+    <th>Repository</th>
+    <td>${repositoryId}</td>
+  </tr>
+  <tr>
     <th>Group ID</th>
     <td>${model.groupId}</td>
   </tr>

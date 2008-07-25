@@ -57,6 +57,8 @@ public class BrowseAction
     private String groupId;
 
     private String artifactId;
+    
+    private String repositoryId;
 
     public String browse()
     {
@@ -167,5 +169,15 @@ public class BrowseAction
     public BrowsingResults getResults()
     {
         return results;
+    }
+    
+    public String getRepositoryId(){
+    	
+    	return repositoryId;
+    }
+    
+    public void setRepositoryId(String repositoryId){
+    	
+    	this.repositoryId = repositoryId;
     }
 }

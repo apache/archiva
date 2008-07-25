@@ -38,9 +38,10 @@ import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.Validateable;
 
 /**
- * Browse the repository.
- *
+ * Browse the repository. 
+ * 
  * TODO change name to ShowVersionedAction to conform to terminology.
+ * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="showArtifactAction"
  */
 public class ShowArtifactAction
@@ -53,12 +54,12 @@ public class ShowArtifactAction
      * @plexus.requirement role-hint="default"
      */
     private RepositoryBrowsing repoBrowsing;
-    
+
     /**
      * @plexus.requirement
      */
     private UserRepositories userRepositories;
-    
+
     /* .\ Input Parameters \.________________________________________ */
 
     private String groupId;
@@ -66,6 +67,8 @@ public class ShowArtifactAction
     private String artifactId;
 
     private String version;
+
+    private String repositoryId;
 
     /* .\ Exposed Output Objects \.__________________________________ */
 
@@ -89,16 +92,17 @@ public class ShowArtifactAction
     private List dependencies;
 
     /**
-     * Show the versioned project information tab.
-     * 
-     * TODO: Change name to 'project'
+     * Show the versioned project information tab. TODO: Change name to 'project'
      */
     public String artifact()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         try
         {
-            this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+            this.model =
+                repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+            this.repositoryId =
+                repoBrowsing.getRepositoryId( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
         }
         catch ( ObjectNotFoundException oe )
         {
@@ -142,7 +146,8 @@ public class ShowArtifactAction
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         System.out.println( "#### In reports." );
-        // TODO: hook up reports on project - this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId, version );
+        // TODO: hook up reports on project - this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId,
+        // version );
         System.out.println( "#### Found " + reports.size() + " reports." );
 
         return SUCCESS;
@@ -171,12 +176,12 @@ public class ShowArtifactAction
 
         return SUCCESS;
     }
-    
+
     private String getPrincipal()
     {
         return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
-    
+
     private List<String> getObservableRepos()
     {
         try
@@ -271,4 +276,15 @@ public class ShowArtifactAction
     {
         return dependees;
     }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
+
 }

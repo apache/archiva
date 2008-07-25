@@ -85,4 +85,9 @@ public interface RepositoryBrowsing
     public List<ArchivaProjectModel> getUsedBy( String principle, List<String> observableRepositoryIds, String groupId,
                                                 String artifactId, String version )
         throws ArchivaDatabaseException;
+
+    
+    public String getRepositoryId( String principle, List<String> observableRepositoryIds, String groupId,
+                                       String artifactId, String version )
+        throws ObjectNotFoundException, ArchivaDatabaseException;
 }
