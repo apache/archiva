@@ -145,17 +145,17 @@
     </dependency>
     <!-- Plexus Security Dependencies -->
     <dependency>
-      <groupId>org.codehaus.plexus.redback</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-xwork-content</artifactId>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.redback</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-xwork-integration</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.redback</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-taglib</artifactId>
     </dependency>
     <!-- Other dependencies -->
