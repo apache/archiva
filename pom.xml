@@ -628,7 +628,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
@@ -640,7 +640,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-users-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
@@ -652,7 +652,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-keys-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
@@ -664,7 +664,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-model</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -675,7 +675,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-authorization-rbac</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -686,7 +686,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-role-manager</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -697,7 +697,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-system</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -708,7 +708,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-taglib</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -719,7 +719,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-xwork-content</artifactId>
         <version>${redback.version}</version>
         <type>war</type>
@@ -731,7 +731,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-xwork-integration</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -952,7 +952,7 @@
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-3</wagon.version>
-    <redback.version>1.1-SNAPSHOT</redback.version>
+    <redback.version>1.0.3-SNAPSHOT</redback.version>
     <jetty.version>6.1.6</jetty.version>
   </properties>
   <profiles>

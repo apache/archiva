@@ -43,35 +43,35 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-system</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-rbac-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-rbac-role-manager</artifactId>
     </dependency>
     <!-- Test Scoped -->
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-authorization-rbac</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-users-memory</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.plexus.redback</groupId>
       <artifactId>redback-rbac-memory</artifactId>
       <scope>test</scope>
     </dependency>
