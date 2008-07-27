@@ -19,6 +19,17 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -64,17 +75,6 @@ import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * DefaultRepositoryProxyConnectors
@@ -938,7 +938,7 @@ public class DefaultRepositoryProxyConnectors
     {
         boolean connected = false;
 
-        ProxyInfo networkProxy = null;
+        final ProxyInfo networkProxy;
         synchronized ( this.networkProxyMap )
         {
             networkProxy = (ProxyInfo) this.networkProxyMap.get( connector.getProxyId() );

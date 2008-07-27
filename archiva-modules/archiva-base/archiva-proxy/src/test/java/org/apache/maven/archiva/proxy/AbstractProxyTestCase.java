@@ -549,17 +549,19 @@ public abstract class AbstractProxyTestCase
             // This is just a warning.
             System.err.println( "[WARN] Skipping setup of testable managed repository, source dir does not exist: "
                 + sourceDir );
-            return;
         }
-
-        // Test that the source is a dir.
-        if ( !sourceDir.isDirectory() )
+        else
         {
-            fail( "Unable to setup testable managed repository, source is not a directory: " + sourceDir );
-        }
 
-        // Copy directory structure.
-        copyDirectoryStructure( sourceDir, destDir );
+            // Test that the source is a dir.
+            if ( !sourceDir.isDirectory() )
+            {
+                fail( "Unable to setup testable managed repository, source is not a directory: " + sourceDir );
+            }
+
+            // Copy directory structure.
+            copyDirectoryStructure( sourceDir, destDir );
+        }
     }
 
     protected void setManagedNewerThanRemote( File managedFile, File remoteFile )

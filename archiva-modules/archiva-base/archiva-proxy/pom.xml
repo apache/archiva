@@ -72,6 +72,18 @@
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <version>6.1.11</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http-lightweight</artifactId>
+      <version>${wagon.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
