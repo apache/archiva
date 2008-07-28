@@ -92,6 +92,7 @@ public class SearchResults
     {
         StringBuffer key = new StringBuffer();
 
+        key.append( StringUtils.defaultString( artifact.getModel().getRepositoryId() ) ).append( ":" );
         key.append( StringUtils.defaultString( artifact.getGroupId() ) ).append( ":" );
         key.append( StringUtils.defaultString( artifact.getArtifactId() ) );
 

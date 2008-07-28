@@ -130,8 +130,7 @@ public class IndexJavaPublicMethodsConsumer
                     file.getAbsolutePath().endsWith( ".tar.gz" ) || file.getAbsolutePath().endsWith( ".tar.bz2" ) ||
                     file.getAbsolutePath().endsWith( ".car" ) || file.getAbsolutePath().endsWith( ".sar" ) ||
                     file.getAbsolutePath().endsWith( ".mar" ) || file.getAbsolutePath().endsWith( ".rar" ) )
-            {
-            
+            {            
                 if( file.exists() )
                 {
                     List<String> files = readFilesInArchive( file );
@@ -140,6 +139,8 @@ public class IndexJavaPublicMethodsConsumer
                     
                     // NOTE: what about public variables? should these be indexed too?
                     RepositoryContentIndex bytecodeIndex = repoIndexFactory.createBytecodeIndex( repoContent.getRepository() );
+                    
+                    artifact.getModel().setRepositoryId( repoContent.getId() );
                     
                     BytecodeRecord bytecodeRecord = new BytecodeRecord();
                     bytecodeRecord.setFilename( file.getName() );

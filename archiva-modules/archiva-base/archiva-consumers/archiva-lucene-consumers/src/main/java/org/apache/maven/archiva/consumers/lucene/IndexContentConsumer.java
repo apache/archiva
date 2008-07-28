@@ -171,7 +171,8 @@ public class IndexContentConsumer
             {
                 ArtifactReference ref = repository.toArtifactReference( path );
                 ArchivaArtifact artifact = new ArchivaArtifact( ref );
-                record.setArtifact( artifact );
+                artifact.getModel().setRepositoryId( repository.getId() );
+                record.setArtifact( artifact );                
             }
             catch ( LayoutException e )
             {

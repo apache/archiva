@@ -129,7 +129,7 @@ public class DefaultCrossRepositorySearchTest
 
     public void testSearchTerm_Org()
         throws Exception
-    {
+    {        
         CrossRepositorySearch search = lookupCrossRepositorySearch();
 
         String expectedRepos[] = new String[] {
@@ -140,12 +140,12 @@ public class DefaultCrossRepositorySearchTest
             "org","org2","org3","org4","org5","org6","org7"
         };
         
-        assertSearchResults( expectedRepos, expectedResults, search, "org", null );
+        assertSearchResults( expectedRepos, expectedResults, search, "org", null, false );
     }
 
     public void testSearchTerm_Junit()
         throws Exception
-    {
+    {        
         CrossRepositorySearch search = lookupCrossRepositorySearch();
         
         String expectedRepos[] = new String[] {
@@ -156,12 +156,12 @@ public class DefaultCrossRepositorySearchTest
             "junit","junit2","junit3"
         };
         
-        assertSearchResults( expectedRepos, expectedResults, search, "junit", null );
+        assertSearchResults( expectedRepos, expectedResults, search, "junit", null, false );
     }
 
     public void testSearchInvalidTerm()
         throws Exception
-    {
+    {        
         CrossRepositorySearch search = lookupCrossRepositorySearch();
 
         String expectedRepos[] = new String[] {
@@ -172,12 +172,12 @@ public class DefaultCrossRepositorySearchTest
             // Nothing.
         };
         
-        assertSearchResults( expectedRepos, expectedResults, search, "monosodium", null );
+        assertSearchResults( expectedRepos, expectedResults, search, "monosodium", null, false );
     }
     
     public void testSearchWithinSearchResults()
         throws Exception
-    {
+    {        
         CrossRepositorySearch search = lookupCrossRepositorySearch();
 
         String expectedRepos[] = new String[] {
@@ -189,7 +189,7 @@ public class DefaultCrossRepositorySearchTest
         };
         
         // first search
-        assertSearchResults( expectedRepos, expectedResults, search, "org", null );
+        assertSearchResults( expectedRepos, expectedResults, search, "org", null, false );
         
         List<String> previousSearchTerms = new ArrayList<String>();
         previousSearchTerms.add( "org" );        
@@ -197,12 +197,12 @@ public class DefaultCrossRepositorySearchTest
             "org.apache.maven.archiva.record", "org.apache.maven.archiva.record2",
                 "org.apache.maven.archiva.record3", "org.apache.maven.archiva.record4",
                 "org.apache.maven.archiva.record5", "org.apache.maven.archiva.record6",
-                "org.apache.maven.archiva.record7"
+                "org.apache.maven.archiva.record7" 
         };
         
         //second search
         assertSearchResults( expectedRepos, secondSearchExpectedResults, search, "org.apache.maven.archiva.record",
-                             previousSearchTerms );
+                             previousSearchTerms, false );
         
         previousSearchTerms.add( "org.apache.maven.archiva.record" );
         String thirdSearchExpectedResults[] = new String[] { 
@@ -210,11 +210,40 @@ public class DefaultCrossRepositorySearchTest
         };
         
         //third search
-        assertSearchResults( expectedRepos, thirdSearchExpectedResults, search, "junit", previousSearchTerms );        
+        assertSearchResults( expectedRepos, thirdSearchExpectedResults, search, "junit", previousSearchTerms, false );        
+    }
+    
+    public void testSearchForClassesAndPackages()
+        throws Exception
+    {                
+        CrossRepositorySearch search = lookupCrossRepositorySearch();
+
+        String expectedRepos[] = new String[] {
+            TEST_DEFAULT_REPO_ID
+        };
+                
+        String expectedResults[] = new String[] { 
+            "archiva-common-1.0.jar"
+        };
+        
+        // class with packagename search
+        assertSearchResults( expectedRepos, expectedResults, search, 
+                             "org.apache.maven.archiva.common.utils.BaseFile", null, true );
+        // class name search
+        assertSearchResults( expectedRepos, expectedResults, search, 
+                             "BaseFile", null, true );
+                
+        String expectedMethodSearchResults[] = new String[] { 
+            "continuum-webapp-1.0.3-SNAPSHOT.war"
+        };
+        
+        // method search
+        assertSearchResults( expectedRepos, expectedMethodSearchResults, search,
+                             "org.apache.maven.continuum.web.action.BuildDefinitionAction.isBuildFresh", null, true );        
     }
     
     private void assertSearchResults( String expectedRepos[], String expectedResults[], CrossRepositorySearch search,
-                                      String term, List<String> previousSearchTerms )
+                                      String term, List<String> previousSearchTerms, boolean bytecode )
         throws Exception
     {
         SearchResultLimits limits = new SearchResultLimits( 0 );
@@ -226,7 +255,14 @@ public class DefaultCrossRepositorySearchTest
         SearchResults results = null;
         if( previousSearchTerms == null )
         {
-            results = search.searchForTerm( "guest", selectedRepos, term, limits );
+            if( bytecode )
+            {
+                results = search.searchForBytecode( "guest", selectedRepos, term, limits );
+            }
+            else
+            {
+                results = search.searchForTerm( "guest", selectedRepos, term, limits );
+            }
         }
         else
         {

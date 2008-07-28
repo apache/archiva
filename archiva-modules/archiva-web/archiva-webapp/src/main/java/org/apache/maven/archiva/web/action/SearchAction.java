@@ -90,6 +90,8 @@ public class SearchAction
     private String completeQueryString;
     
     private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
+    
+    private static final String[] BYTECODE_KEYWORDS = new String[] { "class:", "package:", "method:" };
 
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -110,14 +112,21 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        if( searchResultsOnly && !completeQueryString.equals( "" ) )
-        { 
-            results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
+        if( isBytecodeSearch( q ) )
+        {   
+            results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, removeKeywords( q ), limits );
         }
         else
         {
-            completeQueryString = "";
-            results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+            if( searchResultsOnly && !completeQueryString.equals( "" ) )
+            { 
+                results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
+            }
+            else
+            {
+                completeQueryString = "";
+                results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+            }
         }
         
         if ( results.isEmpty() )
@@ -310,4 +319,25 @@ public class SearchAction
     {
         this.completeQueryString = completeQueryString;
     }    
+    
+    private boolean isBytecodeSearch( String queryString )
+    {
+        if( queryString.startsWith( BYTECODE_KEYWORDS[0] ) || queryString.startsWith( BYTECODE_KEYWORDS[1] ) || 
+                        queryString.startsWith( BYTECODE_KEYWORDS[2] ) )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private String removeKeywords( String queryString )
+    {  
+        String qString = StringUtils.uncapitalize( queryString );
+        qString = StringUtils.removeStart( queryString, BYTECODE_KEYWORDS[0] );
+        qString = StringUtils.removeStart( qString, BYTECODE_KEYWORDS[1] );
+        qString = StringUtils.removeStart( qString, BYTECODE_KEYWORDS[2] );
+        
+        return qString;
+    }
 }

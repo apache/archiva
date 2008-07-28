@@ -134,9 +134,7 @@ public class DefaultCrossRepositorySearch
                                         SearchResultLimits limits, List<String> previousSearchTerms )
     {
         List<RepositoryContentIndex> indexes = getFileContentIndexes( principal, selectedRepos );
-        List<RepositoryContentIndex> bytecodeIndices = getBytecodeIndexes( principal, selectedRepos );        
-        indexes.addAll( bytecodeIndices );
-
+        
         try
         {
             QueryParser parser = new FileContentHandlers().getQueryParser();
