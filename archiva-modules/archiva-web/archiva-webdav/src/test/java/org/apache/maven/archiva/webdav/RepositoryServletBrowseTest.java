@@ -58,7 +58,7 @@ public class RepositoryServletBrowseTest
 
         // dumpResponse( response );
 
-        String expectedLinks[] = new String[] { "./commons-lang/", "./net/", "./org/" };
+        String expectedLinks[] = new String[] { "commons-lang/", "net/", "org/" };
         assertLinks(expectedLinks, response.getLinks());
     }
     
@@ -69,7 +69,7 @@ public class RepositoryServletBrowseTest
         WebResponse response = sc.getResponse( request );
         assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
         
-        String expectedLinks[] = new String[] { "../", "./apache/", "./codehaus/" };
+        String expectedLinks[] = new String[] { "../", "apache/", "codehaus/" };
         assertLinks(expectedLinks, response.getLinks());
     }
     

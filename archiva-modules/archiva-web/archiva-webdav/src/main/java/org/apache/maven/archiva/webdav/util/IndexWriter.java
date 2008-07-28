@@ -19,6 +19,7 @@ package org.apache.maven.archiva.webdav.util;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.io.OutputContext;
 
@@ -92,6 +93,9 @@ public class IndexWriter
         {
             File file = new File(logicalResource);
             String parentName = file.getParent().equals("") ? "/" : file.getParent();
+            
+            //convert to unix path in case archiva is hosted on windows
+            parentName = StringUtils.replace(parentName, "\\", "/" );
 
             writer.println("<ul>");
             writer.println("<li><a href=\"../\">" + parentName + "</a> <i><small>(Parent)</small></i></li>");
@@ -154,11 +158,11 @@ public class IndexWriter
     {        
         if (directory)
         {
-            writer.println("<li><a href=\"./" + resourceName + "/\">" + resourceName + "</a></li>");
+            writer.println("<li><a href=\"" + resourceName + "/\">" + resourceName + "</a></li>");
         }
         else
         {
-            writer.println("<li><a href=\"./" + resourceName + "\">" + resourceName + "</a></li>");
+            writer.println("<li><a href=\"" + resourceName + "\">" + resourceName + "</a></li>");
         }
     }    
 }
