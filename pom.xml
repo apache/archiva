@@ -1037,4 +1037,19 @@
       </build>
     </profile>
   </profiles>
+
+  <!-- temporarily added for redback 1.0.3-SNAPSHOT | remove once redback is released! -->
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>codehaus.org.snapshots</id>
+      <name>Codehaus Snapshots Repository</name>
+      <url>http://snapshots.repository.codehaus.org</url>
+    </repository>
+  </repositories>
 </project>
