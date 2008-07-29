@@ -91,7 +91,7 @@ public class SearchAction
     
     private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
     
-    private static final String[] BYTECODE_KEYWORDS = new String[] { "class:", "package:", "method:" };
+    private static final String BYTECODE_KEYWORD = "bytecode:";
 
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -114,7 +114,7 @@ public class SearchAction
 
         if( isBytecodeSearch( q ) )
         {   
-            results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, removeKeywords( q ), limits );
+            results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, removeKeyword( q ), limits );
         }
         else
         {
@@ -322,21 +322,18 @@ public class SearchAction
     
     private boolean isBytecodeSearch( String queryString )
     {
-        if( queryString.startsWith( BYTECODE_KEYWORDS[0] ) || queryString.startsWith( BYTECODE_KEYWORDS[1] ) || 
-                        queryString.startsWith( BYTECODE_KEYWORDS[2] ) )
+        if( queryString.startsWith( BYTECODE_KEYWORD ) )
         {
-            return true;
+            return true;            
         }
         
         return false;
     }
     
-    private String removeKeywords( String queryString )
+    private String removeKeyword( String queryString )
     {  
         String qString = StringUtils.uncapitalize( queryString );
-        qString = StringUtils.removeStart( queryString, BYTECODE_KEYWORDS[0] );
-        qString = StringUtils.removeStart( qString, BYTECODE_KEYWORDS[1] );
-        qString = StringUtils.removeStart( qString, BYTECODE_KEYWORDS[2] );
+        qString= StringUtils.remove( queryString, BYTECODE_KEYWORD );
         
         return qString;
     }

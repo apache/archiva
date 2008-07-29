@@ -33,8 +33,8 @@
 
   <p>
     Enter your search terms. A variety of data will be searched for your keywords.<br/>
-    To search for java classes, packages or methods, append the keywords "<i>class:</i>",
-    "<i>package:</i>" or "<i>method:</i>" before your query. Example, class:MyClass 
+    To search for java classes, packages or methods, append the keyword "<i>bytecode:</i>" 
+    to your query. Example, bytecode:MyClass or bytecode:myMethod 
     <ww:actionerror/>
   </p>
 </div>

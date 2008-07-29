@@ -148,7 +148,7 @@ public class IndexJavaPublicMethodsConsumer
                     bytecodeRecord.setFiles( files );
                     bytecodeRecord.setMethods( mapOfClassesAndMethods.get( METHODS ) );
                     bytecodeRecord.setArtifact( artifact );
-                    bytecodeRecord.setRepositoryId( artifact.getModel().getRepositoryId() );
+                    bytecodeRecord.setRepositoryId( repoContent.getId() );
                     bytecodeIndex.modifyRecord( bytecodeRecord );
                 }
             }

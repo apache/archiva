@@ -81,7 +81,8 @@ public class SearchResults
         {
             hit = new SearchResultHit();
         }
-
+        
+        hit.setRepositoryId( bytecode.getRepositoryId() );
         hit.addArtifact( bytecode.getArtifact() );
         hit.setContext( null ); // TODO: provide context on why this is a valuable hit.
 
