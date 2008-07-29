@@ -95,11 +95,6 @@ public class DefaultRepositoryProxyConnectors
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role="org.apache.maven.wagon.Wagon"
-     */
-    private Map<String, Wagon> wagons;
-
-    /**
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
@@ -137,6 +132,11 @@ public class DefaultRepositoryProxyConnectors
      * @plexus.requirement
      */
     private RepositoryContentConsumers consumers;
+
+    /**
+     * @plexus.requirement
+     */
+    private WagonFactory wagonFactory;
 
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException
@@ -589,12 +589,17 @@ public class DefaultRepositoryProxyConnectors
             return null;
         }
 
+        // MRM-631 - the lightweight wagon does not reset these - remove if we switch to httpclient based wagon
+        String previousHttpProxyHost = System.getProperty( "http.proxyHost" );
+        String previousHttpProxyPort = System.getProperty( "http.proxyPort" );
+        String previousProxyExclusions = System.getProperty( "http.nonProxyHosts" );
+
         Wagon wagon = null;
         try
         {
             RepositoryURL repoUrl = remoteRepository.getURL();
             String protocol = repoUrl.getProtocol();
-            wagon = (Wagon) wagons.get( protocol );
+            wagon = (Wagon) wagonFactory.getWagon( "wagon#" + protocol );
             if ( wagon == null )
             {
                 throw new ProxyException( "Unsupported target repository protocol: " + protocol );
@@ -633,6 +638,32 @@ public class DefaultRepositoryProxyConnectors
                 try
                 {
                     wagon.disconnect();
+
+                    // MRM-631 - the lightweight wagon does not reset these - remove if we switch to httpclient based wagon
+                    if ( previousHttpProxyHost != null )
+                    {
+                        System.setProperty( "http.proxyHost", previousHttpProxyHost );
+                    }
+                    else
+                    {
+                        System.getProperties().remove( "http.proxyHost" );
+                    }
+                    if ( previousHttpProxyPort != null )
+                    {
+                        System.setProperty( "http.proxyPort", previousHttpProxyPort );
+                    }
+                    else
+                    {
+                        System.getProperties().remove( "http.proxyPort" );
+                    }
+                    if ( previousProxyExclusions != null )
+                    {
+                        System.setProperty( "http.nonProxyHosts", previousProxyExclusions );
+                    }
+                    else
+                    {
+                        System.getProperties().remove( "http.nonProxyHosts" );
+                    }
                 }
                 catch ( ConnectionException e )
                 {
@@ -970,14 +1001,7 @@ public class DefaultRepositoryProxyConnectors
             wagon.setTimeout(timeoutInMilliseconds);
 
             Repository wagonRepository = new Repository( remoteRepository.getId(), remoteRepository.getURL().toString() );
-            if ( networkProxy != null )
-            {
-                wagon.connect( wagonRepository, authInfo, networkProxy );
-            }
-            else
-            {
-                wagon.connect( wagonRepository, authInfo );
-            }
+            wagon.connect( wagonRepository, authInfo, networkProxy );
             connected = true;
         }
         catch ( ConnectionException e )

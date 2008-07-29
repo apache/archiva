@@ -21,7 +21,6 @@ package org.apache.maven.archiva.proxy;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -160,6 +159,9 @@ public class HttpProxyTransferTest
     public void testGetOverHttpProxy()
         throws Exception
     {
+        assertNull( System.getProperty( "http.proxyHost" ) );
+        assertNull( System.getProperty( "http.proxyPort" ) );
+        
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
 
         // Configure Connector (usually done within archiva.xml configuration)
@@ -183,6 +185,9 @@ public class HttpProxyTransferTest
         String expectedContents = FileUtils.readFileToString( sourceFile, null );
         String actualContents = FileUtils.readFileToString( downloadedFile, null );
         assertEquals( "Check file contents.", expectedContents, actualContents );
+        
+        assertNull( System.getProperty( "http.proxyHost" ) );
+        assertNull( System.getProperty( "http.proxyPort" ) );
     }
 
     private void addConnector()

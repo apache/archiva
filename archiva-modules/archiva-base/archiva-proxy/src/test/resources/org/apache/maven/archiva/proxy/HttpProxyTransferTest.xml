@@ -49,10 +49,6 @@
           <field-name>archivaConfiguration</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.wagon.Wagon</role>
-          <field-name>wagons</field-name>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
           <role-hint>mocked</role-hint>
         </requirement>
@@ -74,6 +70,10 @@
         <requirement>
           <role>org.apache.maven.archiva.policies.urlcache.UrlFailureCache</role>
           <field-name>urlFailureCache</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.proxy.WagonFactory</role>
+          <role-hint>default</role-hint>
         </requirement>
       </requirements>
     </component>

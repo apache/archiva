@@ -54,8 +54,7 @@
           <field-name>archivaConfiguration</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.wagon.Wagon</role>
-          <field-name>wagons</field-name>
+          <role>org.apache.maven.archiva.proxy.WagonFactory</role>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>

@@ -22,11 +22,9 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <bean id="urlFailureCache"
-    class="org.apache.maven.archiva.policies.urlcache.DefaultUrlFailureCache">
-    <!-- collaborators and configuration for this bean go here -->
-    <constructor-arg ref="cache#url-failures-cache"
-      type="org.codehaus.plexus.cache.Cache" />
+  <bean id="wagonFactory"
+    class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
+    <property name="serviceLocatorInterface"
+      value="org.apache.maven.archiva.proxy.WagonFactory" />
   </bean>
-
 </beans>
