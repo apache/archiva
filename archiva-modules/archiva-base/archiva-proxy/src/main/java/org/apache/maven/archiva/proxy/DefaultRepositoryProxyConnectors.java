@@ -822,9 +822,15 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( WagonException e )
         {
-            throw new ProxyException(
-                "Download failure on resource [" + remoteRepository.getURL() + "/" + remotePath + "]:" + e.getMessage(),
-                e );
+            // TODO: shouldn't have to drill into the cause, but TransferFailedException is often not descriptive enough
+            
+            String msg =
+                "Download failure on resource [" + remoteRepository.getURL() + "/" + remotePath + "]:" + e.getMessage();
+            if ( e.getCause() != null )
+            {
+                msg += " (cause: " + e.getCause() + ")";
+            }
+            throw new ProxyException( msg, e );
         }
         finally
         {
