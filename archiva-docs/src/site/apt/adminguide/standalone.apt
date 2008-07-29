@@ -159,7 +159,7 @@ Installing Standalone Distribution of Apache Archiva
    and the configuration files (in the conf directory, or the other locations specified above) and use a new extracted installation of Archiva.
 
    Note that the <<<users>>> database must always be retained as it contains the permissions and user information across versions. However,
-   in order to take advantage of the improvements in search in Archiva 1.1, s.a. search by java class/package/method, the archiva database must
+   in order to take advantage of the improvements in search in Archiva 1.1 (and higher versions), s.a. search by java class/package/method, the archiva database must
    be re-created. So you need to delete the <<<data/databases/archiva>>> directory, delete the <<<.index>>> directories of your respective repositories, and execute the repository and database scanners after
    starting Archiva.
 
