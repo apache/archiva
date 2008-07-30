@@ -980,32 +980,48 @@ public class DefaultRepositoryProxyConnectors
         {
             networkProxy = (ProxyInfo) this.networkProxyMap.get( connector.getProxyId() );
         }
+        
+        if ( log.isDebugEnabled() )
+        {            
+            if ( networkProxy != null )
+            {
+                // TODO: move to proxyInfo.toString()
+                String msg =
+                    "Using network proxy " + networkProxy.getHost() + ":" + networkProxy.getPort()
+                        + " to connect to remote repository " + remoteRepository.getURL();
+                if ( networkProxy.getNonProxyHosts() != null )
+                {
+                    msg += "; excluding hosts: " + networkProxy.getNonProxyHosts();
+                }
+                if ( StringUtils.isNotBlank( networkProxy.getUserName() ) )
+                {
+                    msg += "; as user: " + networkProxy.getUserName();
+                }
+                log.debug( msg );
+            }
+        }
+
+        AuthenticationInfo authInfo = null;
+        String username = remoteRepository.getRepository().getUsername();
+        String password = remoteRepository.getRepository().getPassword();
+
+        if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
+        {
+            log.debug( "Using username " + username + " to connect to remote repository "
+                + remoteRepository.getURL() );
+            authInfo = new AuthenticationInfo();
+            authInfo.setUserName( username );
+            authInfo.setPassword( password );
+        }
+
+        //Convert seconds to milliseconds
+        int timeoutInMilliseconds = remoteRepository.getRepository().getTimeout() * 1000;
+
+        //Set timeout
+        wagon.setTimeout(timeoutInMilliseconds);
 
         try
         {
-            AuthenticationInfo authInfo = null;
-            String username = remoteRepository.getRepository().getUsername();
-            String password = remoteRepository.getRepository().getPassword();
-
-            if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
-            {
-                log.debug( "Using username " + username + " to connect to remote repository "
-                                       + remoteRepository.getURL() );
-                authInfo = new AuthenticationInfo();
-                authInfo.setUserName( username );
-                authInfo.setPassword( password );
-            }
-            else
-            {
-                log.debug( "No authentication for remote repository needed" );
-            }
-
-            //Convert seconds to milliseconds
-            int timeoutInMilliseconds = remoteRepository.getRepository().getTimeout() * 1000;
-
-            //Set timeout
-            wagon.setTimeout(timeoutInMilliseconds);
-
             Repository wagonRepository = new Repository( remoteRepository.getId(), remoteRepository.getURL().toString() );
             wagon.connect( wagonRepository, authInfo, networkProxy );
             connected = true;
