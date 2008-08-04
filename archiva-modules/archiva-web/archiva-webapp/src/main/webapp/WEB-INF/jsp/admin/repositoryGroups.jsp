@@ -93,6 +93,8 @@
   </div>
   </c:if>
   
+  <c:set var="numberOfRepos" value="${fn:length(repositoryGroup.value.repositories)}" />
+
   <c:forEach items="${repositoryGroup.value.repositories}" var="repository" varStatus="r">
   
   <c:choose>
@@ -119,12 +121,16 @@
           <ww:param name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
           <ww:param name="repoId" value="managedRepositories['${repository}'].id"/>
         </ww:url>
-        <ww:a href="%{sortUpRepositoryUrl}" cssClass="up" title="Move Repository Up">
-          <img src="${iconUpUrl}"/>
-        </ww:a>
-        <ww:a href="%{sortDownRepositoryUrl}" cssClass="down" title="Move Repository Down">
-          <img src="${iconDownUrl}"/>
-        </ww:a>
+        <c:if test="${r.count > 1}">
+          <ww:a href="%{sortUpRepositoryUrl}" cssClass="up" title="Move Repository Up">
+            <img src="${iconUpUrl}"/>
+          </ww:a>
+        </c:if>
+        <c:if test="${r.count < numberOfRepos}">
+          <ww:a href="%{sortDownRepositoryUrl}" cssClass="down" title="Move Repository Down">
+            <img src="${iconDownUrl}"/>
+          </ww:a>
+        </c:if>
         <ww:a href="%{removeRepositoryUrl}" cssClass="delete" title="Delete Repository">
           <img src="${iconDeleteUrl}"/>
         </ww:a>
