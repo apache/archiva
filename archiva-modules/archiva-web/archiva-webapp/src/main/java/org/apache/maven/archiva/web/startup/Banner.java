@@ -220,7 +220,7 @@ public class Banner
 
     public void display() 
     {
-        String banner = getBanner( ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
-        LoggerFactory.getLogger( Banner.class ).info( StringUtils.repeat( "_", 25 ) + "\n" + banner );
+        String banner = getBanner( ArchivaVersion.determineVersion() );
+    	LoggerFactory.getLogger( Banner.class ).info( StringUtils.repeat( "_", 25 ) + "\n" + banner );
     }
 }

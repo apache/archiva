@@ -19,13 +19,13 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 
 /**
  * ArchivaVersion 
@@ -41,14 +41,15 @@ public class ArchivaVersion
     {
     }
 
-    public static String determineVersion( ClassLoader cloader )
+    public static String determineVersion(  )
     {
         if ( version != null )
         {
             return version;
         }
         
-        InputStream is = cloader.getResourceAsStream( "/META-INF/maven/org.apache.archiva/archiva-configuration/pom.properties" );
+        InputStream is = ArchivaConfiguration.class.getResourceAsStream( "/META-INF/maven/org.apache.archiva/archiva-configuration/pom.properties" );
+        
         if ( is != null )
         {
             try
