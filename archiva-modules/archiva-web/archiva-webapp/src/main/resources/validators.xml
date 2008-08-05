@@ -34,5 +34,6 @@
   <validator name="regex" class="com.opensymphony.xwork.validator.validators.RegexFieldValidator"/>
   <validator name="interval" class="org.apache.maven.archiva.web.validator.IntervalValidator"/>
   <validator name="syncedrepo" class="org.apache.maven.archiva.web.validator.SyncedRepositoryValidator"/>
+  <validator name="crontab" class="org.apache.maven.archiva.web.validator.CronExpressionValidator"/>
 </validators>
 
