@@ -68,6 +68,7 @@ import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
@@ -388,11 +389,18 @@ public class UploadAction
                 return ERROR;
             }
 
+            String pomFilename = filename;
+            if( classifier != null && !"".equals( classifier ) )
+            {
+                pomFilename = StringUtils.remove( pomFilename, "-" + classifier );
+            }
+            pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
+                
             if ( generatePom )
             {
                 try
                 {
-                    File generatedPomFile = createPom( targetPath, filename );
+                    File generatedPomFile = createPom( targetPath, pomFilename );
                     consumers.executeConsumers( repoConfig, generatedPomFile );
                 }
                 catch ( IOException ie )
@@ -410,10 +418,9 @@ public class UploadAction
             if ( pomFile != null && pomFile.length() > 0 ) 
             {
                 try
-                {
-                    String targetFilename = filename.replaceAll( packaging, "pom" );
-                    copyFile( pomFile, targetPath, targetFilename );
-                    consumers.executeConsumers( repoConfig, new File( targetPath, targetFilename ) );
+                {                    
+                    copyFile( pomFile, targetPath, pomFilename );
+                    consumers.executeConsumers( repoConfig, new File( targetPath, pomFilename ) );
                 }
                 catch ( IOException ie )
                 {
@@ -482,9 +489,7 @@ public class UploadAction
         projectModel.setVersion( version );
         projectModel.setPackaging( packaging );
         
-        filename = FilenameUtils.removeExtension(filename) + ".pom";
-        File pomFile = new File( targetPath, filename);
-        
+        File pomFile = new File( targetPath, filename);        
         pomWriter.write( projectModel, pomFile );
 
         return pomFile;
