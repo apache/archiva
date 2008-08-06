@@ -951,8 +951,8 @@
   </dependencyManagement>
   <properties>
     <maven.version>2.0.8</maven.version>
-    <wagon.version>1.0-SNAPSHOT</wagon.version>
-    <redback.version>1.0.3-SNAPSHOT</redback.version>
+    <wagon.version>1.0-beta-4</wagon.version>
+    <redback.version>1.0.3</redback.version>
     <jetty.version>6.1.6</jetty.version>
   </properties>
   <profiles>
