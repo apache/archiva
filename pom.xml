@@ -37,9 +37,9 @@
   <version>1.2-SNAPSHOT</version>
   <url>http://archiva.apache.org</url>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/archiva/trunk</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-1.1.x</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/branches/archiva-1.1.x</developerConnection>
+    <url>https://svn.apache.org/repos/asf/archiva/tags/archiva-1.1.x</url>
   </scm>
 
   <build>
@@ -953,7 +953,7 @@
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-4</wagon.version>
     <redback.version>1.0.3</redback.version>
-    <jetty.version>6.1.11</jetty.version>
+    <jetty.version>6.1.6</jetty.version>
   </properties>
   <profiles>
     <profile>
