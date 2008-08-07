@@ -37,9 +37,9 @@
   <version>1.2-SNAPSHOT</version>
   <url>http://archiva.apache.org</url>
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-1.1.x</connection>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/archiva/branches/archiva-1.1.x</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/branches/archiva-1.1.x</developerConnection>
-    <url>https://svn.apache.org/repos/asf/archiva/tags/archiva-1.1.x</url>
+    <url>https://svn.apache.org/repos/asf/archiva/branches/archiva-1.1.x</url>
   </scm>
 
   <build>
