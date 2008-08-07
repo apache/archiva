@@ -1,12 +1,12 @@
  -----
- Release Notes for Archiva 1.1
+ Release Notes for Archiva 1.1.1
  -----
 
-Release Notes for Archiva 1.1 
+Release Notes for Archiva 1.1.1
 
-  The Apache Archiva team would like to announce the release of Archiva 1.1.
+  The Apache Archiva team would like to announce the release of Archiva 1.1.1.
 
-  Archiva 1.1 is {{{http://archiva.apache.org/download.html} available for download from the web site}}.
+  Archiva 1.1.1 is {{{http://archiva.apache.org/download.html} available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
 
@@ -57,7 +57,37 @@ Release Notes for Archiva 1.1
 
   The Archiva 1.1 feature set can be seen in the {{{tour/index.html} feature tour}}.
 
-  The following describes the changes since the 1.0.2 release. The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13861&styleName=Text&projectId=10980} in JIRA}}.
+* Changes in Archiva 1.1.1
+
+** Bug
+
+     * [MRM-584] - Newly created user cannot login
+
+     * [MRM-631] - network proxy is always used when defined
+
+     * [MRM-814] - Invalid cron expressions are accepted in Database Scanning
+
+     * [MRM-873] - repository groups - move up/down should not show when it's not possible
+
+     * [MRM-883] - RSS syndication java.lang.ArrayIndexOutOfBoundsException
+
+     * [MRM-884] - network proxy fails after upgrading to archiva 1.1
+
+     * [MRM-888] - add notes on reindexing to the upgrade docs
+
+     * [MRM-891] - Unable to use archiva as http source with maven-stage-plugin
+
+     * [MRM-892] - Search for java classes and package names is broken
+
+     * [MRM-895] - Archiva version doesn't appear on the footer when it is installed on Tomcat
+
+     * [MRM-896] - classifier is appended to pom filename after artifact upload
+
+** Improvement
+
+     * [MRM-817] - Artifact information screen should indicate the name of repository in which the artifact resides
+
+  The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=14461&styleName=Text&projectId=10980} in JIRA}}.
 
 * Changes in Archiva 1.1
 
@@ -251,6 +281,8 @@ Release Notes for Archiva 1.1
 
     * [MRM-754] - Update the screenshots in the docs
     
+  The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13861&styleName=Text&projectId=10980} in JIRA}}.
+
 * Changes in Archiva 1.0.2
 
 ** Bug
