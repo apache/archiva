@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+  <field name="repository.id">
+    <field-validator type="requiredstring">
+      <message>You must enter a repository identifier.</message>
+    </field-validator>
+  </field>
+  <field name="repository.location">
+    <field-validator type="requiredstring">
+      <message>You must enter a directory.</message>
+    </field-validator>
+  </field>
+  <field name="repository.name">
+    <field-validator type="requiredstring">
+      <message>You must enter a repository name.</message>
+    </field-validator>
+  </field>   
+  <field name="repository.retentionCount">
+    <field-validator type="int">
+      <param name="min">1</param>
+      <param name="max">100</param>
+      <message>Repository Purge By Retention Count needs to be between ${min} and ${max}.</message>
+    </field-validator>    
+  </field>
+  <field name="repository.daysOlder">
+    <field-validator type="int">
+      <param name="min">0</param>
+      <message>Repository Purge By Days Older Than needs to be larger than ${min}.</message>
+    </field-validator>    
+  </field>
+</validators>
