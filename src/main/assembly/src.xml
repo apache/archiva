@@ -38,20 +38,20 @@
       <outputDirectory>/</outputDirectory>
       <excludes>
         <exclude>**/target/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/archiva-applet.jar</exclude>
-        <exclude>archiva-webapp/src/main/webapp/META-INF/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/images/redback/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/template/redback/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/WEB-INF/classes/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/WEB-INF/lib/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/WEB-INF/database/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/WEB-INF/logs/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/redback/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/css/redback/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/WEB-INF/jsp/redback/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/WEB-INF/template/redback/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/WEB-INF/logs/**</exclude>
-        <exclude>archiva-webapp/src/main/webapp/WEB-INF/temp/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/archiva-applet.jar</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/META-INF/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/images/redback/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/template/redback/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/classes/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/lib/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/database/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/logs/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/redback/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/css/redback/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/jsp/redback/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/template/redback/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/logs/**</exclude>
+        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/temp/**</exclude>
       </excludes>
     </fileSet>
     <fileSet>
