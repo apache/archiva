@@ -969,7 +969,6 @@
                 <descriptor>src/main/assembly/src.xml</descriptor>
               </descriptors>
               <tarLongFileMode>gnu</tarLongFileMode>
-              <appendAssemblyId>false</appendAssemblyId>
               <finalName>apache-archiva-${project.version}-src</finalName>
             </configuration>
             <executions>
