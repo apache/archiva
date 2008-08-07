@@ -64,6 +64,10 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl104-over-slf4j</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
