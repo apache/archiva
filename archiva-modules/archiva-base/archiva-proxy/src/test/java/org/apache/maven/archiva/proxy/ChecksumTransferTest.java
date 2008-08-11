@@ -474,7 +474,8 @@ public class ChecksumTransferTest
         assertNoTempFiles( expectedFile );
         // There are no hashcodes on the proxy side to download.
         // The FAIL policy will delete the checksums as bad.
-        assertChecksums( expectedFile, null, null );
+        
+        assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
     }
 
     public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingFixSetting()
