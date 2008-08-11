@@ -367,27 +367,6 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
-    private long getLastModified( File file )
-    {
-        if ( !file.exists() || !file.isFile() )
-        {
-            return 0;
-        }
-
-        return file.lastModified();
-    }
-
-    private boolean hasBeenUpdated( File file, long originalLastModified )
-    {
-        if ( !file.exists() || !file.isFile() )
-        {
-            return false;
-        }
-
-        long currentLastModified = getLastModified( file );
-        return ( currentLastModified > originalLastModified );
-    }
-
     public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata )
     {
         File workingDir = createWorkingDirectory(repository);
@@ -487,6 +466,27 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
+    private long getLastModified( File file )
+    {
+        if ( !file.exists() || !file.isFile() )
+        {
+            return 0;
+        }
+
+        return file.lastModified();
+    }
+
+    private boolean hasBeenUpdated( File file, long originalLastModified )
+    {
+        if ( !file.exists() || !file.isFile() )
+        {
+            return false;
+        }
+
+        long currentLastModified = getLastModified( file );
+        return ( currentLastModified > originalLastModified );
+    }
+    
     private File toLocalRepoFile( ManagedRepositoryContent repository, RemoteRepositoryContent targetRepository,
                                   String targetPath )
     {
