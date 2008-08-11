@@ -352,7 +352,7 @@
       <email>james@atlassian.com</email>
       <organization>Atlassian</organization>
       <roles>
-        <roles>Committer</roles>
+        <role>Committer</role>
       </roles>
       <timezone>+11</timezone>
     </developer>
