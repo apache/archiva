@@ -72,6 +72,30 @@ public class RepositoryServletBrowseTest
         String expectedLinks[] = new String[] { "../", "apache/", "codehaus/" };
         assertLinks(expectedLinks, response.getLinks());
     }
+
+    public void testGetDirectoryWhichHasMatchingFile() //MRM-893
+        throws Exception
+    {
+        new File( repoRootInternal, "org/apache/archiva/artifactId/1.0" ).mkdirs();
+        new File( repoRootInternal, "org/apache/archiva/artifactId/1.0/artifactId-1.0.jar" ).createNewFile();
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId" );
+        WebResponse response = sc.getResponse( request );
+        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
+
+        request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/" );
+        response = sc.getResponse( request );
+        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
+        
+        request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar" );
+        response = sc.getResponse( request );
+        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
+        
+        request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar/" );
+        response = sc.getResponse( request );
+        assertEquals( "Response", HttpServletResponse.SC_NOT_FOUND, response.getResponseCode() );
+    }
+    
     
     private void assertLinks(String expectedLinks[], WebLink actualLinks[])
     {

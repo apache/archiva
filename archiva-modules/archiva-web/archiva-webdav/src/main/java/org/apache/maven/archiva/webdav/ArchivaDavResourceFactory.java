@@ -409,6 +409,17 @@ public class ArchivaDavResourceFactory
         throws DavException
     {
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
+        
+        //MRM-893, dont send back a file when user intentionally wants a directory
+        if ( locator.getHref( false ).endsWith( "/" ) )
+        {
+            if ( ! resourceFile.isDirectory() )
+            {
+                //force a resource not found 
+                return null;
+            }
+        }
+
         ArchivaDavResource resource =
             new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                     managedRepository.getRepository(), request.getRemoteAddr(),
