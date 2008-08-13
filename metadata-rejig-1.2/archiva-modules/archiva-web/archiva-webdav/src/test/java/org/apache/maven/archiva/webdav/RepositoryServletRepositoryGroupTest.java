@@ -77,6 +77,7 @@ public class RepositoryServletRepositoryGroupTest
     protected static final String REPO_GROUP_WITH_INVALID_REPOS = "group-with-invalid-repos";
     
     
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -119,6 +120,7 @@ public class RepositoryServletRepositoryGroupTest
         saveConfiguration( archivaConfiguration );
     }
     
+    @Override
     protected void tearDown()
         throws Exception
     {
@@ -275,7 +277,7 @@ public class RepositoryServletRepositoryGroupTest
         response = sc.getResource( request );
         
         assertResponseOK( response );
-        assertEquals( "d2321a573e0488bca571b624f891104009408dd8  maven-metadata-group-with-valid-repos.xml", response.getText() );
+        assertEquals( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml", response.getText() );
         
         // request the md5 checksum of the metadata
         request =
@@ -284,7 +286,7 @@ public class RepositoryServletRepositoryGroupTest
         response = sc.getResource( request );
                 
         assertResponseOK( response );
-        assertEquals( "79d271fbe8bd1d17b23273937750d407  maven-metadata-group-with-valid-repos.xml", response.getText().trim() );
+        assertEquals( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml", response.getText().trim() );
     }
         
     protected void assertResponseMethodNotAllowed( WebResponse response )

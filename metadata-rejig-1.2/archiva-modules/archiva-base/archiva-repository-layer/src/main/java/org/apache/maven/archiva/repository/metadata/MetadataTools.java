@@ -424,9 +424,8 @@ public class MetadataTools
     
     public void updateMetadata( ManagedRepositoryContent managedRepository, String logicalResource) throws RepositoryMetadataException
     {
-        ArchivaRepositoryMetadata metadata = null;
         final File metadataFile = new File(managedRepository.getRepoRoot(), logicalResource);
-//        final long lastUpdated = getExistingLastUpdated( metadataFile );
+        ArchivaRepositoryMetadata metadata = null;
         
         //Gather and merge all metadata available
         List<ArchivaRepositoryMetadata> metadatas = getMetadatasForManagedRepository(managedRepository, logicalResource);
@@ -448,12 +447,10 @@ public class MetadataTools
             updateMetadataVersions(availableVersions, metadata);
         }
         
-//        if ( lastUpdated > 0 )
-//        {
-//            metadata.setLastUpdatedTimestamp( toLastUpdatedDate( lastUpdated ) );
-//        }
-        
         RepositoryMetadataWriter.write(metadata, metadataFile);
+        
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        checksum.fixChecksums( algorithms );
     }
     
     /**
