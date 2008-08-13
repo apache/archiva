@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project>
+  <body>
+    <breadcrumbs>
+      <item name="1.1.1" href="/docs/1.1.1" />
+    </breadcrumbs>
+
+    <menu name="Introduction">
+      <item name="Quick Start"  href="/quick-start.html" />
+      <item name="Feature Tour" href="/tour/index.html" />
+      <item name="Release Notes" href="/release-notes.html" />
+    </menu>
+
+    <menu name="Users Guide">
+      <item name="Browsing"                  href="/userguide/browsing.html" />
+      <item name="Searching"                 href="/userguide/searching.html" />
+      <item name="Identifying an Artifact"   href="/userguide/find-artifact.html" />
+      <item name="Using as a repository"     href="/userguide/using-repository.html" />
+      <item name="Deploying to repository"   href="/userguide/deploy.html" />
+      <item name="Configuring Virtual Repositories"   href="/userguide/virtual-repositories.html" />
+      <item name="Rss Feeds in Archiva"      href="/userguide/rss.html"/>
+    </menu>
+
+    <menu name="Administrators Guide">
+<!-- TODO: add an overview in future versions
+      <item name="Structure of Archiva"      href="/adminguide/structure.html" />
+-->
+      <item name="Installing Archiva"        href="/adminguide/installing.html" collapse="true">
+        <item name="Installing Standalone"   href="/adminguide/standalone.html" />
+        <item name="Installing as a WAR"     href="/adminguide/webapp.html" />
+      </item>
+      <item name="Databases"                 href="/adminguide/databases.html" />
+      <item name="Security"                  href="/adminguide/security.html" collapse="true">
+        <item name="Roles"                   href="/adminguide/roles.html" />
+        <item name="Customising"             href="/adminguide/customising-security.html" />
+<!-- TODO: for a future version
+        <item name="Using LDAP"              href="/adminguide/ldap.html" />
+-->
+      </item>
+      <item name="Runtime Configuration"     href="/adminguide/configuration.html" collapse="true">
+        <item name="Repositories"            href="/adminguide/repositories.html" />
+        <item name="Proxy Connectors"        href="/adminguide/proxy-connectors.html" />
+        <item name="Network Proxies"         href="/adminguide/network-proxies.html" />
+        <item name="Legacy (Maven 1) Support"         href="/adminguide/legacy.html" />        
+        <item name="Consumers"               href="/adminguide/consumers.html" />
+      </item>
+      <item name="Configuration Files"       href="/adminguide/configuration-files.html" />
+      <item name="Reports"                   href="/adminguide/reports.html" />
+    </menu>
+
+    <menu name="Customising Archiva">
+      <item name="Writing a Consumer Plugin" href="/customising/writing-consumer.html" />
+    </menu>
+
+    <menu name="More Information">
+      <item name="Archiva Wiki"              href="http://cwiki.apache.org/confluence/display/ARCHIVA/Index" />
+    </menu>
+  </body>
+</project>
