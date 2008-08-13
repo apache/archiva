@@ -20,8 +20,6 @@ package org.apache.maven.archiva.proxy;
  */
 
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 
@@ -50,7 +48,7 @@ public interface RepositoryProxyConnectors
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException;
-
+    
     /**
      * Performs the metadata fetch operation against the target repositories
      * of the provided source repository.
@@ -62,20 +60,7 @@ public interface RepositoryProxyConnectors
      * @param metadata the metadata to fetch.
      * @return the file that was obtained, or null if no content was obtained
      */
-    public File fetchFromProxies( ManagedRepositoryContent repository, VersionedReference metadata );
-
-    /**
-     * Performs the metadata fetch operation against the target repositories
-     * of the provided source repository.
-     * 
-     * If the metadata is found, it is downloaded and placed into the source repository
-     * filesystem.
-     * 
-     * @param repository the source repository to use. (must be a managed repository)
-     * @param metadata the metadata to fetch.
-     * @return the file that was obtained, or null if no content was obtained
-     */
-    public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata );
+    public File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath );
 
     /**
      * Performs the fetch operation against the target repositories
