@@ -60,6 +60,15 @@ public class MetadataToolsTest
     private MetadataTools tools;
 
     protected MockConfiguration config;
+    
+    public void testToVersionedReferenceLog4J() throws RepositoryMetadataException
+    {
+        String path = "log4j/log4j/maven-metadata.xml";
+        ProjectReference reference = tools.toProjectReference(path);
+        assertEquals("log4j", reference.getGroupId());
+        assertEquals("log4j", reference.getArtifactId());
+//        assertEquals("", reference.getVersion());
+    }
 
     public void testGatherSnapshotVersionsA()
         throws Exception
@@ -219,7 +228,7 @@ public class MetadataToolsTest
 
         assertEquals( "com/foo/foo-tool/maven-metadata.xml", tools.toPath( reference ) );
     }
-
+    
     public void testToProjectReferenceFooTools()
         throws RepositoryMetadataException
     {

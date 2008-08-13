@@ -244,8 +244,7 @@ public class RepositoryServletRepositoryGroupTest
                 "<version>1.5</version><version>2.0</version></versions><lastUpdated>20080709095554</lastUpdated>" +
                 "</versioning></metadata>", null );
         
-        WebRequest request =
-            new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/" +
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/" +
                 "dummy-merged-metadata-resource/maven-metadata.xml" );
         WebResponse response = sc.getResource( request );              
         
