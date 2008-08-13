@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 
 /**
  * RepositoryMetadataWriter 
@@ -48,6 +49,7 @@ public class RepositoryMetadataWriter
     public static void write( ArchivaRepositoryMetadata metadata, File outputFile )
         throws RepositoryMetadataException
     {
+        boolean thrown = false;
         FileWriter writer = null;
         try
         {
@@ -57,12 +59,17 @@ public class RepositoryMetadataWriter
         }
         catch ( IOException e )
         {
+            thrown = true;
             throw new RepositoryMetadataException( "Unable to write metadata file: " + outputFile.getAbsolutePath()
                 + " - " + e.getMessage(), e );
         }
         finally
         {
             IOUtils.closeQuietly( writer );
+            if (thrown)
+            {
+                FileUtils.deleteQuietly(outputFile);
+            }
         }
     }
 
@@ -74,7 +81,7 @@ public class RepositoryMetadataWriter
         Element root = DocumentHelper.createElement( "metadata" );
         doc.setRootElement( root );
 
-        root.addElement( "groupId" ).setText( metadata.getGroupId() );
+        addOptionalElementText( root, "groupId", metadata.getGroupId());
         addOptionalElementText( root, "artifactId", metadata.getArtifactId() );
         addOptionalElementText( root, "version", metadata.getVersion() );
 

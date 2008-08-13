@@ -32,7 +32,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -40,9 +39,7 @@ import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.Keys;
-import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.RepositoryURL;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.DownloadErrorPolicy;
 import org.apache.maven.archiva.policies.DownloadPolicy;
 import org.apache.maven.archiva.policies.PolicyConfigurationException;
@@ -51,13 +48,11 @@ import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
@@ -269,13 +264,13 @@ public class DefaultRepositoryProxyConnectors
 
         return null;
     }
-
-    public File fetchFromProxies( ManagedRepositoryContent repository, VersionedReference metadata )
+    
+    public File fetchMetatadaFromProxies(ManagedRepositoryContent repository, String logicalPath)
     {
         File workingDir = createWorkingDirectory(repository);
         try
         {
-            File localFile = toLocalFile( repository, metadata );
+            File localFile = new File(repository.getRepoRoot(), logicalPath);
 
             Properties requestProperties = new Properties();
             requestProperties.setProperty( "filetype", "metadata" );
@@ -286,14 +281,13 @@ public class DefaultRepositoryProxyConnectors
             for ( ProxyConnector connector : connectors )
             {
                 RemoteRepositoryContent targetRepository = connector.getTargetRepository();
-                String targetPath = metadataTools.toPath( metadata );
 
-                File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
+                File localRepoFile = toLocalRepoFile( repository, targetRepository, logicalPath );
                 long originalMetadataTimestamp = getLastModified( localRepoFile );
 
                 try
                 {
-                    transferFile( connector, targetRepository, targetPath, repository, workingDir, localRepoFile, requestProperties, true );
+                    transferFile( connector, targetRepository, logicalPath, repository, workingDir, localRepoFile, requestProperties, true );
 
                     if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
                     {
@@ -302,20 +296,20 @@ public class DefaultRepositoryProxyConnectors
                 }
                 catch ( NotFoundException e )
                 {
-                    log.debug( "Versioned Metadata " + Keys.toKey( metadata )
+                    log.debug( "Metadata " + logicalPath
                                            + " not found on remote repository \""
-                                           + targetRepository.getRepository().getId() + "\"." );
+                                           + targetRepository.getRepository().getId() + "\".", e );
                 }
                 catch ( NotModifiedException e )
                 {
-                    log.debug( "Versioned Metadata " + Keys.toKey( metadata )
+                    log.debug( "Metadata " + logicalPath
                                            + " not updated on remote repository \""
-                                           + targetRepository.getRepository().getId() + "\"." );
+                                           + targetRepository.getRepository().getId() + "\".", e );
                 }
                 catch ( ProxyException e )
                 {
                     log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
-                        "\" for versioned Metadata " + Keys.toKey( metadata ) +
+                        "\" for versioned Metadata " + logicalPath +
                         ", continuing to next repository. Error message: " + e.getMessage() );
                     log.debug( "Full stack trace", e );
                 }
@@ -330,126 +324,11 @@ public class DefaultRepositoryProxyConnectors
             {
                 try
                 {
-                    metadataTools.updateMetadata( repository, metadata );
-                }
-                catch ( LayoutException e )
-                {
-                    log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage() );
-                    // TODO: add into repository report?
+                    metadataTools.updateMetadata( repository, logicalPath );
                 }
                 catch ( RepositoryMetadataException e )
                 {
                     log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
-                    // TODO: add into repository report?
-                }
-                catch ( IOException e )
-                {
-                    log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
-                    // TODO: add into repository report?
-                }
-                catch ( ContentNotFoundException e )
-                {
-                    log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
-                    // TODO: add into repository report?
-                }
-            }
-
-            if ( fileExists( localFile ) )
-            {
-                return localFile;
-            }
-        }
-        finally
-        {
-            FileUtils.deleteQuietly(workingDir);
-        }
-
-        return null;
-    }
-
-    public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata )
-    {
-        File workingDir = createWorkingDirectory(repository);
-        try
-        {
-            File localFile = toLocalFile( repository, metadata );
-
-            Properties requestProperties = new Properties();
-            requestProperties.setProperty( "filetype", "metadata" );
-            boolean metadataNeedsUpdating = false;
-            long originalTimestamp = getLastModified( localFile );
-
-            List<ProxyConnector> connectors = getProxyConnectors( repository );
-            for ( ProxyConnector connector : connectors )
-            {
-                RemoteRepositoryContent targetRepository = connector.getTargetRepository();
-                String targetPath = metadataTools.toPath( metadata );
-
-                File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
-                long originalMetadataTimestamp = getLastModified( localRepoFile );
-                try
-                {
-                    transferFile( connector, targetRepository, targetPath, repository, workingDir, localRepoFile, requestProperties, true );
-
-                    if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
-                    {
-                        metadataNeedsUpdating = true;
-                    }
-                }
-                catch ( NotFoundException e )
-                {
-                    log.debug( "Project Metadata " + Keys.toKey( metadata ) + " not found on remote repository \""
-                                           + targetRepository.getRepository().getId() + "\"." );
-                }
-                catch ( NotModifiedException e )
-                {
-                    log.debug( "Project Metadata " + Keys.toKey( metadata )
-                                           + " not updated on remote repository \""
-                                           + targetRepository.getRepository().getId() + "\"." );
-                }
-                catch ( ProxyException e )
-                {
-                    log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
-                        "\" for project metadata " + Keys.toKey( metadata ) +
-                        ", continuing to next repository. Error message: " + e.getMessage() );
-                    log.debug( "Full stack trace", e );
-                }
-
-            }
-
-            if ( hasBeenUpdated( localFile, originalTimestamp ) )
-            {
-                metadataNeedsUpdating = true;
-            }
-
-            if ( metadataNeedsUpdating )
-            {
-                try
-                {
-                    metadataTools.updateMetadata( repository, metadata );
-                }
-                catch ( LayoutException e )
-                {
-                    log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage() );
-                    // TODO: add into repository report?
-                }
-                catch ( RepositoryMetadataException e )
-                {
-                    log
-                        .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
-                    // TODO: add into repository report?
-                }
-                catch ( IOException e )
-                {
-                    log
-                        .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
-                    // TODO: add into repository report?
-                }
-                catch ( ContentNotFoundException e )
-                {
-                    log
-                        .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
-                    // TODO: add into repository report?
                 }
             }
 
@@ -508,18 +387,6 @@ public class DefaultRepositoryProxyConnectors
     private File toLocalFile( ManagedRepositoryContent repository, ArtifactReference artifact )
     {
         return repository.toFile( artifact );
-    }
-
-    private File toLocalFile( ManagedRepositoryContent repository, ProjectReference metadata )
-    {
-        String sourcePath = metadataTools.toPath( metadata );
-        return new File( repository.getRepoRoot(), sourcePath );
-    }
-
-    private File toLocalFile( ManagedRepositoryContent repository, VersionedReference metadata )
-    {
-        String sourcePath = metadataTools.toPath( metadata );
-        return new File( repository.getRepoRoot(), sourcePath );
     }
 
     /**

@@ -905,7 +905,7 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, metadata );
+        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository, managedDefaultRepository.toMetadataPath(metadata) );
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -929,7 +929,7 @@ public class MetadataTransferTest
         File expectedFile = new File( managedDefaultDir, requestedResource );
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, metadata );
+        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository, managedDefaultRepository.toMetadataPath(metadata) );
 
         assertNull( downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -948,7 +948,7 @@ public class MetadataTransferTest
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, metadata );
+        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository, managedDefaultRepository.toMetadataPath(metadata) );
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -972,7 +972,7 @@ public class MetadataTransferTest
         File expectedFile = new File( managedDefaultDir, requestedResource );
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, metadata );
+        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository, managedDefaultRepository.toMetadataPath(metadata) );
 
         assertNull( downloadedFile );
         assertNoTempFiles( expectedFile );

@@ -514,7 +514,7 @@ public class ArchivaDavResourceFactory
         // Is it a Metadata resource?
         if ( repositoryRequest.isDefault( resource.getPath() ) && repositoryRequest.isMetadata( resource.getPath() ) )
         {
-            return fetchMetadataFromProxies( managedRepository, request, resource );
+            return connectors.fetchMetatadaFromProxies(managedRepository, resource.getPath()) != null;
         }
 
         // Not any of the above? Then it's gotta be an artifact reference.
@@ -543,45 +543,6 @@ public class ArchivaDavResourceFactory
             log.error( e.getMessage(), e );
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to fetch artifact resource." );
         }
-        return false;
-    }
-
-    private boolean fetchMetadataFromProxies( ManagedRepositoryContent managedRepository, DavServletRequest request,
-                                              LogicalResource resource )
-        throws DavException
-    {
-        ProjectReference project;
-        VersionedReference versioned;
-
-        try
-        {
-
-            versioned = metadataTools.toVersionedReference( resource.getPath() );
-            if ( versioned != null )
-            {
-                connectors.fetchFromProxies( managedRepository, versioned );
-                return true;
-            }
-        }
-        catch ( RepositoryMetadataException e )
-        {
-            /* eat it */
-        }
-
-        try
-        {
-            project = metadataTools.toProjectReference( resource.getPath() );
-            if ( project != null )
-            {
-                connectors.fetchFromProxies( managedRepository, project );
-                return true;
-            }
-        }
-        catch ( RepositoryMetadataException e )
-        {
-            /* eat it */
-        }
-
         return false;
     }
 
