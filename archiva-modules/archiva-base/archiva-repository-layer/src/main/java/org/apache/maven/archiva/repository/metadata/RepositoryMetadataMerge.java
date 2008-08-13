@@ -19,11 +19,7 @@ package org.apache.maven.archiva.repository.metadata;
  * under the License.
  */
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.SnapshotVersion;
@@ -31,7 +27,6 @@ import org.apache.maven.archiva.model.SnapshotVersion;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.model.Plugin;
 
 /**
