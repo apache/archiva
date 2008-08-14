@@ -320,7 +320,7 @@ public class DefaultRepositoryProxyConnectors
                 metadataNeedsUpdating = true;
             }
 
-            if ( metadataNeedsUpdating )
+            if ( metadataNeedsUpdating || !localFile.exists())
             {
                 try
                 {

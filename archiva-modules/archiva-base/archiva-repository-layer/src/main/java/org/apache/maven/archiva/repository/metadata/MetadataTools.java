@@ -439,7 +439,18 @@ public class MetadataTools
             metadata = RepositoryMetadataMerge.merge(metadata, proxiedMetadata);
         }
         
-        Set<String> availableVersions = new HashSet<String>(metadata.getAvailableVersions());
+        if (metadata == null)
+        {
+            log.debug("No metadata to update for " + logicalResource);
+            return;
+        }
+        
+        Set<String> availableVersions = new HashSet<String>();
+        List<String> metadataAvailableVersions = metadata.getAvailableVersions();
+        if (metadataAvailableVersions != null)
+        {
+            availableVersions.addAll(metadataAvailableVersions);
+        }
         availableVersions = findPossibleVersions(availableVersions, metadataFile.getParentFile());
 
         if (availableVersions.size() > 0)
@@ -500,12 +511,16 @@ public class MetadataTools
             }
         }
         
-        for (String proxyId : proxies.get(managedRepository.getId()))
+        Set<String> proxyIds = proxies.get(managedRepository.getId());
+        if (proxyIds != null)
         {
-            ArchivaRepositoryMetadata proxyMetadata = readProxyMetadata( managedRepository, logicalResource, proxyId );
-            if (proxyMetadata != null)
+            for (String proxyId : proxyIds)
             {
-                metadatas.add(proxyMetadata);
+                ArchivaRepositoryMetadata proxyMetadata = readProxyMetadata( managedRepository, logicalResource, proxyId );
+                if (proxyMetadata != null)
+                {
+                    metadatas.add(proxyMetadata);
+                }
             }
         }
         
