@@ -25,6 +25,9 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
@@ -46,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -81,6 +85,11 @@ public class DefaultArchivaTaskScheduler
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
+    
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaDAO dao;
 
     public static final String DATABASE_SCAN_GROUP = "database-group";
 
@@ -97,6 +106,8 @@ public class DefaultArchivaTaskScheduler
     public static final String CRON_HOURLY = "0 0 * * * ?";
 
     private Set<String> jobs = new HashSet<String>();
+    
+    private List<String> queuedRepos = new ArrayList<String>();
 
     public void startup()
         throws ArchivaException
@@ -126,6 +137,11 @@ public class DefaultArchivaTaskScheduler
                 if ( repoConfig.isScanned() )
                 {
                     scheduleRepositoryJobs( repoConfig );
+                    
+                    if( !isPreviouslyScanned( repoConfig ) )
+                    {
+                        queueInitialRepoScan( repoConfig );
+                    }
                 }
             }
 
@@ -137,6 +153,54 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
+    private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig )
+    {
+        List<RepositoryScanStatistics> results =
+            dao.query( new MostRecentRepositoryScanStatistics( repoConfig.getId() ) );
+
+        if ( results != null && !results.isEmpty() )
+        {
+            return true;
+        }
+
+        return false;
+    }
+    
+    // MRM-848: Pre-configured repository initially appear to be empty
+    private synchronized void queueInitialRepoScan( ManagedRepositoryConfiguration repoConfig )
+    {
+        String repoId = repoConfig.getId();
+
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repoId );
+        task.setName( REPOSITORY_JOB + ":" + repoId + ":initial-scan" );
+        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+
+        boolean scheduleTask = false;
+
+        if ( queuedRepos.contains( repoId ) )
+        {
+            log.error( "Repository [" + repoId + "] is currently being processed or is already queued." );
+        }
+        else
+        {
+            scheduleTask = true;
+        }
+
+        if ( scheduleTask )
+        {
+            try
+            {
+                queuedRepos.add( repoConfig.getId() );
+                this.queueRepositoryTask( task );
+            }
+            catch ( TaskQueueException e )
+            {
+                log.error( "Error occurred while queueing repository [" + repoId + "] task : " + e.getMessage() );
+            }
+        }
+    }
+    
     private synchronized void scheduleRepositoryJobs( ManagedRepositoryConfiguration repoConfig )
         throws SchedulerException
     {
@@ -230,6 +294,7 @@ public class DefaultArchivaTaskScheduler
                 scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
             }
             jobs.clear();
+            queuedRepos.clear();
         }
         catch ( SchedulerException e )
         {
