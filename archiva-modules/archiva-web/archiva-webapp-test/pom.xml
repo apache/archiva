@@ -17,14 +17,13 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.0-alpha-3-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-webapp-test</artifactId>
   <packaging>pom</packaging>
@@ -33,6 +32,13 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-command-line</artifactId>
+      <version>1.0-alpha-2</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>plexus-container-default</artifactId>
+          <groupId>org.codehaus.plexus</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -48,6 +54,10 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-slf4j-logging</artifactId>
     </dependency>
     
     <!-- Dependency for MavenConnectionTest -->
@@ -74,7 +84,6 @@
       <artifactId>activation</artifactId>
     </dependency>
   </dependencies>
-
   <build>
     <testSourceDirectory>src/test/it</testSourceDirectory>
     <plugins>
@@ -107,6 +116,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
+              <includeGroupIds>org.apache.derby,javax.mail,javax.activation</includeGroupIds>
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
               <excludeTransitive>false</excludeTransitive>
@@ -152,12 +162,12 @@
             <configuration>
               <tasks>
                 <copy todir="${project.build.directory}/${container.name}conf">
-                  <fileset dir="src/test/${container.name}"/>
+                  <fileset dir="src/test/${container.name}" />
                 </copy>
                 <copy
-                    todir="${project.build.directory}/installs/${container.name}/apache-tomcat-5.5.20/apache-tomcat-5.5.20/common/lib">
+                  todir="${project.build.directory}/installs/${container.name}/apache-tomcat-5.5.26/apache-tomcat-5.5.26/common/lib">
                   <fileset dir="${project.build.directory}/providedDependencies">
-                    <include name="**/*.jar"/>
+                    <include name="**/*.jar" />
                   </fileset>
                 </copy>
               </tasks>
@@ -171,8 +181,8 @@
             <phase>integration-test</phase>
             <configuration>
               <tasks>
-                <get src="http://localhost:9696/archiva/" dest="${project.build.directory}/index.html"/>
-                <delete file="${project.build.directory}/index.html"/>
+                <get src="http://localhost:9696/archiva/" dest="${project.build.directory}/index.html" />
+                <delete file="${project.build.directory}/index.html" />
               </tasks>
             </configuration>
             <goals>
@@ -241,6 +251,7 @@
             <timeout>600000</timeout>
             <systemProperties>
               <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+              <appserver.home>${project.build.directory}/appserver-base</appserver.home>
             </systemProperties>
           </container>
           <configuration>
@@ -274,7 +285,6 @@
       </plugin>
     </plugins>
   </build>
-
   <profiles>
     <profile>
       <id>tomcat5x</id>
@@ -283,10 +293,9 @@
       </activation>
       <properties>
         <container.name>tomcat5x</container.name>
-        <container.url>http://apache.multidist.com/tomcat/tomcat-5/v5.5.20/bin/apache-tomcat-5.5.20.zip</container.url>
+        <container.url>http://archive.apache.org/dist/tomcat/tomcat-5/v5.5.26/bin/apache-tomcat-5.5.26.zip</container.url>
       </properties>
     </profile>
-
     <profile>
       <id>firefox</id>
       <activation>
@@ -309,5 +318,4 @@
       </properties>
     </profile>
   </profiles>
-
 </project>
