@@ -26,7 +26,7 @@
 <c:set var="currentUrl">
   <ww:url/>
 </c:set>
-<c:if test="${!empty(action) && !empty(namespace)}">
+<c:if test="${!empty (action) && !empty (namespace)}">
   <c:set var="url">
     <ww:url action="${action}" namespace="${namespace}"/>
   </c:set>

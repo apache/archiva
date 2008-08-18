@@ -31,19 +31,19 @@
     </p>
   --%>
   <ul>
-    <c:if test="${!empty(mailingList.subscribeAddress)}">
+    <c:if test="${!empty (mailingList.subscribeAddress)}">
       <li>
         <b>Subscribe:</b>
         <a href="mailto:${mailingList.subscribeAddress}">${mailingList.subscribeAddress}</a>
       </li>
     </c:if>
-    <c:if test="${!empty(mailingList.postAddress)}">
+    <c:if test="${!empty (mailingList.postAddress)}">
       <li>
         <b>Post:</b>
         <a href="mailto:${mailingList.postAddress}">${mailingList.postAddress}</a>
       </li>
     </c:if>
-    <c:if test="${!empty(mailingList.unsubscribeAddress)}">
+    <c:if test="${!empty (mailingList.unsubscribeAddress)}">
       <li>
         <b>Unsubscribe:</b>
         <a href="mailto:${mailingList.unsubscribeAddress}">${mailingList.unsubscribeAddress}</a>
@@ -55,7 +55,7 @@
             <a href="mailto:${mailingList.owner}">${mailingList.owner}</a>
           </li>
       --%>
-    <c:if test="${!empty(mailingList.mainArchiveUrl)}">
+    <c:if test="${!empty (mailingList.mainArchiveUrl)}">
       <li>
         <b>Archive:</b>
         <ul>
@@ -65,7 +65,7 @@
         </ul>
       </li>
     </c:if>
-    <%-- <c:if test="${!empty(mailingList.otherArchives)}">
+    <%-- <c:if test="${!empty (mailingList.otherArchives)}">
       <li>
         <b>Other Archives:</b>
         <ul>
@@ -79,6 +79,6 @@
     </c:if> --%>
   </ul>
 </c:forEach>
-<c:if test="${empty(mailingLists)}">
+<c:if test="${empty (mailingLists)}">
   <strong>No mailing lists</strong>
 </c:if>

@@ -34,7 +34,7 @@
   <strong> : </strong>
   <archiva:groupIdLink var="${groupId}" includeTop="false" />
   
-  <c:if test="${!empty(artifactId)}">    
+  <c:if test="${!empty (artifactId)}">    
     <c:set var="url">
       <ww:url action="browseArtifact" namespace="/">
         <ww:param name="groupId" value="%{'${groupId}'}"/>
@@ -45,12 +45,12 @@
   </c:if>
   | <strong>Version(s):</strong>
   <c:choose>
-    <c:when test="${!empty(version)}">
+    <c:when test="${!empty (version)}">
       <c:set var="url">
         <ww:url action="showArtifact" namespace="/">
           <ww:param name="groupId" value="%{'${groupId}'}"/>
           <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-          <c:if test="${!empty(version)}">
+          <c:if test="${!empty (version)}">
             <ww:param name="version" value="%{'${version}'}"/>
           </c:if>
         </ww:url>
@@ -71,10 +71,10 @@
       </c:forEach>
     </c:otherwise>
   </c:choose>
-  <c:if test="${!empty(scope)}">
+  <c:if test="${!empty (scope)}">
     | <strong>Scope:</strong> ${scope}
   </c:if>
-  <c:if test="${!empty(classifier)}">
+  <c:if test="${!empty (classifier)}">
     | <strong>Classifier:</strong> ${classifier}
   </c:if>  
 </span>

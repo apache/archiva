@@ -48,7 +48,7 @@
 <h2>Network Proxies</h2>
 
 <c:choose>
-  <c:when test="${empty(networkProxies)}">
+  <c:when test="${empty (networkProxies)}">
     <%-- No Local Repositories. --%>
     <strong>There are no network proxies configured yet.</strong>
   </c:when>
@@ -101,12 +101,12 @@
           <th>Port</th>
           <td>${proxy.port}</td>
         </tr>
-        <c:if test="${not empty(proxy.username)}">
+        <c:if test="${not empty (proxy.username)}">
           <tr>
             <th>Username</th>
             <td>${proxy.username}</td>
           </tr>
-          <c:if test="${not empty(proxy.password)}">
+          <c:if test="${not empty (proxy.password)}">
             <tr>
               <th>Password</th>
               <td>&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;</td>
