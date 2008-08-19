@@ -50,7 +50,7 @@ public class SnapshotTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         assertNotDownloaded( downloadedFile );
@@ -70,7 +70,7 @@ public class SnapshotTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -92,7 +92,7 @@ public class SnapshotTransferTest
         expectedFile.setLastModified( getPastDate().getTime() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -115,7 +115,7 @@ public class SnapshotTransferTest
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
 
         // Attempt to download.
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
@@ -207,7 +207,7 @@ public class SnapshotTransferTest
         proxiedFile.setLastModified( getFutureDate().getTime() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -230,7 +230,7 @@ public class SnapshotTransferTest
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -253,9 +253,9 @@ public class SnapshotTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES , false);
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES , false);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -277,7 +277,7 @@ public class SnapshotTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -303,7 +303,7 @@ public class SnapshotTransferTest
         expectedFile.setLastModified( getPastDate().getTime() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 

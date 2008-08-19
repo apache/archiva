@@ -63,7 +63,7 @@ public class ErrorHandlingTest
         File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         simulateGetError( path, expectedFile, createTransferException() );
 
@@ -92,7 +92,7 @@ public class ErrorHandlingTest
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
         File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.STOP );
 
@@ -107,7 +107,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
 
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false  );
 
         simulateGetError( path, expectedFile, createResourceNotFoundException() );
 
@@ -122,7 +122,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
 
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false  );
 
         simulateGetError( path, expectedFile, createTransferException() );
 
@@ -135,7 +135,7 @@ public class ErrorHandlingTest
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
         File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false  );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.QUEUE );
 
@@ -201,7 +201,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE );
 
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false  );
 
         simulateGetError( path, expectedFile, createResourceNotFoundException() );
 
@@ -216,7 +216,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE );
 
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false  );
 
         simulateGetError( path, expectedFile, createTransferException() );
 
@@ -229,7 +229,7 @@ public class ErrorHandlingTest
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
         File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1 );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false  );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.IGNORE );
 
@@ -499,14 +499,14 @@ public class ErrorHandlingTest
     {
         saveRemoteRepositoryConfig( id, name, "test://bad.machine.com/repo/", "default" );
         saveConnector( ID_DEFAULT_MANAGED, id, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS,
-                       CachedFailuresPolicy.NO, errorPolicy );
+                       CachedFailuresPolicy.NO, errorPolicy, false );
     }
 
     private void createMockedProxyConnector( String id, String name, String errorPolicy, String errorOnUpdatePolicy )
     {
         saveRemoteRepositoryConfig( id, name, "test://bad.machine.com/repo/", "default" );
         saveConnector( ID_DEFAULT_MANAGED, id, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS,
-                       CachedFailuresPolicy.NO, errorPolicy, errorOnUpdatePolicy );
+                       CachedFailuresPolicy.NO, errorPolicy, errorOnUpdatePolicy, false );
     }
 
     private File setupRepositoriesWithLocalFileNotPresent( String path )

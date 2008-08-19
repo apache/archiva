@@ -1076,6 +1076,7 @@ public class DefaultRepositoryProxyConnectors
                     connector.setProxyId( proxyConfig.getProxyId() );
                     connector.setPolicies( proxyConfig.getPolicies() );
                     connector.setOrder( proxyConfig.getOrder() );
+                    connector.setDisabled( proxyConfig.isDisabled() );
 
                     // Copy any blacklist patterns.
                     List<String> blacklist = new ArrayList<String>();
