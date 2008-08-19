@@ -114,17 +114,13 @@
           <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
         </ww:url>
         <c:if test="${connector.disabled}">
-            <ww:a href="%{enableProxyConnectorUrl}" label="Enable Proxy Connector">
-                Enable
-            </ww:a>
+            <ww:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">Enable</ww:a>
         </c:if>
         <c:if test="${connector.disabled == false}">
-            <ww:a href="%{disableProxyConnectorUrl}" title="Disable Proxy Connector">
-                Disable
-            </ww:a>
+            <ww:a href="%{disableProxyConnectorUrl}" title="Disable Proxy Connector">Disable</ww:a>
         </c:if>
         <c:if test="${pc.count > 1}">
-          <ww:a href="%{sortUpProxyConnectorUrl}" cssClass="up" title="Move Proxy Connector Up">
+          <ww:a href="%{sortUpProxyConnectorUrl}" title="Move Proxy Connector Up">
             <img src="${iconUpUrl}"/>
           </ww:a>
         </c:if>
