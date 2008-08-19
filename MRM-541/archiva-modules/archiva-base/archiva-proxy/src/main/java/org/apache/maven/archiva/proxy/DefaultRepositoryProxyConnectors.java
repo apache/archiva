@@ -151,6 +151,11 @@ public class DefaultRepositoryProxyConnectors
             Map<String, Exception> previousExceptions = new LinkedHashMap<String, Exception>();
             for ( ProxyConnector connector : connectors )
             {
+                if (connector.isDisabled())
+                {
+                    continue;
+                }
+                
                 RemoteRepositoryContent targetRepository = connector.getTargetRepository();
                 requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
 
@@ -221,6 +226,11 @@ public class DefaultRepositoryProxyConnectors
             List<ProxyConnector> connectors = getProxyConnectors( repository );
             for ( ProxyConnector connector : connectors )
             {
+                if (connector.isDisabled())
+                {
+                    continue;
+                }
+                
                 RemoteRepositoryContent targetRepository = connector.getTargetRepository();
                 requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
 
@@ -280,6 +290,11 @@ public class DefaultRepositoryProxyConnectors
             List<ProxyConnector> connectors = getProxyConnectors( repository );
             for ( ProxyConnector connector : connectors )
             {
+                if (connector.isDisabled())
+                {
+                    continue;
+                }
+                
                 RemoteRepositoryContent targetRepository = connector.getTargetRepository();
 
                 File localRepoFile = toLocalRepoFile( repository, targetRepository, logicalPath );

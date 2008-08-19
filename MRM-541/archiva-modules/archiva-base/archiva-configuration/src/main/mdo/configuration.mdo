@@ -725,6 +725,15 @@
             <multiplicity>*</multiplicity>
           </association>
         </field>
+        <field>
+          <name>disabled</name>
+          <version>1.2+</version>
+          <description>
+            If the the repository proxy connector is disabled or not
+          </description>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
