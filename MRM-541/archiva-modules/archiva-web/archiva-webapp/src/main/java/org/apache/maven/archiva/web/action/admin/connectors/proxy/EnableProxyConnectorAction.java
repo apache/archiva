@@ -66,7 +66,7 @@ public class EnableProxyConnectorAction extends AbstractProxyConnectorAction
             return ERROR;
         }
         
-        proxyConfig.setDisabled(true);
+        proxyConfig.setDisabled(false);
         
         addActionMessage( "Successfully enabled proxy connector [" + source + " , " + target + " ]" );
 
