@@ -377,6 +377,19 @@
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
+    
+    <action name="enableProxyConnector" class="enableProxyConnectorAction" method="confirm">
+      <result name="input">/WEB-INF/jsp/admin/enableProxyConnector.jsp</result>
+      <result name="success" type="redirect-action">proxyConnectors</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="disableProxyConnector" class="disableProxyConnectorAction" method="confirm">
+      <result name="input">/WEB-INF/jsp/admin/disableProxyConnector.jsp</result>
+      <result name="success" type="redirect-action">proxyConnectors</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
 
     <!-- .\ NETWORK PROXIES \._________________________________________ -->
 
