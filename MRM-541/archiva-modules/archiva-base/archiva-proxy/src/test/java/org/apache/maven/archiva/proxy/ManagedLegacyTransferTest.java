@@ -51,7 +51,7 @@ public class ManagedLegacyTransferTest
         assertNotExistsInManagedLegacyRepo( expectedFile );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1 );
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
@@ -80,7 +80,7 @@ public class ManagedLegacyTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
@@ -102,7 +102,7 @@ public class ManagedLegacyTransferTest
         assertNotExistsInManagedLegacyRepo( expectedFile );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED );
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
@@ -127,7 +127,7 @@ public class ManagedLegacyTransferTest
         ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED );
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
@@ -149,7 +149,7 @@ public class ManagedLegacyTransferTest
         assertTrue( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED );
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
@@ -171,7 +171,7 @@ public class ManagedLegacyTransferTest
         assertTrue( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1 );
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
@@ -193,7 +193,7 @@ public class ManagedLegacyTransferTest
         assertNotExistsInManagedLegacyRepo( expectedFile );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED );
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
@@ -215,7 +215,7 @@ public class ManagedLegacyTransferTest
         assertNotExistsInManagedLegacyRepo( expectedFile );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1 );
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
