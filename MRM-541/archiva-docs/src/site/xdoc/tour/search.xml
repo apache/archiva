@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Artifact Search</title>
+    <author email="brett@apache.org">Brett Porter</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Artifact Search">
+      <div style="text-align: center">
+        <img src="../images/tour/search.png" width="640" height="401" alt="" />
+        <p>
+          Archiva has both a user-friendly browsing interface, and powerful search functionalities. The contents of all artifacts are indexed,
+          including Maven project information and Java class information to facilitate locating code within any repository.
+          By using the "Find Artifact" feature, you can identify unknown artifacts based on the database of known checksums for known artifacts.
+        </p>
+        <p>
+          <a href="project.html">Previous: Project Information</a> |
+          <strong>Artifact Search</strong> |
+          <a href="proxy.html">Next: Remote Proxying Cache</a>
+        </p>
+      </div>
+    </section>
+  </body>
+</document>
