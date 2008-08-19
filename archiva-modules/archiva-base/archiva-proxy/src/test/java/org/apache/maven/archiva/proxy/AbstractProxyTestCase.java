@@ -338,29 +338,29 @@ public abstract class AbstractProxyTestCase
         }
     }
 
-    protected void saveConnector( String sourceRepoId, String targetRepoId )
+    protected void saveConnector( String sourceRepoId, String targetRepoId, boolean disabled )
     {
         saveConnector( sourceRepoId, targetRepoId, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, disabled );
     }
 
     protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
-                                  String snapshotPolicy, String cacheFailuresPolicy )
+                                  String snapshotPolicy, String cacheFailuresPolicy, boolean disabled )
     {
         saveConnector( sourceRepoId, targetRepoId, checksumPolicy, releasePolicy, snapshotPolicy, cacheFailuresPolicy,
-                       PropagateErrorsDownloadPolicy.QUEUE );
+                       PropagateErrorsDownloadPolicy.QUEUE, disabled );
     }
 
     protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
-                                  String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy )
+                                  String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy, boolean disabled )
     {
         saveConnector( sourceRepoId, targetRepoId, checksumPolicy, releasePolicy, snapshotPolicy, cacheFailuresPolicy,
-                       errorPolicy, PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
+                       errorPolicy, PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT, disabled );
     }
 
     protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
                                   String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy,
-                                  String errorOnUpdatePolicy )
+                                  String errorOnUpdatePolicy, boolean disabled )
     {
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
         connectorConfig.setSourceRepoId( sourceRepoId );
@@ -371,6 +371,7 @@ public abstract class AbstractProxyTestCase
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, cacheFailuresPolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS, errorPolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS_ON_UPDATE, errorOnUpdatePolicy );
+        connectorConfig.setDisabled(disabled);
 
         int count = config.getConfiguration().getProxyConnectors().size();
         config.getConfiguration().addProxyConnector( connectorConfig );

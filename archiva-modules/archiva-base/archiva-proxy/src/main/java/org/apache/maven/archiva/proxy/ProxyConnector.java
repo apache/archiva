@@ -49,6 +49,18 @@ public class ProxyConnector
     private int order;
 
     private Map<String, String> policies;
+    
+    private boolean disabled;
+
+    public boolean isDisabled()
+    {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) 
+    {
+        this.disabled = disabled;
+    }
 
     public List<String> getBlacklist()
     {
@@ -110,6 +122,7 @@ public class ProxyConnector
         this.proxyId = proxyId;
     }
 
+    @Override
     public String toString()
     {
         StringBuffer sb = new StringBuffer();

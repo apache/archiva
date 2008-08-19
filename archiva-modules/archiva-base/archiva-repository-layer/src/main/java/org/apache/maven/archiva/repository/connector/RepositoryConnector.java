@@ -39,4 +39,8 @@ public interface RepositoryConnector
     public List<String> getBlacklist();
     
     public List<String> getWhitelist();
+    
+    public boolean isDisabled();
+    
+    public void setDisabled(boolean disabled);
 }

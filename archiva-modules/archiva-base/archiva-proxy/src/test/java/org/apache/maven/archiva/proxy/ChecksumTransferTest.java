@@ -39,6 +39,27 @@ import java.io.File;
 public class ChecksumTransferTest
     extends AbstractProxyTestCase
 {
+    public void testGetChecksumWhenConnectorIsDisabled()
+        throws Exception
+    {
+        String path = "org/apache/maven/test/get-checksum-both-right/1.0/get-checksum-both-right-1.0.jar";
+        setupTestableManagedRepository( path );
+
+        File expectedFile = new File( managedDefaultDir, path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
+        assertFalse( expectedFile.exists() );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, true );
+        
+        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        
+        assertNull(downloadedFile);
+    }
+    
     public void testGetChecksumBothCorrect()
         throws Exception
     {
@@ -53,7 +74,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -78,7 +99,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -103,7 +124,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -127,7 +148,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -151,7 +172,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -175,7 +196,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -197,7 +218,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -222,7 +243,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -244,7 +265,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -269,7 +290,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -291,7 +312,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -316,7 +337,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -341,7 +362,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -366,7 +387,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -394,7 +415,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false  );
 
         wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
         wagonMockControl.setMatcher(customWagonGetMatcher);
@@ -440,7 +461,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO , false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -466,7 +487,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO , false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -493,7 +514,7 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO , false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 

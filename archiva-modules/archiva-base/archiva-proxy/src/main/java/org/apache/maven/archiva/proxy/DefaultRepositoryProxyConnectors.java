@@ -151,6 +151,11 @@ public class DefaultRepositoryProxyConnectors
             Map<String, Exception> previousExceptions = new LinkedHashMap<String, Exception>();
             for ( ProxyConnector connector : connectors )
             {
+                if (connector.isDisabled())
+                {
+                    continue;
+                }
+                
                 RemoteRepositoryContent targetRepository = connector.getTargetRepository();
                 requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
 
@@ -221,6 +226,11 @@ public class DefaultRepositoryProxyConnectors
             List<ProxyConnector> connectors = getProxyConnectors( repository );
             for ( ProxyConnector connector : connectors )
             {
+                if (connector.isDisabled())
+                {
+                    continue;
+                }
+                
                 RemoteRepositoryContent targetRepository = connector.getTargetRepository();
                 requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
 
@@ -280,6 +290,11 @@ public class DefaultRepositoryProxyConnectors
             List<ProxyConnector> connectors = getProxyConnectors( repository );
             for ( ProxyConnector connector : connectors )
             {
+                if (connector.isDisabled())
+                {
+                    continue;
+                }
+                
                 RemoteRepositoryContent targetRepository = connector.getTargetRepository();
 
                 File localRepoFile = toLocalRepoFile( repository, targetRepository, logicalPath );
@@ -1061,6 +1076,7 @@ public class DefaultRepositoryProxyConnectors
                     connector.setProxyId( proxyConfig.getProxyId() );
                     connector.setPolicies( proxyConfig.getPolicies() );
                     connector.setOrder( proxyConfig.getOrder() );
+                    connector.setDisabled( proxyConfig.isDisabled() );
 
                     // Copy any blacklist patterns.
                     List<String> blacklist = new ArrayList<String>();
