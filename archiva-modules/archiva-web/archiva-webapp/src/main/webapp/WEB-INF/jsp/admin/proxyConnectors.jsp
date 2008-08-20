@@ -38,6 +38,8 @@
 <c:url var="iconCreateUrl" value="/images/icons/create.png"/>
 <c:url var="iconUpUrl" value="/images/icons/up.gif"/>
 <c:url var="iconDownUrl" value="/images/icons/down.gif"/>
+<c:url var="iconEnable" value="/images/icons/on-symbol.png"/>
+<c:url var="iconDisable" value="/images/icons/off-symbol.png"/>
 
 <div id="contentArea">
 
@@ -114,10 +116,14 @@
           <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
         </ww:url>
         <c:if test="${connector.disabled}">
-            <ww:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">Enable</ww:a>
+            <ww:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">
+				<img src="${iconDisable}"/>
+			</ww:a>
         </c:if>
         <c:if test="${connector.disabled == false}">
-            <ww:a href="%{disableProxyConnectorUrl}" title="Disable Proxy Connector">Disable</ww:a>
+            <ww:a href="%{disableProxyConnectorUrl}" title="Disable Proxy Connector">
+				<img src="${iconEnable}"/>
+			</ww:a>
         </c:if>
         <c:if test="${pc.count > 1}">
           <ww:a href="%{sortUpProxyConnectorUrl}" title="Move Proxy Connector Up">
