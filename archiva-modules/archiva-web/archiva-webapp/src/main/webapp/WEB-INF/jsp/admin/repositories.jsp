@@ -88,7 +88,7 @@
     </ww:a>
   </redback:ifAnyAuthorized>
   <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
-  <a href="/archiva/rss/rss_feeds?repoId=${repository.id}">
+  <a href="/archiva/feeds/${repository.id}">
 	<img src="${rssFeedIconUrl}" />
   </a>
 </div>

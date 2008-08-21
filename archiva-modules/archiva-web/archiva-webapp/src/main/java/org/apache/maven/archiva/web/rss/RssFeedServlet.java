@@ -35,6 +35,7 @@ import org.apache.archiva.rss.processor.RssFeedProcessor;
 import org.apache.commons.codec.Decoder;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
@@ -106,22 +107,33 @@ public class RssFeedServlet
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws ServletException, IOException
     {
-        String repoId = req.getParameter( "repoId" );
-        String groupId = req.getParameter( "groupId" );
-        String artifactId = req.getParameter( "artifactId" );
+        String repoId = null;
+        String groupId = null;
+        String artifactId = null;
+        
+        String url = StringUtils.removeEnd( req.getRequestURL().toString(), "/" );          
+        if( StringUtils.countMatches( StringUtils.substringAfter( url, "feeds/" ), "/" ) > 0 )
+        {
+            artifactId = StringUtils.substringAfterLast( url, "/" );
+            groupId = StringUtils.substringBeforeLast( StringUtils.substringAfter( url, "feeds/" ), "/");
+            groupId = StringUtils.replaceChars( groupId, '/', '.' );
+        }
+        else if( StringUtils.countMatches( StringUtils.substringAfter( url, "feeds/" ), "/" ) == 0 )
+        {
+            repoId = StringUtils.substringAfterLast( url, "/" );
+        }
+        else
+        {
+            res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Invalid request url." );
+            return;
+        }        
         
         try
         {
             Map<String, String> map = new HashMap<String, String>();
             SyndFeed feed = null;
-        
-            if ( ( repoId == null ) && ( groupId == null && artifactId == null ) )
-            {
-                res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Required fields not found in request." );
-                return;
-            }
-
-            if ( isAllowed( req ) )
+            
+            if ( isAllowed( req, repoId, groupId, artifactId ) )
             {
                 if ( repoId != null )
                 {
@@ -157,14 +169,14 @@ public class RssFeedServlet
             }
             
             res.setContentType( MIME_TYPE );
-            
+                        
             if ( repoId != null )
-            {
-                feed.setLink( req.getRequestURL() + "?repoId=" + repoId );
+            {   
+                feed.setLink( req.getRequestURL().toString() );
             }
             else if ( ( groupId != null ) && ( artifactId != null ) )
             {
-                feed.setLink( req.getRequestURL() + "?groupId=" + groupId + "&artifactId=" + artifactId );
+                feed.setLink( req.getRequestURL().toString() );                
             }
 
             SyndFeedOutput output = new SyndFeedOutput();
@@ -218,20 +230,23 @@ public class RssFeedServlet
      * Basic authentication.
      * 
      * @param req
+     * @param repositoryId TODO
+     * @param groupId TODO
+     * @param artifactId TODO
      * @return
      */
-    private boolean isAllowed( HttpServletRequest req )
+    private boolean isAllowed( HttpServletRequest req, String repositoryId, String groupId, String artifactId )
         throws UserNotFoundException, AccountLockedException, AuthenticationException, MustChangePasswordException,
         UnauthorizedException
     {
         String auth = req.getHeader( "Authorization" );
         List<String> repoIds = new ArrayList<String>();
 
-        if ( req.getParameter( "repoId" ) != null )
+        if ( repositoryId != null )
         {
-            repoIds.add( req.getParameter( "repoId" ) );
+            repoIds.add( repositoryId );
         }
-        else if ( req.getParameter( "artifactId" ) != null && req.getParameter( "groupId" ) != null )
+        else if ( artifactId != null && groupId != null )
         {
             if ( auth != null )
             {
