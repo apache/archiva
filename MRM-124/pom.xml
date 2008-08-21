@@ -383,6 +383,16 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-xmlrpc-api</artifactId>
+        <version>1.2-SNAPSHOT</version>        
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-xmlrpc-server</artifactId>
+        <version>1.2-SNAPSHOT</version>        
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-rss</artifactId>
         <version>1.2-SNAPSHOT</version>
       </dependency>
@@ -868,6 +878,34 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
         <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.xmlrpc</groupId>
+        <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
+        <version>0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.xmlrpc</groupId>
+        <artifactId>atlassian-xmlrpc-client-integration</artifactId>
+        <version>0.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.xmlrpc</groupId>
+        <artifactId>atlassian-xmlrpc-binder</artifactId>
+        <version>0.4</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.xmlrpc</groupId>
+        <artifactId>atlassian-xmlrpc-binder-testing</artifactId>
+        <version>0.4</version>
+        <scope>test</scope>
       </dependency>
 
       <!-- Transitive versions to manage -->
