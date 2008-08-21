@@ -1,0 +1,12 @@
+<project>
+  <groupId>test</groupId>
+  <artifactId>relocated-v3artifact</artifactId>
+  <version>1.0.0</version>
+  <distributionManagement>
+    <relocation>
+      <groupId>relocated-test</groupId>
+      <artifactId>relocated-v3artifact</artifactId>
+      <version>1.0.0</version>
+    </relocation>
+  </distributionManagement>
+</project>

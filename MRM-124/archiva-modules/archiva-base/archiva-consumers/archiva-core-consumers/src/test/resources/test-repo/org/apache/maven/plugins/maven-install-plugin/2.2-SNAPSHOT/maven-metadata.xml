@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-install-plugin</artifactId>
+  <version>2.2-SNAPSHOT</version>
+  <versioning>
+    <snapshot />
+    <lastUpdated>20070509114036</lastUpdated>
+  </versioning>
+</metadata>
