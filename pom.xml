@@ -882,12 +882,12 @@
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
-        <version>0.4</version>
+        <version>0.5-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-client-integration</artifactId>
-        <version>0.4</version>
+        <version>0.5-SNAPSHOT</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -898,7 +898,7 @@
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder</artifactId>
-        <version>0.4</version>
+        <version>0.5-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -1086,6 +1086,17 @@
           <id>codehaus.org.snapshots</id>
           <name>Codehaus Snapshots Repository</name>
           <url>http://snapshots.repository.codehaus.org</url>
+        </repository>
+        <repository>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+          <id>com.atlassian.snapshots</id>
+          <name>Atlassian Snapshots Repository</name>
+          <url>https://maven.atlassian.com/public-snapshot</url>
         </repository>
       </repositories>
     </profile>
