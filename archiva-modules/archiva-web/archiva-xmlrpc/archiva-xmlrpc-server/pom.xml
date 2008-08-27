@@ -31,7 +31,7 @@
   <dependencies>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
-        <artifactId>atlassian-xmlrpc-client-integration</artifactId>
+        <artifactId>atlassian-xmlrpc-binder-server</artifactId>
       </dependency>
   </dependencies>
 </project>
