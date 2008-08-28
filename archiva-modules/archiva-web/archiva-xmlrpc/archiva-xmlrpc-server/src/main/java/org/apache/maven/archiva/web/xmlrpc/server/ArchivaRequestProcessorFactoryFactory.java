@@ -23,30 +23,49 @@ import java.util.HashMap;
  */
 import java.util.List;
 import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.server.RequestProcessorFactoryFactory;
-import org.apache.xmlrpc.server.RequestProcessorFactoryFactory.RequestProcessorFactory;
 
 public class ArchivaRequestProcessorFactoryFactory implements RequestProcessorFactoryFactory
 {
-    private final Map<Class, Object> services;
+    private final Map<Class, ArchivaRequestProcessorFactory> services;
 
     public ArchivaRequestProcessorFactoryFactory(List serviceList)
     {
-        services = new HashMap<Class, Object>();
+        services = new HashMap<Class, ArchivaRequestProcessorFactory>();
         for (Object service : serviceList)
         {
-            services.put(service.getClass(), service);
+            services.put(service.getClass(), new ArchivaRequestProcessorFactory(service.getClass(), service));
         }
     }
 
     public RequestProcessorFactory getRequestProcessorFactory(Class pClass)
         throws XmlRpcException
     {
-        Object object = services.get(pClass);
-        if (object == null)
+        ArchivaRequestProcessorFactory processorFactory = services.get(pClass);
+        if (processorFactory == null)
         {
             throw new XmlRpcException("Could not find service object instance for type " + pClass.getName());
         }
-        return new ArchivaRequestProcessorFactory(pClass, object);
+        return processorFactory;
+    }
+    
+    private class ArchivaRequestProcessorFactory implements RequestProcessorFactory
+    {
+        private final Class pType;
+
+        private final Object serviceObject;
+
+        public ArchivaRequestProcessorFactory(Class pType, Object serviceObject)
+        {
+            this.pType = pType;
+            this.serviceObject = serviceObject;
+        }
+
+        public Object getRequestProcessor(XmlRpcRequest request)
+            throws XmlRpcException
+        {
+            return serviceObject;
+        }
     }
 }
