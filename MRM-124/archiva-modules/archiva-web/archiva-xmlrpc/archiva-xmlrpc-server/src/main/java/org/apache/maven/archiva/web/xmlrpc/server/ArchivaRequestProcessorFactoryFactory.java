@@ -1,8 +1,5 @@
 package org.apache.maven.archiva.web.xmlrpc.server;
 
-import java.util.Map;
-import java.util.HashMap;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,6 +19,8 @@ import java.util.HashMap;
  * under the License.
  */
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
