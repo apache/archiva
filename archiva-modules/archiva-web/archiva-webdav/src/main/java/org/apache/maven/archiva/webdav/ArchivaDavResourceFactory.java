@@ -174,6 +174,11 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement role-hint="md5";
      */
     private Digester digestMd5;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaXworkUser archivaXworkUser;
         
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
@@ -317,7 +322,7 @@ public class ArchivaDavResourceFactory
                         ArchivaDavResource metadataChecksumResource =
                             new ArchivaDavResource( metadataChecksum.getAbsolutePath(), logicalResource.getPath(), null,
                                                     request.getRemoteAddr(), request.getDavSession(), archivaLocator, this,
-                                                    mimeTypes, auditListeners, consumers );
+                                                    mimeTypes, auditListeners, consumers, archivaXworkUser );
                         availableResources.add( 0, metadataChecksumResource );
                     }
                 }
@@ -349,7 +354,7 @@ public class ArchivaDavResourceFactory
                         ArchivaDavResource metadataResource =
                             new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), null,
                                                     request.getRemoteAddr(), request.getDavSession(), archivaLocator, this,
-                                                    mimeTypes, auditListeners, consumers );
+                                                    mimeTypes, auditListeners, consumers, archivaXworkUser );
                         availableResources.add( 0, metadataResource );
                     }
                     catch ( RepositoryMetadataException r )
@@ -398,7 +403,7 @@ public class ArchivaDavResourceFactory
             resource =
                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource,
                                         managedRepository.getRepository(), davSession, archivaLocator, this, mimeTypes,
-                                        auditListeners, consumers );
+                                        auditListeners, consumers, archivaXworkUser );
         }
         resource.addLockManager(lockManager);
         return resource;
@@ -423,7 +428,7 @@ public class ArchivaDavResourceFactory
         ArchivaDavResource resource =
             new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                     managedRepository.getRepository(), request.getRemoteAddr(),
-                                    request.getDavSession(), locator, this, mimeTypes, auditListeners, consumers );
+                                    request.getDavSession(), locator, this, mimeTypes, auditListeners, consumers, archivaXworkUser );
 
         if ( !resource.isCollection() )
         {
@@ -468,7 +473,7 @@ public class ArchivaDavResourceFactory
                     new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                             managedRepository.getRepository(), request.getRemoteAddr(),
                                             request.getDavSession(), locator, this, mimeTypes, auditListeners,
-                                            consumers );
+                                            consumers, archivaXworkUser );
             }
         }
         return resource;
@@ -497,7 +502,7 @@ public class ArchivaDavResourceFactory
 
         return new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                        managedRepository.getRepository(), request.getRemoteAddr(),
-                                       request.getDavSession(), locator, this, mimeTypes, auditListeners, consumers );
+                                       request.getDavSession(), locator, this, mimeTypes, auditListeners, consumers, archivaXworkUser );
     }
 
     private boolean fetchContentFromProxies( ManagedRepositoryContent managedRepository, DavServletRequest request,
@@ -622,7 +627,7 @@ public class ArchivaDavResourceFactory
     // TODO: remove?
     private void triggerAuditEvent( String remoteIP, String repositoryId, String resource, String action )
     {
-        String activePrincipal = ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        String activePrincipal = archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
         AuditEvent event = new AuditEvent( repositoryId, activePrincipal, resource, action );
         event.setRemoteIP( remoteIP );
 
@@ -769,7 +774,7 @@ public class ArchivaDavResourceFactory
                             request.getSession().getAttribute( SecuritySystemConstants.SECURITY_SESSION_KEY ) );
         }
 
-        String activePrincipal = ArchivaXworkUser.getActivePrincipal( sessionMap );
+        String activePrincipal = archivaXworkUser.getActivePrincipal( sessionMap );
         boolean allow = isAllowedToContinue( request, repositories, activePrincipal );
 
         if( allow )

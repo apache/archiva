@@ -40,6 +40,7 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.security.UserRepositories;
@@ -90,6 +91,8 @@ public class RssFeedServlet
     private ServletAuthenticator servletAuth;
 
     private HttpAuthenticator httpAuth;
+    
+    private ArchivaXworkUser archivaXworkUser;
 
     public void init( javax.servlet.ServletConfig servletConfig )
         throws ServletException
@@ -102,6 +105,7 @@ public class RssFeedServlet
             (ServletAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
         httpAuth =
             (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
+        archivaXworkUser = (ArchivaXworkUser) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaXworkUser.class ) );
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
@@ -269,7 +273,7 @@ public class RssFeedServlet
 
                 if ( usernamePassword == null || usernamePassword.trim().equals( "" ) )
                 {
-                    repoIds = getObservableRepos( ArchivaRoleConstants.PRINCIPAL_GUEST );
+                    repoIds = getObservableRepos( archivaXworkUser.getGuest() );
                 }
                 else
                 {
@@ -279,7 +283,7 @@ public class RssFeedServlet
             }
             else
             {
-                repoIds = getObservableRepos( ArchivaRoleConstants.PRINCIPAL_GUEST );
+                repoIds = getObservableRepos( archivaXworkUser.getGuest() );
             }
         }
         else

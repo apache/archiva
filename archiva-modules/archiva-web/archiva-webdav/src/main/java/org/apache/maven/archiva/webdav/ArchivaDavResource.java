@@ -97,17 +97,20 @@ public class ArchivaDavResource
     private final MimeTypes mimeTypes;
 
     private List<AuditListener> auditListeners;
+    
+    private ArchivaXworkUser archivaXworkUser;
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryContentConsumers consumers )
+                               RepositoryContentConsumers consumers, ArchivaXworkUser archivaXworkUser )
     {
         this.localResource = new File( localResource ); 
         this.logicalResource = logicalResource;
         this.locator = locator;
         this.factory = factory;
         this.session = session;
+        this.archivaXworkUser = archivaXworkUser;
         
         // TODO: push into locator as well as moving any references out of the resource factory
         this.repository = repository;
@@ -121,10 +124,10 @@ public class ArchivaDavResource
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                String remoteAddr, DavSession session, ArchivaDavResourceLocator locator,
                                DavResourceFactory factory, MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryContentConsumers consumers )
+                               RepositoryContentConsumers consumers, ArchivaXworkUser archivaXworkUser )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
-              consumers );
+              consumers, archivaXworkUser );
 
         this.remoteAddr = remoteAddr;
     }
@@ -614,7 +617,7 @@ public class ArchivaDavResource
 
     private void triggerAuditEvent( String remoteIP, String repositoryId, String resource, String action )
     {
-        String activePrincipal = ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        String activePrincipal = archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
         AuditEvent event = new AuditEvent( repositoryId, activePrincipal, resource, action );
         event.setRemoteIP( remoteIP );
 

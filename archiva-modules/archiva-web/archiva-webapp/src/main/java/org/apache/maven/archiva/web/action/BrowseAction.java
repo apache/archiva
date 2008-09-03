@@ -52,6 +52,11 @@ public class BrowseAction
      */
     private UserRepositories userRepositories;
     
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaXworkUser archivaXworkUser;
+    
     private BrowsingResults results;
 
     private String groupId;
@@ -121,7 +126,7 @@ public class BrowseAction
     
     private String getPrincipal()
     {
-        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
     
     private List<String> getObservableRepos()
