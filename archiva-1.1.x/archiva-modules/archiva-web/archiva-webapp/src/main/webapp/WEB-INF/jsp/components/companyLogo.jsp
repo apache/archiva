@@ -19,10 +19,10 @@
 
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<c:if test="${!empty(organisationLogo)}">
+<c:if test="${!empty (organisationLogo)}">
   <ww:set name="organisationUrl" value="organisationUrl"/>
   <c:choose>
-    <c:when test="${!empty(organisationUrl)}">
+    <c:when test="${!empty (organisationUrl)}">
       <a href="${companyUrl}">
         <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
       </a>

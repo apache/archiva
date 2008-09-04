@@ -57,7 +57,7 @@
 <h2>Repository Groups</h2>
 
 <c:choose>
-<c:when test="${empty(repositoryGroups)}">
+<c:when test="${empty (repositoryGroups)}">
   <strong>No Repository Groups Defined.</strong>
 </c:when>
 <c:otherwise>
@@ -83,7 +83,7 @@
     <p><a href="${baseUrl}/${repositoryGroup.key}/">${baseUrl}/${repositoryGroup.key}/</a></p>
   </div>
 
-  <c:if test="${!empty(groupToRepositoryMap[repositoryGroup.key])}">
+  <c:if test="${!empty (groupToRepositoryMap[repositoryGroup.key])}">
   <div class="repos">
     <ww:form name="form${i}" action="addRepositoryToGroup" namespace="/admin" validate="true">
       <ww:hidden name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>

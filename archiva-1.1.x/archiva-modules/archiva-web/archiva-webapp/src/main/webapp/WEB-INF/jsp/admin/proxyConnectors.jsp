@@ -57,7 +57,7 @@
 <h2>Repository Proxy Connectors</h2>
 
 <c:choose>
-<c:when test="${empty(proxyConnectorMap)}">
+<c:when test="${empty (proxyConnectorMap)}">
   <strong>No Repository Proxy Connectors Defined.</strong>
 </c:when>
 <c:otherwise>
@@ -139,7 +139,7 @@
         <th nowrap="nowrap">Network Proxy:</th>
         <td>
           <c:choose>
-            <c:when test="${empty(connector.proxyId)}">
+            <c:when test="${empty (connector.proxyId)}">
               <span class="directConnection">(Direct Connection)</span>
             </c:when>
             <c:otherwise>
@@ -168,7 +168,7 @@
         </td>
       </tr>
 
-      <c:if test="${not(empty(connector.whiteListPatterns))}">
+      <c:if test="${not (empty (connector.whiteListPatterns))}">
         <tr>
           <th nowrap="nowrap">White List:</th>
           <td nowrap="nowrap">
@@ -179,7 +179,7 @@
         </tr>
       </c:if>
 
-      <c:if test="${not(empty(connector.blackListPatterns))}">
+      <c:if test="${not (empty (connector.blackListPatterns))}">
         <tr>
           <th nowrap="nowrap">Black List:</th>
           <td>
@@ -190,7 +190,7 @@
         </tr>
       </c:if>
 
-      <c:if test="${not(empty(connector.properties))}">
+      <c:if test="${not (empty (connector.properties))}">
         <tr>
           <th>Properties:</th>
           <td>

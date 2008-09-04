@@ -64,7 +64,7 @@
 <h2>Database - Unprocessed Artifacts Scanning</h2>
 
 <c:choose>
-  <c:when test="${empty(unprocessedConsumers)}">
+  <c:when test="${empty (unprocessedConsumers)}">
     <%-- No Consumers. Eeek! --%>
     <strong>There are no consumers for unprocessed artifacts.</strong>
   </c:when>
@@ -119,7 +119,7 @@
 <h2>Database - Artifact Cleanup Scanning</h2>
 
 <c:choose>
-  <c:when test="${empty(cleanupConsumers)}">
+  <c:when test="${empty (cleanupConsumers)}">
     <%-- No Consumers. Eeek! --%>
     <strong>There are no consumers for artifact cleanup.</strong>
   </c:when>

@@ -68,7 +68,7 @@
 
 <h1>
   <c:choose>
-    <c:when test="${empty(model.name)}">
+    <c:when test="${empty (model.name)}">
       ${model.artifactId}
     </c:when>
     <c:otherwise>

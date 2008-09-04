@@ -71,7 +71,7 @@
 <h2>Repository Scanning - File Types</h2>
 
 <c:choose>
-  <c:when test="${empty(fileTypeMap)}">
+  <c:when test="${empty (fileTypeMap)}">
     <%-- No File Types. Eeek! --%>
     <strong>There are no file types configured.</strong>
   </c:when>
@@ -147,7 +147,7 @@
 <h2>Repository Scanning - Consumers of Known Content</h2>
 
 <c:choose>
-  <c:when test="${empty(knownContentConsumers)}">
+  <c:when test="${empty (knownContentConsumers)}">
     <%-- No Good Consumers. Eeek! --%>
     <strong>There are no consumers of known content available.</strong>
   </c:when>
@@ -203,7 +203,7 @@
 <h2>Repository Scanning - Consumers of Invalid Content</h2>
 
 <c:choose>
-  <c:when test="${empty(invalidContentConsumers)}">
+  <c:when test="${empty (invalidContentConsumers)}">
     <%-- No Consumers. Eeek! --%>
     <strong>There are no consumers of invalid content available.</strong>
   </c:when>
