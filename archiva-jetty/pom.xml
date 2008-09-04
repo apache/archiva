@@ -142,7 +142,7 @@
        <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
-        <version>1.0-beta-1</version>
+        <version>1.0-SNAPSHOT</version>
         <configuration>
           <daemons>
             <daemon>
@@ -200,6 +200,15 @@
                       <value>30</value>
                     </property>
                   </configuration>
+                  <includes>
+                    <include>linux-x86-32</include>
+                    <include>linux-x86-64</include>
+                    <include>macosx-x86-universal-32</include>
+                    <include>solaris-x86-32</include>
+                    <include>solaris-sparc-32</include>
+                    <include>solaris-sparc-64</include>
+                    <include>windows-x86-32</include>
+                  </includes>
                 </generatorConfiguration>
               </generatorConfigurations>
               <jvmSettings>
