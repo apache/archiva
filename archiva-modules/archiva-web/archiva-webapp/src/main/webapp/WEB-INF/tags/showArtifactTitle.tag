@@ -26,7 +26,7 @@
   <span class="artifact-title">
     <c:set var="url">
       <c:choose>
-        <c:when test="${!empty(version)}">
+        <c:when test="${!empty (version)}">
           <ww:url action="showArtifact" namespace="/">
             <ww:param name="groupId" value="%{'${groupId}'}"/>
             <ww:param name="artifactId" value="%{'${artifactId}'}"/>

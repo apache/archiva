@@ -35,6 +35,6 @@
                          classifier="${dependency.classifier}"/>
   </p>
 </c:forEach>
-<c:if test="${empty(dependencies)}">
+<c:if test="${empty (dependencies)}">
   <strong>No results</strong>
 </c:if>

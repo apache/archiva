@@ -50,7 +50,7 @@
 <h2>Path Mappings</h2>
 
 <c:choose>
-<c:when test="${empty(legacyArtifactPaths)}">
+<c:when test="${empty (legacyArtifactPaths)}">
   <%-- No paths. --%>
   <p><strong>There are no legacy artifact paths configured yet.</strong></p>
 </c:when>

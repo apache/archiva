@@ -34,6 +34,6 @@
                          version="${project.version}"/>
   </p>
 </c:forEach>
-<c:if test="${empty(dependees)}">
+<c:if test="${empty (dependees)}">
   <strong>No results</strong>
 </c:if>

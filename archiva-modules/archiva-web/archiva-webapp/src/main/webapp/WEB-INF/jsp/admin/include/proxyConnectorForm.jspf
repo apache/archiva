@@ -81,7 +81,7 @@
   </td>
   <td>
     <c:choose>
-      <c:when test="${empty(connector.properties)}">
+      <c:when test="${empty (connector.properties)}">
         <i>No properties have been set.</i>
       </c:when>
       <c:otherwise>
@@ -128,7 +128,7 @@
   </td>
   <td>
     <c:choose>
-      <c:when test="${empty(connector.blackListPatterns)}">
+      <c:when test="${empty (connector.blackListPatterns)}">
         <i>No black list patterns have been set.</i>
       </c:when>
       <c:otherwise>
@@ -167,7 +167,7 @@
   </td>
   <td>
     <c:choose>
-      <c:when test="${empty(connector.whiteListPatterns)}">
+      <c:when test="${empty (connector.whiteListPatterns)}">
         <i>No white list patterns have been set.</i>
       </c:when>
       <c:otherwise>

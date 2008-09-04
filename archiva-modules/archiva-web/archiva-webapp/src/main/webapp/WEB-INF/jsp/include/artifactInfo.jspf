@@ -39,7 +39,7 @@
   --%>
 </p>
 
-<c:if test="${!empty(model.description)}">
+<c:if test="${!empty (model.description)}">
   <blockquote>${model.description}</blockquote>
 </c:if>
 
@@ -120,12 +120,12 @@
 </pre>
 </c:if>
 
-<c:if test="${!empty(model.url) || model.organization != null || !empty(model.licenses)
+<c:if test="${!empty (model.url) || model.organization != null || !empty (model.licenses)
     || model.issueManagement != null || model.ciManagement != null}">
 
   <h2>Other Details</h2>
   <table class="infoTable">
-    <c:if test="${!empty(model.url)}">
+    <c:if test="${!empty (model.url)}">
       <tr>
         <th>URL</th>
         <td>
@@ -148,13 +148,13 @@
         </td>
       </tr>
     </c:if>
-    <c:if test="${!empty(model.licenses)}">
+    <c:if test="${!empty (model.licenses)}">
       <c:forEach items="${model.licenses}" var="license">
         <tr>
           <th>License</th>
           <td>
             <c:choose>
-              <c:when test="${!empty(license.url)}">
+              <c:when test="${!empty (license.url)}">
                 <a href="${license.url}">${license.name}</a>
               </c:when>
               <c:otherwise>
@@ -170,7 +170,7 @@
         <th>Issue Tracker</th>
         <td>
           <c:choose>
-            <c:when test="${!empty(model.issueManagement.url)}">
+            <c:when test="${!empty (model.issueManagement.url)}">
               <a href="${model.issueManagement.url}">${model.issueManagement.system}</a>
             </c:when>
             <c:otherwise>
@@ -185,7 +185,7 @@
         <th>Continuous Integration</th>
         <td>
           <c:choose>
-            <c:when test="${!empty(model.ciManagement.url)}">
+            <c:when test="${!empty (model.ciManagement.url)}">
               <a href="${model.ciManagement.url}">${model.ciManagement.system}</a>
             </c:when>
             <c:otherwise>
@@ -201,7 +201,7 @@
 <c:if test="${model.scm != null}">
   <h2>SCM</h2>
   <table class="infoTable">
-    <c:if test="${!empty(model.scm.connection)}">
+    <c:if test="${!empty (model.scm.connection)}">
       <tr>
         <th>Connection</th>
         <td>
@@ -209,7 +209,7 @@
         </td>
       </tr>
     </c:if>
-    <c:if test="${!empty(model.scm.developerConnection)}">
+    <c:if test="${!empty (model.scm.developerConnection)}">
       <tr>
         <th>Dev. Connection</th>
         <td>
@@ -217,7 +217,7 @@
         </td>
       </tr>
     </c:if>
-    <c:if test="${!empty(model.scm.url)}">
+    <c:if test="${!empty (model.scm.url)}">
       <tr>
         <th>Viewer</th>
         <td>

@@ -33,6 +33,6 @@
     </c:forEach>
   </ul>
 </c:forEach>
-<c:if test="${empty(reports)}">
+<c:if test="${empty (reports)}">
   <strong>No reports for this artifact.</strong>
 </c:if>

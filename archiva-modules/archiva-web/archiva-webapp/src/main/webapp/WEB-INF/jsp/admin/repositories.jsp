@@ -50,7 +50,7 @@
 <h2>Managed Repositories</h2>
 
 <c:choose>
-<c:when test="${empty(managedRepositories)}">
+<c:when test="${empty (managedRepositories)}">
   <%-- No Managed Repositories. --%>
   <strong>There are no managed repositories configured yet.</strong>
 </c:when>
@@ -116,7 +116,7 @@
   <th>Directory</th>
   <td>${repository.location}</td>
 </tr>
-<c:if test="${!empty(repository.indexDir)}">
+<c:if test="${!empty (repository.indexDir)}">
 	<tr>
 	  <th>Index Directory</th>
 	  <td>${repository.indexDir}</td>
@@ -140,7 +140,7 @@
     </c:choose>
   </td>
 </tr>
-<c:if test="${!empty(repositoryToGroupMap[repository.id])}">
+<c:if test="${!empty (repositoryToGroupMap[repository.id])}">
   <tr>
     <th>Groups</th>
     <td>
@@ -205,7 +205,7 @@
     <td>
       <c:set var="stats" value="${repositoryStatistics[repository.id]}"/>
       <c:choose>
-        <c:when test="${empty(stats)}">
+        <c:when test="${empty (stats)}">
           No Statistics Available.
         </c:when>
         <c:otherwise>
@@ -258,7 +258,7 @@
 <h2>Remote Repositories</h2>
 
 <c:choose>
-  <c:when test="${empty(remoteRepositories)}">
+  <c:when test="${empty (remoteRepositories)}">
     <%-- No Remote Repositories. --%>
     <strong>There are no remote repositories configured yet.</strong>
   </c:when>
