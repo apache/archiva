@@ -75,6 +75,11 @@ public class SearchAction
      */
     private UserRepositories userRepositories;
     
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaXworkUser archivaXworkUser;
+    
     private static final String RESULTS = "results";
 
     private static final String ARTIFACT = "artifact";
@@ -195,7 +200,7 @@ public class SearchAction
     
     private String getPrincipal()
     {
-        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
     
     private List<String> getObservableRepos()
