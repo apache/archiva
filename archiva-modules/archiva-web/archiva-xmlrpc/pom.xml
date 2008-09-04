@@ -31,6 +31,6 @@
   <packaging>pom</packaging>
   <modules>
     <module>archiva-xmlrpc-api</module>
-    <module>archiva-xmlrpc-server</module>
+    <module>archiva-xmlrpc-services</module>
   </modules>
 </project>

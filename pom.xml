@@ -879,15 +879,17 @@
         <artifactId>jetty</artifactId>
         <version>${jetty.version}</version>
       </dependency>
+
+      <!-- xmlrpc -->
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.7</version>
       </dependency>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-server-spring</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.7</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -898,13 +900,13 @@
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.7</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-testing</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.7</version>
         <scope>test</scope>
       </dependency>
 
