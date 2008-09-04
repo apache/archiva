@@ -26,8 +26,8 @@
         <version>1.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>archiva-xmlrpc-server</artifactId>
-    <name>Archiva Web :: XML-RPC Server</name>
+    <artifactId>archiva-xmlrpc-services</artifactId>
+    <name>Archiva Web :: XML-RPC Services</name>
     <dependencies>
         <dependency>
             <groupId>org.apache.archiva</groupId>
@@ -40,10 +40,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.xmlrpc</groupId>
-            <artifactId>atlassian-xmlrpc-binder-server</artifactId>
         </dependency>
     </dependencies>
 </project>

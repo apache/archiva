@@ -388,7 +388,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-xmlrpc-server</artifactId>
+        <artifactId>archiva-xmlrpc-services</artifactId>
         <version>1.2-SNAPSHOT</version>        
       </dependency>
       <dependency>
@@ -882,12 +882,12 @@
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
-        <version>0.5</version>
+        <version>0.6-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
-        <artifactId>atlassian-xmlrpc-binder-server</artifactId>
-        <version>0.5</version>
+        <artifactId>atlassian-xmlrpc-binder-server-spring</artifactId>
+        <version>0.6-SNAPSHOT</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -898,13 +898,13 @@
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder</artifactId>
-        <version>0.5</version>
+        <version>0.6-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-testing</artifactId>
-        <version>0.5</version>
+        <version>0.6-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
 
