@@ -69,13 +69,17 @@
             <%-- Prev & Next icons --%>
             <c:set var="prevPageUrl">
               <ww:url action="quickSearch" namespace="/">
-                <ww:param name="q" value="%{'${q}'}"/>                
+                <ww:param name="q" value="%{'${q}'}"/>
+                <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+                <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>                
                 <ww:param name="currentPage" value="%{'${currentPage - 1}'}"/>
               </ww:url>
       	    </c:set>
       	    <c:set var="nextPageUrl">
               <ww:url action="quickSearch" namespace="/">
                 <ww:param name="q" value="%{'${q}'}"/>                
+                <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+                <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
                 <ww:param name="currentPage" value="%{'${currentPage + 1}'}"/>
               </ww:url>
       	    </c:set>    
