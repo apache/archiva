@@ -85,6 +85,10 @@
       <artifactId>archiva-rss</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-xmlrpc-services</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
@@ -220,6 +224,11 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging-api</artifactId>
       <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.atlassian.xmlrpc</groupId>
+      <artifactId>atlassian-xmlrpc-binder-server-spring</artifactId>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
   <build>
