@@ -20,6 +20,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
@@ -198,7 +199,7 @@ public class RepositoryPurgeConsumer
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( propertyNameTriggers.contains( propertyName ) )
+        if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
         {
             initIncludes();
         }
@@ -219,13 +220,6 @@ public class RepositoryPurgeConsumer
     public void initialize()
         throws InitializationException
     {
-        propertyNameTriggers = new ArrayList<String>();
-        propertyNameTriggers.add( "repositoryScanning" );
-        propertyNameTriggers.add( "fileTypes" );
-        propertyNameTriggers.add( "fileType" );
-        propertyNameTriggers.add( "patterns" );
-        propertyNameTriggers.add( "pattern" );
-
         configuration.addChangeListener( this );
 
         initIncludes();
