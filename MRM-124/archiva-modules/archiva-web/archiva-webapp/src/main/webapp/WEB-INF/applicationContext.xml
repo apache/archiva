@@ -40,4 +40,10 @@
     </constructor-arg>
   </bean>
 
+  <bean name="xmlRpcAuthenticator" class="org.apache.maven.archiva.xmlrpc.security.XmlRpcAuthenticator">
+      <constructor-arg>
+         <ref bean="securitySystem"/>
+      </constructor-arg>
+  </bean>
+
 </beans>
