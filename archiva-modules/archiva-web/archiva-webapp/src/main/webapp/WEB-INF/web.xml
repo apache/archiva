@@ -90,7 +90,11 @@
         <param-name>serviceListBeanName</param-name>
         <param-value>xmlrpcServicesList</param-value>
     </init-param>
-    <load-on-startup>1</load-on-startup>
+        <init-param>
+            <param-name>authHandlerBeanName</param-name>
+            <param-value>xmlRpcAuthenticator</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
   </servlet>
   
   <servlet>

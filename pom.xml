@@ -393,6 +393,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-xmlrpc-security</artifactId>
+        <version>1.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-rss</artifactId>
         <version>1.2-SNAPSHOT</version>
       </dependency>
@@ -510,6 +515,11 @@
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlrpc</groupId>
+        <artifactId>xmlrpc-server</artifactId>
+        <version>3.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
