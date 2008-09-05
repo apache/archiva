@@ -894,12 +894,12 @@
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
-        <version>0.7</version>
+        <version>${binder.version}</version>
       </dependency>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-server-spring</artifactId>
-        <version>0.7</version>
+        <version>${binder.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -910,13 +910,13 @@
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder</artifactId>
-        <version>0.7</version>
+        <version>${binder.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder-testing</artifactId>
-        <version>0.7</version>
+        <version>${binder.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -1004,6 +1004,7 @@
     <wagon.version>1.0-beta-4</wagon.version>
     <redback.version>1.0.3</redback.version>
     <jetty.version>6.1.6</jetty.version>
+    <binder.version>0.8-SNAPSHOT</binder.version>
   </properties>
   <profiles>
     <profile>
