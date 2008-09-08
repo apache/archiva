@@ -109,15 +109,28 @@
 </table>
 
 <c:if test="${model.packaging != 'pom'}">
-  <h2>POM Dependency Snippet</h2>
+  <h2>POM Snippet</h2>
+  <c:choose>
+    <c:when test="${model.packaging == 'maven-plugin'}">
+<pre class="pom">
+    &lt;plugin>
+      &lt;groupId>${model.groupId}&lt;/groupId>
+      &lt;artifactId>${model.artifactId}&lt;/artifactId>
+      &lt;version>${version}&lt;/version>
+    &lt;/plugin>
+</pre>
+    </c:when>
+    <c:otherwise>
 <pre class="pom">
     &lt;dependency>
       &lt;groupId>${model.groupId}&lt;/groupId>
-      &lt;artifactId>${model.artifactId}&lt;/artifactId>     
+      &lt;artifactId>${model.artifactId}&lt;/artifactId>
       &lt;version>${version}&lt;/version><c:if test="${model.packaging != 'jar'}">
       &lt;type>${model.packaging}&lt;/type></c:if>
     &lt;/dependency>
 </pre>
+    </c:otherwise>
+  </c:choose>
 </c:if>
 
 <c:if test="${!empty (model.url) || model.organization != null || !empty (model.licenses)
