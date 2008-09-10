@@ -41,6 +41,6 @@ public interface ServletAuthenticator
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
         boolean isWriteRequest ) throws AuthorizationException, UnauthorizedException;
     
-    public boolean isAuthorizedToAccessVirtualRepository( String principal, String repoId )
+    public boolean isAuthorized( String principal, String repoId )
         throws UnauthorizedException;
 }
