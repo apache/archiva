@@ -93,7 +93,7 @@ public class ArchivaServletAuthenticator
         return true;
     }
 
-    public boolean isAuthorizedToAccessVirtualRepository( String principal, String repoId )
+    public boolean isAuthorized( String principal, String repoId )
         throws UnauthorizedException
     {
         try

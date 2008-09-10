@@ -772,6 +772,22 @@ public class ArchivaDavResourceFactory
         }
         catch ( AuthenticationException e )
         {
+            // safety check for MRM-911            
+            String guest = archivaXworkUser.getGuest();
+            try
+            {
+                if( servletAuth.isAuthorized( guest, 
+                      ( ( ArchivaDavResourceLocator ) request.getRequestLocator() ).getRepositoryId() ) )
+                {   
+                    return true;
+                }
+            }
+            catch ( UnauthorizedException ae )
+            {
+                throw new UnauthorizedDavException( repositoryId,
+                        "You are not authenticated and authorized to access any repository." );
+            }
+                        
             throw new UnauthorizedDavException( repositoryId, "You are not authenticated" );
         }
         catch ( MustChangePasswordException e )
@@ -840,7 +856,7 @@ public class ArchivaDavResourceFactory
                     // for the current user logged in
                     try
                     {
-                        if( servletAuth.isAuthorizedToAccessVirtualRepository( activePrincipal, repository ) )
+                        if( servletAuth.isAuthorized( activePrincipal, repository ) )
                         {
                             getResource( locator, mergedRepositoryContents, logicalResource, repository );
                         }
@@ -936,7 +952,7 @@ public class ArchivaDavResourceFactory
             {
                 try
                 {
-                    if( servletAuth.isAuthorizedToAccessVirtualRepository( activePrincipal, repository ) )
+                    if( servletAuth.isAuthorized( activePrincipal, repository ) )
                     {
                         allow = true;
                         break;
