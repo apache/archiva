@@ -39,7 +39,20 @@
 
 <div id="contentArea">
   <div id="searchBox">
-    <%@ include file="/WEB-INF/jsp/include/quickSearchForm.jspf" %>
+  <ww:form method="get" action="quickSearch" validate="true">
+    <ww:textfield label="Search for" size="50" name="q"/>
+    <ww:checkbox label="Search within results" name="searchResultsOnly"/>        
+    <ww:hidden name="completeQueryString" value="${completeQueryString}"/>        
+    <ww:submit label="Go!"/>
+  </ww:form>
+
+  <script type="text/javascript">
+    document.getElementById("quickSearch_q").focus();
+  </script>
+
+  <p>
+    <ww:actionerror/>
+  </p>
   </div>
 
   <h1>Results</h1>
