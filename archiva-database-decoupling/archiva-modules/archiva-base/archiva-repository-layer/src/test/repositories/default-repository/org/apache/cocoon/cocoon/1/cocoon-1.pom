@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2005 The Apache Software Foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!--+
+    | This is the main Maven file that contains all global settings, management and information.
+    | @version $Id$
+    +-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>1</version>
+  </parent>
+  
+  <packaging>pom</packaging>  
+  
+  <groupId>org.apache.cocoon</groupId>
+  <artifactId>cocoon</artifactId>
+  <version>1</version>
+  
+  <name>Apache Cocoon</name>
+  <url>http://cocoon.apache.org</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <!--modules>
+    <module>blocks</module>
+    <module>commons</module>
+    <module>core</module>
+    <module>tools</module>
+  </modules-->
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven central repository</name>
+      <url>http://ibiblio.org/maven2</url>
+    </repository>
+    <repository>
+      <id>apache.snapshot</id>
+      <name>Apache Snapshot Repository</name>
+      <url>http://svn.apache.org/maven-snapshot-repository</url>
+    </repository>
+    <repository>
+      <id>apache-cvs</id>
+      <name>Apache Maven Repository</name>
+      <url>http://svn.apache.org/repository</url>
+      <layout>legacy</layout>
+    </repository>
+  </repositories>
+  <!-- Activate this element if you want to use snapshot versions of plugins
+  <pluginRepositories>
+    <pluginRepository>
+      <id>snapshots</id>
+      <url>http://snapshots.maven.codehaus.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
+  -->
+  <organization>
+    <name>The Apache Software Foundation</name>
+    <url>http://www.apache.org/</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>crossley</id>
+      <name>David Crossley</name>
+      <email>crossley@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org/</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+    <developer>
+      <id>bdelacretaz</id>
+      <name>Bertrand Delacretaz</name>
+      <email>bdelacretaz@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>danielf</id>
+      <name>Daniel Fagerstrom</name>
+      <email>danielf@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>antonio</id>
+      <name>Antonio Gallardo</name>
+      <email>antonio@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+    <developer>
+      <id>lgawron</id>
+      <name>Leszek Gawron</name>
+      <email>lgawron@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>joerg</id>
+      <name>Jorg Heinicke</name>
+      <email>joerg@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <timezone>+1</timezone>
+      <roles>
+         <role>Committer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jheymans</id>
+      <name>Jorg Heymans</name>
+      <email>jheymans@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>anathaniel</id>
+      <name>Alfred Nathaniel</name>
+      <email>anathaniel@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>giacomo</id>
+      <name>Giacomo Pati</name>
+      <email>giacomo@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>reinhard</id>
+      <name>Reinhard Poetz</name>
+      <email>reinhard@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>    
+    <developer>
+      <id>jbq</id>
+      <name>Jean-Baptiste Quenot</name>
+      <email>jbq@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>gianugo</id>
+      <name>Gianugo Rabellino</name>
+      <email>gianugo@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>cziegeler</id>
+      <name>Carsten Ziegeler</name>
+      <email>cziegeler@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>vgritsenko</id>
+      <name>Vadim Gritsenko</name>
+      <email>vgritsenko@apache.org</email>
+      <organization>ASF</organization>
+      <organizationUrl>http://www.apache.org</organizationUrl>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>jira</system>
+    <url>https://issues.apache.org/jira/browse/COCOON</url>
+  </issueManagement>
+  <ciManagement>
+    <system>continuum</system>
+    <url>http://cocoon.zones.apache.org:12000/continuum/servlet/continuum</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <configuration>
+          <address>dev@cocoon.apache.org</address>
+        </configuration>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+  <mailingLists>
+    <mailingList>
+      <name>Cocoon User List</name>
+      <subscribe>users-subscribe@cocoon.apache.org</subscribe>
+      <unsubscribe>users-unsubscribe@cocoon.apache.org</unsubscribe>
+      <post>users@cocoon.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/cocoon-users</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/users@cocoon.apache.org/</otherArchive>
+        <otherArchive>http://marc.theaimsgroup.com/?l=xml-cocoon-user</otherArchive>
+        <otherArchive>http://news.gmane.org/gmane.text.xml.cocoon.user</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Cocoon Developer List</name>
+      <subscribe>dev-subscribe@cocoon.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@cocoon.apache.org</unsubscribe>
+      <post>dev@cocoon.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/cocoon-dev</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/dev@cocoon.apache.org/</otherArchive>
+        <otherArchive>http://marc.theaimsgroup.com/?l=xml-cocoon-dev</otherArchive>
+        <otherArchive>http://news.gmane.org/gmane.text.xml.cocoon.dev</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Cocoon Documentation List</name>
+      <subscribe>docs-subscribe@cocoon.apache.org</subscribe>
+      <unsubscribe>docs-unsubscribe@cocoon.apache.org</unsubscribe>
+      <post>docs@cocoon.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/cocoon-docs</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/dev@cocoon.apache.org/</otherArchive>
+        <otherArchive>http://marc.theaimsgroup.com/?l=xml-cocoon-docs</otherArchive>
+        <otherArchive>http://news.gmane.org/gmane.text.xml.cocoon.docs</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Cocoon Subversion Repository List</name>
+      <subscribe>cvs-subscribe@cocoon.apache.org</subscribe>
+      <unsubscribe>cvs-unsubscribe@cocoon.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/cocoon-cvs</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/cvs@cocoon.apache.org/</otherArchive>
+        <otherArchive>http://marc.theaimsgroup.com/?l=xml-cocoon-cvs</otherArchive>
+        <otherArchive>http://news.gmane.org/gmane.text.xml.cocoon.cvs</otherArchive>
+      </otherArchives>
+    </mailingList>
+  </mailingLists>
+  <scm>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/cocoon/tags/cocoon-1</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/cocoon/tags/cocoon-1</developerConnection>
+    <url>https://svn.apache.org/repos/asf/cocoon/tags/cocoon-1</url>
+  </scm>
+  <distributionManagement>
+    <repository>
+      <id>apache-maven</id>
+      <name>release repository</name>
+      <url>scpexe://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+    </repository>
+    <snapshotRepository>
+      <id>apache-maven-snapshot</id>
+      <name>snapshot repository</name>
+      <url>scpexe://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin> 
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.2</version>
+        </plugin> 
+      </plugins>
+    </pluginManagement>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ssh-external</artifactId>
+         <version>1.0-alpha-6</version>
+      </extension>
+    </extensions>
+   <!--
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <source>1.4</source>
+              <target>1.4</target>
+          </configuration>
+      </plugin>
+    </plugins>
+    -->
+    <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://svn.apache.org/repos/asf/cocoon/tags</tagBase>
+        </configuration>
+      </plugin>    
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>project-team</report>
+              <report>mailing-list</report>
+              <report>cim</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>
