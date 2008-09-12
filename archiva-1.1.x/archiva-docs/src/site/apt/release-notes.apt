@@ -1,12 +1,12 @@
  -----
- Release Notes for Archiva 1.1.1
+ Release Notes for Archiva 1.1.2
  -----
 
-Release Notes for Archiva 1.1.1
+Release Notes for Archiva 1.1.2
 
-  The Apache Archiva team would like to announce the release of Archiva 1.1.1.
+  The Apache Archiva team would like to announce the release of Archiva 1.1.2.
 
-  Archiva 1.1.1 is {{{http://archiva.apache.org/download.html} available for download from the web site}}.
+  Archiva 1.1.2 is {{{http://archiva.apache.org/download.html} available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
 
@@ -56,6 +56,54 @@ Release Notes for Archiva 1.1.1
 * Release Notes
 
   The Archiva 1.1 feature set can be seen in the {{{tour/index.html} feature tour}}.
+
+* Changes in Archiva 1.1.2
+
+** Bug
+
+    * [MRM-765] - should not be possible to create a proxy connector if there are no remote repositories
+
+    * [MRM-807] - Deployed dll won't be indexed
+
+    * [MRM-834] - Wrong repository url when archiva is used behind Apache with mof_proxy
+
+    * [MRM-841] - Introducing a new scannable artifact file type requires restart in order for some consumers to work
+
+    * [MRM-880] - Archiva does not start up on Solaris 64-Bit
+
+    * [MRM-881] - Failing to startup due to invalid bean definition
+
+    * [MRM-893] - Illegal browse operation allow
+
+    * [MRM-902] - If path has leading slash when being checked againts whitelists and blacklists causes matching failure
+
+    * [MRM-903] - Repository scanning should not stop when encounters error
+
+    * [MRM-905] - EL Expression failed with empty/not functions
+
+    * [MRM-911] - Archiva checks user's credentials before guest's rights on the repository
+
+    * [MRM-912] - rss urls seem to use fixed webcontext "archiva" instead of actual webcontext
+
+    * [MRM-915] - NPE with rss links
+
+    * [MRM-926] - NPE with search page
+
+    * [MRM-932] - Error 500 when clicking the Next or Previous icon of the results of a search, if user is trying to search for java classes, packages or methods.
+
+    * [MRM-934] - For bytecode search, only 1 version of the artifact is returned even if there are more than 1 version of that artifact which matched the search
+
+    * [MRM-943] - results search option should only be available on results page
+
+** Improvement
+
+    * [MRM-839] - change RSS URLs
+
+    * [MRM-848] - Pre-configured repositories initially appear to be empty
+
+    * [MRM-874] - POM snippet for plugins should be <plugin> not <dependency>
+
+  The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=14491&styleName=Text&projectId=10980} in JIRA}}.
 
 * Changes in Archiva 1.1.1
 
