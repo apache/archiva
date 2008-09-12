@@ -32,10 +32,6 @@
           <role-hint>retention-count</role-hint>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.database.ArchivaDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
           <role-hint>retention-count</role-hint>
         </requirement>
@@ -45,11 +41,6 @@
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
           <role-hint>retention-count</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
-          <role-hint>lucene</role-hint>
-          <field-name>indexFactory</field-name>
         </requirement>
       </requirements>
       <configuration>
@@ -124,10 +115,6 @@
           <role-hint>days-old</role-hint>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.database.ArchivaDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
           <role-hint>days-old</role-hint>
         </requirement>
@@ -137,11 +124,6 @@
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
           <role-hint>days-old</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
-          <role-hint>lucene</role-hint>
-          <field-name>indexFactory</field-name>
         </requirement>
       </requirements>
       <configuration>
@@ -203,106 +185,5 @@
         </requirement>
       </requirements>
     </component>
-
-
-    <!-- DAOs -->
-    <component>
-      <role>org.apache.maven.archiva.database.ArchivaDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.database.jdo.JdoArchivaDAO</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.database.jdo.JdoAccess</role>
-          <role-hint>archiva</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.database.ArtifactDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.database.ProjectModelDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.database.RepositoryProblemDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.database.ArtifactDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.database.jdo.JdoArtifactDAO</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.database.jdo.JdoAccess</role>
-          <role-hint>archiva</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.database.ProjectModelDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.database.jdo.JdoProjectModelDAO</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.database.jdo.JdoAccess</role>
-          <role-hint>archiva</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.database.RepositoryProblemDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.database.jdo.JdoRepositoryProblemDAO</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.database.jdo.JdoAccess</role>
-          <role-hint>archiva</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-
-
-    <!-- JdoAccess -->
-    <component>
-      <role>org.apache.maven.archiva.database.jdo.JdoAccess</role>
-      <role-hint>archiva</role-hint>
-      <implementation>org.apache.maven.archiva.database.jdo.JdoAccess</implementation>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.jdo.JdoFactory</role>
-          <role-hint>archiva</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-
-    <!-- JDO Factory -->
-    <component>
-      <role>org.codehaus.plexus.jdo.JdoFactory</role>
-      <role-hint>archiva</role-hint>
-      <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>
-      <configuration>
-        <persistenceManagerFactoryClass>org.jpox.PersistenceManagerFactoryImpl</persistenceManagerFactoryClass>
-        <driverName>org.hsqldb.jdbcDriver</driverName>
-        <userName>sa</userName>
-        <password></password>
-        <url>jdbc:hsqldb:mem:testdb</url>
-        <otherProperties>
-          <property>
-            <name>javax.jdo.PersistenceManagerFactoryClass</name>
-            <value>org.jpox.PersistenceManagerFactoryImpl</value>
-          </property>
-        </otherProperties>
-      </configuration>
-    </component>
-    
-    <!-- LuceneRepositoryIndexFactory -->
-    <component>
-      <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
-      <role-hint>lucene</role-hint>
-      <implementation>org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexFactoryStub</implementation>
-    </component>
-
   </components>
 </component-set>

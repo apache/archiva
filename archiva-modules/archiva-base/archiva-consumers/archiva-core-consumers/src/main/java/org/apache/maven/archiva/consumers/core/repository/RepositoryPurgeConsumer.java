@@ -19,6 +19,10 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -26,24 +30,18 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Consumer for removing old snapshots in the repository based on the criteria
@@ -76,11 +74,6 @@ public class RepositoryPurgeConsumer
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaDAO dao;
-
-    /**
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
@@ -97,19 +90,15 @@ public class RepositoryPurgeConsumer
 
     private List<String> includes = new ArrayList<String>();
 
-    private List<String> propertyNameTriggers = new ArrayList<String>();
-
     private RepositoryPurge repoPurge;
 
     private RepositoryPurge cleanUp;
 
     private boolean deleteReleasedSnapshots;
-    
-    /**
-     * @plexus.requirement role-hint="lucene"
-     */
-    private RepositoryContentIndexFactory indexFactory;
 
+    /** @plexus.requirement role="org.apache.maven.archiva.repository.events.RepositoryListener" */
+    private List<RepositoryListener> listeners = Collections.emptyList();
+    
     public String getId()
     {
         return this.id;
@@ -140,27 +129,23 @@ public class RepositoryPurgeConsumer
     {
         try
         {
-            Map<String, RepositoryContentIndex> indices = new HashMap<String, RepositoryContentIndex>();
-            indices.put( "bytecode", indexFactory.createBytecodeIndex( repository ) );
-            indices.put( "hashcodes", indexFactory.createHashcodeIndex( repository ) );
-            indices.put( "filecontent", indexFactory.createFileContentIndex( repository ) );
-            
             ManagedRepositoryContent repositoryContent = repositoryFactory.getManagedRepositoryContent( repository
                 .getId() );
 
             if ( repository.getDaysOlder() != 0 )
             {
-                repoPurge = new DaysOldRepositoryPurge( repositoryContent, dao.getArtifactDAO(), repository
-                    .getDaysOlder(), repository.getRetentionCount(), indices );
+                repoPurge = new DaysOldRepositoryPurge( repositoryContent, repository.getDaysOlder(), 
+                                                        repository.getRetentionCount(), listeners );
             }
             else
             {
-                repoPurge = new RetentionCountRepositoryPurge( repositoryContent, dao.getArtifactDAO(), repository
-                    .getRetentionCount(), indices );
+                repoPurge = new RetentionCountRepositoryPurge( repositoryContent, repository.getRetentionCount(), 
+                                                               listeners );
             }
             
-            cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, dao.getArtifactDAO(),
-                                   metadataTools, indices, configuration, repositoryFactory );
+            cleanUp =
+                new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, configuration,
+                                                             repositoryFactory, listeners );
 
             deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
         }
@@ -229,10 +214,5 @@ public class RepositoryPurgeConsumer
     {
         // we need to check all files for deletion, especially if not modified
         return true;
-    }
-    
-    public void setRepositoryContentIndexFactory( RepositoryContentIndexFactory indexFactory )
-    {
-        this.indexFactory = indexFactory;
     }
 }
