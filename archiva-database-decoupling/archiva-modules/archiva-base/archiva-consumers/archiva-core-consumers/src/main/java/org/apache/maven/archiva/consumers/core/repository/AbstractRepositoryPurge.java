@@ -19,25 +19,15 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
-import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
-import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
-import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.layout.LayoutException;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
 
 /**
  * Base class for all repository purge tasks.
@@ -47,18 +37,14 @@ import java.util.Set;
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
 {
-    protected ManagedRepositoryContent repository;
+    protected final ManagedRepositoryContent repository;
+    
+	protected final List<RepositoryListener> listeners;
 
-    protected ArtifactDAO artifactDao;
-
-    private Map<String, RepositoryContentIndex> indices;
-
-    public AbstractRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
-                                    Map<String, RepositoryContentIndex> indices )
+    public AbstractRepositoryPurge( ManagedRepositoryContent repository, List<RepositoryListener> listeners )
     {
         this.repository = repository;
-        this.artifactDao = artifactDao;
-        this.indices = indices;
+        this.listeners = listeners;
     }
 
     /**
@@ -98,10 +84,6 @@ public abstract class AbstractRepositoryPurge
     {        
         if( references != null && !references.isEmpty() )
         {
-            List<LuceneRepositoryContentRecord> fileContentRecords = new ArrayList<LuceneRepositoryContentRecord>();
-            List<LuceneRepositoryContentRecord> hashcodeRecords = new ArrayList<LuceneRepositoryContentRecord>();
-            List<LuceneRepositoryContentRecord> bytecodeRecords = new ArrayList<LuceneRepositoryContentRecord>();
-            
             for ( ArtifactReference reference : references )
             {   
                 File artifactFile = repository.toFile( reference );
@@ -110,46 +92,14 @@ public abstract class AbstractRepositoryPurge
                     new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
                                          reference.getClassifier(), reference.getType() );
     
-                FileContentRecord fileContentRecord = new FileContentRecord();
-                fileContentRecord.setFilename( repository.toPath( artifact ) );
-                fileContentRecords.add( fileContentRecord );
-    
-                HashcodesRecord hashcodesRecord = new HashcodesRecord();
-                hashcodesRecord.setArtifact( artifact );
-                hashcodeRecords.add( hashcodesRecord );
-    
-                BytecodeRecord bytecodeRecord = new BytecodeRecord();
-                bytecodeRecord.setArtifact( artifact );
-                bytecodeRecords.add( bytecodeRecord );
-    
+                for ( RepositoryListener listener : listeners )
+                {
+                    listener.deleteArtifact( repository, artifact );
+                }
+                
                 // TODO: this needs to be logged
                 artifactFile.delete();
                 purgeSupportFiles( artifactFile );
-    
-                // intended to be swallowed
-                // continue updating the database for all artifacts
-                try
-                {
-                    String artifactPath = toRelativePath( artifactFile );
-                    updateDatabase( artifactPath );
-                }
-                catch ( ArchivaDatabaseException ae )
-                {
-                    // TODO: determine logging to be used
-                }
-                catch ( LayoutException le )
-                {
-                    // Ignore
-                }
-            }
-    
-            try
-            {
-                updateIndices( fileContentRecords, hashcodeRecords, bytecodeRecords );
-            }
-            catch ( RepositoryIndexException e )
-            {
-                // Ignore
             }
         }
     }
@@ -185,33 +135,5 @@ public abstract class AbstractRepositoryPurge
                 // TODO: log that it was deleted
             }
         }
-    }
-
-    private void updateDatabase( String path )
-        throws ArchivaDatabaseException, LayoutException
-    {
-        ArtifactReference artifact = repository.toArtifactReference( path );
-        ArchivaArtifact queriedArtifact =
-            artifactDao.getArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                                     artifact.getClassifier(), artifact.getType() );
-
-        artifactDao.deleteArtifact( queriedArtifact );
-
-        // TODO [MRM-37]: re-run the database consumers to clean up
-    }
-    
-    private void updateIndices( List<LuceneRepositoryContentRecord> fileContentRecords,
-                                List<LuceneRepositoryContentRecord> hashcodeRecords,
-                                List<LuceneRepositoryContentRecord> bytecodeRecords )
-        throws RepositoryIndexException
-    {        
-        RepositoryContentIndex index = indices.get( "filecontent" );
-        index.deleteRecords( fileContentRecords );
-        
-        index = indices.get( "hashcodes" );
-        index.deleteRecords( hashcodeRecords );
-        
-        index = indices.get( "bytecode" );
-        index.deleteRecords( bytecodeRecords );
     }
 }

@@ -1,0 +1,28 @@
+Stage 1: remove use of database and index from core consumers (move implementation into respective database and index modules)
+
+Done!
+
+Stage 2: separate model from JPOX annotated classes, centralising JPOX use in database
+
+* archiva-model to be reviewed, possibly split into a basic model with extensible parts. See metadata proposal
+* add consumer to generate Archiva metadata at same time as database model
+
+Stage 3: add a basic repository querying API for base artifact information and retrieval of metadata
+
+* RSS, browse
+* consider repository-api refactorings
+* at this point, should be able to have functional Archiva without a database
+* note that metadata need not be stored with the artifacts themselves, but will be by default
+
+Stage 4: incorporation of event API
+
+* used to centralise arrival, removal, etc of files/artifacts in the repository
+* errors should be events as well to avoid exceptions in the logs and instead meaningful handling/reporting
+
+Stage 5: isolate scanning code
+
+* Repository should operate without scanning code, it should push events if enabled
+* better assessment of its progress, performance
+* removal of database / repository scanning duality - all operations are driven by the event bus
+* move some database operations to a housekeeping scheduled task (same for index), make scheduled tasks a listable item based on available plugins
+
