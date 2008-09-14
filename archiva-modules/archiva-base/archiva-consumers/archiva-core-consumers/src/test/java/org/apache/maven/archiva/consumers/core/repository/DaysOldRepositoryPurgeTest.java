@@ -19,17 +19,14 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexStub;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+
+import org.apache.commons.lang.time.DateUtils;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -37,9 +34,6 @@ import java.util.Map;
 public class DaysOldRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
-
-    private Map<String, RepositoryContentIndex> map;
-
     private static final String[] extensions =
         new String[] { "-5.jar", "-5.pom", "-6.jar", "-6.pom", "-7.jar", "-7.pom" };
 
@@ -55,12 +49,6 @@ public class DaysOldRepositoryPurgeTest
 
     private String sec;
 
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-    }
-
     private void setLastModified( String dirPath, long lastModified )
     {
         File dir = new File( dirPath );
@@ -74,14 +62,11 @@ public class DaysOldRepositoryPurgeTest
     public void testByLastModified()
         throws Exception
     {
-        map = new HashMap<String, RepositoryContentIndex>();
-        map.put( "filecontent", new LuceneRepositoryContentIndexStub( 2 ) );
-        map.put( "hashcodes", new LuceneRepositoryContentIndexStub( 2 ) );
-        map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
-
         repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), map );
+            new DaysOldRepositoryPurge( getRepository(),
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(),
+                                        Collections.singletonList( listener ) );
 
         String repoRoot = prepareTestRepos();
 
@@ -89,9 +74,16 @@ public class DaysOldRepositoryPurgeTest
 
         setLastModified( projectRoot + "/2.2-SNAPSHOT/", 1179382029 );
 
-        populateDbForTestByLastModified();
-
+        // test listeners for the correct artifacts
+        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-install-plugin",
+                                                                  "2.2-SNAPSHOT", "maven-plugin" ) );
+        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-install-plugin",
+                                                                  "2.2-SNAPSHOT", "pom" ) );
+        listenerControl.replay();
+        
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
+        
+        listenerControl.verify();
 
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
@@ -119,14 +111,10 @@ public class DaysOldRepositoryPurgeTest
     public void testOrderOfDeletion()
         throws Exception
     {
-        map = new HashMap<String, RepositoryContentIndex>();
-        map.put( "filecontent", new LuceneRepositoryContentIndexStub( 2 ) );
-        map.put( "hashcodes", new LuceneRepositoryContentIndexStub( 2 ) );
-        map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
-
         repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), map );
+            new DaysOldRepositoryPurge( getRepository(), getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), 
+                                        Collections.singletonList( listener ) );
 
         String repoRoot = prepareTestRepos();
 
@@ -134,9 +122,16 @@ public class DaysOldRepositoryPurgeTest
 
         setLastModified( projectRoot + "/1.1.2-SNAPSHOT/", 1179382029 );
 
-        populateDbForTestOrderOfDeletion();
-
+        // test listeners for the correct artifacts
+        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-assembly-plugin",
+                                                                  "1.1.2-20070427.065136-1", "maven-plugin" ) );
+        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-assembly-plugin",
+                                                                  "1.1.2-20070427.065136-1", "pom" ) );
+        listenerControl.replay();
+        
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
+
+        listenerControl.verify();
 
         assertDeleted( projectRoot + "/1.1.2-SNAPSHOT/maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
         assertDeleted( projectRoot + "/1.1.2-SNAPSHOT/maven-assembly-plugin-1.1.2-20070427.065136-1.jar.sha1" );
@@ -164,14 +159,11 @@ public class DaysOldRepositoryPurgeTest
     public void testMetadataDrivenSnapshots()
         throws Exception
     {
-        map = new HashMap<String, RepositoryContentIndex>();
-        map.put( "filecontent", new LuceneRepositoryContentIndexStub( 2 ) );
-        map.put( "hashcodes", new LuceneRepositoryContentIndexStub( 2 ) );
-        map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
-
         repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), map );
+            new DaysOldRepositoryPurge( getRepository(),
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(),
+                                        Collections.singletonList( listener ) );
 
         String repoRoot = prepareTestRepos();
 
@@ -221,9 +213,16 @@ public class DaysOldRepositoryPurgeTest
         versions.add( "1.4.3-" + year + mon + day + "." + hr + min + sec + "-7" );
         versions.add( "1.4.3-SNAPSHOT" );
 
-        populateDb( "org.codehaus.plexus", "plexus-utils", versions );
-
+        // test listeners for the correct artifacts
+        listener.deleteArtifact( getRepository(), createArtifact( "org.codehaus.plexus", "plexus-utils",
+                                                                  "1.4.3-20070113.163208-4", "jar" ) );
+        listener.deleteArtifact( getRepository(), createArtifact( "org.codehaus.plexus", "plexus-utils",
+                                                                  "1.4.3-20070113.163208-4", "pom" ) );
+        listenerControl.replay();
+        
         repoPurge.process( PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT );
+
+        listenerControl.verify();
 
         // this should be deleted since the filename version (timestamp) is older than
         // 100 days even if the last modified date was <100 days ago
@@ -259,16 +258,5 @@ public class DaysOldRepositoryPurgeTest
     {
         super.tearDown();
         repoPurge = null;
-    }
-
-    private void populateDbForTestByLastModified()
-        throws Exception
-    {
-        List<String> versions = new ArrayList<String>();
-        versions.add( "2.2-20061118.060401-2" );
-        versions.add( "2.2-20070513.034619-5" );
-        versions.add( "2.2-SNAPSHOT" );
-
-        populateDb( "org.apache.maven.plugins", "maven-install-plugin", versions );
     }
 }
