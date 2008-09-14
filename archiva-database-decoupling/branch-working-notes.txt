@@ -18,6 +18,8 @@ Stage 4: incorporation of event API
 
 * used to centralise arrival, removal, etc of files/artifacts in the repository
 * errors should be events as well to avoid exceptions in the logs and instead meaningful handling/reporting
+* could also be used for configuration events
+* consider hooking the audit log to this as well
 
 Stage 5: isolate scanning code
 
