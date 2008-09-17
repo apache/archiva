@@ -242,6 +242,51 @@ public class DefaultCrossRepositorySearchTest
                              "org.apache.maven.continuum.web.action.BuildDefinitionAction.isBuildFresh", null, true );        
     }
     
+    public void testExecuteFilteredSearch()
+        throws Exception
+    {
+        CrossRepositorySearch search = lookupCrossRepositorySearch();
+
+        String expectedRepos[] = new String[] { TEST_DEFAULT_REPO_ID };
+
+        String expectedResults[] = new String[] { "org1", "org2", "org3", "org4", "org5", "org6", "org7", "org8" };
+
+        String secondExpectedResults[] = new String[] { "continuum-webapp" };
+
+        String thirdExpectedResults[] = new String[] { "archiva-common" };
+
+        // search for groupId
+        assertFilteredSearchResults( expectedRepos, expectedResults, search, "org", null, null, null, 30 );
+
+        // search for groupId and artifactId
+        assertFilteredSearchResults( expectedRepos, secondExpectedResults, search, "org.apache.maven",
+                                     "continuum-webapp", null, null, 30 );
+
+        // search for groupId , artifactId and version
+        assertFilteredSearchResults( expectedRepos, thirdExpectedResults, search, "org.apache.maven.archiva",
+                                     "archiva-common", "1.0", null, 30 );
+    }
+    
+    private void assertFilteredSearchResults ( String expectedRepos[], String expectedResults[], CrossRepositorySearch search, 
+                                               String groupId, String artifactId, String version, String className , int rowCount )
+    {
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+        limits.setPageSize(  rowCount );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.addAll( Arrays.asList( expectedRepos ) );
+        
+        SearchResults results = null;
+        
+        results = search.executeFilteredSearch( "guest" , selectedRepos, groupId, artifactId, version, className, limits );
+        
+        assertNotNull( "Search Results should not be null.", results );
+        assertEquals( "Repository Hits", expectedRepos.length, results.getRepositories().size() );
+        assertEquals( expectedRepos.length, 1);
+        assertEquals( TEST_DEFAULT_REPO_ID , selectedRepos.get( 0 ) );
+        assertEquals( "Search Result Hits", expectedResults.length, results.getHits().size() );
+    }
+    
     private void assertSearchResults( String expectedRepos[], String expectedResults[], CrossRepositorySearch search,
                                       String term, List<String> previousSearchTerms, boolean bytecode )
         throws Exception
@@ -251,11 +296,12 @@ public class DefaultCrossRepositorySearchTest
         
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.addAll( Arrays.asList( expectedRepos ) );
-        
+       
         SearchResults results = null;
+
         if( previousSearchTerms == null )
-        {
-            if( bytecode )
+            {
+                if( bytecode )
             {
                 results = search.searchForBytecode( "guest", selectedRepos, term, limits );
             }
@@ -268,16 +314,18 @@ public class DefaultCrossRepositorySearchTest
         {
             results = search.searchForTerm( "guest", selectedRepos, term, limits, previousSearchTerms );
         }
+
         
         assertNotNull( "Search Results should not be null.", results );
         assertEquals( "Repository Hits", expectedRepos.length, results.getRepositories().size() );
+        
         // TODO: test the repository ids returned.
 
         assertEquals( "Search Result Hits", expectedResults.length, results.getHits().size() );
         // TODO: test the order of hits.
         // TODO: test the value of the hits.
     }
-
+    
     protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();

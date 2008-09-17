@@ -30,7 +30,12 @@
 
 <body>
 
-<h1>Search</h1>
+<c:if test="${fromFilterSearch == true}">
+  <h1>Advanced Search</h1>
+</c:if>
+<c:if test="${fromFilterSearch == false}">
+  <h1>Search</h1>
+</c:if> 
 
 <c:url var="imgNextPageUrl" value="/images/icon_next_page.gif"/>
 <c:url var="imgPrevPageUrl" value="/images/icon_prev_page.gif"/>
@@ -39,20 +44,44 @@
 
 <div id="contentArea">
   <div id="searchBox">
-  <ww:form method="get" action="quickSearch" validate="true">
-    <ww:textfield label="Search for" size="50" name="q"/>
-    <ww:checkbox label="Search within results" name="searchResultsOnly"/>        
-    <ww:hidden name="completeQueryString" value="${completeQueryString}"/>        
-    <ww:submit label="Go!"/>
-  </ww:form>
 
-  <script type="text/javascript">
-    document.getElementById("quickSearch_q").focus();
-  </script>
+    <c:if test="${fromFilterSearch == true}">
+      <ww:form method="get" action="filteredSearch" validate="true">
+        <ww:textfield label="Row Count" size="50" name="rowCount"/>
+        <ww:textfield label="Group Id" size="50" name="groupId"/>
+        <ww:textfield label="Artifact Id" size="50" name="artifactId"/>
+        <ww:textfield label="Version" size="50" name="version"/>
+        <ww:textfield label="Class / Package" size="50" name="className"/>
+        <ww:select name="repositoryId" label="Repository ID" list="managedRepositoryList"/>
+        <ww:hidden name="completeQueryString" value="${completeQueryString}"/>
+        <ww:hidden name="fromFilterSearch" value="${fromFilterSearch}"/>
+        <ww:submit label="Go!"/>
+      </ww:form>
+  
+      <ww:url id="indexUrl" action="index"/>
+      <ww:a href="%{indexUrl}">
+        Quick Search Page
+      </ww:a>
+      <script type="text/javascript">
+        document.getElementById("filteredSearch_groupId").focus();
+      </script>
+      </c:if>
+    <c:if test="${fromFilterSearch == false}">
+      <ww:form method="get" action="quickSearch" validate="true">
+        <ww:textfield label="Search for" size="50" name="q"/>
+        <ww:checkbox label="Search within results" name="searchResultsOnly"/>        
+        <ww:hidden name="completeQueryString" value="${completeQueryString}"/>        
+        <ww:submit label="Go!"/>
+      </ww:form> 
+      <script type="text/javascript">
+        document.getElementById("quickSearch_q").focus();
+      </script>
+    </c:if>
 
   <p>
     <ww:actionerror/>
   </p>
+
   </div>
 
   <h1>Results</h1>
@@ -62,10 +91,10 @@
 
       <%-- search was made from the indices --%>
       <c:when test="${databaseResults == null}">
-        <c:set var="hitsNum">${fn:length(results.hits) + (currentPage * results.limits.pageSize)}</c:set>
+        <c:set var="hitsNum">${fn:length(results.hits) + (currentPage  * results.limits.pageSize)}</c:set>
         <c:choose>
           <c:when test="${results.totalHits > results.limits.pageSize}">
-            <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
+              <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
           </c:when>
           <c:otherwise>
             <p>Hits: 1 to ${hitsNum} of ${results.totalHits}</p>
@@ -80,22 +109,55 @@
       	  <%-- Pagination start --%>
       	    <p>                       
             <%-- Prev & Next icons --%>
-            <c:set var="prevPageUrl">
-              <ww:url action="quickSearch" namespace="/">
-                <ww:param name="q" value="%{'${q}'}"/>
-                <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-                <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>                
-                <ww:param name="currentPage" value="%{'${currentPage - 1}'}"/>
-              </ww:url>
-      	    </c:set>
-      	    <c:set var="nextPageUrl">
-              <ww:url action="quickSearch" namespace="/">
-                <ww:param name="q" value="%{'${q}'}"/>                
-                <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-                <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
-                <ww:param name="currentPage" value="%{'${currentPage + 1}'}"/>
-              </ww:url>
-      	    </c:set>    
+              <c:if test="${fromFilterSearch == false}">
+               <c:set var="prevPageUrl">
+                 <ww:url action="quickSearch" namespace="/">
+                   <ww:param name="q" value="%{'${q}'}"/>                
+                   <ww:param name="currentPage" value="%{'${currentPage - 1}'}"/>
+                 </ww:url>
+       	      </c:set>
+       	      <c:set var="nextPageUrl">
+                 <ww:url action="quickSearch" namespace="/">
+                   <ww:param name="q" value="%{'${q}'}"/>                
+                   <ww:param name="currentPage" value="%{'${currentPage + 1}'}"/>
+                 </ww:url>
+       	      </c:set>    
+              </c:if>
+
+              <c:if test="${fromFilterSearch == true}">
+               <c:set var="prevPageUrl">
+                 <ww:url action="filteredSearch" namespace="/">
+ <%-- 		  <ww:param name="q" value="%{'${q}'}"/>   --%>
+                   <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
+                   <ww:param name="groupId" value="%{'${groupId}'}"/>
+                   <ww:param name="artifactId" value="%{'${artifactId}'}"/>
+                   <ww:param name="version" value="%{'${version}'}"/>
+                   <ww:param name="className" value="%{'${className}'}"/>
+                   <ww:param name="repositoryId" value="%{'${repositoryId}'}"/>
+                   <ww:param name="filterSearch" value="%{'${filterSearch}'}"/>
+  		   <ww:param name="fromResultsPage" value="true"/>
+                   <ww:param name="currentPage" value="%{'${currentPage - 1}'}"/>
+ 		  <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+ 		  <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+                 </ww:url>
+       	      </c:set>
+       	      <c:set var="nextPageUrl">
+                <ww:url action="filteredSearch" namespace="/">
+<%-- 		 <ww:param name="q" value="%{'${q}'}"/> --%>
+                  <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
+                  <ww:param name="groupId" value="%{'${groupId}'}"/>
+                  <ww:param name="artifactId" value="%{'${artifactId}'}"/>
+                  <ww:param name="version" value="%{'${version}'}"/>
+                  <ww:param name="className" value="%{'${className}'}"/>
+                  <ww:param name="repositoryId" value="%{'${repositoryId}'}"/>
+                  <ww:param name="filterSearch" value="%{'${filterSearch}'}"/>
+  		  <ww:param name="fromResultsPage" value="true"/>
+                  <ww:param name="currentPage" value="%{'${currentPage + 1}'}"/>
+ 		  <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+		  <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+                </ww:url>
+      	      </c:set>    
+             </c:if>
             
             <c:choose>
               <c:when test="${currentPage == 0}">                               
@@ -133,25 +195,54 @@
 			</c:choose>
 						
 			<c:forEach var="i" begin="${beginVal}" end="${endVal}">
-              <c:choose>                   			    
-				<c:when test="${i != currentPage}">
-				   <c:set var="specificPageUrl">
-		              <ww:url action="quickSearch" namespace="/">
-		                <ww:param name="q" value="%{'${q}'}"/>
-		                <ww:param name="currentPage" value="%{'${i}'}"/>
-		                <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-		                <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
-		              </ww:url>
-		      	  </c:set>
-				  <a href="${specificPageUrl}">${i + 1}</a>
-				</c:when>
-				<c:otherwise>		
-					<b>${i + 1}</b>   
-				</c:otherwise>				  			    
-              </c:choose> 
+                          <c:if test="${fromFilterSearch == false}">
+                            <c:choose>                   			    
+		              <c:when test="${i != currentPage}">
+		                <c:set var="specificPageUrl">
+		                  <ww:url action="quickSearch" namespace="/">
+		                    <ww:param name="q" value="%{'${q}'}"/>
+		                    <ww:param name="currentPage" value="%{'${i}'}"/>
+		                    <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+		                    <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>  
+  		                  </ww:url>
+		      	        </c:set>
+			          <a href="${specificPageUrl}">${i + 1}</a>
+			      </c:when>
+			      <c:otherwise>		
+		       	        <b>${i + 1}</b>   
+		              </c:otherwise>				  			    
+                            </c:choose>
+                          </c:if>
+
+                          <c:if test="${fromFilterSearch == true}">
+                            <c:choose>                  			    
+		              <c:when test="${i != currentPage}">
+		                <c:set var="specificPageUrl">
+		                  <ww:url action="filteredSearch" namespace="/">
+<%-- 		                    <ww:param name="q" value="%{'${q}'}"/>   --%>
+                                    <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
+                                    <ww:param name="groupId" value="%{'${groupId}'}"/>
+                                    <ww:param name="artifactId" value="%{'${artifactId}'}"/>
+                                    <ww:param name="version" value="%{'${version}'}"/>
+                                    <ww:param name="className" value="%{'${className}'}"/>
+                                    <ww:param name="repositoryId" value="%{'${repositoryId}'}"/>
+                                    <ww:param name="filterSearch" value="%{'${filterSearch}'}"/>
+		                    <ww:param name="fromResultsPage" value="true"/>
+		                    <ww:param name="currentPage" value="%{'${i}'}"/>
+		                    <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+		                    <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+		                  </ww:url>
+		      	        </c:set>
+				<a href="${specificPageUrl}">${i + 1}</a>
+			      </c:when>
+			      <c:otherwise>		
+		                <b>${i + 1}</b>   
+			      </c:otherwise>
+                            </c:choose>
+                          </c:if>
 			</c:forEach>
-				
-			<c:choose>
+			
+                        <c:choose>
 			  <c:when test="${currentPage == (totalPages - 1)}">
 			    <img src="${imgNextPageDisabledUrl}"/>
               </c:when>

@@ -20,7 +20,7 @@
 <%@ taglib prefix="ww" uri="/webwork" %>
 <html>
 <head>
-  <title>Quick Search</title>
+  <title>Advanced Search</title>
   <ww:head/>
 </head>
 
@@ -30,37 +30,38 @@
 
 <body>
 
-<h1>Search</h1>
+<h1>Advanced Search</h1>
+
 
 <div id="contentArea">
-<div id="searchBox">
-  <ww:form method="get" action="quickSearch" validate="true">
-    <ww:textfield label="Search for" size="50" name="q"/>
-    <ww:hidden name="completeQueryString" value="${completeQueryString}"/>        
-    <ww:submit label="Go!"/>
-  </ww:form>
+
+  <div id="searchBox">
+  
+    <ww:form method="get" action="filteredSearch" validate="true">
+      <ww:textfield label="Row Count" size="50" name="rowCount"/>
+      <ww:textfield label="Group Id" size="50" name="groupId"/>
+      <ww:textfield label="Artifact Id" size="50" name="artifactId"/>
+      <ww:textfield label="Version" size="50" name="version"/>
+      <ww:textfield label="Class / Package" size="50" name="className"/>
+      <ww:select name="repositoryId" label="Repository ID" list="managedRepositoryList"/>
+      <ww:hidden name="completeQueryString" value="${completeQueryString}"/>
+      <ww:hidden name="fromFilterSearch" value="${fromFilterSearch}"/>
+      <ww:submit label="Go!"/>
+    </ww:form>
+  
+    <ww:url id="indexUrl" action="index"/>
+      <ww:a href="%{indexUrl}">
+        Quick Search Page
+    </ww:a>
+
+  </div>
 
   <script type="text/javascript">
-    document.getElementById("quickSearch_q").focus();
+    document.getElementById("filteredSearch_groupId").focus();
   </script>
+  <ww:actionerror/>
 
-  <ww:url id="filteredSearchUrl" action="advancedSearch"/>
-  <ww:a href="%{filteredSearchUrl}">
-    Advanced Search
-  </ww:a>
+</div> 
 
-  <p>
-    <ww:actionerror/>
-  </p>
-</div>
-
-  <p>
-    Enter your search terms. A variety of data will be searched for your keywords.<br/>
-    To search for Java classes, packages or methods, use the keyword <code>bytecode:</code>
-    before the term. For example: 
-    <code>bytecode:MyClass</code>, or:
-    <code>bytecode:myMethod</code>
-  </p>
-</div>
 </body>
 </html>

@@ -143,6 +143,16 @@
     <action name="index" class="searchAction" method="input">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
+
+    <action name="advancedSearch" class="searchAction" method="input">
+      <result name="input">/WEB-INF/jsp/advancedSearch.jsp</result>
+    </action>
+
+    <action name="filteredSearch" class="searchAction" method="filteredSearch">
+      <result name="input">/WEB-INF/jsp/advancedSearch.jsp</result>
+      <result>/WEB-INF/jsp/results.jsp</result>
+      <result name="error">/WEB-INF/jsp/quickSearch.jsp</result>
+    </action>
 	
     <action name="quickSearch" class="searchAction" method="quickSearch">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
