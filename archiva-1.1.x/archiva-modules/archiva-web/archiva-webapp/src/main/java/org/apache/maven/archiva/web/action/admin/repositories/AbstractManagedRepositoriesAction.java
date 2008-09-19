@@ -69,7 +69,7 @@ public abstract class AbstractManagedRepositoriesAction
         }
         if ( !file.exists() || !file.isDirectory() )
         {
-            throw new IOException( "unable to add repository - can not create the root directory: " + file );
+            throw new IOException( "Unable to add repository - no write access, can not create the root directory: " + file );
         }
 
         configuration.addManagedRepository( repository );
