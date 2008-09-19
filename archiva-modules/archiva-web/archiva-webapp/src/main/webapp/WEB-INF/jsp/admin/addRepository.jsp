@@ -30,7 +30,7 @@
 <h1>Admin: Add Managed Repository</h1>
 
 <div id="contentArea">
-
+  <ww:actionerror/>
   <ww:actionmessage/>
   <ww:form method="post" action="addRepository!commit" namespace="/admin" validate="true">
     <ww:textfield name="repository.id" label="Identifier" size="10" required="true"/>
