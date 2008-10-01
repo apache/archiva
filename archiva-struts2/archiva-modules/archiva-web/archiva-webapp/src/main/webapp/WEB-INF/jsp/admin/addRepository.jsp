@@ -17,12 +17,12 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Add Managed Repository</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -30,13 +30,13 @@
 <h1>Admin: Add Managed Repository</h1>
 
 <div id="contentArea">
-  <ww:actionerror/>
-  <ww:actionmessage/>
-  <ww:form method="post" action="addRepository!commit" namespace="/admin" validate="true">
-    <ww:textfield name="repository.id" label="Identifier" size="10" required="true"/>
+  <s:actionerror/>
+  <s:actionmessage/>
+  <s:form method="post" action="addRepository!commit" namespace="/admin" validate="true">
+    <s:textfield name="repository.id" label="Identifier" size="10" required="true"/>
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
-    <ww:submit value="Add Repository"/>
-  </ww:form>
+    <s:submit value="Add Repository"/>
+  </s:form>
 
   <script type="text/javascript">
     document.getElementById("addRepository_repository_id").focus();

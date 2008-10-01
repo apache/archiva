@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
@@ -25,7 +25,7 @@
 <html>
 <head>
   <title>Administration - Repositories</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -34,17 +34,17 @@
 
 <div id="contentArea">
 
-<ww:actionerror/>
-<ww:actionmessage/>
+<s:actionerror/>
+<s:actionmessage/>
 
 <div class="admin">
 <div class="controls">
   <redback:ifAuthorized permission="archiva-manage-configuration">
-    <ww:url id="addRepositoryUrl" action="addRepository"/>
-    <ww:a href="%{addRepositoryUrl}">
+    <s:url id="addRepositoryUrl" action="addRepository"/>
+    <s:a href="%{addRepositoryUrl}">
       <img src="<c:url value="/images/icons/create.png" />" alt="" width="16" height="16"/>
       Add
-    </ww:a>
+    </s:a>
   </redback:ifAuthorized>
 </div>
 <h2>Managed Repositories</h2>
@@ -72,20 +72,20 @@
 <div class="controls">
     <%-- TODO: make some icons --%>
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-    <ww:url id="editRepositoryUrl" action="editRepository">
-      <ww:param name="repoid" value="%{'${repository.id}'}"/>
-    </ww:url>
-    <ww:url id="deleteRepositoryUrl" action="confirmDeleteRepository">
-      <ww:param name="repoid" value="%{'${repository.id}'}"/>
-    </ww:url>
-    <ww:a href="%{editRepositoryUrl}">
+    <s:url id="editRepositoryUrl" action="editRepository">
+      <s:param name="repoid" value="%{'${repository.id}'}"/>
+    </s:url>
+    <s:url id="deleteRepositoryUrl" action="confirmDeleteRepository">
+      <s:param name="repoid" value="%{'${repository.id}'}"/>
+    </s:url>
+    <s:a href="%{editRepositoryUrl}">
       <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
       Edit
-    </ww:a>
-    <ww:a href="%{deleteRepositoryUrl}">
+    </s:a>
+    <s:a href="%{deleteRepositoryUrl}">
       <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>
       Delete
-    </ww:a>
+    </s:a>
   </redback:ifAnyAuthorized>
   <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
   <a href="/archiva/feeds/${repository.id}">
@@ -190,10 +190,10 @@
         <tr>
           <td>
             <redback:ifAuthorized permission="archiva-run-indexer">
-              <ww:form action="indexRepository" theme="simple">
-                <ww:hidden name="repoid" value="%{'${repository.id}'}"/>
-                <ww:submit value="Scan Repository Now"/>
-              </ww:form>
+              <s:form action="indexRepository" theme="simple">
+                <s:hidden name="repoid" value="%{'${repository.id}'}"/>
+                <s:submit value="Scan Repository Now"/>
+              </s:form>
             </redback:ifAuthorized>
           </td>
         </tr>
@@ -248,11 +248,11 @@
 
 <div class="controls">
   <redback:ifAuthorized permission="archiva-manage-configuration">
-    <ww:url id="addRepositoryUrl" action="addRemoteRepository"/>
-    <ww:a href="%{addRepositoryUrl}">
+    <s:url id="addRepositoryUrl" action="addRemoteRepository"/>
+    <s:a href="%{addRepositoryUrl}">
       <img src="<c:url value="/images/icons/create.png" />" alt="" width="16" height="16"/>
       Add
-    </ww:a>
+    </s:a>
   </redback:ifAuthorized>
 </div>
 <h2>Remote Repositories</h2>
@@ -278,20 +278,20 @@
 
         <div class="controls">
           <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-            <ww:url id="editRepositoryUrl" action="editRemoteRepository">
-              <ww:param name="repoid" value="%{'${repository.id}'}"/>
-            </ww:url>
-            <ww:a href="%{editRepositoryUrl}">
+            <s:url id="editRepositoryUrl" action="editRemoteRepository">
+              <s:param name="repoid" value="%{'${repository.id}'}"/>
+            </s:url>
+            <s:a href="%{editRepositoryUrl}">
               <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
               Edit
-            </ww:a>
-            <ww:url id="deleteRepositoryUrl" action="confirmDeleteRemoteRepository">
-              <ww:param name="repoid" value="%{'${repository.id}'}"/>
-            </ww:url>
-            <ww:a href="%{deleteRepositoryUrl}">
+            </s:a>
+            <s:url id="deleteRepositoryUrl" action="confirmDeleteRemoteRepository">
+              <s:param name="repoid" value="%{'${repository.id}'}"/>
+            </s:url>
+            <s:a href="%{deleteRepositoryUrl}">
               <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>
               Delete
-            </ww:a>
+            </s:a>
           </redback:ifAnyAuthorized>
         </div>
 

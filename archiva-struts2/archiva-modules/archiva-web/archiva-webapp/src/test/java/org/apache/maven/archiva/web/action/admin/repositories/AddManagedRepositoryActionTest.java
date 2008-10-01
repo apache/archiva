@@ -19,15 +19,15 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork2.Action;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
@@ -63,6 +63,7 @@ public class AddManagedRepositoryActionTest
         return AbstractManagedRepositoriesAction.class.getName().replace( '.', '/' ) + "Test.xml";
     }
     
+    @Override
     protected void setUp()
         throws Exception
     {

@@ -19,8 +19,8 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
-import com.opensymphony.webwork.interceptor.ServletRequestAware;
-import com.opensymphony.xwork.Preparable;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.RangeConstraint;
@@ -31,11 +31,11 @@ import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.model.RepositoryProblemReport;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="generateReport"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport"
  */
 public class GenerateReportAction
     extends PlexusActionSupport

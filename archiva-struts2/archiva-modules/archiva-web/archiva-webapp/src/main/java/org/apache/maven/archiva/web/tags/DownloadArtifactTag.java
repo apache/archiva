@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import com.opensymphony.webwork.views.jsp.TagUtils;
+import org.apache.struts2.views.jsp.TagUtils;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

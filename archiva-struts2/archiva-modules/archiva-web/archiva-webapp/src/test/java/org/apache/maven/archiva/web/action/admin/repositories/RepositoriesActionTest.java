@@ -21,9 +21,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
-import com.opensymphony.xwork.Action;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import com.opensymphony.xwork2.Action;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**

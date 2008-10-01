@@ -24,7 +24,7 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 /**
  * EnableProxyConnectorAction 
  * 
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="enableProxyConnectorAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="enableProxyConnectorAction"
  */
 public class EnableProxyConnectorAction extends AbstractProxyConnectorAction
 {

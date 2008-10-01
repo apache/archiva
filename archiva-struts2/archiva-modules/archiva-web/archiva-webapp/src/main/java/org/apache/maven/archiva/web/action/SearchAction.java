@@ -42,15 +42,14 @@ import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import com.opensymphony.xwork.ActionContext;
-import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * Search all indexed fields by the given criteria.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="searchAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction"
  */
 public class SearchAction
     extends PlexusActionSupport
@@ -307,8 +306,7 @@ public class SearchAction
 
         return RESULTS;
     }
-
-    @Override
+    
     public String doInput()
     {
         return INPUT;

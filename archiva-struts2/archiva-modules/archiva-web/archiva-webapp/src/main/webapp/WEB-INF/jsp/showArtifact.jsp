@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
@@ -26,12 +26,12 @@
 <html>
 <head>
   <title>Browse Repository</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
-<ww:set name="model" value="model"/>
+<s:set name="model" value="model"/>
 <c:choose>
   <c:when test="${model.packaging == 'maven-plugin'}">
     <c:url var="imageUrl" value="/images/mavenplugin.gif"/>
@@ -77,53 +77,53 @@
   <div id="tabs">
     <span>
       <c:set var="url">
-        <ww:url action="showArtifact">
-          <ww:param name="groupId" value="%{groupId}"/>
-          <ww:param name="artifactId" value="%{artifactId}"/>
-          <ww:param name="version" value="%{version}"/>
-        </ww:url>
+        <s:url action="showArtifact">
+          <s:param name="groupId" value="%{groupId}"/>
+          <s:param name="artifactId" value="%{artifactId}"/>
+          <s:param name="version" value="%{version}"/>
+        </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Info</my:currentWWUrl>
       <c:set var="url">
-        <ww:url action="showArtifactDependencies">
-          <ww:param name="groupId" value="%{groupId}"/>
-          <ww:param name="artifactId" value="%{artifactId}"/>
-          <ww:param name="version" value="%{version}"/>
-        </ww:url>
+        <s:url action="showArtifactDependencies">
+          <s:param name="groupId" value="%{groupId}"/>
+          <s:param name="artifactId" value="%{artifactId}"/>
+          <s:param name="version" value="%{version}"/>
+        </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Dependencies</my:currentWWUrl>
       <c:set var="url">
-        <ww:url action="showArtifactDependencyTree">
-          <ww:param name="groupId" value="%{groupId}"/>
-          <ww:param name="artifactId" value="%{artifactId}"/>
-          <ww:param name="version" value="%{version}"/>
-        </ww:url>
+        <s:url action="showArtifactDependencyTree">
+          <s:param name="groupId" value="%{groupId}"/>
+          <s:param name="artifactId" value="%{artifactId}"/>
+          <s:param name="version" value="%{version}"/>
+        </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Dependency Tree</my:currentWWUrl>
       <c:set var="url">
-        <ww:url action="showArtifactDependees">
-          <ww:param name="groupId" value="%{groupId}"/>
-          <ww:param name="artifactId" value="%{artifactId}"/>
-          <ww:param name="version" value="%{version}"/>
-        </ww:url>
+        <s:url action="showArtifactDependees">
+          <s:param name="groupId" value="%{groupId}"/>
+          <s:param name="artifactId" value="%{artifactId}"/>
+          <s:param name="version" value="%{version}"/>
+        </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Used By</my:currentWWUrl>
       <c:set var="url">
-        <ww:url action="showArtifactMailingLists">
-          <ww:param name="groupId" value="%{groupId}"/>
-          <ww:param name="artifactId" value="%{artifactId}"/>
-          <ww:param name="version" value="%{version}"/>
-        </ww:url>
+        <s:url action="showArtifactMailingLists">
+          <s:param name="groupId" value="%{groupId}"/>
+          <s:param name="artifactId" value="%{artifactId}"/>
+          <s:param name="version" value="%{version}"/>
+        </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
       <%-- POSTPONED to 1.0-alpha-2
       <redback:ifAnyAuthorized permissions="archiva-access-reports">
         <c:set var="url">
-	      <ww:url action="showArtifactReports">
-	        <ww:param name="groupId" value="%{groupId}"/>
-	        <ww:param name="artifactId" value="%{artifactId}"/>
-	        <ww:param name="version" value="%{version}"/>
-	      </ww:url>
+	      <s:url action="showArtifactReports">
+	        <s:param name="groupId" value="%{groupId}"/>
+	        <s:param name="artifactId" value="%{artifactId}"/>
+	        <s:param name="version" value="%{version}"/>
+	      </s:url>
 	    </c:set>
 	    <my:currentWWUrl url="${url}">Reports</my:currentWWUrl>
       </redback:ifAnyAuthorized>

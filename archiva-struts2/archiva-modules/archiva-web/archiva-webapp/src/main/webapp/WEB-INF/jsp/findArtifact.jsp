@@ -17,12 +17,12 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Find Artifact</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body onload="document.checksumSearch.file.disabled = false">
@@ -31,7 +31,7 @@
 
 <div id="contentArea">
   <div id="searchBox">
-    <ww:if test="${applicationScope.uiOptions.appletFindEnabled}">
+    <s:if test="${applicationScope.uiOptions.appletFindEnabled}">
       <script type="text/javascript">
         function generateMd5( file, defVal )
         {
@@ -55,18 +55,18 @@
         <span class="errorMessage">JavaScript is disabled: using the file browser will not work.</span>
       </noscript>
 
-      <ww:form method="POST" action="checksumSearch" namespace="/"
+      <s:form method="POST" action="checksumSearch" namespace="/"
                onsubmit="this.q.value = generateMd5(this.file.value,this.md5.value); this.file.disabled = true;">
-        <ww:hidden name="q"/>
+        <s:hidden name="q"/>
         <tr>
           <td class="tdLabel"><label for="checksumSearch_file" class="label">Search for:</label></td>
           <td>
             <input type="file" name="file" size="50" value="" id="checksumSearch_file"/>
           </td>
         </tr>
-        <ww:textfield label="Checksum" size="50" name="md5"/>
-        <ww:submit value="Search"/>
-      </ww:form>
+        <s:textfield label="Checksum" size="50" name="md5"/>
+        <s:submit value="Search"/>
+      </s:form>
 
       <p>
         This allows you to search the repository using the checksum of an artifact that you are trying to identify.
@@ -79,7 +79,7 @@
         <b>not</b>
         be uploaded to the server. See the progress bar below for progress of
         locally creating a checksum that is uploaded to the server after you hit "Search".
-        <ww:actionerror/>
+        <s:actionerror/>
       </p>
 
       <p>
@@ -88,17 +88,17 @@
                 width="400" height="20" name="ChecksumApplet">
         </applet>
       </p>
-    </ww:if>
-    <ww:else>
-      <ww:form method="POST" action="checksumSearch" namespace="/">
-        <ww:textfield label="Checksum" size="50" name="q"/>
-        <ww:submit value="Search"/>
-      </ww:form>
+    </s:if>
+    <s:else>
+      <s:form method="POST" action="checksumSearch" namespace="/">
+        <s:textfield label="Checksum" size="50" name="q"/>
+        <s:submit value="Search"/>
+      </s:form>
 
       <p>
-        <ww:actionerror/>
+        <s:actionerror/>
       </p>
-    </ww:else>
+    </s:else>
   </div>
 </div>
 

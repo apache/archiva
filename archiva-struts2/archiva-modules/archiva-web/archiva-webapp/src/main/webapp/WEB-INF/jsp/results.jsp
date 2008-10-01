@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib uri="/webwork" prefix="ww" %>
+<%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
@@ -25,7 +25,7 @@
 <html>
 <head>
   <title>Search Results</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -46,40 +46,40 @@
   <div id="searchBox">
 
     <c:if test="${fromFilterSearch == true}">
-      <ww:form method="get" action="filteredSearch" validate="true">
-        <ww:textfield label="Row Count" size="50" name="rowCount"/>
-        <ww:textfield label="Group Id" size="50" name="groupId"/>
-        <ww:textfield label="Artifact Id" size="50" name="artifactId"/>
-        <ww:textfield label="Version" size="50" name="version"/>
-        <ww:textfield label="Class / Package" size="50" name="className"/>
-        <ww:select name="repositoryId" label="Repository ID" list="managedRepositoryList"/>
-        <ww:hidden name="completeQueryString" value="${completeQueryString}"/>
-        <ww:hidden name="fromFilterSearch" value="${fromFilterSearch}"/>
-        <ww:submit label="Go!"/>
-      </ww:form>
+      <s:form method="get" action="filteredSearch" validate="true">
+        <s:textfield label="Row Count" size="50" name="rowCount"/>
+        <s:textfield label="Group Id" size="50" name="groupId"/>
+        <s:textfield label="Artifact Id" size="50" name="artifactId"/>
+        <s:textfield label="Version" size="50" name="version"/>
+        <s:textfield label="Class / Package" size="50" name="className"/>
+        <s:select name="repositoryId" label="Repository ID" list="managedRepositoryList"/>
+        <s:hidden name="completeQueryString" value="${completeQueryString}"/>
+        <s:hidden name="fromFilterSearch" value="${fromFilterSearch}"/>
+        <s:submit label="Go!"/>
+      </s:form>
   
-      <ww:url id="indexUrl" action="index"/>
-      <ww:a href="%{indexUrl}">
+      <s:url id="indexUrl" action="index"/>
+      <s:a href="%{indexUrl}">
         Quick Search Page
-      </ww:a>
+      </s:a>
       <script type="text/javascript">
         document.getElementById("filteredSearch_groupId").focus();
       </script>
       </c:if>
     <c:if test="${fromFilterSearch == false}">
-      <ww:form method="get" action="quickSearch" validate="true">
-        <ww:textfield label="Search for" size="50" name="q"/>
-        <ww:checkbox label="Search within results" name="searchResultsOnly"/>        
-        <ww:hidden name="completeQueryString" value="${completeQueryString}"/>        
-        <ww:submit label="Go!"/>
-      </ww:form> 
+      <s:form method="get" action="quickSearch" validate="true">
+        <s:textfield label="Search for" size="50" name="q"/>
+        <s:checkbox label="Search within results" name="searchResultsOnly"/>        
+        <s:hidden name="completeQueryString" value="${completeQueryString}"/>        
+        <s:submit label="Go!"/>
+      </s:form> 
       <script type="text/javascript">
         document.getElementById("quickSearch_q").focus();
       </script>
     </c:if>
 
   <p>
-    <ww:actionerror/>
+    <s:actionerror/>
   </p>
 
   </div>
@@ -111,51 +111,51 @@
             <%-- Prev & Next icons --%>
               <c:if test="${fromFilterSearch == false}">
                <c:set var="prevPageUrl">
-                 <ww:url action="quickSearch" namespace="/">
-                   <ww:param name="q" value="%{'${q}'}"/>                
-                   <ww:param name="currentPage" value="%{'${currentPage - 1}'}"/>
-                 </ww:url>
+                 <s:url action="quickSearch" namespace="/">
+                   <s:param name="q" value="%{'${q}'}"/>                
+                   <s:param name="currentPage" value="%{'${currentPage - 1}'}"/>
+                 </s:url>
        	      </c:set>
        	      <c:set var="nextPageUrl">
-                 <ww:url action="quickSearch" namespace="/">
-                   <ww:param name="q" value="%{'${q}'}"/>                
-                   <ww:param name="currentPage" value="%{'${currentPage + 1}'}"/>
-                 </ww:url>
+                 <s:url action="quickSearch" namespace="/">
+                   <s:param name="q" value="%{'${q}'}"/>                
+                   <s:param name="currentPage" value="%{'${currentPage + 1}'}"/>
+                 </s:url>
        	      </c:set>    
               </c:if>
 
               <c:if test="${fromFilterSearch == true}">
                <c:set var="prevPageUrl">
-                 <ww:url action="filteredSearch" namespace="/">
- <%-- 		  <ww:param name="q" value="%{'${q}'}"/>   --%>
-                   <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
-                   <ww:param name="groupId" value="%{'${groupId}'}"/>
-                   <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-                   <ww:param name="version" value="%{'${version}'}"/>
-                   <ww:param name="className" value="%{'${className}'}"/>
-                   <ww:param name="repositoryId" value="%{'${repositoryId}'}"/>
-                   <ww:param name="filterSearch" value="%{'${filterSearch}'}"/>
-  		   <ww:param name="fromResultsPage" value="true"/>
-                   <ww:param name="currentPage" value="%{'${currentPage - 1}'}"/>
- 		  <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
- 		  <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
-                 </ww:url>
+                 <s:url action="filteredSearch" namespace="/">
+ <%-- 		  <s:param name="q" value="%{'${q}'}"/>   --%>
+                   <s:param name="rowCount" value="%{'${rowCount}'}"/>  
+                   <s:param name="groupId" value="%{'${groupId}'}"/>
+                   <s:param name="artifactId" value="%{'${artifactId}'}"/>
+                   <s:param name="version" value="%{'${version}'}"/>
+                   <s:param name="className" value="%{'${className}'}"/>
+                   <s:param name="repositoryId" value="%{'${repositoryId}'}"/>
+                   <s:param name="filterSearch" value="%{'${filterSearch}'}"/>
+  		   <s:param name="fromResultsPage" value="true"/>
+                   <s:param name="currentPage" value="%{'${currentPage - 1}'}"/>
+ 		  <s:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+ 		  <s:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+                 </s:url>
        	      </c:set>
        	      <c:set var="nextPageUrl">
-                <ww:url action="filteredSearch" namespace="/">
-<%-- 		 <ww:param name="q" value="%{'${q}'}"/> --%>
-                  <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
-                  <ww:param name="groupId" value="%{'${groupId}'}"/>
-                  <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-                  <ww:param name="version" value="%{'${version}'}"/>
-                  <ww:param name="className" value="%{'${className}'}"/>
-                  <ww:param name="repositoryId" value="%{'${repositoryId}'}"/>
-                  <ww:param name="filterSearch" value="%{'${filterSearch}'}"/>
-  		  <ww:param name="fromResultsPage" value="true"/>
-                  <ww:param name="currentPage" value="%{'${currentPage + 1}'}"/>
- 		  <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-		  <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
-                </ww:url>
+                <s:url action="filteredSearch" namespace="/">
+<%-- 		 <s:param name="q" value="%{'${q}'}"/> --%>
+                  <s:param name="rowCount" value="%{'${rowCount}'}"/>  
+                  <s:param name="groupId" value="%{'${groupId}'}"/>
+                  <s:param name="artifactId" value="%{'${artifactId}'}"/>
+                  <s:param name="version" value="%{'${version}'}"/>
+                  <s:param name="className" value="%{'${className}'}"/>
+                  <s:param name="repositoryId" value="%{'${repositoryId}'}"/>
+                  <s:param name="filterSearch" value="%{'${filterSearch}'}"/>
+  		  <s:param name="fromResultsPage" value="true"/>
+                  <s:param name="currentPage" value="%{'${currentPage + 1}'}"/>
+ 		  <s:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+		  <s:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+                </s:url>
       	      </c:set>    
              </c:if>
             
@@ -199,12 +199,12 @@
                             <c:choose>                   			    
 		              <c:when test="${i != currentPage}">
 		                <c:set var="specificPageUrl">
-		                  <ww:url action="quickSearch" namespace="/">
-		                    <ww:param name="q" value="%{'${q}'}"/>
-		                    <ww:param name="currentPage" value="%{'${i}'}"/>
-		                    <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-		                    <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>  
-  		                  </ww:url>
+		                  <s:url action="quickSearch" namespace="/">
+		                    <s:param name="q" value="%{'${q}'}"/>
+		                    <s:param name="currentPage" value="%{'${i}'}"/>
+		                    <s:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+		                    <s:param name="completeQueryString" value="%{'${completeQueryString}'}"/>  
+  		                  </s:url>
 		      	        </c:set>
 			          <a href="${specificPageUrl}">${i + 1}</a>
 			      </c:when>
@@ -218,20 +218,20 @@
                             <c:choose>                  			    
 		              <c:when test="${i != currentPage}">
 		                <c:set var="specificPageUrl">
-		                  <ww:url action="filteredSearch" namespace="/">
-<%-- 		                    <ww:param name="q" value="%{'${q}'}"/>   --%>
-                                    <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
-                                    <ww:param name="groupId" value="%{'${groupId}'}"/>
-                                    <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-                                    <ww:param name="version" value="%{'${version}'}"/>
-                                    <ww:param name="className" value="%{'${className}'}"/>
-                                    <ww:param name="repositoryId" value="%{'${repositoryId}'}"/>
-                                    <ww:param name="filterSearch" value="%{'${filterSearch}'}"/>
-		                    <ww:param name="fromResultsPage" value="true"/>
-		                    <ww:param name="currentPage" value="%{'${i}'}"/>
-		                    <ww:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-		                    <ww:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
-		                  </ww:url>
+		                  <s:url action="filteredSearch" namespace="/">
+<%-- 		                    <s:param name="q" value="%{'${q}'}"/>   --%>
+                                    <s:param name="rowCount" value="%{'${rowCount}'}"/>  
+                                    <s:param name="groupId" value="%{'${groupId}'}"/>
+                                    <s:param name="artifactId" value="%{'${artifactId}'}"/>
+                                    <s:param name="version" value="%{'${version}'}"/>
+                                    <s:param name="className" value="%{'${className}'}"/>
+                                    <s:param name="repositoryId" value="%{'${repositoryId}'}"/>
+                                    <s:param name="filterSearch" value="%{'${filterSearch}'}"/>
+		                    <s:param name="fromResultsPage" value="true"/>
+		                    <s:param name="currentPage" value="%{'${i}'}"/>
+		                    <s:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
+		                    <s:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+		                  </s:url>
 		      	        </c:set>
 				<a href="${specificPageUrl}">${i + 1}</a>
 			      </c:when>

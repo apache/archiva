@@ -17,19 +17,19 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Delete Proxy Connector</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
 <h1>Admin: Delete Proxy Connector</h1>
 
-<ww:actionerror/>
+<s:actionerror/>
 
 <div id="contentArea">
 
@@ -43,11 +43,11 @@
     Are you sure you want to delete proxy connector <code>[ ${source} , ${target} ]</code> ?
   </p>
 
-  <ww:form method="post" action="deleteProxyConnector!delete" namespace="/admin" validate="true">
-    <ww:hidden name="target"/>
-    <ww:hidden name="source"/>
-    <ww:submit value="Delete"/>
-  </ww:form>
+  <s:form method="post" action="deleteProxyConnector!delete" namespace="/admin" validate="true">
+    <s:hidden name="target"/>
+    <s:hidden name="source"/>
+    <s:submit value="Delete"/>
+  </s:form>
 </div>
 
 </body>

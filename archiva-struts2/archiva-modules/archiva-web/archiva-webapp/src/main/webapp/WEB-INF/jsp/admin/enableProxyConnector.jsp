@@ -17,19 +17,19 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Enable Proxy Connector</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
 <h1>Admin: Enable Proxy Connector</h1>
 
-<ww:actionerror/>
+<s:actionerror/>
 
 <div id="contentArea">
 
@@ -39,11 +39,11 @@
     Are you sure you want to enable proxy connector <code>[ ${source} , ${target} ]</code> ?
   </p>
 
-  <ww:form method="post" action="enableProxyConnector!enable" namespace="/admin" validate="true">
-    <ww:hidden name="target"/>
-    <ww:hidden name="source"/>
-    <ww:submit value="Enable"/>
-  </ww:form>
+  <s:form method="post" action="enableProxyConnector!enable" namespace="/admin" validate="true">
+    <s:hidden name="target"/>
+    <s:hidden name="source"/>
+    <s:submit value="Enable"/>
+  </s:form>
 </div>
 
 </body>

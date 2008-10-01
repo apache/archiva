@@ -19,9 +19,9 @@ package org.apache.maven.archiva.web.validator;
  * under the License.
  */
 
-import com.opensymphony.xwork.validator.ValidationException;
-import com.opensymphony.xwork.validator.ValidatorContext;
-import com.opensymphony.xwork.validator.validators.ValidatorSupport;
+import com.opensymphony.xwork2.validator.ValidationException;
+import com.opensymphony.xwork2.validator.ValidatorContext;
+import com.opensymphony.xwork2.validator.validators.ValidatorSupport;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>

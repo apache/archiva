@@ -17,13 +17,13 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
   <title>You have access to no repositories</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>

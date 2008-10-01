@@ -26,16 +26,15 @@ import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import com.opensymphony.webwork.components.ActionError;
-import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork2.Preparable;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
 
 /**
  * Add a LegacyArtifactPath to archiva configuration
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="addLegacyArtifactPathAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addLegacyArtifactPathAction"
  */
 public class AddLegacyArtifactPathAction
     extends PlexusActionSupport

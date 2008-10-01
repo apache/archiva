@@ -17,14 +17,14 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
 
 <html>
 <head>
   <title>Browse Repository</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -40,14 +40,14 @@
 
     <h2>Versions</h2>
     <ul>
-      <ww:set name="versions" value="versions"/>
+      <s:set name="versions" value="versions"/>
       <c:forEach items="${versions}" var="version">
         <c:set var="url">
-          <ww:url action="showArtifact" namespace="/">
-            <ww:param name="groupId" value="%{'${groupId}'}"/>
-            <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-            <ww:param name="version" value="%{'${version}'}"/>
-          </ww:url>
+          <s:url action="showArtifact" namespace="/">
+            <s:param name="groupId" value="%{'${groupId}'}"/>
+            <s:param name="artifactId" value="%{'${artifactId}'}"/>
+            <s:param name="version" value="%{'${version}'}"/>
+          </s:url>
         </c:set>
         <li><a href="${url}">${version}/</a></li>
       </c:forEach>

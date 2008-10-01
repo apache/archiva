@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork2.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
 import org.apache.maven.archiva.configuration.Configuration;

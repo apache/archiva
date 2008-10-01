@@ -19,10 +19,11 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import com.opensymphony.webwork.WebWorkException;
-import com.opensymphony.webwork.components.Component;
-import com.opensymphony.xwork.util.OgnlValueStack;
+import org.apache.struts2.StrutsException;
+import org.apache.struts2.components.Component;
+import com.opensymphony.xwork2.util.OgnlValueStack;
 
+import com.opensymphony.xwork2.util.ValueStack;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDAO;
@@ -51,7 +52,7 @@ import javax.servlet.jsp.PageContext;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role="com.opensymphony.webwork.components.Component" role-hint="download-artifact"
+ * @plexus.component role="org.apache.struts2.components.Component" role-hint="download-artifact"
  * instantiation-strategy="per-lookup"
  */
 public class DownloadArtifact
@@ -82,7 +83,7 @@ public class DownloadArtifact
 
     private DecimalFormat decimalFormat;
 
-    public DownloadArtifact( OgnlValueStack stack, PageContext pageContext )
+    public DownloadArtifact( ValueStack stack, PageContext pageContext )
     {
         super( stack );
         decimalFormat = new DecimalFormat( "#,#00" );
@@ -100,6 +101,7 @@ public class DownloadArtifact
         }
     }
 
+    @Override
     public boolean end( Writer writer, String body )
     {
         StringBuffer sb = new StringBuffer();
@@ -151,7 +153,7 @@ public class DownloadArtifact
         }
         catch ( IOException e )
         {
-            throw new WebWorkException( "IOError: " + e.getMessage(), e );
+            throw new StrutsException( "IOError: " + e.getMessage(), e );
         }
 
         return super.end( writer, body );

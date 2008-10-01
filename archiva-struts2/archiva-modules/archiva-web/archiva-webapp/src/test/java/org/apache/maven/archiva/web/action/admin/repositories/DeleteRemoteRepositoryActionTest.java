@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork2.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;

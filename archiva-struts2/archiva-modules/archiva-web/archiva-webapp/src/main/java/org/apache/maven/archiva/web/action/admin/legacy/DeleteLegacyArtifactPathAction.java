@@ -25,15 +25,15 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
  * Delete a LegacyArtifactPath to archiva configuration
  *
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="deleteLegacyArtifactPathAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteLegacyArtifactPathAction"
  */
 public class DeleteLegacyArtifactPathAction
     extends PlexusActionSupport

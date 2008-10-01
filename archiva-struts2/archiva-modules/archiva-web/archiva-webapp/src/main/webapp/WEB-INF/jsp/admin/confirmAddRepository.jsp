@@ -17,13 +17,13 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
   <title>Admin: Add Managed Repository</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -103,33 +103,33 @@
     </table>
   </div>
   	
-  <ww:form method="post" action="${action}" namespace="/admin" validate="true" theme="simple">
+  <s:form method="post" action="${action}" namespace="/admin" validate="true" theme="simple">
     <div class="buttons">      
-      <ww:hidden name="repository.id" value="${repository.id}"/>
-      <ww:hidden name="repository.name" value="${repository.name}"/>
-      <ww:hidden name="repository.location" value="${repository.location}"/>
-      <ww:hidden name="repository.indexDir" value="${repository.indexDir}"/>
-      <ww:hidden name="repository.layout" value="${repository.layout}"/>
-      <ww:hidden name="repository.refreshCronExpression" value="${repository.refreshCronExpression}"/>
-      <ww:hidden name="repository.daysOlder" value="${repository.daysOlder}"/>
-      <ww:hidden name="repository.retentionCount" value="${repository.retentionCount}"/>
-      <ww:hidden name="repository.releases" value="${repository.releases}"/>
-      <ww:hidden name="repository.snapshots" value="${repository.snapshots}"/>
-      <ww:hidden name="repository.scanned" value="${repository.scanned}"/>
-      <ww:hidden name="repository.deleteReleasedSnapshots" value="${repository.deleteReleasedSnapshots}"/>
+      <s:hidden name="repository.id" value="${repository.id}"/>
+      <s:hidden name="repository.name" value="${repository.name}"/>
+      <s:hidden name="repository.location" value="${repository.location}"/>
+      <s:hidden name="repository.indexDir" value="${repository.indexDir}"/>
+      <s:hidden name="repository.layout" value="${repository.layout}"/>
+      <s:hidden name="repository.refreshCronExpression" value="${repository.refreshCronExpression}"/>
+      <s:hidden name="repository.daysOlder" value="${repository.daysOlder}"/>
+      <s:hidden name="repository.retentionCount" value="${repository.retentionCount}"/>
+      <s:hidden name="repository.releases" value="${repository.releases}"/>
+      <s:hidden name="repository.snapshots" value="${repository.snapshots}"/>
+      <s:hidden name="repository.scanned" value="${repository.scanned}"/>
+      <s:hidden name="repository.deleteReleasedSnapshots" value="${repository.deleteReleasedSnapshots}"/>
       
       <c:choose>      
         <c:when test="${action == 'addRepository'}">
-      	  <ww:submit value="Save" method="confirmAdd"/>
+      	  <s:submit value="Save" method="confirmAdd"/>
       	</c:when>
       	<c:otherwise>
-      	  <ww:submit value="Save" method="confirmUpdate"/>
+      	  <s:submit value="Save" method="confirmUpdate"/>
       	</c:otherwise>
      </c:choose>
       
-      <ww:submit value="Cancel" method="execute"/>
+      <s:submit value="Cancel" method="execute"/>
     </div>
-  </ww:form>
+  </s:form>
   
 </body>
 </html>

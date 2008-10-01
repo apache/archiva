@@ -31,7 +31,7 @@ import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
+import org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

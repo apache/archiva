@@ -26,7 +26,7 @@
 
   <filter>
     <filter-name>webwork-cleanup</filter-name>
-    <filter-class>com.opensymphony.webwork.dispatcher.ActionContextCleanUp</filter-class>
+    <filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
   </filter>
 
   <filter>
@@ -36,7 +36,7 @@
 
   <filter>
     <filter-name>webwork</filter-name>
-    <filter-class>com.opensymphony.webwork.dispatcher.FilterDispatcher</filter-class>
+    <filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
   </filter>
 
   <!-- this must be before the sitemesh filter -->
