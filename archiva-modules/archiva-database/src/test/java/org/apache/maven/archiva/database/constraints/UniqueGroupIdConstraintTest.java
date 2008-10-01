@@ -230,8 +230,8 @@ public class UniqueGroupIdConstraintTest
 
         assertConstraint( new String[] { "org.codehaus.modello", "org.codehaus.mojo", "org.apache.archiva" },
                           new UniqueGroupIdConstraint( observableRepositories ) );
-    }
-
+    }   
+    
     private void assertConstraint( String[] expectedGroupIds, SimpleConstraint constraint )
         throws Exception
     {

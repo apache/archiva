@@ -20,10 +20,14 @@ package org.apache.maven.archiva.scheduled.executors;
  */
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstraint;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
@@ -38,6 +42,7 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -112,19 +117,95 @@ public class ArchivaRepositoryScanningTaskExecutor
 
             log.info( "Finished repository task: " + stats.toDump( arepo ) );
             
-            // I hate jpox and modello
-            RepositoryContentStatistics dbstats = new RepositoryContentStatistics();
-            dbstats.setDuration( stats.getDuration() );
-            dbstats.setNewFileCount( stats.getNewFileCount() );
-            dbstats.setRepositoryId( stats.getRepositoryId() );
-            dbstats.setTotalFileCount( stats.getTotalFileCount() );
-            dbstats.setWhenGathered( stats.getWhenGathered() );
+            RepositoryContentStatistics dbstats = constructRepositoryStatistics( arepo, sinceWhen, results, stats );
             
-            dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( dbstats );
+            dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( dbstats );            
         }
         catch ( RepositoryException e )
-        {
+        {   
             throw new TaskExecutionException( "Repository error when executing repository job.", e );
-        }        
+        }    
     }
+
+    private RepositoryContentStatistics constructRepositoryStatistics( ManagedRepositoryConfiguration arepo,
+                                                                       long sinceWhen,
+                                                                       List<RepositoryContentStatistics> results,
+                                                                       RepositoryScanStatistics stats )        
+    {
+        // I hate jpox and modello <-- and so do I
+        RepositoryContentStatistics dbstats = new RepositoryContentStatistics();
+        dbstats.setDuration( stats.getDuration() );
+        dbstats.setNewFileCount( stats.getNewFileCount() );
+        dbstats.setRepositoryId( stats.getRepositoryId() );
+        dbstats.setTotalFileCount( stats.getTotalFileCount() );
+        dbstats.setWhenGathered( stats.getWhenGathered() );
+                
+        // MRM-84
+       /*
+        List<RepositoryContentStatistics> secondResults = dao.query( new MostRecentRepositoryScanStatistics( arepo.getId() ) );
+        if ( CollectionUtils.isNotEmpty( results ) )
+        {
+            RepositoryContentStatistics lastStats = secondResults.get( 0 );
+            sinceWhen = lastStats.getWhenGathered().getTime() + lastStats.getDuration();
+        }        
+        */
+        
+        // total artifact count
+        try
+        {
+            List artifacts = dao.getArtifactDAO().queryArtifacts( 
+                      new ArtifactsByRepositoryConstraint( arepo.getId(), stats.getWhenGathered(), "groupId", true ) );            
+            dbstats.setTotalArtifactCount( artifacts.size() );
+        }
+        catch ( ObjectNotFoundException oe )
+        {
+            log.error( "Object not found in the database : " + oe.getMessage() );
+        }
+        catch ( ArchivaDatabaseException ae )
+        {   
+            log.error( "Error occurred while querying artifacts for artifact count : " + ae.getMessage() );
+        }
+
+        
+        // total repo size
+        long size = FileUtils.sizeOfDirectory( new File( arepo.getLocation() ) );
+        dbstats.setTotalSize( size );
+        
+        /*
+         TODO:
+          
+          // total unique groups
+        List<String> repos = new ArrayList<String>();
+        repos.add( arepo.getId() ); 
+        try
+        {
+            List<String> groupIds = dao.getArtifactDAO().queryArtifacts( new UniqueGroupIdConstraint( repos ) );            
+            dbstats.setTotalGroupCount( groupIds.size() );
+        }
+        catch ( ObjectNotFoundException oe )
+        {
+            
+        }
+        catch ( ArchivaDatabaseException ae )
+        {
+            
+        }
+        
+        // total unique projects
+        try
+        {
+            List<Object[]> artifactIds = dao.getArtifactDAO().queryArtifacts( new UniqueArtifactIdConstraint( arepo.getId(), true ) );            
+            dbstats.setTotalProjectCount( artifactIds.size() );
+        }
+        catch ( ObjectNotFoundException oe )
+        {
+            
+        }
+        catch ( ArchivaDatabaseException ae )
+        {
+
+        }*/
+                
+        return dbstats;
+    }    
 }

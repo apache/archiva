@@ -32,7 +32,7 @@ import org.apache.maven.archiva.model.RepositoryContentStatistics;
  * @version
  */
 public class RepositoryContentStatisticsByRepositoryConstraintTest
-    extends AbstractArchivaDatabaseTestCase
+    extends AbstractArchivaDatabaseTestCase 
 {
     private RepositoryContentStatistics createStats( String repoId, String timestamp, long duration, long totalfiles,
                                                      long newfiles )
@@ -75,5 +75,28 @@ public class RepositoryContentStatisticsByRepositoryConstraintTest
         assertEquals( "internal", ( (RepositoryContentStatistics) results.get( 1 ) ).getRepositoryId() );
         assertEquals( "internal", ( (RepositoryContentStatistics) results.get( 2 ) ).getRepositoryId() );
         assertEquals( "internal", ( (RepositoryContentStatistics) results.get( 3 ) ).getRepositoryId() );
+    }
+    
+    public void testStatsWithDateRange()
+        throws Exception
+    {
+        Constraint constraint =
+            new RepositoryContentStatisticsByRepositoryConstraint( "internal", toDate( "2007/10/18 8:00:00" ),
+                                                                   toDate( "2007/10/20 8:00:00" ) );
+        List results = dao.getRepositoryContentStatisticsDAO().queryRepositoryContentStatistics( constraint );
+        assertNotNull( "Stats: results (not null)", results );
+        assertEquals( "Stats: results.size", 3, results.size() );
+
+        assertEquals( "internal", ( (RepositoryContentStatistics) results.get( 0 ) ).getRepositoryId() );
+        assertEquals( toDate( "2007/10/20 8:00:00" ),
+                      ( (RepositoryContentStatistics) results.get( 0 ) ).getWhenGathered() );
+
+        assertEquals( "internal", ( (RepositoryContentStatistics) results.get( 1 ) ).getRepositoryId() );
+        assertEquals( toDate( "2007/10/19 8:00:00" ),
+                      ( (RepositoryContentStatistics) results.get( 1 ) ).getWhenGathered() );
+
+        assertEquals( "internal", ( (RepositoryContentStatistics) results.get( 2 ) ).getRepositoryId() );
+        assertEquals( toDate( "2007/10/18 8:00:00" ),
+                      ( (RepositoryContentStatistics) results.get( 2 ) ).getWhenGathered() );
     }
 }
