@@ -22,14 +22,13 @@ package org.apache.maven.archiva.web.action;
 import java.util.Collections;
 import java.util.List;
 
-import com.opensymphony.xwork.ActionContext;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.security.*;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
  * Browse the repository.
@@ -37,7 +36,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
  * @todo cache browsing results.
  * @todo implement repository selectors (all or specific repository)
  * @todo implement security around browse (based on repository id at first)
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="browseAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction"
  */
 public class BrowseAction
     extends PlexusActionSupport

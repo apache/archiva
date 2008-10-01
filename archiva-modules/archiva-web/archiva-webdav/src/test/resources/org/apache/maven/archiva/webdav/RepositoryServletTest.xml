@@ -144,7 +144,7 @@
           <field-name>mimeTypes</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator</role>
+          <role>org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator</role>
           <role-hint>basic</role-hint>
           <field-name>httpAuth</field-name>
         </requirement>

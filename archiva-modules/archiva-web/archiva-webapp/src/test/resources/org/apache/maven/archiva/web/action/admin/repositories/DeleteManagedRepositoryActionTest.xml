@@ -30,7 +30,7 @@
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.RoleManagerStub</implementation>
     </component>
     <component>
-      <role>com.opensymphony.xwork.Action</role>
+      <role>com.opensymphony.xwork2.Action</role>
       <role-hint>deleteManagedRepositoryAction</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.DeleteManagedRepositoryAction</implementation>
       <instantiation-strategy>per-lookup</instantiation-strategy>

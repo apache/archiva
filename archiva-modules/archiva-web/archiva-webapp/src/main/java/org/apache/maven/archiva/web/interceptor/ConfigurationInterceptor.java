@@ -19,9 +19,9 @@ package org.apache.maven.archiva.web.interceptor;
  * under the License.
  */
 
-import com.opensymphony.webwork.ServletActionContext;
-import com.opensymphony.xwork.ActionInvocation;
-import com.opensymphony.xwork.interceptor.Interceptor;
+import org.apache.struts2.ServletActionContext;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.Interceptor;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 
 import javax.servlet.ServletContext;
@@ -30,7 +30,7 @@ import javax.servlet.ServletContext;
  * An interceptor that makes the configuration bits available, both to the application and the webapp
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @plexus.component role="com.opensymphony.xwork.interceptor.Interceptor"
+ * @plexus.component role="com.opensymphony.xwork2.interceptor.Interceptor"
  * role-hint="configurationInterceptor"
  */
 public class ConfigurationInterceptor

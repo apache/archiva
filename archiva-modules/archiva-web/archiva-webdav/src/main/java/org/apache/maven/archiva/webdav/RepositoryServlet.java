@@ -46,7 +46,7 @@ import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
-import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
+import org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

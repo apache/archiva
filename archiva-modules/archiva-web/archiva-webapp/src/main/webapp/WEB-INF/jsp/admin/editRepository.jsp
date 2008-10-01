@@ -17,29 +17,29 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Edit Managed Repository</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
 <h1>Admin: Edit Managed Repository</h1>
 
-<ww:actionerror/>
+<s:actionerror/>
 
 <div id="contentArea">
 
-  <ww:actionmessage/>
-  <ww:form method="post" action="editRepository!commit" namespace="/admin" validate="false">
-    <ww:hidden name="repository.id"/>
-    <ww:label label="ID" name="repository.id" />
+  <s:actionmessage/>
+  <s:form method="post" action="editRepository!commit" namespace="/admin" validate="false">
+    <s:hidden name="repository.id"/>
+    <s:label label="ID" name="repository.id" />
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
-    <ww:submit value="Update Repository"/>
-  </ww:form>
+    <s:submit value="Update Repository"/>
+  </s:form>
 
   <script type="text/javascript">
     document.getElementById("editRepository_repository_name").focus();

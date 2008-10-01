@@ -19,8 +19,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
-import com.opensymphony.xwork.Validateable;
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -35,7 +35,7 @@ import java.io.IOException;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="addManagedRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addManagedRepositoryAction"
  */
 public class AddManagedRepositoryAction
     extends AbstractManagedRepositoriesAction

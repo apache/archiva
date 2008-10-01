@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ taglib prefix="archiva" uri="http://archiva.apache.org"%>
@@ -25,7 +25,7 @@
 <html>
 <head>
 <title>Administration - Network Proxies</title>
-<ww:head />
+<s:head />
 </head>
 
 <body>
@@ -34,16 +34,16 @@
 
 <div id="contentArea">
 
-<ww:actionerror /> <ww:actionmessage />
+<s:actionerror /> <s:actionmessage />
 
 <div class="admin">
 <div class="controls">
 <redback:ifAuthorized
   permission="archiva-manage-configuration">
-  <ww:url id="addNetworkProxyUrl" action="addNetworkProxy" />
-  <ww:a href="%{addNetworkProxyUrl}">
+  <s:url id="addNetworkProxyUrl" action="addNetworkProxy" />
+  <s:a href="%{addNetworkProxyUrl}">
     <img src="<c:url value="/images/icons/create.png" />" />
-        Add Network Proxy</ww:a>
+        Add Network Proxy</s:a>
 </redback:ifAuthorized></div>
 <h2>Network Proxies</h2>
 
@@ -70,18 +70,18 @@
       <div class="controls">
       <redback:ifAnyAuthorized
         permissions="archiva-manage-configuration">
-        <ww:url id="editNetworkProxyUrl" action="editNetworkProxy">
-          <ww:param name="proxyid" value="%{'${proxy.id}'}" />
-        </ww:url>
-        <ww:url id="deleteNetworkProxyUrl" action="deleteNetworkProxy" method="confirm">
-          <ww:param name="proxyid" value="%{'${proxy.id}'}" />
-        </ww:url>
-        <ww:a href="%{editNetworkProxyUrl}">
+        <s:url id="editNetworkProxyUrl" action="editNetworkProxy">
+          <s:param name="proxyid" value="%{'${proxy.id}'}" />
+        </s:url>
+        <s:url id="deleteNetworkProxyUrl" action="deleteNetworkProxy" method="confirm">
+          <s:param name="proxyid" value="%{'${proxy.id}'}" />
+        </s:url>
+        <s:a href="%{editNetworkProxyUrl}">
           <img src="<c:url value="/images/icons/edit.png" />" />
-            Edit Network Proxy</ww:a>
-        <ww:a href="%{deleteNetworkProxyUrl}">
+            Edit Network Proxy</s:a>
+        <s:a href="%{deleteNetworkProxyUrl}">
           <img src="<c:url value="/images/icons/delete.gif" />" />
-            Delete Network Proxy</ww:a>
+            Delete Network Proxy</s:a>
       </redback:ifAnyAuthorized></div>
 
       <table class="infoTable">

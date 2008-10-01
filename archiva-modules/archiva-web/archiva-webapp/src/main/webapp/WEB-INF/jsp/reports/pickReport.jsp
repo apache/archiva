@@ -17,12 +17,12 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Reports</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -30,12 +30,12 @@
 
 <div id="contentArea">
 
-  <ww:form action="generateReport" namespace="/report" validate="true">
-    <ww:textfield label="Row Count" name="rowCount" />
-    <ww:textfield label="Group ID" name="groupId"/>
-    <ww:select label="Repository ID" name="repositoryId" list="repositoryIds"/>
-    <ww:submit value="Show Report"/>
-  </ww:form>
+  <s:form action="generateReport" namespace="/report" validate="true">
+    <s:textfield label="Row Count" name="rowCount" />
+    <s:textfield label="Group ID" name="groupId"/>
+    <s:select label="Repository ID" name="repositoryId" list="repositoryIds"/>
+    <s:submit value="Show Report"/>
+  </s:form>
 
 </div>
 

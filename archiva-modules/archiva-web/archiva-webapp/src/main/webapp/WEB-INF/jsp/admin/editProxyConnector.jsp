@@ -17,13 +17,13 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
   <title>Admin : Edit Proxy Connector</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -32,13 +32,13 @@
 
 <div id="contentArea">
 
-  <ww:actionerror/>
-  <ww:actionmessage/>
+  <s:actionerror/>
+  <s:actionmessage/>
 
-  <ww:form name="saveProxyConnector" method="post" action="editProxyConnector!commit" namespace="/admin" validate="true">
+  <s:form name="saveProxyConnector" method="post" action="editProxyConnector!commit" namespace="/admin" validate="true">
     <%@ include file="/WEB-INF/jsp/admin/include/proxyConnectorForm.jspf" %>
-    <ww:submit value="Save Proxy Connector"/>
-  </ww:form>
+    <s:submit value="Save Proxy Connector"/>
+  </s:form>
   
 </div>
 

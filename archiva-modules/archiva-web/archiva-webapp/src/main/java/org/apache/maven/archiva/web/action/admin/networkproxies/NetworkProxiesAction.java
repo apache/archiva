@@ -19,15 +19,15 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork2.Preparable;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="networkProxiesAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="networkProxiesAction"
  */
 public class NetworkProxiesAction
     extends PlexusActionSupport

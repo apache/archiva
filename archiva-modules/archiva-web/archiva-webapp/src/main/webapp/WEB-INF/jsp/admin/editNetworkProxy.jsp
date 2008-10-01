@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:choose>
@@ -33,7 +33,7 @@
 <html>
 <head>
   <title>Admin: ${addedit} Network Proxy</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -44,24 +44,24 @@
 
   <h2>${addedit} network proxy: ${networkProxyName}</h2>
 
-  <ww:actionerror/> 
-  <ww:actionmessage/>
+  <s:actionerror/> 
+  <s:actionmessage/>
   
-  <ww:form method="post" action="saveNetworkProxy" namespace="/admin">
-    <ww:hidden name="mode"/>
+  <s:form method="post" action="saveNetworkProxy" namespace="/admin">
+    <s:hidden name="mode"/>
     
 	<c:choose>
 	  <c:when test="${mode == 'edit'}">
-	    <ww:hidden name="proxy.id"/>
+	    <s:hidden name="proxy.id"/>
 	  </c:when>
 	  <c:otherwise>
-	    <ww:textfield name="proxy.id" label="Identifier" size="10" required="true"/>
+	    <s:textfield name="proxy.id" label="Identifier" size="10" required="true"/>
 	  </c:otherwise>
 	</c:choose>
     
     <%@ include file="/WEB-INF/jsp/admin/include/networkProxyForm.jspf" %>
-    <ww:submit value="Save Network Proxy"/>
-  </ww:form>
+    <s:submit value="Save Network Proxy"/>
+  </s:form>
 
   <script type="text/javascript">
     document.getElementById("saveNetworkProxy_host").focus();

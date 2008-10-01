@@ -46,7 +46,7 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
+import org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator;
 
 public class ArchivaDavSessionProviderTest extends TestCase
 {

@@ -17,11 +17,11 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <html>
 <head>
   <title>Configure Appearance</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -33,14 +33,14 @@
   Enter the details of your organization below.
 </p>
 
-<ww:set name="editOrganisationInfo" value="editOrganisationInfo"/>
-<ww:actionmessage/>
-<ww:form method="post" action="saveAppearance" namespace="/admin" validate="true" theme="xhtml">
-    <ww:textfield name="organisationName" value="${organisationName}" label="Name" size="50"  />
-    <ww:textfield name="organisationUrl" value="${organisationUrl}" label="URL" size="50"/>
-    <ww:textfield name="organisationLogo" value="${organisationLogo}" label="Logo URL" size="50" />
-  <ww:submit value="Save"/>
-</ww:form>
+<s:set name="editOrganisationInfo" value="editOrganisationInfo"/>
+<s:actionmessage/>
+<s:form method="post" action="saveAppearance" namespace="/admin" validate="true" theme="xhtml">
+    <s:textfield name="organisationName" value="${organisationName}" label="Name" size="50"  />
+    <s:textfield name="organisationUrl" value="${organisationUrl}" label="URL" size="50"/>
+    <s:textfield name="organisationLogo" value="${organisationLogo}" label="Logo URL" size="50" />
+  <s:submit value="Save"/>
+</s:form>
 </body>
 
 </html>

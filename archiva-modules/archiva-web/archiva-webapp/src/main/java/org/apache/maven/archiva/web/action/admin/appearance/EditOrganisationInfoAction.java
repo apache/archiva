@@ -19,22 +19,22 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
 
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
 
 /**
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id: ConfigurationAction.java 480950 2006-11-30 14:58:35Z evenisse $
  * 
- * @plexus.component role="com.opensymphony.xwork.Action"
+ * @plexus.component role="com.opensymphony.xwork2.Action"
  *                   role-hint="editOrganisationInfo"
  */
 public class EditOrganisationInfoAction

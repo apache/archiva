@@ -17,12 +17,12 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Reports</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -30,7 +30,7 @@
 
 <div id="contentArea">
 
-  <ww:text name="The operation generated an empty report."/>
+  <s:text name="The operation generated an empty report."/>
 
 </div>
 </body>

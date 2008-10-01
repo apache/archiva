@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import com.opensymphony.webwork.views.jsp.TagUtils;
+import org.apache.struts2.views.jsp.TagUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +41,7 @@ public class GroupIdLinkTag
 
     private boolean includeTop = false;
 
+    @Override
     public void release()
     {
         var_ = null;
@@ -50,6 +51,7 @@ public class GroupIdLinkTag
         super.release();
     }
 
+    @Override
     public int doEndTag()
         throws JspException
     {

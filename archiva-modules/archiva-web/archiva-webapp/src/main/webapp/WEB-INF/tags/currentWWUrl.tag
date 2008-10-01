@@ -17,18 +17,18 @@
   ~ under the License.
   --%>
 
-<%@ taglib uri="/webwork" prefix="ww" %>
+<%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ attribute name="action" %>
 <%@ attribute name="namespace" %>
 <%@ attribute name="url" %>
 
 <c:set var="currentUrl">
-  <ww:url/>
+  <s:url/>
 </c:set>
 <c:if test="${!empty (action) && !empty (namespace)}">
   <c:set var="url">
-    <ww:url action="${action}" namespace="${namespace}"/>
+    <s:url action="%{action}" namespace="%{namespace}"/>
   </c:set>
 </c:if>
 <c:set var="text">

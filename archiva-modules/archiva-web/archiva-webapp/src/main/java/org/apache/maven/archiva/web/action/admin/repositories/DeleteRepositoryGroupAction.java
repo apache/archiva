@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork2.Preparable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -30,7 +30,7 @@ import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
  * 
  * @author
  * @version
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="deleteRepositoryGroupAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRepositoryGroupAction"
  */
 public class DeleteRepositoryGroupAction 
     extends AbstractRepositoriesAdminAction

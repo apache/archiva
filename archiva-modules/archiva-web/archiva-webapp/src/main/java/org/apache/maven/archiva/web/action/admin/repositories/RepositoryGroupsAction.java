@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.opensymphony.webwork.interceptor.ServletRequestAware;
-import com.opensymphony.xwork.Preparable;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import com.opensymphony.xwork2.Preparable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -40,7 +40,7 @@ import org.apache.maven.archiva.web.util.ContextUtils;
  * 
  * @author
  * @version
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="repositoryGroupsAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryGroupsAction"
  */
 public class RepositoryGroupsAction
     extends AbstractRepositoriesAdminAction

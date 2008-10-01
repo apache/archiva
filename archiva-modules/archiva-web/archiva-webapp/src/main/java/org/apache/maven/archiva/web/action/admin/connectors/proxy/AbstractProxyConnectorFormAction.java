@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.policies.DownloadErrorPolicy;

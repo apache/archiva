@@ -32,17 +32,16 @@ import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import com.opensymphony.xwork.ActionContext;
-import com.opensymphony.xwork.Validateable;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.Validateable;
 
 /**
  * Browse the repository. 
  * 
  * TODO change name to ShowVersionedAction to conform to terminology.
  * 
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="showArtifactAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
  */
 public class ShowArtifactAction
     extends PlexusActionSupport
