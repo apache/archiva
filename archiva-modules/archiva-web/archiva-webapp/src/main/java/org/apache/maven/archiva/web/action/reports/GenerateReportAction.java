@@ -22,6 +22,8 @@ package org.apache.maven.archiva.web.action.reports;
 import com.opensymphony.webwork.interceptor.ServletRequestAware;
 import com.opensymphony.xwork.Preparable;
 
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -51,6 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -123,15 +127,20 @@ public class GenerateReportAction
     
     private List<String> availableRepositories;  
     
-    private Date startDate;
+    private String startDate;
     
-    private Date endDate;
+    private String endDate;
     
     private int reposSize;
     
     private String selectedRepo;
     
     private List<RepositoryStatistics> repositoryStatistics = new ArrayList<RepositoryStatistics>();
+    
+    private DataLimits limits = new DataLimits();
+    
+    private String[] datePatterns = new String[] { "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", 
+        "dd MMMMM yyyy", "dd/MM/yy", "dd/MM/yyyy", "yyyy/MM/dd" };
     
     public void prepare()
     {
@@ -177,9 +186,48 @@ public class GenerateReportAction
      */
     public String generateStatistics()
     {   
-        DataLimits limits = new DataLimits();        
-        setDefaults();
+        if( rowCount < 10 )
+        {
+            addFieldError( "rowCount", "Row count must be larger than 10." );
+            return INPUT;
+        }
         reposSize = selectedRepositories.size();
+        Date startDateInDateFormat = null;
+        Date endDateInDateFormat = null;
+        
+        if( startDate == null || "".equals( startDate ) )
+        {
+            startDateInDateFormat = getDefaultStartDate();
+        }
+        else
+        {
+            try
+            {
+                startDateInDateFormat = DateUtils.parseDate( startDate, datePatterns );
+            }
+            catch ( ParseException e )
+            {
+                addFieldError( "startDate", "Invalid date format.");
+                return INPUT;
+            }
+        }
+        
+        if( endDate == null || "".equals( endDate ) )
+        {
+            endDateInDateFormat = getDefaultEndDate();
+        }
+        else
+        {
+            try
+            {
+                endDateInDateFormat = DateUtils.parseDate( endDate, datePatterns );                
+            }
+            catch ( ParseException e )
+            {
+                addFieldError( "endDate", "Invalid date format.");
+                return INPUT;
+            }
+        }
         
         try
         {
@@ -197,7 +245,7 @@ public class GenerateReportAction
                     try
                     {
                         List contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
-                           new RepositoryContentStatisticsByRepositoryConstraint( repo, startDate, endDate ) );
+                           new RepositoryContentStatisticsByRepositoryConstraint( repo, startDateInDateFormat, endDateInDateFormat ) );
                         
                         if( contentStats == null || contentStats.isEmpty() )
                         {
@@ -206,7 +254,7 @@ public class GenerateReportAction
                             
                             continue;
                         }                        
-                        repositoryStatistics.addAll( generator.generateReport( contentStats, repo, startDate, endDate, limits ) );
+                        repositoryStatistics.addAll( generator.generateReport( contentStats, repo, startDateInDateFormat, endDateInDateFormat, limits ) );
                     }
                     catch ( ObjectNotFoundException oe )
                     {
@@ -229,7 +277,7 @@ public class GenerateReportAction
                 try
                 {
                     List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
-                           new RepositoryContentStatisticsByRepositoryConstraint( selectedRepo, startDate, endDate ) );
+                           new RepositoryContentStatisticsByRepositoryConstraint( selectedRepo, startDateInDateFormat, endDateInDateFormat ) );
                     
                     if( contentStats == null || contentStats.isEmpty() )
                     {   
@@ -242,7 +290,7 @@ public class GenerateReportAction
                     int totalPages = ( limits.getTotalCount() / limits.getPerPageCount() ) + extraPage;                    
                     limits.setCountOfPages( totalPages );
                     
-                    repositoryStatistics = generator.generateReport( contentStats, selectedRepo, startDate, endDate, limits );
+                    repositoryStatistics = generator.generateReport( contentStats, selectedRepo, startDateInDateFormat, endDateInDateFormat, limits );
                 }
                 catch ( ObjectNotFoundException oe )
                 {
@@ -259,7 +307,23 @@ public class GenerateReportAction
             {
                 addFieldError( "availableRepositories", "Please select a repository (or repositories) from the list." );
                 return INPUT;
-            }            
+            } 
+            
+            if( repositoryStatistics.isEmpty() )
+            {
+                return BLANK;
+            }
+            
+            if( startDate.equals( getDefaultStartDate() ) )
+            {
+                startDate = null;
+            }
+            else
+            {   
+                startDate = DateFormatUtils.format( startDateInDateFormat, "MM/dd/yyyy" );                
+            }
+            
+            endDate = DateFormatUtils.format( endDateInDateFormat, "MM/dd/yyyy" );
         }
         catch ( ArchivaReportException e )
         {
@@ -269,21 +333,19 @@ public class GenerateReportAction
         
         return SUCCESS;
     }
-
-    private void setDefaults()
+    
+    private Date getDefaultStartDate()
     {
-        if( startDate == null )
-        {
-            Calendar cal = Calendar.getInstance();
-            cal.clear();
-            cal.set( 1900, 1, 1, 0, 0, 0 );
-            startDate = cal.getTime();
-        }
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set( 1900, 1, 1, 0, 0, 0 );
         
-        if( endDate == null )
-        {
-            endDate = Calendar.getInstance().getTime();
-        }
+        return cal.getTime();
+    }
+    
+    private Date getDefaultEndDate()
+    {
+        return Calendar.getInstance().getTime();
     }
     
     public String execute()
@@ -525,22 +587,22 @@ public class GenerateReportAction
         this.availableRepositories = availableRepositories;
     }
 
-    public Date getStartDate()
+    public String getStartDate()
     {
         return startDate;
     }
 
-    public void setStartDate( Date startDate )
+    public void setStartDate( String startDate )
     {
         this.startDate = startDate;
     }
 
-    public Date getEndDate()
+    public String getEndDate()
     {
         return endDate;
     }
 
-    public void setEndDate( Date endDate )
+    public void setEndDate( String endDate )
     {
         this.endDate = endDate;
     }
@@ -573,5 +635,15 @@ public class GenerateReportAction
     public void setSelectedRepo( String selectedRepo )
     {
         this.selectedRepo = selectedRepo;
+    }
+
+    public DataLimits getLimits()
+    {
+        return limits;
+    }
+
+    public void setLimits( DataLimits limits )
+    {
+        this.limits = limits;
     }
 }

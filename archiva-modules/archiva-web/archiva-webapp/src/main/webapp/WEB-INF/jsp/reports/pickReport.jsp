@@ -39,6 +39,7 @@
 		
 	<ww:datepicker label="Start Date" name="startDate" id="startDate"/>
 	<ww:datepicker label="End Date" name="endDate" id="endDate"/>
+	<ww:textfield label="Row Count" name="rowCount" />
 		    
     <ww:submit value="View Statistics"/>
   </ww:form>
