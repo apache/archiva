@@ -127,7 +127,6 @@
               <c:if test="${fromFilterSearch == true}">
                <c:set var="prevPageUrl">
                  <ww:url action="filteredSearch" namespace="/">
- <%-- 		  <ww:param name="q" value="%{'${q}'}"/>   --%>
                    <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
                    <ww:param name="groupId" value="%{'${groupId}'}"/>
                    <ww:param name="artifactId" value="%{'${artifactId}'}"/>
@@ -143,7 +142,6 @@
        	      </c:set>
        	      <c:set var="nextPageUrl">
                 <ww:url action="filteredSearch" namespace="/">
-<%-- 		 <ww:param name="q" value="%{'${q}'}"/> --%>
                   <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
                   <ww:param name="groupId" value="%{'${groupId}'}"/>
                   <ww:param name="artifactId" value="%{'${artifactId}'}"/>
@@ -219,7 +217,6 @@
 		              <c:when test="${i != currentPage}">
 		                <c:set var="specificPageUrl">
 		                  <ww:url action="filteredSearch" namespace="/">
-<%-- 		                    <ww:param name="q" value="%{'${q}'}"/>   --%>
                                     <ww:param name="rowCount" value="%{'${rowCount}'}"/>  
                                     <ww:param name="groupId" value="%{'${groupId}'}"/>
                                     <ww:param name="artifactId" value="%{'${artifactId}'}"/>
