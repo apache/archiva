@@ -247,16 +247,33 @@ public class RepositoryServletSecurityTest
         servlet = (RepositoryServlet) ic.getServlet();
         servlet.setDavSessionProvider( davSessionProvider );
 
+        ArchivaDavResourceFactory archivaDavResourceFactory = (ArchivaDavResourceFactory) servlet.getResourceFactory();
+        archivaDavResourceFactory.setHttpAuth( httpAuth );
+        archivaDavResourceFactory.setServletAuth( servletAuth );
+
+        servlet.setResourceFactory( archivaDavResourceFactory );
+        
         AuthenticationResult result = new AuthenticationResult();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
                                            new AuthenticationException( "Authentication error" ) );
-        // servletAuthControl.expectAndReturn( servletAuth.isAuthorized( "guest", "internal" ), true );
-
+        servletAuthControl.expectAndReturn( servletAuth.isAuthorized( "guest", "internal" ), true );
+        
+     // ArchivaDavResourceFactory#isAuthorized()
+        SecuritySession session = new DefaultSecuritySession();
+        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession(), session );
+        servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, result ),
+                                           new AuthenticationException( "Authentication error" ) );
+        
+        // check if guest has write access
+        servletAuthControl.expectAndReturn( servletAuth.isAuthorized( "guest", "internal" ), true );
+        
         httpAuthControl.replay();
         servletAuthControl.replay();
 
-        WebResponse response = sc.getResponse( request );
+        //WebResponse response = sc.getResponse( request );
+        servlet.service( ic.getRequest(), ic.getResponse() );
 
         httpAuthControl.verify();
         servletAuthControl.verify();
@@ -460,8 +477,7 @@ public class RepositoryServletSecurityTest
         AuthenticationResult result = new AuthenticationResult();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
-        //servletAuthControl.expectAndReturn( servletAuth.isAuthorized( "guest", "internal" ), true );
-
+        
      // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
@@ -474,13 +490,11 @@ public class RepositoryServletSecurityTest
 
         WebResponse response = sc.getResponse( request );
         
-        //servlet.service( ic.getRequest(), ic.getResponse() );
-
         httpAuthControl.verify();
         servletAuthControl.verify();
 
-        //assertEquals( HttpServletResponse.SC_OK, response.getResponseCode() );
-        //assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
+        assertEquals( HttpServletResponse.SC_OK, response.getResponseCode() );
+        assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
     // test get with valid user with no read access to repo
