@@ -1,0 +1,11 @@
+<metadata>
+  <groupId>test</groupId>
+  <artifactId>v4artifact</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20060111.120115</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+  </versioning>
+</metadata>

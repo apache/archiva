@@ -1,0 +1,50 @@
+ -----
+ Archiva Security Configuration
+ -----
+
+Archiva Security Configuration
+
+ Security properties and password rules can be configured in the
+ <<<security.properties>>> file, which by default is searched for in:
+
+   * <<<~/.m2/security.properties>>>
+  
+   * <<<conf/security.properties>>> in the Archiva installation
+
+   []
+
+ (In the above list, <<<~>>> is the home directory of the user who is running
+ Archiva.)
+
+~~TODO: Link to plexus-redback documentation when available
+
+ Following are some of the properties you can modify.  For a complete list,
+ consult the default properties file in Redback's svn repo:
+ {{{http://svn.codehaus.org/redback/redback/trunk/redback-configuration/src/main/resources/org/codehaus/plexus/redback/config-defaults.properties}
+ config-defaults.properties}}
+
++-----+
+# Security Policies
+#security.policy.password.encoder=
+security.policy.password.previous.count=6
+security.policy.password.expiration.days=90
+security.policy.allowed.login.attempt=3
+
+# Password Rules
+security.policy.password.rule.alphanumeric.enabled=false
+security.policy.password.rule.alphacount.enabled=true
+security.policy.password.rule.alphacount.minimum=1
+security.policy.password.rule.characterlength.enabled=true
+security.policy.password.rule.characterlength.minimum=1
+security.policy.password.rule.characterlength.maximum=8
+security.policy.password.rule.musthave.enabled=true
+security.policy.password.rule.numericalcount.enabled=true
+security.policy.password.rule.numericalcount.minimum=1
+security.policy.password.rule.reuse.enabled=true
+security.policy.password.rule.nowhitespace.enabled=true
++-----+
+ 
+ <<Note:>> If installed standalone, Archiva's list of configuration files is <itself> configurable, and
+ can be found in:
+ <<<apps/archiva/WEB-INF/classes/META-INF/plexus/application.xml>>>
+

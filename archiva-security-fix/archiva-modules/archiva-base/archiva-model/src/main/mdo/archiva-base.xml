@@ -1,0 +1,2400 @@
+<?xml version="1.0" ?>
+<model jpox.mapping-in-package="true"
+       jpox.table-prefix="ARCHIVA_"
+       xsd.namespace="http://maven.apache.org/archiva/MODEL-1.0.0"
+       xsd.target-namespace="http://maven.apache.org/archiva/MODEL-1.0.0">
+  <id>archiva-base-model</id>
+  <name>ArchivaBaseModel</name>
+  <version>1.0.0</version>
+  <description>Archiva Model</description>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.apache.maven.archiva.model</value>
+    </default>
+  </defaults>
+
+  <classes>
+    <class stash.storable="false"
+           rootElement="true"
+           jpox.enabled="false">
+      <name>ArchivaAll</name>
+      <version>1.0.0+</version>
+      <description>
+        This object is only used for the XML backup / restore features of Archiva.
+        This object is not serialized to the Database.
+      </description>
+      <fields>
+        <!-- Note: these are only managed repositories. This should be reviewed as to whether they are still needed
+        <field>
+          <name>repositories</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ArchivaRepositoryModel</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+         -->
+        <field>
+          <name>artifacts</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ArchivaArtifactModel</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>repositoryMetadata</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ArchivaRepositoryMetadata</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>projects</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ArchivaProjectModel</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>repositoryProblems</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>RepositoryProblem</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>repositoryContentStatistics</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>RepositoryContentStatistics</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 3259707008803111764L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <!-- _______________________________________________________________
+          ____                      _ _
+         |  _ \ ___ _ __   ___  ___(_) |_ ___  _ __ _   _
+         | |_) / _ \ '_ \ / _ \/ __| | __/ _ \| '__| | | |
+         |  _ <  __/ |_) | (_) \__ \ | || (_) | |  | |_| |
+         |_| \_\___| .__/ \___/|___/_|\__\___/|_|   \__, |
+                   |_|                              |___/
+      -->
+    <!-- 
+    <class stash.storable="true"
+           jpox.table="REPOSITORIES"
+           jpox.not-persisted-fields="modelEncoding">
+      <name>ArchivaRepositoryModel</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off">
+          <name>id</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The unique ID for the repository.
+          </description>
+        </field>
+        <field stash.maxSize="250">
+          <name>name</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Name of the repository.
+          </description>
+        </field>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The URL of the repository.
+          </description>
+        </field>
+	<field stash.maxSize="250">
+          <name>repositoryUsername</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The Username of the repository.
+          </description>
+        </field>
+        <field stash.maxSize="250">
+          <name>repositoryPassword</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The Password of the repository.
+          </description>
+        </field>
+        <field stash.maxSize="20">
+          <name>creationSource</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Source of this repository.
+            (Example: Configuration, POM)
+          </description>
+        </field>
+        <field stash.maxSize="16">
+          <name>layoutName</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The layout of the repository.
+            (Either 'default', or 'legacy')
+          </description>
+          <defaultValue>default</defaultValue>
+        </field>
+        <field>
+          <name>releasePolicy</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <required>true</required>
+          <description>
+            The releases policy of the repository.
+          </description>
+          <defaultValue>true</defaultValue>
+        </field>
+        <field>
+          <name>snapshotPolicy</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <required>true</required>
+          <description>
+            The snapshot policy of the repository.
+          </description>
+          <defaultValue>false</defaultValue>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 6823195399928260795L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+     -->
+
+    <!-- _______________________________________________________________
+           _         _   _  __            _
+          / \   _ __| |_(_)/ _| __ _  ___| |_
+         / _ \ | '__| __| | |_ / _` |/ __| __|
+        / ___ \| |  | |_| |  _| (_| | (__| |_
+       /_/   \_\_|   \__|_|_|  \__,_|\___|\__|
+
+      -->
+
+    <class stash.storable="true"
+           jpox.table="ARTIFACT"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey">
+      <name>ArchivaArtifactModel</name>
+      <version>1.0.0+</version>
+      <fields>
+        <!-- 
+           NOTE TO ARCHIVA DEVELOPERS....
+           
+           The ArchivaArtifact object should contain no platform specifics!!
+           Put Java specifics in the ArchivaArtifactJavaDetails object.
+           Put .Net specifics in the ArchivaArtifactDotNetDetails object.
+         -->
+        <field stash.maxSize="250"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="80"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>classifier</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The classifier for this artifact.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent"
+               jpox.column="FILE_TYPE">
+          <name>type</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The type of artifact.
+          </description>
+        </field>
+        <field stash.maxSize="50">
+          <name>repositoryId</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The repository associated with this content.
+          </description>
+        </field>
+        <field jpox.column="SNAPSHOT_VERSION">
+          <name>snapshot</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <required>true</required>
+          <description>
+            True if this is a snapshot.
+          </description>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field stash.maxSize="35">
+          <name>checksumMD5</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The MD5 checksum for the artifact file.
+          </description>
+        </field>
+        <field stash.maxSize="45">
+          <name>checksumSHA1</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The SHA1 checksum for the artifact file.
+          </description>
+        </field>
+        <field>
+          <name>lastModified</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>true</required>
+          <description>
+            The Last Modified Timestamp of this artifact.
+          </description>
+        </field>
+        <field jpox.column="FILE_SIZE">
+          <name>size</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>long</type>
+          <required>true</required>
+          <description>
+            The size of the artifact on disk.
+          </description>
+        </field>
+        <field stash.maxSize="16">
+          <name>platform</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The platform of this artifact. (default: "java")
+          </description>
+          <defaultValue>java</defaultValue>
+        </field>
+        <field>
+          <name>whenIndexed</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>false</required>
+          <description>
+            The timestamp when this artifact was indexed.
+          </description>
+        </field>
+        <field>
+          <name>whenProcessed</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>false</required>
+          <description>
+            When this artifact's contents was processed.
+          </description>
+        </field>
+        <field>
+          <name>origin</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The origin of this artifact. (Filesystem, Proxy, Deploy)
+          </description>
+        </field>
+        <field>
+          <name>whenGathered</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>false</required>
+          <description>
+            When this artifact was gathered or disovered from the repository.
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -6292417108113887384L;
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Identify if this artifact's contents have been processed or not.
+     * 
+     * @return true if the artifact's contents have been processed.
+     */
+    public boolean isProcessed()
+    {
+        return !(whenProcessed == null);
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+    <class stash.storable="true"
+           jpox.table="JAVA_ARTIFACT"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaArtifactJavaDetailsKey">
+      <name>ArchivaArtifactJavaDetails</name>
+      <interfaces>
+        <interface>org.apache.maven.archiva.model.ArchivaArtifactPlatformDetails</interface>
+      </interfaces>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="80"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>classifier</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The classifier for this artifact.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent"
+               jpox.column="FILE_TYPE">
+          <name>type</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The type of artifact.
+          </description>
+        </field>
+        <field>
+          <name>checksumBytecode</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The SHA1 checksum for the bytecode in the artifact file. (Can be empty if
+            the artifact contains no bytecode)
+          </description>
+        </field>
+        <field>
+          <name>jdk</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The JDK revision of the bytecode. (Can be empty if the artifact contains no bytecode)
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -4774236779581844880L;
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Identify this implementation as a set of java details.
+     * 
+     * @return the Java platform string
+     */
+    public String getPlatform()
+    {
+        return "java";
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <!-- _______________________________________________________________
+       __  __      _            _       _
+      |  \/  | ___| |_ __ _  __| | __ _| |_ __ _
+      | |\/| |/ _ \ __/ _` |/ _` |/ _` | __/ _` |
+      | |  | |  __/ || (_| | (_| | (_| | || (_| |
+      |_|  |_|\___|\__\__,_|\__,_|\__,_|\__\__,_|
+
+    -->
+
+    <class stash.storable="true"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaRepositoryMetadataKey"
+           jpox.table="REPOSITORY_METADATA">
+      <name>ArchivaRepositoryMetadata</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the metadata.
+          </description>
+        </field>
+        <field stash.maxSize="80"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the metadata.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Version of the metadata.
+          </description>
+        </field>
+        <field>
+          <name>latestVersion</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The latest version id.
+          </description>
+        </field>
+        <field>
+          <name>releasedVersion</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The released version id.
+          </description>
+        </field>
+        <field>
+          <name>snapshotVersion</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <description>
+            The snapshot version id.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>SnapshotVersion</type>
+            <multiplicity>1</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>plugins</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <description>
+            The available plugins.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>Plugin</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>availableVersions</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of available version ids.
+          </description>
+        </field>
+        <field>
+          <name>lastUpdated</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            When the metadata was last updated.
+          </description>
+        </field>
+        <field>
+          <name>fileLastModified</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>true</required>
+          <description>
+            The Last Modified Timestamp of this file.
+          </description>
+        </field>
+        <field jpox.column="FILE_SIZE">
+          <name>fileSize</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>long</type>
+          <required>true</required>
+          <description>
+            The size of the artifact on disk.
+          </description>
+        </field>
+        <field>
+          <name>whenIndexed</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>false</required>
+          <description>
+            The timestamp when this artifact was indexed.
+          </description>
+        </field>
+        <field>
+          <name>origin</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The origin of this artifact. (Filesystem, Proxy, Deploy)
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 914715358219606100L;
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0</version>
+          <code>
+            public void updateTimestamp()
+            {
+            setLastUpdatedTimestamp( new java.util.Date() );
+            }
+
+            public void setLastUpdatedTimestamp( java.util.Date date )
+            {
+            java.util.TimeZone timezone = java.util.TimeZone.getTimeZone( "UTC" );
+            java.text.DateFormat fmt = new java.text.SimpleDateFormat( "yyyyMMddHHmmss" );
+            fmt.setTimeZone( timezone );
+            setLastUpdated( fmt.format( date ) );
+            }
+          </code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="REPOSITORY_METADATA_SNAPSHOTS">
+      <name>SnapshotVersion</name>
+      <description>The Snapshot Version</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="20"
+               jpox.column="VERSION_TIMESTAMP">
+          <name>timestamp</name>
+          <type>String</type>
+          <identifier>false</identifier>
+          <required>true</required>
+          <description>
+            The unique timestamp for the snapshot version.
+          </description>
+        </field>
+        <field>
+          <name>buildNumber</name>
+          <type>int</type>
+          <identifier>false</identifier>
+          <required>true</required>
+          <description>The incremental build number of the snapshot.</description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -1251466956496493405L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="REPOSITORY_METADATA_PLUGINS">
+      <name>Plugin</name>
+      <description>The Plugin</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="20"
+               jpox.column="PLUGIN_PREFIX">
+          <name>prefix</name>
+          <type>String</type>
+          <identifier>false</identifier>
+          <required>true</required>
+          <description>
+            The prefix for a plugin
+          </description>
+        </field>
+        <field
+               jpox.column="PLUGIN_ARTIFACT_ID">
+          <name>artifactId</name>
+          <type>String</type>
+          <identifier>true</identifier>
+          <required>true</required>
+          <description>
+            The artifactId for a plugin
+          </description>
+        </field>
+        <field jpox.column="PLUGIN_NAME">
+          <name>name</name>
+          <type>String</type>
+          <identifier>false</identifier>
+          <required>true</required>
+          <description>
+            The name for a plugin
+          </description>
+        </field>
+      </fields>
+    </class>
+
+
+    <!-- _______________________________________________________________
+        ____       __
+       |  _ \ ___ / _| ___ _ __ ___ _ __   ___ ___  ___
+       | |_) / _ \ |_ / _ \ '__/ _ \ '_ \ / __/ _ \/ __|
+       |  _ (  __/  _|  __/ | |  __/ | | | (_|  __/\__ \
+       |_| \_\___|_|  \___|_|  \___|_| |_|\___\___||___/
+    -->
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="PROJECT_REFERENCE">
+      <name>ProjectReference</name>
+      <description>A reference to another (unversioned) Project</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250"
+               null-value="default">
+          <name>groupId</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the project reference.
+          </description>
+        </field>
+        <field stash.maxSize="80"
+               null-value="default">
+          <name>artifactId</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the project reference.
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 8947981859537138991L;
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static String defaultString( String value )
+    {
+        if ( value == null )
+        {
+            return "";
+        }
+        
+        return value.trim();
+    }
+          
+    public static String toKey( ProjectReference reference )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( defaultString( reference.getGroupId() ) ).append( ":" );
+        key.append( defaultString( reference.getArtifactId() ) ).append( ":" );
+
+        return key.toString();
+    }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="VERSIONED_REFERENCE">
+      <name>VersionedReference</name>
+      <description>A reference to another Versioned Project</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250"
+               null-value="default">
+          <name>groupId</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="80"
+               null-value="default">
+          <name>artifactId</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               null-value="default">
+          <name>version</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -6990353165677563113L;
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static String defaultString( String value )
+    {
+        if ( value == null )
+        {
+            return "";
+        }
+        
+        return value.trim();
+    }
+          
+    public static String toKey( VersionedReference reference )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( defaultString( reference.getGroupId() ) ).append( ":" );
+        key.append( defaultString( reference.getArtifactId() ) ).append( ":" );
+        key.append( defaultString( reference.getVersion() ) ).append( ":" );
+
+        return key.toString();
+    }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="ARTIFACT_REFERENCE">
+      <name>ArtifactReference</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250"
+               null-value="default">
+          <name>groupId</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="80"
+               null-value="default">
+          <name>artifactId</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               null-value="default">
+          <name>version</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               null-value="default">
+          <name>classifier</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The classifier for this artifact.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               null-value="default"
+               jpox.column="FILE_TYPE">
+          <name>type</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The type of artifact.
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -6116764846682178732L;
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static String defaultString( String value )
+    {
+        if ( value == null )
+        {
+            return "";
+        }
+        
+        return value.trim();
+    }
+          
+    public static String toKey( ArtifactReference artifactReference )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( defaultString( artifactReference.getGroupId() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getArtifactId() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getVersion() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getClassifier() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getType() ) );
+
+        return key.toString();
+    }
+
+    public static String toVersionlessKey( ArtifactReference artifactReference )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( defaultString( artifactReference.getGroupId() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getArtifactId() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getClassifier() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getType() ) );
+
+        return key.toString();
+    }
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    public int hashCode()
+    {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + ( ( groupId == null ) ? 0 : groupId.hashCode() );
+        result = PRIME * result + ( ( artifactId == null ) ? 0 : artifactId.hashCode() );
+        result = PRIME * result + ( ( version == null ) ? 0 : version.hashCode() );
+        result = PRIME * result + ( ( classifier == null ) ? 0 : classifier.hashCode() );
+        result = PRIME * result + ( ( type == null ) ? 0 : type.hashCode() );
+        return result;
+    }
+
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+        {
+            return true;
+        }
+        
+        if ( obj == null )
+        {
+            return false;
+        }
+        
+        if ( getClass() != obj.getClass() )
+        {
+            return false;
+        }
+
+        final ArtifactReference other = (ArtifactReference) obj;
+
+        if ( groupId == null )
+        {
+            if ( other.groupId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !groupId.equals( other.groupId ) )
+        {
+            return false;
+        }
+
+        if ( artifactId == null )
+        {
+            if ( other.artifactId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !artifactId.equals( other.artifactId ) )
+        {
+            return false;
+        }
+
+        if ( version == null )
+        {
+            if ( other.version != null )
+            {
+                return false;
+            }
+        }
+        else if ( !version.equals( other.version ) )
+        {
+            return false;
+        }
+
+        if ( classifier == null )
+        {
+            if ( other.classifier != null )
+            {
+                return false;
+            }
+        }
+        else if ( !classifier.equals( other.classifier ) )
+        {
+            return false;
+        }
+        
+        if ( type == null )
+        {
+            if ( other.type != null )
+            {
+                return false;
+            }
+        }
+        else if ( !type.equals( other.type ) )
+        {
+            return false;
+        }
+        
+        return true;
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <!-- _______________________________________________________________
+         __  __                         ____            _           _
+        |  \/  | __ ___   _____ _ __   |  _ \ _ __ ___ (_) ___  ___| |_
+        | |\/| |/ _` \ \ / / _ \ '_ \  | |_) | '__/ _ \| |/ _ \/ __| __|
+        | |  | | (_| |\ V /  __/ | | | |  __/| | | (_) | |  __/ (__| |_
+        |_|  |_|\__,_| \_/ \___|_| |_| |_|   |_|  \___// |\___|\___|\__|
+                                                     |__/
+     -->
+
+    <class stash.storable="true"
+           jpox.table="PROJECT"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaProjectModelKey">
+      <name>ArchivaProjectModel</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="80"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field>
+          <name>parentProject</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>VersionedReference</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>
+            The content key for a parent reference.
+          </description>
+        </field>
+        <field>
+          <name>packaging</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The declared packaging for this project model.
+          </description>
+        </field>
+        <field>
+          <name>name</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The name of this project.
+          </description>
+        </field>
+        <field stash.maxSize="8192">
+          <name>description</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The description of this project.
+          </description>
+        </field>
+        <field>
+          <name>origin</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The Origin of this Model. (Filesystem, Proxy, or Deploy)
+          </description>
+        </field>
+        <field>
+          <name>whenIndexed</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>Date</type>
+          <description>
+            The timestamp when this model was indexed.
+          </description>
+        </field>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The URL for the project's homepage.
+          </description>
+        </field>
+        <field>
+          <name>organization</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>Organization</type>
+          </association>
+        </field>
+        <field>
+          <name>licenses</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>License</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>mailingLists</name>
+          <version>1.0.0+</version>
+          <description>The mailing lists.</description>
+          <required>false</required>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>MailingList</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>issueManagement</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The project's issue management system information.]]></description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>IssueManagement</type>
+          </association>
+        </field>
+        <field>
+          <name>ciManagement</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The project's continuous integration information.]]></description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>CiManagement</type>
+          </association>
+        </field>
+        <field>
+          <name>scm</name>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[Specification for the SCM used by the project, such as CVS, Subversion, etc.]]></description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>Scm</type>
+          </association>
+        </field>
+        <field>
+          <name>individuals</name>
+          <version>1.0.0+</version>
+          <description>
+            The list of individuals around this project.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>Individual</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>dependencies</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+              This element describes all of the dependencies associated with a
+              project.
+          ]]></description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>Dependency</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>dependencyManagement</name>
+          <version>1.0.0+</version>
+          <description>
+            The list of dependency management settings.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>Dependency</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>repositories</name>
+          <version>1.0.0+</version>
+          <description>
+            The list project repositories in use by this project.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>ProjectRepository</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>plugins</name>
+          <version>1.0.0+</version>
+          <description>
+            The list of plugins that this project uses.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>ArtifactReference</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>reports</name>
+          <version>1.0.0+</version>
+          <description>
+            The list of reports that this project uses.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>ArtifactReference</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>buildExtensions</name>
+          <version>1.0.0+</version>
+          <description>
+            The list of build extensions that this project uses.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>ArtifactReference</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>properties</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            Properties on the project.  Only really used to resolve
+            variables inside of the project during an effective project
+            model resolution.
+          ]]></description>
+          <type>Properties</type>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>relocation</name>
+          <version>1.0.0+</version>
+          <description>If relocated, this is the new location reference</description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>VersionedReference</type>
+            <multiplicity>1</multiplicity>
+          </association>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -4216128775884469616L;
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    public Dependency asDependency()
+    {
+        Dependency dep = new Dependency();
+        
+        dep.setGroupId( groupId );
+        dep.setArtifactId( artifactId );
+        dep.setVersion( version );
+        dep.setType( packaging );
+        
+        return dep;
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="MAILING_LISTS">
+      <name>MailingList</name>
+      <description>A Mailing List</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>name</name>
+          <version>1.0.0+</version>
+          <description>The name of the mailing list.</description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>subscribeAddress</name>
+          <version>1.0.0+</version>
+          <description>The email address to subscribe to this mailing list.</description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>unsubscribeAddress</name>
+          <version>1.0.0+</version>
+          <description>The email address to unsubscribe to this mailing list.</description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>postAddress</name>
+          <version>1.0.0+</version>
+          <description>The email address to post to this mailing list.</description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>mainArchiveUrl</name>
+          <version>1.0.0+</version>
+          <description>The url to the archive for this mailing list.</description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>otherArchives</name>
+          <version>1.0.0+</version>
+          <description>The email address to subscribe to this mailing list.</description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 843006855864469245L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="ORGANIZATION">
+      <name>Organization</name>
+      <description>Specifies the organization that produces this project.</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250">
+          <name>name</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <description><![CDATA[The full name of the organization.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The URL to the organization's home page.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250"
+               jpox.column="FAVICON_URL">
+          <name>favicon</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            The URL to the organization's logo image.  This can be an URL relative
+            to the base directory of the generated web site,
+            (e.g., <code>/images/org-logo.png</code>) or an absolute URL
+            (e.g., <code>http://my.corp/logo.png</code>).  This value is used
+            when generating the project documentation.
+          ]]></description>
+          <type>String</type>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -7782212828768434535L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="LICENSES">
+      <name>License</name>
+      <description><![CDATA[
+        Describes the licenses for this project.  This is used to generate
+        the license page of the project's web site, as well as being taken into consideration in other reporting and
+        validation. The licenses listed for the project are that of the project itself, and not of dependencies.
+      ]]></description>
+      <version>1.0.0+</version>
+      <fields>
+        <field jpox.column="LICENSE_ID">
+          <name>id</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>int</type>
+          <description>
+            The type of license.
+          </description>
+        </field>
+        <field stash.maxSize="250">
+          <name>name</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The full legal name of the license.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The official url for the license text.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="8192">
+          <name>comments</name>
+          <description>
+            Addendum information pertaining to this license.
+          </description>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 6078130909089038238L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="ISSUE_MANAGEMENT">
+      <name>IssueManagement</name>
+      <description>
+        Information about the issue tracking (or bug tracking) system used to manage this project.
+      </description>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <description><![CDATA[URL for the issue management system used by the project.]]></description>
+          <type>String</type>
+        </field>
+        <field jpox.column="SYSTEM_NAME">
+          <name>system</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The name of the issue management system, e.g. Bugzilla]]></description>
+          <type>String</type>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -8881904886381224821L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class jpox.not-persisted-fields="modelEncoding">
+      <name>CiManagement</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[URL for the continuous integration system used by the project if it has a web interface.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="50"
+               jpox.column="SYSTEM_NAME">
+          <name>system</name>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[The name of the continuous integration system, e.g. <code>continuum</code>.]]></description>
+          <type>String</type>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 7592740408468517476L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding">
+      <name>Individual</name>
+      <description>
+        Description of a person who has contributed to the project.
+        This includes contributors and commitors.
+      </description>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250">
+          <name>email</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <description><![CDATA[The email address of the individual.]]></description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>name</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The full name of the individual.]]></description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>principal</name>
+          <version>1.0.0+</version>
+          <description>
+            The RedBack (plexus security) principal associated with this Invididual.
+          </description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>commitor</name>
+          <version>1.0.0+</version>
+          <description>
+            The flag if this user is a developer and/or commitor.
+          </description>
+          <type>boolean</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The URL for the homepage of the individual.]]></description>
+          <type>String</type>
+        </field>
+        <!-- TODO: should this just be a single Organization element -->
+        <field>
+          <name>organization</name>
+          <alias>organisation</alias>
+          <version>1.0.0+</version>
+          <description><![CDATA[The organization to which the individual belongs.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>organizationUrl</name>
+          <alias>organisationUrl</alias>
+          <version>1.0.0+</version>
+          <description><![CDATA[The URL of the organization.]]></description>
+          <type>String</type>
+        </field>
+        <field jpox.column="CONTRIBUTOR_ROLES">
+          <name>roles</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            The roles the individual plays in the project.  Each role is
+            described by a <code>role</code> element, the body of which is a
+            role name. This can also be used to describe the contribution.
+          ]]></description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>timezone</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            The timezone the individual is in. This is a number in the range -11 to 12.
+          ]]></description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>properties</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            Properties about the individual, such as an instant messenger handle.
+          ]]></description>
+          <type>Properties</type>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -3847642264665088605L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="DEPENDENCY">
+      <name>Dependency</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250">
+          <name>groupId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="80">
+          <name>artifactId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50">
+          <name>version</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field stash.maxSize="50">
+          <name>classifier</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <defaultValue></defaultValue>
+          <description><![CDATA[
+            The classifier of the dependency. This allows distinguishing two artifacts that belong to the same POM but
+            were built differently, and is appended to the filename after the version. For example,
+            <code>jdk14</code> and <code>jdk15</code>.
+          ]]></description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.column="DEPENDENCY_TYPE">
+          <name>type</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description><![CDATA[
+            The type of dependency. This defaults to <code>jar</code>. While it usually represents the extension on
+            the filename of the dependency, that is not always the case. A type can be mapped to a different
+            extension and a classifier.
+            The type often correspongs to the packaging used, though this is also not always the case.
+            Some examples are <code>jar</code>, <code>war</code>, <code>ejb-client</code> and <code>test-jar</code>.
+            New types can be defined by plugins that set
+            <code>extensions</code> to <code>true</code>, so this is not a complete list.
+          ]]></description>
+          <defaultValue>jar</defaultValue>
+        </field>
+        <field>
+          <name>transitive</name>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <description>True if the dependency is only here due a transitive resolution</description>
+          <type>boolean</type>
+          <!-- <defaultValue>false</defaultValue> -->
+        </field>
+        <field>
+          <name>fromParent</name>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <description>True if the dependency is only here due a parent pom</description>
+          <type>boolean</type>
+          <!-- <defaultValue>false</defaultValue> -->
+        </field>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            This url will be provided to the user if the jar file cannot be downloaded
+            from the central repository.
+          ]]></description>
+          <type>String</type>
+        </field>
+        <field jpox.column="DEPENDENCY_SCOPE">
+          <name>scope</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            The scope of the dependency - <code>compile</code>, <code>runtime</code>, <code>test</code>,
+            <code>system</code>, and <code>provided</code>. Used to
+            calculate the various classpaths used for compilation, testing, and so on. It also assists in determining
+            which artifacts to include in a distribution of this project. For more information, see
+            <a href="http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html">the
+            dependency mechanism</a>.
+            ]]>
+          </description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>systemPath</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            FOR SYSTEM SCOPE ONLY. Note that use of this property is <b>discouraged</b> and may be replaced in later
+            versions. This specifies the path on the filesystem for this dependency.
+            Requires an absolute path for the value, not relative.
+            Use a property that gives the machine specific absolute path,
+            e.g. <code>${java.home}</code>.
+          ]]></description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>exclusions</name>
+          <version>1.0.0+</version>
+          <description>
+            Lists a set of artifacts that should be excluded from this dependency's artifact list when it comes to
+            calculating transitive dependencies.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>Exclusion</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>optional</name>
+          <version>1.0.0+</version>
+          <description>
+            Indicates the dependency is optional for use of this library. While the version of the dependency will be
+            taken into account for dependency calculation if the library is used elsewhere, it will not be passed on
+            transitively.
+          </description>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -5401218809636164002L;
+          ]]></code>
+        </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    public String toString()
+    {
+        return Dependency.toKey( this );
+    }          
+          
+    public static String toKey( Dependency dep )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( dep.getGroupId() ).append( ":" );
+        key.append( dep.getArtifactId() ).append( ":" );
+        key.append( dep.getVersion() ).append( ":" );
+        if ( dep.getClassifier() != null )
+        {
+            key.append( dep.getClassifier() );
+        }
+        key.append( ":" );
+        key.append( dep.getType() );
+
+        return key.toString();
+    }
+
+    public static String toVersionlessKey( Dependency dep )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( dep.getGroupId() ).append( ":" );
+        key.append( dep.getArtifactId() ).append( ":" );
+        if ( dep.getClassifier() != null )
+        {
+            key.append( dep.getClassifier() );
+        }
+        key.append( ":" );
+        key.append( dep.getType() );
+
+        return key.toString();
+    }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="EXCLUSIONS">
+      <name>Exclusion</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250">
+          <name>groupId</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The group ID of the project to exclude.]]></description>
+          <type>String</type>
+          <required>true</required>
+        </field>
+        <field stash.maxSize="80">
+          <name>artifactId</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[The artifact ID of the project to exclude.]]></description>
+          <type>String</type>
+          <required>true</required>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 5655957444245343314L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="SCM">
+      <name>Scm</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="250" jpox.column="SCM_URL">
+          <name>connection</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+              The source control management system URL
+              that describes the repository and how to connect to the
+              repository. For more information, see the
+              <a href="http://maven.apache.org/scm/scm-url-format.html">URL format</a>
+              and <a href="http://maven.apache.org/scm/scms-overview.html">list of supported SCMs</a>.
+              This connection is read-only.
+          ]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>developerConnection</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            Just like <code>connection</code>, but for developers, i.e. this scm connection
+            will not be read only.
+          ]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[The URL to the project's browsable SCM repository, such as ViewVC or Fisheye.]]></description>
+          <type>String</type>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 4075086167850885575L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="PROJECT_REPOSITORIES">
+      <name>ProjectRepository</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="50">
+          <name>id</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            A unique identifier for a repository. This is used to match the repository to configuration in
+            the <code>settings.xml</code> file, for example.
+          ]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>name</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            Human readable name of the repository.
+          ]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250">
+          <name>url</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+             The url of the repository, in the form <code>protocol://hostname/path</code>.
+          ]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="16">
+          <name>layout</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            The type of layout this repository uses for locating and storing artifacts - can be <code>legacy</code> or
+            <code>default</code>.
+          ]]></description>
+          <type>String</type>
+          <defaultValue>default</defaultValue>
+        </field>
+        <field>
+          <name>plugins</name>
+          <version>1.0.0+</version>
+          <description>
+            Flag indicating if this repository is for plugin resolution.
+          </description>
+          <type>boolean</type>
+        </field>
+        <field>
+          <name>releases</name>
+          <version>1.0.0+</version>
+          <description>
+            Flag indicating if this repository has release versioned artifacts.
+          </description>
+          <type>boolean</type>
+        </field>
+        <field>
+          <name>snapshots</name>
+          <version>1.0.0+</version>
+          <description>
+            Flag indicating if this repository has snapshot versioned artifacts.
+          </description>
+          <type>boolean</type>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = 8906309721278091848L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <!-- _______________________________________________________________
+          _   _            _ _   _
+         | | | | ___  __ _| | |_| |__
+         | |_| |/ _ \/ _` | | __| '_ \
+         |  _  |  __/ (_| | | |_| | | |
+         |_| |_|\___|\__,_|_|\__|_| |_|
+      -->
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="REPOSITORY_PROBLEMS">
+      <name>RepositoryProblem</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="50">
+          <name>repositoryId</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The repository associated with this path and problem.
+          </description>
+        </field>
+        <field stash.maxSize="250"
+               jpox.column="REPO_PATH">
+          <name>path</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The path into the repository for the problem.
+          </description>
+        </field>
+        <field stash.maxSize="250">
+          <name>groupId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The Group ID of the repository content with the problem.
+          </description>
+        </field>
+        <field stash.maxSize="80">
+          <name>artifactId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The Artifact ID of the repository content with the problem.
+          </description>
+        </field>
+        <field stash.maxSize="50">
+          <name>version</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content with the problem.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.column="PROBLEM_TYPE">
+          <name>type</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The type of health problem.
+          </description>
+        </field>
+        <field stash.maxSize="20"
+               jpox.column="PROBLEM_ORIGIN">
+          <name>origin</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The origin of the health problem.
+          </description>
+        </field>
+        <field stash.maxSize="4096">
+          <name>message</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The origin of the health problem.
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -3426958367216659565L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <!-- _______________________________________________________________
+          ____  _        _   _     _   _
+         / ___|| |_ __ _| |_(_)___| |_(_) ___ ___
+         \___ \| __/ _` | __| / __| __| |/ __/ __|
+          ___) | || (_| | |_| \__ \ |_| | (__\__ \
+         |____/ \__\__,_|\__|_|___/\__|_|\___|___/
+      -->
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="REPOSITORY_STATS">
+      <name>RepositoryContentStatistics</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="50">
+          <name>repositoryId</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The repository id the statistics belong to.
+          </description>
+        </field>
+        <field>
+          <name>whenGathered</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>Date</type>
+          <description>
+            The timestamp on when this set of statistics was gathered.
+          </description>
+        </field>
+        <field>
+          <name>duration</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The duration (in milliseconds) for the gathering of the statistics.
+          </description>
+        </field>
+        <field>
+          <name>totalFileCount</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total number of files in the repository.
+          </description>
+        </field>
+        <field>
+          <name>newFileCount</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The number of new files discovered.
+          </description>
+        </field>
+        <field>
+          <name>totalProjectCount</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total number of unique projects in the repository.
+          </description>
+        </field>
+        <field>
+          <name>totalGroupCount</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total number of unique groups in the repository.
+          </description>
+        </field>
+        <field>
+          <name>totalArtifactCount</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total number of artifacts in the repository. 
+          </description>
+        </field>
+        <field>
+          <name>totalSize</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total size in bytes of the repository.
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static final long serialVersionUID = -7113629916828442780L;
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+  </classes>
+</model>

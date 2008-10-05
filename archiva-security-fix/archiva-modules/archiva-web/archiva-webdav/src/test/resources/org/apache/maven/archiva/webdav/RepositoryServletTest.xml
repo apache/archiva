@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<plexus>
+  <components>
+    <!--
+     | Logger manager
+     -->
+    <component>
+      <role>org.codehaus.plexus.logging.LoggerManager</role>
+      <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
+      <lifecycle-handler>basic</lifecycle-handler>
+    </component>
+
+    <!--
+     | Configuration
+     -->
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>configured</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>configured</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <system/>
+          <xml fileName="${appserver.base}/conf/archiva.xml"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.archiva.webdav.DavServerManager</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.archiva.webdav.DefaultDavServerManager</implementation>
+      <description>DefaultDavServerManager</description>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.webdav.DavServerComponent</role>
+          <role-hint>proxied</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    
+    <component>
+      <role>org.codehaus.plexus.cache.Cache</role>
+      <role-hint>url-failures-cache</role-hint>
+      <implementation>org.codehaus.plexus.cache.ehcache.EhcacheCache</implementation>
+      <description>URL Failure Cache</description>
+      <configuration>
+        <disk-expiry-thread-interval-seconds>600</disk-expiry-thread-interval-seconds>
+        <disk-persistent>false</disk-persistent> <!--disabling disk persistence for unit testing. -->
+        <disk-store-path>${java.io.tmpdir}/archiva/urlcache</disk-store-path>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>url-failures-cache</name>
+        <overflow-to-disk>false</overflow-to-disk>
+        <!-- 45 minutes = 2700 seconds -->
+        <time-to-idle-seconds>2700</time-to-idle-seconds>
+        <!-- 30 minutes = 1800 seconds  -->
+        <time-to-live-seconds>1800</time-to-live-seconds>
+      </configuration>
+    </component>    
+    
+    
+    <!-- Don't drag in the world just to test this -->
+    <component>
+      <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.archiva.webdav.StubRepositoryContentConsumers</implementation>
+    </component>
+    
+    <component>
+      <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.archiva.webdav.BypassSecuritySystem</implementation>
+    </component>
+	
+	<component>
+      <role>org.apache.maven.archiva.webdav.ArchivaDavResourceFactory</role>
+      <implementation>org.apache.maven.archiva.webdav.UnauthenticatedDavResourceFactory</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+          <field-name>archivaConfiguration</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+          <field-name>repositoryFactory</field-name>
+        </requirement>        
+        <requirement>
+          <role>org.apache.maven.archiva.repository.content.RepositoryRequest</role>
+          <field-name>repositoryRequest</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.proxy.RepositoryProxyConnectors</role>
+          <field-name>connectors</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>
+          <field-name>metadataTools</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.security.ServletAuthenticator</role>
+          <field-name>servletAuth</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.webdav.util.MimeTypes</role>
+          <field-name>mimeTypes</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator</role>
+          <role-hint>basic</role-hint>
+          <field-name>httpAuth</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
+          <role-hint>default</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.digest.ChecksumFile</role>
+          <field-name>checksum</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.digest.Digester</role>
+          <role-hint>sha1</role-hint>
+          <field-name>digestSha1</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.digest.Digester</role>
+          <role-hint>md5</role-hint>
+          <field-name>digestMd5</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.security.ArchivaXworkUser</role>
+          <field-name>archivaXworkUser</field-name>
+        </requirement>        
+      </requirements>
+    </component>
+  </components>
+</plexus>

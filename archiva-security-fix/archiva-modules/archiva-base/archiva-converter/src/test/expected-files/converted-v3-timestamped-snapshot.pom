@@ -1,0 +1,28 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>test</groupId>
+  <artifactId>v3artifact</artifactId>
+  <version>1.0.0-20060105.130101-3</version>
+  <scm>
+    <connection>scm:cvs:ext:${maven.username}@localhost:/home/cvs</connection>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>groupId</groupId>
+      <artifactId>artifactId</artifactId>
+      <version>version</version>
+    </dependency>
+    <dependency>
+      <groupId>groupId</groupId>
+      <artifactId>test-artifactId</artifactId>
+      <version>version</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
