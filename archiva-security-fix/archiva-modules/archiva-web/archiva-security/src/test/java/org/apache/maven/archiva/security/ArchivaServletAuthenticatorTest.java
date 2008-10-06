@@ -19,7 +19,17 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import javax.servlet.http.HttpServletRequest;
+
+import org.codehaus.plexus.redback.authentication.AuthenticationException;
+import org.codehaus.plexus.redback.authentication.AuthenticationResult;
+import org.codehaus.plexus.redback.authorization.UnauthorizedException;
+import org.codehaus.plexus.redback.system.DefaultSecuritySession;
+import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.users.User;
+import org.codehaus.plexus.redback.users.UserManager; 
+
+import org.easymock.MockControl;
 
 /**
  * ArchivaServletAuthenticatorTest
@@ -28,23 +38,187 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
  * @version
  */
 public class ArchivaServletAuthenticatorTest
-    extends PlexusInSpringTestCase
-{
+    extends AbstractSecurityTest
+{    
+    private ServletAuthenticator servletAuth;
+    
+    private MockControl httpServletRequestControl;
+    
+    private HttpServletRequest request;
+    
+    @Override
     public void setUp()
         throws Exception
     {
         super.setUp();
+        
+        servletAuth = ( ServletAuthenticator ) lookup( ServletAuthenticator.class, "default" );
+        
+        httpServletRequestControl = MockControl.createControl( HttpServletRequest.class );
+        request = ( HttpServletRequest ) httpServletRequestControl.getMock();
+        
+        setupRepository( "corporate" );
     }
     
-    public void testIsAuthenticated()
-        throws Exception
+    @Override
+    protected String getPlexusConfigLocation()
     {
-        //TODO
+        return "org/apache/maven/archiva/security/ArchivaServletAuthenticatorTest.xml";
     }
     
-    public void testIsAuthorized()
+    protected void assignRepositoryManagerRole( String principal, String repoId )
         throws Exception
     {
-        //TODO
+        roleManager.assignTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId, principal );
+    }
+    
+    public void testIsAuthenticatedUserExists()
+        throws Exception
+    {
+        AuthenticationResult result = new AuthenticationResult( true, "user", null );
+        boolean isAuthenticated = servletAuth.isAuthenticated( request, result );
+        
+        assertTrue( isAuthenticated );
+    }
+    
+    public void testIsAuthenticatedUserDoesNotExist()
+        throws Exception
+    {
+        AuthenticationResult result = new AuthenticationResult( false, "non-existing-user", null );
+        try
+        {
+            servletAuth.isAuthenticated( request, result );
+            fail( "Authentication exception should have been thrown." );
+        }
+        catch ( AuthenticationException e )
+        {
+            assertEquals( "User Credentials Invalid", e.getMessage() );
+        }        
+    }
+    
+    public void testIsAuthorizedUserHasWriteAccess()
+        throws Exception
+    {   
+        createUser( USER_ALPACA, "Al 'Archiva' Paca" );
+        
+        assignRepositoryManagerRole( USER_ALPACA, "corporate" );
+
+        UserManager userManager = securitySystem.getUserManager();
+        User user = userManager.findUser( USER_ALPACA );
+        
+        AuthenticationResult result = new AuthenticationResult( true, USER_ALPACA, null );
+        
+        SecuritySession session = new DefaultSecuritySession( result, user );
+        boolean isAuthorized = servletAuth.isAuthorized( request, session, "corporate", true );
+                
+        assertTrue( isAuthorized );
+    }
+    
+    public void testIsAuthorizedUserHasNoWriteAccess()
+        throws Exception
+    {
+        createUser( USER_ALPACA, "Al 'Archiva' Paca" );
+        
+        assignRepositoryObserverRole( USER_ALPACA, "corporate" );
+    
+        httpServletRequestControl.expectAndReturn( request.getRemoteAddr(), "192.168.111.111" );
+        
+        UserManager userManager = securitySystem.getUserManager();
+        User user = userManager.findUser( USER_ALPACA );
+        
+        AuthenticationResult result = new AuthenticationResult( true, USER_ALPACA, null );
+        
+        SecuritySession session = new DefaultSecuritySession( result, user );
+        
+        httpServletRequestControl.replay();
+        
+        try
+        {
+            servletAuth.isAuthorized( request, session, "corporate", true );
+            fail( "UnauthorizedException should have been thrown." ); 
+        }
+        catch ( UnauthorizedException e )
+        {
+            assertEquals( "Access denied for repository corporate", e.getMessage() );
+        }
+    
+        httpServletRequestControl.verify();
+    }
+    
+    
+    public void testIsAuthorizedUserHasReadAccess()
+        throws Exception
+    { 
+        createUser( USER_ALPACA, "Al 'Archiva' Paca" );
+        
+        assignRepositoryObserverRole( USER_ALPACA, "corporate" );
+        
+        UserManager userManager = securitySystem.getUserManager();
+        User user = userManager.findUser( USER_ALPACA );
+        
+        AuthenticationResult result = new AuthenticationResult( true, USER_ALPACA, null );
+        
+        SecuritySession session = new DefaultSecuritySession( result, user );
+        boolean isAuthorized = servletAuth.isAuthorized( request, session, "corporate", false );
+                
+        assertTrue( isAuthorized );        
+    }
+    
+    public void testIsAuthorizedUserHasNoReadAccess()
+        throws Exception
+    {
+        createUser( USER_ALPACA, "Al 'Archiva' Paca" );
+        
+        UserManager userManager = securitySystem.getUserManager();
+        User user = userManager.findUser( USER_ALPACA );
+        
+        AuthenticationResult result = new AuthenticationResult( true, USER_ALPACA, null );
+        
+        SecuritySession session = new DefaultSecuritySession( result, user );
+        try
+        {
+            servletAuth.isAuthorized( request, session, "corporate", false );
+            fail( "UnauthorizedException should have been thrown." );
+        }
+        catch ( UnauthorizedException e )
+        {
+            assertEquals( "Access denied for repository corporate", e.getMessage() );
+        }       
+    }
+    
+    public void testIsAuthorizedGustUserHasWriteAccess()
+        throws Exception
+    {   
+        assignRepositoryManagerRole( USER_GUEST, "corporate" );        
+        boolean isAuthorized = servletAuth.isAuthorized( USER_GUEST, "corporate", true );
+        
+        assertTrue( isAuthorized );
+    }
+    
+    public void testIsAuthorizedGustUserHasNoWriteAccess()
+        throws Exception
+    {   
+        assignRepositoryObserverRole( USER_GUEST, "corporate" );
+        
+        boolean isAuthorized = servletAuth.isAuthorized( USER_GUEST, "corporate", true );
+        assertFalse( isAuthorized );
+    }
+    
+    public void testIsAuthorizedGustUserHasReadAccess()
+        throws Exception
+    {
+        assignRepositoryObserverRole( USER_GUEST, "corporate" );
+        
+        boolean isAuthorized = servletAuth.isAuthorized( USER_GUEST, "corporate", false );
+        
+        assertTrue( isAuthorized );        
+    }
+    
+    public void testIsAuthorizedGustUserHasNoReadAccess()
+        throws Exception
+    {                   
+        boolean isAuthorized = servletAuth.isAuthorized( USER_GUEST, "corporate", false );
+            
+        assertFalse( isAuthorized );
     }
 }
