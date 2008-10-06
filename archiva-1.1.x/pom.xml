@@ -205,6 +205,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+      <version>1.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl104-over-slf4j</artifactId>
       <scope>test</scope>
