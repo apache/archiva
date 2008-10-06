@@ -35,12 +35,46 @@ import org.codehaus.plexus.redback.system.SecuritySession;
  */
 public interface ServletAuthenticator
 {
+    /**
+     * Authentication check for users.
+     * 
+     * @param request
+     * @param result
+     * @return
+     * @throws AuthenticationException
+     * @throws AccountLockedException
+     * @throws MustChangePasswordException
+     */
     public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException;
 
+    /**
+     * Authorization check for valid users.
+     * 
+     * @param request
+     * @param securitySession
+     * @param repositoryId
+     * @param isWriteRequest
+     * @return
+     * @throws AuthorizationException
+     * @throws UnauthorizedException
+     */
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
         boolean isWriteRequest ) throws AuthorizationException, UnauthorizedException;
     
+    /**
+     * Authorization check specific for user guest, which doesn't go through 
+     * HttpBasicAuthentication#getAuthenticationResult( HttpServletRequest request, HttpServletResponse response )
+     * since no credentials are attached to the request. 
+     * 
+     * See also MRM-911
+     * 
+     * @param principal
+     * @param repoId
+     * @param isWriteRequest
+     * @return
+     * @throws UnauthorizedException
+     */
     public boolean isAuthorized( String principal, String repoId, boolean isWriteRequest )
         throws UnauthorizedException;
 }
