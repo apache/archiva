@@ -186,7 +186,7 @@ public class ArchivaServletAuthenticatorTest
         }       
     }
     
-    public void testIsAuthorizedGustUserHasWriteAccess()
+    public void testIsAuthorizedGuestUserHasWriteAccess()
         throws Exception
     {   
         assignRepositoryManagerRole( USER_GUEST, "corporate" );        
@@ -195,7 +195,7 @@ public class ArchivaServletAuthenticatorTest
         assertTrue( isAuthorized );
     }
     
-    public void testIsAuthorizedGustUserHasNoWriteAccess()
+    public void testIsAuthorizedGuestUserHasNoWriteAccess()
         throws Exception
     {   
         assignRepositoryObserverRole( USER_GUEST, "corporate" );
@@ -204,7 +204,7 @@ public class ArchivaServletAuthenticatorTest
         assertFalse( isAuthorized );
     }
     
-    public void testIsAuthorizedGustUserHasReadAccess()
+    public void testIsAuthorizedGuestUserHasReadAccess()
         throws Exception
     {
         assignRepositoryObserverRole( USER_GUEST, "corporate" );
@@ -214,7 +214,7 @@ public class ArchivaServletAuthenticatorTest
         assertTrue( isAuthorized );        
     }
     
-    public void testIsAuthorizedGustUserHasNoReadAccess()
+    public void testIsAuthorizedGuestUserHasNoReadAccess()
         throws Exception
     {                   
         boolean isAuthorized = servletAuth.isAuthorized( USER_GUEST, "corporate", false );
