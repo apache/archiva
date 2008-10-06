@@ -287,7 +287,6 @@ public class ArchivaDavResourceFactory
             }
         }        
         
-        System.out.println( "Available resources --> " + availableResources );
         if ( availableResources.isEmpty() )
         {
             throw e;
