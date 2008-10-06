@@ -93,11 +93,18 @@ public class ArchivaServletAuthenticator
         return true;
     }
 
-    public boolean isAuthorized( String principal, String repoId )
+    public boolean isAuthorized( String principal, String repoId, boolean isWriteRequest )
         throws UnauthorizedException
     {
         try
         {
+            String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
+
+            if ( isWriteRequest )
+            {
+                permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
+            }
+            
             User user = securitySystem.getUserManager().findUser( principal );
             if ( user.isLocked() )
             {
@@ -107,8 +114,7 @@ public class ArchivaServletAuthenticator
             AuthenticationResult authn = new AuthenticationResult( true, principal, null );
             SecuritySession securitySession = new DefaultSecuritySession( authn, user );
 
-            return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
-                                                repoId );
+            return securitySystem.isAuthorized( securitySession, permission, repoId );
         }
         catch ( UserNotFoundException e )
         {
