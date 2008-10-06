@@ -91,11 +91,7 @@ public class RepositoryServletSecurityTest
     private ArchivaXworkUser archivaXworkUser;
 
     private RepositoryServlet servlet;
-
-    private MockControl davResourceFactoryControl;
-
-    private DavResourceFactory davResourceFactory;
-
+    
     public void setUp()
         throws Exception
     {
@@ -135,11 +131,7 @@ public class RepositoryServletSecurityTest
         archivaXworkUser = new ArchivaXworkUser();
         archivaXworkUser.setGuest( "guest" );
 
-        davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth, archivaXworkUser );
-
-        davResourceFactoryControl = MockControl.createControl( DavResourceFactory.class );
-        davResourceFactoryControl.setDefaultMatcher( new AlwaysMatcher() );
-        davResourceFactory = (DavResourceFactory) davResourceFactoryControl.getMock();
+        davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth, archivaXworkUser );      
     }
 
     protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
@@ -230,8 +222,7 @@ public class RepositoryServletSecurityTest
 
         httpAuthControl.replay();
         servletAuthControl.replay();
-
-        //WebResponse response = sc.getResponse( request );
+        
         servlet.service( ic.getRequest(), ic.getResponse() );
         
         httpAuthControl.verify();
@@ -270,8 +261,7 @@ public class RepositoryServletSecurityTest
         servletAuth.isAuthorized( "guest", "internal", true );
         servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
         servletAuthControl.setReturnValue( true );
-        //servletAuthControl.expectAndReturn( servletAuth.isAuthorized( "guest", "internal", true ), true );
-        
+                
      // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
@@ -283,12 +273,10 @@ public class RepositoryServletSecurityTest
         servletAuth.isAuthorized( "guest", "internal", true );
         servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
         servletAuthControl.setReturnValue( true );
-        //servletAuthControl.expectAndReturn( servletAuth.isAuthorized( "guest", "internal", true ), true );
         
         httpAuthControl.replay();
         servletAuthControl.replay();
 
-        //WebResponse response = sc.getResponse( request );
         servlet.service( ic.getRequest(), ic.getResponse() );
 
         httpAuthControl.verify();
@@ -333,7 +321,6 @@ public class RepositoryServletSecurityTest
         httpAuthControl.replay();
         servletAuthControl.replay();
         
-        //WebResponse response = sc.getResponse( request );
         servlet.service( ic.getRequest(), ic.getResponse() );
 
         httpAuthControl.verify();
@@ -378,9 +365,6 @@ public class RepositoryServletSecurityTest
 
         httpAuthControl.replay();
         servletAuthControl.replay();
-
-        // WebResponse response = sc.getResponse( request );
-        // WebResponse response = ic.getServletResponse();
 
         servlet.service( ic.getRequest(), ic.getResponse() );
 
@@ -534,26 +518,33 @@ public class RepositoryServletSecurityTest
         InvocationContext ic = sc.newInvocation( request );
         servlet = (RepositoryServlet) ic.getServlet();
         servlet.setDavSessionProvider( davSessionProvider );
-        servlet.setResourceFactory( davResourceFactory );
 
+        ArchivaDavResourceFactory archivaDavResourceFactory = (ArchivaDavResourceFactory) servlet.getResourceFactory();
+        archivaDavResourceFactory.setHttpAuth( httpAuth );
+        archivaDavResourceFactory.setServletAuth( servletAuth );
+
+        servlet.setResourceFactory( archivaDavResourceFactory );
+        
         AuthenticationResult result = new AuthenticationResult();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
 
-        //TODO remove davResourceFactoryControl!
-        davResourceFactoryControl.expectAndThrow( davResourceFactory.createResource( null, null, null ),
-                                                  new UnauthorizedDavException( "internal", "User not authorized" ) );
-
+     // ArchivaDavResourceFactory#isAuthorized()
+        SecuritySession session = new DefaultSecuritySession();
+        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession(), session );
+        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
+        servletAuthControl.expectAndThrow( servletAuth.isAuthorized( null, session, "internal", true ),
+                                           new UnauthorizedException( "User not authorized to read repository." ) );
+        
         httpAuthControl.replay();
         servletAuthControl.replay();
-        davResourceFactoryControl.replay();
-
+        
         WebResponse response = sc.getResponse( request );
 
         httpAuthControl.verify();
         servletAuthControl.verify();
-        davResourceFactoryControl.verify();
-
+        
         assertEquals( HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode() );
     }
 }
