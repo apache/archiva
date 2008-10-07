@@ -35,7 +35,9 @@ public class UniqueArtifactIdConstraint
     implements Constraint
 {
     private StringBuffer sql = new StringBuffer();
-
+    
+    private Class resultClass;
+    
     /**
      * Obtain a set of unique ArtifactIds for the specified groupId.
      * 
@@ -43,7 +45,7 @@ public class UniqueArtifactIdConstraint
      */
     public UniqueArtifactIdConstraint( List<String> selectedRepositoryIds, String groupId )
     {
-        appendSelect( sql );
+        appendSelect( sql, false );
         sql.append( " WHERE " );
         SqlBuilder.appendWhereSelectedRepositories( sql, "repositoryId", selectedRepositoryIds );
         sql.append( " && " );
@@ -60,17 +62,36 @@ public class UniqueArtifactIdConstraint
      */
     public UniqueArtifactIdConstraint( String groupId )
     {
-        appendSelect( sql );
+        appendSelect( sql, false );
         sql.append( " WHERE " );
         appendWhereSelectedGroupId( sql );
         appendGroupBy( sql );
 
         super.params = new Object[] { groupId };
     }
+    
+    /**
+     * Obtain a set of unique artifactIds with respect to their groups from the specified repository.
+     * 
+     * @param repoId
+     * @param isUnique
+     */
+    public UniqueArtifactIdConstraint( String repoId, boolean isUnique )
+    {
+        appendSelect( sql, isUnique );
+        sql.append( " WHERE repositoryId == \"" + repoId + "\"" );
+        
+        resultClass = Object[].class;
+    }
 
     @SuppressWarnings("unchecked")
     public Class getResultClass()
     {
+        if( resultClass != null )
+        {
+            return resultClass;
+        }
+        
         return String.class;
     }
 
@@ -84,9 +105,16 @@ public class UniqueArtifactIdConstraint
         buf.append( " GROUP BY artifactId ORDER BY artifactId ASCENDING" );
     }
 
-    private void appendSelect( StringBuffer buf )
+    private void appendSelect( StringBuffer buf, boolean isUnique )
     {
-        buf.append( "SELECT artifactId FROM " ).append( ArchivaArtifactModel.class.getName() );
+        if( isUnique )
+        {
+            buf.append( "SELECT DISTINCT groupId, artifactId FROM " ).append( ArchivaArtifactModel.class.getName() );
+        }
+        else
+        {
+            buf.append( "SELECT artifactId FROM " ).append( ArchivaArtifactModel.class.getName() );
+        }
     }
 
     private void appendWhereSelectedGroupId( StringBuffer buf )

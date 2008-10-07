@@ -40,6 +40,8 @@ public abstract class AbstractDeclarativeConstraint
     protected Object[] params;
 
     protected int[] range;
+    
+    protected String sortDirection = Constraint.ASCENDING;
 
     public String getFilter()
     {
@@ -68,7 +70,7 @@ public abstract class AbstractDeclarativeConstraint
 
     public String getSortDirection()
     {
-        return Constraint.ASCENDING;
+        return sortDirection;
     }
     
     public String[] getVariables()

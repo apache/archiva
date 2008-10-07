@@ -19,6 +19,8 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -27,14 +29,8 @@ import org.apache.maven.archiva.configuration.FileType;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexFactoryStub;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.custommonkey.xmlunit.XMLAssert;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -99,13 +95,6 @@ public class RepositoryPurgeConsumerTest
             (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
                                                      "repo-purge-consumer-by-retention-count" );
 
-        LuceneRepositoryContentIndexFactoryStub indexFactory = new LuceneRepositoryContentIndexFactoryStub();
-        indexFactory.setExpectedRecordsSize( 2 );
-
-        ( (RepositoryPurgeConsumer) repoPurgeConsumer ).setRepositoryContentIndexFactory( indexFactory );
-
-        populateDbForRetentionCountTest();
-
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDaysOlder( 0 ); // force days older off to allow retention count purge to execute.
         repoConfiguration.setRetentionCount( TEST_RETENTION_COUNT );
@@ -163,16 +152,9 @@ public class RepositoryPurgeConsumerTest
     public void testConsumerByDaysOld()
         throws Exception
     {
-        populateDbForDaysOldTest();
-
         KnownRepositoryContentConsumer repoPurgeConsumer =
             (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
                                                      "repo-purge-consumer-by-days-old" );
-
-        LuceneRepositoryContentIndexFactoryStub indexFactory = new LuceneRepositoryContentIndexFactoryStub();
-        indexFactory.setExpectedRecordsSize( 2 );
-
-        ( (RepositoryPurgeConsumer) repoPurgeConsumer ).setRepositoryContentIndexFactory( indexFactory );
 
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDaysOlder( TEST_DAYS_OLDER );
@@ -222,8 +204,6 @@ public class RepositoryPurgeConsumerTest
             (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
                                                      "repo-purge-consumer-by-retention-count" );
 
-        populateDbForReleasedSnapshotsTest();
-
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
         addRepoToConfiguration( "retention-count", repoConfiguration );
@@ -265,8 +245,6 @@ public class RepositoryPurgeConsumerTest
             (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
                                                      "repo-purge-consumer-by-days-old" );
 
-        populateDbForReleasedSnapshotsTest();
-
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
@@ -300,35 +278,5 @@ public class RepositoryPurgeConsumerTest
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
                                      "//metadata/versioning/versions/version", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
-    }
-
-    public void populateDbForRetentionCountTest()
-        throws ArchivaDatabaseException
-    {
-        List<String> versions = new ArrayList<String>();
-        versions.add( "1.0RC1-20070504.153317-1" );
-        versions.add( "1.0RC1-20070504.160758-2" ); 
-        versions.add( "1.0RC1-20070505.090015-3" );
-        versions.add( "1.0RC1-20070506.090132-4" );
-
-        populateDb( "org.jruby.plugins", "jruby-rake-plugin", versions );
-    }
-
-    private void populateDbForDaysOldTest()
-        throws ArchivaDatabaseException
-    {
-        List<String> versions = new ArrayList<String>();
-        versions.add( "2.2-SNAPSHOT" );
-
-        populateDb( "org.apache.maven.plugins", "maven-install-plugin", versions );
-    }
-
-    public void populateDbForReleasedSnapshotsTest()
-        throws ArchivaDatabaseException
-    {
-        List<String> versions = new ArrayList<String>();
-        versions.add( "2.3-SNAPSHOT" );
-
-        populateDb( "org.apache.maven.plugins", "maven-plugin-plugin", versions );
     }
 }

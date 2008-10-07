@@ -20,7 +20,6 @@ package org.apache.maven.archiva.webdav;
  */
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
@@ -37,12 +36,11 @@ import org.apache.jackrabbit.webdav.lock.Scope;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
-import org.easymock.MockControl;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
@@ -69,6 +67,8 @@ public class DavResourceTest extends PlexusInSpringTestCase
     private RepositoryContentConsumers consumers;
 
     private ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
+    
+    private ArchivaXworkUser archivaXworkUser;
 
     @Override
     protected void setUp()
@@ -87,6 +87,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
         lockManager = new SimpleLockManager();
         resource.addLockManager(lockManager);
         consumers = new RepositoryContentConsumers();
+        archivaXworkUser = (ArchivaXworkUser) getApplicationContext().getBean( PlexusToSpringUtils.buildSpringId( ArchivaXworkUser.class ) );
     }
 
     @Override
@@ -101,7 +102,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
     private DavResource getDavResource(String logicalPath, File file)
     {
         return new ArchivaDavResource( file.getAbsolutePath(), logicalPath, repository, session, resourceLocator,
-                                       resourceFactory, mimeTypes, Collections.emptyList(), consumers );
+                                       resourceFactory, mimeTypes, Collections.emptyList(), consumers, archivaXworkUser );
     }
     
     public void testDeleteNonExistantResourceShould404()
@@ -302,7 +303,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
 
         public DavResource createResource(DavResourceLocator locator, DavSession session) throws DavException {
             return new ArchivaDavResource( baseDir.getAbsolutePath(), "/", repository, session, resourceLocator,
-                                           resourceFactory, mimeTypes, Collections.emptyList(), consumers );
+                                           resourceFactory, mimeTypes, Collections.emptyList(), consumers, archivaXworkUser );
         }
     }
 }

@@ -27,13 +27,29 @@
 
 <body>
 <h1>Reports</h1>
-
+  
 <div id="contentArea">
 
-  <ww:form action="generateReport" namespace="/report" validate="true">
+  <h2>Repository Statistics</h2>
+  <ww:form action="generateStatisticsReport" namespace="/report" validate="true">   
+    
+    <ww:optiontransferselect label="Repositories To Be Compared" name="availableRepositories" 
+		list="availableRepositories" doubleName="selectedRepositories"
+		doubleList="selectedRepositories" size="8" doubleSize="8"/>
+		
+	<ww:datepicker label="Start Date" name="startDate" id="startDate"/>
+	<ww:datepicker label="End Date" name="endDate" id="endDate"/>
+	<ww:textfield label="Row Count" name="rowCount" />
+		    
+    <ww:submit value="View Statistics"/>
+  </ww:form>
+    
+  <h2>Repository Health</h2>
+  <ww:form namespace="/report" action="generateReport" validate="true">  
     <ww:textfield label="Row Count" name="rowCount" />
     <ww:textfield label="Group ID" name="groupId"/>
-    <ww:select label="Repository ID" name="repositoryId" list="repositoryIds"/>
+    <ww:select label="Repository ID" name="repositoryId" list="repositoryIds"/>    
+  
     <ww:submit value="Show Report"/>
   </ww:form>
 

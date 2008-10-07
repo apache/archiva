@@ -46,14 +46,22 @@
 <ww:actionerror/>
 <ww:actionmessage/>
 
-<div style="float:right">
-  <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-    <ww:url id="addProxyConnectorUrl" action="addProxyConnector"/>
-    <ww:a href="%{addProxyConnectorUrl}" cssClass="create">
-      <img src="<c:url value="/images/icons/create.png" />"/>
-      Add
-    </ww:a>
-  </redback:ifAnyAuthorized>
+<div style="float:right">  
+  <c:choose>
+	<c:when test="${remoteRepoExists}">
+	  <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
+	    <ww:url id="addProxyConnectorUrl" action="addProxyConnector"/>
+	    <ww:a href="%{addProxyConnectorUrl}" cssClass="create">
+	      <img src="<c:url value="/images/icons/create.png" />"/>
+	      Add
+	    </ww:a>
+	  </redback:ifAnyAuthorized>
+	</c:when>
+	<c:otherwise>
+		<img src="<c:url value="/images/icons/create.png" />"/>
+	      Add (Disabled. No remote repositories)
+	</c:otherwise>
+  </c:choose>    
 </div>
 
 <h2>Repository Proxy Connectors</h2>

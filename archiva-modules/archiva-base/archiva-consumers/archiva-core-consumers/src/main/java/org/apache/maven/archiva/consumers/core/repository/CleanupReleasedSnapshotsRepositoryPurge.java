@@ -19,12 +19,17 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -33,16 +38,10 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -78,11 +77,12 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     
     private RepositoryContentFactory repoContentFactory;
 
-    public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
-                    MetadataTools metadataTools, Map<String, RepositoryContentIndex> indices, 
-                    ArchivaConfiguration archivaConfig, RepositoryContentFactory repoContentFactory )
+    public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, MetadataTools metadataTools,
+                                                    ArchivaConfiguration archivaConfig,
+                                                    RepositoryContentFactory repoContentFactory,
+                                                    List<RepositoryListener> listeners )
     {
-        super( repository, artifactDao, indices );
+        super( repository, listeners );
         this.metadataTools = metadataTools;
         this.archivaConfig = archivaConfig;
         this.repoContentFactory = repoContentFactory;
@@ -101,17 +101,17 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 return;
             }
 
-            ArtifactReference artifact = repository.toArtifactReference( path );
+            ArtifactReference artifactRef = repository.toArtifactReference( path );
 
-            if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
+            if ( !VersionUtil.isSnapshot( artifactRef.getVersion() ) )
             {
                 // Nothing to do here, not a snapshot, skip it.
                 return;
             }
 
             ProjectReference reference = new ProjectReference();
-            reference.setGroupId( artifact.getGroupId() );
-            reference.setArtifactId( artifact.getArtifactId() );
+            reference.setGroupId( artifactRef.getGroupId() );
+            reference.setArtifactId( artifactRef.getArtifactId() );
             
             // Gather up all of the versions.
             List<String> allVersions = new ArrayList<String>( repository.getVersions( reference ) );
@@ -161,8 +161,12 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             boolean needsMetadataUpdate = false;
 
             VersionedReference versionRef = new VersionedReference();
-            versionRef.setGroupId( artifact.getGroupId() );
-            versionRef.setArtifactId( artifact.getArtifactId() );
+            versionRef.setGroupId( artifactRef.getGroupId() );
+            versionRef.setArtifactId( artifactRef.getArtifactId() );
+            
+            ArchivaArtifact artifact =
+                new ArchivaArtifact( artifactRef.getGroupId(), artifactRef.getArtifactId(), artifactRef.getVersion(),
+                                     artifactRef.getClassifier(), artifactRef.getType() );
             
             for ( String version : snapshotVersions )
             {   
@@ -170,13 +174,19 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 {                    
                     versionRef.setVersion( version );
                     repository.deleteVersion( versionRef );
+                    
+                    for ( RepositoryListener listener : listeners )
+                    {
+                        listener.deleteArtifact( repository, artifact );
+                    }
+                    
                     needsMetadataUpdate = true;
                 }
             }           
                         
             if ( needsMetadataUpdate )
             {
-                updateMetadata( artifact );
+                updateMetadata( artifactRef );
             }
         }
         catch ( LayoutException e )

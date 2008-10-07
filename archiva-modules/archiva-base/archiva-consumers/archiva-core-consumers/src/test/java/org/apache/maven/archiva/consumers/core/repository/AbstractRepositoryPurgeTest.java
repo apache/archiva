@@ -19,28 +19,16 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.jpox.SchemaTool;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.Map.Entry;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.easymock.MockControl;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -74,74 +62,21 @@ public abstract class AbstractRepositoryPurgeTest
 
     private ManagedRepositoryContent repo;
 
-    protected ArtifactDAO dao;
-
     protected RepositoryPurge repoPurge;
 
+    protected MockControl listenerControl;
+
+    protected RepositoryListener listener;
+
+    @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
+        
+        listenerControl = MockControl.createControl( RepositoryListener.class );
 
-        DefaultConfigurableJdoFactory jdoFactory = (DefaultConfigurableJdoFactory) lookup( JdoFactory.ROLE, "archiva" );
-        assertEquals( DefaultConfigurableJdoFactory.class.getName(), jdoFactory.getClass().getName() );
-
-        jdoFactory.setPersistenceManagerFactoryClass( "org.jpox.PersistenceManagerFactoryImpl" );
-
-        jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.hsqldb.jdbcDriver" ) );
-        jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:hsqldb:mem:testdb" ) );
-
-        jdoFactory.setUserName( System.getProperty( "jdo.test.user", "sa" ) );
-
-        jdoFactory.setPassword( System.getProperty( "jdo.test.pass", "" ) );
-
-        jdoFactory.setProperty( "org.jpox.transactionIsolation", "READ_COMMITTED" );
-
-        jdoFactory.setProperty( "org.jpox.poid.transactionIsolation", "READ_COMMITTED" );
-
-        jdoFactory.setProperty( "org.jpox.autoCreateSchema", "true" );
-
-        jdoFactory.setProperty( "javax.jdo.option.RetainValues", "true" );
-
-        jdoFactory.setProperty( "javax.jdo.option.RestoreValues", "true" );
-
-        // jdoFactory.setProperty( "org.jpox.autoCreateColumns", "true" );
-
-        jdoFactory.setProperty( "org.jpox.validateTables", "true" );
-
-        jdoFactory.setProperty( "org.jpox.validateColumns", "true" );
-
-        jdoFactory.setProperty( "org.jpox.validateConstraints", "true" );
-
-        Properties properties = jdoFactory.getProperties();
-
-        for ( Entry<Object, Object> entry : properties.entrySet() )
-        {
-            System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
-        }
-
-        URL jdoFileUrls[] = new URL[] { getClass().getResource( "/org/apache/maven/archiva/model/package.jdo" ) };
-
-        if ( ( jdoFileUrls == null ) || ( jdoFileUrls[0] == null ) )
-        {
-            fail( "Unable to process test " + getName() + " - missing package.jdo." );
-        }
-
-        File propsFile = null; // intentional
-        boolean verbose = true;
-
-        SchemaTool.deleteSchemaTables( jdoFileUrls, new URL[] {}, propsFile, verbose );
-        SchemaTool.createSchemaTables( jdoFileUrls, new URL[] {}, propsFile, verbose, null );
-
-        PersistenceManagerFactory pmf = jdoFactory.getPersistenceManagerFactory();
-
-        assertNotNull( pmf );
-
-        PersistenceManager pm = pmf.getPersistenceManager();
-
-        pm.close();
-
-        dao = (ArtifactDAO) lookup( ArtifactDAO.class.getName(), "jdo" );
+        listener = (RepositoryListener) listenerControl.getMock();
     }
     
     @Override
@@ -180,28 +115,6 @@ public abstract class AbstractRepositoryPurgeTest
         return repo;
     }
 
-    protected void populateDb( String groupId, String artifactId, List<String> versions )
-        throws ArchivaDatabaseException
-    {
-        for ( String version : versions )
-        {
-            ArchivaArtifact artifact = dao.createArtifact( groupId, artifactId, version, "", "jar" );
-            assertNotNull( artifact );
-            artifact.getModel().setLastModified( new Date() );
-            artifact.getModel().setOrigin( "test" );
-            ArchivaArtifact savedArtifact = dao.saveArtifact( artifact );
-            assertNotNull( savedArtifact );
-
-            //POM
-            artifact = dao.createArtifact( groupId, artifactId, version, "", "pom" );
-            assertNotNull( artifact );
-            artifact.getModel().setLastModified( new Date() );
-            artifact.getModel().setOrigin( "test" );
-            savedArtifact = dao.saveArtifact( artifact );
-            assertNotNull( savedArtifact );
-        }
-    }
-
     protected void assertDeleted( String path )
     {
         assertFalse( "File should have been deleted: " + path, new File( path ).exists() );
@@ -230,15 +143,9 @@ public abstract class AbstractRepositoryPurgeTest
         
         return testDir.getAbsolutePath();
     }
-    
-    protected void populateDbForTestOrderOfDeletion()
-        throws Exception
+
+    protected ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String type )
     {
-        List<String> versions = new ArrayList<String>();
-        versions.add( "1.1.2-20070427.065136-1" );
-        versions.add( "1.1.2-20070506.163513-2" );
-        versions.add( "1.1.2-20070615.105019-3" );
-    
-        populateDb( "org.apache.maven.plugins", "maven-assembly-plugin", versions );
+        return new ArchivaArtifact( groupId, artifactId, version, null, type );
     }
 }

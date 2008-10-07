@@ -24,9 +24,12 @@ import org.apache.jackrabbit.webdav.WebdavRequest;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
+import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
+import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
@@ -45,10 +48,13 @@ public class ArchivaDavSessionProvider
 
     private HttpAuthenticator httpAuth;
     
-    public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth )
+    private ArchivaXworkUser archivaXworkUser;
+    
+    public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth, ArchivaXworkUser archivaXworkUser )
     {
         this.servletAuth = servletAuth;
         this.httpAuth = httpAuth;
+        this.archivaXworkUser = archivaXworkUser;
     }
 
     public boolean attachSession( WebdavRequest request )
@@ -67,7 +73,26 @@ public class ArchivaDavSessionProvider
         }
         catch ( AuthenticationException e )
         {   
-            throw new UnauthorizedDavException( repositoryId, "You are not authenticated" );            
+            boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
+            
+            // safety check for MRM-911            
+            String guest = archivaXworkUser.getGuest();
+            try
+            {
+                if( servletAuth.isAuthorized( guest, 
+                      ( ( ArchivaDavResourceLocator ) request.getRequestLocator() ).getRepositoryId(), isPut ) )
+                {
+                    request.setDavSession(new ArchivaDavSession());
+                    return true;
+                }
+            }
+            catch ( UnauthorizedException ae )
+            {
+                throw new UnauthorizedDavException( repositoryId,
+                    "You are not authenticated and authorized to access any repository." );
+            }
+            
+            throw new UnauthorizedDavException( repositoryId, "You are not authenticated." );            
         }
         catch ( MustChangePasswordException e )
         {         

@@ -19,7 +19,10 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
@@ -69,9 +72,7 @@ public class AutoRemoveConsumer
     private FileTypes filetypes;
 
     private File repositoryDir;
-
-    private List<String> propertyNameTriggers = new ArrayList<String>();
-
+    
     private List<String> includes = new ArrayList<String>();
 
     public String getId()
@@ -122,8 +123,8 @@ public class AutoRemoveConsumer
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        if ( propertyNameTriggers.contains( propertyName ) )
+    {                
+        if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
         {
             initIncludes();
         }
@@ -143,14 +144,7 @@ public class AutoRemoveConsumer
 
     public void initialize()
         throws InitializationException
-    {
-        propertyNameTriggers = new ArrayList<String>();
-        propertyNameTriggers.add( "repositoryScanning" );
-        propertyNameTriggers.add( "fileTypes" );
-        propertyNameTriggers.add( "fileType" );
-        propertyNameTriggers.add( "patterns" );
-        propertyNameTriggers.add( "pattern" );
-
+    {     
         configuration.addChangeListener( this );
 
         initIncludes();

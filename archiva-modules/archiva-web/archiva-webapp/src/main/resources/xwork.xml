@@ -143,6 +143,16 @@
     <action name="index" class="searchAction" method="input">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
+
+    <action name="advancedSearch" class="searchAction" method="input">
+      <result name="input">/WEB-INF/jsp/advancedSearch.jsp</result>
+    </action>
+
+    <action name="filteredSearch" class="searchAction" method="filteredSearch">
+      <result name="input">/WEB-INF/jsp/advancedSearch.jsp</result>
+      <result>/WEB-INF/jsp/results.jsp</result>
+      <result name="error">/WEB-INF/jsp/quickSearch.jsp</result>
+    </action>
 	
     <action name="quickSearch" class="searchAction" method="quickSearch">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
@@ -501,6 +511,13 @@
       <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
       <result>/WEB-INF/jsp/reports/basicReport.jsp</result>
     </action>
+    
+    <action name="generateStatisticsReport" class="generateReport" method="generateStatistics">
+      <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
+      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
+      <result>/WEB-INF/jsp/reports/statisticsReport.jsp</result>
+    </action>
+    
   </package>
 </xwork>
 

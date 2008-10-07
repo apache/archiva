@@ -86,6 +86,11 @@ public class UploadAction
       * @plexus.requirement
       */
      private RepositoryContentConsumers consumers;
+     
+     /**
+      * @plexus.requirement
+      */
+     private ArchivaXworkUser archivaXworkUser;
     
     /**
      * The groupId of the artifact to be deployed.
@@ -456,7 +461,7 @@ public class UploadAction
 
     private String getPrincipal()
     {
-        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
 
     private void copyFile( File sourceFile, File targetPath, String targetFilename )

@@ -2346,6 +2346,46 @@
             The number of new files discovered.
           </description>
         </field>
+        <field>
+          <name>totalProjectCount</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total number of unique projects in the repository.
+          </description>
+        </field>
+        <field>
+          <name>totalGroupCount</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total number of unique groups in the repository.
+          </description>
+        </field>
+        <field>
+          <name>totalArtifactCount</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total number of artifacts in the repository. 
+          </description>
+        </field>
+        <field>
+          <name>totalSize</name>
+          <version>1.0.0+</version>
+          <identifier>false</identifier>
+          <required>true</required>
+          <type>long</type>
+          <description>
+            The total size in bytes of the repository.
+          </description>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>

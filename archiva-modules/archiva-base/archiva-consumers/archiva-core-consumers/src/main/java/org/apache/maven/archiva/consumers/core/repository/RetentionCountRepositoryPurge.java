@@ -19,22 +19,20 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.VersionComparator;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.ContentNotFoundException;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.layout.LayoutException;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
  * Purge the repository by retention count. Retain only the specified number of snapshots.
@@ -46,10 +44,10 @@ public class RetentionCountRepositoryPurge
 {
     private int retentionCount;
 
-    public RetentionCountRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
-                                          int retentionCount, Map<String, RepositoryContentIndex> indices )
+    public RetentionCountRepositoryPurge( ManagedRepositoryContent repository, 
+                                          int retentionCount, List<RepositoryListener> listeners )
     {
-        super( repository, artifactDao, indices );
+        super( repository, listeners );
         this.retentionCount = retentionCount;
     }
 

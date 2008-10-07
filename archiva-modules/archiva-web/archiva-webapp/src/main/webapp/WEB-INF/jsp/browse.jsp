@@ -69,13 +69,14 @@
               <ww:param name="groupId" value="%{'${results.selectedGroupId}'}"/>
               <ww:param name="artifactId" value="%{'${artifactId}'}"/>
             </ww:url>
-          </c:set>          
+          </c:set>
+          <c:url var="rssUrl" value="/feeds/${groupId}/${artifactId}"/>
           <li>
           <a href="${url}">${artifactId}/</a>
-          <a href="/archiva/rss/rss_feeds?groupId=${groupId}&artifactId=${artifactId}">
-      		<img src="${rssFeedIconUrl}" />
-    	  </a>
-    	  </li>    
+          <a href="${rssUrl}">
+            <img src="${rssFeedIconUrl}" />
+          </a>
+          </li>
         </c:forEach>
       </ul>
     </div>

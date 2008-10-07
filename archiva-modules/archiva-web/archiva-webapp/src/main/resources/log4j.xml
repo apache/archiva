@@ -37,7 +37,7 @@
     <appender-ref ref="auditlog" />
   </logger>
   
-  <logger name="org.codehaus.plexus.security">
+  <logger name="org.codehaus.plexus.redback">
     <level value="info"/>
     <appender-ref ref="rolling" />
   </logger>
