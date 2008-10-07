@@ -1,12 +1,14 @@
  -----
- Release Notes for Archiva 1.1.2
+ Release Notes for Archiva 1.1.3
  -----
 
-Release Notes for Archiva 1.1.2
+Release Notes for Archiva 1.1.3
 
-  The Apache Archiva team would like to announce the release of Archiva 1.1.2.
+  The Apache Archiva team would like to announce the release of Archiva 1.1.3.  Archiva is {{{http://archiva.apache.org/download.html} 
+  available for download from the web site}}.
 
-  Archiva 1.1.2 is {{{http://archiva.apache.org/download.html} available for download from the web site}}.
+  The Archiva 1.1.3 release fixes a security issue under some circumstances which was introduced in Archiva 1.1.2, and all users are 
+  encouraged to upgrade. The release also includes a small number of fixes outlined below.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
 
@@ -56,6 +58,18 @@ Release Notes for Archiva 1.1.2
 * Release Notes
 
   The Archiva 1.1 feature set can be seen in the {{{tour/index.html} feature tour}}.
+
+* Changes in Archiva 1.1.3
+
+** Bug
+
+    * [MRM-967] - Security Issue: If repository observer role is enabled for the 'guest' user, an invalid user is able to deploy to that repository
+
+    * [MRM-397] - background of the Archiva logo is not transparent in repositories page
+
+    * [MRM-580] - does not give error message when one defines an illegal directory for a managed repository
+
+    * [MRM-954] - Footer doesn't stretch across repositoryGroups page
 
 * Changes in Archiva 1.1.2
 
