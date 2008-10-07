@@ -106,6 +106,40 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-beanshell</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <evaluateBeanshell>
+                      <message>Site descriptor needs to be updated for the current release version</message>
+                      <condition>
+                        <![CDATA[
+                          javax.xml.xpath.XPath xpath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+                          org.xml.sax.InputSource is = new org.xml.sax.InputSource( new java.io.FileInputStream( "${basedir}/src/site/site.xml" ) );
+                          xpath.evaluate( "//project/body/breadcrumbs/item[@name='${project.version}']/@href", is ).equals( "/docs/${project.version}" )
+                        ]]>
+                      </condition>
+                    </evaluateBeanshell>
+                    <evaluateBeanshell>
+                      <message>Release notes need to be updated for the current release version</message>
+                      <condition>
+                        <![CDATA[
+                          org.codehaus.plexus.util.FileUtils.fileRead( "${basedir}/src/site/apt/release-notes.apt" ).indexOf( "Release Notes for Archiva ${project.version}" ) >= 0
+                        ]]>
+                      </condition>
+                    </evaluateBeanshell>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
