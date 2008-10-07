@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -37,56 +36,68 @@ import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 
-public class XmlRpcAuthenticatorTest extends TestCase
+public class XmlRpcAuthenticatorTest
+    extends TestCase
 {
     private static final String USERNAME = "username";
+
     private static final String PASSWORD = "password";
 
-    public void testAuthentication() throws Exception
+    public void testAuthentication()
+        throws Exception
     {
-        MockSecuritySystem securitySystem = new MockSecuritySystem(true, true, USERNAME, PASSWORD);
-        XmlRpcAuthenticator authenticator = new XmlRpcAuthenticator(securitySystem);
-        MockXmlRpcRequest request = new MockXmlRpcRequest(USERNAME, PASSWORD);
-        
-        assertTrue(authenticator.isAuthorized(request));
+        MockSecuritySystem securitySystem = new MockSecuritySystem( true, true, USERNAME, PASSWORD );
+        XmlRpcAuthenticator authenticator = new XmlRpcAuthenticator( securitySystem );
+        MockXmlRpcRequest request = new MockXmlRpcRequest( USERNAME, PASSWORD );
+
+        assertTrue( authenticator.isAuthorized( request ) );
     }
 
-    class MockXmlRpcRequest implements XmlRpcRequest
+    class MockXmlRpcRequest
+        implements XmlRpcRequest
     {
         private final XmlRpcHttpRequestConfigImpl configImpl;
-        
-        public MockXmlRpcRequest(String username, String password)
+
+        public MockXmlRpcRequest( String username, String password )
         {
             configImpl = new XmlRpcHttpRequestConfigImpl();
-            configImpl.setBasicUserName(username);
-            configImpl.setBasicPassword(password);
+            configImpl.setBasicUserName( username );
+            configImpl.setBasicPassword( password );
         }
 
-        public XmlRpcRequestConfig getConfig() {
+        public XmlRpcRequestConfig getConfig()
+        {
             return configImpl;
         }
 
-        public String getMethodName() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getMethodName()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Object getParameter(int pIndex) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Object getParameter( int pIndex )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public int getParameterCount() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public int getParameterCount()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
     }
 
-    class MockSecuritySystem implements SecuritySystem
+    class MockSecuritySystem
+        implements SecuritySystem
     {
         private final boolean authorized;
+
         private final boolean authenticate;
+
         private final String username;
+
         private final String password;
 
-        public MockSecuritySystem(boolean authorized, boolean authenticate, String username, String password)
+        public MockSecuritySystem( boolean authorized, boolean authenticate, String username, String password )
         {
             this.authorized = authorized;
             this.authenticate = authenticate;
@@ -94,65 +105,87 @@ public class XmlRpcAuthenticatorTest extends TestCase
             this.password = password;
         }
 
-        public SecuritySession authenticate(AuthenticationDataSource dataSource) throws AuthenticationException, UserNotFoundException, AccountLockedException {
-            return new SecuritySession() {
+        public SecuritySession authenticate( AuthenticationDataSource dataSource )
+            throws AuthenticationException, UserNotFoundException, AccountLockedException
+        {
+            return new SecuritySession()
+            {
 
-                public AuthenticationResult getAuthenticationResult() {
-                    throw new UnsupportedOperationException("Not supported yet.");
+                public AuthenticationResult getAuthenticationResult()
+                {
+                    throw new UnsupportedOperationException( "Not supported yet." );
                 }
 
-                public User getUser() {
-                    throw new UnsupportedOperationException("Not supported yet.");
+                public User getUser()
+                {
+                    throw new UnsupportedOperationException( "Not supported yet." );
                 }
 
-                public boolean isAuthenticated() {
+                public boolean isAuthenticated()
+                {
                     throw new UnsupportedOperationException();
                 }
             };
         }
 
-        public AuthorizationResult authorize(SecuritySession session, Object arg1) throws AuthorizationException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public AuthorizationResult authorize( SecuritySession session, Object arg1 )
+            throws AuthorizationException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public AuthorizationResult authorize(SecuritySession session, Object arg1, Object arg2) throws AuthorizationException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public AuthorizationResult authorize( SecuritySession session, Object arg1, Object arg2 )
+            throws AuthorizationException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getAuthenticatorId() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getAuthenticatorId()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getAuthorizerId() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getAuthorizerId()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public KeyManager getKeyManager() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public KeyManager getKeyManager()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public UserSecurityPolicy getPolicy() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public UserSecurityPolicy getPolicy()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getUserManagementId() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getUserManagementId()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public UserManager getUserManager() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public UserManager getUserManager()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isAuthenticated(AuthenticationDataSource dataSource) throws AuthenticationException, UserNotFoundException, AccountLockedException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean isAuthenticated( AuthenticationDataSource dataSource )
+            throws AuthenticationException, UserNotFoundException, AccountLockedException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isAuthorized(SecuritySession session, Object arg1) throws AuthorizationException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean isAuthorized( SecuritySession session, Object arg1 )
+            throws AuthorizationException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isAuthorized(SecuritySession session, Object arg1, Object arg2) throws AuthorizationException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean isAuthorized( SecuritySession session, Object arg1, Object arg2 )
+            throws AuthorizationException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
     }
 }
