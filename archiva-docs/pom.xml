@@ -122,7 +122,7 @@
                       <condition>
                         <![CDATA[
                           javax.xml.xpath.XPath xpath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
-                          org.xml.sax.InputSource is = new org.xml.sax.InputSource( new java.io.FileInputStream( "src/site/site.xml" ) );
+                          org.xml.sax.InputSource is = new org.xml.sax.InputSource( new java.io.FileInputStream( "${basedir}/src/site/site.xml" ) );
                           xpath.evaluate( "//project/body/breadcrumbs/item[@name='${project.version}']/@href", is ).equals( "/docs/${project.version}" )
                         ]]>
                       </condition>
@@ -131,7 +131,7 @@
                       <message>Release notes need to be updated for the current release version</message>
                       <condition>
                         <![CDATA[
-                          org.codehaus.plexus.util.FileUtils.fileRead( "src/site/apt/release-notes.apt" ).indexOf( "Release Notes for Archiva ${project.version}" ) >= 0
+                          org.codehaus.plexus.util.FileUtils.fileRead( "${basedir}/src/site/apt/release-notes.apt" ).indexOf( "Release Notes for Archiva ${project.version}" ) >= 0
                         ]]>
                       </condition>
                     </evaluateBeanshell>
