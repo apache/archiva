@@ -1,3 +1,4 @@
+package org.apache.maven.archiva.xmlrpc.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,8 +19,6 @@
  * under the License.
  */
 
-package org.apache.maven.archiva.xmlrpc.security;
-
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
@@ -34,58 +33,63 @@ import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 
-public class XmlRpcAuthenticator implements AuthenticationHandler
+public class XmlRpcAuthenticator
+    implements AuthenticationHandler
 {
     private final SecuritySystem securitySystem;
 
-    public XmlRpcAuthenticator(SecuritySystem securitySystem)
+    public XmlRpcAuthenticator( SecuritySystem securitySystem )
     {
         this.securitySystem = securitySystem;
     }
 
-    public boolean isAuthorized(XmlRpcRequest pRequest) throws XmlRpcException {
-        if (pRequest.getConfig() instanceof XmlRpcHttpRequestConfigImpl)
+    public boolean isAuthorized( XmlRpcRequest pRequest )
+        throws XmlRpcException
+    {
+        if ( pRequest.getConfig() instanceof XmlRpcHttpRequestConfigImpl )
         {
-            XmlRpcHttpRequestConfigImpl config = (XmlRpcHttpRequestConfigImpl)pRequest.getConfig();
-            SecuritySession session = authenticate(new PasswordBasedAuthenticationDataSource(config.getBasicUserName(), config.getBasicPassword()));
-            AuthorizationResult result = authorize(session);
+            XmlRpcHttpRequestConfigImpl config = (XmlRpcHttpRequestConfigImpl) pRequest.getConfig();
+            SecuritySession session =
+                authenticate( new PasswordBasedAuthenticationDataSource( config.getBasicUserName(),
+                                                                         config.getBasicPassword() ) );
+            AuthorizationResult result = authorize( session );
             return result.isAuthorized();
         }
 
-        throw new XmlRpcException("Unsupported transport (must be http)");
+        throw new XmlRpcException( "Unsupported transport (must be http)" );
     }
-    
-    private SecuritySession authenticate(PasswordBasedAuthenticationDataSource authenticationDataSource)
+
+    private SecuritySession authenticate( PasswordBasedAuthenticationDataSource authenticationDataSource )
         throws XmlRpcException
     {
         try
         {
-            return securitySystem.authenticate(authenticationDataSource);
+            return securitySystem.authenticate( authenticationDataSource );
         }
-        catch (AccountLockedException e)
+        catch ( AccountLockedException e )
         {
-            throw new XmlRpcException(401, e.getMessage(), e);
+            throw new XmlRpcException( 401, e.getMessage(), e );
         }
-        catch (AuthenticationException e)
+        catch ( AuthenticationException e )
         {
-            throw new XmlRpcException(401, e.getMessage(), e);
+            throw new XmlRpcException( 401, e.getMessage(), e );
         }
-        catch (UserNotFoundException e)
+        catch ( UserNotFoundException e )
         {
-            throw new XmlRpcException(401, e.getMessage(), e);
+            throw new XmlRpcException( 401, e.getMessage(), e );
         }
     }
-    
-    private AuthorizationResult authorize(SecuritySession session)
+
+    private AuthorizationResult authorize( SecuritySession session )
         throws XmlRpcException
     {
         try
         {
-            return securitySystem.authorize(session, ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE);
+            return securitySystem.authorize( session, ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE );
         }
-        catch (AuthorizationException e)
+        catch ( AuthorizationException e )
         {
-            throw new XmlRpcException(401, e.getMessage(), e);
+            throw new XmlRpcException( 401, e.getMessage(), e );
         }
     }
 }
