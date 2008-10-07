@@ -18,20 +18,23 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-xmlrpc</artifactId>
     <version>1.2-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
-
   <artifactId>archiva-xmlrpc-api</artifactId>
   <name>Archiva Web :: XML-RPC API</name>
   <dependencies>
     <dependency>
-        <groupId>com.atlassian.xmlrpc</groupId>
-        <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
+      <groupId>com.atlassian.xmlrpc</groupId>
+      <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
     </dependency>
   </dependencies>
 </project>
