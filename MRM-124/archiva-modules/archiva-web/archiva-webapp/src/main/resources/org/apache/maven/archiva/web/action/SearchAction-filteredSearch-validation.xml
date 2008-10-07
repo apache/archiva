@@ -1,4 +1,5 @@
-<%--
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
   ~ distributed with this work for additional information
@@ -15,26 +16,19 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  --%>
+  -->
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
-<div id="searchBox">
-  <ww:form method="get" action="quickSearch" validate="true">
-    <ww:textfield label="Search for" size="50" name="q"/>
-    <ww:checkbox label="Search Results Only" name="searchResultsOnly"/>        
-    <ww:hidden name="completeQueryString" value="${completeQueryString}"/>        
-    <ww:submit label="Go!"/>
-  </ww:form>
-
-  <script type="text/javascript">
-    document.getElementById("quickSearch_q").focus();
-  </script>
-
-  <p>
-    Enter your search terms. A variety of data will be searched for your keywords.<br/>
-    To search for java classes, packages or methods, append the keyword "<i>bytecode:</i>" 
-    to your query. Example, bytecode:MyClass or bytecode:myMethod 
-    <ww:actionerror/>
-  </p>
-</div>
+<validators>
+  <field name="rowCount">
+    <field-validator type="int">
+      <message>Invalid entry</message>
+    </field-validator>
+    <field-validator type="int">
+    <param name="min">1</param>
+      <message>Row count must be larger than ${min}.</message>
+    </field-validator>
+  </field>
+</validators>

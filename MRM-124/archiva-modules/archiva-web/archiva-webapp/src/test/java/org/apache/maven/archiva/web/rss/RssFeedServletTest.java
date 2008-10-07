@@ -59,7 +59,7 @@ public class RssFeedServletTest
         throws Exception
     {
         RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation( "http://localhost/rss/rss_feeds?repoId=test-repo" ).getServlet();
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/test-repo" ).getServlet();
         assertNotNull( servlet );
     }
 
@@ -67,10 +67,10 @@ public class RssFeedServletTest
         throws Exception
     {
         RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation( "http://localhost/rss/rss_feeds?repoId=test-repo" ).getServlet();
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/test-repo" ).getServlet();
         assertNotNull( servlet );
 
-        WebRequest request = new GetMethodWebRequest( "http://localhost/rss/rss_feeds?repoId=test-repo" );
+        WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/test-repo" );
         
         BASE64Encoder encoder = new BASE64Encoder();
         String userPass = "user1:password1";
@@ -88,10 +88,10 @@ public class RssFeedServletTest
     {
         RssFeedServlet servlet =
             (RssFeedServlet) client.newInvocation(
-                                                   "http://localhost/rss/rss_feeds?groupId=org.apache.archiva&artifactId=artifact-two" ).getServlet();
+                                                   "http://localhost/feeds/org/apache/archiva/artifact-two" ).getServlet();
         assertNotNull( servlet );
 
-        WebRequest request = new GetMethodWebRequest( "http://localhost/rss/rss_feeds?groupId=org.apache.archiva&artifactId=artifact-two" );
+        WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/org/apache/archiva/artifact-two" );
         
         BASE64Encoder encoder = new BASE64Encoder();
         String userPass = "user1:password1";
@@ -109,12 +109,12 @@ public class RssFeedServletTest
     {
         RssFeedServlet servlet =
             (RssFeedServlet) client.newInvocation(
-                                                   "http://localhost/rss/rss_feeds?invalid_param=xxx" ).getServlet();
+                                                   "http://localhost/feeds?invalid_param=xxx" ).getServlet();
         assertNotNull( servlet );
 
         try
         {
-            WebResponse response = client.getResponse( "http://localhost/rss/rss_feeds?invalid_param=xxx" );
+            WebResponse response = client.getResponse( "http://localhost/feeds?invalid_param=xxx" );
         }
         catch ( HttpException he )
         {
@@ -127,11 +127,11 @@ public class RssFeedServletTest
     {
         RssFeedServlet servlet =
             (RssFeedServlet) client.newInvocation(
-                                                   "http://localhost/rss/rss_feeds?repoId=unauthorized-repo" ).getServlet();
+                                                   "http://localhost/feeds/unauthorized-repo" ).getServlet();
         assertNotNull( servlet );
     
         
-        WebRequest request = new GetMethodWebRequest( "http://localhost/rss/rss_feeds?repoId=unauthorized-repo" );
+        WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
         
         Encoder encoder = new Base64();
         String userPass = "unauthUser:unauthPass";
@@ -153,11 +153,11 @@ public class RssFeedServletTest
     {
         RssFeedServlet servlet =
             (RssFeedServlet) client.newInvocation(
-                                                   "http://localhost/rss/rss_feeds?repoId=unauthorized-repo" ).getServlet();
+                                                   "http://localhost/feeds/unauthorized-repo" ).getServlet();
         assertNotNull( servlet );
     
         
-        WebRequest request = new GetMethodWebRequest( "http://localhost/rss/rss_feeds?repoId=unauthorized-repo" );
+        WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
         
         BASE64Encoder encoder = new BASE64Encoder();
         String userPass = "user1:password1";

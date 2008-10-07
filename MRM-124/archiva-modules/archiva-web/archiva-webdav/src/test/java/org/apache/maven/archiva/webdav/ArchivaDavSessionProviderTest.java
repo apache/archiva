@@ -59,7 +59,7 @@ public class ArchivaDavSessionProviderTest extends TestCase
         throws Exception
     {
         super.setUp();
-        sessionProvider = new ArchivaDavSessionProvider(new ServletAuthenticatorMock(), new HttpAuthenticatorMock());
+        sessionProvider = new ArchivaDavSessionProvider(new ServletAuthenticatorMock(), new HttpAuthenticatorMock(), null);
         request = new WebdavRequestImpl(new HttpServletRequestMock(), null);
     }
     
@@ -362,7 +362,7 @@ public class ArchivaDavSessionProviderTest extends TestCase
             return true;
         }
 
-        public boolean isAuthorizedToAccessVirtualRepository(String arg0, String arg1)
+        public boolean isAuthorized(String arg0, String arg1, boolean isWriteRequest)
             throws UnauthorizedException
         {
             return true;

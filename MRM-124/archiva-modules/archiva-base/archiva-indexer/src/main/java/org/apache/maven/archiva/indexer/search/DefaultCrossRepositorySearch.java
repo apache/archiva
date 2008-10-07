@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -32,16 +33,20 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.Searchable;
+import org.apache.lucene.search.TermQuery;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.indexer.ArtifactKeys;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
+import org.apache.maven.archiva.indexer.bytecode.BytecodeKeys;
 import org.apache.maven.archiva.indexer.filecontent.FileContentHandlers;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesHandlers;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesKeys;
@@ -57,7 +62,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * DefaultCrossRepositorySearch
- *
+ * 
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.indexer.search.CrossRepositorySearch" role-hint="default"
@@ -66,12 +71,12 @@ public class DefaultCrossRepositorySearch
     implements CrossRepositorySearch, RegistryListener, Initializable
 {
     private Logger log = LoggerFactory.getLogger( DefaultCrossRepositorySearch.class );
-    
+
     /**
      * @plexus.requirement role-hint="lucene"
      */
     private RepositoryContentIndexFactory indexFactory;
-    
+
     /**
      * @plexus.requirement
      */
@@ -79,14 +84,61 @@ public class DefaultCrossRepositorySearch
 
     private List<ManagedRepositoryConfiguration> localIndexedRepositories = new ArrayList<ManagedRepositoryConfiguration>();
 
-    public SearchResults searchForChecksum( String principal, List<String> selectedRepos, String checksum, SearchResultLimits limits )
+    public SearchResults executeFilteredSearch( String principal, List<String> selectedRepos, String groupId,
+                                                String artifactId, String version, String className,
+                                                SearchResultLimits limits )
+    {
+        List<RepositoryContentIndex> indexes = getBytecodeIndexes( principal, selectedRepos );
+        SearchResults results = new SearchResults();
+        BooleanQuery booleanQuery = new BooleanQuery();
+
+        if ( groupId != null && groupId.length() > 0 )
+        {
+            parseAndAdd( booleanQuery, ArtifactKeys.GROUPID, groupId, "\\.|-" );
+        }
+
+        if ( artifactId != null && artifactId.length() > 0 )
+        {
+            parseAndAdd( booleanQuery, ArtifactKeys.ARTIFACTID, artifactId, "\\.|-" );
+        }
+
+        if ( version != null && version.length() > 0 )
+        {
+            parseAndAdd( booleanQuery, ArtifactKeys.VERSION, version, "\\.|-" );
+        }
+
+        if ( className != null && className.length() > 0 )
+        {
+
+            try
+            {
+                QueryParser parser =
+                    new MultiFieldQueryParser( new String[] { BytecodeKeys.CLASSES, BytecodeKeys.FILES,
+                        BytecodeKeys.METHODS }, new BytecodeHandlers().getAnalyzer() );
+                booleanQuery.add( parser.parse( className ), BooleanClause.Occur.MUST );
+            }
+            catch ( ParseException e )
+            {
+
+            }
+        }
+
+        LuceneQuery query = new LuceneQuery( booleanQuery );
+        results = searchAll( query, limits, indexes, null );
+        results.getRepositories().add( this.localIndexedRepositories );
+
+        return results;
+    }
+
+    public SearchResults searchForChecksum( String principal, List<String> selectedRepos, String checksum,
+                                            SearchResultLimits limits )
     {
         List<RepositoryContentIndex> indexes = getHashcodeIndexes( principal, selectedRepos );
 
         try
         {
             QueryParser parser = new MultiFieldQueryParser( new String[]{HashcodesKeys.MD5, HashcodesKeys.SHA1},
-                                                            new HashcodesHandlers().getAnalyzer() );
+                                           new HashcodesHandlers().getAnalyzer() );
             LuceneQuery query = new LuceneQuery( parser.parse( checksum ) );
             SearchResults results = searchAll( query, limits, indexes, null );
             results.getRepositories().addAll( this.localIndexedRepositories );
@@ -124,23 +176,22 @@ public class DefaultCrossRepositorySearch
         return new SearchResults();
     }
 
-    
     public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
     {
         return searchForTerm( principal, selectedRepos, term, limits, null );        
     }
-    
+
     public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term,
                                         SearchResultLimits limits, List<String> previousSearchTerms )
     {
         List<RepositoryContentIndex> indexes = getFileContentIndexes( principal, selectedRepos );
-        
+
         try
         {
             QueryParser parser = new FileContentHandlers().getQueryParser();
             LuceneQuery query = null;
             SearchResults results = null;
-            if( previousSearchTerms == null || previousSearchTerms.isEmpty() )
+            if ( previousSearchTerms == null || previousSearchTerms.isEmpty() )
             {
                 query = new LuceneQuery( parser.parse( term ) );
                 results = searchAll( query, limits, indexes, null );
@@ -149,17 +200,17 @@ public class DefaultCrossRepositorySearch
             {
                 // AND the previous search terms
                 BooleanQuery booleanQuery = new BooleanQuery();
-                for( String previousSearchTerm : previousSearchTerms )
+                for ( String previousSearchTerm : previousSearchTerms )
                 {
                     booleanQuery.add( parser.parse( previousSearchTerm ), BooleanClause.Occur.MUST );
                 }
-                
-                query = new LuceneQuery( booleanQuery );                
+
+                query = new LuceneQuery( booleanQuery );
                 Filter filter = new QueryWrapperFilter( parser.parse( term ) );
                 results = searchAll( query, limits, indexes, filter );
-            }            
+            }
             results.getRepositories().addAll( this.localIndexedRepositories );
-            
+
             return results;
         }
         catch ( ParseException e )
@@ -168,9 +219,9 @@ public class DefaultCrossRepositorySearch
         }
 
         // empty results.
-        return new SearchResults(); 
+        return new SearchResults();
     }
-    
+
     private SearchResults searchAll( LuceneQuery luceneQuery, SearchResultLimits limits, List<RepositoryContentIndex> indexes, Filter filter )
     {
         org.apache.lucene.search.Query specificQuery = luceneQuery.getLuceneQuery();
@@ -203,7 +254,7 @@ public class DefaultCrossRepositorySearch
 
             // Perform the search.
             Hits hits = null;
-            if( filter != null )
+            if ( filter != null )
             {
                 hits = searcher.search( specificQuery, filter );
             }
@@ -355,7 +406,7 @@ public class DefaultCrossRepositorySearch
 
         return ret;
     }
-    
+
     private boolean indexExists( RepositoryContentIndex index )
     {
         try
@@ -399,6 +450,26 @@ public class DefaultCrossRepositorySearch
                     localIndexedRepositories.add( repo );
                 }
             }
+        }
+    }
+
+    private void parseAndAdd( BooleanQuery query, String key, String value, String delimiter )
+    {
+        if ( value != null && value.length() > 0 )
+        {
+            String[] terms = value.split( delimiter );
+            for ( int i = 0; i < terms.length; i++ )
+            {
+                Term valueTerm = new Term( key, terms[i] );
+                Query valueQuery = new TermQuery( valueTerm );
+                query.add( valueQuery, BooleanClause.Occur.MUST );
+            }
+        }
+        else
+        {
+            Term valueTerm = new Term( key, value );
+            Query valueQuery = new TermQuery( valueTerm );
+            query.add( valueQuery, BooleanClause.Occur.MUST );
         }
     }
 

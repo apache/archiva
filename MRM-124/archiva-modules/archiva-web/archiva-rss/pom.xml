@@ -18,6 +18,7 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-model</artifactId>
     </dependency>
+    <!-- TODO: replace with metadata processor -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-database</artifactId>

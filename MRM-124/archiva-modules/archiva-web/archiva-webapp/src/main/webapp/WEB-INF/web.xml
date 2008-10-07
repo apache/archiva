@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -17,7 +17,10 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" version="2.4"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
   <display-name>Apache Archiva</display-name>
 
@@ -82,20 +85,6 @@
     <!-- Loading this on startup so as to take advantage of configuration listeners -->
     <load-on-startup>1</load-on-startup>
   </servlet>
-
-  <servlet>
-    <servlet-name>XmlRpcServlet</servlet-name>
-    <servlet-class>com.atlassian.xmlrpc.spring.BinderSpringXmlRpcServlet</servlet-class>
-    <init-param>
-        <param-name>serviceListBeanName</param-name>
-        <param-value>xmlrpcServicesList</param-value>
-    </init-param>
-        <init-param>
-            <param-name>authHandlerBeanName</param-name>
-            <param-value>xmlRpcAuthenticator</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-  </servlet>
   
   <servlet>
     <servlet-name>RssFeedServlet</servlet-name>
@@ -104,17 +93,12 @@
   
   <servlet-mapping>
      <servlet-name>RssFeedServlet</servlet-name>
-     <url-pattern>/rss/rss_feeds</url-pattern>
+     <url-pattern>/feeds/*</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>RepositoryServlet</servlet-name>
     <url-pattern>/repository/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>XmlRpcServlet</servlet-name>
-    <url-pattern>/xmlrpc</url-pattern>
   </servlet-mapping>
 
   <resource-ref>
@@ -135,4 +119,5 @@
     <res-auth>Container</res-auth>
     <res-sharing-scope>Shareable</res-sharing-scope>
   </resource-ref>
+
 </web-app>

@@ -80,21 +80,21 @@
       <artifactId>maven-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.redback</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-xwork-integration</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.redback</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.redback</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rbac-memory</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.redback</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-users-memory</artifactId>
       <scope>test</scope>
     </dependency>

@@ -74,10 +74,6 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-    </dependency>
     <!--  TEST DEPS  -->
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>

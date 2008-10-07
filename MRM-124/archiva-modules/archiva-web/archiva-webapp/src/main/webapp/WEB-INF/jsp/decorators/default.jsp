@@ -115,6 +115,11 @@
             <my:currentWWUrl action="userlist" namespace="/security">User Management</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
+        <redback:ifAuthorized permission="archiva-manage-users">
+          <li class="none">
+            <my:currentWWUrl action="roles" namespace="/security">User Roles</my:currentWWUrl>
+          </li>
+        </redback:ifAuthorized>        
         <redback:ifAuthorized permission="archiva-manage-configuration">
           <li class="none">
             <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>

@@ -1,5 +1,7 @@
 package org.apache.maven.archiva.consumers.core.repository;
 
+import java.util.Collections;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,14 +21,6 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexStub;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-
 /**
  * Test RetentionsCountRepositoryPurgeTest
  *
@@ -41,13 +35,11 @@ public class RetentionCountRepositoryPurgeTest
     {
         super.setUp();
 
-        Map<String, RepositoryContentIndex> map = new HashMap<String, RepositoryContentIndex>();
-        map.put( "filecontent", new LuceneRepositoryContentIndexStub( 2 ) );
-        map.put( "hashcodes", new LuceneRepositoryContentIndexStub( 2 ) );
-        map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
-        
-        repoPurge = new RetentionCountRepositoryPurge( getRepository(), dao,
-                                                       getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), map );
+        repoPurge =
+            new RetentionCountRepositoryPurge(
+                                               getRepository(),
+                                               getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(),
+                                               Collections.singletonList( listener ) );
     }
 
     /**
@@ -58,12 +50,23 @@ public class RetentionCountRepositoryPurgeTest
     public void testIfAJarWasFound()
         throws Exception
     {
-        populateIfJarWasFoundDb();
-
         String repoRoot = prepareTestRepos();
 
+        // test listeners for the correct artifacts
+        listener.deleteArtifact( getRepository(), createArtifact( "org.jruby.plugins", "jruby-rake-plugin",
+                                                                  "1.0RC1-20070504.153317-1", "jar" ) );
+        listener.deleteArtifact( getRepository(), createArtifact( "org.jruby.plugins", "jruby-rake-plugin",
+                                                                  "1.0RC1-20070504.153317-1", "pom" ) );
+        listener.deleteArtifact( getRepository(), createArtifact( "org.jruby.plugins", "jruby-rake-plugin",
+                                                                  "1.0RC1-20070504.160758-2", "jar" ) );
+        listener.deleteArtifact( getRepository(), createArtifact( "org.jruby.plugins", "jruby-rake-plugin",
+                                                                  "1.0RC1-20070504.160758-2", "pom" ) );
+        listenerControl.replay();
+        
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
         
+        listenerControl.verify();
+
         String versionRoot = repoRoot + "/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT";
 
         // assert if removed from repo
@@ -105,11 +108,18 @@ public class RetentionCountRepositoryPurgeTest
     public void testIfAPomWasFound()
         throws Exception
     {
-        populateIfPomWasFoundDb();
-
         String repoRoot = prepareTestRepos();
 
+        // test listeners for the correct artifacts
+        listener.deleteArtifact( getRepository(), createArtifact( "org.codehaus.castor", "castor-anttasks",
+                                                                  "1.1.2-20070427.065136-1", "jar" ) );
+        listener.deleteArtifact( getRepository(), createArtifact( "org.codehaus.castor", "castor-anttasks",
+                                                                  "1.1.2-20070427.065136-1", "pom" ) );
+        listenerControl.replay();
+        
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_POM );
+        
+        listenerControl.verify();
 
         String versionRoot = repoRoot + "/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT";
         
@@ -146,11 +156,18 @@ public class RetentionCountRepositoryPurgeTest
     public void testOrderOfDeletion()
         throws Exception
     {
-        populateDbForTestOrderOfDeletion();
-
         String repoRoot = prepareTestRepos();
 
+        // test listeners for the correct artifacts
+        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-assembly-plugin",
+                                                                  "1.1.2-20070427.065136-1", "maven-plugin" ) );
+        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-assembly-plugin",
+                                                                  "1.1.2-20070427.065136-1", "pom" ) );
+        listenerControl.replay();
+        
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
+
+        listenerControl.verify();
 
         String versionRoot = repoRoot + 
             "/org/apache/maven/plugins/maven-assembly-plugin/1.1.2-SNAPSHOT";
@@ -176,28 +193,5 @@ public class RetentionCountRepositoryPurgeTest
         assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.pom" );
         assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.pom.sha1" );
         assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.pom.md5" );
-    }
-    
-    public void populateIfJarWasFoundDb()
-        throws Exception
-    {
-        List<String> versions = new ArrayList<String>();
-        versions.add( "1.0RC1-20070504.153317-1" );
-        versions.add( "1.0RC1-20070504.160758-2" );
-        versions.add( "1.0RC1-20070505.090015-3" );
-        versions.add( "1.0RC1-20070506.090132-4" );
-
-        populateDb( "org.jruby.plugins", "jruby-rake-plugin", versions );
-    }
-
-    public void populateIfPomWasFoundDb()
-        throws Exception
-    {
-        List<String> versions = new ArrayList<String>();
-        versions.add( "1.1.2-20070427.065136-1" );
-        versions.add( "1.1.2-20070615.105019-3" );
-        versions.add( "1.1.2-20070506.163513-2" );
-
-        populateDb( "org.codehaus.castor", "castor-anttasks", versions );
     }
 }

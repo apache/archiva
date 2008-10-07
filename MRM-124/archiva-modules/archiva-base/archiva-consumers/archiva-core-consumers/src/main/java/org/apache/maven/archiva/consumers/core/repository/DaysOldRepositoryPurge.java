@@ -19,17 +19,6 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.maven.archiva.common.utils.VersionComparator;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.ContentNotFoundException;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.layout.LayoutException;
-
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,9 +27,18 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
+
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
  * Purge from repository all snapshots older than the specified days in the repository configuration.
@@ -56,10 +54,10 @@ public class DaysOldRepositoryPurge
 
     private int retentionCount;
 
-    public DaysOldRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao, int daysOlder,
-                                   int retentionCount, Map<String, RepositoryContentIndex> indices )
+    public DaysOldRepositoryPurge( ManagedRepositoryContent repository, int daysOlder,
+                                   int retentionCount, List<RepositoryListener> listeners )
     {
-        super( repository, artifactDao, indices );
+        super( repository, listeners );
         this.daysOlder = daysOlder;
         this.retentionCount = retentionCount;
         timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );

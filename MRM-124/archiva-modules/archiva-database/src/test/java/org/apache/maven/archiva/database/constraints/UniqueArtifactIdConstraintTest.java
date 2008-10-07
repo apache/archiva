@@ -22,6 +22,7 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -62,9 +63,31 @@ public class UniqueArtifactIdConstraintTest
     public void testConstraint()
         throws Exception
     {
-        ArchivaArtifact artifact;
+        setUpArtifacts();
 
-        // Setup artifacts in fresh DB.
+        assertConstraint( new String[] {}, new UniqueArtifactIdConstraint( "org.apache" ) );
+        assertConstraint( new String[] { "commons-lang" }, new UniqueArtifactIdConstraint( "commons-lang" ) );
+        assertConstraint( new String[] { "test-one" }, new UniqueArtifactIdConstraint( "org.apache.maven.test" ) );
+        assertConstraint( new String[] { "test-two", "test-bar" },
+                          new UniqueArtifactIdConstraint( "org.apache.maven.shared" ) );
+        assertConstraint( new String[] { "modellong" }, new UniqueArtifactIdConstraint( "org.codehaus.modello" ) );
+    }
+    
+    public void testConstraintDisregardGroupId()
+        throws Exception
+    {
+        setUpArtifacts();
+        
+        assertConstraintWithMultipleResultTypes( new String[] { "commons-lang", "test-one", "test-two", "test-two", "test-bar", "modellong" },
+                          new UniqueArtifactIdConstraint( "testable_repo", true ) );
+    }
+
+    private void setUpArtifacts()
+        throws ArchivaDatabaseException
+    {
+        ArchivaArtifact artifact;
+        
+     // Setup artifacts in fresh DB.
         artifact = createArtifact( "commons-lang", "commons-lang", "2.0" );
         artifactDao.saveArtifact( artifact );
 
@@ -88,26 +111,41 @@ public class UniqueArtifactIdConstraintTest
 
         artifact = createArtifact( "org.codehaus.modello", "modellong", "3.0" );
         artifactDao.saveArtifact( artifact );
-
-        assertConstraint( new String[] {}, new UniqueArtifactIdConstraint( "org.apache" ) );
-        assertConstraint( new String[] { "commons-lang" }, new UniqueArtifactIdConstraint( "commons-lang" ) );
-        assertConstraint( new String[] { "test-one" }, new UniqueArtifactIdConstraint( "org.apache.maven.test" ) );
-        assertConstraint( new String[] { "test-two", "test-bar" },
-                          new UniqueArtifactIdConstraint( "org.apache.maven.shared" ) );
-        assertConstraint( new String[] { "modellong" }, new UniqueArtifactIdConstraint( "org.codehaus.modello" ) );
     }
-
+    
+    private void assertConstraintWithMultipleResultTypes( String[] artifactIds, SimpleConstraint constraint )
+        throws Exception
+    {
+        String prefix = "Unique Artifact IDs: ";
+    
+        List<Object[]> results = dao.query( constraint );
+        assertNotNull( prefix + "Not Null", results );
+        assertEquals( prefix + "Results.size", artifactIds.length, results.size() );
+    
+        List<String> expectedArtifactIds = Arrays.asList( artifactIds );
+    
+        Iterator<Object[]> it = results.iterator();
+        while ( it.hasNext() )
+        {
+            Object[] actualArtifactIds = (Object[]) it.next();            
+            String actualArtifactId = ( String ) actualArtifactIds[1];
+            assertTrue( prefix + "artifactId result should not be blank.", StringUtils.isNotBlank( actualArtifactId ) );
+            assertTrue( prefix + " artifactId result <" + actualArtifactId + "> exists in expected artifactIds.",
+                        expectedArtifactIds.contains( actualArtifactId ) );            
+        }
+    }
+    
     private void assertConstraint( String[] artifactIds, SimpleConstraint constraint )
     {
         String prefix = "Unique Artifact IDs: ";
 
-        List results = dao.query( constraint );
+        List<String> results = dao.query( constraint );
         assertNotNull( prefix + "Not Null", results );
         assertEquals( prefix + "Results.size", artifactIds.length, results.size() );
 
-        List expectedArtifactIds = Arrays.asList( artifactIds );
+        List<String> expectedArtifactIds = Arrays.asList( artifactIds );
 
-        Iterator it = results.iterator();
+        Iterator<String> it = results.iterator();
         while ( it.hasNext() )
         {
             String actualArtifactId = (String) it.next();

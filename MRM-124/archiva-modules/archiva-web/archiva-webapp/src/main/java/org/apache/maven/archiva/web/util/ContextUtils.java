@@ -80,15 +80,7 @@ public class ContextUtils
         StringBuffer baseUrl = new StringBuffer();
         
         baseUrl.append( request.getScheme() ).append( "://" );
-        baseUrl.append( request.getServerName() );
-        int portnum = request.getServerPort();
-
-        // Only add port if non-standard.
-        Integer defaultPortnum = (Integer) defaultSchemePortMap.get( request.getScheme() );
-        if ( ( defaultPortnum == null ) || ( defaultPortnum.intValue() != portnum ) )
-        {
-            baseUrl.append( ":" ).append( String.valueOf( portnum ) );
-        }
+        baseUrl.append( getServerName( request ) );
         baseUrl.append( request.getContextPath() );
 
         if ( StringUtils.isNotBlank( resource ) )
@@ -102,5 +94,24 @@ public class ContextUtils
         }
 
         return baseUrl.toString();
+    }
+
+    private static String getServerName( HttpServletRequest request )
+    {
+        String name = request.getHeader( "X-Forwarded-Host" );
+        if ( name == null )
+        {
+            name = request.getServerName();
+            int portnum = request.getServerPort();
+
+            // Only add port if non-standard.
+            Integer defaultPortnum = (Integer) defaultSchemePortMap.get( request.getScheme() );
+            if ( ( defaultPortnum == null ) || ( defaultPortnum.intValue() != portnum ) )
+            {
+                name = name + ":" + String.valueOf( portnum );
+            }
+            return name;
+        }
+        return name;
     }
 }

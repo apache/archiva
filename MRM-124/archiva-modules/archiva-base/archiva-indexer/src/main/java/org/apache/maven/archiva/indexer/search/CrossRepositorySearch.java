@@ -69,4 +69,21 @@ public interface CrossRepositorySearch
      * @return the results.
      */
     public SearchResults searchForChecksum( String principal, List<String> selectedRepos, String checksum, SearchResultLimits limits );
+    
+    /**
+     * Search for a specific artifact matching the given field values. The search is performed on the bytecode
+     * index/indices.
+     * 
+     * @param principal
+     * @param selectedRepos repository to be searched
+     * @param groupId groupId to be matched
+     * @param artifactId artifactId to be matched
+     * @param version version to be matched
+     * @param className Java class or package name to be matched
+     * @param limits the limits to apply to the search results
+     * @return
+     */
+    public SearchResults executeFilteredSearch( String principal, List<String> selectedRepos, String groupId,
+                                                String artifactId, String version, String className,
+                                                SearchResultLimits limits );
 }

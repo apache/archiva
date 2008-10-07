@@ -30,20 +30,4 @@
   <bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="location" value="classpath:application.properties" />
   </bean>
-
-
-  <bean name="testXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.maven.archiva.web.xmlrpc.services.PingServiceImpl"/>
-
-  <bean name="xmlrpcServicesList" class="java.util.ArrayList">
-    <constructor-arg>
-        <ref bean="testXmlRpcService"/>
-    </constructor-arg>
-  </bean>
-
-  <bean name="xmlRpcAuthenticator" class="org.apache.maven.archiva.xmlrpc.security.XmlRpcAuthenticator">
-      <constructor-arg>
-         <ref bean="securitySystem"/>
-      </constructor-arg>
-  </bean>
-
 </beans>

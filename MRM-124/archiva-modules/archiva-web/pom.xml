@@ -32,7 +32,6 @@
     <module>archiva-webapp</module>
     <module>archiva-webdav</module>
     <module>archiva-rss</module>
-    <module>archiva-xmlrpc</module>
   </modules>
 
   <profiles>

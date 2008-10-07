@@ -74,7 +74,7 @@ public class SearchResults
     private void addBytecodeHit( BytecodeRecord bytecode )
     {
         String key = toKey( bytecode.getArtifact() );
-
+        
         SearchResultHit hit = (SearchResultHit) this.hits.get( key );
 
         if ( hit == null )
@@ -95,7 +95,8 @@ public class SearchResults
 
         key.append( StringUtils.defaultString( artifact.getModel().getRepositoryId() ) ).append( ":" );
         key.append( StringUtils.defaultString( artifact.getGroupId() ) ).append( ":" );
-        key.append( StringUtils.defaultString( artifact.getArtifactId() ) );
+        key.append( StringUtils.defaultString( artifact.getArtifactId() ) ).append( ":" );
+        key.append( StringUtils.defaultString( artifact.getVersion() ) );
 
         return key.toString();
     }

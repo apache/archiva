@@ -44,6 +44,11 @@ public class ProxyConnectorsAction
     private Map<String, AbstractRepositoryConfiguration> repoMap;
 
     /**
+     * boolean to indicate that remote repo is present. Used for Add Link
+     */
+    private boolean remoteRepoExists=false;
+    
+    /**
      * Map of Proxy Connectors.
      */
     private Map<String, List<ProxyConnectorConfiguration>> proxyConnectorMap;
@@ -57,6 +62,8 @@ public class ProxyConnectorsAction
         repoMap.putAll( config.getManagedRepositoriesAsMap() );
 
         proxyConnectorMap = createProxyConnectorMap();
+        
+        remoteRepoExists=config.getRemoteRepositories().size()>0;
     }
 
     public Map<String, AbstractRepositoryConfiguration> getRepoMap()
@@ -67,5 +74,10 @@ public class ProxyConnectorsAction
     public Map<String, List<ProxyConnectorConfiguration>> getProxyConnectorMap()
     {
         return proxyConnectorMap;
+    }
+
+	public boolean getRemoteRepoExists()
+    {
+        return remoteRepoExists;
     }
 }

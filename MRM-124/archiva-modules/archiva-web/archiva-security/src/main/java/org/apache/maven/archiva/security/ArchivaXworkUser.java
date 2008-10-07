@@ -19,27 +19,38 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.plexus.redback.users.User;
+import org.codehaus.plexus.registry.Registry;
 
 /**
  * ArchivaXworkUser 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @plexus.component role="org.apache.maven.archiva.security.ArchivaXworkUser"
  */
 public class ArchivaXworkUser
 {
-    public static String getActivePrincipal( Map<String, Object> sessionMap )
-    {
+    /**
+     * @plexus.requirement role-hint="commons-configuration"
+     */
+    private Registry registry;
+    
+    private static final String KEY = "org.codehaus.plexus.redback";
+    
+    private static String guest;
+            
+    public String getActivePrincipal( Map<String, Object> sessionMap )
+    {   
         if ( sessionMap == null )
         {
-            return ArchivaRoleConstants.PRINCIPAL_GUEST;
+            return getGuest();
         }
 
     	SecuritySession securitySession =
@@ -52,15 +63,31 @@ public class ArchivaXworkUser
 
         if ( securitySession == null )
         {
-            return ArchivaRoleConstants.PRINCIPAL_GUEST;
+            return getGuest();
         }
 
         User user = securitySession.getUser();        
         if ( user == null )
         {
-            return ArchivaRoleConstants.PRINCIPAL_GUEST;
+            return getGuest();
         }
 
         return (String) user.getPrincipal();
+    }    
+   
+    public String getGuest()
+    {
+        if( guest == null || "".equals( guest ) )
+        {
+            Registry subset = registry.getSubset( KEY );
+            guest = subset.getString( "redback.default.guest", ArchivaRoleConstants.PRINCIPAL_GUEST );
+        }
+        
+        return guest;
+    }
+    
+    public void setGuest( String guesT )
+    {
+        guest = guesT;
     }
 }

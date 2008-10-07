@@ -35,7 +35,7 @@
 
   <servlet-mapping>
   	<servlet-name>RssFeedServlet</servlet-name>
-	<url-pattern>/rss/*</url-pattern>
+	<url-pattern>/feeds/*</url-pattern>
   </servlet-mapping>
   
   <context-param>

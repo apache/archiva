@@ -205,6 +205,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+      <version>1.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl104-over-slf4j</artifactId>
       <scope>test</scope>
@@ -383,21 +389,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-xmlrpc-api</artifactId>
-        <version>1.2-SNAPSHOT</version>        
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-xmlrpc-services</artifactId>
-        <version>1.2-SNAPSHOT</version>        
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-xmlrpc-security</artifactId>
-        <version>1.2-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-rss</artifactId>
         <version>1.2-SNAPSHOT</version>
       </dependency>
@@ -515,11 +506,6 @@
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.xmlrpc</groupId>
-        <artifactId>xmlrpc-server</artifactId>
-        <version>3.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -648,7 +634,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-rbac-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
@@ -660,7 +646,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-users-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
@@ -672,7 +658,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-keys-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
@@ -684,7 +670,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-rbac-model</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -695,7 +681,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-authorization-rbac</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -706,7 +692,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-rbac-role-manager</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -717,7 +703,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-system</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -728,7 +714,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-taglib</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -739,7 +725,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-xwork-content</artifactId>
         <version>${redback.version}</version>
         <type>war</type>
@@ -751,7 +737,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.redback</groupId>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-xwork-integration</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -890,36 +876,6 @@
         <version>${jetty.version}</version>
       </dependency>
 
-      <!-- xmlrpc -->
-      <dependency>
-        <groupId>com.atlassian.xmlrpc</groupId>
-        <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
-        <version>${binder.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.atlassian.xmlrpc</groupId>
-        <artifactId>atlassian-xmlrpc-binder-server-spring</artifactId>
-        <version>${binder.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.atlassian.xmlrpc</groupId>
-        <artifactId>atlassian-xmlrpc-binder</artifactId>
-        <version>${binder.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.atlassian.xmlrpc</groupId>
-        <artifactId>atlassian-xmlrpc-binder-testing</artifactId>
-        <version>${binder.version}</version>
-        <scope>test</scope>
-      </dependency>
-
       <!-- Transitive versions to manage -->
       <dependency>
         <groupId>org.springframework</groupId>
@@ -1002,9 +958,8 @@
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-4</wagon.version>
-    <redback.version>1.0.3</redback.version>
+    <redback.version>1.1.1</redback.version>
     <jetty.version>6.1.6</jetty.version>
-    <binder.version>0.8</binder.version>
   </properties>
   <profiles>
     <profile>
@@ -1099,17 +1054,6 @@
           <id>codehaus.org.snapshots</id>
           <name>Codehaus Snapshots Repository</name>
           <url>http://snapshots.repository.codehaus.org</url>
-        </repository>
-        <repository>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-          <id>com.atlassian.snapshots</id>
-          <name>Atlassian Snapshots Repository</name>
-          <url>https://maven.atlassian.com/public-snapshot</url>
         </repository>
       </repositories>
     </profile>

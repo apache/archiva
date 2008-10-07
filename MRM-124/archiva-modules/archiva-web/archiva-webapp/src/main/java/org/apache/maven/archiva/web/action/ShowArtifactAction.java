@@ -59,6 +59,11 @@ public class ShowArtifactAction
      * @plexus.requirement
      */
     private UserRepositories userRepositories;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaXworkUser archivaXworkUser;
 
     /* .\ Input Parameters \.________________________________________ */
 
@@ -179,7 +184,7 @@ public class ShowArtifactAction
 
     private String getPrincipal()
     {
-        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
 
     private List<String> getObservableRepos()
