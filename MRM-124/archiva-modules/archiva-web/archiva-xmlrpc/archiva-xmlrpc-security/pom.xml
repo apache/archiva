@@ -47,5 +47,37 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-security</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-spring</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- use spring for the unit tests?
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+     -->
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-authorization-rbac</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-keys-memory</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-users-memory</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-rbac-memory</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
