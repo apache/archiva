@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.xmlrpc.api;
+package org.apache.archiva.web.xmlrpc.api;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

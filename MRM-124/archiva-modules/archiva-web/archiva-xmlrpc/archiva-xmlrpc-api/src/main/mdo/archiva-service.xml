@@ -25,7 +25,7 @@
   <defaults>
     <default>
       <key>package</key>
-      <value>org.apache.maven.archiva.web.xmlrpc.api</value>
+      <value>org.apache.archiva.web.xmlrpc.api</value>
     </default>
   </defaults>
   <classes>

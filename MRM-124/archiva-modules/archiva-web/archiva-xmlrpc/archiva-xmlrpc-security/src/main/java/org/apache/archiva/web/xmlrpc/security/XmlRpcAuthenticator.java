@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.xmlrpc.security;
+package org.apache.archiva.web.xmlrpc.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
