@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.xmlrpc.services;
+package org.apache.archiva.web.xmlrpc.services;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,9 +21,9 @@ package org.apache.maven.archiva.web.xmlrpc.services;
 
 import java.util.List;
 
-import org.apache.maven.archiva.web.xmlrpc.api.AdministrationService;
-import org.apache.maven.archiva.web.xmlrpc.api.ManagedRepository;
-import org.apache.maven.archiva.web.xmlrpc.api.RemoteRepository;
+import org.apache.archiva.web.xmlrpc.api.AdministrationService;
+import org.apache.archiva.web.xmlrpc.api.ManagedRepository;
+import org.apache.archiva.web.xmlrpc.api.RemoteRepository;
 
 public class AdministrationServiceImpl
     implements AdministrationService

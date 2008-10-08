@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.xmlrpc.services;
+package org.apache.archiva.web.xmlrpc.services;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.xmlrpc.services;
  * under the License.
  */
 
-import org.apache.maven.archiva.web.xmlrpc.api.TestService;
+import org.apache.archiva.web.xmlrpc.api.TestService;
 
 public class PingServiceImpl implements TestService
 {
