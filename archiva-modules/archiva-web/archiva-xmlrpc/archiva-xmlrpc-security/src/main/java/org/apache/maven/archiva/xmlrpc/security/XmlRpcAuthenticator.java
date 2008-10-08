@@ -85,6 +85,8 @@ public class XmlRpcAuthenticator
     {
         try
         {
+            //TODO authorization/permissions should be checked depending on the service being accessed
+            
             return securitySystem.authorize( session, ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE );
         }
         catch ( AuthorizationException e )
