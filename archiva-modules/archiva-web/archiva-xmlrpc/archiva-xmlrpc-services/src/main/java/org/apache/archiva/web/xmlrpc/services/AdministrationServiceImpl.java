@@ -22,15 +22,24 @@ package org.apache.archiva.web.xmlrpc.services;
 import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
-import org.apache.archiva.web.xmlrpc.api.ManagedRepository;
-import org.apache.archiva.web.xmlrpc.api.RemoteRepository;
+import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
+import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
 
 public class AdministrationServiceImpl
     implements AdministrationService
 {
-
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration archivaConfiguration;
+    
     public boolean configureDatabaseConsumer( String consumerId, boolean enable )
     {
+        //Configuration config = archivaConfiguration.getConfiguration();
+        
+        
         // TODO Auto-generated method stub
         return false;
     }
@@ -65,7 +74,7 @@ public class AdministrationServiceImpl
         return null;
     }
 
-    public List<String> getAllRepositoryConsumers( String repoId )
+    public List<String> getAllRepositoryConsumers()
     {
         // TODO Auto-generated method stub
         return null;
