@@ -35,7 +35,7 @@ public class AdministrationServiceImpl
      */
     private ArchivaConfiguration archivaConfiguration;
     
-    public boolean configureDatabaseConsumer( String consumerId, boolean enable )
+    public boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception
     {
         //Configuration config = archivaConfiguration.getConfiguration();
         
@@ -44,25 +44,27 @@ public class AdministrationServiceImpl
         return false;
     }
 
-    public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable )
+    public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable ) throws Exception
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
+    public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version ) throws Exception
+    {
+        // TODO implement delete artifact in Archiva
+        
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean executeDatabaseScanner() throws Exception
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean executeDatabaseScanner()
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean executeRepositoryScanner( String repoId )
+    public boolean executeRepositoryScanner( String repoId ) throws Exception
     {
         // TODO Auto-generated method stub
         return false;
