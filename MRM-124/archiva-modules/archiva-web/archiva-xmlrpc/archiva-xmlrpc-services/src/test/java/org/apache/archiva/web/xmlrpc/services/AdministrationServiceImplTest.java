@@ -31,6 +31,9 @@ import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
@@ -52,6 +55,10 @@ public class AdministrationServiceImplTest
     
     private AdministrationService service;
     
+    private MockControl taskSchedulerControl;
+    
+    private ArchivaTaskScheduler taskScheduler;
+        
     protected void setUp()
         throws Exception
     {
@@ -63,118 +70,13 @@ public class AdministrationServiceImplTest
         configControl = MockClassControl.createControl( Configuration.class );
         config = ( Configuration ) configControl.getMock();      
         
+        taskSchedulerControl = MockControl.createControl( ArchivaTaskScheduler.class );
+        taskScheduler = ( ArchivaTaskScheduler ) taskSchedulerControl.getMock();
+        
         service = new AdministrationServiceImpl();
     }
-    
-    public void testConfigureValidDatabaseConsumer()
-        throws Exception
-    {
-        /*DatabaseScanningConfiguration dbScanning = new DatabaseScanningConfiguration();
-        dbScanning.addCleanupConsumer( "cleanup-index" );
-        dbScanning.addCleanupConsumer( "cleanup-database" );
-        dbScanning.addUnprocessedConsumer( "unprocessed-artifacts" );
-        dbScanning.addUnprocessedConsumer( "unprocessed-poms" );
         
-     // test enable
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.getDatabaseScanning(), dbScanning );
-        
-        config.setDatabaseScanning( dbScanning );
-        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        configControl.setVoidCallable();
-        
-        archivaConfig.save( config );
-        archivaConfigControl.setVoidCallable();
-        
-        archivaConfigControl.replay();
-        configControl.replay();
-        
-        boolean success = service.configureDatabaseConsumer( "new-cleanup-consumer", true ); 
-        
-        archivaConfigControl.verify();
-        configControl.verify();
-        
-        assertTrue( success );
-        
-      // test disable 
-        archivaConfigControl.reset();
-        configControl.reset();
-        
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.getDatabaseScanning(), dbScanning );
-        
-        config.setDatabaseScanning( dbScanning );
-        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        configControl.setVoidCallable();
-        
-        archivaConfig.save( config );
-        archivaConfigControl.setVoidCallable();
-        
-        archivaConfigControl.replay();
-        configControl.replay();
-        
-        success = service.configureDatabaseConsumer( "new-cleanup-consumer", false ); 
-        
-        archivaConfigControl.verify();
-        configControl.verify();
-        
-        assertTrue( success );*/
-    }
-    
-    public void testConfigureInvalidDatabaseConsumer()
-        throws Exception
-    {
-        
-    }
-    
-    public void testConfigureValidRepositoryConsumer()
-        throws Exception
-    {
-        // test enable & disable
-    }
-    
-    public void testConfigureInvalidRepositoryConsumer()
-        throws Exception
-    {
-    
-    }
-    
-    public void testDeleteArtifactArtifactExists()
-        throws Exception
-    {
-    
-    }
-    
-    public void testDeleteArtifactArtifactDoesNotExist()
-        throws Exception
-    {
-    
-    }
-    
-    public void testDeleteArtifacRepositoryDoesNotExist()
-        throws Exception
-    {
-    
-    }
-    
-    public void testExecuteRepoScannerRepoExists()
-        throws Exception
-    {
-    
-    }
-    
-    public void testExecuteRepoScannerRepoDoesNotExist()
-        throws Exception
-    {
-    
-    }
-    
-    public void testExecuteDbScanner()
-        throws Exception
-    {
-        
-    }
-    
+  // DATABASE CONSUMERS
     public void testGetAllDbConsumers()
         throws Exception
     {
@@ -203,10 +105,98 @@ public class AdministrationServiceImplTest
         assertTrue( dbConsumers.contains( "unprocessed-poms" ) );*/
     }
     
+/*    public void testConfigureValidDatabaseConsumer()
+        throws Exception
+    {
+        DatabaseScanningConfiguration dbScanning = new DatabaseScanningConfiguration();
+        dbScanning.addCleanupConsumer( "cleanup-index" );
+        dbScanning.addCleanupConsumer( "cleanup-database" );
+        dbScanning.addUnprocessedConsumer( "unprocessed-artifacts" );
+        dbScanning.addUnprocessedConsumer( "unprocessed-poms" );
+     
+      //TODO mock checking whether the db consumer is valid or not
+        
+     // test enable
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.getDatabaseScanning(), dbScanning );
+        
+        config.setDatabaseScanning( dbScanning );
+        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        configControl.setVoidCallable();
+        
+        archivaConfig.save( config );
+        archivaConfigControl.setVoidCallable();
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+        
+        try
+        {
+            boolean success = service.configureDatabaseConsumer( "new-cleanup-consumer", true );
+            assertTrue( success );
+        }
+        catch ( Exception e )
+        {
+            fail( "An exception should not have been thrown." );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+                
+      // test disable 
+        archivaConfigControl.reset();
+        configControl.reset();
+        
+      //TODO mock checking whether the db consumer is valid or not
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.getDatabaseScanning(), dbScanning );
+        
+        config.setDatabaseScanning( dbScanning );
+        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        configControl.setVoidCallable();
+        
+        archivaConfig.save( config );
+        archivaConfigControl.setVoidCallable();
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+        
+        try
+        {
+            boolean success = service.configureDatabaseConsumer( "new-cleanup-consumer", false );
+            assertTrue( success );
+        }
+        catch ( Exception e )
+        {
+            fail( "An exception should not have been thrown." );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+    }
+    
+    public void testConfigureInvalidDatabaseConsumer()
+        throws Exception
+    {
+        //TODO mock checking whether the db consumer is valid or not
+        
+        try
+        {
+            service.configureDatabaseConsumer( "invalid-consumer", true );
+            fail( "An exception should have been thrown." );
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Invalid database consumer.", e.getMessage() );
+        }
+    }
+    
+ // REPOSITORY CONSUMERS
     public void testGetAllRepoConsumers()
         throws Exception
     {
-        /*RepositoryScanningConfiguration repoScanning = new RepositoryScanningConfiguration();
+        RepositoryScanningConfiguration repoScanning = new RepositoryScanningConfiguration();
         repoScanning.addKnownContentConsumer( "index-artifacts" );
         repoScanning.addKnownContentConsumer( "index-poms" );
         repoScanning.addKnownContentConsumer( "fix-checksums" );
@@ -230,13 +220,265 @@ public class AdministrationServiceImplTest
         assertTrue( repoConsumers.contains( "index-poms" ) );
         assertTrue( repoConsumers.contains( "fix-checksums" ) );
         assertTrue( repoConsumers.contains( "check-poms" ) );
-        assertTrue( repoConsumers.contains( "check-metadata" ) );*/
+        assertTrue( repoConsumers.contains( "check-metadata" ) );
     }
+    
+    public void testConfigureValidRepositoryConsumer()
+        throws Exception
+    {
+        //TODO mock checking whether the repo consumer is valid or not
+                
+        RepositoryScanningConfiguration repoScanning = new RepositoryScanningConfiguration();
+        repoScanning.addKnownContentConsumer( "index-artifacts" );
+        repoScanning.addKnownContentConsumer( "index-poms" );
+        repoScanning.addKnownContentConsumer( "fix-checksums" );
+        repoScanning.addInvalidContentConsumer( "check-poms" );
+        repoScanning.addInvalidContentConsumer( "check-metadata" );
+        
+     // test enable
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning );
+        
+        config.setRepositoryScanning( repoScanning );
+        
+        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        configControl.setVoidCallable();
+        
+        archivaConfig.save( config );
+        archivaConfigControl.setVoidCallable();
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+        
+        try
+        {
+            boolean success = service.configureRepositoryConsumer( null, "new-repo-consumer", true );
+            assertTrue( success );
+        }
+        catch ( Exception e )
+        {
+            fail( "An exception should not have been thrown." );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+                
+      // test disable 
+        archivaConfigControl.reset();
+        configControl.reset();
+        
+      //TODO mock checking whether the repo consumer is valid or not
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning );
+        
+        config.setRepositoryScanning( repoScanning );
+        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        configControl.setVoidCallable();
+        
+        archivaConfig.save( config );
+        archivaConfigControl.setVoidCallable();
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+        
+        try
+        {
+            boolean success = service.configureRepositoryConsumer( null, "new-repo-consumer", false );
+            assertTrue( success );
+        }
+        catch ( Exception e )
+        {
+            fail( "An excecption should not have been thrown." );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();        
+    }
+    
+    public void testConfigureInvalidRepositoryConsumer()
+        throws Exception
+    {
+        //TODO mock checking whether the repo consumer is valid or not
+        
+        try
+        {
+            service.configureRepositoryConsumer( null, "invalid-consumer", true );
+            fail( "An exception should have been thrown." );
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Invalid database consumer.", e.getMessage() );
+        }
+    }
+
+// DELETE ARTIFACT
+    
+    public void testDeleteArtifactArtifactExists()
+        throws Exception
+    {
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
+                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
+        
+        // TODO 
+        // - mock checking of artifact existence in the repo
+        // - mock artifact delete
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+       
+        try
+        {
+            boolean success = service.deleteArtifact( "internal", "org.apache.archiva", "archiva-test", "1.0" );
+            assertTrue( success ); 
+        }
+        catch ( Exception e )
+        {
+            fail( "An exception should not have been thrown." );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+    }
+    
+    public void testDeleteArtifactArtifactDoesNotExist()
+        throws Exception
+    {
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
+                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
+        
+        // TODO mock checking of artifact existence in the repo
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+       
+        try
+        {
+            service.deleteArtifact( "internal", "org.apache.archiva", "archiva-test", "1.0" );
+            fail( "An exception should have been thrown." );
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Artifact does not exist.", e.getMessage() );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+    }
+    
+    public void testDeleteArtifacRepositoryDoesNotExist()
+        throws Exception
+    {
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), null );
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+       
+        try
+        {
+            service.deleteArtifact( "internal", "org.apache.archiva", "archiva-test", "1.0" );
+            fail( "An exception should have been thrown." );
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Repository does not exist.", e.getMessage() );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+    }
+    
+// REPO SCANNING
+    
+    public void testExecuteRepoScannerRepoExists()
+        throws Exception
+    {        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
+                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
+        
+        RepositoryTask task = new RepositoryTask();
+        
+        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingAnyRepositoryTask(), false );
+        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingRepositoryTask( "internal" ), false );
+        
+        taskScheduler.queueRepositoryTask( task );
+        taskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        taskSchedulerControl.setVoidCallable();
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+        taskSchedulerControl.replay();
+
+        try
+        {
+            boolean success = service.executeRepositoryScanner( "internal" );
+            assertTrue( success );
+        }
+        catch ( Exception e )
+        {
+            fail( "An exception should not have been thrown." );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+        taskSchedulerControl.verify();
+    }
+    
+    public void testExecuteRepoScannerRepoDoesNotExist()
+        throws Exception
+    {
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), null );
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+       
+        try
+        {
+            service.executeRepositoryScanner( "internal" );
+            fail( "An exception should have been thrown." );
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Repository does not exist.", e.getMessage() );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+    }
+    
+ // DATABASE SCANNING
+    
+    public void testExecuteDbScanner()
+        throws Exception
+    {
+        DatabaseTask task = new DatabaseTask();
+        
+        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingDatabaseTask(), false );
+                
+        taskScheduler.queueDatabaseTask( task );
+        taskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        taskSchedulerControl.setVoidCallable();
+        
+        taskSchedulerControl.replay();
+
+        boolean success = service.executeDatabaseScanner();
+        
+        taskSchedulerControl.verify();        
+        
+        assertTrue( success );
+    }
+     
+ // REPOSITORIES
     
     public void testGetAllManagedRepositories()
         throws Exception
     {
-        /*List<ManagedRepositoryConfiguration> managedRepos = new ArrayList<ManagedRepositoryConfiguration>();        
+        List<ManagedRepositoryConfiguration> managedRepos = new ArrayList<ManagedRepositoryConfiguration>();        
         managedRepos.add( createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
         managedRepos.add( createManagedRepo( "snapshots", "default", "Snapshots Repository", false, true ) );
         
@@ -255,13 +497,13 @@ public class AdministrationServiceImplTest
         assertEquals( 2, repos.size() );
                 
         assertManagedRepo( ( ManagedRepository ) repos.get( 0 ), managedRepos.get( 0 ) );
-        assertManagedRepo( ( ManagedRepository ) repos.get( 1 ), managedRepos.get( 1 ) );*/
+        assertManagedRepo( ( ManagedRepository ) repos.get( 1 ), managedRepos.get( 1 ) );
     }
 
     public void testGetAllRemoteRepositories()
         throws Exception
     {
-        /*List<RemoteRepositoryConfiguration> remoteRepos = new ArrayList<RemoteRepositoryConfiguration>(); 
+        List<RemoteRepositoryConfiguration> remoteRepos = new ArrayList<RemoteRepositoryConfiguration>(); 
         remoteRepos.add( createRemoteRepository( "central", "Central Repository", "default", "http://repo1.maven.org/maven2") );
         remoteRepos.add( createRemoteRepository( "dummy", "Dummy Remote Repository", "legacy", "http://dummy.com/dummy") );
         
@@ -280,9 +522,9 @@ public class AdministrationServiceImplTest
         assertEquals( 2, repos.size() );
          
         assertRemoteRepo( (RemoteRepository) repos.get( 0 ), remoteRepos.get( 0 ) );
-        assertRemoteRepo( (RemoteRepository) repos.get( 1 ), remoteRepos.get( 1 ) );        */
+        assertRemoteRepo( (RemoteRepository) repos.get( 1 ), remoteRepos.get( 1 ) );        
     }
-
+*/
     private void assertRemoteRepo( RemoteRepository remoteRepo, RemoteRepositoryConfiguration expectedRepoConfig )
     {
         assertEquals( expectedRepoConfig.getId(), remoteRepo.getId() );

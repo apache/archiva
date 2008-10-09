@@ -29,22 +29,78 @@ import com.atlassian.xmlrpc.ServiceObject;
 @ServiceObject( "Administration" )
 public interface AdministrationService
 {
-    public boolean executeRepositoryScanner( String repoId );
+    /**
+     * Executes repository scanner on the given repository.
+     *  
+     * @param repoId id of the repository to be scanned
+     * @return
+     * @throws Exception
+     */
+    public boolean executeRepositoryScanner( String repoId ) throws Exception;
+   
+    /**
+     * Executes the database scanner.
+     * 
+     * @return
+     * @throws Exception
+     */
+    public boolean executeDatabaseScanner() throws Exception;
 
-    public boolean executeDatabaseScanner();
-
+    /**
+     * Gets all available database consumers.
+     * @return
+     */
     public List<String> getAllDatabaseConsumers();
+   
+    /**
+     * Configures (enable or disable) database consumer.
+     * 
+     * @param consumerId id of the database consumer
+     * @param enable flag whether to enable or disable the specified consumer
+     * @return
+     * @throws Exception
+     */
+    public boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception;
 
-    public boolean configureDatabaseConsumer( String consumerId, boolean enable );
-
-    // TODO should we already implement config of consumers per repository?
-    public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable );
-
+    /**
+     * Gets all available repository consumers.
+     * 
+     * @return
+     */
     public List<String> getAllRepositoryConsumers();
+    
+    // TODO should we already implement config of consumers per repository?
+    public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable ) throws Exception;
 
+    /**
+     * Gets all managed repositories.
+     * 
+     * @return
+     */
     public List<ManagedRepository> getAllManagedRepositories();
 
+    /**
+     * Gets all remote repositories.
+     * 
+     * @return
+     */
     public List<RemoteRepository> getAllRemoteRepositories();
 
-    public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version );
+    /**
+     * Deletes given artifact from the specified repository.
+     * 
+     * @param repoId id of the repository where the artifact to be deleted resides
+     * @param groupId groupId of the artifact to be deleted
+     * @param artifactId artifactId of the artifact to be deleted
+     * @param version version of the artifact to be deleted
+     * @return
+     * @throws Exception
+     */
+    public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
+        throws Exception;
+    
+    //TODO 
+    // consider the following as additional services:
+    // - getAllConfiguredRepositoryConsumers( String repoId ) - list all enabled consumers for the repo
+    // - getAllConfiguredDatabaseConsumers() - list all enabled db consumers
 }
