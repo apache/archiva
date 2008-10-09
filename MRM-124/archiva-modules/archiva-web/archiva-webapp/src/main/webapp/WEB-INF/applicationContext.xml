@@ -32,10 +32,13 @@
   </bean>
   
   <bean name="testXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.maven.archiva.web.xmlrpc.services.PingServiceImpl"/>
+  
+  <bean name="administrationXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.maven.archiva.web.xmlrpc.services.AdministrationServiceImpl"/>
 
   <bean name="xmlrpcServicesList" class="java.util.ArrayList">
     <constructor-arg>
         <ref bean="testXmlRpcService"/>
+        <ref bean="administrationXmlRpcService"/>
     </constructor-arg>
   </bean>
 

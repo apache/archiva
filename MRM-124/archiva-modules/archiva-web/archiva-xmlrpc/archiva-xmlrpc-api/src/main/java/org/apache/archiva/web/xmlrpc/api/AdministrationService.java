@@ -21,6 +21,9 @@ package org.apache.archiva.web.xmlrpc.api;
 
 import java.util.List;
 
+import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
+import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
+
 import com.atlassian.xmlrpc.ServiceObject;
 
 @ServiceObject( "Administration" )
@@ -37,7 +40,7 @@ public interface AdministrationService
     // TODO should we already implement config of consumers per repository?
     public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable );
 
-    public List<String> getAllRepositoryConsumers( String repoId );
+    public List<String> getAllRepositoryConsumers();
 
     public List<ManagedRepository> getAllManagedRepositories();
 
