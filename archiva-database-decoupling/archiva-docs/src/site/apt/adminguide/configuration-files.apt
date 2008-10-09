@@ -13,8 +13,6 @@ Configuration Files of Apache Archiva
 
     * <<<security.properties>>> - this configures the security as described in the {{{security.html} security configuration documentation}}
 
-    * <<<plexus.xml>>> - only applies when running the standalone Archiva instance, as described in the {{{standalone.html} installing Archiva standalone documentation}}
-
   This section will focus on the <<<archiva.xml>>> file.
 
 * The Archiva configuration file
