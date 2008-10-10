@@ -19,6 +19,7 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
@@ -26,6 +27,13 @@ import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
+import org.codehaus.plexus.registry.RegistryException;
 
 public class AdministrationServiceImpl
     implements AdministrationService
@@ -35,21 +43,72 @@ public class AdministrationServiceImpl
      */
     private ArchivaConfiguration archivaConfiguration;
     
+    private RepositoryContentConsumers consumerUtil;
+    
     public boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception
     {
         //Configuration config = archivaConfiguration.getConfiguration();
-        
-        
+             
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable ) throws Exception
+    /**
+     * @see AdministrationService#configureRepositoryConsumer(String, String, boolean)
+     */
+    public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable )
+        throws Exception
     {
-        // TODO Auto-generated method stub
-        return false;
+        List<KnownRepositoryContentConsumer> knownConsumers = consumerUtil.getAvailableKnownConsumers();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = consumerUtil.getAvailableInvalidConsumers();
+        
+        boolean found = false;
+        boolean isKnownContentConsumer = false;
+        for( KnownRepositoryContentConsumer consumer : knownConsumers )
+        {
+            if( consumer.getId().equals( consumerId ) )
+            {
+                found = true;
+                isKnownContentConsumer = true;
+                break;
+            }
+        }
+        
+        if( !found )
+        {
+            for( InvalidRepositoryContentConsumer consumer : invalidConsumers )
+            {
+                if( consumer.getId().equals( consumerId ) )
+                {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        
+        if( !found )
+        {
+            throw new Exception( "Invalid repository consumer." );
+        }
+        
+        Configuration config = archivaConfiguration.getConfiguration();
+        RepositoryScanningConfiguration repoScanningConfig = config.getRepositoryScanning();
+        
+        if( isKnownContentConsumer )
+        {
+            repoScanningConfig.addKnownContentConsumer( consumerId );
+        }
+        else
+        {
+            repoScanningConfig.addInvalidContentConsumer( consumerId );
+        }
+        
+        config.setRepositoryScanning( repoScanningConfig );        
+        saveConfiguration( config );
+        
+        return true;
     }
-
+    
     public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version ) throws Exception
     {
         // TODO implement delete artifact in Archiva
@@ -70,16 +129,37 @@ public class AdministrationServiceImpl
         return false;
     }
 
+    /**
+     * @see AdministrationService#getAllDatabaseConsumers()
+     */
     public List<String> getAllDatabaseConsumers()
     {
-        // TODO Auto-generated method stub
-        return null;
+        List<String> consumers = new ArrayList<String>();
+        
+        return consumers;
     }
 
+    /**
+     * @see AdministrationService#getAllRepositoryConsumers()
+     */
     public List<String> getAllRepositoryConsumers()
     {
-        // TODO Auto-generated method stub
-        return null;
+        List<String> consumers = new ArrayList<String>();
+                
+        List<KnownRepositoryContentConsumer> knownConsumers = consumerUtil.getAvailableKnownConsumers();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = consumerUtil.getAvailableInvalidConsumers();
+        
+        for( KnownRepositoryContentConsumer consumer : knownConsumers )
+        {
+            consumers.add( consumer.getId() );
+        }
+        
+        for( InvalidRepositoryContentConsumer consumer : invalidConsumers )
+        {
+            consumers.add( consumer.getId() );
+        }
+
+        return consumers;
     }
 
     public List<ManagedRepository> getAllManagedRepositories()
@@ -91,4 +171,36 @@ public class AdministrationServiceImpl
     {
         return null;
     }
+
+    private void saveConfiguration( Configuration config )
+        throws Exception
+    {
+        try
+        {
+            archivaConfiguration.save( config );
+        }
+        catch(  RegistryException e )
+        {
+            throw new Exception( "Error occurred in the registry." );
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            throw new Exception( "Error occurred while saving the configuration." );    
+        }
+    }
+    
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public RepositoryContentConsumers getConsumerUtil()
+    {
+        return consumerUtil;
+    }
+
+    public void setConsumerUtil( RepositoryContentConsumers consumerUtil )
+    {
+        this.consumerUtil = consumerUtil;
+    }    
 }

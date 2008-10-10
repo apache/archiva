@@ -31,6 +31,9 @@ import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
@@ -53,11 +56,27 @@ public class AdministrationServiceImplTest
     
     private Configuration config;
     
-    private AdministrationService service;
+    private AdministrationServiceImpl service;
     
     private MockControl taskSchedulerControl;
     
     private ArchivaTaskScheduler taskScheduler;
+    
+    private MockControl consumerUtilControl;
+    
+    private RepositoryContentConsumers consumerUtil;
+
+    private MockControl knownContentConsumerControl;
+
+    private MockControl invalidContentConsumerControl;
+
+    private KnownRepositoryContentConsumer indexArtifactConsumer;
+
+    private KnownRepositoryContentConsumer indexPomConsumer;
+
+    private InvalidRepositoryContentConsumer checkPomConsumer;
+
+    private InvalidRepositoryContentConsumer checkMetadataConsumer;
         
     protected void setUp()
         throws Exception
@@ -73,14 +92,27 @@ public class AdministrationServiceImplTest
         taskSchedulerControl = MockControl.createControl( ArchivaTaskScheduler.class );
         taskScheduler = ( ArchivaTaskScheduler ) taskSchedulerControl.getMock();
         
+        consumerUtilControl = MockClassControl.createControl( RepositoryContentConsumers.class );
+        consumerUtil = ( RepositoryContentConsumers ) consumerUtilControl.getMock();
+        
+        knownContentConsumerControl = MockControl.createControl( KnownRepositoryContentConsumer.class );
+        indexArtifactConsumer = ( KnownRepositoryContentConsumer ) knownContentConsumerControl.getMock();
+        indexPomConsumer = ( KnownRepositoryContentConsumer ) knownContentConsumerControl.getMock();
+        
+        invalidContentConsumerControl = MockControl.createControl( InvalidRepositoryContentConsumer.class );
+        checkPomConsumer = ( InvalidRepositoryContentConsumer ) invalidContentConsumerControl.getMock();
+        checkMetadataConsumer = ( InvalidRepositoryContentConsumer ) invalidContentConsumerControl.getMock();
+        
         service = new AdministrationServiceImpl();
+        service.setArchivaConfiguration( archivaConfig );
+        service.setConsumerUtil( consumerUtil );        
     }
         
   // DATABASE CONSUMERS
-    public void testGetAllDbConsumers()
+    /*    public void testGetAllDbConsumers()
         throws Exception
-    {
-        /*DatabaseScanningConfiguration dbScanning = new DatabaseScanningConfiguration();
+    {   
+        DatabaseScanningConfiguration dbScanning = new DatabaseScanningConfiguration();
         dbScanning.addCleanupConsumer( "cleanup-index" );
         dbScanning.addCleanupConsumer( "cleanup-database" );
         dbScanning.addUnprocessedConsumer( "unprocessed-artifacts" );
@@ -92,6 +124,8 @@ public class AdministrationServiceImplTest
         archivaConfigControl.replay();
         configControl.replay();
         
+        
+        
         List<String> dbConsumers = service.getAllDatabaseConsumers(); 
         
         archivaConfigControl.verify();
@@ -102,10 +136,10 @@ public class AdministrationServiceImplTest
         assertTrue( dbConsumers.contains( "cleanup-index" ) );
         assertTrue( dbConsumers.contains( "cleanup-database" ) );
         assertTrue( dbConsumers.contains( "unprocessed-artifacts" ) );
-        assertTrue( dbConsumers.contains( "unprocessed-poms" ) );*/
+        assertTrue( dbConsumers.contains( "unprocessed-poms" ) );
     }
     
-/*    public void testConfigureValidDatabaseConsumer()
+    public void testConfigureValidDatabaseConsumer()
         throws Exception
     {
         DatabaseScanningConfiguration dbScanning = new DatabaseScanningConfiguration();
@@ -192,67 +226,62 @@ public class AdministrationServiceImplTest
         }
     }
     
+    */
+    
  // REPOSITORY CONSUMERS
     public void testGetAllRepoConsumers()
         throws Exception
-    {
-        RepositoryScanningConfiguration repoScanning = new RepositoryScanningConfiguration();
-        repoScanning.addKnownContentConsumer( "index-artifacts" );
-        repoScanning.addKnownContentConsumer( "index-poms" );
-        repoScanning.addKnownContentConsumer( "fix-checksums" );
-        repoScanning.addInvalidContentConsumer( "check-poms" );
-        repoScanning.addInvalidContentConsumer( "check-metadata" );
+    {   
+        recordRepoConsumerValidation();
         
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning );
+        consumerUtilControl.replay();
+        knownContentConsumerControl.replay();
+        invalidContentConsumerControl.replay();
+                
+        List<String> repoConsumers = service.getAllRepositoryConsumers(); 
         
-        archivaConfigControl.replay();
-        configControl.replay();
-        
-        List<String> repoConsumers = service.getAllDatabaseConsumers(); 
-        
-        archivaConfigControl.verify();
-        configControl.verify();
-        
+        consumerUtilControl.verify();
+        knownContentConsumerControl.verify();
+        invalidContentConsumerControl.verify();
+                        
         assertNotNull( repoConsumers );
-        assertEquals( 5, repoConsumers.size() );
-        assertTrue( repoConsumers.contains( "index-artifacts" ) );
-        assertTrue( repoConsumers.contains( "index-poms" ) );
-        assertTrue( repoConsumers.contains( "fix-checksums" ) );
-        assertTrue( repoConsumers.contains( "check-poms" ) );
+        assertEquals( 4, repoConsumers.size() );
+        assertTrue( repoConsumers.contains( "index-artifact" ) );
+        assertTrue( repoConsumers.contains( "index-pom" ) );
+        assertTrue( repoConsumers.contains( "check-pom" ) );
         assertTrue( repoConsumers.contains( "check-metadata" ) );
     }
     
     public void testConfigureValidRepositoryConsumer()
         throws Exception
-    {
-        //TODO mock checking whether the repo consumer is valid or not
-                
+    {   
         RepositoryScanningConfiguration repoScanning = new RepositoryScanningConfiguration();
-        repoScanning.addKnownContentConsumer( "index-artifacts" );
-        repoScanning.addKnownContentConsumer( "index-poms" );
-        repoScanning.addKnownContentConsumer( "fix-checksums" );
-        repoScanning.addInvalidContentConsumer( "check-poms" );
-        repoScanning.addInvalidContentConsumer( "check-metadata" );
+        repoScanning.addKnownContentConsumer( "index-artifact" );
+        repoScanning.addKnownContentConsumer( "index-pom" );
+        repoScanning.addInvalidContentConsumer( "check-pom" );        
         
-     // test enable
+     // test enable "check-metadata" consumer
+        recordRepoConsumerValidation();
+        
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning );
         
-        config.setRepositoryScanning( repoScanning );
-        
+        config.setRepositoryScanning( repoScanning );                
         configControl.setMatcher( MockControl.ALWAYS_MATCHER );
         configControl.setVoidCallable();
         
         archivaConfig.save( config );
         archivaConfigControl.setVoidCallable();
-        
+                
+        consumerUtilControl.replay();
+        knownContentConsumerControl.replay();
+        invalidContentConsumerControl.replay();
         archivaConfigControl.replay();
-        configControl.replay();
+        configControl.replay();        
         
         try
         {
-            boolean success = service.configureRepositoryConsumer( null, "new-repo-consumer", true );
+            boolean success = service.configureRepositoryConsumer( null, "check-metadata", true );
             assertTrue( success );
         }
         catch ( Exception e )
@@ -260,14 +289,22 @@ public class AdministrationServiceImplTest
             fail( "An exception should not have been thrown." );
         }
         
+        consumerUtilControl.verify();
+        knownContentConsumerControl.verify();
+        invalidContentConsumerControl.verify();        
         archivaConfigControl.verify();
         configControl.verify();
                 
-      // test disable 
+     // test disable "check-metadata" consumer 
+        consumerUtilControl.reset();
+        knownContentConsumerControl.reset();
+        invalidContentConsumerControl.reset();        
         archivaConfigControl.reset();
         configControl.reset();
         
-      //TODO mock checking whether the repo consumer is valid or not
+        repoScanning.addInvalidContentConsumer( "check-metadata" );
+
+        recordRepoConsumerValidation();
         
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning );
@@ -278,24 +315,32 @@ public class AdministrationServiceImplTest
         
         archivaConfig.save( config );
         archivaConfigControl.setVoidCallable();
-        
+                
+        consumerUtilControl.replay();
+        knownContentConsumerControl.replay();
+        invalidContentConsumerControl.replay();
         archivaConfigControl.replay();
         configControl.replay();
         
         try
         {
-            boolean success = service.configureRepositoryConsumer( null, "new-repo-consumer", false );
+            boolean success = service.configureRepositoryConsumer( null, "check-metadata", false );
+            
+            consumerUtilControl.verify();
+            knownContentConsumerControl.verify();
+            invalidContentConsumerControl.verify();        
+            archivaConfigControl.verify();
+            configControl.verify();
+            
             assertTrue( success );
         }
         catch ( Exception e )
         {
             fail( "An excecption should not have been thrown." );
-        }
-        
-        archivaConfigControl.verify();
-        configControl.verify();        
+        }     
     }
-    
+ 
+    /*
     public void testConfigureInvalidRepositoryConsumer()
         throws Exception
     {
@@ -308,7 +353,7 @@ public class AdministrationServiceImplTest
         }
         catch ( Exception e )
         {
-            assertEquals( "Invalid database consumer.", e.getMessage() );
+            assertEquals( "Invalid repository consumer.", e.getMessage() );
         }
     }
 
@@ -565,6 +610,25 @@ public class AdministrationServiceImplTest
         repoConfig.setSnapshots( hasSnapshots );
         
         return repoConfig;
+    }
+    
+    private void recordRepoConsumerValidation()
+    {
+        List<KnownRepositoryContentConsumer> availableKnownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        availableKnownConsumers.add( indexArtifactConsumer );
+        availableKnownConsumers.add( indexPomConsumer );
+        
+        List<InvalidRepositoryContentConsumer> availableInvalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        availableInvalidConsumers.add( checkPomConsumer );
+        availableInvalidConsumers.add( checkMetadataConsumer );
+        
+        consumerUtilControl.expectAndReturn( consumerUtil.getAvailableKnownConsumers(), availableKnownConsumers );
+        knownContentConsumerControl.expectAndReturn( indexArtifactConsumer.getId(), "index-artifact" );
+        knownContentConsumerControl.expectAndReturn( indexPomConsumer.getId(), "index-pom" );
+        
+        consumerUtilControl.expectAndReturn( consumerUtil.getAvailableInvalidConsumers(), availableInvalidConsumers );
+        invalidContentConsumerControl.expectAndReturn( checkPomConsumer.getId(), "check-pom" );
+        invalidContentConsumerControl.expectAndReturn( checkMetadataConsumer.getId(), "check-metadata" );
     }
     
 }
