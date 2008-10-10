@@ -130,6 +130,9 @@ public class XmlRpcAuthenticatorTest
         
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
         
+        xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
+                                              "AdministrationService.getAllManagedRepositories" );
+        
         xmlRpcRequestControl.replay();
         configControl.replay();
         
@@ -167,6 +170,9 @@ public class XmlRpcAuthenticatorTest
         
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
         
+        xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
+                                              "AdministrationService.getAllManagedRepositories" );
+        
         xmlRpcRequestControl.replay();
         configControl.replay();
         
@@ -197,6 +203,9 @@ public class XmlRpcAuthenticatorTest
         configControl.expectAndReturn( config.getBasicUserName(), USER_ALPACA );
         
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
+        
+        xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
+                                              "AdministrationService.getAllManagedRepositories" );
         
         xmlRpcRequestControl.replay();
         configControl.replay();
