@@ -39,6 +39,16 @@ public class ManagedRepository
 
     private boolean releases = false;
    
+    public ManagedRepository( String id, String name, String url, String layout, boolean snapshots, boolean releases )
+    {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+        this.layout = layout;
+        this.snapshots = snapshots;
+        this.releases = releases;
+    }
+    
     public boolean equals(Object other)
     {
         if ( this == other)

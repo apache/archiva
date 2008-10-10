@@ -35,6 +35,14 @@ public class RemoteRepository
     
     private String layout;
 
+    public RemoteRepository( String id, String name, String url, String layout )
+    {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+        this.layout = layout;
+    }
+    
     public boolean equals(Object other)
     {
         if ( this == other)
