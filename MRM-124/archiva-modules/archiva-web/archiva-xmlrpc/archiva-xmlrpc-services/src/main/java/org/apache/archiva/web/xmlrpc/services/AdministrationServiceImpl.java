@@ -30,11 +30,19 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
+import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.codehaus.plexus.registry.RegistryException;
 
+/**
+ * AdministrationServiceImpl
+ * 
+ * @version $Id: AdministrationServiceImpl.java
+ */
 public class AdministrationServiceImpl
     implements AdministrationService
 {
@@ -43,14 +51,64 @@ public class AdministrationServiceImpl
      */
     private ArchivaConfiguration archivaConfiguration;
     
-    private RepositoryContentConsumers consumerUtil;
+    private RepositoryContentConsumers repoConsumersUtil;
     
+    private DatabaseConsumers dbConsumersUtil;
+    
+    /**
+     * @see AdministrationService#configureDatabaseConsumer(String, boolean)
+     */
     public boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception
     {
-        //Configuration config = archivaConfiguration.getConfiguration();
-             
-        // TODO Auto-generated method stub
-        return false;
+        List<DatabaseCleanupConsumer> cleanupConsumers = dbConsumersUtil.getAvailableCleanupConsumers();
+        List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers =
+            dbConsumersUtil.getAvailableUnprocessedConsumers();
+        
+        boolean found = false;
+        boolean isCleanupConsumer = false;        
+        for( DatabaseCleanupConsumer consumer : cleanupConsumers )
+        {
+            if( consumer.getId().equals( consumerId ) )
+            {
+                found = true;
+                isCleanupConsumer = true;
+                break;
+            }
+        }
+        
+        if( !found )
+        {
+            for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
+            {
+                if( consumer.getId().equals( consumerId ) )
+                {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        
+        if( !found )
+        {
+            throw new Exception( "Invalid database consumer." );
+        }
+        
+        Configuration config = archivaConfiguration.getConfiguration();
+        DatabaseScanningConfiguration dbScanningConfig = config.getDatabaseScanning();
+        
+        if( isCleanupConsumer )
+        {
+            dbScanningConfig.addCleanupConsumer( consumerId );            
+        }
+        else
+        {
+            dbScanningConfig.addUnprocessedConsumer( consumerId );
+        }
+        
+        config.setDatabaseScanning( dbScanningConfig );        
+        saveConfiguration( config );
+        
+        return true;
     }
 
     /**
@@ -59,8 +117,10 @@ public class AdministrationServiceImpl
     public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable )
         throws Exception
     {
-        List<KnownRepositoryContentConsumer> knownConsumers = consumerUtil.getAvailableKnownConsumers();
-        List<InvalidRepositoryContentConsumer> invalidConsumers = consumerUtil.getAvailableInvalidConsumers();
+        // TODO use repoId once consumers are configured per repository! (MRM-930)
+        
+        List<KnownRepositoryContentConsumer> knownConsumers = repoConsumersUtil.getAvailableKnownConsumers();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = repoConsumersUtil.getAvailableInvalidConsumers();
         
         boolean found = false;
         boolean isKnownContentConsumer = false;
@@ -109,6 +169,9 @@ public class AdministrationServiceImpl
         return true;
     }
     
+    /**
+     * @see AdministrationService#deleteArtifact(String, String, String, String)
+     */
     public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version ) throws Exception
     {
         // TODO implement delete artifact in Archiva
@@ -117,12 +180,18 @@ public class AdministrationServiceImpl
         return false;
     }
 
+    /**
+     * @see AdministrationService#executeDatabaseScanner()
+     */
     public boolean executeDatabaseScanner() throws Exception
     {
         // TODO Auto-generated method stub
         return false;
     }
 
+    /**
+     * @see AdministrationService#executeRepositoryScanner(String)
+     */
     public boolean executeRepositoryScanner( String repoId ) throws Exception
     {
         // TODO Auto-generated method stub
@@ -136,6 +205,19 @@ public class AdministrationServiceImpl
     {
         List<String> consumers = new ArrayList<String>();
         
+        List<DatabaseCleanupConsumer> cleanupConsumers = dbConsumersUtil.getAvailableCleanupConsumers();
+        List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers = dbConsumersUtil.getAvailableUnprocessedConsumers();
+        
+        for( DatabaseCleanupConsumer consumer : cleanupConsumers )
+        {
+            consumers.add( consumer.getId() );
+        }  
+        
+        for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
+        {
+            consumers.add( consumer.getId() );
+        } 
+        
         return consumers;
     }
 
@@ -146,8 +228,8 @@ public class AdministrationServiceImpl
     {
         List<String> consumers = new ArrayList<String>();
                 
-        List<KnownRepositoryContentConsumer> knownConsumers = consumerUtil.getAvailableKnownConsumers();
-        List<InvalidRepositoryContentConsumer> invalidConsumers = consumerUtil.getAvailableInvalidConsumers();
+        List<KnownRepositoryContentConsumer> knownConsumers = repoConsumersUtil.getAvailableKnownConsumers();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = repoConsumersUtil.getAvailableInvalidConsumers();
         
         for( KnownRepositoryContentConsumer consumer : knownConsumers )
         {
@@ -162,11 +244,17 @@ public class AdministrationServiceImpl
         return consumers;
     }
 
+    /**
+     * @see AdministrationService#getAllManagedRepositories()
+     */
     public List<ManagedRepository> getAllManagedRepositories()
     {
         return null;
     }
 
+    /**
+     * @see AdministrationService#getAllRemoteRepositories()
+     */
     public List<RemoteRepository> getAllRemoteRepositories()
     {
         return null;
@@ -194,13 +282,13 @@ public class AdministrationServiceImpl
         this.archivaConfiguration = archivaConfiguration;
     }
 
-    public RepositoryContentConsumers getConsumerUtil()
+    public void setRepoConsumersUtil( RepositoryContentConsumers consumerUtil )
     {
-        return consumerUtil;
-    }
-
-    public void setConsumerUtil( RepositoryContentConsumers consumerUtil )
-    {
-        this.consumerUtil = consumerUtil;
+        this.repoConsumersUtil = consumerUtil;
     }    
+    
+    public void setDbConsumersUtil( DatabaseConsumers consumerUtil )
+    {
+        this.dbConsumersUtil = consumerUtil;
+    }   
 }
