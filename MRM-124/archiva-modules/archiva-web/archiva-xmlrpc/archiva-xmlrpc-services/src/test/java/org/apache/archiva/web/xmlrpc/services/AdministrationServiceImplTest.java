@@ -22,7 +22,6 @@ package org.apache.archiva.web.xmlrpc.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
