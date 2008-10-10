@@ -142,6 +142,7 @@ public class AdministrationServiceImplTest
         service.setArchivaConfiguration( archivaConfig );
         service.setRepoConsumersUtil( repoConsumersUtil );     
         service.setDbConsumersUtil( dbConsumersUtil );
+        service.setTaskScheduler( taskScheduler );
     }
   
 /* Tests for database consumers  */
@@ -496,10 +497,11 @@ public class AdministrationServiceImplTest
         archivaConfigControl.verify();
         configControl.verify();
     }
+    */
     
-// REPO SCANNING
+/* Tests for repository scanning  */
     
-    public void testExecuteRepoScannerRepoExists()
+    public void testExecuteRepoScannerRepoExistsAndNotBeingScanned()
         throws Exception
     {        
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
@@ -508,7 +510,7 @@ public class AdministrationServiceImplTest
         
         RepositoryTask task = new RepositoryTask();
         
-        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingAnyRepositoryTask(), false );
+        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingAnyRepositoryTask(), true );
         taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingRepositoryTask( "internal" ), false );
         
         taskScheduler.queueRepositoryTask( task );
@@ -523,6 +525,35 @@ public class AdministrationServiceImplTest
         {
             boolean success = service.executeRepositoryScanner( "internal" );
             assertTrue( success );
+        }
+        catch ( Exception e )
+        {
+            fail( "An exception should not have been thrown." );
+        }
+        
+        archivaConfigControl.verify();
+        configControl.verify();
+        taskSchedulerControl.verify();
+    }
+    
+    public void testExecuteRepoScannerRepoExistsButBeingScanned()
+        throws Exception
+    {        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
+                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
+        
+        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingAnyRepositoryTask(), true );
+        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingRepositoryTask( "internal" ), true);
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+        taskSchedulerControl.replay();
+    
+        try
+        {
+            boolean success = service.executeRepositoryScanner( "internal" );
+            assertFalse( success );
         }
         catch ( Exception e )
         {
@@ -557,9 +588,9 @@ public class AdministrationServiceImplTest
         configControl.verify();
     }
     
- // DATABASE SCANNING
+/* Tests for db scanning  */
     
-    public void testExecuteDbScanner()
+    public void testExecuteDbScannerDbNotBeingScanned()
         throws Exception
     {
         DatabaseTask task = new DatabaseTask();
@@ -578,8 +609,21 @@ public class AdministrationServiceImplTest
         
         assertTrue( success );
     }
- */
     
+    public void testExecuteDbScannerDbIsBeingScanned()
+        throws Exception
+    {        
+        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingDatabaseTask(), true );
+                
+        taskSchedulerControl.replay();
+
+        boolean success = service.executeDatabaseScanner();
+        
+        taskSchedulerControl.verify();        
+        
+        assertFalse( success );
+    }
+     
 /* Tests for querying repositories  */
     
     public void testGetAllManagedRepositories()

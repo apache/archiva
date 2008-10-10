@@ -38,6 +38,11 @@ import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
+import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.registry.RegistryException;
 
 /**
@@ -63,7 +68,10 @@ public class AdministrationServiceImpl
      */
     private DatabaseConsumers dbConsumersUtil;
     
-    private String requestUrl;    
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaTaskScheduler taskScheduler;
     
     /**
      * @see AdministrationService#configureDatabaseConsumer(String, boolean)
@@ -195,8 +203,18 @@ public class AdministrationServiceImpl
      */
     public boolean executeDatabaseScanner() throws Exception
     {
-        // TODO Auto-generated method stub
-        return false;
+        if ( taskScheduler.isProcessingDatabaseTask() )
+        {
+            return false;
+        }
+
+        DatabaseTask task = new DatabaseTask();
+        task.setName( DefaultArchivaTaskScheduler.DATABASE_JOB + ":user-requested-via-web-service" );
+        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+        
+        taskScheduler.queueDatabaseTask( task );            
+        
+        return true;
     }
 
     /**
@@ -204,8 +222,28 @@ public class AdministrationServiceImpl
      */
     public boolean executeRepositoryScanner( String repoId ) throws Exception
     {
-        // TODO Auto-generated method stub
-        return false;
+        Configuration config = archivaConfiguration.getConfiguration();
+        if( config.findManagedRepositoryById( repoId ) == null )
+        {
+            throw new Exception( "Repository does not exist." );
+        }
+        
+        if ( taskScheduler.isProcessingAnyRepositoryTask() )
+        {
+            if ( taskScheduler.isProcessingRepositoryTask( repoId ) )
+            {
+                return false;
+            }
+        }
+
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repoId );
+        task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repoId );
+        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+
+        taskScheduler.queueRepositoryTask( task );            
+        
+        return true;
     }
 
     /**
@@ -327,5 +365,10 @@ public class AdministrationServiceImpl
     public void setDbConsumersUtil( DatabaseConsumers consumerUtil )
     {
         this.dbConsumersUtil = consumerUtil;
+    }
+
+    public void setTaskScheduler( ArchivaTaskScheduler taskScheduler )
+    {
+        this.taskScheduler = taskScheduler;
     }   
 }
