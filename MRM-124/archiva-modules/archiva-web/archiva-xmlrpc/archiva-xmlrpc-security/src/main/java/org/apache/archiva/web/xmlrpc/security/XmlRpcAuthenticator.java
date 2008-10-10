@@ -33,6 +33,13 @@ import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 
+/**
+ * XmlRpcAuthenticator
+ * 
+ * Custom authentication and authorization handler for xmlrpc requests.
+ * 
+ * @version $Id 
+ */
 public class XmlRpcAuthenticator
     implements AuthenticationHandler
 {
@@ -45,14 +52,16 @@ public class XmlRpcAuthenticator
 
     public boolean isAuthorized( XmlRpcRequest pRequest )
         throws XmlRpcException
-    {
+    {   
         if ( pRequest.getConfig() instanceof XmlRpcHttpRequestConfigImpl )
         {
             XmlRpcHttpRequestConfigImpl config = (XmlRpcHttpRequestConfigImpl) pRequest.getConfig();
             SecuritySession session =
                 authenticate( new PasswordBasedAuthenticationDataSource( config.getBasicUserName(),
                                                                          config.getBasicPassword() ) );
-            AuthorizationResult result = authorize( session );
+            String method = pRequest.getMethodName();            
+            AuthorizationResult result = authorize( session, method );
+            
             return result.isAuthorized();
         }
 
@@ -80,14 +89,25 @@ public class XmlRpcAuthenticator
         }
     }
 
-    private AuthorizationResult authorize( SecuritySession session )
+    private AuthorizationResult authorize( SecuritySession session, String methodName )
         throws XmlRpcException
-    {
+    {   
         try
-        {
-            //TODO authorization/permissions should be checked depending on the service being accessed
-            
-            return securitySystem.authorize( session, ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE );
+        {     
+            // sample attempt at simplifying authorization checking of requested service method
+            // TODO test with a sample client to see if this would work!
+            if ( ServiceMethodsPermissionsMapping.SERVICE_METHODS_FOR_OPERATION_MANAGE_CONFIGURATION.contains( methodName ) )
+            {                
+                return securitySystem.authorize( session, ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION );
+            }
+            else if ( ServiceMethodsPermissionsMapping.SERVICE_METHODS_FOR_OPERATION_RUN_INDEXER.contains( methodName ) )
+            {                
+                return securitySystem.authorize( session, ArchivaRoleConstants.OPERATION_RUN_INDEXER );
+            }
+            else
+            {
+                return securitySystem.authorize( session, ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE );
+            }
         }
         catch ( AuthorizationException e )
         {
