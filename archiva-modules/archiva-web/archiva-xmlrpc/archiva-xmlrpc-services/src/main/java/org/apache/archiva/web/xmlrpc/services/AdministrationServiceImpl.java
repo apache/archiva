@@ -29,6 +29,8 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
@@ -51,9 +53,17 @@ public class AdministrationServiceImpl
      */
     private ArchivaConfiguration archivaConfiguration;
     
+    /**
+     * @plexus.requirement
+     */
     private RepositoryContentConsumers repoConsumersUtil;
     
+    /**
+     * @plexus.requirement
+     */
     private DatabaseConsumers dbConsumersUtil;
+    
+    private String requestUrl;    
     
     /**
      * @see AdministrationService#configureDatabaseConsumer(String, boolean)
@@ -249,7 +259,21 @@ public class AdministrationServiceImpl
      */
     public List<ManagedRepository> getAllManagedRepositories()
     {
-        return null;
+        List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>();
+        
+        Configuration config = archivaConfiguration.getConfiguration();
+        List<ManagedRepositoryConfiguration> managedRepoConfigs = config.getManagedRepositories();
+        
+        for( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
+        {
+            // TODO fix resolution of repo url!            
+            ManagedRepository repo =
+                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), "URL", repoConfig.getLayout(),
+                                       repoConfig.isSnapshots(), repoConfig.isReleases() );  
+            managedRepos.add( repo );
+        }
+        
+        return managedRepos;
     }
 
     /**
@@ -257,7 +281,20 @@ public class AdministrationServiceImpl
      */
     public List<RemoteRepository> getAllRemoteRepositories()
     {
-        return null;
+        List<RemoteRepository> remoteRepos = new ArrayList<RemoteRepository>();
+        
+        Configuration config = archivaConfiguration.getConfiguration();
+        List<RemoteRepositoryConfiguration> remoteRepoConfigs = config.getRemoteRepositories();
+        
+        for( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
+        {
+            RemoteRepository repo =
+                new RemoteRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl(),
+                                      repoConfig.getLayout() );
+            remoteRepos.add( repo );
+        }
+        
+        return remoteRepos;
     }
 
     private void saveConfiguration( Configuration config )
