@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
@@ -135,7 +136,9 @@ public class ProjectModelToDatabaseListener
             return;
         }
 
-        model.setOrigin( "filesystem" );
+        // Clone model, since DAO while detachingCopy resets contents of the model
+        // this changes behaviour of EffectiveProjectModelFilter
+        model = ArchivaModelCloner.clone( model );
 
         try
         {

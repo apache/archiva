@@ -81,19 +81,28 @@ public class EffectiveProjectModelFilterTest
     public void testBuildEffectiveProject()
         throws Exception
     {
+        assertEffectiveProject(
+                "/org/apache/maven/archiva/archiva-model/1.0-SNAPSHOT/archiva-model-1.0-SNAPSHOT.pom",
+        "/archiva-model-effective.pom");
+        assertEffectiveProject(
+                "/test-project/test-project-endpoint-ejb/2.4.4/test-project-endpoint-ejb-2.4.4.pom",
+        "/test-project-model-effective.pom");
+    }
+
+    private void assertEffectiveProject(String pomFile, String effectivePomFile) throws Exception,
+            ProjectModelException {
         initTestResolverFactory();
         EffectiveProjectModelFilter filter = lookupEffective();
 
-        ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY
-            + "/org/apache/maven/archiva/archiva-model/1.0-SNAPSHOT/archiva-model-1.0-SNAPSHOT.pom" );
+        ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY + pomFile );
 
         ArchivaProjectModel effectiveModel = filter.filter( startModel );
 
-        ArchivaProjectModel expectedModel = createArchivaProjectModel( "src/test/expected-poms/"
-            + "/archiva-model-effective.pom" );
+        ArchivaProjectModel expectedModel = createArchivaProjectModel( "src/test/expected-poms/" + effectivePomFile);
 
         assertModel( expectedModel, effectiveModel );
     }
+
 
     /**
      * [MRM-510] In Repository Browse, the first unique snapshot version clicked is getting persisted in the 
@@ -272,7 +281,7 @@ public class EffectiveProjectModelFilterTest
         while ( it.hasNext() )
         {
             Dependency dep = it.next();
-            String key = Dependency.toVersionlessKey( dep );
+            String key = Dependency.toKey( dep );
             map.put( key, dep );
         }
         return map;

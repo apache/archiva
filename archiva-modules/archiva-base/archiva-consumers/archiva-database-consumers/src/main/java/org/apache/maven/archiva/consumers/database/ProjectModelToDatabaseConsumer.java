@@ -32,6 +32,7 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Keys;
 import org.apache.maven.archiva.model.RepositoryProblem;
@@ -41,7 +42,6 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
-import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel300Reader;
@@ -84,11 +84,6 @@ public class ProjectModelToDatabaseConsumer
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
-
-    /**
-     * @plexus.requirement role-hint="expression"
-     */
-    private ProjectModelFilter expressionModelFilter;
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.repository.project.ProjectModelFilter"
@@ -160,23 +155,22 @@ public class ProjectModelToDatabaseConsumer
         {
             model = reader.read( artifactFile );
 
-            model.setOrigin( "filesystem" );
-
             // The version should be updated to the artifact/filename version if it is a unique snapshot
             if ( VersionUtil.isUniqueSnapshot( artifact.getVersion() ) )
             {
                 model.setVersion( artifact.getVersion() );
             }
 
-            // Filter the model
-            model = expressionModelFilter.filter( model );
-
-            // Resolve the project model
+            // Resolve the project model (build effective model, resolve expressions)
             model = effectiveModelFilter.filter( model );
 
             if ( isValidModel( model, repo, artifact ) )
             {
                 log.debug( "Adding project model to database - " + Keys.toKey( model ) );
+                
+                // Clone model, since DAO while detachingCopy resets its contents
+                // This changes contents of the cache in EffectiveProjectModelFilter
+                model = ArchivaModelCloner.clone( model );
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else
@@ -356,5 +350,4 @@ public class ProjectModelToDatabaseConsumer
             }
         }
     }
-    
 }

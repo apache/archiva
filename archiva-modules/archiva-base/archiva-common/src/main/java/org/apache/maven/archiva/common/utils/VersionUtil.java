@@ -137,7 +137,7 @@ public class VersionUtil
         }
         else
         {
-            return version.endsWith( SNAPSHOT );
+            return isGenericSnapshot(version);
         }
     }
 
