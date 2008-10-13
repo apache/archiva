@@ -454,4 +454,9 @@ public class ManagedLegacyRepositoryContent
             }
         }
     }
+    
+    public void setFileTypes( FileTypes fileTypes )
+    {
+        this.filetypes = fileTypes;
+    }
 }

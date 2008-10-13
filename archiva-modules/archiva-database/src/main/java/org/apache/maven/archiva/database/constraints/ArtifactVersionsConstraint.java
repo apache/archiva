@@ -35,18 +35,20 @@ public class ArtifactVersionsConstraint
     
     private String sortColumn = "repositoryId";
     
-    public ArtifactVersionsConstraint( String repoId, String groupId, String artifactId )
+    public ArtifactVersionsConstraint( String repoId, String groupId, String artifactId, boolean includeWhenGathered )
     {        
         if( repoId != null )
         {   
-            whereClause = "repositoryId.equals(selectedRepoId) && groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId) " +
-            		"&& whenGathered != null";
+            whereClause = "repositoryId.equals(selectedRepoId) && groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId) " 
+                + ( includeWhenGathered ? "&& whenGathered != null" : "" );                
             declParams = new String[] { "String selectedRepoId", "String selectedGroupId", "String selectedArtifactId" };
             params = new Object[] { repoId, groupId, artifactId };
         }
         else
         {
-            whereClause = "groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId) && this.whenGathered != null";            
+            whereClause =
+                "groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId) " +                        
+                    ( includeWhenGathered ? "&& whenGathered != null" : "" );            
             declParams = new String[] { "String selectedGroupId", "String selectedArtifactId" };
             params = new Object[] { groupId, artifactId };
         }
@@ -54,7 +56,7 @@ public class ArtifactVersionsConstraint
     
     public ArtifactVersionsConstraint( String repoId, String groupId, String artifactId, String sortColumn )
     {   
-        this( repoId, groupId, artifactId );
+        this( repoId, groupId, artifactId, true );
         this.sortColumn = sortColumn;        
     }
         
