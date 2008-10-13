@@ -117,4 +117,9 @@ public abstract class AbstractLegacyRepositoryContent
         // Default process.
         return type + "s";
     }
+    
+    public void setLegacyPathParser( PathParser parser )
+    {
+        this.legacyPathParser = parser;
+    }
 }

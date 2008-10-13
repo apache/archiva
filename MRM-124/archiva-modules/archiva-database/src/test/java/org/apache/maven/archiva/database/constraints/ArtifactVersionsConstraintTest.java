@@ -87,14 +87,14 @@ public class ArtifactVersionsConstraintTest
     {        
         populateDb();
         assertConstraint( "Artifacts By Repository", 3, 
-                          new ArtifactVersionsConstraint( null, "org.apache.archiva", "artifact-one" ) );
+                          new ArtifactVersionsConstraint( null, "org.apache.archiva", "artifact-one", true ) );
     }    
     
     public void testQueryAllVersionsOfArtifactInARepo() throws Exception
     {
         populateDb();
         assertConstraint( "Artifacts By Repository", 2, 
-                          new ArtifactVersionsConstraint( TEST_REPO, "org.apache.archiva", "artifact-one" ) );
+                          new ArtifactVersionsConstraint( TEST_REPO, "org.apache.archiva", "artifact-one", true ) );
     }
     
     private void assertConstraint( String msg, int count, ArtifactVersionsConstraint constraint )

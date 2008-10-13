@@ -32,11 +32,22 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
@@ -72,6 +83,26 @@ public class AdministrationServiceImpl
      * @plexus.requirement
      */
     private ArchivaTaskScheduler taskScheduler;
+    
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repoFactory;
+    
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArtifactDAO artifactDAO;
+    
+    /**
+     * @plexus.requirement role-hint="not-present-remove-db-artifact"
+     */
+    private DatabaseCleanupConsumer cleanupArtifacts;
+    
+    /**
+     * @plexus.requirement role-hint="not-present-remove-db-project"
+     */
+    private DatabaseCleanupConsumer cleanupProjects;
     
     /**
      * @see AdministrationService#configureDatabaseConsumer(String, boolean)
@@ -190,12 +221,76 @@ public class AdministrationServiceImpl
     /**
      * @see AdministrationService#deleteArtifact(String, String, String, String)
      */
-    public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version ) throws Exception
+    public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
+        throws Exception
     {
-        // TODO implement delete artifact in Archiva
+        Configuration config = archivaConfiguration.getConfiguration();
+        ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repoId );
         
-        // TODO Auto-generated method stub
-        return false;
+        if( repoConfig == null )
+        {
+            throw new Exception( "Repository does not exist." );
+        }
+            
+        try
+        {
+            ManagedRepositoryContent repoContent = repoFactory.getManagedRepositoryContent( repoId );            
+            VersionedReference ref = new VersionedReference();
+            ref.setGroupId( groupId );
+            ref.setArtifactId( artifactId );
+            ref.setVersion( version );
+                   
+            // delete from file system
+            repoContent.deleteVersion( ref );
+            
+            ArtifactVersionsConstraint constraint = new ArtifactVersionsConstraint( repoId, groupId, artifactId, false );
+            List<ArchivaArtifact> artifacts = null;
+            
+            try
+            {
+                artifacts = artifactDAO.queryArtifacts( constraint );
+                if( artifacts == null )
+                {
+                    return true;
+                }
+            }
+            catch ( ArchivaDatabaseException e )
+            {
+                throw new Exception( "Error occurred while cleaning up database." );
+            }            
+               
+            // cleanup db manually? or use the cleanup consumers as what is done now?
+            for( ArchivaArtifact artifact : artifacts )
+            {
+                if( artifact.getVersion().equals( version ) )
+                {
+                    try
+                    {
+                        cleanupArtifacts.processArchivaArtifact( artifact );
+                        cleanupProjects.processArchivaArtifact( artifact );
+                    }
+                    catch ( ConsumerException ce )
+                    {
+                        // log error
+                        continue;
+                    }                   
+                }
+            }
+        }
+        catch ( ContentNotFoundException e )
+        {
+            throw new Exception( "Artifact does not exist." );
+        }
+        catch ( RepositoryNotFoundException e )
+        {
+            throw new Exception( "Repository does not exist." );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new Exception( "Repository exception occurred." );
+        }
+        
+        return true;
     }
 
     /**
@@ -370,5 +465,25 @@ public class AdministrationServiceImpl
     public void setTaskScheduler( ArchivaTaskScheduler taskScheduler )
     {
         this.taskScheduler = taskScheduler;
+    }
+
+    public void setRepoFactory( RepositoryContentFactory repoFactory )
+    {
+        this.repoFactory = repoFactory;
+    }
+
+    public void setArtifactDAO( ArtifactDAO artifactDAO )
+    {
+        this.artifactDAO = artifactDAO;
+    }
+
+    public void setCleanupArtifacts( DatabaseCleanupConsumer cleanupArtifacts )
+    {
+        this.cleanupArtifacts = cleanupArtifacts;
+    }
+
+    public void setCleanupProjects( DatabaseCleanupConsumer cleanupProjects )
+    {
+        this.cleanupProjects = cleanupProjects;
     }   
 }

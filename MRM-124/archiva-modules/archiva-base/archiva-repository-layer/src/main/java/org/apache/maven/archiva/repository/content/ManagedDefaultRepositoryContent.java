@@ -78,6 +78,10 @@ public class ManagedDefaultRepositoryContent
                 // TODO: log this somewhere?
             }
         }
+        else
+        {
+            throw new ContentNotFoundException( "Unable to delete non-existing project directory." );
+        }
     }
 
     public String getId()
