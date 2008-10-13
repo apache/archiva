@@ -843,6 +843,8 @@ public class AdministrationServiceImplTest
         assertEquals( expectedRepoConfig.getId(), managedRepo.getId() );
         assertEquals( expectedRepoConfig.getLayout(), managedRepo.getLayout() );
         assertEquals( expectedRepoConfig.getName(), managedRepo.getName() );
+        
+        //TODO enable assert once fixed in AdministrationServiceImpl!
         //assertEquals( "http://localhost:8080/archiva/repository/" + expectedRepoConfig.getId(), managedRepo.getUrl() );
         assertEquals( expectedRepoConfig.isReleases(), managedRepo.isReleases() );
         assertEquals( expectedRepoConfig.isSnapshots(), managedRepo.isSnapshots() );
@@ -900,22 +902,6 @@ public class AdministrationServiceImplTest
         unprocessedConsumersControl.expectAndReturn( processPomConsumer.getId(), "process-pom" );
     }    
     
-    private List<ArchivaArtifact> getArtifacts()
-    {
-        List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();
-        
-        ArchivaArtifactModel model = new ArchivaArtifactModel();
-        model.setRepositoryId( "internal" );
-        model.setGroupId( "org.apache.archiva" );
-        model.setArtifactId( "archiva-test" );
-        model.setVersion( "1.0" );
-        model.setType( "jar" );
-        
-        ArchivaArtifact artifact = new ArchivaArtifact( model );
-        artifacts.add( artifact );
-        return artifacts;
-    }    
-    
     private void recordInManagedLegacyRepoContent( MockControl fileTypesControl, FileTypes fileTypes,
                                                    MockControl pathParserControl, PathParser parser )
         throws LayoutException
@@ -944,6 +930,22 @@ public class AdministrationServiceImplTest
         
         aRef = createArtifactReference("archiva-test", "org.apache.archiva", "1.1", "jar");
         pathParserControl.expectAndReturn( parser.toArtifactReference( "org.apache.archiva/jars/archiva-test-1.1.jar" ), aRef );
+    }
+    
+    private List<ArchivaArtifact> getArtifacts()
+    {
+        List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();
+        
+        ArchivaArtifactModel model = new ArchivaArtifactModel();
+        model.setRepositoryId( "internal" );
+        model.setGroupId( "org.apache.archiva" );
+        model.setArtifactId( "archiva-test" );
+        model.setVersion( "1.0" );
+        model.setType( "jar" );
+        
+        ArchivaArtifact artifact = new ArchivaArtifact( model );
+        artifacts.add( artifact );
+        return artifacts;
     }
 
     private ArtifactReference createArtifactReference( String artifactId, String groupId, String version, String type )
