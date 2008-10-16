@@ -40,13 +40,12 @@
     <constructor-arg ref="repositoryContentFactory"/>
     <constructor-arg ref="artifactDAO#jdo"/>
     <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-artifact"/>
-    <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-project"/>        
+    <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-project"/> 
+    <constructor-arg ref="archivaTaskScheduler"/>       
   </bean> 
 
   <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">
-    <constructor-arg> 
-      <ref bean="administrationService"/>
-    </constructor-arg>
+    <constructor-arg ref="administrationService"/>
   </bean>
     
   <bean name="xmlRpcAuthenticator" class="org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator">

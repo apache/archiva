@@ -69,9 +69,7 @@ public class AdministrationServiceImpl
     private RepositoryContentConsumers repoConsumersUtil;
         
     private DatabaseConsumers dbConsumersUtil;
-        
-    //private ArchivaTaskScheduler taskScheduler;
-        
+            
     private RepositoryContentFactory repoFactory;
     
     private ArtifactDAO artifactDAO;
@@ -80,10 +78,12 @@ public class AdministrationServiceImpl
    
     private DatabaseCleanupConsumer cleanupProjects;
     
+    private ArchivaTaskScheduler taskScheduler;
+    
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
                                       DatabaseConsumers dbConsumersUtil, RepositoryContentFactory repoFactory,
                                       ArtifactDAO artifactDAO, DatabaseCleanupConsumer cleanupArtifacts,
-                                      DatabaseCleanupConsumer cleanupProjects )
+                                      DatabaseCleanupConsumer cleanupProjects, ArchivaTaskScheduler taskScheduler )
     {   
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
@@ -92,6 +92,7 @@ public class AdministrationServiceImpl
         this.artifactDAO = artifactDAO;
         this.cleanupArtifacts = cleanupArtifacts;
         this.cleanupProjects = cleanupProjects;             
+        this.taskScheduler = taskScheduler;
     }
         
     /**
@@ -288,7 +289,7 @@ public class AdministrationServiceImpl
      */
     public Boolean executeDatabaseScanner() throws Exception
     {
-        /*if ( taskScheduler.isProcessingDatabaseTask() )
+        if ( taskScheduler.isProcessingDatabaseTask() )
         {
             return false;
         }
@@ -297,7 +298,7 @@ public class AdministrationServiceImpl
         task.setName( DefaultArchivaTaskScheduler.DATABASE_JOB + ":user-requested-via-web-service" );
         task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
         
-        taskScheduler.queueDatabaseTask( task );      */      
+        taskScheduler.queueDatabaseTask( task );           
         
         return new Boolean( true );
     }
@@ -307,7 +308,7 @@ public class AdministrationServiceImpl
      */
     public Boolean executeRepositoryScanner( String repoId ) throws Exception
     {
-       /* Configuration config = archivaConfiguration.getConfiguration();
+        Configuration config = archivaConfiguration.getConfiguration();
         if( config.findManagedRepositoryById( repoId ) == null )
         {
             throw new Exception( "Repository does not exist." );
@@ -326,7 +327,7 @@ public class AdministrationServiceImpl
         task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repoId );
         task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
 
-        taskScheduler.queueRepositoryTask( task );      */      
+        taskScheduler.queueRepositoryTask( task );          
         
         return new Boolean( true );
     }
@@ -395,8 +396,6 @@ public class AdministrationServiceImpl
                                        repoConfig.isSnapshots(), repoConfig.isReleases() );  
             managedRepos.add( repo );
         }
-        
-        System.out.println( "\n++++++MANAGED REPOS --> " + managedRepos );
         
         return managedRepos;
     }
