@@ -1,6 +1,0 @@
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>test</groupId>
-  <artifactId>artifact-two</artifactId>
-  <version>1.0.0</version>
-</project>
