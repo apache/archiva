@@ -107,7 +107,7 @@ public class ManagedRepository
     {
         return this.snapshots;
     } 
-
+    
     public void setId(String id)
     {
         this.id = id;
@@ -127,7 +127,7 @@ public class ManagedRepository
     {
         this.releases = releases;
     } 
-    
+
     public void setSnapshots(boolean snapshots)
     {
         this.snapshots = snapshots;
@@ -136,13 +136,5 @@ public class ManagedRepository
     public void setUrl(String url)
     {
         this.url = url;
-    }  
-   
-    public java.lang.String toString()
-    {
-        StringBuffer buf = new StringBuffer();
-        buf.append( "id = '" );
-        buf.append( getId() + "'" );
-        return buf.toString();
-    } 
+    }
 }
