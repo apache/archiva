@@ -31,18 +31,25 @@
     <property name="location" value="classpath:application.properties" />
   </bean>
   
-  <bean name="testXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.maven.archiva.web.xmlrpc.services.PingServiceImpl"/>
+  <bean name="testXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.PingServiceImpl"/>
   
-  <bean name="administrationXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.maven.archiva.web.xmlrpc.services.AdministrationServiceImpl"/>
+  <bean name="administrationService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
+    <constructor-arg ref="archivaConfiguration"/>
+    <constructor-arg ref="repositoryContentConsumers"/>
+    <constructor-arg ref="databaseConsumers"/>
+    <constructor-arg ref="repositoryContentFactory"/>
+    <constructor-arg ref="artifactDAO#jdo"/>
+    <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-artifact"/>
+    <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-project"/>        
+  </bean> 
 
-  <bean name="xmlrpcServicesList" class="java.util.ArrayList">
-    <constructor-arg>
-        <ref bean="testXmlRpcService"/>
-        <ref bean="administrationXmlRpcService"/>
+  <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">
+    <constructor-arg> 
+      <ref bean="administrationService"/>
     </constructor-arg>
   </bean>
-
-  <bean name="xmlRpcAuthenticator" class="org.apache.maven.archiva.xmlrpc.security.XmlRpcAuthenticator">
+    
+  <bean name="xmlRpcAuthenticator" class="org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator">
       <constructor-arg>
          <ref bean="securitySystem"/>
       </constructor-arg>

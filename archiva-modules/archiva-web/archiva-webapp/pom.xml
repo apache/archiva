@@ -86,6 +86,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-xmlrpc-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-xmlrpc-services</artifactId>
     </dependency>
     <dependency>

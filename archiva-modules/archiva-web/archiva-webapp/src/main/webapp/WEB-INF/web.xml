@@ -113,6 +113,10 @@
 			<param-name>authHandlerBeanName</param-name>
 			<param-value>xmlRpcAuthenticator</param-value>
 		</init-param>
+		<init-param>
+		  <param-name>enabledForExtensions</param-name>
+		  <param-value>true</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 

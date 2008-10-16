@@ -63,51 +63,41 @@ import org.codehaus.plexus.registry.RegistryException;
  */
 public class AdministrationServiceImpl
     implements AdministrationService
-{
-    /**
-     * @plexus.requirement
-     */
+{    
     private ArchivaConfiguration archivaConfiguration;
-    
-    /**
-     * @plexus.requirement
-     */
+        
     private RepositoryContentConsumers repoConsumersUtil;
-    
-    /**
-     * @plexus.requirement
-     */
+        
     private DatabaseConsumers dbConsumersUtil;
-    
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaTaskScheduler taskScheduler;
-    
-    /**
-     * @plexus.requirement
-     */
+        
+    //private ArchivaTaskScheduler taskScheduler;
+        
     private RepositoryContentFactory repoFactory;
     
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
     private ArtifactDAO artifactDAO;
     
-    /**
-     * @plexus.requirement role-hint="not-present-remove-db-artifact"
-     */
     private DatabaseCleanupConsumer cleanupArtifacts;
-    
-    /**
-     * @plexus.requirement role-hint="not-present-remove-db-project"
-     */
+   
     private DatabaseCleanupConsumer cleanupProjects;
     
+    public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
+                                      DatabaseConsumers dbConsumersUtil, RepositoryContentFactory repoFactory,
+                                      ArtifactDAO artifactDAO, DatabaseCleanupConsumer cleanupArtifacts,
+                                      DatabaseCleanupConsumer cleanupProjects )
+    {   
+        this.archivaConfiguration = archivaConfig;
+        this.repoConsumersUtil = repoConsumersUtil;
+        this.dbConsumersUtil = dbConsumersUtil;
+        this.repoFactory = repoFactory;
+        this.artifactDAO = artifactDAO;
+        this.cleanupArtifacts = cleanupArtifacts;
+        this.cleanupProjects = cleanupProjects;             
+    }
+        
     /**
      * @see AdministrationService#configureDatabaseConsumer(String, boolean)
      */
-    public boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception
+    public Boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception
     {
         List<DatabaseCleanupConsumer> cleanupConsumers = dbConsumersUtil.getAvailableCleanupConsumers();
         List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers =
@@ -157,13 +147,13 @@ public class AdministrationServiceImpl
         config.setDatabaseScanning( dbScanningConfig );        
         saveConfiguration( config );
         
-        return true;
+        return new Boolean( true );
     }
 
     /**
      * @see AdministrationService#configureRepositoryConsumer(String, String, boolean)
      */
-    public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable )
+    public Boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable )
         throws Exception
     {
         // TODO use repoId once consumers are configured per repository! (MRM-930)
@@ -215,13 +205,13 @@ public class AdministrationServiceImpl
         config.setRepositoryScanning( repoScanningConfig );        
         saveConfiguration( config );
         
-        return true;
+        return new Boolean( true );
     }
     
     /**
      * @see AdministrationService#deleteArtifact(String, String, String, String)
      */
-    public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
+    public Boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
         throws Exception
     {
         Configuration config = archivaConfiguration.getConfiguration();
@@ -290,15 +280,15 @@ public class AdministrationServiceImpl
             throw new Exception( "Repository exception occurred." );
         }
         
-        return true;
+        return new Boolean( true );
     }
 
     /**
      * @see AdministrationService#executeDatabaseScanner()
      */
-    public boolean executeDatabaseScanner() throws Exception
+    public Boolean executeDatabaseScanner() throws Exception
     {
-        if ( taskScheduler.isProcessingDatabaseTask() )
+        /*if ( taskScheduler.isProcessingDatabaseTask() )
         {
             return false;
         }
@@ -307,17 +297,17 @@ public class AdministrationServiceImpl
         task.setName( DefaultArchivaTaskScheduler.DATABASE_JOB + ":user-requested-via-web-service" );
         task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
         
-        taskScheduler.queueDatabaseTask( task );            
+        taskScheduler.queueDatabaseTask( task );      */      
         
-        return true;
+        return new Boolean( true );
     }
 
     /**
      * @see AdministrationService#executeRepositoryScanner(String)
      */
-    public boolean executeRepositoryScanner( String repoId ) throws Exception
+    public Boolean executeRepositoryScanner( String repoId ) throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
+       /* Configuration config = archivaConfiguration.getConfiguration();
         if( config.findManagedRepositoryById( repoId ) == null )
         {
             throw new Exception( "Repository does not exist." );
@@ -336,9 +326,9 @@ public class AdministrationServiceImpl
         task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repoId );
         task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
 
-        taskScheduler.queueRepositoryTask( task );            
+        taskScheduler.queueRepositoryTask( task );      */      
         
-        return true;
+        return new Boolean( true );
     }
 
     /**
@@ -406,6 +396,8 @@ public class AdministrationServiceImpl
             managedRepos.add( repo );
         }
         
+        System.out.println( "\n++++++MANAGED REPOS --> " + managedRepos );
+        
         return managedRepos;
     }
 
@@ -445,45 +437,5 @@ public class AdministrationServiceImpl
         {
             throw new Exception( "Error occurred while saving the configuration." );    
         }
-    }
-    
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
-        this.archivaConfiguration = archivaConfiguration;
-    }
-
-    public void setRepoConsumersUtil( RepositoryContentConsumers consumerUtil )
-    {
-        this.repoConsumersUtil = consumerUtil;
     }    
-    
-    public void setDbConsumersUtil( DatabaseConsumers consumerUtil )
-    {
-        this.dbConsumersUtil = consumerUtil;
-    }
-
-    public void setTaskScheduler( ArchivaTaskScheduler taskScheduler )
-    {
-        this.taskScheduler = taskScheduler;
-    }
-
-    public void setRepoFactory( RepositoryContentFactory repoFactory )
-    {
-        this.repoFactory = repoFactory;
-    }
-
-    public void setArtifactDAO( ArtifactDAO artifactDAO )
-    {
-        this.artifactDAO = artifactDAO;
-    }
-
-    public void setCleanupArtifacts( DatabaseCleanupConsumer cleanupArtifacts )
-    {
-        this.cleanupArtifacts = cleanupArtifacts;
-    }
-
-    public void setCleanupProjects( DatabaseCleanupConsumer cleanupProjects )
-    {
-        this.cleanupProjects = cleanupProjects;
-    }   
 }

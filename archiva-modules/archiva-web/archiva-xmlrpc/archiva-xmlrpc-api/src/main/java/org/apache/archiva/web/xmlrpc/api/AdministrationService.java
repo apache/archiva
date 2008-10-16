@@ -26,9 +26,9 @@ import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 
 import com.atlassian.xmlrpc.ServiceObject;
 
-@ServiceObject( "Administration" )
+@ServiceObject( "AdministrationService" )
 public interface AdministrationService
-{
+{    
     /**
      * Executes repository scanner on the given repository.
      *  
@@ -36,7 +36,7 @@ public interface AdministrationService
      * @return
      * @throws Exception
      */
-    public boolean executeRepositoryScanner( String repoId ) throws Exception;
+    public Boolean executeRepositoryScanner( String repoId ) throws Exception;
    
     /**
      * Executes the database scanner.
@@ -44,7 +44,7 @@ public interface AdministrationService
      * @return
      * @throws Exception
      */
-    public boolean executeDatabaseScanner() throws Exception;
+    public Boolean executeDatabaseScanner() throws Exception;
 
     /**
      * Gets all available database consumers.
@@ -60,7 +60,7 @@ public interface AdministrationService
      * @return
      * @throws Exception
      */
-    public boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception;
+    public Boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception;
 
     /**
      * Gets all available repository consumers.
@@ -70,7 +70,7 @@ public interface AdministrationService
     public List<String> getAllRepositoryConsumers();
     
     // TODO should we already implement config of consumers per repository?
-    public boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable ) throws Exception;
+    public Boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable ) throws Exception;
 
     /**
      * Gets all managed repositories.
@@ -96,8 +96,8 @@ public interface AdministrationService
      * @return
      * @throws Exception
      */
-    public boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
-        throws Exception;
+    public Boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
+        throws Exception;    
     
     //TODO 
     // consider the following as additional services:
