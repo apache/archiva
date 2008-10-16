@@ -172,7 +172,7 @@ public class AdministrationServiceImplTest
         cleanupConsumer = ( DatabaseCleanupConsumer ) cleanupControl.getMock();
          
         service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, dbConsumersUtil, 
-                         repositoryFactory, artifactDao, cleanupConsumer, cleanupConsumer );
+                         repositoryFactory, artifactDao, cleanupConsumer, cleanupConsumer, taskScheduler );
     }
   
 /* Tests for database consumers  */

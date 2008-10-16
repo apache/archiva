@@ -69,7 +69,16 @@ public interface AdministrationService
      */
     public List<String> getAllRepositoryConsumers();
     
-    // TODO should we already implement config of consumers per repository?
+ // TODO should we already implement config of consumers per repository?
+    /**
+     * Configures (enable or disable) repository consumer.
+     * 
+     * @param repoId
+     * @param consumerId
+     * @param enable
+     * @return
+     * @throws Exception
+     */    
     public Boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable ) throws Exception;
 
     /**
