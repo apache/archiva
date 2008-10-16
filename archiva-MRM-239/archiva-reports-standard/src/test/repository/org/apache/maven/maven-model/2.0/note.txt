@@ -1,3 +1,0 @@
-- The artifact is located in the proper location.
-- The groupId, artifactId and version of the pom in the file system matches 
-	the groupId, artifactId and version of the pom included in the package.
