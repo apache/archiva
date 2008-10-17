@@ -42,8 +42,8 @@
       	<archiva:groupIdLink var="${report.groupId}" includeTop="true"/>
       	<c:set var="url">
         <s:url action="browseArtifact" namespace="/">
-          <s:param name="groupId" value="%{'${report.groupId}'}"/>
-          <s:param name="artifactId" value="%{'${report.artifactId}'}"/>
+          <s:param name="groupId" value="%{#attr.report.groupId}"/>
+          <s:param name="artifactId" value="%{#attr.report.artifactId}"/>
         </s:url>
       	</c:set>
       	<a href="${url}">${report.artifactId}</a> /

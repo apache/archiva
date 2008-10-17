@@ -36,9 +36,9 @@
 <s:set name="editOrganisationInfo" value="editOrganisationInfo"/>
 <s:actionmessage/>
 <s:form method="post" action="saveAppearance" namespace="/admin" validate="true" theme="xhtml">
-    <s:textfield name="organisationName" value="${organisationName}" label="Name" size="50"  />
-    <s:textfield name="organisationUrl" value="${organisationUrl}" label="URL" size="50"/>
-    <s:textfield name="organisationLogo" value="${organisationLogo}" label="Logo URL" size="50" />
+    <s:textfield name="organisationName" value="%{#attr.organisationName}" label="Name" size="50"  />
+    <s:textfield name="organisationUrl" value="%{#attr.organisationUrl}" label="URL" size="50"/>
+    <s:textfield name="organisationLogo" value="%{#attr.organisationLogo}" label="Logo URL" size="50" />
   <s:submit value="Save"/>
 </s:form>
 </body>

@@ -42,7 +42,7 @@
       <c:forEach items="${results.groupIds}" var="groupId">
         <c:set var="url">
           <s:url action="browseGroup" namespace="/">
-            <s:param name="groupId" value="%{'${groupId}'}"/>
+            <s:param name="groupId" value="%{#attr.groupId}"/>
           </s:url>
         </c:set>
         <li><a href="${url}">${groupId}/</a></li>
@@ -57,8 +57,8 @@
         <c:forEach items="${results.versions}" var="version">
           <c:set var="url">
             <s:url action="browseVersion" namespace="/">
-              <s:param name="groupId" value="%{'${results.selectedGroupId}'}"/>
-              <s:param name="version" value="%{'${version}'}"/>
+              <s:param name="groupId" value="%{#attr.results.selectedGroupId}"/>
+              <s:param name="version" value="%{#attr.version}"/>
             </s:url>
           </c:set>
           <li><a href="${url}">${version}/</a></li>
@@ -74,8 +74,8 @@
         <c:forEach items="${results.artifacts}" var="artifactId">
           <c:set var="url">
             <s:url action="browseArtifact" namespace="/">
-              <s:param name="groupId" value="%{'${groupId}'}"/>
-              <s:param name="artifactId" value="%{'${artifactId}'}"/>
+              <s:param name="groupId" value="%{#attr.groupId}"/>
+              <s:param name="artifactId" value="%{#attr.artifactId}"/>
             </s:url>
           </c:set>
           <li><a href="${url}">${artifactId}/</a></li>

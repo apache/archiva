@@ -19,12 +19,13 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import org.apache.struts2.views.jsp.TagUtils;
+import com.opensymphony.xwork2.util.ValueStack;
+import org.apache.struts2.components.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import org.apache.struts2.views.jsp.ComponentTagSupport;
 
 /**
  * GroupIdLink 
@@ -33,13 +34,18 @@ import javax.servlet.jsp.tagext.TagSupport;
  * @version $Id$
  */
 public class GroupIdLinkTag
-    extends TagSupport
+    extends ComponentTagSupport
 {
     private String var_; // stores EL-based property
 
     private String var; // stores the evaluated object.
 
     private boolean includeTop = false;
+
+    @Override
+    public Component getBean(ValueStack valueStack, HttpServletRequest request, HttpServletResponse response) {
+        return new GroupIdLink( valueStack, request, response );
+    }
 
     @Override
     public void release()
@@ -56,14 +62,11 @@ public class GroupIdLinkTag
         throws JspException
     {
         evaluateExpressions();
+        
+        GroupIdLink groupIdLink = (GroupIdLink)component;
 
-        GroupIdLink gidlink = new GroupIdLink( TagUtils.getStack( pageContext ), (HttpServletRequest) pageContext
-            .getRequest(), (HttpServletResponse) pageContext.getResponse() );
-
-        gidlink.setGroupId( var );
-        gidlink.setIncludeTop( includeTop );
-
-        gidlink.end( pageContext.getOut(), "" );
+        groupIdLink.setGroupId( var );
+        groupIdLink.setIncludeTop( includeTop );
 
         return super.doEndTag();
     }

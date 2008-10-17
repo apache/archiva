@@ -104,6 +104,7 @@ public class GenerateReportAction
         return repositoryIds;
     }
 
+    @Override
     public String execute()
         throws Exception
     {

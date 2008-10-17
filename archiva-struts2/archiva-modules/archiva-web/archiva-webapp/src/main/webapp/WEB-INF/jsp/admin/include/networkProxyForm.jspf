@@ -16,11 +16,11 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<ww:textfield name="proxy.protocol" label="Protocol" size="5" required="true"/>
-<ww:textfield name="proxy.host" label="Hostname" size="50" required="true"/>  
-<ww:textfield name="proxy.port" label="Port" size="5" required="true" />
-<ww:textfield name="proxy.username" label="Username" size="25" required="false" />
-<ww:password name="proxy.password" label="Password" size="25" required="false" />
+<s:textfield name="proxy.protocol" label="Protocol" size="5" required="true"/>
+<s:textfield name="proxy.host" label="Hostname" size="50" required="true"/>
+<s:textfield name="proxy.port" label="Port" size="5" required="true" />
+<s:textfield name="proxy.username" label="Username" size="25" required="false" />
+<s:password name="proxy.password" label="Password" size="25" required="false" />

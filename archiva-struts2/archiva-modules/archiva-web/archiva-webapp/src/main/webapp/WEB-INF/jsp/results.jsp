@@ -53,8 +53,8 @@
         <s:textfield label="Version" size="50" name="version"/>
         <s:textfield label="Class / Package" size="50" name="className"/>
         <s:select name="repositoryId" label="Repository ID" list="managedRepositoryList"/>
-        <s:hidden name="completeQueryString" value="${completeQueryString}"/>
-        <s:hidden name="fromFilterSearch" value="${fromFilterSearch}"/>
+        <s:hidden name="completeQueryString" value="%{#attr.completeQueryString}"/>
+        <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}"/>
         <s:submit label="Go!"/>
       </s:form>
   
@@ -70,7 +70,7 @@
       <s:form method="get" action="quickSearch" validate="true">
         <s:textfield label="Search for" size="50" name="q"/>
         <s:checkbox label="Search within results" name="searchResultsOnly"/>        
-        <s:hidden name="completeQueryString" value="${completeQueryString}"/>        
+        <s:hidden name="completeQueryString" value="%{#attr.completeQueryString}"/>        
         <s:submit label="Go!"/>
       </s:form> 
       <script type="text/javascript">
@@ -112,14 +112,14 @@
               <c:if test="${fromFilterSearch == false}">
                <c:set var="prevPageUrl">
                  <s:url action="quickSearch" namespace="/">
-                   <s:param name="q" value="%{'${q}'}"/>                
-                   <s:param name="currentPage" value="%{'${currentPage - 1}'}"/>
+                   <s:param name="q" value="%{#attr.q}"/>                
+                   <s:param name="currentPage" value="%{#attr.currentPage - 1}"/>
                  </s:url>
        	      </c:set>
        	      <c:set var="nextPageUrl">
                  <s:url action="quickSearch" namespace="/">
-                   <s:param name="q" value="%{'${q}'}"/>                
-                   <s:param name="currentPage" value="%{'${currentPage + 1}'}"/>
+                   <s:param name="q" value="%{#attr.q}"/>                
+                   <s:param name="currentPage" value="%{#attr.currentPage + 1}"/>
                  </s:url>
        	      </c:set>    
               </c:if>
@@ -127,34 +127,34 @@
               <c:if test="${fromFilterSearch == true}">
                <c:set var="prevPageUrl">
                  <s:url action="filteredSearch" namespace="/">
- <%-- 		  <s:param name="q" value="%{'${q}'}"/>   --%>
-                   <s:param name="rowCount" value="%{'${rowCount}'}"/>  
-                   <s:param name="groupId" value="%{'${groupId}'}"/>
-                   <s:param name="artifactId" value="%{'${artifactId}'}"/>
-                   <s:param name="version" value="%{'${version}'}"/>
-                   <s:param name="className" value="%{'${className}'}"/>
-                   <s:param name="repositoryId" value="%{'${repositoryId}'}"/>
-                   <s:param name="filterSearch" value="%{'${filterSearch}'}"/>
+ <%-- 		  <s:param name="q" value="%{#attr.q}"/>   --%>
+                   <s:param name="rowCount" value="%{#attr.rowCount}"/>
+                   <s:param name="groupId" value="%{#attr.groupId}"/>
+                   <s:param name="artifactId" value="%{#attr.artifactId}"/>
+                   <s:param name="version" value="%{#attr.version}"/>
+                   <s:param name="className" value="%{#attr.className}"/>
+                   <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
+                   <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
   		   <s:param name="fromResultsPage" value="true"/>
-                   <s:param name="currentPage" value="%{'${currentPage - 1}'}"/>
- 		  <s:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
- 		  <s:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+                   <s:param name="currentPage" value="%{#attr.currentPage - 1}"/>
+ 		  <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+ 		  <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
                  </s:url>
        	      </c:set>
        	      <c:set var="nextPageUrl">
                 <s:url action="filteredSearch" namespace="/">
-<%-- 		 <s:param name="q" value="%{'${q}'}"/> --%>
-                  <s:param name="rowCount" value="%{'${rowCount}'}"/>  
-                  <s:param name="groupId" value="%{'${groupId}'}"/>
-                  <s:param name="artifactId" value="%{'${artifactId}'}"/>
-                  <s:param name="version" value="%{'${version}'}"/>
-                  <s:param name="className" value="%{'${className}'}"/>
-                  <s:param name="repositoryId" value="%{'${repositoryId}'}"/>
-                  <s:param name="filterSearch" value="%{'${filterSearch}'}"/>
+<%-- 		 <s:param name="q" value="%{#attr.q}"/> --%>
+                  <s:param name="rowCount" value="%{#attr.rowCount}"/>
+                  <s:param name="groupId" value="%{#attr.groupId}"/>
+                  <s:param name="artifactId" value="%{#attr.artifactId}"/>
+                  <s:param name="version" value="%{#attr.version}"/>
+                  <s:param name="className" value="%{#attr.className}"/>
+                  <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
+                  <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
   		  <s:param name="fromResultsPage" value="true"/>
-                  <s:param name="currentPage" value="%{'${currentPage + 1}'}"/>
- 		  <s:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-		  <s:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+                  <s:param name="currentPage" value="%{#attr.currentPage + 1}"/>
+ 		  <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+		  <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
                 </s:url>
       	      </c:set>    
              </c:if>
@@ -200,10 +200,10 @@
 		              <c:when test="${i != currentPage}">
 		                <c:set var="specificPageUrl">
 		                  <s:url action="quickSearch" namespace="/">
-		                    <s:param name="q" value="%{'${q}'}"/>
-		                    <s:param name="currentPage" value="%{'${i}'}"/>
-		                    <s:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-		                    <s:param name="completeQueryString" value="%{'${completeQueryString}'}"/>  
+		                    <s:param name="q" value="%{#attr.q}"/>
+		                    <s:param name="currentPage" value="%{#attr.i}"/>
+		                    <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+		                    <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
   		                  </s:url>
 		      	        </c:set>
 			          <a href="${specificPageUrl}">${i + 1}</a>
@@ -219,18 +219,18 @@
 		              <c:when test="${i != currentPage}">
 		                <c:set var="specificPageUrl">
 		                  <s:url action="filteredSearch" namespace="/">
-<%-- 		                    <s:param name="q" value="%{'${q}'}"/>   --%>
-                                    <s:param name="rowCount" value="%{'${rowCount}'}"/>  
-                                    <s:param name="groupId" value="%{'${groupId}'}"/>
-                                    <s:param name="artifactId" value="%{'${artifactId}'}"/>
-                                    <s:param name="version" value="%{'${version}'}"/>
-                                    <s:param name="className" value="%{'${className}'}"/>
-                                    <s:param name="repositoryId" value="%{'${repositoryId}'}"/>
-                                    <s:param name="filterSearch" value="%{'${filterSearch}'}"/>
+<%-- 		                    <s:param name="q" value="%{#attr.q}"/>   --%>
+                                    <s:param name="rowCount" value="%{#attr.rowCount}"/>
+                                    <s:param name="groupId" value="%{#attr.groupId}"/>
+                                    <s:param name="artifactId" value="%{#attr.artifactId}"/>
+                                    <s:param name="version" value="%{#attr.version}"/>
+                                    <s:param name="className" value="%{#attr.className}"/>
+                                    <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
+                                    <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
 		                    <s:param name="fromResultsPage" value="true"/>
-		                    <s:param name="currentPage" value="%{'${i}'}"/>
-		                    <s:param name="searchResultsOnly" value="%{'${searchResultsOnly}'}"/>
-		                    <s:param name="completeQueryString" value="%{'${completeQueryString}'}"/>
+		                    <s:param name="currentPage" value="%{#attr.i}"/>
+		                    <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+		                    <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
 		                  </s:url>
 		      	        </c:set>
 				<a href="${specificPageUrl}">${i + 1}</a>

@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
 <%@ taglib prefix="page"      uri="http://www.opensymphony.com/sitemesh/page" %>
-<%@ taglib prefix="s"        uri="/struts-tags" %>
+<%@ taglib prefix="s"         uri="/struts-tags" %>
 <%@ taglib prefix="c"         uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="redback"   uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 <%@ taglib prefix="my"        tagdir="/WEB-INF/tags" %>

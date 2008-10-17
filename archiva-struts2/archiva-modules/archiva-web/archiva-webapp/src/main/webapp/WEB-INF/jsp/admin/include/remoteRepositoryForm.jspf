@@ -17,12 +17,12 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
-<ww:textfield name="repository.name" label="Name" size="50" required="true"/>
-<ww:textfield name="repository.url" label="URL" size="50" required="true"/>
-<ww:textfield name="repository.username" label="Username" size="25" required="false"/>
-<ww:password name="repository.password" label="Password" size="25" required="false"/>
-<ww:textfield name="repository.timeout" label="Timeout in seconds" size="3" required="false"/>
-<ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
+<s:textfield name="repository.name" label="Name" size="50" required="true"/>
+<s:textfield name="repository.url" label="URL" size="50" required="true"/>
+<s:textfield name="repository.username" label="Username" size="25" required="false"/>
+<s:password name="repository.password" label="Password" size="25" required="false"/>
+<s:textfield name="repository.timeout" label="Timeout in seconds" size="3" required="false"/>
+<s:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
            name="repository.layout" label="Type"/>

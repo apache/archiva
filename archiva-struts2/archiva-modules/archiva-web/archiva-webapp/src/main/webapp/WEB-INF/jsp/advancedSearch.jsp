@@ -44,8 +44,8 @@
       <s:textfield label="Version" size="50" name="version"/>
       <s:textfield label="Class / Package" size="50" name="className"/>
       <s:select name="repositoryId" label="Repository ID" list="managedRepositoryList"/>
-      <s:hidden name="completeQueryString" value="${completeQueryString}"/>
-      <s:hidden name="fromFilterSearch" value="${fromFilterSearch}"/>
+      <s:hidden name="completeQueryString" value="%{#attr.completeQueryString}"/>
+      <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}"/>
       <s:submit label="Go!"/>
     </s:form>
   
