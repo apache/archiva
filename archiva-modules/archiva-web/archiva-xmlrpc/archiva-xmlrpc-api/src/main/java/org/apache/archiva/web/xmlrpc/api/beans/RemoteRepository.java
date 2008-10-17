@@ -22,6 +22,7 @@ package org.apache.archiva.web.xmlrpc.api.beans;
 import java.io.Serializable;
 
 import com.atlassian.xmlrpc.ServiceBean;
+import com.atlassian.xmlrpc.ServiceBeanField;
 
 @ServiceBean
 public class RemoteRepository
@@ -35,6 +36,11 @@ public class RemoteRepository
     
     private String layout;
 
+    public RemoteRepository()
+    {
+        
+    }
+    
     public RemoteRepository( String id, String name, String url, String layout )
     {
         this.id = id;
@@ -89,31 +95,27 @@ public class RemoteRepository
         return result;
     }
     
+    @ServiceBeanField( "id" )
     public void setId(String id)
     {
         this.id = id;
     }
     
+    @ServiceBeanField( "layout" )
     public void setLayout(String layout)
     {
         this.layout = layout;
     }
     
+    @ServiceBeanField( "name" )
     public void setName(String name)
     {
         this.name = name;
     } 
     
+    @ServiceBeanField( "url" )
     public void setUrl(String url)
     {
         this.url = url;
-    } 
-    
-    public java.lang.String toString()
-    {
-        StringBuffer buf = new StringBuffer();
-        buf.append( "id = '" );
-        buf.append( getId() + "'" );
-        return buf.toString();
-    }
+    }     
 }
