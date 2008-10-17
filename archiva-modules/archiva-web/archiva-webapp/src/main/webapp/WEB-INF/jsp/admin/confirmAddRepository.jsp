@@ -103,20 +103,20 @@
     </table>
   </div>
   	
-  <s:form method="post" action="${action}" namespace="/admin" validate="true" theme="simple">
+  <s:form method="post" action="%{action}" namespace="/admin" validate="true" theme="simple">
     <div class="buttons">      
-      <s:hidden name="repository.id" value="${repository.id}"/>
-      <s:hidden name="repository.name" value="${repository.name}"/>
-      <s:hidden name="repository.location" value="${repository.location}"/>
-      <s:hidden name="repository.indexDir" value="${repository.indexDir}"/>
-      <s:hidden name="repository.layout" value="${repository.layout}"/>
-      <s:hidden name="repository.refreshCronExpression" value="${repository.refreshCronExpression}"/>
-      <s:hidden name="repository.daysOlder" value="${repository.daysOlder}"/>
-      <s:hidden name="repository.retentionCount" value="${repository.retentionCount}"/>
-      <s:hidden name="repository.releases" value="${repository.releases}"/>
-      <s:hidden name="repository.snapshots" value="${repository.snapshots}"/>
-      <s:hidden name="repository.scanned" value="${repository.scanned}"/>
-      <s:hidden name="repository.deleteReleasedSnapshots" value="${repository.deleteReleasedSnapshots}"/>
+      <s:hidden name="repository.id" value="%{#attr.repository.id}"/>
+      <s:hidden name="repository.name" value="%{#attr.repository.name}"/>
+      <s:hidden name="repository.location" value="%{#attr.repository.location}"/>
+      <s:hidden name="repository.indexDir" value="%{#attr.repository.indexDir}"/>
+      <s:hidden name="repository.layout" value="%{#attr.repository.layout}"/>
+      <s:hidden name="repository.refreshCronExpression" value="%{#attr.repository.refreshCronExpression}"/>
+      <s:hidden name="repository.daysOlder" value="%{#attr.repository.daysOlder}"/>
+      <s:hidden name="repository.retentionCount" value="%{#attr.repository.retentionCount}"/>
+      <s:hidden name="repository.releases" value="%{#attr.repository.releases}"/>
+      <s:hidden name="repository.snapshots" value="%{#attr.repository.snapshots}"/>
+      <s:hidden name="repository.scanned" value="%{#attr.repository.scanned}"/>
+      <s:hidden name="repository.deleteReleasedSnapshots" value="%{#attr.repository.deleteReleasedSnapshots}"/>
       
       <c:choose>      
         <c:when test="${action == 'addRepository'}">

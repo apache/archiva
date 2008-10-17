@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ attribute name="groupId" required="true" %>
 <%@ attribute name="artifactId" %>
@@ -27,17 +27,17 @@
     <c:set var="url">
       <c:choose>
         <c:when test="${!empty (version)}">
-          <ww:url action="showArtifact" namespace="/">
-            <ww:param name="groupId" value="%{'${groupId}'}"/>
-            <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-            <ww:param name="version" value="%{'${version}'}"/>
-          </ww:url>
+          <s:url action="showArtifact" namespace="/">
+            <s:param name="groupId" value="%{#attr.groupId}"/>
+            <s:param name="artifactId" value="%{#attr.artifactId}"/>
+            <s:param name="version" value="%{#attr.version}"/>
+          </s:url>
         </c:when>
         <c:otherwise>
-          <ww:url action="browseArtifact" namespace="/">
-            <ww:param name="groupId" value="%{'${groupId}'}"/>
-            <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-          </ww:url>
+          <s:url action="browseArtifact" namespace="/">
+            <s:param name="groupId" value="%{#attr.groupId}"/>
+            <s:param name="artifactId" value="%{#attr.artifactId}"/>
+          </s:url>
         </c:otherwise>
       </c:choose>
     </c:set>

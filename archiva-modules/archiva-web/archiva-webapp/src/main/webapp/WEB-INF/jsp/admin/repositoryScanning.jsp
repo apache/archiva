@@ -113,8 +113,8 @@
               <code>${escapedPattern}</code>
             </td>
             <td class="controls ${bgcolor}">
-              <s:a href="#" title="Remove [${escapedPattern}] Pattern from [${filetypeId}]"
-                    onclick="removeFiletypePattern( '${filetypeId}', '${escapedPattern}' )" 
+              <s:a href="#" title="Remove [%{#attr.escapedPattern}] Pattern from [%{#attr.filetypeId}]"
+                    onclick="removeFiletypePattern( '%{#attr.filetypeId}', '%{#attr.escapedPattern}' )" 
                     theme="simple">
                 <img src="${iconDeleteUrl}" />
               </s:a>
@@ -124,13 +124,13 @@
         <tr>
           <td>
             <s:textfield size="40" 
-                          id="newpattern_${j.index}"
+                          id="newpattern_%{#attr.j.index}"
                           theme="simple" />
           </td>
           <td>
             <s:a href="#" 
-                  title="Add Pattern to [${filetypeId}]"
-                  onclick="addFiletypePattern( '${filetypeId}', 'newpattern_${j.index}' )"
+                  title="Add Pattern to [%{#attr.filetypeId}]"
+                  onclick="addFiletypePattern( '%{#attr.filetypeId}', 'newpattern_%{#attr.j.index}' )"
                   theme="simple">
               <img src="${iconCreateUrl}" />
             </s:a>

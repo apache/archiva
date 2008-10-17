@@ -28,7 +28,7 @@
 </c:set>
 <c:if test="${!empty (action) && !empty (namespace)}">
   <c:set var="url">
-    <s:url action="%{action}" namespace="%{namespace}"/>
+    <s:url action="%{#attr.action}" namespace="%{#attr.namespace}"/>
   </c:set>
 </c:if>
 <c:set var="text">

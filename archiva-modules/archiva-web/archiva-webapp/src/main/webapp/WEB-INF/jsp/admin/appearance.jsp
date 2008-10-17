@@ -60,7 +60,7 @@
         <tr>
           <th>&nbsp;</th>
           <td>
-      <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
+            <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
           </td>
         </tr>
       </table>

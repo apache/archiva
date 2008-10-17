@@ -100,28 +100,28 @@
     <div class="controls">
       <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
         <s:url id="sortDownProxyConnectorUrl" action="sortDownProxyConnector">
-          <s:param name="target" value="%{'${connector.targetRepoId}'}"/>
-          <s:param name="source" value="%{'${connector.sourceRepoId}'}"/>
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
         </s:url>
         <s:url id="sortUpProxyConnectorUrl" action="sortUpProxyConnector">
-          <s:param name="target" value="%{'${connector.targetRepoId}'}"/>
-          <s:param name="source" value="%{'${connector.sourceRepoId}'}"/>
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
         </s:url>
         <s:url id="editProxyConnectorUrl" action="editProxyConnector">
-          <s:param name="target" value="%{'${connector.targetRepoId}'}"/>
-          <s:param name="source" value="%{'${connector.sourceRepoId}'}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
         </s:url>
         <s:url id="deleteProxyConnectorUrl" action="deleteProxyConnector" method="confirmDelete">
-          <s:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-          <s:param name="target" value="%{'${connector.targetRepoId}'}"/>
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
         </s:url>
         <s:url id="enableProxyConnectorUrl" action="enableProxyConnector" method="confirmEnable">
-          <s:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-          <s:param name="target" value="%{'${connector.targetRepoId}'}"/>
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
         </s:url>
         <s:url id="disableProxyConnectorUrl" action="disableProxyConnector" method="confirmDisable">
-          <s:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-          <s:param name="target" value="%{'${connector.targetRepoId}'}"/>
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
         </s:url>
         <c:if test="${connector.disabled}">
             <s:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">
@@ -172,7 +172,7 @@
             </c:when>
             <c:otherwise>
               <s:url id="editProxyIdUrl" action="editNetworkProxy">
-                <s:param name="proxyid" value="%{'${connector.proxyId}'}"/>
+                <s:param name="proxyid" value="%{'#attr.connector.proxyId'}"/>
               </s:url>
               <s:a href="%{editProxyIdUrl}" cssClass="edit" title="Edit Network Proxy">
                 ${connector.proxyId}

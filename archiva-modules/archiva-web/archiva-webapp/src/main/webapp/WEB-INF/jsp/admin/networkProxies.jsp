@@ -71,10 +71,10 @@
       <redback:ifAnyAuthorized
         permissions="archiva-manage-configuration">
         <s:url id="editNetworkProxyUrl" action="editNetworkProxy">
-          <s:param name="proxyid" value="%{'${proxy.id}'}" />
+          <s:param name="proxyid" value="%{#attr.proxy.id}" />
         </s:url>
         <s:url id="deleteNetworkProxyUrl" action="deleteNetworkProxy" method="confirm">
-          <s:param name="proxyid" value="%{'${proxy.id}'}" />
+          <s:param name="proxyid" value="%{#attr.proxy.id}" />
         </s:url>
         <s:a href="%{editNetworkProxyUrl}">
           <img src="<c:url value="/images/icons/edit.png" />" />

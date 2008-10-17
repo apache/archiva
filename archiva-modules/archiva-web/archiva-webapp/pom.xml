@@ -284,8 +284,6 @@
                 <!-- Directory created by jetty:run -->
                 <include>WEB-INF/temp</include>
                 <!-- Directory created by jetty:run -->
-                <include>WEB-INF/jasperreports</include>
-                <!-- Directory created by jasperreports-maven-plugin -->
               </includes>
             </fileset>
           </filesets>
@@ -477,58 +475,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <!--
-        Inclusion of this profile brings in Jasper, which is not distributed by default due to ASF licensing policy
-        regarding LGPL dependencies. A basic report is used instead.
-
-        Note: in the future, it may be better to use the jasperreports plugin at all times (so the compiled report is
-        included), so that we just require that the JAR be on the classpath to activate it. We haven't taken this step
-        here because the jasperreports plugin is not yet released.
-
-        See also: MRM-447
-      -->
-      <id>jasper</id>
-      <dependencies>
-        <dependency>
-          <groupId>jasperreports</groupId>
-          <artifactId>jasperreports</artifactId>
-          <version>1.2.0</version>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>jasperreports-maven-plugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <executions>
-              <execution>
-                <phase>compile</phase>
-                <goals>
-                  <goal>compile-reports</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <targetDirectory>src/main/webapp/WEB-INF/jasperreports</targetDirectory>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-      <pluginRepositories>
-        <pluginRepository>
-          <id>Codehaus Snapshots</id>
-          <url>http://snapshots.repository.codehaus.org/</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-        </pluginRepository>
-      </pluginRepositories>
     </profile>
   </profiles>
 </project>

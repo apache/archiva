@@ -73,10 +73,10 @@
     <%-- TODO: make some icons --%>
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
     <s:url id="editRepositoryUrl" action="editRepository">
-      <s:param name="repoid" value="%{'${repository.id}'}"/>
+      <s:param name="repoid" value="%{#attr.repository.id}"/>
     </s:url>
     <s:url id="deleteRepositoryUrl" action="confirmDeleteRepository">
-      <s:param name="repoid" value="%{'${repository.id}'}"/>
+      <s:param name="repoid" value="%{#attr.repository.id}"/>
     </s:url>
     <s:a href="%{editRepositoryUrl}">
       <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
@@ -191,7 +191,7 @@
           <td>
             <redback:ifAuthorized permission="archiva-run-indexer">
               <s:form action="indexRepository" theme="simple">
-                <s:hidden name="repoid" value="%{'${repository.id}'}"/>
+                <s:hidden name="repoid" value="%{#attr.repository.id}"/>
                 <s:submit value="Scan Repository Now"/>
               </s:form>
             </redback:ifAuthorized>
@@ -279,14 +279,14 @@
         <div class="controls">
           <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
             <s:url id="editRepositoryUrl" action="editRemoteRepository">
-              <s:param name="repoid" value="%{'${repository.id}'}"/>
+              <s:param name="repoid" value="%{#attr.repository.id}"/>
             </s:url>
             <s:a href="%{editRepositoryUrl}">
               <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
               Edit
             </s:a>
             <s:url id="deleteRepositoryUrl" action="confirmDeleteRemoteRepository">
-              <s:param name="repoid" value="%{'${repository.id}'}"/>
+              <s:param name="repoid" value="%{#attr.repository.id}"/>
             </s:url>
             <s:a href="%{deleteRepositoryUrl}">
               <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>

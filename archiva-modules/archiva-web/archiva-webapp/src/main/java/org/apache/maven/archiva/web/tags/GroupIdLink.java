@@ -114,14 +114,14 @@ public class GroupIdLink
 
     private String determineBrowseActionUrl()
     {
-        return determineActionURL( "browse", NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext, encode );
+        return determineActionURL( "browse", NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext, encode, false, false );
     }
 
     private String determineBrowseGroupActionUrl( String gid )
     {
         parameters.put( "groupId", gid );
 
-        return determineActionURL( ACTION, NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext, encode );
+        return determineActionURL( ACTION, NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext, encode, false, false );
     }
 
     public String getGroupId()

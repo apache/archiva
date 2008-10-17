@@ -21,7 +21,6 @@ package org.apache.maven.archiva.web.tags;
 
 import org.apache.struts2.StrutsException;
 import org.apache.struts2.components.Component;
-import com.opensymphony.xwork2.util.OgnlValueStack;
 
 import com.opensymphony.xwork2.util.ValueStack;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -111,7 +110,7 @@ public class DownloadArtifact
             Constraint constraint = new ArtifactsRelatedConstraint( groupId, artifactId, version );
             List<ArchivaArtifact> relatedArtifacts = dao.getArtifactDAO().queryArtifacts( constraint );
 
-            if ( relatedArtifacts != null )
+            if ( relatedArtifacts != null && relatedArtifacts.size() > 0 )
             {
                 String repoId = ( (ArchivaArtifact) relatedArtifacts.get( 0 ) ).getModel().getRepositoryId();
                 ManagedRepositoryContent repo = repositoryFactory.getManagedRepositoryContent( repoId );

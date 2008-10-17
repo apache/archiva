@@ -44,9 +44,9 @@
       <c:forEach items="${versions}" var="version">
         <c:set var="url">
           <s:url action="showArtifact" namespace="/">
-            <s:param name="groupId" value="%{'${groupId}'}"/>
-            <s:param name="artifactId" value="%{'${artifactId}'}"/>
-            <s:param name="version" value="%{'${version}'}"/>
+            <s:param name="groupId" value="%{#attr.groupId}"/>
+            <s:param name="artifactId" value="%{#attr.artifactId}"/>
+            <s:param name="version" value="%{'#attr.version}"/>
           </s:url>
         </c:set>
         <li><a href="${url}">${version}/</a></li>

@@ -73,7 +73,7 @@
     <%-- TODO: make some icons --%>
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
     <s:url id="deleteLegacyArtifactPath" action="deleteLegacyArtifactPath">
-      <s:param name="path" value="%{'${legacyArtifactPath.path}'}"/>
+      <s:param name="path" value="%{#attr.legacyArtifactPath.path}"/>
     </s:url>
     <s:a href="%{deleteLegacyArtifactPath}">
       <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>
