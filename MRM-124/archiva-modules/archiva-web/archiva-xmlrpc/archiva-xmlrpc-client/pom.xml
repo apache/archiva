@@ -35,6 +35,11 @@
       <artifactId>xmlrpc-client</artifactId>
       <version>3.1</version>
     </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.8.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -45,12 +50,44 @@
           <executable>java</executable>
           <mainClass>org.apache.archiva.web.xmlrpc.client.SampleClient</mainClass>
           <arguments>
-            <!-- URL ex. http://127.0.0.1:8080/archiva/xmlrpc --> 
+            <!-- 
+                 URL: ex. http://127.0.0.1:8080/archiva/xmlrpc 
+                 USERNAME & PASSWORD: Archiva credentials  
+            --> 
             <argument>URL</argument>
             <argument>USERNAME</argument>
             <argument>PASSWORD</argument>
           </arguments>
         </configuration>
+      </plugin>
+      <!-- override parent config, commons-logging cannot be excluded from commons-beanutils - NoClassDef error occurs -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.0-alpha-3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <excludes>
+                    <exclude>org.codehaus.plexus:plexus-container-default</exclude>                    
+                    <exclude>velocity:velocity-dep</exclude>
+                    <exclude>classworlds:classworlds</exclude>
+                    <exclude>javax.transaction:jta</exclude>
+                    <exclude>javax.sql:jdbc-stdext</exclude>
+                    <exclude>ant:ant-optional</exclude>
+                    <!-- exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude -->
+                    <exclude>xom:xom</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

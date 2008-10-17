@@ -19,6 +19,7 @@ package org.apache.archiva.web.xmlrpc.client;
  * under the License.
  */
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -29,6 +30,7 @@ import java.util.Set;
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
@@ -75,7 +77,19 @@ public class SampleClient
             for( int i = 0; i < managedRepos.length; i++ )
             {
                 System.out.println( "=================================" );
-                ManagedRepository managedRepo = (ManagedRepository) managedRepos[i];
+                ManagedRepository managedRepo = new ManagedRepository(); 
+                try
+                {   
+                    BeanUtils.populate( managedRepo, (Map)managedRepos[i] );
+                }
+                catch ( IllegalAccessException e )
+                {
+                    e.printStackTrace();
+                }
+                catch ( InvocationTargetException e )
+                {
+                    e.printStackTrace();
+                }
                 System.out.println( "Id: " + managedRepo.getId() );
                 System.out.println( "Name: " + managedRepo.getName() );
                 System.out.println( "Layout: " + managedRepo.getLayout() );
@@ -86,14 +100,27 @@ public class SampleClient
                         
             /* remote repositories */
             params = new Object[]{};
-            Object[] remoteReposObj = (Object[])
+            Object[] remoteRepos = (Object[])
                  client.execute( "AdministrationService.getAllRemoteRepositories", params );
             
             System.out.println( "\n******** Remote Repositories ********" );
-            for( int i = 0; i < remoteReposObj.length; i++ )
+            for( int i = 0; i < remoteRepos.length; i++ )
             {
                 System.out.println( "=================================" );
-                RemoteRepository remoteRepo = (RemoteRepository) remoteReposObj[i];
+                RemoteRepository remoteRepo = new RemoteRepository();
+                
+                try
+                {   
+                    BeanUtils.populate( remoteRepo, (Map) remoteRepos[i] );
+                }
+                catch ( IllegalAccessException e )
+                {
+                    e.printStackTrace();
+                }
+                catch ( InvocationTargetException e )
+                {
+                    e.printStackTrace();
+                }
                 System.out.println( "Id: " + remoteRepo.getId() );
                 System.out.println( "Name: " + remoteRepo.getName() );
                 System.out.println( "Layout: " + remoteRepo.getLayout() );

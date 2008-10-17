@@ -22,6 +22,7 @@ package org.apache.archiva.web.xmlrpc.api.beans;
 import java.io.Serializable;
 
 import com.atlassian.xmlrpc.ServiceBean;
+import com.atlassian.xmlrpc.ServiceBeanField;
 
 @ServiceBean
 public class ManagedRepository
@@ -39,6 +40,11 @@ public class ManagedRepository
 
     private boolean releases = false;
    
+    public ManagedRepository()
+    {
+        
+    }
+    
     public ManagedRepository( String id, String name, String url, String layout, boolean snapshots, boolean releases )
     {
         this.id = id;
@@ -108,31 +114,37 @@ public class ManagedRepository
         return this.snapshots;
     } 
     
+    @ServiceBeanField( "id" )
     public void setId(String id)
     {
         this.id = id;
     } 
     
+    @ServiceBeanField( "layout" )
     public void setLayout(String layout)
     {
         this.layout = layout;
     } 
 
+    @ServiceBeanField( "name" )
     public void setName(String name)
     {
         this.name = name;
     } 
     
+    @ServiceBeanField( "releases" )
     public void setReleases(boolean releases)
     {
         this.releases = releases;
     } 
 
+    @ServiceBeanField( "snapshots" )
     public void setSnapshots(boolean snapshots)
     {
         this.snapshots = snapshots;
     } 
 
+    @ServiceBeanField( "url" )
     public void setUrl(String url)
     {
         this.url = url;
