@@ -71,7 +71,7 @@
     
     <div style="float:right">
       <s:url id="deleteRepositoryGroupUrl" action="confirmDeleteRepositoryGroup">
-        <s:param name="repoGroupId" value="%{'${repositoryGroup.key}'}" />
+        <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}" />
       </s:url>
       <s:a href="%{deleteRepositoryGroupUrl}" cssClass="delete">
         <img src="${iconDeleteUrl}"/>
@@ -85,9 +85,9 @@
 
   <c:if test="${!empty (groupToRepositoryMap[repositoryGroup.key])}">
   <div class="repos">
-    <s:form name="form${i}" action="addRepositoryToGroup" namespace="/admin" validate="true">
-      <s:hidden name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
-      <s:select list="groupToRepositoryMap['${repositoryGroup.key}']" name="repoId" theme="simple"/>
+    <s:form name="form%{#attr.i}" action="addRepositoryToGroup" namespace="/admin" validate="true">
+      <s:hidden name="repoGroupId" value="%{#attr.repositoryGroup.key}"/>
+      <s:select list="%{#attr.groupToRepositoryMap[#attr.repositoryGroup.key]}" name="repoId" theme="simple"/>
       <s:submit value="Add Repository" theme="simple" cssClass="button"/>
     </s:form>
   </div>
@@ -110,16 +110,16 @@
     <div class="controls">
       <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
         <s:url id="sortDownRepositoryUrl" action="sortDownRepositoryFromGroup">
-          <s:param name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
-          <s:param name="targetRepo" value="managedRepositories['${repository}'].id"/>
+          <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}"/>
+          <s:param name="targetRepo" value="managedRepositories['%{#attr.repository}'].id"/>
         </s:url>
         <s:url id="sortUpRepositoryUrl" action="sortUpRepositoryFromGroup">
-          <s:param name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
-          <s:param name="targetRepo" value="managedRepositories['${repository}'].id"/>
+          <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}"/>
+          <s:param name="targetRepo" value="managedRepositories['%{#attr.repository}'].id"/>
         </s:url>
         <s:url id="removeRepositoryUrl" action="removeRepositoryFromGroup">
-          <s:param name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
-          <s:param name="repoId" value="managedRepositories['${repository}'].id"/>
+          <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}"/>
+          <s:param name="repoId" value="managedRepositories[%{#attr.repository}].id"/>
         </s:url>
         <c:if test="${r.count > 1}">
           <s:a href="%{sortUpRepositoryUrl}" cssClass="up" title="Move Repository Up">

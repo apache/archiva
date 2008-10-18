@@ -47,10 +47,10 @@
           </td>
           <td>
             <c:set var="value">
-              <s:property id="value" value="%{#attr.connector.policies[#attr.policy.key]}" default="%{attr.policy.value.defaultOption}" />
+              <s:property id="value" value="%{#attr.connector.policies[#attr.policy.key]}" default="%{#attr.policy.value.defaultOption}" />
             </c:set>
-            <s:select name="connector.policies['#attr.policy.key']"
-                       list="policyMap[#attr.policy.key].options"
+            <s:select name="connector.policies['%{#attr.policy.key}']"
+                       list="%{#attr.policyMap[#attr.policy.key].options}"
                        value="%{#attr.value}"
                        id="policy_%{#attr.policy.key}"
                        theme="simple"
@@ -93,7 +93,7 @@
                           theme="simple">${property.key}</s:label>
               </td>
               <td>
-                <s:textfield name="%{#connector.properties['%{#property.key}']}"
+                <s:textfield name="connector.properties['%{#attr.property.key}']"
                               size="15"
                               id="property_%{#attr.property.key}"
                               theme="simple"/>
