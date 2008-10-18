@@ -40,6 +40,7 @@ public class AddProxyConnectorAction
         connector = new ProxyConnectorConfiguration();
     }
     
+    @Override
     public String input()
     {
         return INPUT;
