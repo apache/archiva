@@ -24,6 +24,7 @@ import org.apache.jackrabbit.webdav.WebdavRequest;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
+import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -72,12 +73,14 @@ public class ArchivaDavSessionProvider
         }
         catch ( AuthenticationException e )
         {   
+            boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
+            
             // safety check for MRM-911            
             String guest = archivaXworkUser.getGuest();
             try
             {
                 if( servletAuth.isAuthorized( guest, 
-                      ( ( ArchivaDavResourceLocator ) request.getRequestLocator() ).getRepositoryId() ) )
+                      ( ( ArchivaDavResourceLocator ) request.getRequestLocator() ).getRepositoryId(), isPut ) )
                 {
                     request.setDavSession(new ArchivaDavSession());
                     return true;

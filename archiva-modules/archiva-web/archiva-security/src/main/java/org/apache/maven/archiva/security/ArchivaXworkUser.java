@@ -85,4 +85,9 @@ public class ArchivaXworkUser
         
         return guest;
     }
+    
+    public void setGuest( String guesT )
+    {
+        guest = guesT;
+    }
 }

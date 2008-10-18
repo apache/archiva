@@ -100,20 +100,23 @@ public class EffectiveProjectModelFilter
         // Clone submitted project (so that we don't mess with it) 
         effectiveProject = ArchivaModelCloner.clone( project );
 
-        // Setup Expression Evaluation pieces.
-        effectiveProject = expressionFilter.filter( effectiveProject );
-
         DEBUG( "Starting build of effective with: " + effectiveProject );
 
         // Merge in all the parent poms.
         effectiveProject = mergeParent( effectiveProject );
 
+        // Setup Expression Evaluation pieces.
+        effectiveProject = expressionFilter.filter( effectiveProject );
+
         // Resolve dependency versions from dependency management.
         applyDependencyManagement( effectiveProject );
 
+        // groupId or version could be updated by parent or expressions
+        projectKey = toProjectKey( effectiveProject );
+        
         // Do not add project into cache if it contains no groupId and
         // version information
-        if ( project.getGroupId() != null && project.getVersion() != null )
+        if ( effectiveProject.getGroupId() != null && effectiveProject.getVersion() != null )
         {
             synchronized ( effectiveProjectCache )
             {
@@ -191,8 +194,8 @@ public class EffectiveProjectModelFilter
             if ( parentProject != null )
             {
                 // Merge the pom with the parent pom.
-                parentProject = expressionFilter.filter( parentProject );
                 parentProject = mergeParent( parentProject );
+                parentProject = expressionFilter.filter( parentProject );
 
                 // Cache the pre-merged parent.
                 synchronized ( effectiveProjectCache )

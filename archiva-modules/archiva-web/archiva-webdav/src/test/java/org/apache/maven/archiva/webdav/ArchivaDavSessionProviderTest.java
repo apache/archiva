@@ -362,7 +362,7 @@ public class ArchivaDavSessionProviderTest extends TestCase
             return true;
         }
 
-        public boolean isAuthorized(String arg0, String arg1)
+        public boolean isAuthorized(String arg0, String arg1, boolean isWriteRequest)
             throws UnauthorizedException
         {
             return true;

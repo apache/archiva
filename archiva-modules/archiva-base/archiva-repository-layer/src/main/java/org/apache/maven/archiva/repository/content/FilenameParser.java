@@ -104,7 +104,8 @@ public class FilenameParser
 
             // check it starts with the same version up to the snapshot part
             int leadingLength = expected.length() - 9;
-            if ( version.startsWith( expected.substring( 0, leadingLength ) ) && version.length() > leadingLength )
+            if ( leadingLength > 0 && version.startsWith( expected.substring( 0, leadingLength ) ) &&
+                version.length() > leadingLength )
             {
                 // If we expect a non-generic snapshot - look for the timestamp
                 Matcher m = SNAPSHOT_PATTERN.matcher( version.substring( leadingLength + 1 ) );

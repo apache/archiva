@@ -19,30 +19,48 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
-import org.apache.struts2.interceptor.ServletRequestAware;
 import com.opensymphony.xwork2.Preparable;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.constraints.RangeConstraint;
+import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
 import org.apache.maven.archiva.database.constraints.RepositoryProblemByGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.RepositoryProblemByRepositoryIdConstraint;
 import org.apache.maven.archiva.database.constraints.RepositoryProblemConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.model.RepositoryProblemReport;
+import org.apache.maven.archiva.reporting.ArchivaReportException;
+import org.apache.maven.archiva.reporting.DataLimits;
+import org.apache.maven.archiva.reporting.RepositoryStatistics;
+import org.apache.maven.archiva.reporting.RepositoryStatisticsReportGenerator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport"
@@ -51,10 +69,17 @@ public class GenerateReportAction
     extends PlexusActionSupport
     implements SecureAction, ServletRequestAware, Preparable
 {
+    private Logger log = LoggerFactory.getLogger( GenerateReportAction.class );
+    
     /**
      * @plexus.requirement role-hint="jdo"
      */
     protected ArchivaDAO dao;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration archivaConfiguration;
 
     protected Constraint constraint;
 
@@ -90,13 +115,50 @@ public class GenerateReportAction
     
     protected Map<String, List<RepositoryProblemReport>> repositoriesMap = 
     		new TreeMap<String, List<RepositoryProblemReport>>();
-
+    
+    // for statistics report
+    /**
+     * @plexus.requirement role-hint="simple"
+     */
+    private RepositoryStatisticsReportGenerator generator;
+    
+    private List<String> selectedRepositories = new ArrayList<String>();
+    
+    private List<String> availableRepositories;  
+    
+    private String startDate;
+    
+    private String endDate;
+    
+    private int reposSize;
+    
+    private String selectedRepo;
+    
+    private List<RepositoryStatistics> repositoryStatistics = new ArrayList<RepositoryStatistics>();
+    
+    private DataLimits limits = new DataLimits();
+    
+    private String[] datePatterns = new String[] { "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", 
+        "dd MMMMM yyyy", "dd/MM/yy", "dd/MM/yyyy", "yyyy/MM/dd" };
+    
     public void prepare()
     {
         repositoryIds = new ArrayList<String>();
         repositoryIds.add( ALL_REPOSITORIES ); // comes first to be first in the list
         repositoryIds.addAll(
             dao.query( new UniqueFieldConstraint( RepositoryProblem.class.getName(), "repositoryId" ) ) );
+        
+        availableRepositories = new ArrayList<String>();
+     
+        // remove selected repositories in the option for the statistics report
+        availableRepositories.addAll( archivaConfiguration.getConfiguration().getManagedRepositoriesAsMap().keySet() );        
+        for( String repo : selectedRepositories )
+        {
+            if( availableRepositories.contains( repo ) )
+            {
+                availableRepositories.remove( repo );
+            }
+        }
     }
 
     public Collection<String> getRepositoryIds()
@@ -104,10 +166,202 @@ public class GenerateReportAction
         return repositoryIds;
     }
 
-    @Override
+    /**
+     * Generate the statistics report.
+     * 
+     * check whether single repo report or comparison report
+     * 1. if it is a single repository, get all the statistics for the repository on the specified date
+     *    - if no date is specified, get only the latest 
+     *          (total page = 1 --> no pagination since only the most recent stats will be displayed)
+     *    - otherwise, get everything within the date range (total pages = repo stats / rows per page)
+     *       - required params: repository, startDate, endDate
+     *       
+     * 2. if multiple repositories, get the latest statistics on each repository on the specified date
+     *    - if no date is specified, use the current date endDate
+     *       - required params: repositories, endDate
+     *    - total pages = repositories / rows per page
+     * 
+     * @return
+     */
+    public String generateStatistics()
+    {   
+        if( rowCount < 10 )
+        {
+            addFieldError( "rowCount", "Row count must be larger than 10." );
+            return INPUT;
+        }
+        reposSize = selectedRepositories.size();
+        Date startDateInDateFormat = null;
+        Date endDateInDateFormat = null;
+        
+        if( startDate == null || "".equals( startDate ) )
+        {
+            startDateInDateFormat = getDefaultStartDate();
+        }
+        else
+        {
+            try
+            {
+                startDateInDateFormat = DateUtils.parseDate( startDate, datePatterns );
+            }
+            catch ( ParseException e )
+            {
+                addFieldError( "startDate", "Invalid date format.");
+                return INPUT;
+            }
+        }
+        
+        if( endDate == null || "".equals( endDate ) )
+        {
+            endDateInDateFormat = getDefaultEndDate();
+        }
+        else
+        {
+            try
+            {
+                endDateInDateFormat = DateUtils.parseDate( endDate, datePatterns );                
+            }
+            catch ( ParseException e )
+            {
+                addFieldError( "endDate", "Invalid date format.");
+                return INPUT;
+            }
+        }
+        
+        try
+        {
+            RepositoryContentStatisticsDAO repoContentStatsDao = dao.getRepositoryContentStatisticsDAO();            
+            if( selectedRepositories.size() > 1 )
+            {
+                limits.setTotalCount( selectedRepositories.size() );            
+                limits.setCurrentPage( 1 );
+                limits.setPerPageCount( 1 );
+                limits.setCountOfPages( 1 );
+                
+                // multiple repos
+                for( String repo : selectedRepositories )
+                {  
+                    try
+                    {
+                        List contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
+                           new RepositoryContentStatisticsByRepositoryConstraint( repo, startDateInDateFormat, endDateInDateFormat ) );
+                        
+                        if( contentStats == null || contentStats.isEmpty() )
+                        {
+                            log.info( "No statistics available for repository '" + repo + "'." );
+                            // TODO set repo's stats to 0
+                            
+                            continue;
+                        }                        
+                        repositoryStatistics.addAll( generator.generateReport( contentStats, repo, startDateInDateFormat, endDateInDateFormat, limits ) );
+                    }
+                    catch ( ObjectNotFoundException oe )
+                    {
+                        log.error( "No statistics available for repository '" + repo + "'." );
+                        // TODO set repo's stats to 0
+                    }
+                    catch ( ArchivaDatabaseException ae )
+                    {
+                        log.error( "Error encountered while querying statistics of repository '" + repo + "'." );
+                        // TODO set repo's stats to 0
+                    }
+                }
+            }
+            else if ( selectedRepositories.size() == 1 )
+            {   
+                limits.setCurrentPage( getPage() );
+                limits.setPerPageCount( getRowCount() );
+                
+                selectedRepo = selectedRepositories.get( 0 );
+                try
+                {
+                    List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
+                           new RepositoryContentStatisticsByRepositoryConstraint( selectedRepo, startDateInDateFormat, endDateInDateFormat ) );
+                    
+                    if( contentStats == null || contentStats.isEmpty() )
+                    {   
+                        addActionError( "No statistics available for repository. Repository might not have been scanned." );
+                        return ERROR;
+                    }   
+                    
+                    limits.setTotalCount( contentStats.size() );                    
+                    int extraPage = ( limits.getTotalCount() % limits.getPerPageCount() ) != 0 ? 1 : 0;
+                    int totalPages = ( limits.getTotalCount() / limits.getPerPageCount() ) + extraPage;                    
+                    limits.setCountOfPages( totalPages );
+                    
+                    repositoryStatistics = generator.generateReport( contentStats, selectedRepo, startDateInDateFormat, endDateInDateFormat, limits );
+                }
+                catch ( ObjectNotFoundException oe )
+                {
+                    addActionError( oe.getMessage() );
+                    return ERROR;
+                }
+                catch ( ArchivaDatabaseException de )
+                {
+                    addActionError( de.getMessage() );
+                    return ERROR;
+                }
+            }
+            else
+            {
+                addFieldError( "availableRepositories", "Please select a repository (or repositories) from the list." );
+                return INPUT;
+            } 
+            
+            if( repositoryStatistics.isEmpty() )
+            {
+                return BLANK;
+            }
+            
+            if( startDate.equals( getDefaultStartDate() ) )
+            {
+                startDate = null;
+            }
+            else
+            {   
+                startDate = DateFormatUtils.format( startDateInDateFormat, "MM/dd/yyyy" );                
+            }
+            
+            endDate = DateFormatUtils.format( endDateInDateFormat, "MM/dd/yyyy" );
+        }
+        catch ( ArchivaReportException e )
+        {
+            addActionError( "Error encountered while generating report :: " + e.getMessage() );
+            return ERROR;
+        }
+        
+        return SUCCESS;
+    }
+    
+    private Date getDefaultStartDate()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set( 1900, 1, 1, 0, 0, 0 );
+        
+        return cal.getTime();
+    }
+    
+    private Date getDefaultEndDate()
+    {
+        return Calendar.getInstance().getTime();
+    }
+    
     public String execute()
         throws Exception
-    {
+    {   
+        if( repositoryId == null )
+        {
+            addFieldError( "repositoryId", "You must provide a repository id.");            
+            return INPUT;
+        }
+        
+        if( rowCount < 10 )
+        {
+            addFieldError( "rowCount", "Row count must be larger than 10." );
+            return INPUT;
+        }
+        
         List<RepositoryProblem> problemArtifacts =
             dao.getRepositoryProblemDAO().queryRepositoryProblems( configureConstraint() );
 
@@ -157,7 +411,7 @@ public class GenerateReportAction
             return SUCCESS;
         }
     }
-
+    
     private static boolean isJasperPresent()
     {
         if ( jasperPresent == null )
@@ -207,6 +461,34 @@ public class GenerateReportAction
         }
 
         return constraint;
+    }
+    
+    public SecureActionBundle getSecureActionBundle()
+        throws SecureActionException
+    {
+        SecureActionBundle bundle = new SecureActionBundle();
+    
+        bundle.setRequiresAuthentication( true );
+        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_ACCESS_REPORT, Resource.GLOBAL );
+    
+        return bundle;
+    }
+    
+    private void addToList( RepositoryProblemReport repoProblemReport )
+    {
+        List<RepositoryProblemReport> problemsList = null;
+        
+        if ( repositoriesMap.containsKey( repoProblemReport.getRepositoryId() ) )
+        {
+            problemsList = ( List<RepositoryProblemReport> ) repositoriesMap.get( repoProblemReport.getRepositoryId() );
+        }
+        else
+        {
+            problemsList = new ArrayList<RepositoryProblemReport>();
+            repositoriesMap.put( repoProblemReport.getRepositoryId(), problemsList );
+        }
+        
+        problemsList.add( repoProblemReport );
     }
 
     public void setServletRequest( HttpServletRequest request )
@@ -284,31 +566,83 @@ public class GenerateReportAction
     	return repositoriesMap;
     }
     
-    public SecureActionBundle getSecureActionBundle()
-        throws SecureActionException
+    public List<String> getSelectedRepositories()
     {
-        SecureActionBundle bundle = new SecureActionBundle();
+        return selectedRepositories;
+    }
 
-        bundle.setRequiresAuthentication( true );
-        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_ACCESS_REPORT, Resource.GLOBAL );
+    public void setSelectedRepositories( List<String> selectedRepositories )
+    {
+        this.selectedRepositories = selectedRepositories;
+    }
 
-        return bundle;
+    public List<String> getAvailableRepositories()
+    {
+        return availableRepositories;
+    }
+
+    public void setAvailableRepositories( List<String> availableRepositories )
+    {
+        this.availableRepositories = availableRepositories;
+    }
+
+    public String getStartDate()
+    {
+        return startDate;
+    }
+
+    public void setStartDate( String startDate )
+    {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate()
+    {
+        return endDate;
+    }
+
+    public void setEndDate( String endDate )
+    {
+        this.endDate = endDate;
+    }
+
+    public List<RepositoryStatistics> getRepositoryStatistics()
+    {
+        return repositoryStatistics;
+    }
+
+    public void setRepositoryStatistics( List<RepositoryStatistics> repositoryStatistics )
+    {
+        this.repositoryStatistics = repositoryStatistics;
     }
     
-    private void addToList( RepositoryProblemReport repoProblemReport )
+    public int getReposSize()
     {
-    	List<RepositoryProblemReport> problemsList = null;
-    	
-    	if ( repositoriesMap.containsKey( repoProblemReport.getRepositoryId() ) )
-    	{
-    		problemsList = ( List<RepositoryProblemReport> ) repositoriesMap.get( repoProblemReport.getRepositoryId() );
-    	}
-    	else
-    	{
-    		problemsList = new ArrayList<RepositoryProblemReport>();
-    		repositoriesMap.put( repoProblemReport.getRepositoryId(), problemsList );
-    	}
-    	
-    	problemsList.add( repoProblemReport );
+        return reposSize;
+    }
+
+    public void setReposSize( int reposSize )
+    {
+        this.reposSize = reposSize;
+    }
+
+    public String getSelectedRepo()
+    {
+        return selectedRepo;
+    }
+
+    public void setSelectedRepo( String selectedRepo )
+    {
+        this.selectedRepo = selectedRepo;
+    }
+
+    public DataLimits getLimits()
+    {
+        return limits;
+    }
+
+    public void setLimits( DataLimits limits )
+    {
+        this.limits = limits;
     }
 }

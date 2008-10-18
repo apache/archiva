@@ -1,5 +1,9 @@
 package org.apache.maven.archiva.database.constraints;
 
+import java.util.Date;
+
+import org.apache.maven.archiva.database.Constraint;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -35,6 +39,16 @@ public class RepositoryContentStatisticsByRepositoryConstraint
         whereClause = "repositoryId == repoId";
         declParams = new String[] { "String repoId" };
         params = new Object[] { repoId };
+    }
+    
+    public RepositoryContentStatisticsByRepositoryConstraint( String repoId, Date startDate, Date endDate )
+    {    
+        declImports = new String[] { "import java.util.Date" };
+        whereClause = "repositoryId == repoId && whenGathered >= startDate && whenGathered <= endDate";
+        declParams = new String[] { "String repoId", "Date startDate", "Date endDate" };
+        params = new Object[] { repoId, startDate, endDate };
+        
+        sortDirection = Constraint.DESCENDING;
     }
 
     public String getSortColumn()

@@ -152,6 +152,10 @@
 </c:forEach>
 </div> <%-- admin --%>
 
-</div> <%-- content area --%>
 </c:otherwise>
 </c:choose>
+</div> <%-- content area --%>
+
+</body>
+</html>
+

@@ -77,6 +77,7 @@ public class ProjectModelMerge
         ArchivaProjectModel merged = new ArchivaProjectModel();
 
         // Unmerged.
+        merged.setParentProject(mainProject.getParentProject());
         merged.setArtifactId( mainProject.getArtifactId() );
         merged.setPackaging( StringUtils.defaultIfEmpty( mainProject.getPackaging(), "jar" ) );
         merged.setRelocation( mainProject.getRelocation() );
@@ -334,6 +335,7 @@ public class ProjectModelMerge
         }
 
         Properties merged = new Properties();
+        merged.putAll(mainProperties);
 
         Enumeration keys = parentProperties.propertyNames();
         while ( keys.hasMoreElements() )
