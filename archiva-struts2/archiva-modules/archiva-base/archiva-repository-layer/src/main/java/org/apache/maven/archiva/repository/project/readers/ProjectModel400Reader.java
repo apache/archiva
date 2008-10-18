@@ -104,6 +104,8 @@ public class ProjectModel400Reader
             model.setBuildExtensions( getBuildExtensions( xml ) );
 
             model.setRelocation( getRelocation( xml ) );
+            
+            model.setOrigin("filesystem");
 
             return model;
         }

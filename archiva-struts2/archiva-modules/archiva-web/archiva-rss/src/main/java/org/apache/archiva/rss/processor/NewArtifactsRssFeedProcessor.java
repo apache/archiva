@@ -89,7 +89,7 @@ public class NewArtifactsRssFeedProcessor
         Calendar greaterThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
         greaterThanThisDate.add( Calendar.DATE, -( getNumberOfDaysBeforeNow() ) );
         
-        Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, greaterThanThisDate.getTime(), "whenGathered" );
+        Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, greaterThanThisDate.getTime(), "whenGathered", false );
         List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactsByRepo );
 
         List<RssFeedEntry> entries = processData( artifacts, true );

@@ -104,11 +104,24 @@ public class ProjectModelExpressionFilter
             try
             {
                 // Setup some common properties.
+                VersionedReference parent = model.getParentProject();
+                if ( parent != null )
+                {
+                    String parentGroupId = StringUtils.defaultString( evaluator.expand( parent.getGroupId() ) );
+                    String parentArtifactId = StringUtils.defaultString( evaluator.expand( parent.getArtifactId() ) );
+                    String parentVersion = StringUtils.defaultString( evaluator.expand( parent.getVersion() ) );
+
+                    props.setProperty( "parent.groupId", parentGroupId );
+                    props.setProperty( "parent.artifactId", parentArtifactId );
+                    props.setProperty( "parent.version", parentVersion );
+                }
+
                 String groupId = StringUtils.defaultString( evaluator.expand( model.getGroupId() ) );
                 String artifactId = StringUtils.defaultString( evaluator.expand( model.getArtifactId() ) );
                 String version = StringUtils.defaultString( evaluator.expand( model.getVersion() ) );
                 String name = StringUtils.defaultString( evaluator.expand( model.getName() ) );
                 
+
                 /* Archiva doesn't need to handle a full expression language with object tree walking
                  * as the requirements within Archiva are much smaller, a quick replacement of the
                  * important fields (groupId, artifactId, version, name) are handled specifically. 

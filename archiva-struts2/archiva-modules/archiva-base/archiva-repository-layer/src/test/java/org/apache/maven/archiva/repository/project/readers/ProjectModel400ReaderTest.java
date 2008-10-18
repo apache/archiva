@@ -92,6 +92,6 @@ public class ProjectModel400ReaderTest
         assertEquals( "Parent Version", "1.0-SNAPSHOT", parentRef.getVersion() );
         
         assertNotNull( "Dependencies", project.getDependencies() );
-        assertEquals( "Dependencies.size", 6, project.getDependencies().size() );
+        assertEquals( "Dependencies.size", 8, project.getDependencies().size() );
     }
 }

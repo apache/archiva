@@ -186,14 +186,14 @@ public class ArchivaDavResourceFactory
     {
         checkLocatorIsInstanceOfRepositoryLocator( locator );
         ArchivaDavResourceLocator archivaLocator = (ArchivaDavResourceLocator) locator;
-
+        
         RepositoryGroupConfiguration repoGroupConfig =
             archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( archivaLocator.getRepositoryId() );
         List<String> repositories = new ArrayList<String>();
 
         boolean isGet = WebdavMethodUtil.isReadMethod( request.getMethod() );
         boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
-
+        
         if ( repoGroupConfig != null )
         {
             if( WebdavMethodUtil.isWriteMethod( request.getMethod() ) )
@@ -230,7 +230,7 @@ public class ArchivaDavResourceFactory
 
             try
             {
-                managedRepository = getManagedRepository( repositoryId );
+                managedRepository = getManagedRepository( repositoryId );                
             }
             catch ( DavException de )
             {
@@ -241,13 +241,13 @@ public class ArchivaDavResourceFactory
             DavResource resource = null;
             
             if ( !locator.getResourcePath().startsWith( ArchivaDavResource.HIDDEN_PATH_PREFIX ) )
-            {
+            {                
                 if ( managedRepository != null )
                 {
                     try
                     {
                         if( isAuthorized( request, repositoryId ) )
-                        {
+                        {   
                             LogicalResource logicalResource =
                                 new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
 
@@ -258,12 +258,12 @@ public class ArchivaDavResourceFactory
 
                             if ( isPut )
                             {
-                                resource = doPut( managedRepository, request, archivaLocator, logicalResource );
+                                resource = doPut( managedRepository, request, archivaLocator, logicalResource );                                
                             }
                         }
                     }
                     catch ( DavException de ) 
-                    {
+                    {                        
                         e = de;
                         continue;
                     }
@@ -273,11 +273,11 @@ public class ArchivaDavResourceFactory
                         e = new DavException( HttpServletResponse.SC_NOT_FOUND, "Resource does not exist" );
                     }
                     else
-                    {   
+                    {                           
                         availableResources.add( resource );
 
                         String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
-                        resourcesInAbsolutePath.add( managedRepository.getRepoRoot() + logicalResource );
+                        resourcesInAbsolutePath.add( managedRepository.getRepoRoot() + logicalResource );                        
                     }
                 }
                 else
@@ -491,15 +491,16 @@ public class ArchivaDavResourceFactory
 
         File rootDirectory = new File( managedRepository.getRepoRoot() );
         File destDir = new File( rootDirectory, logicalResource.getPath() ).getParentFile();
+        
         if ( request.getMethod().equals(HTTP_PUT_METHOD) && !destDir.exists() )
         {
             destDir.mkdirs();
             String relPath = PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
             triggerAuditEvent( request.getRemoteAddr(), logicalResource.getPath(), relPath, AuditEvent.CREATE_DIR );
         }
-
-        File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
-
+        
+        File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );        
+                
         return new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                        managedRepository.getRepository(), request.getRemoteAddr(),
                                        request.getDavSession(), locator, this, mimeTypes, auditListeners, consumers, archivaXworkUser );
@@ -721,9 +722,9 @@ public class ArchivaDavResourceFactory
 
     protected boolean isAuthorized( DavServletRequest request, String repositoryId )
         throws DavException
-    {
+    {   
         try
-        {
+        {     
             AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
             SecuritySession securitySession = httpAuth.getSecuritySession();
 
@@ -732,13 +733,15 @@ public class ArchivaDavResourceFactory
                                           WebdavMethodUtil.isWriteMethod( request.getMethod() ) );
         }
         catch ( AuthenticationException e )
-        {
+        {            
+            boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
+            
             // safety check for MRM-911            
             String guest = archivaXworkUser.getGuest();
             try
             {
                 if( servletAuth.isAuthorized( guest, 
-                      ( ( ArchivaDavResourceLocator ) request.getRequestLocator() ).getRepositoryId() ) )
+                      ( ( ArchivaDavResourceLocator ) request.getRequestLocator() ).getRepositoryId(), isPut ) )
                 {   
                     return true;
                 }
@@ -795,6 +798,8 @@ public class ArchivaDavResourceFactory
 
         if( allow )
         {
+            boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
+            
             for( String repository : repositories )
             {
                 // for prompted authentication
@@ -817,7 +822,7 @@ public class ArchivaDavResourceFactory
                     // for the current user logged in
                     try
                     {
-                        if( servletAuth.isAuthorized( activePrincipal, repository ) )
+                        if( servletAuth.isAuthorized( activePrincipal, repository, isPut ) )
                         {
                             getResource( locator, mergedRepositoryContents, logicalResource, repository );
                         }
@@ -909,11 +914,12 @@ public class ArchivaDavResourceFactory
         }
         else
         {
+            boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
             for( String repository : repositories )
             {
                 try
-                {
-                    if( servletAuth.isAuthorized( activePrincipal, repository ) )
+                {   
+                    if( servletAuth.isAuthorized( activePrincipal, repository, isPut ) )
                     {
                         allow = true;
                         break;
@@ -973,5 +979,15 @@ public class ArchivaDavResourceFactory
        {
            return true;
        }
+    }
+    
+    public void setServletAuth( ServletAuthenticator servletAuth )
+    {
+        this.servletAuth = servletAuth;
+    }
+    
+    public void setHttpAuth( HttpAuthenticator httpAuth )
+    {
+        this.httpAuth = httpAuth;
     }
 }
