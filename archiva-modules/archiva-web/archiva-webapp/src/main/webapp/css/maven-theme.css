@@ -23,7 +23,7 @@ body {
 
 body, td, th, select, input, li {
     font-family: Verdana, Helvetica, Arial, sans-serif;
-    font-size: 11pt;
+    font-size: 9pt;
 }
 
 select, input {
@@ -123,9 +123,7 @@ p {
 }
 
 #breadcrumbs {
-    border-top: 1px solid #fff;
-    border-bottom: 1px solid #999;
-    background-color: #F3B455;
+    background-image: url(../images/breadcrumbs.jpg);
     padding: 2px 8px;
 }
 
@@ -298,8 +296,9 @@ pre.pom code {
 }
 
 #footer {
-    background: url( ../images/footerborder.gif ) 0 5px repeat-x;
+    border-top: 1px solid #CCCCCC;
     padding: 14px 4px 12px 4px;
+	color: #333333;
     margin-top: 2em;
 }
 
@@ -328,4 +327,12 @@ blockquote {
 	margin-left: 20px;
 	margin-right: 20px;
 	
+}
+
+#searchBox {
+	margin: 5%;
+}
+
+#searchHint {
+	margin: 5%;
 }

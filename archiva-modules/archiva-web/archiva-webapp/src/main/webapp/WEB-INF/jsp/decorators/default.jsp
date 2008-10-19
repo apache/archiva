@@ -45,32 +45,10 @@
 </head>
 
 <body onload="<decorator:getProperty property="body.onload" />" class="composite">
-<div id="banner">
-  <span id="bannerLeft">
-    <my:currentWWUrl action="index" namespace="/">
-      <img src="<c:url value='/images/archiva.png' />" alt="" width="188" height="69"/>
-    </my:currentWWUrl>
-  </span>
-  <span id="bannerRight">
-    <ww:action namespace="/components" name="companyInfo" executeResult="true"/>
-  </span>
-
-  <div class="clear">
-    <hr/>
-  </div>
-</div>
-
 <div id="breadcrumbs">
-  <div class="xleft">
+  <div class="xright">
     <%@ include file="/WEB-INF/jsp/redback/include/securityLinks.jsp" %>
   </div>
-
-  <div class="xright">
-    <a href="http://archiva.apache.org">Archiva</a> |
-    <a href="http://maven.apache.org/">Maven</a> |
-    <a href="http://www.apache.org/">Apache</a>
-  </div>
-
   <div class="clear">
     <hr/>
   </div>
@@ -79,7 +57,9 @@
 <div id="leftColumn">
 
   <div id="navcolumn">
-
+    <my:currentWWUrl action="index" namespace="/">
+      <img src="<c:url value='/images/archiva.png' />" alt="" width="155" height="55"/>
+    </my:currentWWUrl>
     <h5>Find</h5>
     <ul>
       <li class="none">
@@ -190,10 +170,10 @@
 %>
 <div id="footer">
   <div class="xleft">
-    Apache Archiva <%= ArchivaVersion.getVersion() %>
+    <a href="http://archiva.apache.org/">Apache Archiva <%= ArchivaVersion.getVersion()%></a>
   </div>
   <div class="xright">
-    Copyright &#169; <%= copyrightRange %> The Apache Software Foundation
+    <a href="http://www.apache.org/">Copyright &#169; <%= copyrightRange%> The Apache Software Foundation</a>
   </div>
 
   <div class="clear">

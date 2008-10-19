@@ -30,14 +30,12 @@
 
 <body>
 
-<h1>Search</h1>
-
 <div id="contentArea">
 <div id="searchBox">
   <ww:form method="get" action="quickSearch" validate="true">
     <ww:textfield label="Search for" size="50" name="q"/>
     <ww:hidden name="completeQueryString" value="${completeQueryString}"/>        
-    <ww:submit label="Go!"/>
+    <ww:submit value="Go!"/>
   </ww:form>
 
   <script type="text/javascript">
@@ -53,7 +51,7 @@
     <ww:actionerror/>
   </p>
 </div>
-
+<div id="searchHint">
   <p>
     Enter your search terms. A variety of data will be searched for your keywords.<br/>
     To search for Java classes, packages or methods, use the keyword <code>bytecode:</code>
@@ -61,6 +59,7 @@
     <code>bytecode:MyClass</code>, or:
     <code>bytecode:myMethod</code>
   </p>
+</div>
 </div>
 </body>
 </html>

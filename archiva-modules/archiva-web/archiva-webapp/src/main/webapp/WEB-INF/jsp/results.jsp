@@ -43,7 +43,7 @@
 <c:url var="imgNextPageDisabledUrl" value="/images/icon_next_page_disabled.gif"/>
 
 <div id="contentArea">
-  <div id="searchBox">
+  <div id="searchBoxResults">
 
     <c:if test="${fromFilterSearch == true}">
       <ww:form method="get" action="filteredSearch" validate="true">
