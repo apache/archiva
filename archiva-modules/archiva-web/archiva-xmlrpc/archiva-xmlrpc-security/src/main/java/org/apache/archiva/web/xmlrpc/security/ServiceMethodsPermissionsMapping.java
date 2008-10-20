@@ -43,6 +43,7 @@ public class ServiceMethodsPermissionsMapping
             add( "AdministrationService.getAllRemoteRepositories" );
             add( "AdministrationService.getAllDatabaseConsumers" );
             add( "AdministrationService.getAllRepositoryConsumers" );
+            add( "AdministrationService.deleteArtifact" );
         }
     };
 

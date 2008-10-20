@@ -170,8 +170,16 @@ public class SampleClient
             /* execute db scanner */
             Object[] executeDbScanParams = new Object[] {};            
             configured = client.execute( "AdministrationService.executeDatabaseScanner", executeDbScanParams );
-            System.out.println( "\nExecuted database scanner : " + ( ( Boolean ) configured ).booleanValue() );            
+            System.out.println( "\nExecuted database scanner : " + ( ( Boolean ) configured ).booleanValue() );
             
+            /* delete artifact */
+            /* 
+             * NOTE: before enabling & invoking deleteArtifact, make sure that the repository and artifact exists first!            
+            Object[] deleteArtifactParams = new Object[] { "internal", "javax.activation", "activation", "1.1" };
+            Object artifactDeleted = client.execute( "AdministrationService.deleteArtifact", deleteArtifactParams );
+            System.out.println( "\nDeleted artifact 'javax.activation:activation:1.1' from repository 'internal' : " +
+                ( (Boolean) artifactDeleted ).booleanValue() );    
+            */ 
         }
         catch ( MalformedURLException e )
         {
