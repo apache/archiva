@@ -1,0 +1,229 @@
+<?xml version="1.0" ?>
+
+<!--
+  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.apache.maven.shared</groupId>
+    <artifactId>maven-shared-components</artifactId>
+    <version>3</version>
+  </parent>
+
+  <artifactId>maven-shared-jar</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>Maven Shared Jar Utils</name>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/sandbox/maven-shared-jar</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/sandbox/maven-shared-jar</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/maven/sandbox/maven-shared-jar</url>
+  </scm>
+  
+  <organization>
+    <name>Apache</name>
+  </organization>
+  
+  <issueManagement>
+    <system>jira</system>
+  </issueManagement>
+  
+  <ciManagement>
+    <system>continuum</system>
+  </ciManagement>
+  
+  <developers>
+    <developer>
+      <id>joakime</id>
+      <email>joakime@apache.org</email>
+      <name>Joakim Erdfelt</name>
+    </developer>
+  </developers>
+  
+  <contributors>
+    <contributor>
+      <name>Someone Else</name>
+    </contributor>
+  </contributors>
+  
+  <licenses>
+    <license>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+  
+  <mailingLists>
+    <mailingList>
+      <name>Shared Mailing List</name>
+    </mailingList>
+  </mailingLists>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>descriptor</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>changelog-maven-plugin</artifactId>
+        <!--  Changelog has been moved to org.apache.maven.plugins
+              Need to adjust this location in the future to point to
+              the finalized copy of this plugin.
+        <artifactId>maven-changelog-plugin</artifactId> 
+          -->
+      </plugin>
+      <plugin>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <linkXref>true</linkXref>
+          <rulesets>
+            <ruleset>rulesets/basic.xml</ruleset>
+            <ruleset>rulesets/codesize.xml</ruleset>
+            <ruleset>rulesets/controversial.xml</ruleset>
+            <ruleset>rulesets/coupling.xml</ruleset>
+            <ruleset>rulesets/finalizers.xml</ruleset>
+            <ruleset>rulesets/imports.xml</ruleset>
+            <ruleset>rulesets/junit.xml</ruleset>
+            <ruleset>rulesets/logging-jakarta-commons.xml</ruleset>
+            <ruleset>rulesets/naming.xml</ruleset>
+            <ruleset>rulesets/optimizations.xml</ruleset>
+            <ruleset>rulesets/strictexception.xml</ruleset>
+            <ruleset>rulesets/strings.xml</ruleset>
+            <ruleset>rulesets/sunsecure.xml</ruleset>
+            <ruleset>rulesets/unusedcode.xml</ruleset>
+          </rulesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <repositories>
+    <repository>
+      <id>snapshots.codehaus</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>2.0.5</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact-manager</artifactId>
+      <version>2.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-digest</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.bcel</groupId>
+      <artifactId>bcel</artifactId>
+      <version>5.2</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>

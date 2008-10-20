@@ -1,0 +1,427 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+.sidebar3 {
+	width: 10em;
+	float: right;
+	text-align: center;
+}
+
+#sidebarb {
+	font-size: small;
+	text-align: center;
+	padding: 10px 10px 10px 10px;
+	border: 1px #DFDEDE solid;
+	width: 10em;
+}
+
+#sidebar {
+	float: right;
+	font-size: small;
+	margin: 10px;
+	padding: 10px;
+	border: 1px #DFDEDE solid;
+	width: 10em;
+}
+
+.download {
+	float: right;
+	font-size: small;
+	font-weight: bold;
+	margin: 15px auto 0px auto;
+	height: auto;
+	width: 150px;
+	min-width: 120px;
+	display: block;
+}
+
+.download .hd .c,
+.download .ft .c {
+	font-size: 1px; /* ensure minimum height */
+	height: 10px;
+}
+
+.download .ft .c {
+	height: 10px;
+}
+
+.download .hd {
+	background: transparent url(../images/download.tl.gif) no-repeat 0px 0px;
+}
+
+.download .hd .c {
+	background: transparent url(../images/download.tr.gif) no-repeat right 0px;
+}
+
+.download .bd {
+	background: transparent url(../images/download.ml.gif) repeat-y 0px 0px;
+}
+
+.download .bd .c {
+	background: transparent url(../images/download.mr.gif) repeat-y right 0px;
+}
+
+.download .bd .c .s {
+	margin: 0px 8px 0px 4px;
+	background: #000 url(../images/download.ms.jpg) repeat-x 0px 0px;
+	padding: 1em;
+}
+
+.download .ft {
+	background: transparent url(../images/download.bl.gif) no-repeat 0px 0px;
+}
+
+.download .ft .c {
+	background: transparent url(../images/download.br.gif) no-repeat right 0px;
+}
+
+.download .bd h2 {
+	margin: 0px;
+	text-align: center;
+	border-bottom-width: 0px !important;
+}
+
+.download .bd p {
+	margin: 0px;
+	border: 0px;
+	text-align: left;
+	padding-left: 0px;
+}
+
+.download a {
+	text-decoration: none;
+}
+
+.download p.body {
+  font-weight: bold;
+}
+
+.download table {
+  margin-left: 2px;
+  width: 140px;
+}
+
+.download .icon {
+  width: 16px;
+}
+
+.download .type {
+  font-size: 0.9em;
+  text-align: center;
+}
+
+.download .size {
+  font-weight: normal;
+  font-size: 0.8em;
+  text-align: right;
+}
+
+#contentArea {
+	/* margin-right: 15em; */
+	padding: 1em;
+}
+
+#tabs b {
+	border: 1px #DFDEDE solid;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+#tabs a {
+	border: 1px #DFDEDE solid;
+	padding-left: 1em;
+	padding-right: 1em;
+	text-decoration: none;
+}
+
+#tabArea {
+	border-top: 1px solid #DFDEDE;
+	padding: 1em;
+}
+
+#searchTypes {
+	text-align: right;
+	font-size: xx-small;
+}
+
+.statusFailed {
+	color: red;
+	font-weight: bold;
+}
+
+/* WebWork validation failures */
+.errorMessage {
+	color: red;
+	font-weight: bold;
+}
+
+.actionMessage {
+	font-size: 1.0em;
+	font-weight: bold;
+	color: blue;
+}
+
+.errorBullet {
+	list-style-image: url( "../images/icon_error_sml.gif" );
+}
+
+.warningBullet {
+	list-style-image: url( "../images/icon_warning_sml.gif" );
+}
+
+.infoBullet {
+	list-style-image: url( "../images/icon_info_sml.gif" );
+}
+
+.artifact-link {
+	font-size: x-small;
+	padding-left: 5em;
+}
+
+.artifact-title {
+	
+}
+
+ul.dependencyTree {
+	margin-left: 50px;
+}
+
+ul.dependencyTree span.artifact-link {
+	padding-left: 0px;
+}
+
+.eXtremeTable tr.filter {
+	padding: 1px;
+}
+
+.eXtremeTable .tableRegion,.eXtremeTable .statusBar {
+	width: 100%;
+}
+
+.eXtremeTable .tableRegion .tableHeader {
+	background-color: None;
+	background-image: url(../images/breadcrumbs.jpg);
+	color: gray;
+}
+
+.eXtremeTable .tableRegion .tableHeaderSort {
+	background-color: #FFBF5F;
+}
+
+.eXtremeTable .compactToolbar td {
+	white-space: nowrap;
+}
+
+.tools {
+	border-color: gray !important;	
+}
+
+table.tools th.toolHeading
+{
+	color: gray;
+}
+
+.tools .toolHeading {
+	padding: 0px 3px 0px 3px;
+	margin: 0px !important;
+	font-size: 11px !important;
+	background-color: red;
+	background-image: url(../images/breadcrumbs.jpg);
+}
+
+div.repository h3 {
+	border-bottom: 0px !important;
+	padding-left: 15px !important;
+}
+
+div.repository {
+	border-bottom: 1px solid #DFDEDE;
+}
+
+div.proxyConfig,
+div.repoGroup {
+	border: 1px dashed #DFDEDE;
+	margin-bottom: 15px;
+	padding: 5px;
+}
+
+div.proxyConfig div.managedRepo,
+div.proxyConfig div.remoteRepo,
+div.repoGroup div.managedRepo {
+    border: 1px dotted gray;
+	padding: 5px;
+	background-color: white;
+}
+
+div.proxyConfig div.remoteRepo {
+	margin: 5px;
+}
+
+div.proxyConfig div.managedRepo img,
+div.proxyConfig div.remoteRepo img,
+div.repoGroup div.managedRepo img {
+	float: left;
+	border: 0px;
+}
+
+div.proxyConfig div.managedRepo p,
+div.proxyConfig div.remoteRepo p {
+	margin: 0px;
+	margin-left: 40px;
+	padding: 0px;
+}
+
+div.repoGroup div.managedRepo p {
+    margin: 8px;
+	margin-left: 40px;
+	padding: 0px;
+}
+
+div.proxyConfig div.managedRepo p.id,
+div.proxyConfig div.remoteRepo p.id,
+div.repoGroup div.managedRepo p.id {
+	font-family: monospace;
+}
+
+div.proxyConfig div.connector,
+div.repoGroup div.connector {
+	border: 1px solid #aaaaff;
+	margin-top: 10px;
+	margin-left: 40px !important;
+}
+
+div.proxyConfig a.expand {
+	font-size: 7pt;
+	color: gray;	
+}
+
+div.proxyConfig div.controls,
+div.repoGroup div.controls {
+	float: right;
+}
+
+div.proxyConfig div.connector h4,
+div.repoGroup div.connector h4 {
+	padding: 3px;
+	font-size: 8pt;
+	margin: 0px;
+}
+
+div.proxyConfig div.connector table.settings {
+	border: 0px;
+	background-color: transparent;
+	font-size: 8pt;
+	margin-left: 10px;
+}
+
+div.proxyConfig div.connector table.settings th,
+div.proxyConfig div.connector table.settings td {
+	font-size: 8pt;
+}
+
+div.proxyConfig div.connector table.settings table.policies {
+	border: 1px dotted gray;
+}
+
+div.proxyConfig div.connector table p {
+	margin: 0px;
+	padding: 0px;
+}
+
+div.repoGroup div.repos {
+    text-align: right;
+    padding: 4px 0px 0px 0px;
+}
+
+div.admin div.dark,
+div.admin div.lite {
+	border: 1px solid #aaaaaa;	
+	font-size: 11pt;
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+div.admin div.lite {
+	background-color: white;
+}
+
+div.admin div.dark {
+	background-color: #eeeeee;
+}
+
+div.admin div.controls {
+	float: right;
+	font-size: 8pt !important;
+}
+
+div.admin div.filetype table {
+	margin-left: 25px;
+	border: 1px solid gray;
+}
+
+div.filetype table td.controls {
+	width: 5%;
+}
+
+div.filetype table td.odd,
+div.admin table.consumers td.odd {
+	background-color: #dddddd;	
+}
+
+div.filetype table td.even,
+div.admin table.consumers td.even {
+	background-color: white;	
+}
+
+div.admin table.consumers {
+	margin-left: 15px;
+	border: 1px solid gray;
+}
+
+div.admin table.consumers th {
+	font-size: 1.0em;
+	background-color: #cccccc;
+	text-align: left;
+}
+
+div.admin table.consumers td strong {
+	font-size: 0.8em;
+}
+
+div.warningbox {
+	margin: 20px 40px 20px 40px;
+	border: 1px solid #CC0000;
+	background-color: #FFCCCC;
+	color: #000000;
+	font-size: 15pt;
+	padding: 20px;
+}
+
+div.infobox {
+	margin: 20px 40px 20px 40px;
+	border: 1px solid #0000CC;
+	background-color: #EEEEFF;
+	font-size: 9pt;
+	padding: 20px;
+}
+
+div.buttons {
+	text-align: center;
+}

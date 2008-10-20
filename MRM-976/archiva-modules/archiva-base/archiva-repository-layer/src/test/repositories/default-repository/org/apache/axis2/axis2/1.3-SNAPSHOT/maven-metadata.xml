@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+  <groupId>org.apache.axis2</groupId>
+  <artifactId>axis2</artifactId>
+  <version>1.3-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20070802.113139</timestamp>
+      <buildNumber>29</buildNumber>
+    </snapshot>
+    <lastUpdated>20070802113139</lastUpdated>
+  </versioning>
+</metadata>
