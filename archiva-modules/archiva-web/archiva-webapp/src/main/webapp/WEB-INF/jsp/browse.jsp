@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
@@ -25,7 +25,7 @@
 <html>
 <head>
   <title>Browse Repository</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -48,9 +48,9 @@
       <ul>
         <c:forEach items="${results.groupIds}" var="groupId">
           <c:set var="url">
-            <ww:url action="browseGroup" namespace="/">
-              <ww:param name="groupId" value="%{'${groupId}'}"/>
-            </ww:url>
+            <s:url action="browseGroup" namespace="/">
+              <s:param name="groupId" value="%{#attr.groupId}"/>
+            </s:url>
           </c:set>
           <li><a href="${url}">${groupId}/</a></li>
         </c:forEach>
@@ -65,10 +65,10 @@
         <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
         <c:forEach items="${results.artifacts}" var="artifactId">
           <c:set var="url">
-            <ww:url action="browseArtifact" namespace="/">
-              <ww:param name="groupId" value="%{'${results.selectedGroupId}'}"/>
-              <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-            </ww:url>
+            <s:url action="browseArtifact" namespace="/">
+              <s:param name="groupId" value="%{#attr.results.selectedGroupId}"/>
+              <s:param name="artifactId" value="%{#attr.artifactId}"/>
+            </s:url>
           </c:set>
           <c:url var="rssUrl" value="/feeds/${groupId}/${artifactId}"/>
           <li>
@@ -88,11 +88,11 @@
       <ul>
         <c:forEach items="${results.versions}" var="version">
           <c:set var="url">
-            <ww:url action="showArtifact" namespace="/">
-              <ww:param name="groupId" value="%{'${results.selectedGroupId}'}"/>
-              <ww:param name="artifactId" value="%{'${results.selectedArtifactId}'}"/>
-              <ww:param name="version" value="%{'${version}'}"/>
-            </ww:url>
+            <s:url action="showArtifact" namespace="/">
+              <s:param name="groupId" value="%{#attr.results.selectedGroupId}"/>
+              <s:param name="artifactId" value="%{#attr.results.selectedArtifactId}"/>
+              <s:param name="version" value="%{#attr.version}"/>
+            </s:url>
           </c:set>
           <li><a href="${url}">${version}/</a></li>
         </c:forEach>

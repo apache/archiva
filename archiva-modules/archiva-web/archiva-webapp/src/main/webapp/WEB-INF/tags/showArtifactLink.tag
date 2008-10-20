@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
 
@@ -37,8 +37,8 @@
   <c:if test="${!empty (artifactId)}">    
     <c:set var="url">
       <ww:url action="browseArtifact" namespace="/">
-        <ww:param name="groupId" value="%{'${groupId}'}"/>
-        <ww:param name="artifactId" value="%{'${artifactId}'}"/>
+        <ww:param name="groupId" value="%{#attr.groupId}"/>
+        <ww:param name="artifactId" value="%{#attr.artifactId}"/>
       </ww:url>
     </c:set>
     <a href="${url}">${artifactId}</a>
@@ -48,10 +48,10 @@
     <c:when test="${!empty (version)}">
       <c:set var="url">
         <ww:url action="showArtifact" namespace="/">
-          <ww:param name="groupId" value="%{'${groupId}'}"/>
-          <ww:param name="artifactId" value="%{'${artifactId}'}"/>
+          <ww:param name="groupId" value="%{#attr.groupId}"/>
+          <ww:param name="artifactId" value="%{#attr.artifactId}"/>
           <c:if test="${!empty (version)}">
-            <ww:param name="version" value="%{'${version}'}"/>
+            <ww:param name="version" value="%{#attr.version}"/>
           </c:if>
         </ww:url>
       </c:set>
@@ -61,9 +61,9 @@
       <c:forEach items="${versions}" var="v" varStatus="i">
         <c:set var="url">
           <ww:url action="showArtifact" namespace="/">
-            <ww:param name="groupId" value="%{'${groupId}'}"/>
-            <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-            <ww:param name="version" value="%{'${v}'}"/>
+            <ww:param name="groupId" value="%{#attr.groupId}"/>
+            <ww:param name="artifactId" value="%{#attr.artifactId}"/>
+            <ww:param name="version" value="%{#attr.v}"/>
           </ww:url>
         </c:set>
         <a href="${url}">${v}</a>

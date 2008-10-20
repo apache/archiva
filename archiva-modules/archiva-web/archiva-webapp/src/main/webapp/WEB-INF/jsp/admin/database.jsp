@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
@@ -26,7 +26,7 @@
 <html>
 <head>
 <title>Administration - Database</title>
-<ww:head />
+<s:head />
 </head>
 
 <body>
@@ -35,8 +35,8 @@
 
 <div id="contentArea">
 
-<ww:actionerror /> 
-<ww:actionmessage /> 
+<s:actionerror /> 
+<s:actionmessage /> 
 
 <c:url var="iconDeleteUrl" value="/images/icons/delete.gif" /> 
 <c:url var="iconCreateUrl" value="/images/icons/create.png" /> 
@@ -45,21 +45,21 @@
 
 <h2>Database - Unprocessed Artifacts Scanning</h2>
 
-  <ww:form method="post" action="database!updateSchedule" 
+  <s:form method="post" action="database!updateSchedule" 
              namespace="/admin" validate="false" theme="simple">
     <table>
-      <ww:textfield name="cron" label="Cron" size="40" theme="xhtml" />
+      <s:textfield name="cron" label="Cron" size="40" theme="xhtml" />
       <tr>
         <td colspan="2">
-          <ww:submit value="Update Cron" />
+          <s:submit value="Update Cron" />
         </td>
       </tr>
     </table>                 
-  </ww:form>
+  </s:form>
   
-  <ww:form action="updateDatabase" theme="simple">
-    <ww:submit value="Update Database Now"/>
-  </ww:form>
+  <s:form action="updateDatabase" theme="simple">
+    <s:submit value="Update Database Now"/>
+  </s:form>
 
 <h2>Database - Unprocessed Artifacts Scanning</h2>
 
@@ -71,7 +71,7 @@
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <ww:form method="post" action="database!updateUnprocessedConsumers" 
+    <s:form method="post" action="database!updateUnprocessedConsumers" 
              namespace="/admin" validate="false" theme="simple">
     <table class="consumers">
       <tr>
@@ -107,11 +107,11 @@
       </c:forEach>
       <tr>
         <td colspan="4">
-          <ww:submit value="Update Consumers" />
+          <s:submit value="Update Consumers" />
         </td>
       </tr>
     </table>
-    </ww:form>
+    </s:form>
 
   </c:otherwise>
 </c:choose>
@@ -126,7 +126,7 @@
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <ww:form method="post" action="database!updateCleanupConsumers" 
+    <s:form method="post" action="database!updateCleanupConsumers" 
              namespace="/admin" validate="false" theme="simple">
     <table class="consumers">
       <tr>
@@ -162,11 +162,11 @@
       </c:forEach>
       <tr>
         <td colspan="4">
-          <ww:submit value="Update Consumers" />
+          <s:submit value="Update Consumers" />
         </td>
       </tr>
     </table>
-    </ww:form>
+    </s:form>
 
   </c:otherwise>
 </c:choose>

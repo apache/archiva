@@ -83,6 +83,7 @@
                     <exclude>ant:ant-optional</exclude>
                     <!-- exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude -->
                     <exclude>xom:xom</exclude>
+                    <exclude>org.codehaus.plexus:plexus-xwork-integration</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -395,7 +396,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-spring</artifactId>
-        <version>1.0</version>
+        <version>1.2</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
@@ -633,6 +634,9 @@
           </exclusion>
         </exclusions>
       </dependency>
+      
+      <!-- redback -->
+      
       <dependency>
         <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-rbac-memory</artifactId>
@@ -640,8 +644,8 @@
         <scope>test</scope>
         <exclusions>
           <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -652,8 +656,8 @@
         <scope>test</scope>
         <exclusions>
           <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -664,8 +668,8 @@
         <scope>test</scope>
         <exclusions>
           <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -675,8 +679,8 @@
         <version>${redback.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -686,8 +690,8 @@
         <version>${redback.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -697,8 +701,8 @@
         <version>${redback.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -708,25 +712,25 @@
         <version>${redback.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback</groupId>
-        <artifactId>redback-taglib</artifactId>
+        <artifactId>redback-struts2-taglib</artifactId>
         <version>${redback.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback</groupId>
-        <artifactId>redback-xwork-content</artifactId>
+        <artifactId>redback-struts2-content</artifactId>
         <version>${redback.version}</version>
         <type>war</type>
         <exclusions>
@@ -734,11 +738,15 @@
             <groupId>classworlds</groupId>
             <artifactId>classworlds</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback</groupId>
-        <artifactId>redback-xwork-integration</artifactId>
+        <artifactId>redback-struts2-integration</artifactId>
         <version>${redback.version}</version>
         <exclusions>
           <exclusion>
@@ -752,13 +760,12 @@
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
+          </exclusion>	
         </exclusions>
       </dependency>
+      
+      <!-- redback -->
+      
       <dependency>
         <groupId>org.codehaus.plexus.registry</groupId>
         <artifactId>plexus-registry-api</artifactId>
@@ -850,9 +857,20 @@
         <version>${wagon.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.opensymphony</groupId>
-        <artifactId>webwork</artifactId>
-        <version>2.2.6</version>
+        <groupId>org.apache.struts</groupId>
+        <artifactId>struts2-core</artifactId>
+        <version>2.0.11.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.struts</groupId>
+        <artifactId>struts2-spring-plugin</artifactId>
+        <version>2.0.11.2</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -880,7 +898,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
-        <version>2.5.1</version>
+        <version>2.5.5</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -891,7 +909,18 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>2.5.1</version>
+        <version>2.5.5</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>2.5.5</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -932,17 +961,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-xwork-integration</artifactId>
-        <version>1.0-alpha-7</version>
-        <exclusions>
-          <exclusion>
-            <groupId>velocity</groupId>
-            <artifactId>velocity-dep</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
         <version>1.3.0</version>
@@ -958,7 +976,7 @@
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-4</wagon.version>
-    <redback.version>1.1.1</redback.version>
+    <redback.version>1.2-SNAPSHOT</redback.version>
     <jetty.version>6.1.6</jetty.version>
   </properties>
   <profiles>

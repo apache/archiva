@@ -25,7 +25,7 @@
       <lifecycle-handler>basic</lifecycle-handler>
     </component>
     <component>
-      <role>com.opensymphony.xwork.Action</role>
+      <role>com.opensymphony.xwork2.Action</role>
       <role-hint>repositoriesAction</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.RepositoriesAction</implementation>
       <instantiation-strategy>per-lookup</instantiation-strategy>

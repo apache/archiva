@@ -51,12 +51,14 @@ public class CopyPasteSnippetTag
     
     public static final String TOGGLE = "toggle";
     
+    @Override
     public void release()
     {
         object = null;
         super.release();
     }
 
+    @Override
     public int doEndTag()
         throws JspException
     {

@@ -19,9 +19,7 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
-import com.opensymphony.webwork.interceptor.ServletRequestAware;
-import com.opensymphony.xwork.Preparable;
-
+import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -45,10 +43,6 @@ import org.apache.maven.archiva.reporting.RepositoryStatistics;
 import org.apache.maven.archiva.reporting.RepositoryStatisticsReportGenerator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,9 +56,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 
 /**
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="generateReport"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport"
  */
 public class GenerateReportAction
     extends PlexusActionSupport

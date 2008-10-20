@@ -120,8 +120,8 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.opensymphony</groupId>
-      <artifactId>webwork</artifactId>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
@@ -146,22 +146,27 @@
     <!-- Plexus Security Dependencies -->
     <dependency>
       <groupId>org.codehaus.redback</groupId>
-      <artifactId>redback-xwork-content</artifactId>
+      <artifactId>redback-struts2-content</artifactId>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
-      <artifactId>redback-xwork-integration</artifactId>
+      <artifactId>redback-struts2-integration</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
-      <artifactId>redback-taglib</artifactId>
+      <artifactId>redback-struts2-taglib</artifactId>
     </dependency>
     <!-- Other dependencies -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-webdav</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-spring-plugin</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -279,8 +284,6 @@
                 <!-- Directory created by jetty:run -->
                 <include>WEB-INF/temp</include>
                 <!-- Directory created by jetty:run -->
-                <include>WEB-INF/jasperreports</include>
-                <!-- Directory created by jasperreports-maven-plugin -->
               </includes>
             </fileset>
           </filesets>
@@ -310,12 +313,16 @@
       </plugin>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.1</version>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>7.0.0pre3</version>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <contextPath>/</contextPath>
           <jettyEnvXml>src/jetty-env.xml</jettyEnvXml>
+          <webAppConfig>
+            <contextPath>/</contextPath>
+            <jettyEnvXmlFile>src/jetty-env.xml</jettyEnvXmlFile>
+          </webAppConfig>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>9091</port>
@@ -399,7 +406,7 @@
         <configuration>
           <roleDefaults>
             <roleDefault>
-              <role>com.opensymphony.xwork.Action</role>
+              <role>com.opensymphony.xwork2.Action</role>
               <instantiation-strategy>per-lookup</instantiation-strategy>
             </roleDefault>
           </roleDefaults>
@@ -468,58 +475,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <!--
-        Inclusion of this profile brings in Jasper, which is not distributed by default due to ASF licensing policy
-        regarding LGPL dependencies. A basic report is used instead.
-
-        Note: in the future, it may be better to use the jasperreports plugin at all times (so the compiled report is
-        included), so that we just require that the JAR be on the classpath to activate it. We haven't taken this step
-        here because the jasperreports plugin is not yet released.
-
-        See also: MRM-447
-      -->
-      <id>jasper</id>
-      <dependencies>
-        <dependency>
-          <groupId>jasperreports</groupId>
-          <artifactId>jasperreports</artifactId>
-          <version>1.2.0</version>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>jasperreports-maven-plugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <executions>
-              <execution>
-                <phase>compile</phase>
-                <goals>
-                  <goal>compile-reports</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <targetDirectory>src/main/webapp/WEB-INF/jasperreports</targetDirectory>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-      <pluginRepositories>
-        <pluginRepository>
-          <id>Codehaus Snapshots</id>
-          <url>http://snapshots.repository.codehaus.org/</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-        </pluginRepository>
-      </pluginRepositories>
     </profile>
   </profiles>
 </project>

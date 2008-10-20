@@ -30,7 +30,7 @@ import java.util.List;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="sortProxyConnectorsAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortProxyConnectorsAction"
  */
 public class SortProxyConnectorsAction
     extends AbstractProxyConnectorAction

@@ -17,19 +17,19 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Delete Network Proxy</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
 <h1>Admin: Delete Network Proxy</h1>
 
-<ww:actionerror/>
+<s:actionerror/>
 
 <div id="contentArea">
 
@@ -43,10 +43,10 @@
     Are you sure you want to delete network proxy <code>${proxyid}</code> ?
   </p>
 
-  <ww:form method="post" action="deleteNetworkProxy!delete" namespace="/admin" validate="true">
-    <ww:hidden name="proxyid"/>
-    <ww:submit value="Delete"/>
-  </ww:form>
+  <s:form method="post" action="deleteNetworkProxy!delete" namespace="/admin" validate="true">
+    <s:hidden name="proxyid"/>
+    <s:submit value="Delete"/>
+  </s:form>
 </div>
 
 </body>

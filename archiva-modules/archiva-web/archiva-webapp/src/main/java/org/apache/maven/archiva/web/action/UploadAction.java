@@ -61,12 +61,11 @@ import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import com.opensymphony.webwork.ServletActionContext;
-import com.opensymphony.xwork.ActionContext;
-import com.opensymphony.xwork.Preparable;
-import com.opensymphony.xwork.Validateable;
+import org.apache.struts2.ServletActionContext;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -76,7 +75,7 @@ import org.apache.commons.lang.StringUtils;
  * 
  * @author <a href="mailto:wsmoak@apache.org">Wendy Smoak</a>
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="uploadAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="uploadAction"
  */
 public class UploadAction
     extends PlexusActionSupport

@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork2.Preparable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -34,7 +34,7 @@ import java.util.List;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="deleteRemoteRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRemoteRepositoryAction"
  */
 public class DeleteRemoteRepositoryAction
     extends AbstractRemoteRepositoriesAction

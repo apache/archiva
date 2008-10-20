@@ -19,13 +19,13 @@
 
 <%-- http://www.opensymphony.com/webwork/wikidocs/File%20Upload%20Interceptor.html --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
   <title>Upload Artifact</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -33,13 +33,13 @@
 
 <div id="contentArea">
 
-  <ww:actionerror/>
-  <ww:actionmessage/>
+  <s:actionerror/>
+  <s:actionmessage/>
 
-  <ww:form action="upload!doUpload" method="post" enctype="multipart/form-data" validate="true">    
+  <s:form action="upload!doUpload" method="post" enctype="multipart/form-data" validate="true">    
     <%@ include file="/WEB-INF/jsp/include/uploadForm.jspf" %>
-    <ww:submit/>
-  </ww:form>
+    <s:submit/>
+  </s:form>
 </div>
 
 </body>

@@ -22,9 +22,9 @@ package org.apache.maven.archiva.web.action.admin.appearance;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork2.Preparable;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
 
 /**
  * AbstractAppearanceAction 

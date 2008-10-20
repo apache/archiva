@@ -27,17 +27,17 @@ import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
  * Configures the application.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="schedulerAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="schedulerAction"
  */
 public class SchedulerAction
     extends PlexusActionSupport

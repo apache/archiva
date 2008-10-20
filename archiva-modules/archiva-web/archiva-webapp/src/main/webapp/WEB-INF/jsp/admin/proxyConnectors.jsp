@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
@@ -26,7 +26,7 @@
 <html>
 <head>
   <title>Administration - Proxy Connectors</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -43,18 +43,18 @@
 
 <div id="contentArea">
 
-<ww:actionerror/>
-<ww:actionmessage/>
+<s:actionerror/>
+<s:actionmessage/>
 
 <div style="float:right">  
   <c:choose>
 	<c:when test="${remoteRepoExists}">
 	  <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-	    <ww:url id="addProxyConnectorUrl" action="addProxyConnector"/>
-	    <ww:a href="%{addProxyConnectorUrl}" cssClass="create">
+	    <s:url id="addProxyConnectorUrl" action="addProxyConnector"/>
+	    <s:a href="%{addProxyConnectorUrl}" cssClass="create">
 	      <img src="<c:url value="/images/icons/create.png" />"/>
 	      Add
-	    </ww:a>
+	    </s:a>
 	  </redback:ifAnyAuthorized>
 	</c:when>
 	<c:otherwise>
@@ -99,56 +99,56 @@
   <div class="connector ${rowColor}"> 
     <div class="controls">
       <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-        <ww:url id="sortDownProxyConnectorUrl" action="sortDownProxyConnector">
-          <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
-          <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-        </ww:url>
-        <ww:url id="sortUpProxyConnectorUrl" action="sortUpProxyConnector">
-          <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
-          <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-        </ww:url>
-        <ww:url id="editProxyConnectorUrl" action="editProxyConnector">
-          <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
-          <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-        </ww:url>
-        <ww:url id="deleteProxyConnectorUrl" action="deleteProxyConnector" method="confirmDelete">
-          <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-          <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
-        </ww:url>
-        <ww:url id="enableProxyConnectorUrl" action="enableProxyConnector" method="confirmEnable">
-          <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-          <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
-        </ww:url>
-        <ww:url id="disableProxyConnectorUrl" action="disableProxyConnector" method="confirmDisable">
-          <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
-          <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
-        </ww:url>
+        <s:url id="sortDownProxyConnectorUrl" action="sortDownProxyConnector">
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+        </s:url>
+        <s:url id="sortUpProxyConnectorUrl" action="sortUpProxyConnector">
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+        </s:url>
+        <s:url id="editProxyConnectorUrl" action="editProxyConnector">
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+        </s:url>
+        <s:url id="deleteProxyConnectorUrl" action="deleteProxyConnector" method="confirmDelete">
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+        </s:url>
+        <s:url id="enableProxyConnectorUrl" action="enableProxyConnector" method="confirmEnable">
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+        </s:url>
+        <s:url id="disableProxyConnectorUrl" action="disableProxyConnector" method="confirmDisable">
+          <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
+          <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+        </s:url>
         <c:if test="${connector.disabled}">
-            <ww:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">
+            <s:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">
 				<img src="${iconDisable}"/>
-			</ww:a>
+			</s:a>
         </c:if>
         <c:if test="${connector.disabled == false}">
-            <ww:a href="%{disableProxyConnectorUrl}" title="Disable Proxy Connector">
+            <s:a href="%{disableProxyConnectorUrl}" title="Disable Proxy Connector">
 				<img src="${iconEnable}"/>
-			</ww:a>
+			</s:a>
         </c:if>
         <c:if test="${pc.count > 1}">
-          <ww:a href="%{sortUpProxyConnectorUrl}" title="Move Proxy Connector Up">
+          <s:a href="%{sortUpProxyConnectorUrl}" title="Move Proxy Connector Up">
             <img src="${iconUpUrl}"/>
-          </ww:a>
+          </s:a>
         </c:if>
         <c:if test="${pc.count < numberOfRepos}">
-          <ww:a href="%{sortDownProxyConnectorUrl}" cssClass="down" title="Move Proxy Connector Down">
+          <s:a href="%{sortDownProxyConnectorUrl}" cssClass="down" title="Move Proxy Connector Down">
             <img src="${iconDownUrl}"/>
-          </ww:a>
+          </s:a>
         </c:if>
-        <ww:a href="%{editProxyConnectorUrl}" cssClass="edit" title="Edit Proxy Connector">
+        <s:a href="%{editProxyConnectorUrl}" cssClass="edit" title="Edit Proxy Connector">
           <img src="${iconEditUrl}"/>
-        </ww:a>
-        <ww:a href="%{deleteProxyConnectorUrl}" cssClass="delete" title="Delete Proxy Connector">
+        </s:a>
+        <s:a href="%{deleteProxyConnectorUrl}" cssClass="delete" title="Delete Proxy Connector">
           <img src="${iconDeleteUrl}"/>
-        </ww:a>
+        </s:a>
       </redback:ifAnyAuthorized>
     </div>
 
@@ -171,13 +171,13 @@
               <span class="directConnection">(Direct Connection)</span>
             </c:when>
             <c:otherwise>
-              <ww:url id="editProxyIdUrl" action="editNetworkProxy">
-                <ww:param name="proxyid" value="%{'${connector.proxyId}'}"/>
-              </ww:url>
-              <ww:a href="%{editProxyIdUrl}" cssClass="edit" title="Edit Network Proxy">
+              <s:url id="editProxyIdUrl" action="editNetworkProxy">
+                <s:param name="proxyid" value="%{'#attr.connector.proxyId'}"/>
+              </s:url>
+              <s:a href="%{editProxyIdUrl}" cssClass="edit" title="Edit Network Proxy">
                 ${connector.proxyId}
                 <img src="${iconEditUrl}"/>
-              </ww:a>
+              </s:a>
             </c:otherwise>
           </c:choose>
         </td>

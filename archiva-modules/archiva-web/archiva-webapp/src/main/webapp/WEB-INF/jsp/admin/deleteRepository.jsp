@@ -17,19 +17,19 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Delete Managed Repository</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
 <h1>Admin: Delete Managed Repository</h1>
 
-<ww:actionerror/>
+<s:actionerror/>
 
 <div id="contentArea">
 
@@ -60,14 +60,14 @@
     </table>
   </div>
 
-  <ww:form method="post" action="deleteRepository" namespace="/admin" validate="true" theme="simple">
-    <ww:hidden name="repoid"/>
+  <s:form method="post" action="deleteRepository" namespace="/admin" validate="true" theme="simple">
+    <s:hidden name="repoid"/>
     <div class="buttons">
-      <ww:submit value="Delete Configuration Only" method="deleteEntry" />
-      <ww:submit value="Delete Configuration and Contents" method="deleteContents" />
-      <ww:submit value="Cancel" method="execute"/>
+      <s:submit value="Delete Configuration Only" method="deleteEntry" />
+      <s:submit value="Delete Configuration and Contents" method="deleteContents" />
+      <s:submit value="Cancel" method="execute"/>
     </div>
-  </ww:form>
+  </s:form>
 </div>
 
 </body>

@@ -20,7 +20,7 @@
   --%>
 
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
-<%@ taglib uri="/webwork" prefix="ww" %>
+<%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
@@ -66,11 +66,11 @@
         <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
 
-      <ww:if test="${applicationScope.uiOptions.showFindArtifacts}">
+      <s:if test="%{applicationScope.uiOptions.showFindArtifacts}">
         <li class="none">
           <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
         </li>
-      </ww:if>
+      </s:if>
 
       <li class="none">
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>

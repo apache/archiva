@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.opensymphony.xwork.ActionSupport;
+import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 

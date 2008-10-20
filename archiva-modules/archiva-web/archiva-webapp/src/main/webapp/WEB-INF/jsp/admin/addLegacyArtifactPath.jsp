@@ -17,12 +17,12 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Add Legacy Artifact Path</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -65,17 +65,17 @@
   }
   </script>
 
-  <ww:actionmessage/>
-  <ww:actionerror/>
-  <ww:form method="post" action="addLegacyArtifactPath!commit" namespace="/admin" validate="true">
-    <ww:textfield name="legacyArtifactPath.path" label="Path" size="50" required="true" onchange="parse( this.value )"/>
-    <ww:textfield name="groupId" label="GroupId" size="20" required="true"/>
-    <ww:textfield name="artifactId" label="ArtifactId" size="20" required="true"/>
-    <ww:textfield name="version" label="Version" size="20" required="true"/>
-    <ww:textfield name="classifier" label="Classifier" size="20" required="false"/>
-    <ww:textfield name="type" label="Type" size="20" required="true"/>
-    <ww:submit value="Add Legacy Artifact Path"/>
-  </ww:form>
+  <s:actionmessage/>
+  <s:actionerror/>
+  <s:form method="post" action="addLegacyArtifactPath!commit" namespace="/admin" validate="true">
+    <s:textfield name="legacyArtifactPath.path" label="Path" size="50" required="true" onchange="parse( this.value )"/>
+    <s:textfield name="groupId" label="GroupId" size="20" required="true"/>
+    <s:textfield name="artifactId" label="ArtifactId" size="20" required="true"/>
+    <s:textfield name="version" label="Version" size="20" required="true"/>
+    <s:textfield name="classifier" label="Classifier" size="20" required="false"/>
+    <s:textfield name="type" label="Type" size="20" required="true"/>
+    <s:submit value="Add Legacy Artifact Path"/>
+  </s:form>
 
   <script type="text/javascript">
     var ref = document.getElementById("addLegacyArtifactPath_legacyArtifactPath_artifact").value;

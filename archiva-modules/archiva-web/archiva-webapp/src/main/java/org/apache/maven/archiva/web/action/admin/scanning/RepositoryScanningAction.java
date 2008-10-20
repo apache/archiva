@@ -19,8 +19,8 @@ package org.apache.maven.archiva.web.action.admin.scanning;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
-import com.opensymphony.xwork.Validateable;
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -32,12 +32,13 @@ import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicat
 import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
+
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +50,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="repositoryScanningAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryScanningAction"
  */
 public class RepositoryScanningAction
     extends PlexusActionSupport
