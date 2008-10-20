@@ -42,5 +42,6 @@
     <module>archiva-transaction</module>
     <module>archiva-artifact-converter</module>
     <module>archiva-converter</module>
+    <module>archiva-event</module>
   </modules>
 </project>
