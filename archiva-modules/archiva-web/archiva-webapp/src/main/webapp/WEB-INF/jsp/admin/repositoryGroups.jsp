@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
@@ -26,7 +26,7 @@
 <html>
 <head>
   <title>Administration - Repository Groups</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -41,16 +41,16 @@
 
 <div id="contentArea">
 
-<ww:actionerror/>
-<ww:actionmessage/>
+<s:actionerror/>
+<s:actionmessage/>
 
 <div align="right">
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-    <ww:form action="addRepositoryGroup" namespace="/admin">
+    <s:form action="addRepositoryGroup" namespace="/admin">
       <span class="label">Identifier<span style="color:red">*</span>:</span> 
-      <ww:textfield size="10" label="Identifier" theme="simple" name="repositoryGroup.id"/>
-      <ww:submit value="Add Group" theme="simple" cssClass="button"/>
-    </ww:form>
+      <s:textfield size="10" label="Identifier" theme="simple" name="repositoryGroup.id"/>
+      <s:submit value="Add Group" theme="simple" cssClass="button"/>
+    </s:form>
   </redback:ifAnyAuthorized>
 </div>
 
@@ -70,12 +70,12 @@
   <div class="managedRepo">
     
     <div style="float:right">
-      <ww:url id="deleteRepositoryGroupUrl" action="confirmDeleteRepositoryGroup">
-        <ww:param name="repoGroupId" value="%{'${repositoryGroup.key}'}" />
-      </ww:url>
-      <ww:a href="%{deleteRepositoryGroupUrl}" cssClass="delete">
+      <s:url id="deleteRepositoryGroupUrl" action="confirmDeleteRepositoryGroup">
+        <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}" />
+      </s:url>
+      <s:a href="%{deleteRepositoryGroupUrl}" cssClass="delete">
         <img src="${iconDeleteUrl}"/>
-      </ww:a>
+      </s:a>
     </div>
     
     <img src="<c:url value="/images/archiva-splat-32.gif"/>"/>
@@ -85,11 +85,11 @@
 
   <c:if test="${!empty (groupToRepositoryMap[repositoryGroup.key])}">
   <div class="repos">
-    <ww:form name="form${i}" action="addRepositoryToGroup" namespace="/admin" validate="true">
-      <ww:hidden name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
-      <ww:select list="groupToRepositoryMap['${repositoryGroup.key}']" name="repoId" theme="simple"/>
-      <ww:submit value="Add Repository" theme="simple" cssClass="button"/>
-    </ww:form>
+    <s:form name="form%{#attr.i}" action="addRepositoryToGroup" namespace="/admin" validate="true">
+      <s:hidden name="repoGroupId" value="%{#attr.repositoryGroup.key}"/>
+      <s:select list="%{#attr.groupToRepositoryMap[#attr.repositoryGroup.key]}" name="repoId" theme="simple"/>
+      <s:submit value="Add Repository" theme="simple" cssClass="button"/>
+    </s:form>
   </div>
   </c:if>
   
@@ -109,31 +109,31 @@
   <div class="connector ${rowColor}"> 
     <div class="controls">
       <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-        <ww:url id="sortDownRepositoryUrl" action="sortDownRepositoryFromGroup">
-          <ww:param name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
-          <ww:param name="targetRepo" value="managedRepositories['${repository}'].id"/>
-        </ww:url>
-        <ww:url id="sortUpRepositoryUrl" action="sortUpRepositoryFromGroup">
-          <ww:param name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
-          <ww:param name="targetRepo" value="managedRepositories['${repository}'].id"/>
-        </ww:url>
-        <ww:url id="removeRepositoryUrl" action="removeRepositoryFromGroup">
-          <ww:param name="repoGroupId" value="%{'${repositoryGroup.key}'}"/>
-          <ww:param name="repoId" value="managedRepositories['${repository}'].id"/>
-        </ww:url>
+        <s:url id="sortDownRepositoryUrl" action="sortDownRepositoryFromGroup">
+          <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}"/>
+          <s:param name="targetRepo" value="%{#attr.managedRepositories[#attr.repository].id}"/>
+        </s:url>
+        <s:url id="sortUpRepositoryUrl" action="sortUpRepositoryFromGroup">
+          <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}"/>
+          <s:param name="targetRepo" value="%{#attr.managedRepositories[#attr.repository].id}"/>
+        </s:url>
+        <s:url id="removeRepositoryUrl" action="removeRepositoryFromGroup">
+          <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}"/>
+          <s:param name="repoId" value="%{#attr.managedRepositories[#attr.repository].id}"/>
+        </s:url>
         <c:if test="${r.count > 1}">
-          <ww:a href="%{sortUpRepositoryUrl}" cssClass="up" title="Move Repository Up">
+          <s:a href="%{sortUpRepositoryUrl}" cssClass="up" title="Move Repository Up">
             <img src="${iconUpUrl}"/>
-          </ww:a>
+          </s:a>
         </c:if>
         <c:if test="${r.count < numberOfRepos}">
-          <ww:a href="%{sortDownRepositoryUrl}" cssClass="down" title="Move Repository Down">
+          <s:a href="%{sortDownRepositoryUrl}" cssClass="down" title="Move Repository Down">
             <img src="${iconDownUrl}"/>
-          </ww:a>
+          </s:a>
         </c:if>
-        <ww:a href="%{removeRepositoryUrl}" cssClass="delete" title="Delete Repository">
+        <s:a href="%{removeRepositoryUrl}" cssClass="delete" title="Delete Repository">
           <img src="${iconDeleteUrl}"/>
-        </ww:a>
+        </s:a>
       </redback:ifAnyAuthorized>
     </div>
   

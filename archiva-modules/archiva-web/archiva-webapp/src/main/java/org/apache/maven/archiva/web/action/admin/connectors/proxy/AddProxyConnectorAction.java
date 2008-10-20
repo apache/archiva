@@ -28,7 +28,7 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="addProxyConnectorAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addProxyConnectorAction"
  */
 public class AddProxyConnectorAction
     extends AbstractProxyConnectorFormAction
@@ -40,6 +40,7 @@ public class AddProxyConnectorAction
         connector = new ProxyConnectorConfiguration();
     }
     
+    @Override
     public String input()
     {
         return INPUT;

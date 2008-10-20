@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action.admin.appearance;
 /**
  * Stores the organisation information for displaying on the page.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="organisationInfo"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="organisationInfo"
  */
 public class OrganisationInfoAction
     extends AbstractAppearanceAction

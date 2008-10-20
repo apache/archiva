@@ -94,6 +94,8 @@ public class ProjectModel300Reader
             model.setProperties( getProperties( xml.getElement( "//project/properties" ) ) );
             model.setDependencies( getDependencies( xml ) );
             
+            model.setOrigin("filesystem");
+
             /* Following are not valid for <pomVersion>3</pomVersion> / Maven 1 pom files.
              * 
              * model.setDependencyManagement()

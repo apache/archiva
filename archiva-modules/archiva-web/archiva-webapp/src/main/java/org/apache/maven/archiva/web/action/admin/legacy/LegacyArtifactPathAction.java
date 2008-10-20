@@ -30,19 +30,19 @@ import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.util.ContextUtils;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 
-import com.opensymphony.webwork.interceptor.ServletRequestAware;
-import com.opensymphony.xwork.Preparable;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import com.opensymphony.xwork2.Preparable;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
 
 /**
  * Shows the LegacyArtifactPath Tab for the administrator.
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="legacyArtifactPathAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="legacyArtifactPathAction"
  */
 public class LegacyArtifactPathAction
     extends PlexusActionSupport

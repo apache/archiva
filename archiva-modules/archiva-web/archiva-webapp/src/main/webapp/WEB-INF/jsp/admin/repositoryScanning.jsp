@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
@@ -26,7 +26,7 @@
 <html>
 <head>
 <title>Administration - Repository Scanning</title>
-<ww:head />
+<s:head />
 </head>
 
 <body>
@@ -35,13 +35,13 @@
 
 <div id="contentArea">
 
-<ww:actionerror /> 
-<ww:actionmessage /> 
+<s:actionerror /> 
+<s:actionmessage /> 
 
 <c:url var="iconDeleteUrl" value="/images/icons/delete.gif" /> 
 <c:url var="iconCreateUrl" value="/images/icons/create.png" /> 
-<ww:url id="removeFiletypePatternUrl" action="repositoryScanning" method="removeFiletypePattern" /> 
-<ww:url id="addFiletypePatternUrl"    action="repositoryScanning" method="addFiletypePattern" /> 
+<s:url id="removeFiletypePatternUrl" action="repositoryScanning" method="removeFiletypePattern" /> 
+<s:url id="addFiletypePatternUrl"    action="repositoryScanning" method="addFiletypePattern" /> 
    
 <script type="text/javascript">
 <!--
@@ -78,14 +78,14 @@
   <c:otherwise>
     <%-- Display the filetypes. --%>
 
-    <ww:form method="post" action="repositoryScanning" 
+    <s:form method="post" action="repositoryScanning" 
              namespace="/admin" validate="false" 
              id="filetypeForm" theme="simple">
       <input type="hidden" name="pattern" />
       <input type="hidden" name="fileTypeId" />
-    </ww:form>
+    </s:form>
 
-    <ww:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern" />
+    <s:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern" />
 
     <c:forEach items="${fileTypeIds}" var="filetypeId" varStatus="j">
 
@@ -113,27 +113,27 @@
               <code>${escapedPattern}</code>
             </td>
             <td class="controls ${bgcolor}">
-              <ww:a href="#" title="Remove [${escapedPattern}] Pattern from [${filetypeId}]"
-                    onclick="removeFiletypePattern( '${filetypeId}', '${escapedPattern}' )" 
+              <s:a href="#" title="Remove [%{#attr.escapedPattern}] Pattern from [%{#attr.filetypeId}]"
+                    onclick="removeFiletypePattern( '%{#attr.filetypeId}', '%{#attr.escapedPattern}' )" 
                     theme="simple">
                 <img src="${iconDeleteUrl}" />
-              </ww:a>
+              </s:a>
             </td>
           </tr>
         </c:forEach>
         <tr>
           <td>
-            <ww:textfield size="40" 
-                          id="newpattern_${j.index}"
+            <s:textfield size="40" 
+                          id="newpattern_%{#attr.j.index}"
                           theme="simple" />
           </td>
           <td>
-            <ww:a href="#" 
-                  title="Add Pattern to [${filetypeId}]"
-                  onclick="addFiletypePattern( '${filetypeId}', 'newpattern_${j.index}' )"
+            <s:a href="#" 
+                  title="Add Pattern to [%{#attr.filetypeId}]"
+                  onclick="addFiletypePattern( '%{#attr.filetypeId}', 'newpattern_%{#attr.j.index}' )"
                   theme="simple">
               <img src="${iconCreateUrl}" />
-            </ww:a>
+            </s:a>
           </td>
         </tr>
       </table>
@@ -154,7 +154,7 @@
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <ww:form method="post" action="repositoryScanning!updateKnownConsumers" 
+    <s:form method="post" action="repositoryScanning!updateKnownConsumers" 
              namespace="/admin" validate="false" theme="simple">
     <table class="consumers">
       <tr>
@@ -190,11 +190,11 @@
       </c:forEach>
       <tr>
         <td colspan="4">
-          <ww:submit value="Update Consumers" />
+          <s:submit value="Update Consumers" />
         </td>
       </tr>
     </table>
-    </ww:form>
+    </s:form>
 
   </c:otherwise>
 </c:choose>
@@ -210,7 +210,7 @@
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <ww:form method="post" action="repositoryScanning!updateInvalidConsumers" 
+    <s:form method="post" action="repositoryScanning!updateInvalidConsumers" 
              namespace="/admin" validate="false" theme="simple">
     <table class="consumers">
       <tr>
@@ -246,11 +246,11 @@
       </c:forEach>
       <tr>
         <td colspan="4">
-          <ww:submit value="Update Consumers" />
+          <s:submit value="Update Consumers" />
         </td>
       </tr>
     </table>
-    </ww:form>
+    </s:form>
 
   </c:otherwise>
 </c:choose></div>

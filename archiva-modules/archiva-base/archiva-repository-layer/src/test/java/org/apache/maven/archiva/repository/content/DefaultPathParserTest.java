@@ -296,6 +296,15 @@ public class DefaultPathParserTest
     }
 
     /**
+     * A timestamped versioned artifact but without release version part. Like on axiom trunk. 
+     */
+    public void testBadSnapshotWithoutReleasePart()
+    {
+        assertBadPath( "org/apache/ws/commons/axiom/axiom/SNAPSHOT/axiom-20070912.093446-2.pom", 
+             "snapshot version without release part");
+    }
+
+    /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
      * @throws LayoutException
      */

@@ -17,20 +17,20 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
   <title>Error Occurred</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
 <h1>Error Occurred</h1>
 
-<ww:actionerror/>
+<s:actionerror/>
 
 </body>
 </html>

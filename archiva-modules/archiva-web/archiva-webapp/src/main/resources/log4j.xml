@@ -73,12 +73,12 @@
     <appender-ref ref="rolling" />
   </logger>
 
-  <logger name="com.opensymphony.xwork">
+  <logger name="com.opensymphony.xwork2">
     <level value="info"/>
     <appender-ref ref="rolling" />
   </logger>
 
-  <logger name="com.opensymphony.webwork">
+  <logger name="org.apache.struts2">
     <level value="info"/>
     <appender-ref ref="rolling" />
   </logger>

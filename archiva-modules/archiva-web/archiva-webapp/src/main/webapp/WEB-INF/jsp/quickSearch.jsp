@@ -17,43 +17,41 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <html>
 <head>
   <title>Quick Search</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
-<ww:if test="%{infoMessage != null}">
+<s:if test="%{infoMessage != null}">
   <p>${infoMessage}</p>
-</ww:if>
+</s:if>
 
 <body>
 
-<h1>Search</h1>
-
 <div id="contentArea">
 <div id="searchBox">
-  <ww:form method="get" action="quickSearch" validate="true">
-    <ww:textfield label="Search for" size="50" name="q"/>
-    <ww:hidden name="completeQueryString" value="${completeQueryString}"/>        
-    <ww:submit label="Go!"/>
-  </ww:form>
+  <s:form method="get" action="quickSearch" validate="true">
+    <s:textfield label="Search for" size="50" name="q"/>
+    <s:hidden name="completeQueryString" value="%{completeQueryString}"/>        
+    <s:submit value="Search"/>
+  </s:form>
 
   <script type="text/javascript">
     document.getElementById("quickSearch_q").focus();
   </script>
 
-  <ww:url id="filteredSearchUrl" action="advancedSearch"/>
-  <ww:a href="%{filteredSearchUrl}">
+  <s:url id="filteredSearchUrl" action="advancedSearch"/>
+  <s:a href="%{filteredSearchUrl}">
     Advanced Search
-  </ww:a>
+  </s:a>
 
   <p>
-    <ww:actionerror/>
+    <s:actionerror/>
   </p>
 </div>
-
+<div id="searchHint">
   <p>
     Enter your search terms. A variety of data will be searched for your keywords.<br/>
     To search for Java classes, packages or methods, use the keyword <code>bytecode:</code>
@@ -61,6 +59,7 @@
     <code>bytecode:MyClass</code>, or:
     <code>bytecode:myMethod</code>
   </p>
+</div>
 </div>
 </body>
 </html>

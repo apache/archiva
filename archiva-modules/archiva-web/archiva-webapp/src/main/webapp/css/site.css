@@ -214,7 +214,9 @@ ul.dependencyTree span.artifact-link {
 }
 
 .eXtremeTable .tableRegion .tableHeader {
-	background-color: #F3B455;
+	background-color: None;
+	background-image: url(../images/breadcrumbs.jpg);
+	color: gray;
 }
 
 .eXtremeTable .tableRegion .tableHeaderSort {
@@ -229,11 +231,17 @@ ul.dependencyTree span.artifact-link {
 	border-color: gray !important;	
 }
 
+table.tools th.toolHeading
+{
+	color: gray;
+}
+
 .tools .toolHeading {
 	padding: 0px 3px 0px 3px;
 	margin: 0px !important;
 	font-size: 11px !important;
-	background-color: #F3B455 !important;
+	background-color: red;
+	background-image: url(../images/breadcrumbs.jpg);
 }
 
 div.repository h3 {

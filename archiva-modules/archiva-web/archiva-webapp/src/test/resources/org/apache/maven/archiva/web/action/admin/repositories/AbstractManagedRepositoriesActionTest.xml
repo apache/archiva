@@ -26,7 +26,7 @@
     </component>
 
     <component>
-      <role>com.opensymphony.xwork.Action</role>
+      <role>com.opensymphony.xwork2.Action</role>
       <role-hint>addManagedRepositoryAction</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.AddManagedRepositoryAction</implementation>
       <instantiation-strategy>per-lookup</instantiation-strategy>
@@ -34,7 +34,7 @@
     </component>
     
     <component>
-      <role>com.opensymphony.xwork.Action</role>
+      <role>com.opensymphony.xwork2.Action</role>
       <role-hint>deleteManagedRepositoryAction</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.DeleteManagedRepositoryAction</implementation>
       <instantiation-strategy>per-lookup</instantiation-strategy>
@@ -48,7 +48,7 @@
     </component>
     
     <component>
-      <role>com.opensymphony.xwork.Action</role>
+      <role>com.opensymphony.xwork2.Action</role>
       <role-hint>editManagedRepositoryAction</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.EditManagedRepositoryAction</implementation>
       <instantiation-strategy>per-lookup</instantiation-strategy>

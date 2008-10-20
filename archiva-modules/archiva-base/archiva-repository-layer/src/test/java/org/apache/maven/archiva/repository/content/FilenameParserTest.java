@@ -169,6 +169,15 @@ public class FilenameParserTest
         assertNull( parser.expect( "2.0-SNAPSHOT" ) );
     }
 
+    public void testExpectWrongSnapshot2()
+    {
+        // tests parsing axiom snapshots without exceptions
+        FilenameParser parser = new FilenameParser( "axiom-20080221.062205-9.pom" );
+
+        assertEquals( "axiom", parser.nextNonVersion() );
+        assertNull( parser.expect( "SNAPSHOT" ) );
+    }
+
     public void testClassifier()
     {
         FilenameParser parser = new FilenameParser( "artifact-id-1.0-20070219.171202-34-test-sources.jar" );

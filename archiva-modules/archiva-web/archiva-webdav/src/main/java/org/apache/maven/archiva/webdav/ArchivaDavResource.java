@@ -64,7 +64,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.opensymphony.xwork.ActionContext;
+import com.opensymphony.xwork2.ActionContext;
 
 /**
  * @author <a href="mailto:james@atlassian.com">James William Dumay</a> Portions from the Apache Jackrabbit Project

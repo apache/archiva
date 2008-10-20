@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork2.Preparable;
 
 import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -35,7 +35,7 @@ import java.util.Map;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="proxyConnectorsAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="proxyConnectorsAction"
  */
 public class ProxyConnectorsAction
     extends AbstractProxyConnectorAction

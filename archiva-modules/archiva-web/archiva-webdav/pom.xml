@@ -81,7 +81,7 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
-      <artifactId>redback-xwork-integration</artifactId>
+      <artifactId>redback-struts2-integration</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>

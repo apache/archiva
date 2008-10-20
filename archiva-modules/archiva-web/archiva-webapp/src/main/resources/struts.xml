@@ -18,24 +18,21 @@
   ~ under the License.
   -->
 
-<!DOCTYPE xwork PUBLIC "-//OpenSymphony Group//XWork 1.1//EN"
-    "http://www.opensymphony.com/xwork/xwork-1.1.dtd">
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd"> 
 
-<xwork>
-  <!-- TODO: better error handling for exceptions needed [MRM-490] -->
-  <include file="webwork-default.xml"/>
-
+<struts>
   <!-- Include plexus-security xwork configurations. -->
-  <include file="xwork-security.xml"/>
+  <include file="struts-security.xml"/>
 
-  <package name="base" extends="webwork-default">
+  <package name="base" extends="struts-default">
     <interceptors>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor name="redbackForceAdminUser" class="redbackForceAdminUserInterceptor"/>
       <interceptor name="redbackSecureActions" class="redbackSecureActionInterceptor"/>
       <interceptor name="redbackAutoLogin" class="redbackAutoLoginInterceptor"/>
       <interceptor name="redbackPolicyEnforcement" class="redbackPolicyEnforcementInterceptor"/>
-      <interceptor name="paramFilter" class="com.opensymphony.xwork.interceptor.ParameterFilterInterceptor"/>
+      <interceptor name="paramFilter" class="com.opensymphony.xwork2.interceptor.ParameterFilterInterceptor"/>
 
       <interceptor-stack name="configuredArchivaStack">
         <interceptor-ref name="redbackForceAdminUser"/>
@@ -220,7 +217,7 @@
 
   </package>
 
-  <package name="components" namespace="/components" extends="webwork-default">
+  <package name="components" namespace="/components" extends="struts-default">
     <default-interceptor-ref name="basicStack"/>
     <action name="companyInfo" class="organisationInfo">
       <result>/WEB-INF/jsp/components/companyLogo.jsp</result>
@@ -502,22 +499,10 @@
     </action>
 
     <action name="generateReport" class="generateReport">
-      <result name="jasper" type="jasper">
-        <param name="location">/WEB-INF/jasperreports/report.jasper</param>
-        <param name="dataSource">reports</param>
-        <param name="format">HTML</param>
-      </result>
       <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
       <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
       <result>/WEB-INF/jsp/reports/basicReport.jsp</result>
     </action>
-    
-    <action name="generateStatisticsReport" class="generateReport" method="generateStatistics">
-      <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
-      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
-      <result>/WEB-INF/jsp/reports/statisticsReport.jsp</result>
-    </action>
-    
   </package>
-</xwork>
+</struts>
 

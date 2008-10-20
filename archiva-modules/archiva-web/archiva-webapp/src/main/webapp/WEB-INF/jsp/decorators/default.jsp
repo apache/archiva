@@ -20,7 +20,7 @@
   --%>
 
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
-<%@ taglib uri="/webwork" prefix="ww" %>
+<%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
@@ -45,32 +45,10 @@
 </head>
 
 <body onload="<decorator:getProperty property="body.onload" />" class="composite">
-<div id="banner">
-  <span id="bannerLeft">
-    <my:currentWWUrl action="index" namespace="/">
-      <img src="<c:url value='/images/archiva.png' />" alt="" width="188" height="69"/>
-    </my:currentWWUrl>
-  </span>
-  <span id="bannerRight">
-    <ww:action namespace="/components" name="companyInfo" executeResult="true"/>
-  </span>
-
-  <div class="clear">
-    <hr/>
-  </div>
-</div>
-
 <div id="breadcrumbs">
-  <div class="xleft">
+  <div class="xright">
     <%@ include file="/WEB-INF/jsp/redback/include/securityLinks.jsp" %>
   </div>
-
-  <div class="xright">
-    <a href="http://archiva.apache.org">Archiva</a> |
-    <a href="http://maven.apache.org/">Maven</a> |
-    <a href="http://www.apache.org/">Apache</a>
-  </div>
-
   <div class="clear">
     <hr/>
   </div>
@@ -79,18 +57,20 @@
 <div id="leftColumn">
 
   <div id="navcolumn">
-
+    <my:currentWWUrl action="index" namespace="/">
+      <img src="<c:url value='/images/archiva.png' />" alt="" width="155" height="55"/>
+    </my:currentWWUrl>
     <h5>Find</h5>
     <ul>
       <li class="none">
         <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
 
-      <ww:if test="${applicationScope.uiOptions.showFindArtifacts}">
+      <s:if test="%{applicationScope.uiOptions.showFindArtifacts}">
         <li class="none">
           <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
         </li>
-      </ww:if>
+      </s:if>
 
       <li class="none">
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
@@ -190,10 +170,10 @@
 %>
 <div id="footer">
   <div class="xleft">
-    Apache Archiva <%= ArchivaVersion.getVersion() %>
+    <a href="http://archiva.apache.org/">Apache Archiva <%= ArchivaVersion.getVersion()%></a>
   </div>
   <div class="xright">
-    Copyright &#169; <%= copyrightRange %> The Apache Software Foundation
+    <a href="http://www.apache.org/">Copyright &#169; <%= copyrightRange%> The Apache Software Foundation</a>
   </div>
 
   <div class="clear">
