@@ -36,10 +36,10 @@
   
   <c:if test="${!empty (artifactId)}">    
     <c:set var="url">
-      <ww:url action="browseArtifact" namespace="/">
-        <ww:param name="groupId" value="%{#attr.groupId}"/>
-        <ww:param name="artifactId" value="%{#attr.artifactId}"/>
-      </ww:url>
+      <s:url action="browseArtifact" namespace="/">
+        <s:param name="groupId" value="%{#attr.groupId}"/>
+        <s:param name="artifactId" value="%{#attr.artifactId}"/>
+      </s:url>
     </c:set>
     <a href="${url}">${artifactId}</a>
   </c:if>
@@ -47,24 +47,24 @@
   <c:choose>
     <c:when test="${!empty (version)}">
       <c:set var="url">
-        <ww:url action="showArtifact" namespace="/">
-          <ww:param name="groupId" value="%{#attr.groupId}"/>
-          <ww:param name="artifactId" value="%{#attr.artifactId}"/>
+        <s:url action="showArtifact" namespace="/">
+          <s:param name="groupId" value="%{#attr.groupId}"/>
+          <s:param name="artifactId" value="%{#attr.artifactId}"/>
           <c:if test="${!empty (version)}">
-            <ww:param name="version" value="%{#attr.version}"/>
+            <s:param name="version" value="%{#attr.version}"/>
           </c:if>
-        </ww:url>
+        </s:url>
       </c:set>
       <a href="${url}">${version}</a>
     </c:when>
     <c:otherwise>
       <c:forEach items="${versions}" var="v" varStatus="i">
         <c:set var="url">
-          <ww:url action="showArtifact" namespace="/">
-            <ww:param name="groupId" value="%{#attr.groupId}"/>
-            <ww:param name="artifactId" value="%{#attr.artifactId}"/>
-            <ww:param name="version" value="%{#attr.v}"/>
-          </ww:url>
+          <s:url action="showArtifact" namespace="/">
+            <s:param name="groupId" value="%{#attr.groupId}"/>
+            <s:param name="artifactId" value="%{#attr.artifactId}"/>
+            <s:param name="version" value="%{#attr.v}"/>
+          </s:url>
         </c:set>
         <a href="${url}">${v}</a>
         <c:if test="${!i.last}">,</c:if>
