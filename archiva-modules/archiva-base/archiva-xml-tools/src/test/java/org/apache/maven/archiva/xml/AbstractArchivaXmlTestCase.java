@@ -33,10 +33,13 @@ public abstract class AbstractArchivaXmlTestCase
     extends TestCase
 {
     protected static final String OSLASH = "\u00f8";
+
     protected static final String TRYGVIS = "Trygve Laugst" + OSLASH + "l";
+
     protected static final String INFIN = "\u221e";
+
     protected static final String INFINITE_ARCHIVA = "The " + INFIN + " Archiva";
-    
+
     protected File getExampleXml( String filename )
     {
         File examplesDir = new File( "src/test/examples" );
