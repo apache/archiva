@@ -17,19 +17,19 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Delete Repository Group</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
 <h1>Admin: Delete Repository Group</h1>
 
-<ww:actionerror/>
+<s:actionerror/>
 
 <div id="contentArea">
 
@@ -52,13 +52,13 @@
     </table>
   </div>
 
-  <ww:form method="post" action="deleteRepositoryGroup" namespace="/admin" validate="true" theme="simple">
-    <ww:hidden name="repoGroupId"/>
+  <s:form method="post" action="deleteRepositoryGroup" namespace="/admin" validate="true" theme="simple">
+    <s:hidden name="repoGroupId"/>
     <div class="buttons">
-      <ww:submit value="Confirm" method="delete"/>
-      <ww:submit value="Cancel" method="execute"/>
+      <s:submit value="Confirm" method="delete"/>
+      <s:submit value="Cancel" method="execute"/>
     </div>
-  </ww:form>
+  </s:form>
 </div>
 
 </body>

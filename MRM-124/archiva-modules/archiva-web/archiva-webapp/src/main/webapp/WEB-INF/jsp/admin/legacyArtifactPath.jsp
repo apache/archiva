@@ -17,7 +17,7 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
@@ -25,7 +25,7 @@
 <html>
 <head>
   <title>Administration - Legacy support</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -34,17 +34,17 @@
 
 <div id="contentArea">
 
-<ww:actionerror/>
-<ww:actionmessage/>
+<s:actionerror/>
+<s:actionmessage/>
 
 <div class="admin">
 <div class="controls">
   <redback:ifAuthorized permission="archiva-manage-configuration">
-    <ww:url id="addLegacyArtifactPathUrl" action="addLegacyArtifactPath"/>
-    <ww:a href="%{addLegacyArtifactPathUrl}">
+    <s:url id="addLegacyArtifactPathUrl" action="addLegacyArtifactPath"/>
+    <s:a href="%{addLegacyArtifactPathUrl}">
       <img src="<c:url value="/images/icons/create.png" />" alt="" width="16" height="16"/>
       Add
-    </ww:a>
+    </s:a>
   </redback:ifAuthorized>
 </div>
 <h2>Path Mappings</h2>
@@ -72,13 +72,13 @@
 <div class="controls">
     <%-- TODO: make some icons --%>
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-    <ww:url id="deleteLegacyArtifactPath" action="deleteLegacyArtifactPath">
-      <ww:param name="path" value="%{'${legacyArtifactPath.path}'}"/>
-    </ww:url>
-    <ww:a href="%{deleteLegacyArtifactPath}">
+    <s:url id="deleteLegacyArtifactPath" action="deleteLegacyArtifactPath">
+      <s:param name="path" value="%{#attr.legacyArtifactPath.path}"/>
+    </s:url>
+    <s:a href="%{deleteLegacyArtifactPath}">
       <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>
       Delete
-    </ww:a>
+    </s:a>
   </redback:ifAnyAuthorized>
 </div>
 

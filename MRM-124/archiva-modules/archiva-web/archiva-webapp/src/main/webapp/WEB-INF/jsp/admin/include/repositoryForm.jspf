@@ -16,21 +16,21 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<ww:textfield name="repository.name" label="Name" size="50" required="true"/>
-<ww:textfield name="repository.location" label="Directory" size="50" required="true"/>
-<ww:textfield name="repository.indexDir" label="Index Directory" size="50"/>
-<ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
+<s:textfield name="repository.name" label="Name" size="50" required="true"/>
+<s:textfield name="repository.location" label="Directory" size="50" required="true"/>
+<s:textfield name="repository.indexDir" label="Index Directory" size="50"/>
+<s:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
            name="repository.layout" label="Type"/>
-<ww:textfield name="repository.refreshCronExpression" label="Cron" size="40" required="true"/>
-<ww:textfield name="repository.daysOlder" label="Repository Purge By Days Older Than" size="5"/>
-<ww:textfield name="repository.retentionCount" label="Repository Purge By Retention Count" size="5"/>
-<ww:checkbox name="repository.releases" value="repository.releases" label="Releases Included"/>
-<ww:checkbox name="repository.snapshots" value="repository.snapshots" label="Snapshots Included"/>
-<ww:checkbox name="repository.scanned" value="repository.scanned" label="Scannable"/>
-<ww:checkbox name="repository.deleteReleasedSnapshots" value="repository.deleteReleasedSnapshots"
+<s:textfield name="repository.refreshCronExpression" label="Cron" size="40" required="true"/>
+<s:textfield name="repository.daysOlder" label="Repository Purge By Days Older Than" size="5"/>
+<s:textfield name="repository.retentionCount" label="Repository Purge By Retention Count" size="5"/>
+<s:checkbox name="repository.releases" value="repository.releases" label="Releases Included"/>
+<s:checkbox name="repository.snapshots" value="repository.snapshots" label="Snapshots Included"/>
+<s:checkbox name="repository.scanned" value="repository.scanned" label="Scannable"/>
+<s:checkbox name="repository.deleteReleasedSnapshots" value="repository.deleteReleasedSnapshots"
              label="Delete Released Snapshots"/>
 
  

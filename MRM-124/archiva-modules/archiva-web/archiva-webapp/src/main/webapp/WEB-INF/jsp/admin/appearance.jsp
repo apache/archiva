@@ -17,26 +17,26 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
   <title>Configure Appearance</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 <h1>Appearance</h1>
 
 <div style="float: right">
-  <a href="<ww:url action='editAppearance' />">Edit</a>
+  <a href="<s:url action='editAppearance' />">Edit</a>
 </div>
 <h2>Organization Details</h2>
 
 <p>
   The logo in the top right of the screen is controlled by the following settings.
-  <a href="<ww:url action='editAppearance' />">Change your appearence</a>
+  <a href="<s:url action='editAppearance' />">Change your appearence</a>
 </p>
 
 <h3>Organization Information</h3>
@@ -60,7 +60,7 @@
         <tr>
           <th>&nbsp;</th>
           <td>
-      <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
+            <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
           </td>
         </tr>
       </table>

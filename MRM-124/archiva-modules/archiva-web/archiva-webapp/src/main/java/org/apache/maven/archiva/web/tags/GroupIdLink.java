@@ -19,10 +19,10 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import com.opensymphony.webwork.WebWorkException;
-import com.opensymphony.webwork.components.Component;
-import com.opensymphony.xwork.util.OgnlValueStack;
+import org.apache.struts2.StrutsException;
+import org.apache.struts2.components.Component;
 
+import com.opensymphony.xwork2.util.ValueStack;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.StringTokenizer;
@@ -57,13 +57,14 @@ public class GroupIdLink
 
     private boolean includeTop = false;
 
-    public GroupIdLink( OgnlValueStack stack, HttpServletRequest req, HttpServletResponse res )
+    public GroupIdLink( ValueStack stack, HttpServletRequest req, HttpServletResponse res )
     {
         super( stack );
         this.req = req;
         this.res = res;
     }
 
+    @Override
     public boolean end( Writer writer, String body )
     {
         StringBuffer sb = new StringBuffer();
@@ -105,7 +106,7 @@ public class GroupIdLink
         }
         catch ( IOException e )
         {
-            throw new WebWorkException( "IOError: " + e.getMessage(), e );
+            throw new StrutsException( "IOError: " + e.getMessage(), e );
         }
 
         return super.end( writer, body );
@@ -113,16 +114,14 @@ public class GroupIdLink
 
     private String determineBrowseActionUrl()
     {
-        return determineActionURL( "browse", NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext,
-                                   encode, true );
+        return determineActionURL( "browse", NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext, encode, false, false );
     }
 
     private String determineBrowseGroupActionUrl( String gid )
     {
         parameters.put( "groupId", gid );
 
-        return determineActionURL( ACTION, NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext,
-                                   encode, true );
+        return determineActionURL( ACTION, NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext, encode, false, false );
     }
 
     public String getGroupId()

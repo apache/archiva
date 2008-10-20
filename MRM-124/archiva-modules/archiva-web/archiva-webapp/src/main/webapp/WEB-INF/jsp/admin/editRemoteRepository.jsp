@@ -17,28 +17,28 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Admin: Edit Remote Repository</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
 
 <h1>Admin: Edit Remote Repository</h1>
 
-<ww:actionerror/>
+<s:actionerror/>
 
 <div id="contentArea">
 
-  <ww:actionmessage/>
-  <ww:form method="post" action="editRemoteRepository!commit" namespace="/admin" validate="false">
-    <ww:hidden name="repository.id"/>
+  <s:actionmessage/>
+  <s:form method="post" action="editRemoteRepository!commit" namespace="/admin" validate="false">
+    <s:hidden name="repository.id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/remoteRepositoryForm.jspf" %>
-    <ww:submit value="Update Repository"/>
-  </ww:form>
+    <s:submit value="Update Repository"/>
+  </s:form>
 
   <script type="text/javascript">
     document.getElementById("editRemoteRepository_repository_name").focus();

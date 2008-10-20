@@ -1,4 +1,4 @@
-<@ww.iterator value="parameters.list">
+<@s.iterator value="parameters.list">
     <#if parameters.listKey?exists>
         <#assign itemKey = stack.findValue(parameters.listKey)/>
     <#else>
@@ -36,4 +36,4 @@
 <label for="${parameters.id?html}${itemKey?html}"><#rt/>
     ${itemValue}<#t/>
 </label><br/>
-</@ww.iterator>
+</@s.iterator>

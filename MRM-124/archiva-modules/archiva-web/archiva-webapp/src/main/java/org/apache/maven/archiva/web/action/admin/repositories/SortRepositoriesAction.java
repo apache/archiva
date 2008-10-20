@@ -30,7 +30,7 @@ import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
  * 
  * @author
  * @version
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="sortRepositoriesAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortRepositoriesAction"
  */
 public class SortRepositoriesAction 
     extends AbstractRepositoriesAdminAction

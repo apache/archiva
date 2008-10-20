@@ -893,7 +893,7 @@
         StringBuffer key = new StringBuffer();
 
         key.append( defaultString( reference.getGroupId() ) ).append( ":" );
-        key.append( defaultString( reference.getArtifactId() ) ).append( ":" );
+        key.append( defaultString( reference.getArtifactId() ) );
 
         return key.toString();
     }
@@ -969,7 +969,7 @@
 
         key.append( defaultString( reference.getGroupId() ) ).append( ":" );
         key.append( defaultString( reference.getArtifactId() ) ).append( ":" );
-        key.append( defaultString( reference.getVersion() ) ).append( ":" );
+        key.append( defaultString( reference.getVersion() ) );
 
         return key.toString();
     }

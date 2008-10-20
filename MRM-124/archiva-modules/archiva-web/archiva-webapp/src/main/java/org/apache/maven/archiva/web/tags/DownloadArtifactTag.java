@@ -19,10 +19,15 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import com.opensymphony.webwork.views.jsp.TagUtils;
+import com.opensymphony.xwork2.util.ValueStack;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.struts2.components.Component;
+import org.apache.struts2.views.jsp.TagUtils;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+import org.apache.struts2.views.jsp.ComponentTagSupport;
 
 /**
  * DownloadArtifactTag 
@@ -31,7 +36,7 @@ import javax.servlet.jsp.tagext.TagSupport;
  * @version $Id$
  */
 public class DownloadArtifactTag
-    extends TagSupport
+    extends ComponentTagSupport
 {
     private String groupId_; // stores EL-based groupId property
 
@@ -49,18 +54,22 @@ public class DownloadArtifactTag
 
     private boolean mini; // stores the evaluated mini object.
 
+    @Override
+    public Component getBean(ValueStack valueStack, HttpServletRequest request, HttpServletResponse response) {
+        return new DownloadArtifact(valueStack, pageContext);
+    }
+
+    @Override
     public int doEndTag()
         throws JspException
     {
         evaluateExpressions();
 
-        DownloadArtifact download = new DownloadArtifact( TagUtils.getStack( pageContext ), pageContext );
+        DownloadArtifact download = (DownloadArtifact)component;
         download.setGroupId( groupId );
         download.setArtifactId( artifactId );
         download.setVersion( version );
         download.setMini( mini );
-
-        download.end( pageContext.getOut(), "" );
 
         return super.doEndTag();
     }

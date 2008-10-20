@@ -18,12 +18,12 @@
   --%>
 
 <p>
-  <ww:if test="hasActionErrors()">
+  <s:if test="hasActionErrors()">
     <b style="color: red;">Errors:</b>
-    <ww:iterator value="actionErrors">
+    <s:iterator value="actionErrors">
       <li style="color: red;">
-        <ww:property/>
+        <s:property/>
       </li>
-    </ww:iterator>
-  </ww:if>
+    </s:iterator>
+  </s:if>
 </p>

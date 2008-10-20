@@ -19,8 +19,9 @@ package org.apache.maven.archiva.web.mapper;
  * under the License.
  */
 
-import com.opensymphony.webwork.dispatcher.mapper.ActionMapping;
-import com.opensymphony.webwork.dispatcher.mapper.DefaultActionMapper;
+import com.opensymphony.xwork2.config.ConfigurationManager;
+import org.apache.struts2.dispatcher.mapper.ActionMapping;
+import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -69,7 +70,7 @@ public class RepositoryActionMapper
 
     private static final String PARAM_VERSION = "version";
 
-    public ActionMapping getMapping( HttpServletRequest httpServletRequest )
+    public ActionMapping getMapping( HttpServletRequest httpServletRequest, ConfigurationManager manager )
     {
         String path = httpServletRequest.getServletPath();
 
@@ -141,9 +142,10 @@ public class RepositoryActionMapper
             }
         }
 
-        return super.getMapping( httpServletRequest );
+        return super.getMapping( httpServletRequest, manager );
     }
 
+    @Override
     public String getUriFromActionMapping( ActionMapping actionMapping )
     {
         Map params = actionMapping.getParams();
