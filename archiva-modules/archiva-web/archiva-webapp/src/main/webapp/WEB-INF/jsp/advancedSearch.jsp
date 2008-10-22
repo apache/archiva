@@ -31,11 +31,8 @@
 <body>
 
 <h1>Advanced Search</h1>
-
-
 <div id="contentArea">
-
-  <div id="searchBox">
+  <div id="searchBox">  
   
     <s:form method="get" action="filteredSearch" validate="true">
       <s:textfield label="Row Count" size="50" name="rowCount"/>
@@ -51,7 +48,7 @@
   
     <s:url id="indexUrl" action="index"/>
       <s:a href="%{indexUrl}">
-        Quick Search Page
+        << Quick Search Page
     </s:a>
 
   </div>

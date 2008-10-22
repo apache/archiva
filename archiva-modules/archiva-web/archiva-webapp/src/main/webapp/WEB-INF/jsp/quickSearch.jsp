@@ -44,7 +44,7 @@
 
   <s:url id="filteredSearchUrl" action="advancedSearch"/>
   <s:a href="%{filteredSearchUrl}">
-    Advanced Search
+    Advanced Search >>
   </s:a>
 
   <p>
