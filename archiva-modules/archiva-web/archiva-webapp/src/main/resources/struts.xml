@@ -124,6 +124,7 @@
            include a result for 'error' -->
       <result name="error">/WEB-INF/jsp/generalError.jsp</result>
       <result name="access_to_no_repos">/WEB-INF/jsp/accessToNoRepos.jsp</result>
+      
     </global-results>
   </package>
   
@@ -503,6 +504,23 @@
       <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
       <result>/WEB-INF/jsp/reports/basicReport.jsp</result>
     </action>
+    
+    <action name="generateStatisticsReport" class="generateReport" method="generateStatistics">
+      <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
+      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
+      <result>/WEB-INF/jsp/reports/statisticsReport.jsp</result>
+    </action>
+    
+    <!-- TODO: make report filename dynamic -->
+    <action name="downloadStatsReport" class="generateReport" method="downloadStatisticsReport">
+      <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
+      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
+      <result name="send-file" type="stream">
+        <param name="contentType">${contentType}</param>
+        <param name="contentDisposition">attachment; filename="archiva_statistics_report.csv"</param>
+      </result>
+    </action>
+    
   </package>
 </struts>
 

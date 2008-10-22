@@ -80,14 +80,23 @@ public class SimpleRepositoryStatisticsReportGenerator
      * {@inheritDoc}
      * 
      * @see org.apache.maven.archiva.reporting.RepositoryStatisticsReportGenerator#generateReport(java.util.List
-     *      repoContentStats, java.util.String repository, java.util.Date startDate, java.util.Date endDate)
+     *      repoContentStats, java.util.String repository, java.util.Date startDate, java.util.Date endDate, boolean firstStatsOnly)
      */
-    public List<RepositoryStatistics> generateReport( List<RepositoryContentStatistics> repoContentStats, String repository, Date startDate, Date endDate )
+    public List<RepositoryStatistics> generateReport( List<RepositoryContentStatistics> repoContentStats,
+                                                      String repository, Date startDate, Date endDate,
+                                                      boolean firstStatsOnly )
         throws ArchivaReportException
     {
-        return constructRepositoryStatistics( repoContentStats, repository, endDate, 0, repoContentStats.size() - 1 );
+        if( firstStatsOnly )
+        {
+            return constructRepositoryStatistics( repoContentStats, repository, endDate, 0, 0 );
+        }
+        else
+        {
+            return constructRepositoryStatistics( repoContentStats, repository, endDate, 0, repoContentStats.size() - 1 );
+        }
     }
-
+    
     private List<RepositoryStatistics> constructRepositoryStatistics(
                                                                       List<RepositoryContentStatistics> repoContentStats,
                                                                       String repository, Date endDate,

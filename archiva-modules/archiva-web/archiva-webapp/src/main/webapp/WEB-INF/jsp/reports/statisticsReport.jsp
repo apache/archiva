@@ -17,14 +17,14 @@
   ~ under the License.
   --%>
 
-<%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
   <title>Reports</title>
-  <ww:head/>
+  <s:head/>
 </head>
 
 <body>
@@ -44,22 +44,22 @@
     
     <%-- Set Prev & Next icons --%>
   <c:set var="prevPageUrl">
-    <ww:url action="generateStatisticsReport" namespace="/report">
-      <ww:param name="selectedRepositories" value="%{'${selectedRepositories}'}"/>
-      <ww:param name="rowCount" value="%{'${rowCount}'}"/>
-      <ww:param name="startDate" value="%{'${startDate}'}"/>                      
-      <ww:param name="endDate" value="%{'${endDate}'}"/>
-      <ww:param name="page" value="%{'${page - 1}'}"/>
-    </ww:url>
+    <s:url action="generateStatisticsReport" namespace="/report">    
+      <s:param name="selectedRepositories" value="%{#attr.selectedRepositories}"/>
+      <s:param name="rowCount" value="%{#attr.rowCount}"/>
+      <s:param name="startDate" value="%{#attr.startDate}"/>                      
+      <s:param name="endDate" value="%{#attr.endDate}"/>
+      <s:param name="page" value="%{#attr.page - 1}"/>
+    </s:url>
   </c:set>
   <c:set var="nextPageUrl">
-    <ww:url action="generateStatisticsReport" namespace="/report">
-      <ww:param name="selectedRepositories" value="%{'${selectedRepositories}'}"/>
-      <ww:param name="rowCount" value="%{'${rowCount}'}"/>
-      <ww:param name="startDate" value="%{'${startDate}'}"/>                      
-      <ww:param name="endDate" value="%{'${endDate}'}"/>                
-      <ww:param name="page" value="%{'${page + 1}'}"/>
-    </ww:url>
+    <s:url action="generateStatisticsReport" namespace="/report">    
+      <s:param name="selectedRepositories" value="%{#attr.selectedRepositories}"/>
+      <s:param name="rowCount" value="%{#attr.rowCount}"/>
+      <s:param name="startDate" value="%{#attr.startDate}"/>                      
+      <s:param name="endDate" value="%{#attr.endDate}"/>                
+      <s:param name="page" value="%{#attr.page + 1}"/>
+    </s:url>
   </c:set>
     
   <c:choose>
@@ -101,13 +101,13 @@
     <c:choose>                   			    
       <c:when test="${i != (page - 1)}">
         <c:set var="specificPageUrl">
-          <ww:url action="generateStatisticsReport" namespace="/report">
-            <ww:param name="selectedRepositories" value="%{'${selectedRepositories}'}"/>
-            <ww:param name="rowCount" value="%{'${rowCount}'}"/>
-            <ww:param name="startDate" value="%{'${startDate}'}"/>                      
-            <ww:param name="endDate" value="%{'${endDate}'}"/>
-            <ww:param name="page" value="%{'${page + 1}'}"/>
-          </ww:url>
+          <s:url action="generateStatisticsReport" namespace="/report">
+            <s:param name="selectedRepositories" value="%{#attr.selectedRepositories}"/>
+            <s:param name="rowCount" value="%{#attr.rowCount}"/>
+            <s:param name="startDate" value="%{#attr.startDate}"/>                      
+            <s:param name="endDate" value="%{#attr.endDate}"/>
+            <s:param name="page" value="%{#attr.page + 1}"/>
+          </s:url>
         </c:set>
         <a href="${specificPageUrl}">${i + 1}</a>
       </c:when>
@@ -130,6 +130,14 @@
   </p>   
   <%-- Pagination - end --%>
   
+  <%-- Export to CSV link --%>
+  <s:url id="downloadStatsReportUrl" action="downloadStatsReport" namespace="/report">
+    <s:param name="selectedRepositories" value="%{#attr.selectedRepositories}"/>
+    <s:param name="startDate" value="%{#attr.startDate}"/>                      
+    <s:param name="endDate" value="%{#attr.endDate}"/>
+  </s:url>
+  <s:a href="%{downloadStatsReportUrl}">Export to CSV</s:a>
+            
   <c:choose>
     <c:when test="${reposSize > 1}">
   	

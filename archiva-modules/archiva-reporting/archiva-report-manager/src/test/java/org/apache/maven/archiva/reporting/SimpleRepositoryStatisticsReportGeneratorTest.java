@@ -261,7 +261,7 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         daoControl.replay(); 
         artifactDaoControl.replay();
         
-        List<RepositoryStatistics> data = generator.generateReport( repoContentStats, REPO, startDate, endDate );
+        List<RepositoryStatistics> data = generator.generateReport( repoContentStats, REPO, startDate, endDate, false );
         
         daoControl.verify();
         artifactDaoControl.verify();

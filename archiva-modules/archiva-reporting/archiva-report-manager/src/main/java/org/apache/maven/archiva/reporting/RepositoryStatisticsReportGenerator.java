@@ -42,9 +42,31 @@ public interface RepositoryStatisticsReportGenerator
     
     public static final String ARCHETYPE = "archetype";
     
+    /**
+     * Generate report with limits. Used for pagination.
+     * 
+     * @param repoContentStats
+     * @param repository
+     * @param startDate
+     * @param endDate
+     * @param limits
+     * @return
+     * @throws ArchivaReportException
+     */
     public List<RepositoryStatistics> generateReport( List<RepositoryContentStatistics> repoContentStats, String repository, Date startDate, Date endDate, DataLimits limits )
         throws ArchivaReportException;
     
-    public List<RepositoryStatistics> generateReport( List<RepositoryContentStatistics> repoContentStats, String repository, Date startDate, Date endDate )
-        throws ArchivaReportException;
+    /**
+     * Generate report without limits. Used for exporting the report.
+     * 
+     * @param repoContentStats
+     * @param repository
+     * @param startDate
+     * @param endDate
+     * @param firstStatsOnly TODO
+     * @return
+     * @throws ArchivaReportException
+     */
+    public List<RepositoryStatistics> generateReport( List<RepositoryContentStatistics> repoContentStats, String repository, Date startDate, Date endDate, boolean firstStatsOnly )
+        throws ArchivaReportException; 
 }

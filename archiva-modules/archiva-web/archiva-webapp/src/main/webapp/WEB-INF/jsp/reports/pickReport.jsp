@@ -19,6 +19,9 @@
 
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
+<link type="text/css" rel="StyleSheet" href="/archiva/css/datepicker.css" />
+<script type="text/javascript" src="/archiva/js/datepicker/datepicker.js"></script>
+
 <html>
 <head>
   <title>Reports</title>
@@ -31,16 +34,45 @@
 <div id="contentArea">
 
   <h2>Repository Statistics</h2>
-  <s:form action="generateStatisticsReport" namespace="/report" validate="true">
+  <s:form action="generateStatisticsReport" namespace="/report" validate="false">
     
     <s:optiontransferselect label="Repositories To Be Compared" name="availableRepositories"
 		list="availableRepositories" doubleName="selectedRepositories"
 		doubleList="selectedRepositories" size="8" doubleSize="8"/>
-		
-	<s:datetimepicker label="Start Date" name="startDate" id="startDate"/>
-	<s:datetimepicker label="End Date" name="endDate" id="endDate"  />  
-	<s:textfield label="Row Count" name="rowCount" />
-		    
+	
+	<s:textfield label="Row Count" name="rowCount" /> 	
+	<s:textfield label="Start Date" name="startDate" disabled="true"/>
+      <script type="text/javascript">
+          var d1 = new Date();
+          var dp1 = new DatePicker(d1);
+ 
+          var tables = document.forms[0].getElementsByTagName("table");
+          var myRow = tables[0].insertRow(3);
+          var actionsCell = myRow.insertCell(0);
+          var startDateCell = myRow.insertCell(1);
+          startDateCell.appendChild(dp1.create());
+      
+          dp1.onchange = function () {
+   	           document.forms[0].startDate.value = dp1.getDate();
+          };
+      </script>
+
+    <s:textfield label="End Date" name="endDate" disabled="true"/>
+	  <script type="text/javascript">
+          var d2 = new Date();
+          var dp2 = new DatePicker(d2);
+
+          var tables = document.forms[0].getElementsByTagName("table");
+          var myRow = tables[0].insertRow(5);
+          var actionsCell = myRow.insertCell(0);
+          var startDateCell = myRow.insertCell(1);
+          startDateCell.appendChild(dp2.create());
+      
+          dp2.onchange = function () {
+   	           document.forms[0].endDate.value = dp2.getDate();
+          };
+     </script>
+        
     <s:submit value="View Statistics"/>
   </s:form>
     
