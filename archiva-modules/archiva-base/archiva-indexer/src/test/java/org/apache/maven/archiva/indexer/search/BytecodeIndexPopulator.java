@@ -75,6 +75,9 @@ public class BytecodeIndexPopulator
         // wagon-provider-api-1.0-beta-3-20070209.213958-2.jar.txt
         dumps.put( "wagon-provider-api", createArchivaArtifact( "org.apache.maven.wagon", "wagon-provider-api",
                                                                 "1.0-beta-3-20070209.213958-2", "", "jar" ) );
+        
+        // a-common5
+        dumps.put( "a-common5", createArchivaArtifact( "a", "a-common5", "1.0", "", "jar" ) );
 
         return dumps;
 

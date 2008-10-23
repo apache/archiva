@@ -267,6 +267,32 @@ public class DefaultCrossRepositorySearchTest
                                      "archiva-common", "1.0", null, 30 );
     }
     
+    // MRM-981 - artifactIds with numeric characters aren't found in advanced search
+    public void testFilteredSearchArtifactIdHasNumericChar()
+        throws Exception
+    {
+        CrossRepositorySearch search = lookupCrossRepositorySearch();
+
+        String expectedRepos[] = new String[] { TEST_DEFAULT_REPO_ID };
+
+        String expectedResults[] = new String[] { "a-common5" };
+        
+        assertFilteredSearchResults( expectedRepos, expectedResults, search, null, "a-common5", null, null, 30 );
+        
+        assertFilteredSearchResults( expectedRepos, expectedResults, search, "a", "a-common5", null, null, 30 );
+        
+        assertFilteredSearchResults( expectedRepos, expectedResults, search, "a", "a-common5", "1.0", null, 30 );
+        
+        assertFilteredSearchResults( expectedRepos, expectedResults, search, "a", "a-common5", "1.0", "ACommonTestFile", 30 );
+                
+        assertFilteredSearchResults( expectedRepos, expectedResults, search, "a", "a-common5", "1.0", "a.common5.package.", 30 );
+        
+        String noHitsExpectedResults[] = new String[] {};
+        
+        assertFilteredSearchResults( expectedRepos, noHitsExpectedResults, search, "org.apache.maven.archiva",
+                                     "a-common5", null, null, 30 );
+    }
+    
     private void assertFilteredSearchResults ( String expectedRepos[], String expectedResults[], CrossRepositorySearch search, 
                                                String groupId, String artifactId, String version, String className , int rowCount )
     {

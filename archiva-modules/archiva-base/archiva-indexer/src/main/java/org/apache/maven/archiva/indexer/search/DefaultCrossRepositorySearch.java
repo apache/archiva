@@ -83,49 +83,69 @@ public class DefaultCrossRepositorySearch
     private ArchivaConfiguration configuration;
 
     private List<ManagedRepositoryConfiguration> localIndexedRepositories = new ArrayList<ManagedRepositoryConfiguration>();
-
+    
     public SearchResults executeFilteredSearch( String principal, List<String> selectedRepos, String groupId,
                                                 String artifactId, String version, String className,
                                                 SearchResultLimits limits )
     {
         List<RepositoryContentIndex> indexes = getBytecodeIndexes( principal, selectedRepos );
-        SearchResults results = new SearchResults();
-        BooleanQuery booleanQuery = new BooleanQuery();
-
-        if ( groupId != null && groupId.length() > 0 )
+        SearchResults results = new SearchResults();        
+        List<String> fieldsList = new ArrayList<String>();
+        List<String> termsList = new ArrayList<String>();
+        List<BooleanClause.Occur> flagsList = new ArrayList<BooleanClause.Occur>();
+        
+        if( groupId != null && !"".equals( groupId.trim() ) )
         {
-            parseAndAdd( booleanQuery, ArtifactKeys.GROUPID, groupId, "\\.|-" );
+            fieldsList.add( ArtifactKeys.GROUPID );
+            termsList.add( groupId );
+            flagsList.add( BooleanClause.Occur.MUST );            
         }
-
-        if ( artifactId != null && artifactId.length() > 0 )
+        
+        if( artifactId != null && !"".equals( artifactId.trim() ) )
         {
-            parseAndAdd( booleanQuery, ArtifactKeys.ARTIFACTID, artifactId, "\\.|-" );
+            fieldsList.add( ArtifactKeys.ARTIFACTID );
+            termsList.add( artifactId );
+            flagsList.add( BooleanClause.Occur.MUST );
         }
-
-        if ( version != null && version.length() > 0 )
+        
+        if( version != null && !"".equals( version.trim() ) )
         {
-            parseAndAdd( booleanQuery, ArtifactKeys.VERSION, version, "\\.|-" );
+            fieldsList.add( ArtifactKeys.VERSION );
+            termsList.add( version );
+            flagsList.add( BooleanClause.Occur.MUST );
         }
-
-        if ( className != null && className.length() > 0 )
+        
+        if( className != null && !"".equals( className.trim() ) )
+        {   
+            fieldsList.add( BytecodeKeys.CLASSES );
+            fieldsList.add( BytecodeKeys.FILES );
+            fieldsList.add( BytecodeKeys.METHODS );
+            termsList.add( className.trim() );
+            termsList.add( className.trim() );
+            termsList.add( className.trim() );
+            flagsList.add( BooleanClause.Occur.SHOULD );
+            flagsList.add( BooleanClause.Occur.SHOULD );
+            flagsList.add( BooleanClause.Occur.SHOULD );
+        }        
+        
+        try
         {
-
-            try
-            {
-                QueryParser parser =
-                    new MultiFieldQueryParser( new String[] { BytecodeKeys.CLASSES, BytecodeKeys.FILES,
-                        BytecodeKeys.METHODS }, new BytecodeHandlers().getAnalyzer() );
-                booleanQuery.add( parser.parse( className ), BooleanClause.Occur.MUST );
-            }
-            catch ( ParseException e )
-            {
-
-            }
+            String[] fieldsArr = new String[ fieldsList.size() ];
+            String[] queryArr = new String[ termsList.size() ];
+            BooleanClause.Occur[] flagsArr = new BooleanClause.Occur[ flagsList.size() ];
+            
+            Query fieldsQuery =
+                MultiFieldQueryParser.parse( termsList.toArray( queryArr ), fieldsList.toArray( fieldsArr ),
+                                             flagsList.toArray( flagsArr ), new BytecodeHandlers().getAnalyzer() );
+            
+            LuceneQuery query = new LuceneQuery( fieldsQuery );
+            results = searchAll( query, limits, indexes, null );
+            results.getRepositories().add( this.localIndexedRepositories );
         }
-
-        LuceneQuery query = new LuceneQuery( booleanQuery );
-        results = searchAll( query, limits, indexes, null );
-        results.getRepositories().add( this.localIndexedRepositories );
+        catch ( ParseException e )
+        {
+            log.warn( "Unable to parse advanced search fields and query terms." );
+        }        
 
         return results;
     }
@@ -263,8 +283,8 @@ public class DefaultCrossRepositorySearch
                 hits = searcher.search( specificQuery );
             }
 
-            int hitCount = hits.length();
-
+            int hitCount = hits.length();     
+            
             // Now process the limits.
             results.setLimits( limits );
             results.setTotalHits( hitCount );
@@ -450,26 +470,6 @@ public class DefaultCrossRepositorySearch
                     localIndexedRepositories.add( repo );
                 }
             }
-        }
-    }
-
-    private void parseAndAdd( BooleanQuery query, String key, String value, String delimiter )
-    {
-        if ( value != null && value.length() > 0 )
-        {
-            String[] terms = value.split( delimiter );
-            for ( int i = 0; i < terms.length; i++ )
-            {
-                Term valueTerm = new Term( key, terms[i] );
-                Query valueQuery = new TermQuery( valueTerm );
-                query.add( valueQuery, BooleanClause.Occur.MUST );
-            }
-        }
-        else
-        {
-            Term valueTerm = new Term( key, value );
-            Query valueQuery = new TermQuery( valueTerm );
-            query.add( valueQuery, BooleanClause.Occur.MUST );
         }
     }
 
