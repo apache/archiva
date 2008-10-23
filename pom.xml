@@ -1041,7 +1041,7 @@
     <wagon.version>1.0-beta-4</wagon.version>
     <redback.version>1.2-SNAPSHOT</redback.version>
     <jetty.version>6.1.6</jetty.version>
-    <binder.version>0.8.1</binder.version>
+    <binder.version>0.8.2</binder.version>
   </properties>
   <profiles>
     <profile>
