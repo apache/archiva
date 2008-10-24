@@ -19,16 +19,26 @@
 
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<c:if test="${!empty (organisationLogo)}">
-  <s:set name="organisationUrl" value="organisationUrl"/>
-  <c:choose>
-    <c:when test="${!empty (organisationUrl)}">
-      <a href="${companyUrl}">
-        <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
-      </a>
-    </c:when>
-    <c:otherwise>
-      <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
-    </c:otherwise>
-  </c:choose>
-</c:if>
+<%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
+
+<div id="companyLogo">
+    <s:if test="%{organisationLogo != null}">
+      <s:set name="organisationUrl" value="organisationUrl"/>
+      <s:set name="organisationLogo" value="organisationLogo"/>
+      <c:choose>
+        <c:when test="${!empty (organisationUrl)}">
+          <a href="${companyUrl}">
+            <img src="${organisationLogo}" title="${organisationName}"/>
+          </a>
+        </c:when>
+        <c:otherwise>
+          <img src="${organisationLogo}" title="${organisationName}"/>
+        </c:otherwise>
+      </c:choose>
+    </s:if>
+    <s:else>
+        <my:currentWWUrl action="index" namespace="/">
+          <img src="<c:url value='/images/archiva.png' />"/>
+        </my:currentWWUrl>
+    </s:else>
+</div>

@@ -57,11 +57,7 @@
 <div id="leftColumn">
 
   <div id="navcolumn">
-    <div id="companyLogo">
-        <my:currentWWUrl action="index" namespace="/">
-          <img src="<c:url value='/images/archiva.png' />"/>
-        </my:currentWWUrl>
-    </div>
+    <s:action namespace="/components" name="companyInfo" executeResult="true"/>
     <h5>Find</h5>
     <ul>
       <li class="none">
