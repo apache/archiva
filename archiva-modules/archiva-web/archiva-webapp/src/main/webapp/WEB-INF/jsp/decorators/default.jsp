@@ -57,9 +57,11 @@
 <div id="leftColumn">
 
   <div id="navcolumn">
-    <my:currentWWUrl action="index" namespace="/">
-      <img src="<c:url value='/images/archiva.png' />" alt="" width="155" height="55"/>
-    </my:currentWWUrl>
+    <div id="companyLogo">
+        <my:currentWWUrl action="index" namespace="/">
+          <img src="<c:url value='/images/archiva.png' />"/>
+        </my:currentWWUrl>
+    </div>
     <h5>Find</h5>
     <ul>
       <li class="none">
