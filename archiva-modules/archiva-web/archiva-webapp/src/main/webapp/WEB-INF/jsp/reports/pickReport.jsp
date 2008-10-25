@@ -18,27 +18,22 @@
   --%>
 
 <%@ taglib prefix="s" uri="/struts-tags" %>
-
-<!-- jQuery -->
-<script type="text/javascript" src="/archiva/js/jquery/jquery-1.2.6.packjs"></script>
-
-<!-- required plugins -->
-<script type="text/javascript" src="/archiva/js/jquery/date.js"></script>
-
-<!-- jquery.datePicker.js -->
-<script type="text/javascript" src="/archiva/js/jquery/jquery.datePicker.js"></script>
-
+<%@ taglib prefix="c"         uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
+
   <title>Reports</title>
   <s:head theme="ajax" />
   
+  <link rel="stylesheet" href="<c:url value='/css/ui.datepicker.css'/>" type="text/css" media="all"/>
+  <script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.2.6.pack.js'/>"></script>
+  <script type="text/javascript" src="<c:url value='/js/jquery/ui.datepicker.packed.js'/>"></script>
   <script type="text/javascript" charset="utf-8">
-    $(function()
+    $(document).ready(function()
     {
-		$('#startDate').datePicker({clickInput:true})
-		$('#endDate').datePicker({clickInput:true})
+		$('#startDate').datepicker()
+		$('#endDate').datepicker()
     });
   </script>
 </head>
