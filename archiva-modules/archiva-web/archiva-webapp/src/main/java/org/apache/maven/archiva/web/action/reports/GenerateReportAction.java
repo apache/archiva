@@ -145,7 +145,8 @@ public class GenerateReportAction
     private DataLimits limits = new DataLimits();
     
     private String[] datePatterns = new String[] { "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", 
-        "dd MMMMM yyyy", "dd/MM/yy", "dd/MM/yyyy", "yyyy/MM/dd" };
+        "dd MMMMM yyyy", "dd/MM/yy", "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy",
+        "MM-dd-yy" };
     
     public static final String SEND_FILE = "send-file";
     
