@@ -39,9 +39,8 @@
   <link rel="stylesheet" href="<c:url value="/css/site.css"/>" type="text/css" media="all"/>
   <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
   <link rel="shortcut icon" href="<c:url value="/favicon.ico" />"/>
-  <script type="text/javascript" src="<c:url value="/js/scriptaculous/prototype.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/scriptaculous/scriptaculous.js"/>"></script>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+  <decorator:head />
 </head>
 
 <body onload="<decorator:getProperty property="body.onload" />" class="composite">

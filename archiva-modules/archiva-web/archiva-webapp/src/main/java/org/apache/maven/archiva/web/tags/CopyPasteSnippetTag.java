@@ -77,10 +77,8 @@ public class CopyPasteSnippetTag
             
             if ( TOGGLE.equals( wrapper ) )
             {
-                prefix.append( "<a href=\"#\" onclick=\"Effect.toggle('repoPom" );
-                prefix.append( repo.getId() ).append( "','slide'); return false;\">Show POM Snippet</a><br/>" );
-                prefix.append( "<pre class=\"pom\" style=\"display: none;\" id=\"repoPom" ).append( repo.getId() );
-                prefix.append( "\"><code>" );
+                prefix.append( "<a href=\"#\" class=\"expand\">Show POM Snippet</a><br/>" );
+                prefix.append( "<pre class=\"pom\"><code>" );
         
                 suffix.append( "</code></pre>" );
             }

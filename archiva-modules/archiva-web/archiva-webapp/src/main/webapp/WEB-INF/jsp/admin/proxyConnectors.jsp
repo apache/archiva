@@ -27,6 +27,19 @@
 <head>
   <title>Administration - Proxy Connectors</title>
   <s:head/>
+  <script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.2.6.pack.js'/>"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+    
+ $("table.settings").hide();
+ $("a.expand").click(function(event){
+   event.preventDefault();
+   $(this).next().toggle("slow");
+ });
+
+  });
+  </script>
+
 </head>
 
 <body>
@@ -161,8 +174,8 @@
       <p class="url"><a href="${repoMap[connector.targetRepoId].url}">${repoMap[connector.targetRepoId].url}</a></p>
     </div>
     
-    <a class="expand" href="#" onclick="Effect.toggle('proxySettings_${connector.sourceRepoId}_${connector.targetRepoId}','slide'); return false;">Expand</a>
-    <table class="settings" style="display: none;" id="proxySettings_${connector.sourceRepoId}_${connector.targetRepoId}">
+    <a class="expand" href="#">Settings</a>
+    <table class="settings">
       <tr>
         <th nowrap="nowrap">Network Proxy:</th>
         <td>

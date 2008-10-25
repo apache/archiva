@@ -26,6 +26,18 @@
 <head>
   <title>Administration - Repositories</title>
   <s:head/>
+  <script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.2.6.pack.js'/>"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+    
+ $(".pom").hide();
+ $("a.expand").click(function(event){
+   event.preventDefault();
+   $(this).siblings("pre").toggle("slow");
+ });
+
+  });
+  </script>
 </head>
 
 <body>
