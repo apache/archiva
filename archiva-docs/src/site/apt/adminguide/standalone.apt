@@ -68,7 +68,9 @@ Installing Standalone Distribution of Apache Archiva
 
     * If <<<~/.m2/archiva.xml>>> exists, it is saved there
 
-    * Otherwise, it is saved to <<<$ARCHIVA_BASE/conf/archiva.xml>>>, regardless of whether it previously existed.
+    * Otherwise, if <<<$ARCHIVA_BASE/conf/archiva.xml>>> exists, it is saved there
+
+    * If neither apply, it is saved to <<<~/.m2/archiva.xml>>>.
 
   The configuration will never be saved in the Archiva installation directory if you are using a separate base directory.
 
