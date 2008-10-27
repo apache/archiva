@@ -137,7 +137,7 @@ public class CopyPasteSnippetTag
 
         snippet.append( "    <" ).append( distRepoName ).append( ">\n" );
         snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
-        snippet.append( "      <url>dav:" ).append( ContextUtils.getBaseURL( pageContext, "repository" ) );
+        snippet.append( "      <url>" ).append( ContextUtils.getBaseURL( pageContext, "repository" ) );
         snippet.append( "/" ).append( repo.getId() ).append( "/" ).append( "</url>\n" );
 
         if ( !"default".equals( repo.getLayout() ) )
