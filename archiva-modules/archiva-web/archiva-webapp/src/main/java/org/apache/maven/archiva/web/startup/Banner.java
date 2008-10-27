@@ -23,7 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -218,7 +217,7 @@ public class Banner
         return injectVersion( decode( encodedBanner ), version );
     }
 
-    public void display() 
+    public static void display()
     {
         String banner = getBanner( ArchivaVersion.determineVersion() );
     	LoggerFactory.getLogger( Banner.class ).info( StringUtils.repeat( "_", 25 ) + "\n" + banner );
