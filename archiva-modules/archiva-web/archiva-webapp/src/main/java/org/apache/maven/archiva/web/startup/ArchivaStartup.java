@@ -38,11 +38,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ArchivaStartup
     implements ServletContextListener
 {
-    public void contextDestroyed(ServletContextEvent arg0) {
-    }
-
-    public void contextInitialized(ServletContextEvent arg0) {
-        WebApplicationContext wac =  WebApplicationContextUtils.getRequiredWebApplicationContext(arg0.getServletContext());
+    public void contextInitialized(ServletContextEvent contextEvent) {
+        WebApplicationContext wac =  WebApplicationContextUtils.getRequiredWebApplicationContext(contextEvent.getServletContext());
         
         SecuritySynchronization securitySync = (SecuritySynchronization) wac.getBean(PlexusToSpringUtils.buildSpringId(SecuritySynchronization.class));
         ResolverFactoryInit resolverFactory = (ResolverFactoryInit) wac.getBean(PlexusToSpringUtils.buildSpringId(ResolverFactoryInit.class));
@@ -64,4 +61,6 @@ public class ArchivaStartup
         }
     }
 
+    public void contextDestroyed(ServletContextEvent contextEvent) {
+    }
 }
