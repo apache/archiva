@@ -194,7 +194,7 @@
     <component>
       <role>org.codehaus.plexus.redback.system.check.EnvironmentCheck</role>
       <role-hint>locked-admin-check</role-hint>
-      <implementation>org.codehaus.plexus.redback.struts2.checks.security.LockedAdminEnvironmentCheck</implementation>
+      <implementation>org.codehaus.redback.integration.checks.security.LockedAdminEnvironmentCheck</implementation>
       <description>LockedAdminEnvironmentCheck: checks if accounts marked as system administrator are locked
         and unlocks them on startup.
       </description>
