@@ -18,10 +18,24 @@
   --%>
 
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <html>
 <head>
   <title>Quick Search</title>
   <s:head/>
+  <script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.2.6.pack.js'/>"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+    
+    $("table.settings").hide();
+    $("a.expand").click(function(event){
+      event.preventDefault();
+      $(this).next().toggle("slow");
+    });
+  });
+  </script>
 </head>
 
 <s:if test="%{infoMessage != null}">
@@ -38,10 +52,6 @@
     <s:submit value="Search"/>
   </s:form>
 
-  <script type="text/javascript">
-    document.getElementById("quickSearch_q").focus();
-  </script>
-
   <s:url id="filteredSearchUrl" action="advancedSearch"/>
   <s:a href="%{filteredSearchUrl}">
     Advanced Search >>
@@ -52,13 +62,25 @@
   </p>
 </div>
 <div id="searchHint">
-  <p>
-    Enter your search terms. A variety of data will be searched for your keywords.<br/>
-    To search for Java classes, packages or methods, use the keyword <code>bytecode:</code>
-    before the term. For example: 
-    <code>bytecode:MyClass</code>, or:
-    <code>bytecode:myMethod</code>
-  </p>
+  
+  Enter your search terms. A variety of data will be searched for your keywords. <a class="expand" href="#"><img src="<c:url value="/images/icon_info_sml.gif"/>" /></a>
+  <table class="settings">
+    <tr>
+      <td>
+        <b>*</b> To search for Java classes, packages or methods, use the keyword <code>bytecode:</code>
+        before the term. For example: <code>bytecode:MyClass</code>, or <code>bytecode:myMethod</code><br/>  
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <b>*</b> To perform a boolean <code>NOT</code> search, use the keyword <code>NOT</code> after your search
+         term, followed by the term you want to exclude. For example, to exclude artifacts with 
+         a dependency on the artifact you are searching for from showing up in the search results:  
+         <code>myQueryTerm NOT dependency</code> 
+      </td>
+    </tr>
+  </table>
+  
 </div>
 </div>
 </body>
