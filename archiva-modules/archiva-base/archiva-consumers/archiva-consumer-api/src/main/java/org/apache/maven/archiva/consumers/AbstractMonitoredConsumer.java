@@ -33,7 +33,7 @@ import org.apache.maven.archiva.configuration.FileTypes;
  * @version $Id$
  */
 public abstract class AbstractMonitoredConsumer
-    implements BaseConsumer
+    implements Consumer
 {
     private Set<ConsumerMonitor> monitors = new HashSet<ConsumerMonitor>();
     

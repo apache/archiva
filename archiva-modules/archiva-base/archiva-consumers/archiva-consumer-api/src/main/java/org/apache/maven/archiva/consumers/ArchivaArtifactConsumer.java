@@ -29,7 +29,7 @@ import java.util.List;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface ArchivaArtifactConsumer extends BaseConsumer
+public interface ArchivaArtifactConsumer extends Consumer
 {
     /**
      * Get the list of included file patterns for this consumer.

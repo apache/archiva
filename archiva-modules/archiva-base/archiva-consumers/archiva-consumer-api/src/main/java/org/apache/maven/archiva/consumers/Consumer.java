@@ -20,12 +20,12 @@ package org.apache.maven.archiva.consumers;
  */
 
 /**
- * BaseConsumer - the base set of methods for a consumer. 
+ * Consumer - the base set of methods for a consumer.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract interface BaseConsumer
+public abstract interface Consumer
 {
     /**
      * This is the id for the consumer.

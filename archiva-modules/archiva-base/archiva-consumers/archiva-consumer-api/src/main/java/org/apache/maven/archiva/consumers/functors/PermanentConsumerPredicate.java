@@ -20,7 +20,7 @@ package org.apache.maven.archiva.consumers.functors;
  */
 
 import org.apache.commons.collections.Predicate;
-import org.apache.maven.archiva.consumers.BaseConsumer;
+import org.apache.maven.archiva.consumers.Consumer;
 
 /**
  * Selects Consumers that are flaged as 'permanent'. 
@@ -36,9 +36,9 @@ public class PermanentConsumerPredicate
     {
         boolean satisfies = false;
 
-        if ( object instanceof BaseConsumer )
+        if ( object instanceof Consumer )
         {
-            BaseConsumer consumer = (BaseConsumer) object;
+            Consumer consumer = (Consumer) object;
             satisfies = consumer.isPermanent();
         }
 

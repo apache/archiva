@@ -34,7 +34,7 @@ public interface ConsumerMonitor
      * @param type the type of error.
      * @param message the message about the error.
      */
-    public void consumerError( BaseConsumer consumer, String type, String message );
+    public void consumerError( Consumer consumer, String type, String message );
     
     /**
      * A consumer warning event.
@@ -43,7 +43,7 @@ public interface ConsumerMonitor
      * @param type the type of warning.
      * @param message the message about the warning.
      */
-    public void consumerWarning( BaseConsumer consumer, String type, String message );
+    public void consumerWarning( Consumer consumer, String type, String message );
 
     /**
      * A consumer informational event.
@@ -51,5 +51,5 @@ public interface ConsumerMonitor
      * @param consumer the consumer that caused the informational message.
      * @param message the message.
      */
-    public void consumerInfo( BaseConsumer consumer, String message );
+    public void consumerInfo( Consumer consumer, String message );
 }
