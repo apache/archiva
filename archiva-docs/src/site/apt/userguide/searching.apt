@@ -48,18 +48,38 @@ Searching
 **/*.tld
 +-----+
 
+* Quick Search
+
   The contents of all the files in the repository that matches the above configuration will be indexed during repository
   scan. So when you type a word in the search box, Archiva will search the index for that query string and return all the
-  search hits in the form of a list of artifacts. For example you typed in 'classworlds', the search result would contain
-  the list of artifacts that use or reference 'classworlds'.
+  search hits in the form of a paginated list of artifacts. For example you typed in 'ant', the search result
+  would contain the list of artifacts that use or reference 'ant'.
 
-  Below is a sample screenshot of the search results:
+  Archiva can also search the index for java classes, packages, and methods and return a list of artifacts containing the
+  query string. To do a quick search of java classes, packages, or methods, append the word 'bytecode:' before the query
+  string in the search box. For example, 'bytecode:myMethod'.
+  
+  The 'Search Results Only' option saves the previous search criteria and use it together with the new query string for
+  searching. When the user types a word in the search box, 'launcher' for example, Archiva will search the query string
+  from the previous list of search hits and return a new paginated list of artifacts.
+
+  Below is a sample screenshot of the search results with 'Search Results Only' option selected:
 
 [../images/search-results.jpg] Search Results 
 
   When the user clicks a specific artifact in the search results list, Archiva will direct the user in the Artifact Info
   page (the same page from the Repository Browse). Otherwise if it is not a pom file (ex. metadata.xml), the file will
   appear as a file to be downloaded from the browser.
+
+* Advanced Search
+
+  The Advanced Search feature allows user to narrow down the search by specifying the criteria such as group id,
+  artifact id, version, class or package, and the repository to be searched. This feature also provides the user the
+  option to configure the pagination of results by specifying the number of hits to be displayed in each page.
+  
+  Below is a sample screenshot of Advanced Search:
+
+[../images/advanced-search.jpg] Advanced Search screen 
 
 * Security
 
