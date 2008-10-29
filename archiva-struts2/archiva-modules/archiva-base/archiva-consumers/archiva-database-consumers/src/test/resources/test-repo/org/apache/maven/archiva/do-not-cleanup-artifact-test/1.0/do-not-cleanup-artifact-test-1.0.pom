@@ -1,5 +1,0 @@
-<project>
-  <groupId>org.apache.maven.archiva</groupId>
-  <artifactId>do-not-cleanup-artifact-test</artifactId>
-  <version>1.0</version>
-</project>
