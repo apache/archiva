@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
+import com.atlassian.plugin.osgi.container.OsgiContainerManager;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -26,6 +27,7 @@ import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -46,9 +48,15 @@ public class ArchivaStartup
         ArchivaTaskScheduler taskScheduler = (ArchivaTaskScheduler) wac.getBean(PlexusToSpringUtils.buildSpringId(ArchivaTaskScheduler.class));
         TaskQueueExecutor databaseUpdateQueue = (TaskQueueExecutor) wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "database-update"));
         TaskQueueExecutor repositoryScanningQueue = (TaskQueueExecutor) wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "repository-scanning"));
+        OsgiContainerManager containerManager = getOsgiContainerManager(wac);
 
         try
         {
+            if (!containerManager.isRunning())
+            {
+                containerManager.start();
+            }
+            containerManager.start();
             securitySync.startup();
             resolverFactory.startup();
             taskScheduler.startup();
@@ -60,6 +68,18 @@ public class ArchivaStartup
         }
     }
 
-    public void contextDestroyed(ServletContextEvent contextEvent) {
+    public void contextDestroyed(ServletContextEvent contextEvent)
+    {
+        WebApplicationContext wac =  WebApplicationContextUtils.getRequiredWebApplicationContext(contextEvent.getServletContext());
+        OsgiContainerManager containerManager = getOsgiContainerManager(wac);
+        if (containerManager.isRunning())
+        {
+            containerManager.stop();
+        }
+    }
+
+    private OsgiContainerManager getOsgiContainerManager(ApplicationContext context)
+    {
+        return (OsgiContainerManager)context.getBean("osgiContainerManager");
     }
 }
