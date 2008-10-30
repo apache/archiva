@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Maintenance</title>
+    <author email="oching@apache.org">Maria Odea Ching</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Maintenance">
+      <div style="text-align: center">
+        <img src="../images/tour/maintenance.png" width="640" height="401" alt="" />
+        <p>
+          Archiva has utilities called consumers that can be used for maintaining the
+          Archiva repositories. These can be configured or activated in the Repository
+          Scanning section of the webapp. The configuration are stored in Archiva's
+          xml configuration files, meaning you can also hand-edit these config files to
+          enable or disable these consumers.
+        </p>
+        <p>
+          <a href="reports.html">Previous: Integrity Reports</a> |
+          <strong>Maintenance</strong> |
+          <a href="index.html">Next: Feature Tour</a>
+        </p>
+      </div>
+    </section>
+  </body>
+</document>

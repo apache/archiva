@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven.archiva.web.test</groupId>
+  <artifactId>artifact-s</artifactId>
+  <packaging>jar</packaging>
+  <version>0.1</version>
+  <name>artifact-s</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+     <dependency>
+      <groupId>org.apache.maven.archiva.web.test</groupId>
+      <artifactId>artifact-a</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+      </extension>
+    </extensions>
+  </build>
+</project>
