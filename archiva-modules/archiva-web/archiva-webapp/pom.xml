@@ -176,6 +176,14 @@
       <artifactId>archiva-webdav</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.atlassian.plugins</groupId>
+      <artifactId>atlassian-plugins-osgi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.atlassian.plugins</groupId>
+      <artifactId>atlassian-plugins-spring</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-spring-plugin</artifactId>
       <scope>runtime</scope>
@@ -354,6 +362,10 @@
             <systemProperty>
               <name>appserver.base</name>
               <value>${project.build.directory}/appserver-base</value>
+            </systemProperty>
+            <systemProperty>
+              <name>archiva.home</name>
+              <value>${project.build.directory}/archiva-home</value>
             </systemProperty>
             <systemProperty>
               <name>appserver.home</name>
