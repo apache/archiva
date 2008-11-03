@@ -1,6 +1,5 @@
 package org.apache.archiva.web.xmlrpc.security;
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -56,7 +55,18 @@ public class ServiceMethodsPermissionsMapping
     
     public static final List<String> SERVICE_METHODS_FOR_OPERATION_ACCESS_REPORT = new ArrayList<String>();
     
-    public static final List<String> SERVICE_METHODS_FOR_OPERATION_REPOSITORY_ACCESS = new ArrayList<String>();
+    public static final List<String> SERVICE_METHODS_FOR_OPERATION_REPOSITORY_ACCESS = new ArrayList<String>()
+    {
+        {
+    	    add( "SearchService.quickSearch" );
+    	    add( "SearchService.getArtifactByChecksum" );
+            add( "SearchService.getArtifactVersions" );
+            add( "SearchService.queryArtifactVersionsByDate" );            
+            add(" SearchService.getDirectDependencies" );
+            add(" SearchService.getDirectDependencyTree" );
+            add(" SearchService.getDependees" );
+    	 }
+    };
     
     public static final List<String> SERVICE_METHODS_FOR_OPERATION_ADD_REPOSITORY = new ArrayList<String>();
     
@@ -64,6 +74,6 @@ public class ServiceMethodsPermissionsMapping
     
     public static final List<String> SERVICE_METHODS_FOR_OPERATION_EDIT_REPOSITORY = new ArrayList<String>();
     
-    public static final List<String> SERVICE_METHODS_FOR_OPERATION_REPOSITORY_UPLOAD = new ArrayList<String>();
+    public static final List<String> SERVICE_METHODS_FOR_OPERATION_REPOSITORY_UPLOAD = new ArrayList<String>();    
     
 }

@@ -89,7 +89,7 @@ public class XmlRpcAuthenticatorTest
         xmlRpcRequestControl = MockControl.createControl( XmlRpcRequest.class );
         xmlRpcRequest = ( XmlRpcRequest ) xmlRpcRequestControl.getMock();    
         
-        authenticator = new XmlRpcAuthenticator( securitySystem );        
+        authenticator = new XmlRpcAuthenticator( securitySystem, null );        
     }
             
     private User createUser( String principal, String fullname, String password )
@@ -131,7 +131,7 @@ public class XmlRpcAuthenticatorTest
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
         
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
-                                              "AdministrationService.getAllManagedRepositories" );
+                                              "AdministrationService.getAllManagedRepositories", 2 );
         
         xmlRpcRequestControl.replay();
         configControl.replay();
@@ -171,7 +171,7 @@ public class XmlRpcAuthenticatorTest
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
         
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
-                                              "AdministrationService.getAllManagedRepositories" );
+                                              "AdministrationService.getAllManagedRepositories", 2 );
         
         xmlRpcRequestControl.replay();
         configControl.replay();
@@ -205,7 +205,7 @@ public class XmlRpcAuthenticatorTest
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
         
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
-                                              "AdministrationService.getAllManagedRepositories" );
+                                              "AdministrationService.getAllManagedRepositories", 2 );
         
         xmlRpcRequestControl.replay();
         configControl.replay();

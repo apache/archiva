@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -105,8 +106,6 @@ public class SearchAction
     private String completeQueryString;
     
     private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
-
-    private static final String BYTECODE_KEYWORD = "bytecode:";
 
     private List<String> managedRepositoryList;
 
@@ -232,9 +231,9 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        if( isBytecodeSearch( q ) )
+        if( SearchUtil.isBytecodeSearch( q ) )
         {
-            results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, removeKeyword( q ), limits );
+            results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, SearchUtil.removeBytecodeKeyword( q ), limits );
         }
         else
         {
@@ -437,24 +436,6 @@ public class SearchAction
     public void setCompleteQueryString( String completeQueryString )
     {
         this.completeQueryString = completeQueryString;
-    }
-
-    private boolean isBytecodeSearch( String queryString )
-    {
-        if ( queryString.startsWith( BYTECODE_KEYWORD ) )
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private String removeKeyword( String queryString )
-    {
-        String qString = StringUtils.uncapitalize( queryString );
-        qString = StringUtils.remove( queryString, BYTECODE_KEYWORD );
-
-        return qString;
     }
 
     public ArchivaConfiguration getArchivaConfiguration()

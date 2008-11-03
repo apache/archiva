@@ -32,7 +32,25 @@
   </bean>
   
   <bean name="testXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.PingServiceImpl"/>
+   
+  <bean name="xmlRpcUserRepositories" class="org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories">
+    <constructor-arg ref="userRepositories"/>
+    <constructor-arg ref="xmlRpcAuthenticator"/>    
+  </bean> 
   
+  <!-- Web Services : Search Service -->
+  <bean name="searchService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">
+    <!--  
+    <constructor-arg ref="archivaConfiguration"/>
+    <constructor-arg ref="repositoryContentFactory"/>
+     -->
+    <constructor-arg ref="xmlRpcUserRepositories"/>    
+    <constructor-arg ref="crossRepositorySearch"/>
+    <constructor-arg ref="archivaDAO#jdo"/>
+    <constructor-arg ref="repositoryBrowsing"/>
+  </bean>
+  
+  <!-- Web Services : Administration Service -->
   <bean name="administrationService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
     <constructor-arg ref="archivaConfiguration"/>
     <constructor-arg ref="repositoryContentConsumers"/>
@@ -46,12 +64,12 @@
 
   <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">
     <constructor-arg ref="administrationService"/>
+    <!--  <constructor-arg ref="searchService"/>   -->
   </bean>
     
   <bean name="xmlRpcAuthenticator" class="org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator">
-      <constructor-arg>
-         <ref bean="securitySystem"/>
-      </constructor-arg>
+      <constructor-arg ref="securitySystem"/>
+      <constructor-arg ref="userRepositories"/>
   </bean>
 
   <bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">

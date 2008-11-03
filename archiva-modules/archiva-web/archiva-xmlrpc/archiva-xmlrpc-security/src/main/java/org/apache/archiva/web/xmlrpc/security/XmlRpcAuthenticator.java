@@ -19,7 +19,11 @@ package org.apache.archiva.web.xmlrpc.security;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
+import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.common.XmlRpcHttpRequestConfigImpl;
@@ -44,23 +48,32 @@ public class XmlRpcAuthenticator
     implements AuthenticationHandler
 {
     private final SecuritySystem securitySystem;
-
-    public XmlRpcAuthenticator( SecuritySystem securitySystem )
+    
+    private UserRepositories userRepositories;
+    
+    private String username;
+        
+    public XmlRpcAuthenticator( SecuritySystem securitySystem, UserRepositories userRepositories )
     {
         this.securitySystem = securitySystem;
+        this.userRepositories = userRepositories;
     }
-
+    
     public boolean isAuthorized( XmlRpcRequest pRequest )
         throws XmlRpcException
     {   
+        System.out.println( "authenticator is called for request '" + pRequest.getMethodName() + "'" );
+        
         if ( pRequest.getConfig() instanceof XmlRpcHttpRequestConfigImpl )
         {
             XmlRpcHttpRequestConfigImpl config = (XmlRpcHttpRequestConfigImpl) pRequest.getConfig();
+            username = config.getBasicUserName();
             SecuritySession session =
-                authenticate( new PasswordBasedAuthenticationDataSource( config.getBasicUserName(),
+                authenticate( new PasswordBasedAuthenticationDataSource( username,
                                                                          config.getBasicPassword() ) );
+            
             String method = pRequest.getMethodName();            
-            AuthorizationResult result = authorize( session, method );
+            AuthorizationResult result = authorize( session, method, username );
             
             return result.isAuthorized();
         }
@@ -89,13 +102,12 @@ public class XmlRpcAuthenticator
         }
     }
 
-    private AuthorizationResult authorize( SecuritySession session, String methodName )
+    private AuthorizationResult authorize( SecuritySession session, String methodName, String username )
         throws XmlRpcException
     {   
         try
-        {     
+        {   
             // sample attempt at simplifying authorization checking of requested service method
-            // TODO test with a sample client to see if this would work!
             if ( ServiceMethodsPermissionsMapping.SERVICE_METHODS_FOR_OPERATION_MANAGE_CONFIGURATION.contains( methodName ) )
             {                
                 return securitySystem.authorize( session, ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION );
@@ -104,6 +116,25 @@ public class XmlRpcAuthenticator
             {                
                 return securitySystem.authorize( session, ArchivaRoleConstants.OPERATION_RUN_INDEXER );
             }
+            else if ( ServiceMethodsPermissionsMapping.SERVICE_METHODS_FOR_OPERATION_REPOSITORY_ACCESS.contains( methodName ) )
+            {   
+                try
+                {
+                    List<String> observableRepos = userRepositories.getObservableRepositoryIds( username );
+                    if( observableRepos != null && observableRepos.size() > 1 )
+                    {
+                        return new AuthorizationResult( true, username, null );
+                    }
+                    else
+                    {
+                        return new AuthorizationResult( false, username, null );
+                    }
+                }
+                catch ( ArchivaSecurityException e )
+                {
+                    throw new XmlRpcException( 401, e.getMessage() );
+                }
+            }   
             else
             {
                 return securitySystem.authorize( session, ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE );
@@ -113,5 +144,10 @@ public class XmlRpcAuthenticator
         {
             throw new XmlRpcException( 401, e.getMessage(), e );
         }
+    }
+    
+    public String getActiveUser()
+    {
+        return username;
     }
 }
