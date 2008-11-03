@@ -46,7 +46,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
@@ -85,8 +84,8 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
-import org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -726,7 +725,7 @@ public class ArchivaDavResourceFactory
         try
         {     
             AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
-            SecuritySession securitySession = httpAuth.getSecuritySession();
+            SecuritySession securitySession = httpAuth.getSecuritySession( request.getSession( true ) );
 
             return servletAuth.isAuthenticated( request, result ) &&
                 servletAuth.isAuthorized( request, securitySession, repositoryId,
@@ -803,7 +802,7 @@ public class ArchivaDavResourceFactory
             for( String repository : repositories )
             {
                 // for prompted authentication
-                if( httpAuth.getSecuritySession() != null )
+                if( httpAuth.getSecuritySession( request.getSession( true ) ) != null )
                 {
                     try
                     {
@@ -894,7 +893,7 @@ public class ArchivaDavResourceFactory
 
 
         // if securitySession != null, it means that the user was prompted for authentication
-        if( httpAuth.getSecuritySession() != null )
+        if( httpAuth.getSecuritySession( request.getSession() ) != null )
         {
             for( String repository : repositories )
             {

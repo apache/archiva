@@ -25,9 +25,9 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
+import org.codehaus.redback.integration.interceptor.SecureAction;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 import java.util.List;
 

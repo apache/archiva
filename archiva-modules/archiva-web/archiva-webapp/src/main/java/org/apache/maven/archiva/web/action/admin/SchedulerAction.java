@@ -29,10 +29,10 @@ import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.codehaus.redback.integration.interceptor.SecureAction;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 /**
  * Configures the application.
@@ -153,12 +153,14 @@ public class SchedulerAction
         return SUCCESS;
     }
 
+    @Override
     public void addActionMessage( String aMessage )
     {
         super.addActionMessage( aMessage );
         getLogger().info( "[ActionMessage] " + aMessage );
     }
 
+    @Override
     public void addActionError( String anErrorMessage )
     {
         super.addActionError( anErrorMessage );

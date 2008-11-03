@@ -30,13 +30,13 @@ import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.util.ContextUtils;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.codehaus.redback.integration.interceptor.SecureAction;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 /**
  * Shows the LegacyArtifactPath Tab for the administrator.

@@ -28,7 +28,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.plexus.registry.RegistryException;
 import org.easymock.MockControl;
 

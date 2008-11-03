@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.jackrabbit.webdav.DavResourceFactory;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -40,12 +39,11 @@ import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator;
-import org.codehaus.plexus.redback.struts2.filter.authentication.basic.HttpBasicAuthentication;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
+import org.codehaus.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
-import org.easymock.internal.AlwaysMatcher;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
@@ -265,7 +263,7 @@ public class RepositoryServletSecurityTest
      // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession(), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true) ), session );
         servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, result ),
                                            new AuthenticationException( "Authentication error" ) );
         
@@ -313,7 +311,7 @@ public class RepositoryServletSecurityTest
      // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession(), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndThrow( servletAuth.isAuthorized( null, session, "internal", true ),
                                            new UnauthorizedException( "User not authorized" ) );
@@ -359,7 +357,7 @@ public class RepositoryServletSecurityTest
         // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession(), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
 
@@ -406,7 +404,7 @@ public class RepositoryServletSecurityTest
      // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession(), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
 
@@ -486,7 +484,7 @@ public class RepositoryServletSecurityTest
      // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession(), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
         
@@ -532,7 +530,7 @@ public class RepositoryServletSecurityTest
      // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession(), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndThrow( servletAuth.isAuthorized( null, session, "internal", true ),
                                            new UnauthorizedException( "User not authorized to read repository." ) );

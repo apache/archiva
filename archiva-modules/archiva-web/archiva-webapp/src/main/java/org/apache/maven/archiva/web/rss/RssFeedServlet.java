@@ -38,7 +38,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
@@ -52,8 +51,8 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
@@ -296,7 +295,7 @@ public class RssFeedServlet
             try
             {
                 AuthenticationResult result = httpAuth.getAuthenticationResult( req, null );
-                SecuritySession securitySession = httpAuth.getSecuritySession();
+                SecuritySession securitySession = httpAuth.getSecuritySession( req.getSession( true ) );
 
                 if ( servletAuth.isAuthenticated( req, result ) &&
                     servletAuth.isAuthorized( req, securitySession, repoId, false ) )

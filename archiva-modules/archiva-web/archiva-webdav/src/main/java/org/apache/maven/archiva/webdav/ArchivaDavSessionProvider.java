@@ -19,20 +19,20 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import org.apache.jackrabbit.webdav.DavSessionProvider;
-import org.apache.jackrabbit.webdav.WebdavRequest;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
-import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
-import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
+import org.apache.jackrabbit.webdav.DavSessionProvider;
+import org.apache.jackrabbit.webdav.WebdavRequest;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
+import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
+import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator;
+import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

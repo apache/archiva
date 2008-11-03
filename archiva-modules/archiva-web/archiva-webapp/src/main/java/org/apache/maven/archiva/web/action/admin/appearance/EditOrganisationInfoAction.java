@@ -19,16 +19,15 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
-
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.redback.integration.interceptor.SecureAction;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 /**
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>

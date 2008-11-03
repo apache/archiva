@@ -26,13 +26,16 @@ import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import junit.framework.TestCase;
+
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
 import org.apache.jackrabbit.webdav.WebdavRequestImpl;
@@ -46,7 +49,7 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.struts2.filter.authentication.HttpAuthenticator;
+import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 
 public class ArchivaDavSessionProviderTest extends TestCase
 {
@@ -387,7 +390,7 @@ public class ArchivaDavSessionProviderTest extends TestCase
         
 
         @Override
-        public AuthenticationResult authenticate(AuthenticationDataSource arg0)
+        public AuthenticationResult authenticate(AuthenticationDataSource arg0, HttpSession httpSession)
             throws AuthenticationException, AccountLockedException, MustChangePasswordException
         {
             return new AuthenticationResult();
@@ -401,44 +404,21 @@ public class ArchivaDavSessionProviderTest extends TestCase
         }
 
         @Override
-        public Map getContextSession()
+        public SecuritySession getSecuritySession(HttpSession httpSession)
         {
-            return super.getContextSession();
+            return super.getSecuritySession(httpSession);
         }
 
         @Override
-        public SecuritySession getSecuritySession()
+        public User getSessionUser(HttpSession httpSession)
         {
-            return super.getSecuritySession();
+            return super.getSessionUser(httpSession);
         }
 
         @Override
-        public User getSessionUser()
+        public boolean isAlreadyAuthenticated(HttpSession httpSession)
         {
-            return super.getSessionUser();
-        }
-
-        @Override
-        public boolean isAlreadyAuthenticated()
-        {
-            return super.isAlreadyAuthenticated();
-        }
-
-        @Override
-        public void setSecuritySession(SecuritySession session)
-        {
-            super.setSecuritySession(session);
-        }
-
-        @Override
-        public void setSessionUser(User user) {
-            super.setSessionUser(user);
-        }
-
-        @Override
-        public String storeDefaultUser(String user) {
-            return super.storeDefaultUser(user);
-        }
-        
+            return super.isAlreadyAuthenticated(httpSession);
+        }        
     }
 }

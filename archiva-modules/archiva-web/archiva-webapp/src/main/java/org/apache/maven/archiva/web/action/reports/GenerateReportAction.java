@@ -64,9 +64,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.apache.struts2.interceptor.ServletRequestAware;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureAction;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.struts2.interceptor.SecureActionException;
+import org.codehaus.redback.integration.interceptor.SecureAction;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport"
