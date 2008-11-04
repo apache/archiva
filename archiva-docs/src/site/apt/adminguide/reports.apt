@@ -28,13 +28,46 @@
 
 Making the most of Reporting in Apache Archiva
 
-  Reporting in Archiva is currently limited to a detailed listing of the problematic artifacts in the different 
+  Archiva has two types of reports: Repository Statistics and Repository Health. Repository Statistics was just
+  implemented in 1.2.
+
+* Repository Statistics
+
+  Repository statistics contains the detailed statistics such as number of artifacts, number of groups and projects, etc.
+  of an Archiva managed repository.
+
+** Configuring the Report
+
+  The following fields are configurable for Repository Statistics:
+
+  1. Repositories to be Compared - the repositories whose latest statistics would be compared. If only one repository
+  is selected, the different statistics based on the executed repository scanning and the specified Start Date and End
+  Date will be shown. Otherwise, the latest statistics of the selected repositories on the specified dates will be displayed.
+
+  2. Row Count - the number of rows to be displayed on each page.
+
+  3. Start Date - the start date range of the statistics to be displayed.
+
+  4. End Date - the end date range of the statistics to be displayed.
+
+** Contents of the Report
+
+  The Repository Statistics Show Report button will display a table containing the statistics of the repository/repositories. See below for
+  a sample Repository Statistics report comparing two repositories:
+
+[../images/repository-statistics.jpg] Repository Statistics
+
+  Repository Statistics can be exported to a CSV file. To do this, just click the link on the upper left hand corner above the report.
+
+* Repository Health
+
+  The Repository Health report is a detailed listing of the problematic artifacts in the different
   repositories. Problematic artifacts are those artifacts that were detected by Archiva to have defects (ex. 
   the versions in the pom and in the artifact itself do not match). 
   
-* Configuring a Report
+** Configuring the Report
 
-  There are 3 fields which can be configured when viewing the reports. These are: the number of rows per page, 
+  There are 3 fields which can be configured when viewing the report. These are: the number of rows per page,
   the group id and the repository.
   
   1. Setting the row count. This field is for configuring the number of rows or artifacts to be displayed per page
@@ -50,13 +83,13 @@ Making the most of Reporting in Apache Archiva
   you have configured in the Repositories section will show up in this list, unless of course they all contain 
   defective artifacts. 
   
-* Contents of a Report
+** Contents of the Report
  
-  The Show Report button will display a detailed list of problematic artifacts filtered according to the
-  configuration you've set. Below is a sample Archiva report:
+  The Repository Health Show Report button will display a detailed list of problematic artifacts filtered according to the
+  configuration you've set. Below is a sample Repository Health report:
   
 
-[../images/archiva-report.jpg] Archiva Report  
+[../images/archiva-report.jpg] Repository Health Report
   
   You can see in the sample report that there are links to the groupId and artifactId directories 
   of each artifact. Clicking on any of these links will bring you to the appropriate navigation page in the 
