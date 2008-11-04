@@ -33,7 +33,6 @@
     <dependency>
       <groupId>com.atlassian.xmlrpc</groupId>
       <artifactId>atlassian-xmlrpc-binder</artifactId>
-      <version>0.8.2</version>
     </dependency>
   </dependencies>
   <build>
