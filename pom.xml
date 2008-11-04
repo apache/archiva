@@ -935,7 +935,6 @@
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder</artifactId>
         <version>${binder.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.atlassian.xmlrpc</groupId>

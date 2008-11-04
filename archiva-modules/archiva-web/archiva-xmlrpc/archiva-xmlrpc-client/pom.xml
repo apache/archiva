@@ -31,14 +31,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.xmlrpc</groupId>
-      <artifactId>xmlrpc-client</artifactId>
-      <version>3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <version>1.8.0</version>
+      <groupId>com.atlassian.xmlrpc</groupId>
+      <artifactId>atlassian-xmlrpc-binder</artifactId>
+      <version>0.8.2</version>
     </dependency>
   </dependencies>
   <build>
@@ -55,12 +50,12 @@
                  USERNAME & PASSWORD: Archiva credentials  
             --> 
             <argument>http://127.0.0.1:8080/archiva/xmlrpc</argument>
-            <argument>admin</argument>
-            <argument>admin1</argument>
+            <argument>username</argument>
+            <argument>password</argument>
           </arguments>
         </configuration>
       </plugin>
-      <!-- override parent config, commons-logging cannot be excluded from commons-beanutils - NoClassDef error occurs -->
+      <!-- override parent config, commons-logging cannot be excluded from atlassian-xml-rpc-binder - NoClassDef error occurs -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

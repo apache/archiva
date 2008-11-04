@@ -19,23 +19,17 @@ package org.apache.archiva.web.xmlrpc.client;
  * under the License.
  */
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-import org.apache.xmlrpc.client.XmlRpcClientRequestImpl;
-import org.apache.xmlrpc.client.util.ClientFactory;
+
+import com.atlassian.xmlrpc.AuthenticationInfo;
+import com.atlassian.xmlrpc.Binder;
+import com.atlassian.xmlrpc.BindingException;
+import com.atlassian.xmlrpc.DefaultBinder;
 
 /**
  * TestClient
@@ -56,138 +50,82 @@ public class SampleClient
 {   
     public static void main( String[] args ) 
     {       
+        Binder binder = new DefaultBinder();
+        
         try
         {
-            XmlRpcClient client = new XmlRpcClient();
-            
-            XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-            config.setServerURL( new URL( args[0] ) );
-            config.setBasicUserName( args[1] );
-            config.setBasicPassword( args[2] );
-            config.setEnabledForExtensions( true );
-            
-            client.setConfig( config );
-            
-            /* managed repositories */
-            Object[] params = new Object[]{};
-            Object[] managedRepos = (Object[])
-                 client.execute( "AdministrationService.getAllManagedRepositories", params );                        
+            AuthenticationInfo authnInfo = new AuthenticationInfo( args[1], args[2] );
+            AdministrationService adminService = binder.bind( AdministrationService.class, new URL( args[0] ), authnInfo );
+            List<ManagedRepository> managedRepos = adminService.getAllManagedRepositories();
             
             System.out.println( "\n******** Managed Repositories ********" );
-            for( int i = 0; i < managedRepos.length; i++ )
+            for( ManagedRepository managedRepo : managedRepos )
             {
                 System.out.println( "=================================" );
-                ManagedRepository managedRepo = new ManagedRepository(); 
-                try
-                {   
-                    BeanUtils.populate( managedRepo, (Map)managedRepos[i] );
-                }
-                catch ( IllegalAccessException e )
-                {
-                    e.printStackTrace();
-                }
-                catch ( InvocationTargetException e )
-                {
-                    e.printStackTrace();
-                }
                 System.out.println( "Id: " + managedRepo.getId() );
                 System.out.println( "Name: " + managedRepo.getName() );
                 System.out.println( "Layout: " + managedRepo.getLayout() );
                 System.out.println( "URL: " + managedRepo.getUrl() );
                 System.out.println( "Releases: " + managedRepo.isReleases() );
                 System.out.println( "Snapshots: " + managedRepo.isSnapshots() );
-            }
-                        
-            /* remote repositories */
-            params = new Object[]{};
-            Object[] remoteRepos = (Object[])
-                 client.execute( "AdministrationService.getAllRemoteRepositories", params );
+            }                
             
             System.out.println( "\n******** Remote Repositories ********" );
-            for( int i = 0; i < remoteRepos.length; i++ )
+            List<RemoteRepository> remoteRepos = adminService.getAllRemoteRepositories();
+            for( RemoteRepository remoteRepo : remoteRepos )
             {
                 System.out.println( "=================================" );
-                RemoteRepository remoteRepo = new RemoteRepository();
-                
-                try
-                {   
-                    BeanUtils.populate( remoteRepo, (Map) remoteRepos[i] );
-                }
-                catch ( IllegalAccessException e )
-                {
-                    e.printStackTrace();
-                }
-                catch ( InvocationTargetException e )
-                {
-                    e.printStackTrace();
-                }
                 System.out.println( "Id: " + remoteRepo.getId() );
                 System.out.println( "Name: " + remoteRepo.getName() );
                 System.out.println( "Layout: " + remoteRepo.getLayout() );
-                System.out.println( "URL: " + remoteRepo.getUrl() );                    
+                System.out.println( "URL: " + remoteRepo.getUrl() );
             }
-            
-            /* repo consumers */
-            params = new Object[]{};
-            Object[] repoConsumers = (Object[])
-                 client.execute( "AdministrationService.getAllRepositoryConsumers", params );
             
             System.out.println( "\n******** Repository Consumers ********" );
-            for( int i = 0; i < repoConsumers.length; i++ )
-            {   
-                System.out.println( repoConsumers[i] );                    
+            List<String> repoConsumers = adminService.getAllRepositoryConsumers();
+            for( String consumer : repoConsumers )
+            {
+                System.out.println( consumer );
             }
-            
-            /* db consumers */
-            params = new Object[]{};
-            Object[] dbConsumers = (Object[])
-                 client.execute( "AdministrationService.getAllDatabaseConsumers", params );
             
             System.out.println( "\n******** Database Consumers ********" );
-            for( int i = 0; i < dbConsumers.length; i++ )
-            {   
-                System.out.println( dbConsumers[i] );                    
+            List<String> dbConsumers = adminService.getAllDatabaseConsumers();
+            for( String consumer : dbConsumers )
+            {
+                System.out.println( consumer );
             }
             
-            /* configure repo consumer */
-            Object[] configureRepoConsumerParams = new Object[] { "internal", "repository-purge", true };            
-            Object configured = client.execute( "AdministrationService.configureRepositoryConsumer", configureRepoConsumerParams );            
-            System.out.println( "\nConfigured repo consumer 'repository-purge' : " + ( ( Boolean ) configured ).booleanValue() );
+            Boolean success = adminService.configureRepositoryConsumer( "internal", "repository-purge", true );
+            System.out.println( "\nConfigured repo consumer 'repository-purge' : " +
+                ( (Boolean) success ).booleanValue() );
             
+            success = adminService.configureDatabaseConsumer( "update-db-bytecode-stats", false );
+            System.out.println( "\nConfigured db consumer 'update-db-bytecode-stats' : " +
+                ( (Boolean) success ).booleanValue() );
             
-            /* configure db consumer */
-            Object[] configureDbConsumerParams = new Object[] { "update-db-bytecode-stats", false };            
-            configured = client.execute( "AdministrationService.configureDatabaseConsumer", configureDbConsumerParams );            
-            System.out.println( "\nConfigured db consumer 'update-db-bytecode-stats' : " + ( ( Boolean ) configured ).booleanValue() );            
+            success = adminService.executeRepositoryScanner( "internal" );
+            System.out.println( "\nExecuted repo scanner of repository 'internal' : " +
+                ( (Boolean) success ).booleanValue() );
             
-            
-            /* execute repo scanner */
-            Object[] executeRepoScanParams = new Object[] { "internal" };            
-            configured = client.execute( "AdministrationService.executeRepositoryScanner", executeRepoScanParams );            
-            System.out.println( "\nExecuted repo scanner of repository 'internal' : " + ( ( Boolean ) configured ).booleanValue() );
-            
-            
-            /* execute db scanner */
-            Object[] executeDbScanParams = new Object[] {};            
-            configured = client.execute( "AdministrationService.executeDatabaseScanner", executeDbScanParams );
-            System.out.println( "\nExecuted database scanner : " + ( ( Boolean ) configured ).booleanValue() );
-            
+            success = adminService.executeDatabaseScanner();
+            System.out.println( "\nExecuted database scanner : " + ( (Boolean) success ).booleanValue() );
+           
             /* delete artifact */
             /* 
-             * NOTE: before enabling & invoking deleteArtifact, make sure that the repository and artifact exists first!            
-            Object[] deleteArtifactParams = new Object[] { "internal", "javax.activation", "activation", "1.1" };
-            Object artifactDeleted = client.execute( "AdministrationService.deleteArtifact", deleteArtifactParams );
+             * NOTE: before enabling & invoking deleteArtifact, make sure that the repository and artifact exists first!
+             *                      
+            success = adminService.deleteArtifact( "internal", "javax.activation", "activation", "1.1" );
             System.out.println( "\nDeleted artifact 'javax.activation:activation:1.1' from repository 'internal' : " +
-                ( (Boolean) artifactDeleted ).booleanValue() );    
-            */ 
+                ( (Boolean) success ).booleanValue() );
+            */
         }
-        catch ( MalformedURLException e )
+        catch ( BindingException e )
+        {
+            e.printStackTrace();             
+        }
+        catch( Exception e )
         {
             e.printStackTrace();
         }
-        catch ( XmlRpcException e )
-        {
-            e.printStackTrace();
-        }           
     }
 }
