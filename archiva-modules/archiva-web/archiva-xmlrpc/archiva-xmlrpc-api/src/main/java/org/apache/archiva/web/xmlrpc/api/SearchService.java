@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
+import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
+
 import com.atlassian.xmlrpc.ServiceObject;
 
 @ServiceObject("Search")
@@ -48,7 +50,7 @@ public interface SearchService
     public List<Artifact> getArtifactVersionsByDate( String groupId, String artifactId, String version, Date whenGathered )
             throws Exception;
 
-    public List<Artifact> getDirectDependencies( String repositoryId, String groupId, String artifactId, String version ) 
+    public List<Dependency> getDependencies( String groupId, String artifactId, String version ) 
             throws Exception;
     
     public List<Artifact> getDependencyTree( String groupId, String artifactId, String version ) throws Exception;

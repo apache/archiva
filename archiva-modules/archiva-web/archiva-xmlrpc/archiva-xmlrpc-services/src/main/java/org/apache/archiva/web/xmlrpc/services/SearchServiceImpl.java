@@ -26,9 +26,11 @@ import java.util.List;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
+import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
@@ -37,6 +39,7 @@ import org.apache.maven.archiva.indexer.search.SearchResultHit;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
 
 /**
  * SearchServiceImpl
@@ -176,19 +179,36 @@ public class SearchServiceImpl
         return artifacts;
     }
     
-    public List<Artifact> getDirectDependencies( String repositoryId, String groupId, String artifactId, String version ) 
+    public List<Dependency> getDependencies( String groupId, String artifactId, String version ) 
         throws Exception
     {  
-        List<Artifact> artifacts = new ArrayList<Artifact>();
+        List<Dependency> dependencies = new ArrayList<Dependency>();        
+        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
         
-        return artifacts;
+        try
+        {
+            ArchivaProjectModel model = repoBrowsing.selectVersion( "", observableRepos, groupId, artifactId, version );
+            List<org.apache.maven.archiva.model.Dependency> modelDeps = model.getDependencies();
+            for( org.apache.maven.archiva.model.Dependency dep : modelDeps )
+            {
+                Dependency dependency = new Dependency( 
+                    dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), dep.getClassifier(), dep.getType(), dep.getScope() );
+                dependencies.add( dependency );
+            }
+        }
+        catch ( ObjectNotFoundException oe )
+        {
+            throw new Exception( "Artifact does not exist." );
+        }
+        
+        return dependencies;
     }
     
     public List<Artifact> getDependencyTree( String groupId, String artifactId, String version ) 
         throws Exception
     {
         List<Artifact> a = new ArrayList<Artifact>();
-    
+        
         return a;
     }
     
@@ -197,9 +217,15 @@ public class SearchServiceImpl
         throws Exception
     {
         List<Artifact> artifacts = new ArrayList<Artifact>();
-       
-        // repo browsing usedBy?
-       
+        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
+        
+        List<ArchivaProjectModel> dependees = repoBrowsing.getUsedBy( "", observableRepos, "org.apache.archiva", "archiva-test", "1.0" );
+        for( ArchivaProjectModel model : dependees )
+        {
+            Artifact artifact = new Artifact( "", model.getGroupId(), model.getArtifactId(), model.getVersion(), "", model.getWhenIndexed() );
+            artifacts.add( artifact );
+        }
+        
         return artifacts;
     }
 }

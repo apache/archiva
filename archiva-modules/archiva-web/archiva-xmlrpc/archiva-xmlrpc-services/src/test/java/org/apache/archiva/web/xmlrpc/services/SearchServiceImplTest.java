@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
+import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -35,6 +36,7 @@ import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
@@ -45,6 +47,7 @@ import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
@@ -347,14 +350,73 @@ public class SearchServiceImplTest
     
     public void testGetDependenciesArtifactExists()
         throws Exception
-    {
-    
+    {   
+        List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+        observableRepoIds.add( "public.releases" );
+        
+        ArchivaProjectModel model = new ArchivaProjectModel();
+        model.setGroupId( "org.apache.archiva" );
+        model.setArtifactId( "archiva-test" );
+        model.setVersion( "1.0" );
+        
+        org.apache.maven.archiva.model.Dependency dependency = new org.apache.maven.archiva.model.Dependency();
+        dependency.setGroupId( "commons-logging" );
+        dependency.setArtifactId( "commons-logging" );
+        dependency.setVersion( "2.0" );
+        
+        model.addDependency( dependency );
+        
+        dependency = new org.apache.maven.archiva.model.Dependency();
+        dependency.setGroupId( "junit" );
+        dependency.setArtifactId( "junit" );
+        dependency.setVersion( "2.4" );
+        dependency.setScope( "test" );
+        
+        model.addDependency( dependency );
+        
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );        
+        repoBrowsingControl.expectAndReturn( 
+                 repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), model );
+        
+        repoBrowsingControl.replay(); 
+        userReposControl.replay();
+        
+        List<Dependency> dependencies = searchService.getDependencies( "org.apache.archiva", "archiva-test", "1.0" );
+        
+        repoBrowsingControl.verify();
+        userReposControl.verify();
+        
+        assertNotNull( dependencies );
+        assertEquals( 2, dependencies.size() );
     }
     
     public void testGetDependenciesArtifactDoesNotExist()
         throws Exception
     {
-    
+        List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+        observableRepoIds.add( "public.releases" );
+        
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+        repoBrowsingControl.expectAndThrow( 
+               repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), new ObjectNotFoundException( "Artifact does not exist." ) );
+        
+        userReposControl.replay();
+        repoBrowsingControl.replay();
+        
+        try
+        {
+            List<Dependency> dependencies = searchService.getDependencies( "org.apache.archiva", "archiva-test", "1.0" );
+            fail( "An exception should have been thrown." );
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Artifact does not exist.", e.getMessage() );
+        }
+        
+        userReposControl.verify();
+        repoBrowsingControl.verify();
     }
     
 /* get dependency tree */
@@ -362,7 +424,7 @@ public class SearchServiceImplTest
     public void testGetDependencyTreeArtifactExists()
         throws Exception
     {
-    
+        
     }
     
     public void testGetDependencyTreeArtifactDoesNotExist()
@@ -373,15 +435,87 @@ public class SearchServiceImplTest
     
 /* get dependees */
     
-    public void testGetDependeneesArtifactExists()
+    public void testGetDependees()
         throws Exception
     {
-    
+        Date date = new Date();
+        List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+        observableRepoIds.add( "public.releases" );
+        
+        List dependeeModels = new ArrayList();
+        ArchivaProjectModel dependeeModel = new ArchivaProjectModel();
+        dependeeModel.setGroupId( "org.apache.archiva" );
+        dependeeModel.setArtifactId( "archiva-dependee-one" );
+        dependeeModel.setVersion( "1.0" );
+        dependeeModel.setWhenIndexed( date );
+        dependeeModels.add( dependeeModel );
+        
+        dependeeModel = new ArchivaProjectModel();
+        dependeeModel.setGroupId( "org.apache.archiva" );
+        dependeeModel.setArtifactId( "archiva-dependee-two" );
+        dependeeModel.setVersion( "1.0" );
+        dependeeModel.setWhenIndexed( date );
+        dependeeModels.add( dependeeModel );
+        
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+        repoBrowsingControl.expectAndReturn( repoBrowsing.getUsedBy( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), dependeeModels );
+        
+        repoBrowsingControl.replay(); 
+        userReposControl.replay();
+
+        List<Artifact> dependees = searchService.getDependees( "org.apache.archiva", "archiva-test", "1.0" );
+        
+        repoBrowsingControl.verify();
+        userReposControl.verify();
+        
+        assertNotNull( dependees );
+        assertEquals( 2, dependees.size() );
     }
     
-    public void testGetDependeneesArtifactDoesNotExist()
+    /*public void testGetDependeesArtifactDoesNotExist()
         throws Exception
     {
-    
-    }
+        Date date = new Date();
+        List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+        observableRepoIds.add( "public.releases" );
+        
+        List dependeeModels = new ArrayList();
+        ArchivaProjectModel dependeeModel = new ArchivaProjectModel();
+        dependeeModel.setGroupId( "org.apache.archiva" );
+        dependeeModel.setArtifactId( "archiva-dependee-one" );
+        dependeeModel.setVersion( "1.0" );
+        dependeeModel.setWhenIndexed( date );
+        dependeeModels.add( dependeeModel );
+        
+        dependeeModel = new ArchivaProjectModel();
+        dependeeModel.setGroupId( "org.apache.archiva" );
+        dependeeModel.setArtifactId( "archiva-dependee-two" );
+        dependeeModel.setVersion( "1.0" );
+        dependeeModel.setWhenIndexed( date );
+        dependeeModels.add( dependeeModel );
+        
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+        repoBrowsingControl.expectAndReturn( repoBrowsing.getUsedBy( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), dependeeModels );
+        
+        repoBrowsingControl.replay(); 
+        userReposControl.replay();
+
+        try
+        {
+            List<Artifact> dependees = searchService.getDependees( "org.apache.archiva", "archiva-test", "1.0" );
+            fail( "An exception should have been thrown." );
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Artifact does not exist." )
+        }
+        
+        repoBrowsingControl.verify();
+        userReposControl.verify();
+        
+        assertNotNull( dependees );
+        assertEquals( 2, dependees.size() );
+    }*/
 }
