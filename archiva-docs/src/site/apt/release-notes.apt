@@ -1,10 +1,10 @@
  -----
- Release Notes for Archiva 1.2-SNAPSHOT
+ Release Notes for Archiva 1.2-M1
  -----
 
-Release Notes for Archiva 1.2-SNAPSHOT
+Release Notes for Archiva 1.2-M1
 
-  The Apache Archiva team would like to announce the release of Archiva 1.2.  Archiva is {{{http://archiva.apache.org/download.html} 
+  The Apache Archiva team would like to announce the release of Archiva 1.2-M1.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -15,17 +15,98 @@ Release Notes for Archiva 1.2-SNAPSHOT
 
     * the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
 
-* New in Archiva 1.2
+* New in Archiva 1.2-M1
+
+** Struts 2
+
+   The Archiva web application has been migrated from Webwork to Struts 2.
+
+~~TODO add more info
+
+** Repository Statistics
+
+   Repository statistics are now available to help in monitoring the Archiva repositories. Statistics include the number of artifacts and size
+   of the repository, the number of plugins, jars, wars, etc. For more details about this feature, see {{{adminguide/reports.html}Reports}}.
+
+** Advanced Search
+
+   An advanced or filter search feature is added for more specific searching of artifacts. More details are available in {{{userguide/searching.html}Searching}}.
+
+~~TODO
+
+** Web Services
+
+   A web service for administrative tasks has been provided. It uses the Atlassian XML-RPC Binder which leverages the Apache XML-RPC.
 
 ~~TODO
 
 * Release Notes
 
-  The Archiva 1.2 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.2-M1 feature set can be seen in the {{{tour/index.html} feature tour}}.
 
-* Changes in Archiva 1.2
+* Changes in Archiva 1.2-M1
 
-~~TODO
+** Bug
+
+    * [MRM-514] - Archiva cannot compile and pass tests on JDK 1.6
+
+    * [MRM-615] - When scanning, Archiva doesn't resolve properties/variables of POMs in managed repositories
+
+    * [MRM-620] - pom.xml that inherit version from parent show up in reports as "has an invalid project model"
+
+    * [MRM-717] - Performance affected using Archiva Repository
+
+    * [MRM-844] - "Unable to create ArchivaArtifact with empty version" in dependency tree.
+
+    * [MRM-868] - Include sources bundle during deployment (in release:perform)
+
+    * [MRM-876] - Archiva does not proxy .asc files
+
+    * [MRM-882] - checksum validation reports invalid checksum when checksum is correct
+
+    * [MRM-885] - incorrect metadata generated from merge
+
+    * [MRM-925] - Access to maven-metadata.xml without "groupId" fails when accessed via a repository group
+
+    * [MRM-978] - showArtifactLink tag is broken
+
+    * [MRM-981] - artifactIds with numeric characters aren't found in advanced search
+
+    * [MRM-986] - archiva.xml is saved in home directory instead of $ARCHIVA_BASE/conf
+
+** Improvement
+
+    * [MRM-541] - convenient way to take Archiva proxies "offline"
+
+    * [MRM-906] - Proxy repository operations should not be done in place
+
+    * [MRM-907] - Remove VersionedReference/ProjectReference/ArtifactReference from RepositoryProxyConnectors
+
+    * [MRM-946] - Upgrade to redback 1.1.1
+
+    * [MRM-948] - allow plugins to handle deletion of artifacts through repository purge
+
+    * [MRM-952] - Patch for several issues while processing poms (effective model, expressions resolving, storing to database)
+
+    * [MRM-966] - Update documentation for search feature
+
+    * [MRM-977] - Upgrade from Webwork 2 to Struts 2
+
+    * [MRM-985] - Document usage of boolean NOT in quick search
+
+    * [MRM-987] - switch from prototype to jquery
+
+    * [MRM-988] - remove "dav:" from the POM snippet in repositories page
+
+** New Feature
+
+    * [MRM-90] - add advanced search options
+
+    * [MRM-124] - web service interface
+
+** Task
+
+    * [MRM-84] - Basic statistics
 
 * Changes in Archiva 1.1.3
 

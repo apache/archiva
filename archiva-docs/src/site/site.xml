@@ -21,7 +21,7 @@
 <project>
   <body>
     <breadcrumbs>
-      <item name="1.2-SNAPSHOT" href="/docs/1.2-SNAPSHOT" />
+      <item name="1.2-M1" href="/docs/1.2-M1" />
     </breadcrumbs>
 
     <menu name="Introduction">
