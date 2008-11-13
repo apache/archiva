@@ -112,8 +112,7 @@ public class HttpProxyTransferTest
             {
                 response.setContentType( "text/plain" );
                 response.setStatus( HttpServletResponse.SC_OK );
-                response.getWriter().println( "get-default-layout-1.0.jar" );
-                response.getWriter().println();
+                response.getWriter().print( "get-default-layout-1.0.jar\n\n" );
                 assertNotNull( request.getHeader( "Proxy-Connection" ) );
                 
                 ( (Request) request ).setHandled( true );
