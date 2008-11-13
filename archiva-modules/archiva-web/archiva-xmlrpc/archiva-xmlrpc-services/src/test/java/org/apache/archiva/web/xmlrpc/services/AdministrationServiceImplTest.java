@@ -899,30 +899,38 @@ public class AdministrationServiceImplTest
                                                    MockControl pathParserControl, PathParser parser )
         throws LayoutException
     {
-        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( "org.apache.archiva/poms/archiva-test-1.0.pom" ), true );
-        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( "org.apache.archiva/poms/archiva-test-1.1.pom" ), true );
-        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( "org.apache.archiva/poms/archiva-diff-1.0.pom" ), true );
-        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( "org.apache.archiva/jars/archiva-diff-1.0.jar" ), true );
-        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( "org.apache.archiva/jars/archiva-test-1.0.jar" ), true );
-        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( "org.apache.archiva/jars/archiva-test-1.1.jar" ), true );
+		String sep = File.separator;
+		String ad10p = "org.apache.archiva" + sep + "poms" + sep + "archiva-diff-1.0.pom";
+		String at10p = "org.apache.archiva" + sep + "poms" + sep + "archiva-test-1.0.pom";
+		String at11p = "org.apache.archiva" + sep + "poms" + sep + "archiva-test-1.1.pom";
+		String ad10j = "org.apache.archiva" + sep + "jars" + sep + "archiva-diff-1.0.jar";
+		String at10j = "org.apache.archiva" + sep + "jars" + sep + "archiva-test-1.0.jar";
+		String at11j = "org.apache.archiva" + sep + "jars" + sep + "archiva-test-1.1.jar";
+
+        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( at10p ), true );
+        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( at11p ), true );
+        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( ad10p ), true );
+        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( ad10j ), true );
+        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( at10j ), true );
+        fileTypesControl.expectAndReturn( fileTypes.matchesArtifactPattern( at11j ), true );
         
         ArtifactReference aRef = createArtifactReference("archiva-test", "org.apache.archiva", "1.1", "pom");
-        pathParserControl.expectAndReturn( parser.toArtifactReference( "org.apache.archiva/poms/archiva-test-1.1.pom" ), aRef );
+        pathParserControl.expectAndReturn( parser.toArtifactReference( at11p ), aRef );
         
         aRef = createArtifactReference("archiva-test", "org.apache.archiva", "1.0", "pom");                
-        pathParserControl.expectAndReturn( parser.toArtifactReference( "org.apache.archiva/poms/archiva-test-1.0.pom" ), aRef );
+        pathParserControl.expectAndReturn( parser.toArtifactReference( at10p ), aRef );
         
         aRef = createArtifactReference("archiva-diff", "org.apache.archiva", "1.0", "pom");
-        pathParserControl.expectAndReturn( parser.toArtifactReference( "org.apache.archiva/poms/archiva-diff-1.0.pom" ), aRef );
+        pathParserControl.expectAndReturn( parser.toArtifactReference( ad10p ), aRef );
         
         aRef = createArtifactReference("archiva-diff", "org.apache.archiva", "1.0", "jar");                
-        pathParserControl.expectAndReturn( parser.toArtifactReference( "org.apache.archiva/jars/archiva-diff-1.0.jar" ), aRef );
+        pathParserControl.expectAndReturn( parser.toArtifactReference( ad10j ), aRef );
         
         aRef = createArtifactReference("archiva-test", "org.apache.archiva", "1.0", "jar");
-        pathParserControl.expectAndReturn( parser.toArtifactReference( "org.apache.archiva/jars/archiva-test-1.0.jar" ), aRef );
+        pathParserControl.expectAndReturn( parser.toArtifactReference( at10j ), aRef );
         
         aRef = createArtifactReference("archiva-test", "org.apache.archiva", "1.1", "jar");
-        pathParserControl.expectAndReturn( parser.toArtifactReference( "org.apache.archiva/jars/archiva-test-1.1.jar" ), aRef );
+        pathParserControl.expectAndReturn( parser.toArtifactReference( at11j ), aRef );
     }
     
     private List<ArchivaArtifact> getArtifacts()
