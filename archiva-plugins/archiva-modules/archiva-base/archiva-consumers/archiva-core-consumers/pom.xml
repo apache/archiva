@@ -26,6 +26,7 @@
 
   <artifactId>archiva-core-consumers</artifactId>
   <name>Archiva Consumers :: Core Consumers</name>
+  <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
@@ -45,6 +46,10 @@
       <artifactId>plexus-digest</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
       <scope>test</scope>
@@ -62,4 +67,19 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>1.4.3</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>org.apache.archiva.consumers.core,org.apache.maven.archiva.consumers.core.repository</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
