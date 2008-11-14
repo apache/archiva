@@ -63,8 +63,12 @@
   </bean> 
 
   <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">
-    <constructor-arg ref="administrationService"/>
-    <!--  <constructor-arg ref="searchService"/>   -->
+    <constructor-arg>
+      <list>
+        <ref bean="administrationService"/>
+        <ref bean="searchService"/>
+      </list>
+    </constructor-arg>
   </bean>
     
   <bean name="xmlRpcAuthenticator" class="org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator">

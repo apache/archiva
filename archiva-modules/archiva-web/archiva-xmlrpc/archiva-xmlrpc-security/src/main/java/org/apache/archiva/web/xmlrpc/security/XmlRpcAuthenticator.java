@@ -62,8 +62,6 @@ public class XmlRpcAuthenticator
     public boolean isAuthorized( XmlRpcRequest pRequest )
         throws XmlRpcException
     {   
-        System.out.println( "authenticator is called for request '" + pRequest.getMethodName() + "'" );
-        
         if ( pRequest.getConfig() instanceof XmlRpcHttpRequestConfigImpl )
         {
             XmlRpcHttpRequestConfigImpl config = (XmlRpcHttpRequestConfigImpl) pRequest.getConfig();
