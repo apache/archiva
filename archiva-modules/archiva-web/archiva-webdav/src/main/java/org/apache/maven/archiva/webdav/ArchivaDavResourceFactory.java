@@ -587,7 +587,11 @@ public class ArchivaDavResourceFactory
 
         try
         {
-            Model model = new MavenXpp3Reader().read( new FileReader( pom ) );
+            // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
+            FileReader reader = new FileReader( pom );
+            Model model = new MavenXpp3Reader().read( reader );
+            reader.close();
+
             DistributionManagement dist = model.getDistributionManagement();
             if ( dist != null )
             {
