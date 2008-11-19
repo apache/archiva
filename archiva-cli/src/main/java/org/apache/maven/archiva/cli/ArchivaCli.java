@@ -53,8 +53,6 @@ import com.sampullara.cli.Argument;
  * ArchivaCli
  * 
  * @todo add back reading of archiva.xml from a given location
- * @author Jason van Zyl
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ArchivaCli

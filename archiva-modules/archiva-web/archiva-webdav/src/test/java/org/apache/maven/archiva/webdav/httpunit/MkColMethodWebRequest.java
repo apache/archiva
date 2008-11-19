@@ -25,7 +25,6 @@ import java.net.URL;
 /**
  * MkColMethodWebRequest
  * See RFC-2518 Section 8.3
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class MkColMethodWebRequest extends HeaderOnlyWebRequest
 {

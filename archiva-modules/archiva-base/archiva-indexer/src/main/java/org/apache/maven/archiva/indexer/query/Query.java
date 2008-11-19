@@ -22,7 +22,6 @@ package org.apache.maven.archiva.indexer.query;
 /**
  * Interface to label the query classes
  *
- * @author Edwin Punzalan
  */
 public interface Query
 {

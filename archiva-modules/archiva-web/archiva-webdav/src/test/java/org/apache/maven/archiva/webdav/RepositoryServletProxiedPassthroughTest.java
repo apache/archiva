@@ -29,7 +29,6 @@ import com.meterware.httpunit.WebResponse;
 /**
  * RepositoryServlet Tests, Proxied, Get of resources that are not artifacts or metadata, with varying policy settings.
  * 
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id: RepositoryServletProxiedReleasePolicyTest.java 661174 2008-05-29 01:49:41Z jdumay $
  */
 public class RepositoryServletProxiedPassthroughTest

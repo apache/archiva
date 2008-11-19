@@ -33,7 +33,6 @@ import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePre
 import org.custommonkey.xmlunit.XMLAssert;
 
 /**
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest

@@ -40,7 +40,6 @@ import java.util.Map;
 /**
  * RepositoryContentRequest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

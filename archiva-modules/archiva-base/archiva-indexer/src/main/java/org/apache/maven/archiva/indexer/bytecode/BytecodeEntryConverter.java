@@ -35,7 +35,6 @@ import java.util.List;
 /**
  * Converter for Bytecode records and documents. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class BytecodeEntryConverter implements LuceneEntryConverter

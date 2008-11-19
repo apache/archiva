@@ -38,7 +38,6 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
  * @plexus.component role="org.apache.archiva.rss.RssFeedGenerator" 
  *      instantiation-strategy="per-lookup"
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class RssFeedGenerator

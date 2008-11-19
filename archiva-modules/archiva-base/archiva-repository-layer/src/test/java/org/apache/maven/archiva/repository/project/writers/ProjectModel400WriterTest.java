@@ -36,7 +36,6 @@ import java.io.StringWriter;
 /**
  * ProjectModel400WriterTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ProjectModel400WriterTest

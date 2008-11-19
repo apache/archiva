@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Searcher used for testing purposes only.
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class IndexJavaPublicMethodsCrossRepositorySearch    

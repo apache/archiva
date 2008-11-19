@@ -35,7 +35,6 @@ import java.security.PrivilegedAction;
 /**
  * Applet that takes a file on the local filesystem and checksums it for sending to the server.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class ChecksumApplet
     extends Applet

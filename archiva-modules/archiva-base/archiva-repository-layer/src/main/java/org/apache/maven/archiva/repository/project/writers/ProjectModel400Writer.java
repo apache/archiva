@@ -56,7 +56,6 @@ import java.util.List;
 /**
  * ProjectModel400Writer for Maven 2 project model v4.0.0 pom files.  
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ProjectModel400Writer

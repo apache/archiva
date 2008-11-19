@@ -25,7 +25,6 @@ import org.apache.maven.archiva.consumers.Consumer;
 /**
  * Selects Consumers that are flaged as 'permanent'. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class PermanentConsumerPredicate

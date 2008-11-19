@@ -36,7 +36,6 @@ import java.util.Map;
  * 
  * NOTE: Default edgePredicate is to NOT traverse disabled edges.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class WalkDepthFirstSearch

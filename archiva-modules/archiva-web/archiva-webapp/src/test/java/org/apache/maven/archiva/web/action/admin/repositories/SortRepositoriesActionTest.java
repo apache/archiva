@@ -32,7 +32,6 @@ import com.opensymphony.xwork2.Action;
 /**
  * SortRepositoriesActionTest
  * 
- * @author
  * @version
  */
 public class SortRepositoriesActionTest 

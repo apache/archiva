@@ -24,7 +24,6 @@ import java.util.Date;
 /**
  * RepositoryStatistics
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class RepositoryStatistics
 {

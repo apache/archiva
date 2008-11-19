@@ -92,7 +92,6 @@ import org.slf4j.LoggerFactory;
 import com.opensymphony.xwork2.ActionContext;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  * @plexus.component role="org.apache.maven.archiva.webdav.ArchivaDavResourceFactory"
  */
 public class ArchivaDavResourceFactory

@@ -23,7 +23,6 @@ package org.apache.maven.archiva.database;
 /**
  * Constraint - a generic object for dealing with database constraints. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @see DeclarativeConstraint
  * @see SimpleConstraint

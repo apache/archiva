@@ -22,7 +22,6 @@ package org.apache.maven.archiva.reporting;
 /**
  * ArchivaReportException
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id: ArchivaReportException.java
  */
 public class ArchivaReportException

@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
  * in its pom (both the pom packaged with the artifact & the pom in the
  * file system).
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
  * role-hint="validate-artifacts-location"

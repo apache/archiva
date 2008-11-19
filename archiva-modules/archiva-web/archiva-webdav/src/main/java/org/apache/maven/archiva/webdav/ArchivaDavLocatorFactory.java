@@ -27,7 +27,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class ArchivaDavLocatorFactory
     implements DavLocatorFactory

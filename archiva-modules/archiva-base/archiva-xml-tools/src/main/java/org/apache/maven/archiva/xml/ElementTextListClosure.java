@@ -28,7 +28,6 @@ import java.util.List;
 /**
  * Gather the text from a collection of {@link Element}'s into a {@link List}
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ElementTextListClosure

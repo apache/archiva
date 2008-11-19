@@ -32,7 +32,6 @@ import org.apache.commons.io.output.NullOutputStream;
 /**
  * Checksum - simple checksum hashing routines. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class Checksum

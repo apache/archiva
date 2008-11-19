@@ -31,7 +31,6 @@ import org.apache.maven.archiva.model.RepositoryContentStatistics;
 /**
  * JdoRepositoryContentStatisticsDAOTest
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class JdoRepositoryContentStatisticsDAOTest

@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Map alternate URLs to specific actions. Used for the repository browser and the proxy.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class RepositoryActionMapper
     extends DefaultActionMapper

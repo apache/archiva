@@ -40,7 +40,6 @@ import java.util.Map.Entry;
 /**
  * RefineConflictsTask 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RefineConflictsTask

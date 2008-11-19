@@ -22,7 +22,6 @@ package org.apache.maven.archiva.indexer.query;
 /**
  * Class to hold a single field search condition
  *
- * @author Edwin Punzalan
  */
 public class QueryTerm
 {

@@ -28,7 +28,6 @@ import org.apache.maven.archiva.dependency.graph.walk.WalkDepthFirstSearch;
 /**
  * Update the scopes of the edges to what their parent node says.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class UpdateScopesTask

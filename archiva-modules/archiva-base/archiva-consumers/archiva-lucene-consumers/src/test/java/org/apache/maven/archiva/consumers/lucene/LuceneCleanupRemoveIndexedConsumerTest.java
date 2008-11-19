@@ -27,7 +27,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 /**
  * LuceneCleanupRemoveIndexedConsumerTest
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class LuceneCleanupRemoveIndexedConsumerTest

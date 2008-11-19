@@ -26,7 +26,6 @@ import java.text.ParseException;
 /**
  * A converter for {@link LuceneRepositoryContentRecord} to Lucene {@link Document} objects and back.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public interface LuceneEntryConverter
 {

@@ -6,7 +6,6 @@ import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
 import org.easymock.MockControl;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public abstract class AbstractOrganizationInfoActionTest extends AbstractWebworkTestCase
 {

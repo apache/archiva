@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
  *   <dd>The file that is being referenced in the checksum file.</dd>
  * </dl>
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ChecksummedFile

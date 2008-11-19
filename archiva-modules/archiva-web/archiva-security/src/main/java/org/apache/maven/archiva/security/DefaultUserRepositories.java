@@ -38,7 +38,6 @@ import org.codehaus.plexus.redback.users.UserNotFoundException;
 /**
  * DefaultUserRepositories
  * 
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.security.UserRepositories" role-hint="default"
  */

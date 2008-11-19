@@ -24,7 +24,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 /**
  * Obtain an index instance.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public interface RepositoryContentIndexFactory
 {

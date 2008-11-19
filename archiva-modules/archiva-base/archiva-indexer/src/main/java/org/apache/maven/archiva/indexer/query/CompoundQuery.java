@@ -25,7 +25,6 @@ import java.util.List;
 /**
  * Class to hold multiple SinglePhraseQueries and/or other CompoundQueries.
  *
- * @author Edwin Punzalan
  */
 public class CompoundQuery
     implements Query

@@ -22,7 +22,6 @@ package org.apache.maven.archiva.security;
 /**
  * AccessDeniedException 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class AccessDeniedException

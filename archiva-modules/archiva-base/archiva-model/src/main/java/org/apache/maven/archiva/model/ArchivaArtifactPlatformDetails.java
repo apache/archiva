@@ -22,7 +22,6 @@ package org.apache.maven.archiva.model;
 /**
  * A tag for objects that are considered ArchivaArtifactPlatformDetails. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface ArchivaArtifactPlatformDetails

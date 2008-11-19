@@ -65,7 +65,6 @@ import com.sun.syndication.io.SyndFeedOutput;
 /**
  * Servlet for handling rss feed requests.
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class RssFeedServlet

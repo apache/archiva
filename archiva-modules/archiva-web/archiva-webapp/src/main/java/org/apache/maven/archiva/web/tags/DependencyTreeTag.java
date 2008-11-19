@@ -50,7 +50,6 @@ import javax.servlet.jsp.tagext.TryCatchFinally;
  *   </archiva:dependency-tree>
  * </pre>
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DependencyTreeTag

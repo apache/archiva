@@ -28,7 +28,6 @@ import java.util.Properties;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
- * @author Edwin Punzalan
  */
 public class MavenProxyPropertyLoaderTest
     extends PlexusInSpringTestCase

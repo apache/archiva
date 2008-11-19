@@ -43,7 +43,6 @@ import java.util.Map;
 /**
  * DefaultCrossRepositorySearchTest
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DefaultCrossRepositorySearchTest    

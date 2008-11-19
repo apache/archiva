@@ -36,7 +36,6 @@ import org.easymock.internal.AlwaysMatcher;
 /**
  * SimpleRepositoryStatisticsReportGeneratorTest
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id: SimpleRepositoryStatisticsReportGenerator.java
  * 
  * @plexus.component role="org.apache.maven.archiva.reporting.RepositoryStatisticsReportGenerator" role-hint="simple"

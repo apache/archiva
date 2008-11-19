@@ -22,7 +22,6 @@ package org.apache.maven.archiva.proxy;
 /**
  * NotFoundException - thrown when the resource requested was not found on the remote repository. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class NotFoundException

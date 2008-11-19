@@ -32,7 +32,6 @@ import java.io.File;
 /**
  * Resolve Project from managed repository. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ManagedRepositoryProjectResolver

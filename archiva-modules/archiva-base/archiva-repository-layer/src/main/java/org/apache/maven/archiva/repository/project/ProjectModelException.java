@@ -24,7 +24,6 @@ import org.apache.maven.archiva.common.ArchivaException;
 /**
  * ProjectModelException 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ProjectModelException extends ArchivaException

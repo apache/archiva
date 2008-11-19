@@ -27,7 +27,6 @@ import java.util.List;
 /**
  * WebdavMethodUtil 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id: WebdavMethodUtil.java 5412 2007-01-13 01:18:47Z joakime $
  */
 public class WebdavMethodUtil

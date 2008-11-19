@@ -26,7 +26,6 @@ import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 /**
  * LuceneRepositoryContenIndexFactoryStub
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class LuceneRepositoryContentIndexFactoryStub

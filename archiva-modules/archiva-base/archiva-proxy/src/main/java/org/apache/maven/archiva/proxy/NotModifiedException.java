@@ -29,7 +29,6 @@ package org.apache.maven.archiva.proxy;
  * Similar in scope to the <code>HTTP 304 Not Modified</code> response code.
  * </p> 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class NotModifiedException

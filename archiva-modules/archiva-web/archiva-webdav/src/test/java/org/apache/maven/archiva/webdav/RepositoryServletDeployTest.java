@@ -33,7 +33,6 @@ import org.apache.maven.archiva.webdav.httpunit.MkColMethodWebRequest;
 /**
  * Deploy / Put Test cases for RepositoryServlet.  
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryServletDeployTest

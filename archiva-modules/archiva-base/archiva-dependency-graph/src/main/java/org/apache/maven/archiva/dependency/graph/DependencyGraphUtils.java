@@ -41,7 +41,6 @@ import java.util.Set;
 /**
  * Utilities for manipulating the DependencyGraph. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DependencyGraphUtils

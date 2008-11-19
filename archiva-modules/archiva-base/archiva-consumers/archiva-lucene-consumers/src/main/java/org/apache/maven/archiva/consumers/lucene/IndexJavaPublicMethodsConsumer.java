@@ -48,7 +48,6 @@ import java.util.zip.ZipFile;
 /**
  * IndexJavaPublicMethodsConsumer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  *         <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  * 

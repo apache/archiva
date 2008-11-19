@@ -22,7 +22,6 @@ package org.apache.maven.archiva.repository;
 /**
  * ContentNotFoundException is thrown in response for requests for content that is not the repository. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ContentNotFoundException

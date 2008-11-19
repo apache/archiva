@@ -32,7 +32,6 @@ import org.apache.maven.archiva.model.ArchivaArtifactModel;
 /**
  * ArtifactDAOStub
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class ArtifactDAOStub

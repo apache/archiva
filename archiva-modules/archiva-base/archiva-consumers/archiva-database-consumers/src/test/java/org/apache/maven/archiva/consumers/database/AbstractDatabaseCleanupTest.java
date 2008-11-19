@@ -32,7 +32,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import java.io.File;
 
 /**
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public abstract class AbstractDatabaseCleanupTest
     extends PlexusInSpringTestCase

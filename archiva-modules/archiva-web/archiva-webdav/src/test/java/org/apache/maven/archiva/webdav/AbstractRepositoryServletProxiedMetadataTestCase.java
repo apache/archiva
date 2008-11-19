@@ -31,7 +31,6 @@ import org.custommonkey.xmlunit.Diff;
 /**
  * Abstract TestCase for RepositoryServlet Tests, Proxied, Get of Metadata. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractRepositoryServletProxiedMetadataTestCase

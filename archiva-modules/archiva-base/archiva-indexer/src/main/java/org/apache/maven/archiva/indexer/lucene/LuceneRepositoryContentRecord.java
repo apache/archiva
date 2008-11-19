@@ -22,7 +22,6 @@ package org.apache.maven.archiva.indexer.lucene;
 /**
  * A repository content index record.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public interface LuceneRepositoryContentRecord
 {

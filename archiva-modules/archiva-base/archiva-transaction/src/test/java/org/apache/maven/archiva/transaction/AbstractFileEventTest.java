@@ -30,7 +30,6 @@ import java.util.List;
 
 /**
  * 
- * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
  * @version $Id$
  */
 public abstract class AbstractFileEventTest

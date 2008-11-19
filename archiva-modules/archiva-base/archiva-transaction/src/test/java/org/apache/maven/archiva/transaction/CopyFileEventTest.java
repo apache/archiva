@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @author Edwin Punzalan
  */
 public class CopyFileEventTest
     extends AbstractFileEventTest

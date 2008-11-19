@@ -73,8 +73,6 @@ import org.apache.commons.lang.StringUtils;
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
  * will also be updated if one exists, otherwise it would be created.
  * 
- * @author <a href="mailto:wsmoak@apache.org">Wendy Smoak</a>
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="uploadAction"
  */
 public class UploadAction

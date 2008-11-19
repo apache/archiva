@@ -33,7 +33,6 @@ import org.easymock.MockControl;
 /**
  * Test the configuration store.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class ArchivaConfigurationTest
     extends PlexusInSpringTestCase

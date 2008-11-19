@@ -23,7 +23,6 @@ package org.apache.maven.archiva.web.test;
 /**
  * Test archiva 'Settings'
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class SettingsTest
     extends AbstractArchivaTestCase

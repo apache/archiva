@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 /**
  * AbstractArchivaXmlTestCase 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractArchivaXmlTestCase

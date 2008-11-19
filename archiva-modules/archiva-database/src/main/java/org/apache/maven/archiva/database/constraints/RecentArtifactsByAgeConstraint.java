@@ -27,7 +27,6 @@ import java.util.Date;
 /**
  * Constraint for artifacts that are of a certain age (in days) or newer. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RecentArtifactsByAgeConstraint

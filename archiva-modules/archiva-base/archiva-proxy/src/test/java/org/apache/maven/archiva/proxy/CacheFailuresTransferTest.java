@@ -33,8 +33,6 @@ import java.io.File;
 /**
  * CacheFailuresTransferTest
  *
- * @author Brett Porter
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class CacheFailuresTransferTest

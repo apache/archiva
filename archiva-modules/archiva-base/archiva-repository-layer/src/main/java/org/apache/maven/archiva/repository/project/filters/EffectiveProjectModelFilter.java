@@ -39,7 +39,6 @@ import java.util.Map;
 /**
  * Builder for the Effective Project Model.  
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelFilter" 
  *                   role-hint="effective" 

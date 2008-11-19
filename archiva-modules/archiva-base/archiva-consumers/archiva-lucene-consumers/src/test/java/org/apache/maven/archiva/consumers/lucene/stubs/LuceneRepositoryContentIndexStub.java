@@ -35,7 +35,6 @@ import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 
 /**
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class LuceneRepositoryContentIndexStub

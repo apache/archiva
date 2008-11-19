@@ -27,7 +27,6 @@ import java.net.MalformedURLException;
 /**
  * PathUtil - simple utility methods for path manipulation. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class PathUtil

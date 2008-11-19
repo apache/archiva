@@ -32,7 +32,6 @@ import org.apache.maven.archiva.repository.events.RepositoryListener;
 /**
  * Base class for all repository purge tasks.
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge

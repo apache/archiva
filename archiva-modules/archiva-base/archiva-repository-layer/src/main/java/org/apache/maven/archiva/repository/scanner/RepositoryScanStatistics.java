@@ -29,7 +29,6 @@ import java.util.List;
 /**
  * RepositoryScanStatistics - extension to the RepositoryContentStatistics model.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryScanStatistics

@@ -25,7 +25,6 @@ import java.util.Map;
 /**
  * LatinEntities - simple utility class to handle latin entity conversion. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class LatinEntities

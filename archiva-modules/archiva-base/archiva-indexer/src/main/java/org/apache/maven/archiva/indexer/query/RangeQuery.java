@@ -22,8 +22,6 @@ package org.apache.maven.archiva.indexer.query;
 /**
  * Query object that handles range queries (presently used for dates).
  *
- * @author Maria Odea Ching
- * @author Brett Porter
  */
 public class RangeQuery
     implements Query

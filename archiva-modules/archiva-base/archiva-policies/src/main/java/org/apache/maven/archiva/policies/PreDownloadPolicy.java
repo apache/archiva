@@ -23,7 +23,6 @@ package org.apache.maven.archiva.policies;
 /**
  * Policy to apply before the download is attempted.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface PreDownloadPolicy extends DownloadPolicy

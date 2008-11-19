@@ -34,7 +34,6 @@ import junit.framework.TestCase;
 /**
  * DependencyGraphWalkerTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DependencyGraphWalkerTest

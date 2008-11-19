@@ -35,8 +35,6 @@ import java.util.Map;
 /**
  * Abstract class for the TransactionEvents
  *
- * @author Edwin Punzalan
- * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
  * @version $Id$
  */
 public abstract class AbstractTransactionEvent

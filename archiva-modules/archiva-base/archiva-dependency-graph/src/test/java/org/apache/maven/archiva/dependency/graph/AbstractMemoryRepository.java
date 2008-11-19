@@ -37,7 +37,6 @@ import java.util.Map;
 /**
  * AbstractMemoryRepository 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractMemoryRepository

@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Search the database of known SHA1 Checksums for potential duplicate artifacts.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"

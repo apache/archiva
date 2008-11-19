@@ -28,7 +28,6 @@ import java.util.TreeMap;
 /**
  * GroupIdFilter - utility methods for filtering groupIds. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class GroupIdFilter

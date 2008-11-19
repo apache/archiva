@@ -26,7 +26,6 @@ import org.apache.maven.archiva.database.Constraint;
  * Constraint for retrieving artifacts whose sha1 or md5 checksum matches the
  * specified value.
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class ArtifactsByChecksumConstraint
     extends AbstractDeclarativeConstraint

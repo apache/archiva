@@ -25,7 +25,6 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 /**
  * Lucene record for {@link File} contents. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class FileContentRecord

@@ -33,7 +33,6 @@ import org.easymock.MockControl;
 
 
 /**
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class CleanupReleasedSnapshotsRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest

@@ -23,7 +23,6 @@ import com.opensymphony.xwork2.Action;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class EditOrganizationInfoActionTest extends AbstractOrganizationInfoActionTest
 {

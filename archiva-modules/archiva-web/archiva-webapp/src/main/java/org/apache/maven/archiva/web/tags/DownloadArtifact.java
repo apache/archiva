@@ -49,7 +49,6 @@ import javax.servlet.jsp.PageContext;
 /**
  * DownloadArtifact
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.struts2.components.Component" role-hint="download-artifact"
  * instantiation-strategy="per-lookup"

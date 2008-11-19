@@ -37,7 +37,6 @@ import java.util.List;
 /**
  * Test the repository converter.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @todo what about deletions from the source repository?
  * @todo use artifact-test instead
  * @todo should reject if dependencies are missing - rely on reporting?

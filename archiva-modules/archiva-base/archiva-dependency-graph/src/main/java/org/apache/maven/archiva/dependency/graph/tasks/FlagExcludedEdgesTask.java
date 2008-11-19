@@ -27,7 +27,6 @@ import org.apache.maven.archiva.dependency.graph.walk.WalkDepthFirstSearch;
 /**
  * FlagExcludedEdgesTask 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class FlagExcludedEdgesTask

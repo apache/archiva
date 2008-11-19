@@ -35,7 +35,6 @@ import java.util.ArrayList;
 /**
  * BytecodeRecordLoader - Utility method for loading dump files into BytecordRecords. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class BytecodeRecordLoader

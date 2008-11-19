@@ -43,7 +43,6 @@ import java.util.List;
 /**
  * Lucene implementation of a repository index.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class LuceneRepositoryContentIndex
     implements RepositoryContentIndex

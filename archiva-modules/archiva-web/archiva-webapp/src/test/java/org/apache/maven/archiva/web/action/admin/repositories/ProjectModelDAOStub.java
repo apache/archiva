@@ -30,7 +30,6 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 /**
  * ProjectModelDAOStub
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class ProjectModelDAOStub

@@ -41,7 +41,6 @@ import junit.framework.ComparisonFailure;
 /**
  * AbstractSearchTestCase 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractSearchTestCase

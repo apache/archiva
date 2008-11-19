@@ -27,7 +27,6 @@ import org.apache.maven.archiva.database.RepositoryProblemDAO;
 /**
  * Test for DatabaseCleanupRemoveArtifactConsumerTest
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class DatabaseCleanupRemoveArtifactConsumerTest
     extends AbstractDatabaseCleanupTest

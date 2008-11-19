@@ -26,7 +26,6 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class OrganizationInfoActionTest extends AbstractOrganizationInfoActionTest
 { 

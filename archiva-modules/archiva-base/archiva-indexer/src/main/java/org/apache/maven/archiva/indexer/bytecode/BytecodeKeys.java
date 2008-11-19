@@ -24,7 +24,6 @@ import org.apache.maven.archiva.indexer.ArtifactKeys;
 /**
  * BytecodeKeys 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class BytecodeKeys

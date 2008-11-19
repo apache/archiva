@@ -43,7 +43,6 @@ import org.codehaus.plexus.redback.users.jdo.JdoUser;
 /**
  * SecuritySystem stub used for testing. 
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  */
 public class SecuritySystemStub

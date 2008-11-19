@@ -41,7 +41,6 @@ import junit.framework.Assert;
 /**
  * AbstractRepositoryServletTestCase 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractRepositoryServletTestCase

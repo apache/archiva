@@ -24,7 +24,6 @@ import org.apache.maven.archiva.indexer.query.Query;
 /**
  * A holder for a lucene query to pass to the indexer API.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class LuceneQuery
     implements Query

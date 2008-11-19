@@ -32,7 +32,6 @@ import org.apache.maven.archiva.model.Plugin;
 /**
  * RepositoryMetadataMerge 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryMetadataMerge

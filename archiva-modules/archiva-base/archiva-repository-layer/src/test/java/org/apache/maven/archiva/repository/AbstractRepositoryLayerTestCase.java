@@ -28,7 +28,6 @@ import java.io.File;
 /**
  * AbstractRepositoryLayerTestCase
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractRepositoryLayerTestCase

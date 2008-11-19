@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 /**
  * JdoDatabaseUpdater
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseUpdater" 

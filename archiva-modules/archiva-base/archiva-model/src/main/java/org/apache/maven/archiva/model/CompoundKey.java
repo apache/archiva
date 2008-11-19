@@ -22,7 +22,6 @@ package org.apache.maven.archiva.model;
 /**
  * Tag for identifying a Compound Key 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface CompoundKey

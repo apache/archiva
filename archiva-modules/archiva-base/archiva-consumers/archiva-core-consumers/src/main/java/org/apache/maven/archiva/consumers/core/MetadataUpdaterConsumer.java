@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 /**
  * MetadataUpdaterConsumer will create and update the metadata present within the repository.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  * role-hint="metadata-updater"

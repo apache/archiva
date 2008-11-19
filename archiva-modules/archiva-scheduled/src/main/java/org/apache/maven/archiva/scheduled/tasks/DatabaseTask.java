@@ -23,7 +23,6 @@ package org.apache.maven.archiva.scheduled.tasks;
  * DataRefreshTask - task for discovering changes in the repository 
  * and updating all associated data. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id: DataRefreshTask.java 525176 2007-04-03 15:21:33Z joakime $
  */
 public class DatabaseTask

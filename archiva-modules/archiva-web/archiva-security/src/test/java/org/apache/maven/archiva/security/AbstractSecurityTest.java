@@ -34,7 +34,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 /**
  * AbstractSecurityTest 
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id: AbstractSecurityTest
  */
 public abstract class AbstractSecurityTest

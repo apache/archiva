@@ -34,7 +34,6 @@ import java.io.PrintWriter;
 import java.io.File;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class IndexWriter
 {

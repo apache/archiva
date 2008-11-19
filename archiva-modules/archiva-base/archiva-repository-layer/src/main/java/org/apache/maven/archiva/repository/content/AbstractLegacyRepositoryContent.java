@@ -30,7 +30,6 @@ import java.util.Map;
 /**
  * AbstractLegacyRepositoryContent
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractLegacyRepositoryContent

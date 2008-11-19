@@ -27,7 +27,6 @@ import java.util.List;
 /**
  * A consumer of content (files) in the repository. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface RepositoryContentConsumer extends Consumer

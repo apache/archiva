@@ -41,7 +41,6 @@ import org.codehaus.plexus.redback.users.memory.MemoryUserManager;
  * BypassSecuritySystem - used to bypass the security system for testing reasons and allow
  * for every request to respond as success / true. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

@@ -31,7 +31,6 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 /**
  * ArtifactVersionsConstraintTest
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class ArtifactVersionsConstraintTest

@@ -30,7 +30,6 @@ import java.io.File;
 /**
  * ProjectModel400ReaderTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ProjectModel400ReaderTest

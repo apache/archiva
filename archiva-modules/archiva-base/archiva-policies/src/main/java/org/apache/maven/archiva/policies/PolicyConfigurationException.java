@@ -25,7 +25,6 @@ import org.apache.maven.archiva.common.ArchivaException;
  * PolicyConfigurationException is thrown when a policy cannot be executed due to a 
  * configuration issue. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class PolicyConfigurationException

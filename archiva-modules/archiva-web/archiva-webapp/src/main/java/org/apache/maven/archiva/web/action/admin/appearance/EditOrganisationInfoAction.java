@@ -30,7 +30,6 @@ import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 /**
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id: ConfigurationAction.java 480950 2006-11-30 14:58:35Z evenisse $
  * 
  * @plexus.component role="com.opensymphony.xwork2.Action"

@@ -65,7 +65,6 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
  * be purged.  Leaving 2.1-SNAPSHOT in alone.
  * </p>
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  */
 public class CleanupReleasedSnapshotsRepositoryPurge

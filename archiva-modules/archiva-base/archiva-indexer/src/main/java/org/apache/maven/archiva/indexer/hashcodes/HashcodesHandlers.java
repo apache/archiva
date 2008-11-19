@@ -28,7 +28,6 @@ import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 /**
  * HashcodesHandlers 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class HashcodesHandlers

@@ -31,7 +31,6 @@ import java.io.File;
 /**
  * RepositoryServlet Tests, Proxied, Get of Snapshot Artifacts, with varying policy settings. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryServletProxiedSnapshotPolicyTest

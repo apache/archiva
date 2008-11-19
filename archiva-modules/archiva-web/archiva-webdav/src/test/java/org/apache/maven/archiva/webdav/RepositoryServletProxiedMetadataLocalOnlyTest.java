@@ -22,7 +22,6 @@ package org.apache.maven.archiva.webdav;
 /**
  * RepositoryServlet Tests, Proxied, Get of Metadata, exists on local managed repository only. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryServletProxiedMetadataLocalOnlyTest

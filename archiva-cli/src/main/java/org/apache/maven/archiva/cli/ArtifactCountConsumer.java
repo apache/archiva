@@ -27,7 +27,6 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 /**
  * ArtifactCountConsumer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"

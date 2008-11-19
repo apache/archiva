@@ -25,7 +25,6 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 /**
  * PathParser interface.
  * 
- * @author <a href="mailto:nicolas@apache.org">nicolas de loof</a>
  * @version $Id$
  */
 public interface PathParser

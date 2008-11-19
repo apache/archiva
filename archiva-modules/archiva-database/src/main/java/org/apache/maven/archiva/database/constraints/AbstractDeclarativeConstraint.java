@@ -25,7 +25,6 @@ import org.apache.maven.archiva.database.DeclarativeConstraint;
 /**
  * AbstractDeclarativeConstraint 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractDeclarativeConstraint

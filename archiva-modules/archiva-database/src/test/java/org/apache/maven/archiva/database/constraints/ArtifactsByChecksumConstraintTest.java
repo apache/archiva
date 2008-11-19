@@ -30,8 +30,6 @@ import java.util.List;
 /**
  * ArtifactsByChecksumConstraintTest
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class ArtifactsByChecksumConstraintTest

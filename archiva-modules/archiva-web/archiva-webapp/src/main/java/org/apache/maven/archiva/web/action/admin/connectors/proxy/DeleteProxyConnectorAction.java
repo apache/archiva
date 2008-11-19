@@ -24,7 +24,6 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 /**
  * DeleteProxyConnectorAction 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteProxyConnectorAction"

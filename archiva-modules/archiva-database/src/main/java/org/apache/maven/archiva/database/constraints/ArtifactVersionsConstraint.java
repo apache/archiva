@@ -24,7 +24,6 @@ import org.apache.maven.archiva.database.Constraint;
 /**
  * ArtifactVersionsConstraint
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class ArtifactVersionsConstraint

@@ -33,7 +33,6 @@ import java.util.List;
  * Represents a stack of {@link ProjectModelResolver} resolvers for
  * finding/resolving an ArchivaProjectModel from multiple sources. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ProjectModelResolverStack

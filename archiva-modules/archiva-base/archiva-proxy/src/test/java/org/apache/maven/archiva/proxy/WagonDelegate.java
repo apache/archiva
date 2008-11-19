@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A dummy wagon implementation
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class WagonDelegate
     implements Wagon

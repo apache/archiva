@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link PreDownloadPolicy} to check if the requested url has failed before.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
  * role-hint="cache-failures"

@@ -27,7 +27,6 @@ import java.util.List;
 /**
  * Convert an entire repository.
  * 
- * @author Jason van Zyl
  */
 public interface LegacyRepositoryConverter
 {

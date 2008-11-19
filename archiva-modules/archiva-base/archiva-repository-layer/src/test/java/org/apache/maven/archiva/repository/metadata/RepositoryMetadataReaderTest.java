@@ -27,7 +27,6 @@ import java.io.File;
 /**
  * RepositoryMetadataReaderTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryMetadataReaderTest extends PlexusInSpringTestCase

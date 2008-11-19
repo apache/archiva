@@ -26,7 +26,6 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 /**
  * AbstractLegacyRepositoryContentTestCase
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractLegacyRepositoryContentTestCase

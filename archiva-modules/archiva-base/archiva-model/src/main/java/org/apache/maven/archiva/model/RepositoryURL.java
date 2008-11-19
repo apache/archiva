@@ -22,7 +22,6 @@ package org.apache.maven.archiva.model;
 /**
  * RepositoryURL - Mutable (and protocol forgiving) URL object.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryURL

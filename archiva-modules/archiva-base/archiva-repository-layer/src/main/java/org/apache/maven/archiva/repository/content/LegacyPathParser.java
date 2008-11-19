@@ -32,7 +32,6 @@ import java.util.Iterator;
  * LegacyPathParser is a parser for maven 1 (legacy layout) paths to
  * ArtifactReference.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.repository.content.PathParser"
  * role-hint="legacy"

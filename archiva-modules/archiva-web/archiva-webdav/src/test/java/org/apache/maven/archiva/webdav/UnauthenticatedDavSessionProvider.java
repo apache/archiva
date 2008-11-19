@@ -23,7 +23,6 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.WebdavRequest;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class UnauthenticatedDavSessionProvider extends ArchivaDavSessionProvider
 {

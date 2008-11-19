@@ -38,7 +38,6 @@ import com.meterware.servletunit.ServletUnitClient;
 
 /**
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class RssFeedServletTest

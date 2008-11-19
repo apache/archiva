@@ -26,8 +26,6 @@ import java.util.List;
 /**
  * Event for creating a file from a string content.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
  * @version $Id$
  */
 public class CreateFileEvent

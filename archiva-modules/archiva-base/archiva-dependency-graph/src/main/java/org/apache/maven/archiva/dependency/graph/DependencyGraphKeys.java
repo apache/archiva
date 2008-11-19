@@ -27,7 +27,6 @@ import org.apache.maven.archiva.model.Exclusion;
 /**
  * Key generation for the various objects used within the DependencyGraph. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DependencyGraphKeys

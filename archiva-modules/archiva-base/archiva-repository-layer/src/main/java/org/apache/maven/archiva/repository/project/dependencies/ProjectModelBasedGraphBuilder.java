@@ -33,7 +33,6 @@ import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModel
 /**
  * ProjectModelBasedGraphBuilder 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

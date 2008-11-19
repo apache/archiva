@@ -39,7 +39,6 @@ import com.sun.syndication.feed.synd.SyndFeed;
  * generate a rss feed. The versions will be grouped by the date when the artifact 
  * was gathered. Each group will appear as one entry in the feed.
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  * @plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-versions"
  */

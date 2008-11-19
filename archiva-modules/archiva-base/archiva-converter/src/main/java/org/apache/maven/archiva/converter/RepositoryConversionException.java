@@ -22,7 +22,6 @@ package org.apache.maven.archiva.converter;
 /**
  * Exception occuring during repository conversion.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class RepositoryConversionException
     extends Exception

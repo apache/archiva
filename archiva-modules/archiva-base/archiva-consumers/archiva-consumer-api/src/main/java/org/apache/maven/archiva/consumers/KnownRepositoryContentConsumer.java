@@ -22,7 +22,6 @@ package org.apache.maven.archiva.consumers;
 /**
  * Consumer for Known Repository Content.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface KnownRepositoryContentConsumer

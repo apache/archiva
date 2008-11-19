@@ -37,7 +37,6 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 /**
  * Purge the repository by retention count. Retain only the specified number of snapshots.
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class RetentionCountRepositoryPurge
     extends AbstractRepositoryPurge

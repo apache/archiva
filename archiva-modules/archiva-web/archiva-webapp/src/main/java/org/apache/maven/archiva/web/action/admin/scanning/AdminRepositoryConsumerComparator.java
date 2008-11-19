@@ -24,7 +24,6 @@ import java.util.Comparator;
 /**
  * AdminRepositoryConsumerComparator 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class AdminRepositoryConsumerComparator

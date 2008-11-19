@@ -24,7 +24,6 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 
 /**
- * @author Edwin Punzalan
  */
 public class CreateFileEventTest
     extends AbstractFileEventTest

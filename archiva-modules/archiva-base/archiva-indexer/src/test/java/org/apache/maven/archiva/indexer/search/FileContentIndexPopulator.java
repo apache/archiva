@@ -33,7 +33,6 @@ import junit.framework.AssertionFailedError;
 /**
  * FileContentIndexPopulator 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class FileContentIndexPopulator

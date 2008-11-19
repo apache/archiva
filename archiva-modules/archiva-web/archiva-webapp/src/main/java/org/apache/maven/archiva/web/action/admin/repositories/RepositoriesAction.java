@@ -47,7 +47,6 @@ import java.util.Map;
 /**
  * Shows the Repositories Tab for the administrator.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoriesAction"
  */

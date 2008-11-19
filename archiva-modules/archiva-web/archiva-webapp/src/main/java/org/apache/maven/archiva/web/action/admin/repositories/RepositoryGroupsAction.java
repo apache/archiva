@@ -38,7 +38,6 @@ import org.apache.maven.archiva.web.util.ContextUtils;
 /**
  * RepositoryGroupsAction
  * 
- * @author
  * @version
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryGroupsAction"
  */

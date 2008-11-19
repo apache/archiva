@@ -26,7 +26,6 @@ import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 /**
  * NetworkProxySelectionPredicate 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class NetworkProxySelectionPredicate

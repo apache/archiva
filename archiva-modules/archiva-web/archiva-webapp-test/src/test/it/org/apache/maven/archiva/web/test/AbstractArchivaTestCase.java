@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.test;
 import org.apache.maven.shared.web.test.AbstractSeleniumTestCase;
 
 /**
- * @author Edwin Punzalan
  */
 public abstract class AbstractArchivaTestCase
     extends AbstractSeleniumTestCase

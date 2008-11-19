@@ -25,7 +25,6 @@ import java.io.File;
 /**
  * Filename filter for getting all the files related to a specific artifact.
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class ArtifactFilenameFilter
     implements FilenameFilter

@@ -20,7 +20,6 @@ package org.apache.maven.archiva.webdav;
  */
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public interface RepositoryLocator
 {

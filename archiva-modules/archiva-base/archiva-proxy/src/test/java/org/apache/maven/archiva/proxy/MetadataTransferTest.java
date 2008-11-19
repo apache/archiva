@@ -85,7 +85,6 @@ import java.util.Arrays;
  * (1) If it isn't proxied, no point in having a remote.
  * </pre>
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class MetadataTransferTest

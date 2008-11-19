@@ -25,7 +25,6 @@ import org.codehaus.plexus.redback.role.RoleManager;
 /**
  * RoleProfilesTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id: RoleManagerTest.java 4330 2007-05-10 17:28:56Z jmcconnell $
  */
 public class RoleManagerTest

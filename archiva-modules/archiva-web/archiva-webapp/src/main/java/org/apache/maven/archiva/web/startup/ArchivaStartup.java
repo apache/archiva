@@ -32,7 +32,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ArchivaStartup

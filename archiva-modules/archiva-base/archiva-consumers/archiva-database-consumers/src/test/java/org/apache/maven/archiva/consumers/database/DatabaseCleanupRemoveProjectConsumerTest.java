@@ -28,7 +28,6 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 /**
  * Test for DatabaseCleanupRemoveProjectConsumer
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class DatabaseCleanupRemoveProjectConsumerTest
 	extends AbstractDatabaseCleanupTest

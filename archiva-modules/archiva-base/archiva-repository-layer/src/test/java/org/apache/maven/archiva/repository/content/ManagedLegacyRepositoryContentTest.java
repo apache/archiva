@@ -36,7 +36,6 @@ import java.util.Set;
 /**
  * ManagedLegacyRepositoryContentTest
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ManagedLegacyRepositoryContentTest

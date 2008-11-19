@@ -32,7 +32,6 @@ import java.util.List;
 /**
  * JdoArchivaDAO 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role-hint="jdo"

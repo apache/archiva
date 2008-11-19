@@ -55,7 +55,6 @@ import org.joda.time.format.ISODateTimeFormat;
 /**
  * DavResource for virtual repositories
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class ArchivaVirtualDavResource
     implements DavResource

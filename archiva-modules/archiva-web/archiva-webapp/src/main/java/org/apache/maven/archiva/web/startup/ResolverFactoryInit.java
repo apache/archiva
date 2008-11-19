@@ -28,7 +28,6 @@ import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
  * ResolverFactoryInit - Initialize the Resolver Factory, and hook it up to
  * the database.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

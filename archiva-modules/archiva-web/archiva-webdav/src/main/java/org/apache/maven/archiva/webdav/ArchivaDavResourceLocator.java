@@ -24,7 +24,6 @@ import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.util.Text;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class ArchivaDavResourceLocator
     implements DavResourceLocator, RepositoryLocator

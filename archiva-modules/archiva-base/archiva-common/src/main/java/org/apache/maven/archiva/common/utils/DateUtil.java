@@ -26,7 +26,6 @@ import java.util.GregorianCalendar;
 /**
  * DateUtil - some (not-so) common date utility methods. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DateUtil

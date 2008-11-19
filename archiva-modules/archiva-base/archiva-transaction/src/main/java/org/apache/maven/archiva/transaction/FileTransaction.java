@@ -28,7 +28,6 @@ import java.util.List;
 /**
  * Implement commit/rollback semantics for a set of files.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class FileTransaction
 {

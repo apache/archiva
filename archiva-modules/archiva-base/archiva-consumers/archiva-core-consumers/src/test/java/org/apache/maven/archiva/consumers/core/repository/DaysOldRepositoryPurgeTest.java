@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.commons.lang.time.DateUtils;
 
 /**
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class DaysOldRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest

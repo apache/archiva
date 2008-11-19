@@ -27,7 +27,6 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 /**
  * DefaultPathParser is a parser for maven 2 (default layout) paths to ArtifactReference.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DefaultPathParser implements PathParser

@@ -34,7 +34,6 @@ import java.io.Reader;
 /**
  * HashcodesAnalyzer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class HashcodesAnalyzer extends Analyzer

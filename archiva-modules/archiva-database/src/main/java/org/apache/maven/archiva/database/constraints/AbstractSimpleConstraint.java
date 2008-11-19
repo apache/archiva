@@ -24,7 +24,6 @@ import org.apache.maven.archiva.database.SimpleConstraint;
 /**
  * Simple Constraint abstract for working with nearly-raw SQL strings. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractSimpleConstraint

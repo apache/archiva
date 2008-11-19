@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.action.admin.database;
 /**
  * AdminDatabaseConsumer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class AdminDatabaseConsumer

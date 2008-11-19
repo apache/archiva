@@ -73,7 +73,6 @@ import java.io.Serializable;
  * NOTE: This is a jpox required compound key handler class.
  * </p>
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class AbstractVersionedKey

@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.test;
  */
 
 /**
- * @author Edwin Punzalan
  */
 public class LoginTest
     extends AbstractArchivaTestCase

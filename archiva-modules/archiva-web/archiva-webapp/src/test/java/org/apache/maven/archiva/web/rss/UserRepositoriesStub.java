@@ -30,7 +30,6 @@ import org.apache.maven.archiva.security.UserRepositories;
 /**
  * UserRepositories stub used for testing. 
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  */
 public class UserRepositoriesStub

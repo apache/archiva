@@ -24,7 +24,6 @@ import java.util.Collections;
 /**
  * Test RetentionsCountRepositoryPurgeTest
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class RetentionCountRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest

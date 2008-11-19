@@ -49,7 +49,6 @@ import org.mortbay.jetty.handler.AbstractHandler;
 /**
  * Integration test for connecting over a HTTP proxy.
  * 
- * @author Brett Porter
  * @version $Id: ManagedDefaultTransferTest.java 677852 2008-07-18 08:16:24Z brett $
  */
 public class HttpProxyTransferTest

@@ -22,7 +22,6 @@ package org.apache.maven.archiva.consumers;
 /**
  * Consumer - the base set of methods for a consumer.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract interface Consumer

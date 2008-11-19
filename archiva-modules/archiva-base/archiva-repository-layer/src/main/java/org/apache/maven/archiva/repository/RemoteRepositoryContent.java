@@ -28,7 +28,6 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
  * RemoteRepositoryContent interface for interacting with a remote repository in an abstract way, 
  * without the need for processing based on URLs, or working with the database. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface RemoteRepositoryContent

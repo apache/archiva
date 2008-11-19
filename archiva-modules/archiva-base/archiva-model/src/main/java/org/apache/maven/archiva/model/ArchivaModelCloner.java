@@ -28,7 +28,6 @@ import java.util.Properties;
 /**
  * Utility methods for cloning various Archiva Model objects. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ArchivaModelCloner

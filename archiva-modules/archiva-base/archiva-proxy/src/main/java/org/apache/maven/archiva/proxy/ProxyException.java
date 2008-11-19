@@ -20,7 +20,6 @@ package org.apache.maven.archiva.proxy;
  */
 
 /**
- * @author Edwin Punzalan
  */
 public class ProxyException
     extends Exception

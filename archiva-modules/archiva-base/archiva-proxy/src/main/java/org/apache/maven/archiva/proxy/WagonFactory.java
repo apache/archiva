@@ -24,7 +24,6 @@ import org.apache.maven.wagon.Wagon;
 /**
  * Create a Wagon instance for the given protocol. Implementation will be provided by a Spring service locator.
  * 
- * @author Brett Porter
  */
 public interface WagonFactory
 {

@@ -24,7 +24,6 @@ import com.opensymphony.xwork2.validator.ValidatorContext;
 import com.opensymphony.xwork2.validator.validators.ValidatorSupport;
 
 /**
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class IntervalValidator
     extends ValidatorSupport

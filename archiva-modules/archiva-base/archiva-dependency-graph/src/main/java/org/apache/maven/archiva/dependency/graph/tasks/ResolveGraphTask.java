@@ -32,7 +32,6 @@ import org.apache.maven.archiva.model.VersionedReference;
  * Loop through the unresolved nodes and resolve them, until there
  * are no more unresolved nodes.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ResolveGraphTask

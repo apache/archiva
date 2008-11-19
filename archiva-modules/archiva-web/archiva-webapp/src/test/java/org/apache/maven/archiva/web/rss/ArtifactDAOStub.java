@@ -33,7 +33,6 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 /**
  * Stub used for RssFeedServlet unit test.
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class ArtifactDAOStub

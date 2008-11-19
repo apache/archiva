@@ -43,7 +43,6 @@ import com.atlassian.xmlrpc.DefaultBinder;
  *    - password
  * 2. execute 'mvn exec:java' from the command-line
  * 
- * @author 
  * @version $Id$
  */
 public class SampleClient

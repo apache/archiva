@@ -22,7 +22,6 @@ package org.apache.maven.archiva.dependency.graph;
 /**
  * A tag for a {@link GraphTask} that has the potential to produce a cyclic edge.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface PotentialCyclicEdgeProducer

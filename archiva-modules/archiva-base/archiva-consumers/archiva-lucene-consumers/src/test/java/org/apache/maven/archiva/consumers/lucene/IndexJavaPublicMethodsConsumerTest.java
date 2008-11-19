@@ -35,7 +35,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  *
  */

@@ -36,7 +36,6 @@ import java.util.Map;
 /**
  * Perform a transitive reduction of the graph. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ReduceTransitiveEdgesVisitor

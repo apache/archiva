@@ -34,7 +34,6 @@ import org.easymock.MockControl;
 /**
  * ArchivaServletAuthenticatorTest
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class ArchivaServletAuthenticatorTest

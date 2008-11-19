@@ -47,7 +47,6 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * Consumer for removing old snapshots in the repository based on the criteria
  * specified by the user.
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * 
  * @plexus.component 
  *      role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"

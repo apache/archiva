@@ -60,7 +60,6 @@ import com.meterware.servletunit.ServletUnitClient;
  * Test the flow of the authentication and authorization checks. This does not necessarily
  * perform redback security checking.
  * 
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryServletSecurityTest

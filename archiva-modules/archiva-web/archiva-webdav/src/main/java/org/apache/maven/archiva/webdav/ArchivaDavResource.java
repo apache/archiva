@@ -67,7 +67,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.opensymphony.xwork2.ActionContext;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a> Portions from the Apache Jackrabbit Project
  */
 public class ArchivaDavResource
     implements DavResource

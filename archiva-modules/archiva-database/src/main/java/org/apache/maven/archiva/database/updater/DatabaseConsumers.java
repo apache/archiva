@@ -37,7 +37,6 @@ import java.util.List;
 /**
  * DatabaseConsumers 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseConsumers"

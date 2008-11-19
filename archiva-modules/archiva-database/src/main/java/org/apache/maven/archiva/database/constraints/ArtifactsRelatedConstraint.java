@@ -24,7 +24,6 @@ import org.apache.maven.archiva.database.Constraint;
 /**
  * ArtifactsRelatedConstraint 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ArtifactsRelatedConstraint

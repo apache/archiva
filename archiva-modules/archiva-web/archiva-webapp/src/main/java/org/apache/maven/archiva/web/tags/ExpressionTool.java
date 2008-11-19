@@ -29,7 +29,6 @@ import javax.servlet.jsp.tagext.Tag;
 /**
  * ExpressionTool 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ExpressionTool

@@ -33,7 +33,6 @@ import java.util.Collections;
 /**
  * AddRemoteRepositoryActionTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class AddRemoteRepositoryActionTest

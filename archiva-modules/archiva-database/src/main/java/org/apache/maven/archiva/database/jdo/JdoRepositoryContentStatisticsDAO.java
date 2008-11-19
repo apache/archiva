@@ -30,7 +30,6 @@ import org.apache.maven.archiva.model.RepositoryContentStatistics;
 /**
  * JdoRepositoryContentStatisticsDAO 
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  * 
  * @plexus.component role-hint="jdo"

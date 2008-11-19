@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 /**
  * ArchivaStandardRolesCheck tests for the existance of expected / standard roles and permissions. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.codehaus.plexus.redback.system.check.EnvironmentCheck"

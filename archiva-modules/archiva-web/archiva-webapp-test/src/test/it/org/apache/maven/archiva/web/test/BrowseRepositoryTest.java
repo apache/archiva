@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.test;
 /**
  * Archiva's webapp UI test for browsing the indexed repository.
  * 
- * @author <a href="mailto:nramirez@exist.com">Napoleon Esmundo C. Ramirez</a>
  */
 public class BrowseRepositoryTest
     extends AbstractArchivaTestCase

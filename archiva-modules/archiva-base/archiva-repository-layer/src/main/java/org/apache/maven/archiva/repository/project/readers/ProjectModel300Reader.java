@@ -45,7 +45,6 @@ import java.util.Properties;
 /**
  * ProjectModel300Reader 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ProjectModel300Reader

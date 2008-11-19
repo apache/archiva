@@ -23,7 +23,6 @@ package org.apache.maven.archiva.reporting.metadata;
 /**
  * MetadataValidateConsumer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * TODO: whoops, how do we consumer metadata?  

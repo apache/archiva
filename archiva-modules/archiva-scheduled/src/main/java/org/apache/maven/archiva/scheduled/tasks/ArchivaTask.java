@@ -24,7 +24,6 @@ import org.codehaus.plexus.taskqueue.Task;
 /**
  * A repository task.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public interface ArchivaTask
     extends Task

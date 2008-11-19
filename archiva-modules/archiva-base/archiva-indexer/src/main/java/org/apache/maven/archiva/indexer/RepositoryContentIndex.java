@@ -32,7 +32,6 @@ import java.util.Collection;
 /**
  * Common access methods for a Repository Content index.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public interface RepositoryContentIndex
 {

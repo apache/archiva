@@ -26,7 +26,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 /**
  * ArchivaModelClonerTest
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id: ArchivaModelClonerTest.java 525951 2007-04-05 20:11:19Z joakime $
  */
 public class ArchivaArtifactTest

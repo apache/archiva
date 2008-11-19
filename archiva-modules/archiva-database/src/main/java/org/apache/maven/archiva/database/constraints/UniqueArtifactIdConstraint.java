@@ -27,7 +27,6 @@ import java.util.List;
 /**
  * Obtain a set of unique ArtifactIds for the specified groupId.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class UniqueArtifactIdConstraint

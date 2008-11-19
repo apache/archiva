@@ -22,7 +22,6 @@ package org.apache.maven.archiva.indexer.query;
 /**
  * Query for a single term.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class SingleTermQuery
     implements Query

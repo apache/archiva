@@ -30,8 +30,6 @@ import java.util.List;
 /**
  * Event to copy a file.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
  * @version $Id$
  */
 public class CopyFileEvent

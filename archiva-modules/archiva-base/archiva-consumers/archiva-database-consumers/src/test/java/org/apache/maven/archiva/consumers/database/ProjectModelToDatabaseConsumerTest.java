@@ -40,7 +40,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 /**
  * Test for ProjectModelToDatabaseConsumerTest
  * 
- * @author <a href="mailto:michal.stochmialek@eurobank.pl">Michal Stochmialek</a>
  */
 public class ProjectModelToDatabaseConsumerTest
     extends PlexusInSpringTestCase

@@ -24,7 +24,6 @@ import java.util.Date;
 /**
  * Holds the data for the SyndEntry in the RSS feed.
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class RssFeedEntry

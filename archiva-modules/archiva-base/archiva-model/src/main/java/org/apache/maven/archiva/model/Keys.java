@@ -24,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Keys - utility methods for converting common objects into string keys. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class Keys

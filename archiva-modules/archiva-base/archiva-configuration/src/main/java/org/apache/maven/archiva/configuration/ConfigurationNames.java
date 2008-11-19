@@ -22,7 +22,6 @@ package org.apache.maven.archiva.configuration;
 /**
  * Utility methods for testing the configuration property name.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ConfigurationNames

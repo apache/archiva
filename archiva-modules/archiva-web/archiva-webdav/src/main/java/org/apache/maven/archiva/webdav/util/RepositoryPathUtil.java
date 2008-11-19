@@ -23,7 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class RepositoryPathUtil
 {

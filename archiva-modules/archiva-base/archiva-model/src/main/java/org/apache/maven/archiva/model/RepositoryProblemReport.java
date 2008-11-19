@@ -22,7 +22,6 @@ package org.apache.maven.archiva.model;
 /**
  * RepositoryProblemReport
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryProblemReport

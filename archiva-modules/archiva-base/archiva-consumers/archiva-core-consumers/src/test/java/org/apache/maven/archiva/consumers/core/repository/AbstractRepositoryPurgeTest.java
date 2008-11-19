@@ -31,7 +31,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 /**
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public abstract class AbstractRepositoryPurgeTest
     extends PlexusInSpringTestCase

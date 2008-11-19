@@ -25,7 +25,6 @@ import junit.framework.TestSuite;
 /**
  * Utility class to aide IDE developers.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class AllTests

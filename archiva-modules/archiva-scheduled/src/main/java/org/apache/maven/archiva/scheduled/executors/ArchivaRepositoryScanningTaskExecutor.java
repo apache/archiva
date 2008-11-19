@@ -51,7 +51,6 @@ import java.util.List;
 /**
  * ArchivaRepositoryScanningTaskExecutor 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component

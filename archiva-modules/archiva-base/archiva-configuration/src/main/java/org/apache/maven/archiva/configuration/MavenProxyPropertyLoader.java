@@ -30,8 +30,6 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 /**
- * @author Ben Walding
- * @author Brett Porter
  */
 public class MavenProxyPropertyLoader
 {

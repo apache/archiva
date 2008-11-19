@@ -26,7 +26,6 @@ import java.io.Reader;
 /**
  * Lucene Tokenizer for {@link BytecodeKeys#FILES} fields. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class FilenamesTokenizer extends CharTokenizer

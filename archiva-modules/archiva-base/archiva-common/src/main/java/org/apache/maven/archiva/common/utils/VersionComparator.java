@@ -47,7 +47,6 @@ import java.util.List;
  * Words that are part of the "special word list" will be treated as their index within that heirarchy.
  * Words that cannot be identified as special, are treated using normal case-insensitive comparison rules.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class VersionComparator

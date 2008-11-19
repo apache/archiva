@@ -56,7 +56,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * RepositoryServlet
  * 
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryServlet

@@ -37,7 +37,6 @@ import com.opensymphony.xwork2.Action;
 /**
  * RepositoryGroupsActionTest
  * 
- * @author
  * @version
  */
 public class RepositoryGroupsActionTest 

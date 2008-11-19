@@ -26,7 +26,6 @@ import org.apache.maven.archiva.model.RepositoryContentStatistics;
 /**
  * RepositoryContentStatisticsDAO 
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public interface RepositoryContentStatisticsDAO

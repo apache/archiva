@@ -26,7 +26,6 @@ import org.apache.maven.archiva.database.Constraint;
 /**
  * RepositoryContentStatisticsByRepositoryConstraint
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public class RepositoryContentStatisticsByRepositoryConstraint

@@ -37,7 +37,6 @@ import java.util.List;
 /**
  * DefaultLegacyRepositoryConverter 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component 
  */

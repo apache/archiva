@@ -22,7 +22,6 @@ package org.apache.maven.archiva.configuration;
 /**
  * An error in the configuration.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class InvalidConfigurationException
     extends Exception

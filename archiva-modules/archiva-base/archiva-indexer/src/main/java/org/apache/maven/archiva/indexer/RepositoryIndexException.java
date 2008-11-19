@@ -20,7 +20,6 @@ package org.apache.maven.archiva.indexer;
  */
 
 /**
- * @author Edwin Punzalan
  */
 public class RepositoryIndexException
     extends Exception

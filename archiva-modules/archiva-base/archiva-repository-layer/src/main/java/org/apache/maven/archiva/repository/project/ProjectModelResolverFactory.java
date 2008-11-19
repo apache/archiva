@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory for ProjectModelResolver objects
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelResolverFactory"
  */

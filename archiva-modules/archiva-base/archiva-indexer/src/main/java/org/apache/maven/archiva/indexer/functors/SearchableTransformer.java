@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 /**
  * SearchableTransformer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.commons.collections.Transformer" role-hint="searchable"

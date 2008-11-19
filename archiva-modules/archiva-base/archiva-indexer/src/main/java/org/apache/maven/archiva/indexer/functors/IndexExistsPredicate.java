@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Test the {@link RepositoryContentIndex} object for the existance of an index. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class IndexExistsPredicate

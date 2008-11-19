@@ -29,7 +29,6 @@ import org.apache.maven.archiva.policies.ReleasesPolicy;
 /**
  * RepositoryServlet Tests, Proxied, Get of Release Artifacts, with varying policy settings.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id: RepositoryServletProxiedReleasePolicyTest.java 590908 2007-11-01 06:21:26Z joakime $
  */
 public class RepositoryServletProxiedRelocatedTest

@@ -22,7 +22,6 @@ package org.apache.maven.archiva.indexer.query;
 /**
  * Base of all query terms.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class CompoundQueryTerm
 {

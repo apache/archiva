@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 /**
  * RepositoryContentConsumerUtil 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers"

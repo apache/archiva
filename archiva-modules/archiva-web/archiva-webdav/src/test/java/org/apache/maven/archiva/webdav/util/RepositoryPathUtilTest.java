@@ -22,7 +22,6 @@ package org.apache.maven.archiva.webdav.util;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class RepositoryPathUtilTest extends TestCase
 {

@@ -40,7 +40,6 @@ import org.apache.maven.archiva.web.action.PlexusActionSupport;
  * Base class for all repository administrative functions.
  * This should be neutral to the type of action (add/edit/delete) and type of repo (managed/remote)
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractRepositoriesAdminAction

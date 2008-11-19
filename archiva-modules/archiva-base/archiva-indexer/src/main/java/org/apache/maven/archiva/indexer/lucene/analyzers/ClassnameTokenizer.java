@@ -26,7 +26,6 @@ import java.io.Reader;
 /**
  * Lucene Tokenizer for {@link BytecodeKeys#CLASSES} fields. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ClassnameTokenizer extends CharTokenizer

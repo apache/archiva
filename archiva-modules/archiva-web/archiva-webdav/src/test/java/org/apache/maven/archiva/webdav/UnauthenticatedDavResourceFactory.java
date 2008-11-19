@@ -26,7 +26,6 @@ import org.apache.maven.archiva.webdav.ArchivaDavResourceFactory;
 /**
  * UnauthenticatedDavResourceFactory
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id: 
  */
 public class UnauthenticatedDavResourceFactory

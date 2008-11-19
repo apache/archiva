@@ -39,7 +39,6 @@ import java.io.File;
 /**
  * Consumer for cleaning up the database of artifacts that are no longer existing in the repository. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  *         <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  * 

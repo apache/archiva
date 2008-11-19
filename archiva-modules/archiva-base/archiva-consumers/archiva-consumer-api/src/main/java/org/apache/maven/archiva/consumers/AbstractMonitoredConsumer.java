@@ -29,7 +29,6 @@ import org.apache.maven.archiva.configuration.FileTypes;
 /**
  * AbstractMonitoredConsumer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractMonitoredConsumer

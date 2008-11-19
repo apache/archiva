@@ -22,7 +22,6 @@ package org.apache.maven.archiva.database;
 /**
  * ArchivaDatabaseException
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ArchivaDatabaseException

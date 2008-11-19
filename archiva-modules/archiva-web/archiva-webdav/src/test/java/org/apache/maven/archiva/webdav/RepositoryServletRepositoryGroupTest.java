@@ -54,7 +54,6 @@ import com.meterware.httpunit.WebResponse;
  *                     the artifact is returned, the iteration is broken and any Not Found (HTTP 404) is disregarded
  * Test Case 4.  Accessing a valid repository group with any http write method returns a Bad Request (HTTP 400)
  *                     
- * @author 
  *
  */
 public class RepositoryServletRepositoryGroupTest

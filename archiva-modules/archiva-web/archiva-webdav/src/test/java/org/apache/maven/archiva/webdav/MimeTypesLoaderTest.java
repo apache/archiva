@@ -25,7 +25,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 /**
  * ArchivaMimeTypesTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class MimeTypesLoaderTest

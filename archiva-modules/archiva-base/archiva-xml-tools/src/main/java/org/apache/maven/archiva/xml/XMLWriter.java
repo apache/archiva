@@ -28,7 +28,6 @@ import java.io.Writer;
 /**
  * XMLWriter - Making writing XML files easier. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class XMLWriter

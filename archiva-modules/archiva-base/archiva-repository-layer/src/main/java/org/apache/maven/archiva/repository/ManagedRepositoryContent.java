@@ -33,7 +33,6 @@ import java.util.Set;
  * ManagedRepositoryContent interface for interacting with a managed repository in an abstract way, 
  * without the need for processing based on filesystem paths, or working with the database.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface ManagedRepositoryContent

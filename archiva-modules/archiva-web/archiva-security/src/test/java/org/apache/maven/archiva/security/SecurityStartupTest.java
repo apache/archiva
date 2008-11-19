@@ -24,7 +24,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 /**
  * SecurityStartupTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class SecurityStartupTest

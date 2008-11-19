@@ -24,7 +24,6 @@ import junit.framework.TestCase;
 import java.util.Iterator;
 
 /**
- * @author Brett Porter
  */
 public class QueryTest
     extends TestCase

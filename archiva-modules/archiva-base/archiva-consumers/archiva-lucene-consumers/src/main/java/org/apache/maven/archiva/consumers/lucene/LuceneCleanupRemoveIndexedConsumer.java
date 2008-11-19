@@ -39,7 +39,6 @@ import java.util.List;
 /**
  * LuceneCleanupRemoveIndexedConsumer
  * 
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseCleanupConsumer"
  *                   role-hint="not-present-remove-indexed" instantiation-strategy="per-lookup"

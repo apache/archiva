@@ -24,7 +24,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 /**
  * MimeTypesTest 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id: MimeTypesTest.java 6556 2007-06-20 20:44:46Z joakime $
  */
 public class MimeTypesTest extends PlexusInSpringTestCase

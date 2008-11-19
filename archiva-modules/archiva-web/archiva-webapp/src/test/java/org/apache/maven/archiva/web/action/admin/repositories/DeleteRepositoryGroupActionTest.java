@@ -33,7 +33,6 @@ import org.easymock.MockControl;
 /**
  * DeleteRepositoryGroupActionTest
  * 
- * @author
  * @version
  */
 public class DeleteRepositoryGroupActionTest 

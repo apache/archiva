@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 /**
  * Generic Filename Parser for use with layout routines.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class FilenameParser

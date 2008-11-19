@@ -25,7 +25,6 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 /**
  * Test the WagonFactory works through Spring to be bound into the RepositoryProxyConnectors implementation.
  * 
- * @author Brett Porter
  */
 public class WagonFactoryTest
     extends PlexusInSpringTestCase

@@ -30,7 +30,6 @@ import java.util.List;
 /**
  * SampleKnownConsumer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"

@@ -44,7 +44,6 @@ import java.util.List;
 /**
  * DependencyGraphFactory 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DependencyGraphFactory

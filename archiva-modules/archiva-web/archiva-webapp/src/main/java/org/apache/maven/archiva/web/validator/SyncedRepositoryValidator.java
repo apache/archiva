@@ -27,7 +27,6 @@ import com.opensymphony.xwork2.validator.validators.ValidatorSupport;
  * Validator for synced repository form. The values to be validated depends on the
  * selected sync method to be used.
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class SyncedRepositoryValidator
     extends ValidatorSupport

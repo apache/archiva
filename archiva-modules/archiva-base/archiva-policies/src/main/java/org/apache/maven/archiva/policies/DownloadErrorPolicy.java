@@ -27,7 +27,6 @@ import java.util.Properties;
  * Policy to apply after the download has completed, but before the
  * resource is made available to the calling client.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id$
  */
 public interface DownloadErrorPolicy

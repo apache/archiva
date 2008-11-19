@@ -25,7 +25,6 @@ import java.util.List;
 /**
  * ArchivaDAO - The interface for all content within the database.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface ArchivaDAO

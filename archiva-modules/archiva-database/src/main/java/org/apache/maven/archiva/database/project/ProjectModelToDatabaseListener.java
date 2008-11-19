@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
  * Just in Time save of project models to the database, implemented as a listener
  * on {@link ProjectModelResolver} objects that implement {@link FilesystemBasedResolver}.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

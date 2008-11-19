@@ -24,7 +24,6 @@ import org.apache.maven.archiva.database.Constraint;
 /**
  * RepositoryProblemByTypeConstraint 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryProblemByTypeConstraint

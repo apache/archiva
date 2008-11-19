@@ -43,7 +43,6 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 /**
  * Purge from repository all snapshots older than the specified days in the repository configuration.
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class DaysOldRepositoryPurge
     extends AbstractRepositoryPurge

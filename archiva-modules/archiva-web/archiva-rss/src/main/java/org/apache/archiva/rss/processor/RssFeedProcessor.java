@@ -28,7 +28,6 @@ import com.sun.syndication.feed.synd.SyndFeed;
 /**
  * Retrieve and process the data that will be fed into the RssFeedGenerator.
  * 
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
 public interface RssFeedProcessor

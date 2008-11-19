@@ -43,7 +43,6 @@ import java.util.Collections;
 /**
  * Test maven connection to archiva
  *
- * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class MavenConnectionTest
     extends AbstractArchivaTestCase

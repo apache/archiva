@@ -27,7 +27,6 @@ import java.util.List;
 /**
  * Lucene Record for Bytecode information.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class BytecodeRecord

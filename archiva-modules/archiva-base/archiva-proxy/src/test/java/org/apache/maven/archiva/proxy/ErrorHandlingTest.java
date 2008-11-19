@@ -36,7 +36,6 @@ import java.io.File;
 /**
  * ErrorHandlingTest
  *
- * @author Brett Porter
  * @version $Id$
  */
 public class ErrorHandlingTest

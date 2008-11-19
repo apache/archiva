@@ -26,7 +26,6 @@ import java.util.List;
 /**
  * SqlBuilder - common sql building mechanisms. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class SqlBuilder

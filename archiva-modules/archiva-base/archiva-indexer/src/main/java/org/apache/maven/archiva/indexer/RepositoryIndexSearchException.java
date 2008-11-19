@@ -20,7 +20,6 @@ package org.apache.maven.archiva.indexer;
  */
 
 /**
- * @author Brett Porter
  */
 public class RepositoryIndexSearchException
     extends Exception

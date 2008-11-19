@@ -28,7 +28,6 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 /**
  * The component that takes care of scheduling in the application.
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public interface ArchivaTaskScheduler
 {

@@ -30,7 +30,6 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 /**
  * HashcodesIndexTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class HashcodesIndexTest extends AbstractIndexCreationTestCase

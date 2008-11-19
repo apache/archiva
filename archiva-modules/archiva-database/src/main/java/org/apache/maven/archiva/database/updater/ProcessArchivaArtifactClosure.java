@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 /**
  * ProcessArchivaArtifactClosure 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 class ProcessArchivaArtifactClosure

@@ -22,7 +22,6 @@ package org.apache.maven.archiva.consumers;
 /**
  * DatabaseUnprocessedArtifactConsumer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface DatabaseUnprocessedArtifactConsumer

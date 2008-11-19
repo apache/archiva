@@ -39,7 +39,6 @@ import java.io.File;
  * Consumer for removing or deleting from the database the project models fo artifacts that have been
  * deleted/removed from the repository.
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  *         <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  * 

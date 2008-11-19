@@ -24,7 +24,6 @@ import java.util.List;
 /**
  * Search across repositories in lucene indexes. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @todo add security to not perform search in repositories you don't have access to.
  */

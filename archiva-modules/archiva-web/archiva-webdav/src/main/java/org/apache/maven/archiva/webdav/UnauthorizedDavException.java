@@ -24,7 +24,6 @@ import org.apache.jackrabbit.webdav.DavException;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author <a href="mailto:james@atlassian.com">James William Dumay</a>
  */
 public class UnauthorizedDavException extends DavException
 {

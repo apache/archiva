@@ -24,7 +24,6 @@ import java.io.File;
 /**
  * RepositoryServlet Tests, Proxied, Get of Metadata, exists on remote repository only. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryServletProxiedMetadataRemoteOnlyTest
