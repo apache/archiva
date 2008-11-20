@@ -13,7 +13,7 @@
   </appender>
   
   <appender name="auditlog" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="file" value="${appserver.base}/logs/audit.log" />
+    <param name="file" value="${appserver.base}/logs/archiva-audit.log" />
     <param name="append" value="true" />
     <param name="datePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
