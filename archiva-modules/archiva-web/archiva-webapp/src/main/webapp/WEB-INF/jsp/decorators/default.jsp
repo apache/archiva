@@ -167,10 +167,10 @@
 %>
 <div id="footer">
   <div class="xleft">
-    <a href="http://archiva.apache.org/">Apache Archiva <%= ArchivaVersion.getVersion()%></a>
+    <a target="_blank" href="http://archiva.apache.org/">Apache Archiva <%= ArchivaVersion.getVersion()%></a>
   </div>
   <div class="xright">
-    <a href="http://www.apache.org/">Copyright &#169; <%= copyrightRange%> The Apache Software Foundation</a>
+    Copyright &#169; <%= copyrightRange%> <a target="_blank" href="http://www.apache.org/">The Apache Software Foundation</a>
   </div>
 
   <div class="clear">
