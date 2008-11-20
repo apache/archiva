@@ -64,6 +64,7 @@
         <item name="Consumers"               href="/adminguide/consumers.html" />
       </item>
       <item name="Configuration Files"       href="/adminguide/configuration-files.html" />
+      <item name="Audit Logs"                href="/adminguide/audit-logs.html" />
       <item name="Reports"                   href="/adminguide/reports.html" />
     </menu>
 

@@ -19,6 +19,8 @@ System Administrators Guide to Apache Archiva
 
     * {{{configuration-files.html} The configuration files available for Archiva}}
 
+    * {{{audit-logs.html} Audit logging}}
+
     * {{{reports.html} Repository health reports}}
 
     []

@@ -15,7 +15,11 @@ Release Notes for Archiva 1.2-M1
 
     * the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
 
-* New in Archiva 1.2-M1
+* Compatibility Changes
+
+  * The Audit log filename has been renamed to <<<archiva-audit.log>>> instead of <<<audit.log>>> so that the log directory can be shared with other applications.
+
+* New in Archiva 1.2
 
 ** Struts 2
 
