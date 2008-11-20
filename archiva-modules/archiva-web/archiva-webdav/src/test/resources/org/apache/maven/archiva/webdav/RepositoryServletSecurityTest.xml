@@ -95,14 +95,6 @@
         <!-- 30 minutes = 1800 seconds  -->
         <time-to-live-seconds>1800</time-to-live-seconds>
       </configuration>
-    </component>    
-    
-    
-    <!-- Don't drag in the world just to test this -->
-    <component>
-      <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.webdav.StubRepositoryContentConsumers</implementation>
     </component>
     
     <component>

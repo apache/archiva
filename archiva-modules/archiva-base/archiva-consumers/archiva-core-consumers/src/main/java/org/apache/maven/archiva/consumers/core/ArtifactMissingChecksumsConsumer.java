@@ -19,8 +19,6 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -46,47 +44,23 @@ import java.util.List;
  * ArtifactMissingChecksumsConsumer - Create missing checksums for the artifact.
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="create-missing-checksums"
- * instantiation-strategy="per-lookup"
  */
 public class ArtifactMissingChecksumsConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
-    /**
-     * @plexus.configuration default-value="create-missing-checksums"
-     */
     private String id;
 
-    /**
-     * @plexus.configuration default-value="Create Missing Checksums (.sha1 & .md5)"
-     */
     private String description;
 
-    /**
-     * @plexus.requirement
-     */
     private ArchivaConfiguration configuration;
 
-    /**
-     * @plexus.requirement
-     */
     private FileTypes filetypes;
 
-    /**
-     * @plexus.requirement role-hint="sha1"
-     */
     private Digester digestSha1;
 
-    /**
-     * @plexus.requirement role-hint="md5";
-     */
     private Digester digestMd5;
 
-    /**
-     * @plexus.requirement
-     */
     private ChecksumFile checksum;
 
     private static final String TYPE_CHECKSUM_NOT_FILE = "checksum-bad-not-file";
@@ -98,6 +72,22 @@ public class ArtifactMissingChecksumsConsumer
     private File repositoryDir;
     
     private List<String> includes = new ArrayList<String>();
+
+    public ArtifactMissingChecksumsConsumer(String id,
+            String description,
+            ArchivaConfiguration configuration,
+            FileTypes filetypes,
+            Digester digestSha1,
+            Digester digestMd5,
+            ChecksumFile checksum) {
+        this.id = id;
+        this.description = description;
+        this.configuration = configuration;
+        this.filetypes = filetypes;
+        this.digestSha1 = digestSha1;
+        this.digestMd5 = digestMd5;
+        this.checksum = checksum;
+    }
 
     public String getId()
     {

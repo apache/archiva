@@ -19,17 +19,15 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-
 public class ArtifactMissingChecksumsConsumerTest
     extends AbstractArtifactConsumerTest
 {
+    @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
-        consumer = (ArtifactMissingChecksumsConsumer) lookup( KnownRepositoryContentConsumer.class.getName(),
-                                                              "create-missing-checksums" );
+        consumer = (ArtifactMissingChecksumsConsumer) lookup( "artifactMissingChecksumsConsumer" );
     }
 }

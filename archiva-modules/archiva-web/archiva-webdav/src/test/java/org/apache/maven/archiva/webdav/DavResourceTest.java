@@ -86,7 +86,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
         resource = getDavResource(resourceLocator.getHref(false), myResource);
         lockManager = new SimpleLockManager();
         resource.addLockManager(lockManager);
-        consumers = new RepositoryContentConsumers();
+        consumers = (RepositoryContentConsumers)getApplicationContext().getBean("repositoryContentConsumers");
         archivaXworkUser = (ArchivaXworkUser) getApplicationContext().getBean( PlexusToSpringUtils.buildSpringId( ArchivaXworkUser.class ) );
     }
 

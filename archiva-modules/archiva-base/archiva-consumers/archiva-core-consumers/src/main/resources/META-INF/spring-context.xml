@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+       <bean id="artifactMissingChecksumsConsumer" class="org.apache.maven.archiva.consumers.core.ArtifactMissingChecksumsConsumer" scope="prototype">
+         <constructor-arg>
+           <value>create-missing-checksums</value>
+         </constructor-arg>
+         <constructor-arg>
+           <value>Create Missing Checksums (.sha1, .md5)</value>
+         </constructor-arg>
+         <constructor-arg>
+           <ref bean="archivaConfiguration"/>
+         </constructor-arg>
+         <constructor-arg>
+           <ref bean="fileTypes"/>
+         </constructor-arg>
+         <constructor-arg>
+           <ref bean="digester#sha1"/>
+         </constructor-arg>
+         <constructor-arg>
+           <ref bean="digester#md5"/>
+         </constructor-arg>
+         <constructor-arg>
+           <ref bean="checksumFile"/>
+         </constructor-arg>
+       </bean>
+</beans>

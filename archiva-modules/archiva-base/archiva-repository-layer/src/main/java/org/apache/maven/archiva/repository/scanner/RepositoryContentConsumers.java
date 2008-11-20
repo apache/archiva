@@ -38,39 +38,36 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * RepositoryContentConsumerUtil 
  *
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers"
  */
-public class RepositoryContentConsumers
+public class RepositoryContentConsumers implements ApplicationContextAware
 {
-    private Logger log = LoggerFactory.getLogger( RepositoryContentConsumers.class );
+    private ApplicationContext applicationContext;
     
-    /**
-     * @plexus.requirement
-     */
     private ArchivaConfiguration archivaConfiguration;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
-     */
-    private List<KnownRepositoryContentConsumer> availableKnownConsumers;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer"
-     */
-    private List<InvalidRepositoryContentConsumer> availableInvalidConsumers;
 
     private List<KnownRepositoryContentConsumer> selectedKnownConsumers;
 
     private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
-    
+
+    public RepositoryContentConsumers(ArchivaConfiguration archivaConfiguration)
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext)
+        throws BeansException
+    {
+        this.applicationContext = applicationContext;
+    }
+
     /**
      * <p>
      * Get the list of Ids associated with those {@link KnownRepositoryContentConsumer} that have
@@ -160,7 +157,7 @@ public class RepositoryContentConsumers
 
             List<String> knownSelected = getSelectedKnownConsumerIds();
 
-            for ( KnownRepositoryContentConsumer consumer : availableKnownConsumers )
+            for ( KnownRepositoryContentConsumer consumer : getAvailableKnownConsumers() )
             {
                 if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
                 {
@@ -187,7 +184,7 @@ public class RepositoryContentConsumers
 
             List<String> invalidSelected = getSelectedInvalidConsumerIds();
 
-            for ( InvalidRepositoryContentConsumer consumer : availableInvalidConsumers )
+            for ( InvalidRepositoryContentConsumer consumer : getAvailableInvalidConsumers() )
             {
                 if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
                 {
@@ -208,7 +205,7 @@ public class RepositoryContentConsumers
      */
     public List<KnownRepositoryContentConsumer> getAvailableKnownConsumers()
     {
-        return availableKnownConsumers;
+        return new ArrayList(applicationContext.getBeansOfType(KnownRepositoryContentConsumer.class).values());
     }
 
     /**
@@ -220,35 +217,7 @@ public class RepositoryContentConsumers
      */
     public List<InvalidRepositoryContentConsumer> getAvailableInvalidConsumers()
     {
-        return availableInvalidConsumers;
-    }
-
-    /**
-     * Set the list of {@link KnownRepositoryContentConsumer} objects that are
-     * available.
-     * 
-     * NOTE: This is an override for the base functionality as a component, this
-     * is used by archiva-cli and the unit testing framework.
-     * 
-     * @return the list of available {@link KnownRepositoryContentConsumer}.
-     */
-    public void setAvailableKnownConsumers( List<KnownRepositoryContentConsumer> availableKnownConsumers )
-    {
-        this.availableKnownConsumers = availableKnownConsumers;
-    }
-
-    /**
-     * Set the list of {@link InvalidRepositoryContentConsumer} objects that are
-     * available.
-     * 
-     * NOTE: This is an override for the base functionality as a component, this
-     * is used by archiva-cli and the unit testing framework.
-     * 
-     * @return the list of available {@link InvalidRepositoryContentConsumer}.
-     */
-    public void setAvailableInvalidConsumers( List<InvalidRepositoryContentConsumer> availableInvalidConsumers )
-    {
-        this.availableInvalidConsumers = availableInvalidConsumers;
+        return new ArrayList(applicationContext.getBeansOfType(InvalidRepositoryContentConsumer.class).values());
     }
 
     /**
