@@ -5,9 +5,9 @@
 
    <tlib-version>2.2.3</tlib-version>
    <jsp-version>1.2</jsp-version>
-   <short-name>ArchivaTaglib</short-name>
+   <short-name>archiva</short-name>
 
-   <uri>http://archiva.apache.org</uri>
+   <uri>/WEB-INF/taglib.tld</uri>
 
    <display-name>Archiva Taglib</display-name>
    <description><![CDATA[Archiva JSP Taglib]]></description>

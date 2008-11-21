@@ -37,7 +37,12 @@
   </div>
   
   <p>
-    Are you sure you want to ${action == 'addRepository' ? 'add' : 'update'} the following managed repository?
+    Are you sure you want to 
+    <c:choose>
+      <c:when test="${action == 'addRepository'}">add</c:when>
+      <c:otherwise>update</c:otherwise>
+    </c:choose>
+    the following managed repository?
   </p>
 
   <div class="infobox">

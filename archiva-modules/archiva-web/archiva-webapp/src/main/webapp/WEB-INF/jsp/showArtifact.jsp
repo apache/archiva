@@ -20,7 +20,7 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
+<%@ taglib prefix="archiva"   uri="/WEB-INF/taglib.tld" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 
 <html>
@@ -119,13 +119,13 @@
       <%-- POSTPONED to 1.0-alpha-2
       <redback:ifAnyAuthorized permissions="archiva-access-reports">
         <c:set var="url">
-	      <s:url action="showArtifactReports">
-	        <s:param name="groupId" value="%{groupId}"/>
-	        <s:param name="artifactId" value="%{artifactId}"/>
-	        <s:param name="version" value="%{version}"/>
-	      </s:url>
-	    </c:set>
-	    <my:currentWWUrl url="${url}">Reports</my:currentWWUrl>
+          <s:url action="showArtifactReports">
+            <s:param name="groupId" value="%{groupId}"/>
+            <s:param name="artifactId" value="%{artifactId}"/>
+            <s:param name="version" value="%{version}"/>
+          </s:url>
+        </c:set>
+        <my:currentWWUrl url="${url}">Reports</my:currentWWUrl>
       </redback:ifAnyAuthorized>
         --%>
       

@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="archiva" uri="http://archiva.apache.org" %>
+<%@ taglib prefix="archiva"   uri="/WEB-INF/taglib.tld" %>
 
 <html>
 <head>
