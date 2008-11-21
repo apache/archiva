@@ -1040,7 +1040,7 @@
     <wagon.version>1.0-beta-4</wagon.version>
     <redback.version>1.2-beta-1</redback.version>
     <jetty.version>6.1.6</jetty.version>
-    <binder.version>0.8.2</binder.version>
+    <binder.version>0.9</binder.version>
   </properties>
   <profiles>
     <profile>
