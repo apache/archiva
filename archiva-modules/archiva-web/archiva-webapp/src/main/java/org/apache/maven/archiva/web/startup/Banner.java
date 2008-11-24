@@ -32,8 +32,13 @@ import org.slf4j.LoggerFactory;
  */
 public class Banner
 {
+    private static final String eol = System.getProperty("line.separator");
+
     public static String encode( String raw )
     {
+        // Canonicalize line ends to make them easier to process
+        raw = raw.replace("\r\n", "\n").replace("\r", "\n");
+
         StringBuffer encoded = new StringBuffer();
         int rawlen = raw.length();
 
@@ -124,7 +129,7 @@ public class Banner
                 }
                 else if ( nc == 'n' )
                 {
-                    decoded.append( '\n' );
+                    decoded.append( eol );
                     i++;
                 }
                 else if ( Character.isDigit( nc ) )
@@ -206,7 +211,7 @@ public class Banner
     public static String getBanner( String version )
     {
         String encodedBanner = "$26 $34_$n$15 /$._$7 /$34 $.$n$14 /`/@),$4 |  Ba" +
-                " orunys bs nyy bs gur nycnpn'f  |$n$14 |  (~'  __| gbvyvat njnl ba " +
+                " orunys bs nyy bs gur nycnpnf   |$n$14 |  (~'  __| gbvyvat njnl ba " +
                 "gur Ncnpur Nepuvin |$n$6 _,--.$3_/  |$4 $.$5  cebwrpg grnz, V jbhyq y" +
                 "vxr gb$3 |$n$4 ,' ,$5 ($3 |$5 $.$5     jrypbzr lbh gb Nepuvin$6 |$" +
                 "n$4 |  ($6 $.  /$6 |  $32#  |$n$5 $.  )$._/  ,_/$7 |$36 |$n$5 / /$3 " +
@@ -219,6 +224,6 @@ public class Banner
     public static void display()
     {
         String banner = getBanner( ArchivaVersion.determineVersion() );
-    	LoggerFactory.getLogger( Banner.class ).info( StringUtils.repeat( "_", 25 ) + "\n" + banner );
+    	LoggerFactory.getLogger( Banner.class ).info( StringUtils.repeat( "_", 25 ) + eol + banner );
     }
 }

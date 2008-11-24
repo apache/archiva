@@ -36,6 +36,8 @@ import junit.framework.TestCase;
 public class BannerTest
     extends TestCase
 {
+    private static final String eol = System.getProperty("line.separator");
+
     private void assertEncodeDecode( String encoded, String decoded )
     {
         assertEquals( "Encoding: ", encoded, Banner.encode( decoded ) );
@@ -45,7 +47,7 @@ public class BannerTest
     public void testEncodeDecode()
     {
         assertEncodeDecode( "[$10 ]", "[          ]" );
-        assertEncodeDecode( "$$$5_$n$5_", "$_____\n_____" );
+        assertEncodeDecode( "$$$5_$n$5_", "$_____"+eol+"_____" );
         assertEncodeDecode( "$${Refgjuvyr}", "${Erstwhile}" );
     }
 
@@ -54,8 +56,8 @@ public class BannerTest
         assertEquals( "[ 1.0 ]", Banner.injectVersion( "[#####]", "1.0" ) );
         assertEquals( ".\\  1.0-SNAPSHOT  \\._____", Banner.injectVersion( ".\\################\\._____",
                                                                            "1.0-SNAPSHOT" ) );
-        assertEquals( "Archiva:\n ( 1.0-alpha-1  )", Banner
-            .injectVersion( "Archiva:\n (##############)", "1.0-alpha-1" ) );
+        assertEquals( "Archiva:\"+eol+\" ( 1.0-alpha-1  )", Banner
+            .injectVersion( "Archiva:\"+eol+\" (##############)", "1.0-alpha-1" ) );
     }
 
     public void testGetBanner()
