@@ -19,7 +19,7 @@
   -->
 
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
-<Configure class="org.mortbay.jetty.webapp.WebAppContext">
+<Configure id='wac' class="org.mortbay.jetty.webapp.WebAppContext">
 
   <New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>mail/Session</Arg>
@@ -41,6 +41,7 @@
 
   <!-- Archiva database -->
   <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg><Ref id="wac"/></Arg>
     <Arg>jdbc/archiva</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
@@ -52,6 +53,7 @@
   </New>
 
   <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg><Ref id="wac"/></Arg>
     <Arg>jdbc/archivaShutdown</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
@@ -64,6 +66,7 @@
 
   <!-- Users / Security Database -->
   <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg><Ref id="wac"/></Arg>
     <Arg>jdbc/users</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
@@ -75,6 +78,7 @@
   </New>
 
   <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg><Ref id="wac"/></Arg>
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
