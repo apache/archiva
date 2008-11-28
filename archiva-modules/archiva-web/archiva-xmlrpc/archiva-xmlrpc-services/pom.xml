@@ -22,47 +22,28 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-xmlrpc-api</artifactId>
-    </dependency>  
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-xmlrpc-security</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-indexer</artifactId>
+      <artifactId>archiva-database</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-xmlrpc-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-configuration</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduled</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-security</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
