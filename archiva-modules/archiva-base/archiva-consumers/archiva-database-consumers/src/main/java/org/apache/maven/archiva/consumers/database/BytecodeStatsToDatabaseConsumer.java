@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer"
  *                   role-hint="update-db-bytecode-stats"
  *                   instantiation-strategy="per-lookup"
  */

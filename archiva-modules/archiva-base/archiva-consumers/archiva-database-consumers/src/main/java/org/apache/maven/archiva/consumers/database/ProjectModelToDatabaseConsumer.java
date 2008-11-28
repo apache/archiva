@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * ProjectModelToDatabaseConsumer
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer"
  * role-hint="update-db-project"
  * instantiation-strategy="per-lookup"
  */

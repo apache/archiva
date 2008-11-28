@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * IndexArtifactConsumer
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer"
  * role-hint="index-artifact"
  * instantiation-strategy="per-lookup"
  */

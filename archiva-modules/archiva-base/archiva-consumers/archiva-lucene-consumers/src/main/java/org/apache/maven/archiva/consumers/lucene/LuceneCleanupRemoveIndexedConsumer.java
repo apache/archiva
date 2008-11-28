@@ -40,7 +40,7 @@ import java.util.List;
  * LuceneCleanupRemoveIndexedConsumer
  * 
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseCleanupConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer"
  *                   role-hint="not-present-remove-indexed" instantiation-strategy="per-lookup"
  */
 public class LuceneCleanupRemoveIndexedConsumer

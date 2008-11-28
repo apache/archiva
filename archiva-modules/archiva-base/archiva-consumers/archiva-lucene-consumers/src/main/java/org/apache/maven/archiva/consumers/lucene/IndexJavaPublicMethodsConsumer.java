@@ -51,7 +51,7 @@ import java.util.zip.ZipFile;
  *         <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer"
  *                   role-hint="index-public-methods"
  *                   instantiation-strategy="per-lookup"
  */

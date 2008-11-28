@@ -42,7 +42,7 @@ import java.io.File;
  *         <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseCleanupConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer"
  *                   role-hint="not-present-remove-db-project"
  *                   instantiation-strategy="per-lookup"
  */

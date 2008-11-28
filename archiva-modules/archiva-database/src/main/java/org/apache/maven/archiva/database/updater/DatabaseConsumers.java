@@ -48,12 +48,12 @@ public class DatabaseConsumers
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer"
+     * @plexus.requirement role="org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer"
      */
     private List availableUnprocessedConsumers;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.consumers.DatabaseCleanupConsumer"
+     * @plexus.requirement role="org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer"
      */
     private List availableCleanupConsumers;
 

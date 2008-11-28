@@ -2,7 +2,7 @@
   <components>
 <!-- for testing repo purge using retention count -->
     <component>
-      <role>org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer</role>
+      <role>org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer</role>
       <role-hint>index-public-methods</role-hint>
       <implementation>org.apache.maven.archiva.consumers.lucene.IndexJavaPublicMethodsConsumer</implementation>
       <requirements>

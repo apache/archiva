@@ -22,7 +22,7 @@
   <components>
     
     <component>
-      <role>org.apache.maven.archiva.consumers.DatabaseCleanupConsumer</role>
+      <role>org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer</role>
       <role-hint>lucene-cleanup</role-hint>
       <implementation>org.apache.maven.archiva.consumers.lucene.LuceneCleanupRemoveIndexedConsumer</implementation>
       <requirements>
