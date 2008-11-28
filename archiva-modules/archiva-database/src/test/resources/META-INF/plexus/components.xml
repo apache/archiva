@@ -16,13 +16,13 @@
     </component>
     
     <component>
-      <role>org.apache.maven.archiva.consumers.DatabaseCleanupConsumer</role>
+      <role>org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer</role>
       <role-hint>test-db-cleanup</role-hint>
       <implementation>org.apache.maven.archiva.database.updater.TestDatabaseCleanupConsumer</implementation>
     </component>
     
     <component>
-      <role>org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer</role>
+      <role>org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer</role>
       <role-hint>test-db-unprocessed</role-hint>
       <implementation>org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer</implementation>
     </component>
