@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.project.dependencies;
+package org.apache.maven.archiva.dependency.graph;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,10 +19,6 @@ package org.apache.maven.archiva.repository.project.dependencies;
  * under the License.
  */
 
-import org.apache.maven.archiva.dependency.graph.DependencyGraph;
-import org.apache.maven.archiva.dependency.graph.DependencyGraphBuilder;
-import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
-import org.apache.maven.archiva.dependency.graph.DependencyGraphUtils;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
