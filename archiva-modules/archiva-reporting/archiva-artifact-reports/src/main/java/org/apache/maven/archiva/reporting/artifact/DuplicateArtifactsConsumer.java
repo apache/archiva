@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.ArchivaArtifactConsumer"
  *                   role-hint="duplicate-artifacts"
  */
 public class DuplicateArtifactsConsumer

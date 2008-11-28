@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.ArchivaArtifactConsumer"
  *                   role-hint="missing-dependencies"
  */
 public class ProjectDependenciesConsumer

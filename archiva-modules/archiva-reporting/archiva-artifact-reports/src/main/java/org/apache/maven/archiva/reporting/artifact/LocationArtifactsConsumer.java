@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * file system).
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
+ * @plexus.component role="org.apache.maven.archiva.database.updater.ArchivaArtifactConsumer"
  * role-hint="validate-artifacts-location"
  */
 public class LocationArtifactsConsumer
