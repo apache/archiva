@@ -19,7 +19,7 @@ package org.apache.maven.archiva.consumers.lucene;
  * under the License.
  */
 
-import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
+import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;

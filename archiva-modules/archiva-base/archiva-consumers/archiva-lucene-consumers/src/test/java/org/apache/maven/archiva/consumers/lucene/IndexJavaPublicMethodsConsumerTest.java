@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;

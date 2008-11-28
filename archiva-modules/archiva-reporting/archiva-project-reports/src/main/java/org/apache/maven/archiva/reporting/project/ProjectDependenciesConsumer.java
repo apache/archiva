@@ -20,8 +20,8 @@ package org.apache.maven.archiva.reporting.project;
  */
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
-import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.database.updater.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.util.ArrayList;

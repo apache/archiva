@@ -24,8 +24,6 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.OrPredicate;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
-import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
-import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;

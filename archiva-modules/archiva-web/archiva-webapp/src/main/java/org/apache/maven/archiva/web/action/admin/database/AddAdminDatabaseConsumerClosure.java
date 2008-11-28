@@ -20,7 +20,7 @@ package org.apache.maven.archiva.web.action.admin.database;
  */
 
 import org.apache.commons.collections.Closure;
-import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
+import org.apache.maven.archiva.database.updater.ArchivaArtifactConsumer;
 
 import java.util.ArrayList;
 import java.util.List;

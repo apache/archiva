@@ -21,7 +21,7 @@ package org.apache.maven.archiva.consumers.database;
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.util.List;

@@ -21,10 +21,10 @@ package org.apache.maven.archiva.consumers.database;
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.constraints.RepositoryProblemByArtifactConstraint;
+import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;

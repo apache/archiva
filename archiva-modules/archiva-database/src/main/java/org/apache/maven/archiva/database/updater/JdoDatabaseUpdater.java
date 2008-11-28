@@ -27,7 +27,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
-import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;

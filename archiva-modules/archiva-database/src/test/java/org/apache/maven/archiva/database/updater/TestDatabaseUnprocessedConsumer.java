@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

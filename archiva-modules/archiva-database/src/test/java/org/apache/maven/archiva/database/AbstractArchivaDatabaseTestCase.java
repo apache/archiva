@@ -20,8 +20,8 @@ package org.apache.maven.archiva.database;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
-import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
+import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.database.updater.TestDatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer;
 import org.apache.maven.archiva.model.ArtifactReference;

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.consumers;
+package org.apache.maven.archiva.database.updater;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,8 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
+import org.apache.maven.archiva.consumers.Consumer;
+import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.util.List;

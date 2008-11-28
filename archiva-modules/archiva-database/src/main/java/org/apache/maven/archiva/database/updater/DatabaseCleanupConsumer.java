@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.consumers;
+package org.apache.maven.archiva.database.updater;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,11 +20,11 @@ package org.apache.maven.archiva.consumers;
  */
 
 /**
- * DatabaseUnprocessedArtifactConsumer 
+ * DatabaseCleanupConsumer 
  *
  * @version $Id$
  */
-public interface DatabaseUnprocessedArtifactConsumer
+public interface DatabaseCleanupConsumer
     extends ArchivaArtifactConsumer
 {
 

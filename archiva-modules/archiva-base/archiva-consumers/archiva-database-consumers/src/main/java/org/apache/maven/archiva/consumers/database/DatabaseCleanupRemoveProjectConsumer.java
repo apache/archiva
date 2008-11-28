@@ -22,7 +22,6 @@ package org.apache.maven.archiva.consumers.database;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -30,6 +29,7 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.codehaus.plexus.cache.Cache;
 
 import java.util.List;

@@ -21,7 +21,7 @@ package org.apache.maven.archiva.scheduled;
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
+import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.util.List;

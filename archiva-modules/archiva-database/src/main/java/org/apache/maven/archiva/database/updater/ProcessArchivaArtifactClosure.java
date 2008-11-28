@@ -20,7 +20,6 @@ package org.apache.maven.archiva.database.updater;
  */
 
 import org.apache.commons.collections.Closure;
-import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.slf4j.Logger;
