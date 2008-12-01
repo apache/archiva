@@ -63,6 +63,8 @@ public class ArchivaRepositoryScanningTaskExecutor
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
     
     /**
+     * TODO: just for stats, remove this and use the main stats module
+     * 
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
