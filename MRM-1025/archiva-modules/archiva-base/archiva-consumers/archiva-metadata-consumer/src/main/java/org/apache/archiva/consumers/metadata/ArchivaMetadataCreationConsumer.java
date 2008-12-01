@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.consumers.core;
+package org.apache.archiva.consumers.metadata;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -38,8 +38,6 @@ import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -47,7 +45,7 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
 /**
- * ArtifactUpdateDatabaseConsumer - Take an artifact off of disk and put it into the repository.
+ * Take an artifact off of disk and put it into the metadata repository.
  * 
  * @version $Id: ArtifactUpdateDatabaseConsumer.java 718864 2008-11-19 06:33:35Z brett $
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
@@ -77,13 +75,11 @@ public class ArchivaMetadataCreationConsumer
      */
     private FileTypes filetypes;
 
+    private Date whenGathered;
+
     /**
      * @plexus.requirement
      */
-    private RepositoryContentFactory repositoryFactory;
-
-    private Date whenGathered;
-
     private ManagedRepositoryContent repository;
 
     private List<String> includes = new ArrayList<String>();
@@ -118,16 +114,9 @@ public class ArchivaMetadataCreationConsumer
     public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered )
         throws ConsumerException
     {
-        try
-        {
-            this.repository = repositoryFactory.getManagedRepositoryContent( repo.getId() );
-            this.metadataRepository = new FileMetadataRepository( new File( repository.getRepoRoot(), ".metadata" ) );
-            this.whenGathered = whenGathered;
-        }
-        catch ( RepositoryException e )
-        {
-            throw new ConsumerException( "Unable to start ArtifactUpdateDatabaseConsumer: " + e.getMessage(), e );
-        }
+        this.repository.setRepository( repo );
+        this.metadataRepository = new FileMetadataRepository( new File( repository.getRepoRoot(), ".metadata" ) );
+        this.whenGathered = whenGathered;
     }
 
     public void processFile( String path )
@@ -145,7 +134,7 @@ public class ArchivaMetadataCreationConsumer
         {
             throw new ConsumerException( e.getMessage(), e );
         }
-        
+
         File file = new File( repository.getRepoRoot(), path );
 
         // TODO: needed in a more central place, but trying to isolate impact to start with
@@ -166,7 +155,7 @@ public class ArchivaMetadataCreationConsumer
         project.addBuild( build );
 
         // TODO: store "whenGathered"
-        
+
         // read the metadata and update it if it is newer or doesn't exist
         metadataRepository.update( project );
     }

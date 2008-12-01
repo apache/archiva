@@ -21,32 +21,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
+    <artifactId>archiva-consumers</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva-base</artifactId>
     <version>1.2-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
-
-  <artifactId>archiva-consumers</artifactId>
-  <name>Archiva Consumers</name>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>archiva-consumer-api</module>
-    <module>archiva-core-consumers</module>
-    <module>archiva-database-consumers</module>
-    <module>archiva-lucene-consumers</module>
-    <module>archiva-signature-consumers</module>
-    <module>archiva-dependency-tree-consumer</module>
-    <module>archiva-metadata-consumer</module>
-  </modules>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+  <artifactId>archiva-metadata-consumer</artifactId>
+  <name>Archiva Metadata Consumer</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-consumer-api</artifactId>
+    </dependency>
+    <dependency> <!--  TODO: version into parent -->
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
+    <dependency> <!--  TODO: version into parent -->
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-api</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
+    <dependency> <!--  TODO: version into parent, temporary coupling to file based repo -->
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-file</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
+  </dependencies>
 </project>
