@@ -64,7 +64,7 @@
           <field-name>postDownloadPolicies</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
+          <role>org.apache.archiva.repository.scanner.RepositoryContentConsumers</role>
           <field-name>consumers</field-name>
         </requirement>
         <requirement>

@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
+import org.apache.archiva.repository.scanner.RepositoryScanner;
+import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -39,9 +42,6 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
-import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
@@ -172,7 +172,7 @@ public class ArchivaCli
 
             System.out.println( "\n" + stats.toDump( repo ) );
         }
-        catch ( RepositoryException e )
+        catch ( RepositoryScannerException e )
         {
             e.printStackTrace( System.err );
         }
