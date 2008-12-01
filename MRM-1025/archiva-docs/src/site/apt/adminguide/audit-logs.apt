@@ -1,0 +1,51 @@
+ ------
+ Audit Logs
+ ------
+
+Audit Logs
+
+  Archiva's log directory contains an audit log file named <<<archiva-audit.log>>>, which tracks events that occur in the server.
+
+  A typical record looks like this:
+
+----
+2008-11-20 14:52:38 releases guest 127.0.0.1 "org/mortbay/jetty/jetty/6.1.12/jetty-6.1.12-sources.jar" "Created File (proxied)"
+----
+
+  The space delimited records are:
+
+    * date and time (server local time)
+
+    * repository affected
+
+    * user that enacted the change (or guest if none)
+
+    * IP address of the user
+
+    * the path of the artifact within the repository
+
+    * the event that occured
+
+  Currently, the following events are logged:
+
+    * creation of a directory
+
+    * creation of a file
+
+    * removal of a directory
+
+    * removal of a file
+
+    * modification of a directory
+
+    * move/rename of a file
+
+    * copy of a file
+
+    * move/rename of a directory
+
+    * copy of a directory
+
+    * uploaded file via the web interface
+
+~~TODO: link to configuration files, might want it to be configurable for different levels/events, later add GUI instructions

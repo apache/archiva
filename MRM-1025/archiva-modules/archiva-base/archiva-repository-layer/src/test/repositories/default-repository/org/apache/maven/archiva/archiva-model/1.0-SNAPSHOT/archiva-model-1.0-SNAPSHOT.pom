@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva-base</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>archiva-model</artifactId>
+  <name>Archiva Base :: Model</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-test-A</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-test-B</artifactId>
+      <version>${parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.jdo</groupId>
+      <artifactId>jdo2-api</artifactId>
+      <version>2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.modello</groupId>
+        <artifactId>modello-maven-plugin</artifactId>
+        <version>1.0-alpha-15-SNAPSHOT</version>
+        <configuration>
+          <version>1.0.0</version>
+          <packageWithVersion>false</packageWithVersion>
+          <model>src/main/mdo/archiva-base.xml</model>
+        </configuration>
+        <executions>
+          <execution>
+            <id>archiva-base</id>
+            <goals>
+              <goal>java</goal>
+              <goal>xsd</goal>
+              <goal>jpox-jdo-mapping</goal>
+              <goal>jpox-metadata-class</goal>
+              <!--
+              <goal>xpp3-writer</goal>
+              <goal>xpp3-reader</goal>
+                -->
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+       <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jpox-maven-plugin</artifactId>
+        <version>1.1.6</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.2.1.6</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>create-ddl</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>schema-create</goal>
+            </goals>
+            <configuration>
+              <outputFile>${basedir}/target/classes/org/apache/maven/archiva/model/schema.ddl</outputFile>
+              <toolProperties>
+                <property>
+                  <name>javax.jdo.option.ConnectionDriverName</name>
+                  <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+                </property>
+                <property>
+                  <name>javax.jdo.option.ConnectionURL</name>
+                  <value>jdbc:derby:target/jdo-schema-create;create=true</value>
+                </property>
+                <property>
+                  <name>javax.jdo.option.ConnectionUserName</name>
+                  <value>sa</value>
+                </property>
+                <property>
+                  <name>javax.jdo.option.ConnectionPassword</name>
+                  <value></value>
+                </property>
+                <property>
+                  <name>log4j.configuration</name>
+                  <value>${basedir}/src/test/resources/log4j.xml</value>
+                </property>
+                <property>
+                  <name>org.jpox.autoCreateTables</name>
+                  <value>true</value>
+                </property>
+              </toolProperties>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enhance</id>
+            <goals>
+              <goal>enhance</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+          <instrumentation>
+            <!-- exclude generated -->
+            <excludes>
+              <exclude>org/apache/maven/archiva/reporting/model/**</exclude>
+            </excludes>
+          </instrumentation>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

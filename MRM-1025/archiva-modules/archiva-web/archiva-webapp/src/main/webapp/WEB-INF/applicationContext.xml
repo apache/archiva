@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
+    init-method="initialize"/>
+
+  <bean id="urlFailureCache" class="org.apache.maven.archiva.policies.urlcache.DefaultUrlFailureCache">
+    <constructor-arg ref="cache#url-failures-cache" type="org.codehaus.plexus.cache.Cache"/>
+  </bean>
+
+  <bean name="wagon#http" class="org.apache.maven.wagon.providers.http.LightweightHttpWagon" scope="prototype">
+    <property name="httpHeaders">
+      <map>
+        <entry key="User-Agent" value="${user.agent}" />
+      </map>
+    </property>
+  </bean>
+
+  <bean name="wagon#https" class="org.apache.maven.wagon.providers.http.LightweightHttpsWagon" scope="prototype">
+    <property name="httpHeaders">
+      <map>
+        <entry key="User-Agent" value="${user.agent}" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:application.properties" />
+  </bean>
+  
+  <bean name="testXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.PingServiceImpl"/>
+   
+  <bean name="xmlRpcUserRepositories" class="org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories">
+    <constructor-arg ref="userRepositories"/>
+    <constructor-arg ref="xmlRpcAuthenticator"/>    
+  </bean> 
+  
+  <!-- Web Services : Search Service -->
+  <bean name="searchService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">
+    <!--  
+    <constructor-arg ref="archivaConfiguration"/>
+    <constructor-arg ref="repositoryContentFactory"/>
+     -->
+    <constructor-arg ref="xmlRpcUserRepositories"/>    
+    <constructor-arg ref="crossRepositorySearch"/>
+    <constructor-arg ref="archivaDAO#jdo"/>
+    <constructor-arg ref="repositoryBrowsing"/>
+  </bean>
+  
+  <!-- Web Services : Administration Service -->
+  <bean name="administrationService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
+    <constructor-arg ref="archivaConfiguration"/>
+    <constructor-arg ref="repositoryContentConsumers"/>
+    <constructor-arg ref="databaseConsumers"/>
+    <constructor-arg ref="repositoryContentFactory"/>
+    <constructor-arg ref="artifactDAO#jdo"/>
+    <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-artifact"/>
+    <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-project"/> 
+    <constructor-arg ref="archivaTaskScheduler"/>       
+  </bean> 
+
+  <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="administrationService"/>
+        <ref bean="searchService"/>
+      </list>
+    </constructor-arg>
+  </bean>
+    
+  <bean name="xmlRpcAuthenticator" class="org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator">
+      <constructor-arg ref="securitySystem"/>
+      <constructor-arg ref="userRepositories"/>
+  </bean>
+
+  <bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/mail/Session">
+    </property>
+  </bean>
+
+  <bean name="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="session" ref="mailSession"/>
+  </bean>  
+</beans>

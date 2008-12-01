@@ -1,0 +1,141 @@
+<supplementalDataModels>
+  <supplement>
+  	<project>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <name>Ant</name>
+      <url>http://ant.apache.org/</url>
+      <organization>
+        <name>The Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>The Apache Software License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+  	<project>
+      <groupId>geronimo-spec</groupId>
+      <artifactId>geronimo-spec-jta</artifactId>
+      <name>Geronimo :: Java Transaction API Specification</name>
+      <url>http://geronimo.apache.org/</url>
+      <organization>
+        <name>The Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>The Apache Software License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+  	<project>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <name>JavaBeans Activation Framework (JAF)</name>
+      <organization>
+        <name>Sun Microsystems</name>
+        <url>http://www.sun.com/</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>Common Development and Distribution License (CDDL) v1.0</name>
+          <url>https://glassfish.dev.java.net/public/CDDLv1.0.html</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+  	<project>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <name>JavaMail API</name>
+      <organization>
+        <name>Sun Microsystems</name>
+        <url>http://www.sun.com/</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>Common Development and Distribution License (CDDL) v1.0</name>
+          <url>https://glassfish.dev.java.net/public/CDDLv1.0.html</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+  	<project>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <name>Xerces</name>
+      <url>http://xerces.apache.org/</url>
+      <organization>
+        <name>The Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>The Apache Software License, Version 1.1</name>
+          <url>http://www.apache.org/licenses/LICENSE</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+  	<project>
+      <groupId>tomcat</groupId>
+      <artifactId>jasper-compiler</artifactId>
+      <name>Tomcat Jasper Compiler</name>
+      <organization>
+        <name>The Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>The Apache Software License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+  	<project>
+      <groupId>tomcat</groupId>
+      <artifactId>jasper-compiler-jdt</artifactId>
+      <name>Tomcat Jasper Compiler JDT</name>
+      <organization>
+        <name>The Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>The Apache Software License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+  	<project>
+      <groupId>tomcat</groupId>
+      <artifactId>jasper-runtime</artifactId>
+      <name>Tomcat Jasper Runtime</name>
+      <organization>
+        <name>The Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>The Apache Software License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+</supplementalDataModels>
