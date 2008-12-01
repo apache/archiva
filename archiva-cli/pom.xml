@@ -40,6 +40,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-metadata-consumer</artifactId>
+      <version>1.2-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-xml-tools</artifactId>
     </dependency>
     <dependency>
