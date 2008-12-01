@@ -19,6 +19,7 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
+import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -27,7 +28,6 @@ import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
-import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;

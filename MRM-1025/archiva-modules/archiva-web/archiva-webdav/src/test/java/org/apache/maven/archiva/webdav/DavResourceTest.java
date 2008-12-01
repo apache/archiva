@@ -21,6 +21,7 @@ package org.apache.maven.archiva.webdav;
 
 import java.io.File;
 
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
@@ -36,7 +37,6 @@ import org.apache.jackrabbit.webdav.lock.Scope;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;

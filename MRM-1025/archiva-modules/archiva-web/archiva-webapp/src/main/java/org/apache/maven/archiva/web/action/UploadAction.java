@@ -34,6 +34,7 @@ import java.util.TimeZone;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -46,7 +47,6 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.audit.Auditable;

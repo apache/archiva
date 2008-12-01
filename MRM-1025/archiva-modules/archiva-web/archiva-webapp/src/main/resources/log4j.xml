@@ -27,7 +27,7 @@
     <appender-ref ref="rolling" />
   </logger>
   
-  <logger name="org.apache.maven.archiva.repository.scanner">
+  <logger name="org.apache.archiva.repository.scanner">
     <level value="info" />
     <appender-ref ref="rolling" />
   </logger>

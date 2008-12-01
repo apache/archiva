@@ -21,6 +21,8 @@ package org.apache.maven.archiva.web.action.admin.scanning;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -30,7 +32,6 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 
