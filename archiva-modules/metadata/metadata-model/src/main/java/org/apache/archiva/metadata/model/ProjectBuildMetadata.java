@@ -1,5 +1,6 @@
 package org.apache.archiva.metadata.model;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,5 +42,10 @@ public class ProjectBuildMetadata
     public void addArtifact( ArtifactMetadata artifact )
     {
         this.artifacts.put( artifact.getId(), artifact );
+    }
+
+    public Collection<ArtifactMetadata> getArtifacts()
+    {
+        return artifacts.values();
     }
 }
