@@ -57,9 +57,10 @@
     <constructor-arg ref="databaseConsumers"/>
     <constructor-arg ref="repositoryContentFactory"/>
     <constructor-arg ref="artifactDAO#jdo"/>
-    <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-artifact"/>
-    <constructor-arg ref="databaseCleanupConsumer#not-present-remove-db-project"/> 
-    <constructor-arg ref="archivaTaskScheduler"/>       
+    <constructor-arg ref="archivaTaskScheduler"/>
+    <constructor-arg>
+      <bean class="org.apache.maven.archiva.repository.events.RepositoryListenerFactoryBean" />
+    </constructor-arg>       
   </bean> 
 
   <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">

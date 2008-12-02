@@ -174,6 +174,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                     versionRef.setVersion( version );
                     repository.deleteVersion( versionRef );
                     
+                    // TODO: looks incomplete, might not delete related artifacts?
                     for ( RepositoryListener listener : listeners )
                     {
                         listener.deleteArtifact( repository, artifact );
