@@ -20,11 +20,15 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
@@ -45,6 +49,7 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
 import org.apache.maven.archiva.repository.content.PathParser;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
@@ -100,15 +105,9 @@ public class AdministrationServiceImplTest
     
     private MockControl unprocessedConsumersControl;
     
-    private MockControl cleanupConsumersControl;
-    
     private DatabaseUnprocessedArtifactConsumer processArtifactConsumer;
     
     private DatabaseUnprocessedArtifactConsumer processPomConsumer;
-    
-    private DatabaseCleanupConsumer cleanupIndexConsumer;
-    
-    private DatabaseCleanupConsumer cleanupDbConsumer;
     
     // delete artifact    
     private MockControl repoFactoryControl;
@@ -119,9 +118,15 @@ public class AdministrationServiceImplTest
     
     private ArtifactDAO artifactDao;
     
-    private MockControl cleanupControl;
-    
-    private DatabaseCleanupConsumer cleanupConsumer;
+    private MockControl listenerControl;
+
+    private RepositoryListener listener;
+
+    private DatabaseCleanupConsumer cleanupIndexConsumer;
+
+    private DatabaseCleanupConsumer cleanupDbConsumer;
+
+    private MockControl cleanupConsumersControl;
         
     protected void setUp()
         throws Exception
@@ -154,9 +159,9 @@ public class AdministrationServiceImplTest
         dbConsumersUtil = ( DatabaseConsumers ) dbConsumersUtilControl.getMock();
                 
         cleanupConsumersControl = MockControl.createControl( DatabaseCleanupConsumer.class );
-        cleanupIndexConsumer = ( DatabaseCleanupConsumer ) cleanupConsumersControl.getMock();
-        cleanupDbConsumer = ( DatabaseCleanupConsumer ) cleanupConsumersControl.getMock();
-        
+        cleanupIndexConsumer = (DatabaseCleanupConsumer) cleanupConsumersControl.getMock();
+        cleanupDbConsumer = (DatabaseCleanupConsumer) cleanupConsumersControl.getMock();
+                
         unprocessedConsumersControl = MockControl.createControl( DatabaseUnprocessedArtifactConsumer.class );
         processArtifactConsumer = ( DatabaseUnprocessedArtifactConsumer ) unprocessedConsumersControl.getMock();
         processPomConsumer = ( DatabaseUnprocessedArtifactConsumer ) unprocessedConsumersControl.getMock();
@@ -168,11 +173,12 @@ public class AdministrationServiceImplTest
         artifactDaoControl = MockControl.createControl( ArtifactDAO.class );
         artifactDao = ( ArtifactDAO ) artifactDaoControl.getMock();
                 
-        cleanupControl = MockClassControl.createControl( DatabaseCleanupConsumer.class );
-        cleanupConsumer = ( DatabaseCleanupConsumer ) cleanupControl.getMock();
-         
-        service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, dbConsumersUtil, 
-                         repositoryFactory, artifactDao, cleanupConsumer, cleanupConsumer, taskScheduler );
+        listenerControl = MockControl.createControl( RepositoryListener.class );
+        listener = (RepositoryListener) listenerControl.getMock();
+        
+        service =
+            new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, dbConsumersUtil, repositoryFactory,
+                                           artifactDao, taskScheduler, Collections.singletonList( listener ) );
     }
   
 /* Tests for database consumers  */
@@ -210,7 +216,7 @@ public class AdministrationServiceImplTest
         
         recordDbConsumers();
         
-     // test enable "process-pom" db consumer
+        // test enable "process-pom" db consumer
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.getDatabaseScanning(), dbScanning );
         
@@ -243,7 +249,7 @@ public class AdministrationServiceImplTest
         archivaConfigControl.verify();
         configControl.verify();
                 
-      // test disable "process-pom" db consumer        
+        // test disable "process-pom" db consumer        
         dbConsumersUtilControl.reset();
         cleanupConsumersControl.reset();
         unprocessedConsumersControl.reset();
@@ -454,11 +460,7 @@ public class AdministrationServiceImplTest
     public void testDeleteM2ArtifactArtifactExists()
         throws Exception
     {
-        File file = new File( getBasedir(), "/target/test-classes/default-repo/" ); 
-        assertTrue( file.exists() );
-        
-        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "internal", "default", "Internal Repository", true, false );
-        managedRepo.setLocation( file.getAbsolutePath() );
+        ManagedRepositoryConfiguration managedRepo = createManagedRepo("default", "default-repo");
         
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
@@ -474,33 +476,26 @@ public class AdministrationServiceImplTest
         artifactDaoControl.setMatcher( MockControl.ALWAYS_MATCHER );
         artifactDaoControl.setReturnValue( artifacts );
         
-        cleanupConsumer.processArchivaArtifact( artifacts.get( 0 ) );
-        cleanupControl.setVoidCallable( 2 );
+        listener.deleteArtifact( repoContent, artifacts.get( 0 ) );
+        listenerControl.setVoidCallable( 1 );
                   
         archivaConfigControl.replay();
         configControl.replay();
         repoFactoryControl.replay();    
         artifactDaoControl.replay();
-        cleanupControl.replay();
+        listenerControl.replay();
        
-        try
-        {
-            boolean success = service.deleteArtifact( "internal", "org.apache.archiva", "archiva-test", "1.0" );
-            assertTrue( success ); 
-        }
-        catch ( Exception e )
-        {            
-            fail( "An exception should not have been thrown." );
-        }
+        boolean success = service.deleteArtifact( "internal", "org.apache.archiva", "archiva-test", "1.0" );
+        assertTrue( success ); 
         
         archivaConfigControl.verify();
         configControl.verify();
         repoFactoryControl.verify();
         artifactDaoControl.verify();
-        cleanupControl.verify();
+        listenerControl.verify();
         
-        assertFalse( new File( getBasedir(), "/target/test-classes/default-repo/org/apache/archiva/archiva-test/1.0" ).exists() );
-        assertTrue( new File( getBasedir(), "/target/test-classes/default-repo/org/apache/archiva/archiva-test/1.1" ).exists() );
+        assertFalse( new File( managedRepo.getLocation(), "org/apache/archiva/archiva-test/1.0" ).exists() );
+        assertTrue( new File( managedRepo.getLocation(), "org/apache/archiva/archiva-test/1.1" ).exists() );
     }
     
     public void testDeleteM1ArtifactArtifactExists()
@@ -512,11 +507,7 @@ public class AdministrationServiceImplTest
         MockControl pathParserControl = MockClassControl.createControl( PathParser.class );
         PathParser parser = ( PathParser ) pathParserControl.getMock();
         
-        File file = new File( getBasedir(), "/target/test-classes/legacy-repo/" ); 
-        assertTrue( file.exists() );
-        
-        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "internal", "legacy", "Internal Repository", true, false );
-        managedRepo.setLocation( file.getAbsolutePath() );
+        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "legacy", "legacy-repo" );
         
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
@@ -536,52 +527,42 @@ public class AdministrationServiceImplTest
         artifactDaoControl.setMatcher( MockControl.ALWAYS_MATCHER );
         artifactDaoControl.setReturnValue( artifacts );
                 
-        cleanupConsumer.processArchivaArtifact( artifacts.get( 0 ) );
-        cleanupControl.setVoidCallable( 2 );
+        listener.deleteArtifact( repoContent, artifacts.get( 0 ) );
+        listenerControl.setVoidCallable( 1 );
         
         archivaConfigControl.replay();
         configControl.replay();
         repoFactoryControl.replay();
         artifactDaoControl.replay();
-        cleanupControl.replay();
+        listenerControl.replay();
         fileTypesControl.replay();
         pathParserControl.replay();
        
-        try
-        {
-            boolean success = service.deleteArtifact( "internal", "org.apache.archiva", "archiva-test", "1.0" );
-            assertTrue( success ); 
-        }
-        catch ( Exception e )
-        {
-            fail( "An exception should not have been thrown." );
-        }
+        boolean success = service.deleteArtifact( "internal", "org.apache.archiva", "archiva-test", "1.0" );
+        assertTrue( success ); 
         
         archivaConfigControl.verify();
         configControl.verify();
         repoFactoryControl.verify();
         artifactDaoControl.verify();
-        cleanupControl.verify();
+        listenerControl.verify();
         fileTypesControl.verify();
         pathParserControl.verify();
         
-        assertFalse( new File( getBasedir(), "/target/test-classes/legacy-repo/org.apache.archiva/jars/archiva-test-1.0.jar" ).exists() );
-        assertFalse( new File( getBasedir(), "/target/test-classes/legacy-repo/org.apache.archiva/poms/archiva-test-1.0.pom" ).exists() );
+        File repo = new File( managedRepo.getLocation() );
+        assertFalse( new File( repo, "org.apache.archiva/jars/archiva-test-1.0.jar" ).exists() );
+        assertFalse( new File( repo, "org.apache.archiva/poms/archiva-test-1.0.pom" ).exists() );
         
-        assertTrue( new File( getBasedir(), "/target/test-classes/legacy-repo/org.apache.archiva/jars/archiva-test-1.1.jar" ).exists() );
-        assertTrue( new File( getBasedir(), "/target/test-classes/legacy-repo/org.apache.archiva/jars/archiva-diff-1.0.jar" ).exists() );
-        assertTrue( new File( getBasedir(), "/target/test-classes/legacy-repo/org.apache.archiva/poms/archiva-test-1.1.pom" ).exists() );
-        assertTrue( new File( getBasedir(), "/target/test-classes/legacy-repo/org.apache.archiva/poms/archiva-diff-1.0.pom" ).exists() );
+        assertTrue( new File( repo, "org.apache.archiva/jars/archiva-test-1.1.jar" ).exists() );
+        assertTrue( new File( repo, "org.apache.archiva/jars/archiva-diff-1.0.jar" ).exists() );
+        assertTrue( new File( repo, "org.apache.archiva/poms/archiva-test-1.1.pom" ).exists() );
+        assertTrue( new File( repo, "org.apache.archiva/poms/archiva-diff-1.0.pom" ).exists() );
     }
 
     public void testDeleteArtifactArtifactDoesNotExist()
         throws Exception
     {
-        File file = new File( getBasedir(), "/target/test-classes/default-repo/" ); 
-        assertTrue( file.exists() );
-        
-        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "internal", "default", "Internal Repository", true, false );
-        managedRepo.setLocation( file.getAbsolutePath() );
+        ManagedRepositoryConfiguration managedRepo = createManagedRepo("default", "default-repo");
         
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
@@ -608,6 +589,23 @@ public class AdministrationServiceImplTest
         archivaConfigControl.verify();
         configControl.verify();
         repoFactoryControl.verify();
+    }
+
+    private ManagedRepositoryConfiguration createManagedRepo(String layout, String directory)
+        throws IOException
+    {
+        File srcDir = new File( getBasedir(), "src/test/repositories/"+ directory );
+
+        File repoDir = getTestFile( "target/test-repos/" + directory );
+
+        FileUtils.deleteDirectory( repoDir );
+
+        FileUtils.copyDirectory( srcDir, repoDir, FileFilterUtils.makeSVNAware( null ) );
+
+        ManagedRepositoryConfiguration managedRepo =
+            createManagedRepo( "internal", layout, "Internal Repository", true, false );
+        managedRepo.setLocation( repoDir.getAbsolutePath() );
+        return managedRepo;
     }
     
     public void testDeleteArtifacRepositoryDoesNotExist()

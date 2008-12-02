@@ -20,6 +20,7 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
@@ -32,7 +33,6 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
-import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -48,6 +48,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
@@ -74,25 +75,22 @@ public class AdministrationServiceImpl
     
     private ArtifactDAO artifactDAO;
     
-    private DatabaseCleanupConsumer cleanupArtifacts;
-   
-    private DatabaseCleanupConsumer cleanupProjects;
-    
     private ArchivaTaskScheduler taskScheduler;
     
+    private Collection<RepositoryListener> listeners;
+
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
                                       DatabaseConsumers dbConsumersUtil, RepositoryContentFactory repoFactory,
-                                      ArtifactDAO artifactDAO, DatabaseCleanupConsumer cleanupArtifacts,
-                                      DatabaseCleanupConsumer cleanupProjects, ArchivaTaskScheduler taskScheduler )
-    {   
+                                      ArtifactDAO artifactDAO, ArchivaTaskScheduler taskScheduler,
+                                      Collection<RepositoryListener> listeners )
+    {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
         this.dbConsumersUtil = dbConsumersUtil;
         this.repoFactory = repoFactory;
         this.artifactDAO = artifactDAO;
-        this.cleanupArtifacts = cleanupArtifacts;
-        this.cleanupProjects = cleanupProjects;             
         this.taskScheduler = taskScheduler;
+        this.listeners = listeners;
     }
         
     /**
@@ -230,7 +228,7 @@ public class AdministrationServiceImpl
             ref.setGroupId( groupId );
             ref.setArtifactId( artifactId );
             ref.setVersion( version );
-                   
+            
             // delete from file system
             repoContent.deleteVersion( ref );
             
@@ -240,31 +238,23 @@ public class AdministrationServiceImpl
             try
             {
                 artifacts = artifactDAO.queryArtifacts( constraint );
-                if( artifacts == null )
-                {
-                    return true;
-                }
             }
             catch ( ArchivaDatabaseException e )
             {
                 throw new Exception( "Error occurred while cleaning up database." );
             }            
                
-            // cleanup db manually? or use the cleanup consumers as what is done now?
-            for( ArchivaArtifact artifact : artifacts )
+            if ( artifacts != null )
             {
-                if( artifact.getVersion().equals( version ) )
+                for ( ArchivaArtifact artifact : artifacts )
                 {
-                    try
+                    if ( artifact.getVersion().equals( version ) )
                     {
-                        cleanupArtifacts.processArchivaArtifact( artifact );
-                        cleanupProjects.processArchivaArtifact( artifact );
+                        for ( RepositoryListener listener : listeners )
+                        {
+                            listener.deleteArtifact( repoContent, artifact );
+                        }
                     }
-                    catch ( ConsumerException ce )
-                    {
-                        // log error
-                        continue;
-                    }                   
                 }
             }
         }
@@ -436,5 +426,5 @@ public class AdministrationServiceImpl
         {
             throw new Exception( "Error occurred while saving the configuration." );    
         }
-    }    
+    }
 }
