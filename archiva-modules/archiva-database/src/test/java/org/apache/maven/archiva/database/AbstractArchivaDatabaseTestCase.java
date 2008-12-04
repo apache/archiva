@@ -19,18 +19,6 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
-import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
-import org.apache.maven.archiva.database.updater.TestDatabaseCleanupConsumer;
-import org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.VersionedReference;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.jpox.SchemaTool;
-
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -41,6 +29,16 @@ import java.util.Properties;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.VersionedReference;
+import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
+import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.jpox.SchemaTool;
 
 /**
  * AbstractArchivaDatabaseTestCase 
@@ -131,15 +129,6 @@ public abstract class AbstractArchivaDatabaseTestCase
         pm.close();
 
         this.dao = (ArchivaDAO) lookup( ArchivaDAO.class.getName(), "jdo" );
-    }
-
-    protected TestDatabaseCleanupConsumer lookupTestCleanupConsumer()
-        throws Exception
-    {
-        TestDatabaseCleanupConsumer consumer = (TestDatabaseCleanupConsumer) lookup( DatabaseCleanupConsumer.class,
-                                                                                     "test-db-cleanup" );
-        assertNotNull( "Test Database Cleanup Consumer should not be null.", consumer );
-        return consumer;
     }
 
     protected TestDatabaseUnprocessedConsumer lookupTestUnprocessedConsumer()

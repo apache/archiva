@@ -52,13 +52,6 @@ public class DatabaseConsumers
      */
     private List availableUnprocessedConsumers;
 
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer"
-     */
-    private List availableCleanupConsumers;
-
-    private Predicate selectedCleanupConsumers;
-
     private Predicate selectedUnprocessedConsumers;
 
     class SelectedUnprocessedConsumersPredicate
@@ -80,31 +73,11 @@ public class DatabaseConsumers
         }
     }
 
-    class SelectedCleanupConsumersPredicate
-        implements Predicate
-    {
-        public boolean evaluate( Object object )
-        {
-            boolean satisfies = false;
-
-            if ( object instanceof DatabaseCleanupConsumer )
-            {
-                DatabaseCleanupConsumer consumer = (DatabaseCleanupConsumer) object;
-                DatabaseScanningConfiguration config = archivaConfiguration.getConfiguration().getDatabaseScanning();
-
-                return config.getCleanupConsumers().contains( consumer.getId() );
-            }
-
-            return satisfies;
-        }
-    }
-
     public void initialize()
         throws InitializationException
     {
         Predicate permanentConsumers = new PermanentConsumerPredicate();
 
-        selectedCleanupConsumers = new OrPredicate( permanentConsumers, new SelectedCleanupConsumersPredicate() );
         selectedUnprocessedConsumers = new OrPredicate( permanentConsumers, new SelectedUnprocessedConsumersPredicate() );
     }
 
@@ -122,19 +95,6 @@ public class DatabaseConsumers
     }
 
     /**
-     * Get the {@link List} of {@link DatabaseCleanupConsumer} objects for those
-     * consumers selected due to the configuration.
-     * 
-     * @return the list of selected {@link DatabaseCleanupConsumer} objects.
-     */
-    public List getSelectedCleanupConsumers()
-    {
-        List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( availableCleanupConsumers, selectedCleanupConsumers ) );
-        return ret;
-    }
-
-    /**
      * Get the complete {@link List} of {@link DatabaseUnprocessedArtifactConsumer} objects
      * that are available in the system, regardless of configuration.
      * 
@@ -143,16 +103,5 @@ public class DatabaseConsumers
     public List getAvailableUnprocessedConsumers()
     {
         return Collections.unmodifiableList( this.availableUnprocessedConsumers );
-    }
-
-    /**
-     * Get the complete {@link List} of {@link DatabaseCleanupConsumer} objects
-     * that are available in the system, regardless of configuration.
-     * 
-     * @return the list of all available {@link DatabaseCleanupConsumer} objects.
-     */
-    public List getAvailableCleanupConsumers()
-    {
-        return Collections.unmodifiableList( this.availableCleanupConsumers );
     }
 }

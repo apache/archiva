@@ -19,7 +19,9 @@ package org.apache.maven.archiva.web.action.admin.database;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Preparable;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -27,16 +29,15 @@ import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.admin.scanning.AdminRepositoryConsumerComparator;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.admin.scanning.AdminRepositoryConsumerComparator;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
-
-import java.util.Collections;
-import java.util.List;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * DatabaseAction
@@ -70,16 +71,6 @@ public class DatabaseAction
      */
     private List enabledUnprocessedConsumers;
 
-    /**
-     * List of {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
-     */
-    private List cleanupConsumers;
-
-    /**
-     * List of enabled {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
-     */
-    private List enabledCleanupConsumers;
-
     public void prepare()
         throws Exception
     {
@@ -94,24 +85,12 @@ public class DatabaseAction
         CollectionUtils.forAllDo( databaseConsumers.getAvailableUnprocessedConsumers(), addAdminDbConsumer );
         this.unprocessedConsumers = addAdminDbConsumer.getList();
         Collections.sort( this.unprocessedConsumers, AdminRepositoryConsumerComparator.getInstance() );
-
-        addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getCleanupConsumers() );
-        CollectionUtils.forAllDo( databaseConsumers.getAvailableCleanupConsumers(), addAdminDbConsumer );
-        this.cleanupConsumers = addAdminDbConsumer.getList();
-        Collections.sort( this.cleanupConsumers, AdminRepositoryConsumerComparator.getInstance() );
     }
 
     public String updateUnprocessedConsumers()
     {
         archivaConfiguration.getConfiguration().getDatabaseScanning().setUnprocessedConsumers(
             enabledUnprocessedConsumers );
-
-        return saveConfiguration();
-    }
-
-    public String updateCleanupConsumers()
-    {
-        archivaConfiguration.getConfiguration().getDatabaseScanning().setCleanupConsumers( enabledCleanupConsumers );
 
         return saveConfiguration();
     }
@@ -166,11 +145,6 @@ public class DatabaseAction
         this.cron = cron;
     }
 
-    public List getCleanupConsumers()
-    {
-        return cleanupConsumers;
-    }
-
     public List getUnprocessedConsumers()
     {
         return unprocessedConsumers;
@@ -184,15 +158,5 @@ public class DatabaseAction
     public void setEnabledUnprocessedConsumers( List enabledUnprocessedConsumers )
     {
         this.enabledUnprocessedConsumers = enabledUnprocessedConsumers;
-    }
-
-    public List getEnabledCleanupConsumers()
-    {
-        return enabledCleanupConsumers;
-    }
-
-    public void setEnabledCleanupConsumers( List enabledCleanupConsumers )
-    {
-        this.enabledCleanupConsumers = enabledCleanupConsumers;
     }
 }
