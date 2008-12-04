@@ -79,7 +79,7 @@ public class DefaultCrossRepositorySearch
      */
     private ArchivaConfiguration configuration;
 
-    private List<ManagedRepositoryConfiguration> localIndexedRepositories = new ArrayList<ManagedRepositoryConfiguration>();
+    private final List<ManagedRepositoryConfiguration> localIndexedRepositories = new ArrayList<ManagedRepositoryConfiguration>();
     
     public SearchResults executeFilteredSearch( String principal, List<String> selectedRepos, String groupId,
                                                 String artifactId, String version, String className,
