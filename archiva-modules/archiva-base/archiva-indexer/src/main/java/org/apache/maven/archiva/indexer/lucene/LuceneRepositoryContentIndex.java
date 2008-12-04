@@ -62,7 +62,7 @@ public class LuceneRepositoryContentIndex
      */
     private LuceneIndexHandlers indexHandlers;
     
-    private ManagedRepositoryConfiguration repository;
+    private final ManagedRepositoryConfiguration repository;
 
     public LuceneRepositoryContentIndex( ManagedRepositoryConfiguration repository, File indexDir, LuceneIndexHandlers handlers )
     {
