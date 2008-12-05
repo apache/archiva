@@ -66,6 +66,7 @@ public class FileContentRecord
         return repositoryId + ":" + filename;
     }
 
+    @Override
     public int hashCode()
     {
         final int PRIME = 31;
@@ -74,6 +75,7 @@ public class FileContentRecord
         return result;
     }
 
+    @Override
     public boolean equals( Object obj )
     {
         if ( this == obj )
