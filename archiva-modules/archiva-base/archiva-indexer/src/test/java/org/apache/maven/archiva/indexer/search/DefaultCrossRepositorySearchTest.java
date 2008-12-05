@@ -142,22 +142,6 @@ public class DefaultCrossRepositorySearchTest
         assertSearchResults( expectedRepos, expectedResults, search, "org", null, false );
     }
 
-    public void testSearchTerm_Junit()
-        throws Exception
-    {        
-        CrossRepositorySearch search = lookupCrossRepositorySearch();
-        
-        String expectedRepos[] = new String[] {
-            TEST_DEFAULT_REPO_ID
-        };
-        
-        String expectedResults[] = new String[] { 
-            "junit","junit2","junit3"
-        };
-        
-        assertSearchResults( expectedRepos, expectedResults, search, "junit", null, false );
-    }
-
     public void testSearchInvalidTerm()
         throws Exception
     {        
@@ -172,44 +156,6 @@ public class DefaultCrossRepositorySearchTest
         };
         
         assertSearchResults( expectedRepos, expectedResults, search, "monosodium", null, false );
-    }
-    
-    public void testSearchWithinSearchResults()
-        throws Exception
-    {        
-        CrossRepositorySearch search = lookupCrossRepositorySearch();
-
-        String expectedRepos[] = new String[] {
-            TEST_DEFAULT_REPO_ID
-        };
-        
-        String expectedResults[] = new String[] { 
-            "org","org2","org3","org4","org5","org6","org7"
-        };
-        
-        // first search
-        assertSearchResults( expectedRepos, expectedResults, search, "org", null, false );
-        
-        List<String> previousSearchTerms = new ArrayList<String>();
-        previousSearchTerms.add( "org" );        
-        String secondSearchExpectedResults[] = new String[] { 
-            "org.apache.maven.archiva.record", "org.apache.maven.archiva.record2",
-                "org.apache.maven.archiva.record3", "org.apache.maven.archiva.record4",
-                "org.apache.maven.archiva.record5", "org.apache.maven.archiva.record6",
-                "org.apache.maven.archiva.record7" 
-        };
-        
-        //second search
-        assertSearchResults( expectedRepos, secondSearchExpectedResults, search, "org.apache.maven.archiva.record",
-                             previousSearchTerms, false );
-        
-        previousSearchTerms.add( "org.apache.maven.archiva.record" );
-        String thirdSearchExpectedResults[] = new String[] { 
-            "junit", "junit2", "junit3"
-        };
-        
-        //third search
-        assertSearchResults( expectedRepos, thirdSearchExpectedResults, search, "junit", previousSearchTerms, false );        
     }
     
     public void testSearchForClassesAndPackages()

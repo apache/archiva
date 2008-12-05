@@ -78,16 +78,6 @@ public class FileContentIndexPopulator
         record.setRepositoryId( "test-repo" );
         record.setFilename( path );
 
-        try
-        {
-            record.setContents( FileUtils.readFileToString( pathToFile, null ) );
-        }
-        catch ( IOException e )
-        {
-            e.printStackTrace();
-            throw new AssertionFailedError( "Can't load test file contents: " + pathToFile.getAbsolutePath() );
-        }
-
         return record;
     }
 }
