@@ -44,6 +44,8 @@
 
 <body>
 
+<h1>Search</h1>
+
 <div id="contentArea">
 <div id="searchBox">
   <s:form method="get" action="quickSearch" validate="true">
