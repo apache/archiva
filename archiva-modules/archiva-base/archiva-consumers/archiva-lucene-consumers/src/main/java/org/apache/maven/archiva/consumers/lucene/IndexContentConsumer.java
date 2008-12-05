@@ -159,10 +159,8 @@ public class IndexContentConsumer
         FileContentRecord record = new FileContentRecord();
         try
         {
-            File file = new File( repositoryDir, path );
             record.setRepositoryId( this.repository.getId() );
             record.setFilename( path );
-            record.setContents( FileUtils.readFileToString( file, null ) );
 
             // Test for possible artifact reference syntax.
             try
@@ -178,10 +176,6 @@ public class IndexContentConsumer
             }
 
             index.modifyRecord( record );
-        }
-        catch ( IOException e )
-        {
-            triggerConsumerError( READ_CONTENT, "Unable to read file contents: " + e.getMessage() );
         }
         catch ( RepositoryIndexException e )
         {

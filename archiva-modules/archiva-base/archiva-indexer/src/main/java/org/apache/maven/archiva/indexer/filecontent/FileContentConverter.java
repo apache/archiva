@@ -37,7 +37,6 @@ import java.text.ParseException;
 public class FileContentConverter
     implements LuceneEntryConverter
 {
-
     public Document convert( LuceneRepositoryContentRecord record )
     {
         if ( !( record instanceof FileContentRecord ) )
@@ -62,9 +61,8 @@ public class FileContentConverter
             doc.addFieldTokenized( ArtifactKeys.TYPE, filecontent.getArtifact().getType() );
             doc.addFieldUntokenized( ArtifactKeys.CLASSIFIER, filecontent.getArtifact().getClassifier() );
         }
-        
+
         doc.addFieldTokenized( FileContentKeys.FILENAME, filecontent.getFilename() );
-        doc.addFieldTokenized( FileContentKeys.CONTENT, filecontent.getContents() );
 
         return doc.getDocument();
     }
@@ -91,7 +89,6 @@ public class FileContentConverter
 
         // Filecontent Specifics
         record.setFilename( document.get( FileContentKeys.FILENAME ) );
-        record.setContents( document.get( FileContentKeys.CONTENT ) );
 
         return record;
     }

@@ -23,6 +23,8 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.maven.archiva.indexer.lucene.analyzers.FilenamesTokenizer;
+import org.apache.maven.archiva.indexer.lucene.analyzers.ArtifactIdTokenizer;
+import org.apache.maven.archiva.indexer.lucene.analyzers.GroupIdTokenizer;
 
 import java.io.Reader;
 
@@ -40,6 +42,16 @@ public class FileContentAnalyzer extends Analyzer
         if ( FileContentKeys.FILENAME.equals( field ) )
         {
             return new FilenamesTokenizer( reader );
+        }
+
+        if ( FileContentKeys.ARTIFACTID.equals( field ))
+        {
+            return new ArtifactIdTokenizer(reader);
+        }
+
+        if ( FileContentKeys.GROUPID.equals( field ) )
+        {
+            return new GroupIdTokenizer(reader);
         }
 
         return STANDARD.tokenStream( field, reader );

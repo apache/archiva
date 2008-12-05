@@ -152,7 +152,6 @@ public class SearchServiceImplTest
         FileContentRecord record = new FileContentRecord();
         record.setRepositoryId( "repo1.mirror" );
         record.setArtifact( artifact );
-        record.setContents( "org.apache.archiva:archiva-test:1.0:jar org.apache.archiva.test.MyClassName" );
         record.setFilename( "archiva-test-1.0.jar" );
                 
         results.addHit( record );
@@ -198,7 +197,6 @@ public class SearchServiceImplTest
         FileContentRecord record = new FileContentRecord();
         record.setRepositoryId( "repo1.mirror" );
         record.setArtifact( artifact );
-        record.setContents( "org.apache.archiva:archiva-test:1.0:jar" );
         record.setFilename( "archiva-test-1.0.jar" );
                 
         results.addHit( record );

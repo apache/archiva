@@ -43,8 +43,17 @@ public class FileContentHandlers
     {
         analyzer = new FileContentAnalyzer();
         converter = new FileContentConverter();
-        queryParser = new MultiFieldQueryParser( new String[] { FileContentKeys.FILENAME, FileContentKeys.CONTENT },
-                                                 analyzer );
+        queryParser = new MultiFieldQueryParser( new String[] {
+                                                FileContentKeys.FILENAME,
+                                                FileContentKeys.ARTIFACTID,
+                                                FileContentKeys.GROUPID,
+                                                FileContentKeys.ARTIFACTID_EXACT,
+                                                FileContentKeys.GROUPID_EXACT,
+                                                FileContentKeys.VERSION,
+                                                FileContentKeys.VERSION_EXACT},
+                                                analyzer );
+        //We prefer the narrowing approach to search results.
+        queryParser.setDefaultOperator(MultiFieldQueryParser.Operator.AND);
     }
 
     public String getId()
