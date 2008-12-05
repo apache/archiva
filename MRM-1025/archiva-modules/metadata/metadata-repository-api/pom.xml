@@ -21,7 +21,7 @@
   <parent>
     <artifactId>metadata</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2-MRM1025-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-repository-api</artifactId>
   <name>Archiva Metadata Repository API</name>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
-      <version>1.2-SNAPSHOT</version> <!--  TODO: dep mgmt -->
+      <version>1.2-MRM1025-SNAPSHOT</version> <!--  TODO: dep mgmt -->
     </dependency>
   </dependencies>
 </project>

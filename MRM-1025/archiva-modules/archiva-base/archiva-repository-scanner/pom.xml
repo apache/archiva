@@ -23,7 +23,7 @@
   <parent>
     <artifactId>archiva-base</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2-MRM1025-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-repository-scanner</artifactId>
   <name>Archiva Repository Scanner</name>
