@@ -21,7 +21,7 @@
   <parent>
     <artifactId>archiva-modules</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2-MRM1025-SNAPSHOT</version>
   </parent>
   <artifactId>plugins</artifactId>
   <name>Archiva Core Plugins</name>
