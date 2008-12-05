@@ -1,10 +1,10 @@
  -----
- Release Notes for Archiva 1.2-M1
+ Release Notes for Archiva 1.2-M2
  -----
 
-Release Notes for Archiva 1.2-M1
+Release Notes for Archiva 1.2-M2
 
-  The Apache Archiva team would like to announce the release of Archiva 1.2-M1.  Archiva is {{{http://archiva.apache.org/download.html}
+  The Apache Archiva team would like to announce the release of Archiva 1.2-M2.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -46,9 +46,15 @@ Release Notes for Archiva 1.2-M1
 
 * Release Notes
 
-  The Archiva 1.2-M1 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.2-M2 feature set can be seen in the {{{tour/index.html} feature tour}}.
+
+* Changes in Archiva 1.2-M2
+
+  *Date TBA*
 
 * Changes in Archiva 1.2-M1
+
+  *14 November 2008*
 
 ** Bug
 
@@ -114,6 +120,8 @@ Release Notes for Archiva 1.2-M1
 
 * Changes in Archiva 1.1.3
 
+  *9 October 2008*
+
 ** Bug
 
     * [MRM-967] - Security Issue: If repository observer role is enabled for the 'guest' user, an invalid user is able to deploy to that repository
@@ -125,6 +133,8 @@ Release Notes for Archiva 1.2-M1
     * [MRM-954] - Footer doesn't stretch across repositoryGroups page
 
 * Changes in Archiva 1.1.2
+
+  *11 September 2008*
 
 ** Bug
 
@@ -174,6 +184,8 @@ Release Notes for Archiva 1.2-M1
 
 * Changes in Archiva 1.1.1
 
+  *11 August 2008*
+
 ** Bug
 
      * [MRM-584] - Newly created user cannot login
@@ -205,6 +217,8 @@ Release Notes for Archiva 1.2-M1
   The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=14461&styleName=Text&projectId=10980} in JIRA}}.
 
 * Changes in Archiva 1.1
+
+  *20 July 2008*
 
 ** Sub-task
 
@@ -400,6 +414,8 @@ Release Notes for Archiva 1.2-M1
 
 * Changes in Archiva 1.0.2
 
+  *8 April 2008*
+
 ** Bug
 
     * [MRM-159] - should not respond with a 404 if proxying a file results in a remote error
@@ -490,6 +506,8 @@ Release Notes for Archiva 1.2-M1
 
 * Changes in Archiva 1.0.1
 
+  *4 February 2008*
+
 ** Bug
 
   * [MRM-623] - find artifact self signed certificate will expire soon
@@ -515,4 +533,24 @@ Release Notes for Archiva 1.2-M1
 ** Task
 
   * [MRM-619] - Update docs/site for some corrections
+
+* Archiva 1.0
+
+  *23 November 2007*
+
+  First production release.
+
+* History
+
+  Archiva was started in November 2005, building a simple framework on top of some existing repository conversion
+  tools within the Maven project. Initial development focused on repository conversion, error reporting, and indexing.
+  From January 2006 a web application was started to visualise the information and to start incorporating
+  functionality from the unmaintained maven-proxy project.
+
+  Development continued through many stops and starts. Initial versions of Archiva were built from source by contributors, 
+  and the first alpha version was not released until April 2007. Some significant changes were made to improve
+  performance and functionality in June 2007 and over the next 6 months and a series of alpha and beta releases, a concerted effort
+  was made to release the 1.0 version.
+
+  Archiva became an Apache "top level project" in March 2008.
 
