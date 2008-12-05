@@ -19,8 +19,14 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
@@ -31,7 +37,6 @@ import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanSta
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskSelectionPredicate;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
@@ -47,12 +52,6 @@ import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Default implementation of a scheduling component for archiva.
@@ -345,7 +344,19 @@ public class DefaultArchivaTaskScheduler
             throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
         }
 
-        return CollectionUtils.exists( queue, new RepositoryTaskSelectionPredicate( repositoryId ) );
+        for ( Task t : queue )
+        {
+            if ( t instanceof RepositoryTask )
+            {
+                RepositoryTask task = (RepositoryTask) t;
+                if ( StringUtils.equals( repositoryId, task.getRepositoryId() ) )
+                {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     public boolean isProcessingDatabaseTask()
