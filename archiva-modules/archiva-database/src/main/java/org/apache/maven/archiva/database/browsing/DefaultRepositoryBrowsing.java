@@ -212,8 +212,6 @@ public class DefaultRepositoryBrowsing
     {
         Map<String, String> snapshots = new HashMap<String, String>();
 
-        log.info( "Processing snapshots." );
-
         for ( String version : versions )
         {
             if ( VersionUtil.isSnapshot( version ) )
