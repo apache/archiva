@@ -63,7 +63,7 @@
         <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
 
-      <s:if test="%{applicationScope.uiOptions.showFindArtifacts}">
+      <s:if test="%{#application['uiOptions'].showFindArtifacts}">
         <li class="none">
           <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
         </li>

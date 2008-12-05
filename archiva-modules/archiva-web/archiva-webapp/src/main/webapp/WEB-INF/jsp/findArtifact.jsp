@@ -31,7 +31,7 @@
 
 <div id="contentArea">
   <div id="searchBox">
-    <s:if test="%{#attr.applicationScope.uiOptions.appletFindEnabled}">
+    <s:if test="%{#application['uiOptions'].appletFindEnabled}">
       <script type="text/javascript">
         function generateMd5( file, defVal )
         {
