@@ -131,6 +131,7 @@ public class ArchivaArtifact
         return StringUtils.isNotEmpty( model.getClassifier() );
     }
 
+    @Override
     public int hashCode()
     {
         final int PRIME = 31;
@@ -146,6 +147,7 @@ public class ArchivaArtifact
         return result;
     }
 
+    @Override
     public boolean equals( Object obj )
     {
         if ( this == obj )
@@ -180,6 +182,7 @@ public class ArchivaArtifact
         return true;
     }
 
+    @Override
     public String toString()
     {
         StringBuffer sb = new StringBuffer();
