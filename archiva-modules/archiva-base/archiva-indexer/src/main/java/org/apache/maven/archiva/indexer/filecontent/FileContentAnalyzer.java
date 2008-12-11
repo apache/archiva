@@ -27,6 +27,7 @@ import org.apache.maven.archiva.indexer.lucene.analyzers.ArtifactIdTokenizer;
 import org.apache.maven.archiva.indexer.lucene.analyzers.GroupIdTokenizer;
 
 import java.io.Reader;
+import org.apache.maven.archiva.indexer.lucene.analyzers.VersionTokenizer;
 
 /**
  * FileContentAnalyzer 
@@ -52,6 +53,11 @@ public class FileContentAnalyzer extends Analyzer
         if ( FileContentKeys.GROUPID.equals( field ) )
         {
             return new GroupIdTokenizer(reader);
+        }
+
+        if ( FileContentKeys.VERSION.equals( field ))
+        {
+            return new VersionTokenizer(reader);
         }
 
         return STANDARD.tokenStream( field, reader );
