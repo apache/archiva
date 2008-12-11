@@ -190,12 +190,12 @@ public class UploadAction
 
     public void setArtifactContentType( String contentType )
     {
-        this.artifactContentType = contentType;
+        this.artifactContentType = StringUtils.trim( contentType );
     }
 
     public void setArtifactFileName( String filename )
     {
-        this.artifactFilename = filename;
+        this.artifactFilename = StringUtils.trim( filename );
     }
 
     public void setPom( File file )
@@ -205,12 +205,12 @@ public class UploadAction
 
     public void setPomContentType( String contentType )
     {
-        this.pomContentType = contentType;
+        this.pomContentType = StringUtils.trim( contentType );
     }
 
     public void setPomFileName( String filename )
     {
-        this.pomFilename = filename;
+        this.pomFilename = StringUtils.trim( filename );
     }
 
     public String getGroupId()
@@ -220,7 +220,7 @@ public class UploadAction
 
     public void setGroupId( String groupId )
     {
-        this.groupId = groupId;
+        this.groupId = StringUtils.trim( groupId );
     }
 
     public String getArtifactId()
@@ -230,7 +230,7 @@ public class UploadAction
 
     public void setArtifactId( String artifactId )
     {
-        this.artifactId = artifactId;
+        this.artifactId = StringUtils.trim( artifactId );
     }
 
     public String getVersion()
@@ -240,7 +240,7 @@ public class UploadAction
 
     public void setVersion( String version )
     {
-        this.version = version;
+        this.version = StringUtils.trim( version );
     }
 
     public String getPackaging()
@@ -250,7 +250,7 @@ public class UploadAction
 
     public void setPackaging( String packaging )
     {
-        this.packaging = packaging;
+        this.packaging = StringUtils.trim( packaging );
     }
 
     public String getClassifier()
@@ -260,7 +260,7 @@ public class UploadAction
 
     public void setClassifier( String classifier )
     {
-        this.classifier = classifier;
+        this.classifier = StringUtils.trim( classifier );
     }
 
     public String getRepositoryId()
