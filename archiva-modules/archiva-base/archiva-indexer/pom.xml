@@ -41,6 +41,10 @@
       <artifactId>lucene-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queries</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
       <scope>test</scope>

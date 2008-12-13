@@ -40,7 +40,7 @@ public class SearchResults
 {
     private List repositories = new ArrayList();
 
-    private Map hits = new HashMap();
+    private Map<String, SearchResultHit> hits = new HashMap();
 
     private int totalHits;
 
@@ -82,7 +82,7 @@ public class SearchResults
         }
         
         hit.setRepositoryId( bytecode.getRepositoryId() );
-        hit.addArtifact( bytecode.getArtifact() );
+        hit.setArtifact( bytecode.getArtifact() );
         hit.setContext( null ); // TODO: provide context on why this is a valuable hit.
 
         this.hits.put( key, hit );
@@ -111,18 +111,16 @@ public class SearchResults
             hit = new SearchResultHit();
         }
 
-        hit.addArtifact( hashcodes.getArtifact() );
+        hit.setArtifact( hashcodes.getArtifact() );
         hit.setContext( null ); // TODO: provide context on why this is a valuable hit.
 
-        this.hits.put( key, hit );
+        hits.put( key, hit );
     }
 
     public void addFileContentHit( FileContentRecord filecontent )
     {
-        String key = filecontent.getPrimaryKey();
-
-        SearchResultHit hit = (SearchResultHit) this.hits.get( key );
-
+        final String key = filecontent.getPrimaryKey();
+        SearchResultHit hit = hits.get( key );
         if ( hit == null )
         {
             // Only need to worry about this hit if it is truely new.
@@ -135,7 +133,7 @@ public class SearchResults
             // Test for possible artifact reference ...
             if( filecontent.getArtifact() != null )
             {
-                hit.addArtifact( filecontent.getArtifact() );
+                hit.setArtifact( filecontent.getArtifact() );
             }
 
             this.hits.put( key, hit );
@@ -147,7 +145,7 @@ public class SearchResults
      * 
      * @return the list of {@link SearchResultHit} objects.
      */
-    public List getHits()
+    public List<SearchResultHit> getHits()
     {
         return new ArrayList( hits.values() );
     }

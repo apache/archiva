@@ -20,7 +20,7 @@
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="archiva" tagdir="/WEB-INF/tags" %>
 
 <html>
 <head>
@@ -135,10 +135,10 @@
                    <s:param name="className" value="%{#attr.className}"/>
                    <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
                    <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
-  		   <s:param name="fromResultsPage" value="true"/>
+                   <s:param name="fromResultsPage" value="true"/>
                    <s:param name="currentPage" value="%{#attr.currentPage - 1}"/>
- 		  <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
- 		  <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+                   <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+                   <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
                  </s:url>
        	      </c:set>
        	      <c:set var="nextPageUrl">
@@ -151,10 +151,10 @@
                   <s:param name="className" value="%{#attr.className}"/>
                   <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
                   <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
-  		  <s:param name="fromResultsPage" value="true"/>
+  		          <s:param name="fromResultsPage" value="true"/>
                   <s:param name="currentPage" value="%{#attr.currentPage + 1}"/>
- 		  <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
-		  <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+ 		          <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+		          <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
                 </s:url>
       	      </c:set>    
              </c:if>
@@ -259,12 +259,12 @@
               <c:choose>
                 <c:when test="${not empty (record.groupId)}">
                   <h3 class="artifact-title">
-                    <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                          version="${record.version}"/>
+
+                    <archiva:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"/>
                   </h3>
                   <p>
-                    <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                         version="${record.version}" versions="${record.versions}" repositoryId="${record.repositoryId}"/>
+                    <archiva:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                         versions="${record.versions}" repositoryId="${record.repositoryId}"/>
                   </p>
                 </c:when>
                 <c:otherwise>
@@ -292,12 +292,11 @@
               <c:choose>
                 <c:when test="${not empty (artifactModel.groupId)}">
                   <h3 class="artifact-title">
-                    <my:showArtifactTitle groupId="${artifactModel.groupId}" artifactId="${artifactModel.artifactId}"
-                                          version="${artifactModel.version}"/>
+                    <archiva:showArtifactTitle groupId="${artifactModel.groupId}" artifactId="${artifactModel.artifactId}"/>
                   </h3>
                   <p>
-                    <my:showArtifactLink groupId="${artifactModel.groupId}" artifactId="${artifactModel.artifactId}"
-                                         version="${artifactModel.version}" versions="${artifactModel.versions}"/>
+                    <archiva:showArtifactLink groupId="${artifactModel.groupId}" artifactId="${artifactModel.artifactId}"
+                                         versions="${artifactModel.versions}"/>
                   </p>
                 </c:when>
                 <c:otherwise>

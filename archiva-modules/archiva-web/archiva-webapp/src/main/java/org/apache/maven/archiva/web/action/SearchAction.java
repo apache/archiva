@@ -46,6 +46,8 @@ import org.apache.maven.archiva.security.UserRepositories;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
+import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
+import org.apache.maven.archiva.indexer.search.SearchResultHit;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -126,8 +128,6 @@ public class SearchAction
     private boolean filterSearch = false;
 
     private boolean fromResultsPage;
-
-    private int num;
 
     public boolean isFromResultsPage()
     {
@@ -274,6 +274,18 @@ public class SearchAction
             buildCompleteQueryString( q );
         }
 
+        //Lets get the versions for the artifact we just found and display them
+        //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
+        for (SearchResultHit resultHit : results.getHits())
+        {
+            final List<String> versions = dao.query(new UniqueVersionConstraint(getObservableRepos(), resultHit.getGroupId(), resultHit.getArtifactId()));
+            if (versions != null && !versions.isEmpty())
+            {
+                resultHit.setVersion(null);
+                resultHit.setVersions(versions);
+            }
+        }
+
         return SUCCESS;
     }
 
@@ -329,7 +341,6 @@ public class SearchAction
         catch ( AccessDeniedException e )
         {
             getLogger().warn( e.getMessage(), e );
-            // TODO: pass this onto the screen.
         }
         catch ( ArchivaSecurityException e )
         {

@@ -30,10 +30,7 @@
 <%@ attribute name="repositoryId" %>
 
 <span class="artifact-link">
-  <a href="${pageContext.request.contextPath}/repository/${repositoryId}">${repositoryId}</a>
-  <strong> : </strong>
-  <archiva:groupIdLink var="${groupId}" includeTop="false" />
-  
+  <archiva:groupIdLink var="${groupId}" includeTop="false" /> 
   <c:if test="${!empty (artifactId)}">    
     <c:set var="url">
       <s:url action="browseArtifact" namespace="/">
