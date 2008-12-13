@@ -81,6 +81,18 @@ public class LuceneDocumentMaker
         return this;
     }
 
+    public LuceneDocumentMaker addFieldTokenized( String key, String value, float boost )
+    {
+        if ( value != null )
+        {
+            Field field = new Field( key, value, Field.Store.YES, Field.Index.TOKENIZED );
+            field.setBoost(boost);
+            document.add( field );
+        }
+
+        return this;
+    }
+
     public LuceneDocumentMaker addFieldTokenized( String key, List list )
     {
         if ( ( list != null ) && ( !list.isEmpty() ) )
@@ -101,11 +113,35 @@ public class LuceneDocumentMaker
         return this;
     }
 
+    public LuceneDocumentMaker addFieldUntokenized( String name, String value, float boost )
+    {
+        if ( value != null )
+        {
+            Field field = new Field( name, value, Field.Store.YES, Field.Index.UN_TOKENIZED );
+            field.setBoost(boost);
+            document.add( field );
+        }
+
+        return this;
+    }
+
     public LuceneDocumentMaker addFieldExact( String name, String value )
     {
         if ( value != null )
         {
             document.add( new Field( name, value, Field.Store.NO, Field.Index.UN_TOKENIZED ) );
+        }
+
+        return this;
+    }
+
+    public LuceneDocumentMaker addFieldExact( String name, String value, float boost )
+    {
+        if ( value != null )
+        {
+            Field field = new Field( name, value, Field.Store.NO, Field.Index.UN_TOKENIZED );
+            field.setBoost(boost);
+            document.add( field );
         }
 
         return this;
