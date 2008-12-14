@@ -212,10 +212,17 @@ public class DefaultCrossRepositorySearch
             QueryParser parser = new FileContentHandlers().getQueryParser();
             LuceneQuery query = null;
             SearchResults results = null;
+
+            BooleanFilter duplicateFilter = new BooleanFilter();
+            DuplicateFilter artifactIdDuplicateFilter = new DuplicateFilter(FileContentKeys.ARTIFACTID_EXACT);
+            duplicateFilter.add(new FilterClause(artifactIdDuplicateFilter, BooleanClause.Occur.SHOULD));
+            DuplicateFilter groupIdDuplicateFilter = new DuplicateFilter(FileContentKeys.GROUPID_EXACT);
+            duplicateFilter.add(new FilterClause(groupIdDuplicateFilter, BooleanClause.Occur.SHOULD));
+
             if ( previousSearchTerms == null || previousSearchTerms.isEmpty() )
             {
                 query = new LuceneQuery( parser.parse( term ) );
-                results = searchAll( query, limits, indexes, null );
+                results = searchAll( query, limits, indexes, duplicateFilter );
             }
             else
             {
@@ -228,7 +235,8 @@ public class DefaultCrossRepositorySearch
 
                 query = new LuceneQuery( booleanQuery );
                 Filter filter = new QueryWrapperFilter( parser.parse( term ) );
-                results = searchAll( query, limits, indexes, filter );
+                duplicateFilter.add(new FilterClause(filter, BooleanClause.Occur.SHOULD));
+                results = searchAll( query, limits, indexes, duplicateFilter );
             }
             results.getRepositories().addAll( this.localIndexedRepositories );
 
@@ -272,23 +280,16 @@ public class DefaultCrossRepositorySearch
         {
             // Create a multi-searcher for looking up the information.
             searcher = new MultiSearcher( searchables );
-
-            BooleanFilter booleanFilter = new BooleanFilter();
-            DuplicateFilter artifactIdDuplicateFilter = new DuplicateFilter(FileContentKeys.ARTIFACTID_EXACT);
-            booleanFilter.add(new FilterClause(artifactIdDuplicateFilter, BooleanClause.Occur.MUST));
-            DuplicateFilter groupIdDuplicateFilter = new DuplicateFilter(FileContentKeys.GROUPID_EXACT);
-            booleanFilter.add(new FilterClause(groupIdDuplicateFilter, BooleanClause.Occur.MUST));
             
             // Perform the search.
             Hits hits = null;
             if ( filter != null )
             {
-                booleanFilter.add(new FilterClause(filter, BooleanClause.Occur.MUST));
-                hits = searcher.search( specificQuery, booleanFilter );
+                hits = searcher.search( specificQuery, filter );
             }
             else
             {
-                hits = searcher.search( specificQuery, booleanFilter );
+                hits = searcher.search( specificQuery );
             }
 
             int hitCount = hits.length();     

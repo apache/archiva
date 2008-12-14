@@ -54,8 +54,8 @@ public class FileContentConverter
             // Artifact Reference
             doc.addFieldTokenized( ArtifactKeys.GROUPID, filecontent.getArtifact().getGroupId() );
             doc.addFieldExact( ArtifactKeys.GROUPID_EXACT, filecontent.getArtifact().getGroupId() );
-            doc.addFieldTokenized( ArtifactKeys.ARTIFACTID, filecontent.getArtifact().getArtifactId(), 1.5f );
-            doc.addFieldExact( ArtifactKeys.ARTIFACTID_EXACT, filecontent.getArtifact().getArtifactId(), 1.5f );
+            doc.addFieldTokenized( ArtifactKeys.ARTIFACTID, filecontent.getArtifact().getArtifactId()); //, 2.0f);
+            doc.addFieldExact( ArtifactKeys.ARTIFACTID_EXACT, filecontent.getArtifact().getArtifactId(), 2.0f);
             doc.addFieldTokenized( ArtifactKeys.VERSION, filecontent.getArtifact().getVersion() );
             doc.addFieldExact( ArtifactKeys.VERSION_EXACT, filecontent.getArtifact().getVersion() );
             doc.addFieldTokenized( ArtifactKeys.TYPE, filecontent.getArtifact().getType() );

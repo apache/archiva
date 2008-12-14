@@ -19,16 +19,18 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.AssertionFailedError;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.content.DefaultPathParser;
+import org.apache.maven.archiva.repository.content.PathParser;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
  * FileContentIndexPopulator 
@@ -62,6 +64,11 @@ public class FileContentIndexPopulator
         map.put( "test-pom-1.0", createFileContentRecord( repoDir, prefix + "test-pom/1.0/test-pom-1.0.pom" ) );
         map.put( "test-skin-1.0", createFileContentRecord( repoDir, prefix + "test-skin/1.0/test-skin-1.0.pom" ) );
 
+        map.put("ant-1.5.pom", createFileContentRecord(repoDir, "ant/ant/1.5/ant-1.5.pom"));
+        map.put("ant-1.5.1.pom", createFileContentRecord(repoDir, "ant/ant/1.5.1/ant-1.5.1.pom"));
+        map.put("ant-junit-1.6.5.pom", createFileContentRecord(repoDir, "ant/ant-junit/1.6.5/ant-junit-1.6.5.pom"));
+        map.put("ant-optional-1.5.1.pom", createFileContentRecord(repoDir, "ant/ant-optional/1.5.1/ant-optional-1.5.1.pom"));
+        
         return map;
     }
 
@@ -77,6 +84,18 @@ public class FileContentIndexPopulator
         FileContentRecord record = new FileContentRecord();
         record.setRepositoryId( "test-repo" );
         record.setFilename( path );
+
+        PathParser pathParser = new DefaultPathParser();
+        try
+        {
+            ArtifactReference reference = pathParser.toArtifactReference(path);
+            ArchivaArtifact artifact = new ArchivaArtifact( reference );
+            record.setArtifact(artifact);
+        }
+        catch (LayoutException e)
+        {
+            throw new RuntimeException(e);
+        }
 
         return record;
     }

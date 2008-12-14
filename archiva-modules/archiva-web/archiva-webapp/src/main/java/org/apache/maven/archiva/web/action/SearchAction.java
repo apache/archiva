@@ -46,6 +46,7 @@ import org.apache.maven.archiva.security.UserRepositories;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.indexer.search.SearchResultHit;
 
@@ -231,7 +232,8 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        if( SearchUtil.isBytecodeSearch( q ) )
+        final boolean isbytecodeSearch = SearchUtil.isBytecodeSearch( q );
+        if( isbytecodeSearch )
         {
             results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, SearchUtil.removeBytecodeKeyword( q ), limits );
         }
@@ -274,19 +276,39 @@ public class SearchAction
             buildCompleteQueryString( q );
         }
 
-        //Lets get the versions for the artifact we just found and display them
-        //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
-        for (SearchResultHit resultHit : results.getHits())
+        if (!isbytecodeSearch)
         {
-            final List<String> versions = dao.query(new UniqueVersionConstraint(getObservableRepos(), resultHit.getGroupId(), resultHit.getArtifactId()));
-            if (versions != null && !versions.isEmpty())
+            //Lets get the versions for the artifact we just found and display them
+            //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
+            for (SearchResultHit resultHit : results.getHits())
             {
-                resultHit.setVersion(null);
-                resultHit.setVersions(versions);
+                final List<String> versions = dao.query(new UniqueVersionConstraint(getObservableRepos(), resultHit.getGroupId(), resultHit.getArtifactId()));
+                if (versions != null && !versions.isEmpty())
+                {
+                    resultHit.setVersion(null);
+                    resultHit.setVersions(filterOutTimestampedSnapshots(versions));
+                }
             }
         }
 
         return SUCCESS;
+    }
+
+    /**
+     * Remove timestamped snapshots from versions
+     */
+    private static List<String> filterOutTimestampedSnapshots(List<String> versions)
+    {
+        final List<String> filtered = new ArrayList<String>();
+        for (final String version : versions)
+        {
+            final String baseVersion = VersionUtil.getBaseVersion(version);
+            if (!filtered.contains(baseVersion))
+            {
+                filtered.add(baseVersion);
+            }
+        }
+        return filtered;
     }
 
     public String findArtifact()
