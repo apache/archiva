@@ -185,38 +185,38 @@ public class DefaultCrossRepositorySearchTest
         assertSearchResults( expectedRepos, new ArrayList<SearchResultHit>(), search, "monosodium", null, false );
     }
 
-//    public void testSearchForClassesAndPackages()
-//        throws Exception
-//    {
-//        CrossRepositorySearch search = lookupCrossRepositorySearch();
-//
-//        String expectedRepos[] = new String[] {
-//            TEST_DEFAULT_REPO_ID
+    public void testSearchForClassesAndPackages()
+        throws Exception
+    {
+        CrossRepositorySearch search = lookupCrossRepositorySearch();
+
+        String expectedRepos[] = new String[] {
+            TEST_DEFAULT_REPO_ID
+        };
+
+//        String expectedResults[] = new String[] {
+//            "archiva-common-1.0.jar"
 //        };
-//
-////        String expectedResults[] = new String[] {
-////            "archiva-common-1.0.jar"
-////        };
-//
-//        ArrayList<SearchResultHit> expectedHits = new ArrayList<SearchResultHit>();
-//
-//        // class with packagename search
-//        assertSearchResults( expectedRepos, expectedHits, search,
-//                             "org.apache.maven.archiva.common.utils.BaseFile", null, true );
-//        // class name search
-//        assertSearchResults( expectedRepos, expectedHits, search,
-//                             "BaseFile", null, true );
-//
-////        String expectedMethodSearchResults[] = new String[] {
-////            "continuum-webapp-1.0.3-SNAPSHOT.war"
-////        };
-//
-//        ArrayList<SearchResultHit> expectedMethodSearchResults = new ArrayList<SearchResultHit>();
-//
-//        // method search
-//        assertSearchResults( expectedRepos, expectedMethodSearchResults, search,
-//                             "org.apache.maven.continuum.web.action.BuildDefinitionAction.isBuildFresh", null, true );
-//    }
+
+        ArrayList<SearchResultHit> expectedHits = new ArrayList<SearchResultHit>();
+
+        // class with packagename search
+        assertSearchResults( expectedRepos, expectedHits, search,
+                             "org.apache.maven.archiva.common.utils.BaseFile", null, true );
+        // class name search
+        assertSearchResults( expectedRepos, expectedHits, search,
+                             "BaseFile", null, true );
+
+//        String expectedMethodSearchResults[] = new String[] {
+//            "continuum-webapp-1.0.3-SNAPSHOT.war"
+//        };
+
+        ArrayList<SearchResultHit> expectedMethodSearchResults = new ArrayList<SearchResultHit>();
+
+        // method search
+        assertSearchResults( expectedRepos, expectedMethodSearchResults, search,
+                             "org.apache.maven.continuum.web.action.BuildDefinitionAction.isBuildFresh", null, true );
+    }
     
     public void testExecuteFilteredSearch()
         throws Exception
