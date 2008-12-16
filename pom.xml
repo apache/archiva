@@ -227,7 +227,7 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-webdav</artifactId>
-        <version>1.4</version>
+        <version>1.5.0</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>

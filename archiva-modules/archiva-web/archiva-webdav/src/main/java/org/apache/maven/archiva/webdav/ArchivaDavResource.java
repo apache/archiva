@@ -99,6 +99,8 @@ public class ArchivaDavResource
     
     private ArchivaXworkUser archivaXworkUser;
 
+	public static final String COMPLIANCE_CLASS = "1, 2";
+
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
