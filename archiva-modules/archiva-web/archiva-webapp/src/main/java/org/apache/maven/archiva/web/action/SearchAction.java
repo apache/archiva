@@ -208,6 +208,15 @@ public class SearchAction
             totalPages = totalPages + 1;
         }
 
+        for (SearchResultHit hit : results.getHits())
+        {
+            final String version = hit.getVersion();
+            if (version != null)
+            {
+                hit.setVersion(VersionUtil.getBaseVersion(version));
+            }
+        }
+
         return SUCCESS;
     }
 
