@@ -126,17 +126,6 @@ public class DefaultCrossRepositorySearchTest
         return search;
     }
 
-    public void testSearchTerm_Org()
-        throws Exception
-    {
-        CrossRepositorySearch search = lookupCrossRepositorySearch();
-
-        SearchResults results = search.searchForTerm( "guest", Arrays.asList(TEST_DEFAULT_REPO_ID), "org", new SearchResultLimits(1) );
-
-        assertNotNull(results);
-        assertEquals(7, results.getHits().size());
-    }
-
     public void testSearchArtifactIdHasMoreWieghtThanGroupId() throws Exception
     {
         CrossRepositorySearch search = lookupCrossRepositorySearch();
@@ -147,12 +136,6 @@ public class DefaultCrossRepositorySearchTest
 
         List<SearchResultHit> expectedHits = new ArrayList<SearchResultHit>();
         SearchResultHit hit = new SearchResultHit();
-        hit.setGroupId("ant");
-        hit.setArtifactId("ant");
-        hit.setVersion("1.5.1");
-        expectedHits.add(hit);
-
-        hit = new SearchResultHit();
         hit.setGroupId("ant");
         hit.setArtifactId("ant");
         hit.setVersion("1.5");
@@ -194,27 +177,25 @@ public class DefaultCrossRepositorySearchTest
             TEST_DEFAULT_REPO_ID
         };
 
-//        String expectedResults[] = new String[] {
-//            "archiva-common-1.0.jar"
-//        };
-
-        ArrayList<SearchResultHit> expectedHits = new ArrayList<SearchResultHit>();
+        SearchResultHit archivaCommon = new SearchResultHit();
+        archivaCommon.setArtifactId("archiva-common");
+        archivaCommon.setGroupId("org.apache.maven.archiva");
+        archivaCommon.setVersion("1.0");
 
         // class with packagename search
-        assertSearchResults( expectedRepos, expectedHits, search,
+        assertSearchResults( expectedRepos, Arrays.asList(archivaCommon), search,
                              "org.apache.maven.archiva.common.utils.BaseFile", null, true );
         // class name search
-        assertSearchResults( expectedRepos, expectedHits, search,
+        assertSearchResults( expectedRepos, Arrays.asList(archivaCommon), search,
                              "BaseFile", null, true );
 
-//        String expectedMethodSearchResults[] = new String[] {
-//            "continuum-webapp-1.0.3-SNAPSHOT.war"
-//        };
-
-        ArrayList<SearchResultHit> expectedMethodSearchResults = new ArrayList<SearchResultHit>();
+        SearchResultHit hit = new SearchResultHit();
+        hit.setGroupId("org.apache.maven.continuum");
+        hit.setArtifactId("continuum-webapp");
+        hit.setVersion("1.0.3-SNAPSHOT");
 
         // method search
-        assertSearchResults( expectedRepos, expectedMethodSearchResults, search,
+        assertSearchResults( expectedRepos, Arrays.asList(hit), search,
                              "org.apache.maven.continuum.web.action.BuildDefinitionAction.isBuildFresh", null, true );
     }
     

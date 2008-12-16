@@ -286,7 +286,7 @@ public class SearchAction
                 if (versions != null && !versions.isEmpty())
                 {
                     resultHit.setVersion(null);
-                    resultHit.setVersions(filterOutTimestampedSnapshots(versions));
+                    resultHit.setVersions(filterTimestampedSnapshots(versions));
                 }
             }
         }
@@ -297,7 +297,7 @@ public class SearchAction
     /**
      * Remove timestamped snapshots from versions
      */
-    private static List<String> filterOutTimestampedSnapshots(List<String> versions)
+    private static List<String> filterTimestampedSnapshots(List<String> versions)
     {
         final List<String> filtered = new ArrayList<String>();
         for (final String version : versions)
