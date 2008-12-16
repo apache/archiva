@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.filecontent;
+package org.apache.maven.archiva.indexer.lucene.analyzers;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,17 +19,27 @@ package org.apache.maven.archiva.indexer.filecontent;
  * under the License.
  */
 
-import org.apache.maven.archiva.indexer.ArtifactKeys;
+import java.io.Reader;
+import org.apache.lucene.analysis.CharTokenizer;
 
 /**
- * Lucene Index Keys for the various fields in the FileContent index. 
- *
- * @version $Id$
+ * Lucene Tokenizer for {@link ArtifactKeys#ARTIFACTID} fields.
  */
-public class FileContentKeys
-    extends ArtifactKeys
+public class ArtifactIdTokenizer extends CharTokenizer
 {
-    public static final String ID = "filecontent";
+    public ArtifactIdTokenizer( Reader reader )
+    {
+        super( reader );
+    }
 
-    public static final String FILENAME = "filename";
+    /**
+     * Break on "-" for "atlassian-plugins-core"
+     * @param c
+     * @return
+     */
+    @Override
+    protected boolean isTokenChar(char c)
+    {
+        return (c != '-');
+    }
 }

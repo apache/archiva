@@ -39,8 +39,6 @@ public class FileContentRecord
      */
     private ArchivaArtifact artifact;
 
-    private String contents;
-
     public String getRepositoryId()
     {
         return repositoryId;
@@ -49,16 +47,6 @@ public class FileContentRecord
     public void setRepositoryId( String repositoryId )
     {
         this.repositoryId = repositoryId;
-    }
-
-    public String getContents()
-    {
-        return contents;
-    }
-
-    public void setContents( String contents )
-    {
-        this.contents = contents;
     }
 
     public String getPrimaryKey()

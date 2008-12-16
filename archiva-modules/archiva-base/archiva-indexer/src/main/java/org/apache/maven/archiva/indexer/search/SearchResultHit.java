@@ -48,10 +48,9 @@ public class SearchResultHit
     
     private String repositoryId = "";
 
-    // Advanced hit, if artifact, all versions of artifact
-    private List artifacts = new ArrayList();
+    private List<String> versions = new ArrayList();
 
-    private List versions = new ArrayList();
+    private ArchivaArtifact artifact;
 
     public String getContext()
     {
@@ -88,11 +87,10 @@ public class SearchResultHit
         this.artifactId = artifactId;
     }
 
-    public void addArtifact( ArchivaArtifact artifact )
+    public void setArtifact( ArchivaArtifact artifact )
     {
-        this.artifacts.add( artifact );
-                
-        String ver = artifact.getVersion();        
+        this.artifact = artifact;
+        final String ver = artifact.getVersion();
 
         if ( !this.versions.contains( ver ) )
         {
@@ -115,9 +113,9 @@ public class SearchResultHit
         }
     }
 
-    public List getArtifacts()
+    public ArchivaArtifact getArtifact()
     {
-        return artifacts;
+        return artifact;
     }
 
     public String getGroupId()
@@ -135,9 +133,19 @@ public class SearchResultHit
         return version;
     }
 
-    public List getVersions()
+    public void setVersion(String version)
+    {
+        this.version = version;
+    }
+
+    public List<String> getVersions()
     {
         return versions;
+    }
+
+    public void setVersions(List<String> versions)
+    {
+        this.versions = versions;
     }
 
     public String getRepositoryId()

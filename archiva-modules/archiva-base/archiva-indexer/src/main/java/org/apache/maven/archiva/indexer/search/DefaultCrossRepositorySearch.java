@@ -28,8 +28,11 @@ import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanFilter;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.DuplicateFilter;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.FilterClause;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
@@ -46,6 +49,7 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeKeys;
 import org.apache.maven.archiva.indexer.filecontent.FileContentHandlers;
+import org.apache.maven.archiva.indexer.filecontent.FileContentKeys;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesHandlers;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesKeys;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
@@ -208,10 +212,17 @@ public class DefaultCrossRepositorySearch
             QueryParser parser = new FileContentHandlers().getQueryParser();
             LuceneQuery query = null;
             SearchResults results = null;
+
+            BooleanFilter duplicateFilter = new BooleanFilter();
+            DuplicateFilter artifactIdDuplicateFilter = new DuplicateFilter(FileContentKeys.ARTIFACTID_EXACT);
+            duplicateFilter.add(new FilterClause(artifactIdDuplicateFilter, BooleanClause.Occur.SHOULD));
+            DuplicateFilter groupIdDuplicateFilter = new DuplicateFilter(FileContentKeys.GROUPID_EXACT);
+            duplicateFilter.add(new FilterClause(groupIdDuplicateFilter, BooleanClause.Occur.SHOULD));
+
             if ( previousSearchTerms == null || previousSearchTerms.isEmpty() )
             {
                 query = new LuceneQuery( parser.parse( term ) );
-                results = searchAll( query, limits, indexes, null );
+                results = searchAll( query, limits, indexes, duplicateFilter );
             }
             else
             {
@@ -224,7 +235,8 @@ public class DefaultCrossRepositorySearch
 
                 query = new LuceneQuery( booleanQuery );
                 Filter filter = new QueryWrapperFilter( parser.parse( term ) );
-                results = searchAll( query, limits, indexes, filter );
+                duplicateFilter.add(new FilterClause(filter, BooleanClause.Occur.SHOULD));
+                results = searchAll( query, limits, indexes, duplicateFilter );
             }
             results.getRepositories().addAll( this.localIndexedRepositories );
 
@@ -268,7 +280,7 @@ public class DefaultCrossRepositorySearch
         {
             // Create a multi-searcher for looking up the information.
             searcher = new MultiSearcher( searchables );
-
+            
             // Perform the search.
             Hits hits = null;
             if ( filter != null )

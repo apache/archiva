@@ -108,10 +108,10 @@ public class ShowArtifactAction
             this.repositoryId =
                 repoBrowsing.getRepositoryId( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
         }
-        catch ( ObjectNotFoundException oe )
+        catch ( ObjectNotFoundException e )
         {
-            addActionError( "Unable to find project model for [" + groupId + ":" + artifactId + ":" + version + "]." );
-
+            getLogger().debug(e.getMessage(), e);
+            addActionError( e.getMessage() );
             return ERROR;
         }
 
@@ -208,6 +208,7 @@ public class ShowArtifactAction
         return Collections.emptyList();
     }
 
+    @Override
     public void validate()
     {
         if ( StringUtils.isBlank( groupId ) )
