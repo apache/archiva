@@ -31,11 +31,8 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileSet;
-import org.osgi.impl.bundle.bindex.Index;
+import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.osgi.impl.bundle.bindex.ant.BindexTask;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
  *
@@ -43,13 +40,9 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class OBRRepositoryConsumer 
         extends AbstractMonitoredConsumer
-        implements KnownRepositoryContentConsumer, ApplicationContextAware
+        implements KnownRepositoryContentConsumer
 {
     private ManagedRepositoryContent content;
-
-    public void setApplicationContext(ApplicationContext context) throws BeansException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     public String getDescription() {
         return "Produces the OSGi OBR repository index";
@@ -84,15 +77,15 @@ public class OBRRepositoryConsumer
         throws ConsumerException
     {
         BindexTask task = new BindexTask();
-        File temporaryBindexLocation = new File(path, ".bindex");
-        temporaryBindexLocation.mkdirs();
-        task.setRepositoryFile(new File(temporaryBindexLocation, "repository.xml"));
+        File repositoryIndexFile = new File(new File(path).getParentFile(), ".repository.xml");
+        task.setRepositoryFile(repositoryIndexFile);
         task.setName(content.getRepository().getName());
-        task.setQuiet(true);
+        task.setQuiet(false);
         task.setRoot(new File(content.getRepoRoot()));
 
         FileSet fileSet = new FileSet();
-        fileSet.setIncludesfile(new File(path));
+        fileSet.setDir(new File(path).getParentFile());
+        fileSet.setIncludes("**/*.jar");
         try
         {
             task.execute();
@@ -100,17 +93,6 @@ public class OBRRepositoryConsumer
         catch (BuildException e)
         {
             throw new ConsumerException("Could not add jar " + path + " to obr repository.xml", e);
-        }
-        finally
-        {
-            try
-            {
-                FileUtils.deleteDirectory(temporaryBindexLocation);
-            }
-            catch (IOException e)
-            {
-                throw new ConsumerException(e.getMessage(), e);
-            }
         }
     }
 

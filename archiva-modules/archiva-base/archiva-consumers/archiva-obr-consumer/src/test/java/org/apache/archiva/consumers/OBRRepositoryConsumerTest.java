@@ -19,16 +19,15 @@ package org.apache.archiva.consumers;
 
 import java.io.File;
 import java.util.Date;
+import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
 
 /**
  *
  * @author jdumay
  */
-public class OBRRepositoryConsumerTest extends PlexusInSpringTestCase
+public class OBRRepositoryConsumerTest extends TestCase
 {
     private OBRRepositoryConsumer consumer;
 
@@ -43,7 +42,7 @@ public class OBRRepositoryConsumerTest extends PlexusInSpringTestCase
         File testRepoData = new File("src/test/resources/repository");
         testRepo = new File("target/obrtestrepo").getAbsoluteFile();
         testRepo.mkdirs();
-        consumer = (OBRRepositoryConsumer)lookup(PlexusToSpringUtils.buildSpringId(OBRRepositoryConsumer.class));
+        consumer = new OBRRepositoryConsumer();
         FileUtils.copyDirectory(testRepoData, testRepo);
         configuration = new ManagedRepositoryConfiguration();
         configuration.setName("My Test OSGi repository");
@@ -57,7 +56,7 @@ public class OBRRepositoryConsumerTest extends PlexusInSpringTestCase
         throws Exception
     {
         super.tearDown();
-        FileUtils.deleteDirectory(testRepo);
+        //FileUtils.deleteDirectory(testRepo);
     }
 
     public void testCreatesRepositoryXml() throws Exception
@@ -65,6 +64,8 @@ public class OBRRepositoryConsumerTest extends PlexusInSpringTestCase
         File repositoryXml = new File(configuration.getLocation(), "repository.xml");
         assertFalse("repository.xml should not exist", repositoryXml.exists());
         consumer.processFile(new File(testRepo, "./commons-codec/commons-codec/1.3.0/commons-codec-1.3.0.jar").getAbsolutePath());
+
+        assertTrue(".repository.xml iterim file should exist", new File(testRepo, "commons-codec/commons-codec/1.3.0/.repository.xml").exists());
         assertTrue("repository.xml should exist", repositoryXml.exists());
     }
 }
