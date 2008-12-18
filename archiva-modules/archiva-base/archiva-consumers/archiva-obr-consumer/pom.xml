@@ -53,11 +53,6 @@
           <scope>test</scope>
         </dependency>
         <dependency>
-           <groupId>ant</groupId>
-           <artifactId>ant</artifactId>
-           <version>1.6.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.osgi.impl.bundle.bindex</groupId>
             <artifactId>bindex</artifactId>
             <version>2.2</version>

@@ -35,6 +35,7 @@ import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
+import org.codehaus.plexus.util.FileUtils;
 import org.osgi.impl.bundle.obr.resource.BundleInfo;
 import org.osgi.impl.bundle.obr.resource.RepositoryImpl;
 import org.osgi.impl.bundle.obr.resource.ResourceImpl;
@@ -120,21 +121,23 @@ public class OBRRepositoryConsumer
         pw.close();
         byte buffer[] = out.toByteArray();
         String name = "repository.xml";
-        FileOutputStream fout = new FileOutputStream(repositoryXml);
 
-        if (repositoryXml.getAbsolutePath().endsWith(".zip"))
-        {
-            ZipOutputStream zip = new ZipOutputStream(fout);
-            CRC32 checksum = new CRC32();
-            checksum.update(buffer);
-            ZipEntry ze = new ZipEntry(name);
-            ze.setSize(buffer.length);
-            ze.setCrc(checksum.getValue());
-            zip.putNextEntry(ze);
-            zip.write(buffer, 0, buffer.length);
-            zip.closeEntry();
-            zip.close();
-        }
+        //Write file out of place
+        File tmpFile = File.createTempFile("repository.zip", null);
+        FileOutputStream fout = new FileOutputStream(tmpFile);
+        ZipOutputStream zip = new ZipOutputStream(fout);
+        CRC32 checksum = new CRC32();
+        checksum.update(buffer);
+        ZipEntry ze = new ZipEntry(name);
+        ze.setSize(buffer.length);
+        ze.setCrc(checksum.getValue());
+        zip.putNextEntry(ze);
+        zip.write(buffer, 0, buffer.length);
+        zip.closeEntry();
+        zip.close();
         fout.close();
+
+        //Copy into place
+        FileUtils.copyFile(tmpFile, repositoryXml);
 	}
 }

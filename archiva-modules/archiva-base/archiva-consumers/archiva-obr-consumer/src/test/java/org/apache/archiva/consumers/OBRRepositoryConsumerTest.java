@@ -25,7 +25,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.osgi.impl.bundle.obr.resource.RepositoryImpl;
-import org.osgi.impl.bundle.obr.resource.ResourceImpl;
 
 /**
  *
