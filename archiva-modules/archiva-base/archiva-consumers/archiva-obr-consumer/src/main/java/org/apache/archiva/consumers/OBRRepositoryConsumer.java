@@ -17,22 +17,30 @@
 
 package org.apache.archiva.consumers;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.selectors.FilenameSelector;
-import org.osgi.impl.bundle.bindex.ant.BindexTask;
+import org.osgi.impl.bundle.obr.resource.BundleInfo;
+import org.osgi.impl.bundle.obr.resource.RepositoryImpl;
+import org.osgi.impl.bundle.obr.resource.ResourceImpl;
+import org.osgi.impl.bundle.obr.resource.Tag;
+import org.osgi.service.obr.Repository;
+import org.osgi.service.obr.Resource;
 
 /**
  *
@@ -76,24 +84,57 @@ public class OBRRepositoryConsumer
     public void processFile(String path)
         throws ConsumerException
     {
-        BindexTask task = new BindexTask();
-        File repositoryIndexFile = new File(new File(path).getParentFile(), ".repository.xml");
-        task.setRepositoryFile(repositoryIndexFile);
-        task.setName(content.getRepository().getName());
-        task.setQuiet(false);
-        task.setRoot(new File(content.getRepoRoot()));
-
-        FileSet fileSet = new FileSet();
-        fileSet.setDir(new File(path).getParentFile());
-        fileSet.setIncludes("**/*.jar");
         try
         {
-            task.execute();
+            final String name = content.getRepository().getName();
+            final File repoRoot = new File(content.getRepository().getLocation());
+            createRepositoryIndex(name, repoRoot, new File(path));
         }
-        catch (BuildException e)
+        catch (Exception e)
         {
             throw new ConsumerException("Could not add jar " + path + " to obr repository.xml", e);
         }
     }
+    
+    private void createRepositoryIndex(String repositoryName, File repoRoot, File jarFile) throws Exception
+    {
+        File repositoryXml = new File(repoRoot, "repository.zip");
+        RepositoryImpl repositoryImpl = new RepositoryImpl(repositoryXml.toURL());
+        repositoryImpl.refresh();
 
+        BundleInfo info = new BundleInfo(repositoryImpl, jarFile);
+
+        Tag tag = new Tag("repository");
+		tag.addAttribute("lastmodified", new Date());
+		tag.addAttribute("name", repositoryName);
+        tag.addContent(info.build().toXML());
+
+        for (Resource resource : repositoryImpl.getResources())
+        {
+            tag.addContent(((ResourceImpl)resource).toXML());
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
+        tag.print(0, pw);
+        pw.close();
+        byte buffer[] = out.toByteArray();
+        String name = "repository.xml";
+        FileOutputStream fout = new FileOutputStream(repositoryXml);
+
+        if (repositoryXml.getAbsolutePath().endsWith(".zip"))
+        {
+            ZipOutputStream zip = new ZipOutputStream(fout);
+            CRC32 checksum = new CRC32();
+            checksum.update(buffer);
+            ZipEntry ze = new ZipEntry(name);
+            ze.setSize(buffer.length);
+            ze.setCrc(checksum.getValue());
+            zip.putNextEntry(ze);
+            zip.write(buffer, 0, buffer.length);
+            zip.closeEntry();
+            zip.close();
+        }
+        fout.close();
+	}
 }
