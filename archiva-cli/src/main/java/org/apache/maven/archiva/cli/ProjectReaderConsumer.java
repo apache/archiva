@@ -94,6 +94,7 @@ public class ProjectReaderConsumer
         return includes;
     }
 
+    @Override
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
@@ -101,6 +102,7 @@ public class ProjectReaderConsumer
         this.repo = repository;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
