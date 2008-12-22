@@ -21,7 +21,6 @@ package org.apache.maven.archiva.security;
 
 import java.util.Map;
 
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.plexus.redback.users.User;
