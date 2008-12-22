@@ -38,6 +38,7 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
+import org.apache.maven.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -256,6 +257,11 @@ public class RepositoryContentConsumers implements ApplicationContextAware
                 // Nothing known processed this file.  It is invalid!
                 CollectionUtils.forAllDo( selectedInvalidConsumers, closure );
             }
+
+            TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure(repository);
+
+            CollectionUtils.forAllDo(selectedKnownConsumers, scanCompletedClosure);
+            CollectionUtils.forAllDo(selectedKnownConsumers, scanCompletedClosure);
         }
         finally
         {

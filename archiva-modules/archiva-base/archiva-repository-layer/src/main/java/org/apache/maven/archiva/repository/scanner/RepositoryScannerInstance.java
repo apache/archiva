@@ -34,6 +34,7 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
+import org.apache.maven.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,11 @@ public class RepositoryScannerInstance
         {
             consumerWantsFile.setCaseSensitive( false );
         }
+
+        TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure(repository);
+
+        CollectionUtils.forAllDo(knownConsumers, scanCompletedClosure);
+        CollectionUtils.forAllDo(invalidConsumerList, scanCompletedClosure);
     }
 
     public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,

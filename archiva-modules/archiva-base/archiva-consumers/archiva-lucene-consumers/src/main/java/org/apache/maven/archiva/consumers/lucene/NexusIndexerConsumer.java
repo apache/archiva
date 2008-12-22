@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -39,6 +38,8 @@ import org.sonatype.nexus.index.ArtifactContextProducer;
 import org.sonatype.nexus.index.DefaultArtifactContextProducer;
 import org.sonatype.nexus.index.NexusIndexer;
 import org.sonatype.nexus.index.context.IndexingContext;
+import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
+import org.sonatype.nexus.index.packer.IndexPacker;
 
 public class NexusIndexerConsumer 
     extends AbstractMonitoredConsumer
@@ -50,15 +51,20 @@ public class NexusIndexerConsumer
 
     private final ArtifactContextProducer artifactContextProducer;
 
+    private final IndexPacker indexPacker;
+
     private ManagedRepositoryConfiguration repository;
 
     private ManagedDefaultRepositoryContent repositoryContent;
 
     private IndexingContext context;
 
-    public NexusIndexerConsumer(NexusIndexer indexer)
+    private File managedRepository;
+
+    public NexusIndexerConsumer(NexusIndexer indexer, IndexPacker indexPacker)
     {
         this.indexer = indexer;
+        this.indexPacker = indexPacker;
         this.artifactContextProducer = new DefaultArtifactContextProducer();
     }
 
@@ -81,7 +87,7 @@ public class NexusIndexerConsumer
         throws ConsumerException
     {
         this.repository = repository;
-        File managedRepository = new File(repository.getLocation());
+        managedRepository = new File(repository.getLocation());
         File indexDirectory = new File(managedRepository, ".indexer");
 
         repositoryContent = new ManagedDefaultRepositoryContent();
@@ -91,19 +97,31 @@ public class NexusIndexerConsumer
         {
             try
             {
-                context = indexer.addIndexingContextForced(repository.getId(), repository.getId(), managedRepository, indexDirectory, "repourl", "updateurl", NexusIndexer.FULL_INDEX);
+                context = indexer.addIndexingContext(repository.getId(), repository.getId(), managedRepository, indexDirectory, null, null, NexusIndexer.FULL_INDEX);
                 context.setSearchable(repository.isScanned());
+            }
+            catch (UnsupportedExistingLuceneIndexException e)
+            {
+                log.error("Could not create index at " + indexDirectory.getAbsoluteFile(), e);
             }
             catch (IOException e)
             {
-                log.error("Could not create FSDirectory for index at " + indexDirectory.getAbsoluteFile(), e);
+                log.error("Could not create index at " + indexDirectory.getAbsoluteFile(), e);
             }
         }
     }
 
     public void completeScan()
     {
-        /** do nothing **/
+        final File indexLocation = new File(managedRepository, ".index");
+        try
+        {
+            indexPacker.packIndex(context, indexLocation);
+        }
+        catch (IOException e)
+        {
+            log.error("Could not pack index" + indexLocation.getAbsolutePath(), e );
+        }
     }
 
     public List<String> getExcludes()
@@ -119,26 +137,19 @@ public class NexusIndexerConsumer
     public void processFile(String path) 
         throws ConsumerException
     {
-        File artifactFile = new File(path);
-
-        try
-        {
-            repositoryContent.toArtifactReference(path);
-        }
-        catch (LayoutException e)
-        {
-            /** do nothing **/
-            return;
-        }
+        File artifactFile = new File(managedRepository, path);
 
         ArtifactContext artifactContext = artifactContextProducer.getArtifactContext(context, artifactFile);
-        try
+        if (artifactContext != null)
         {
-            indexer.artifactDiscovered(artifactContext, context);
-        }
-        catch (IOException e)
-        {
-            throw new ConsumerException(e.getMessage(), e);
+            try
+            {
+                indexer.artifactDiscovered(artifactContext, context);
+            }
+            catch (IOException e)
+            {
+                throw new ConsumerException(e.getMessage(), e);
+            }
         }
     }
 }
