@@ -332,6 +332,32 @@
           </execution>  
         </executions>
       </plugin>
+      <!-- 
+        here's a hack to prevent multiple struts core and same struts.xml in classpath
+        which prevent struts start
+      -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cleanup-struts-jar-in-webapp</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <delete includeemptydirs="true">
+                  <fileset dir="${basedir}/src/main/webapp/WEB-INF/lib" includes="**/struts2*.jar" />
+                </delete>
+                <delete includeemptydirs="true">
+                  <fileset dir="${basedir}/src/main/webapp/WEB-INF/classes" includes="**/struts.*" />
+                </delete>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
