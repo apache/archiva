@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
@@ -38,7 +39,6 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
-import org.apache.maven.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

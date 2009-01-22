@@ -91,7 +91,7 @@ public class NexusIndexerConsumer
 
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
-    {
+    {   
         this.repository = repository;
         managedRepository = new File( repository.getLocation() );
         File indexDirectory = new File( managedRepository, ".indexer" );
@@ -125,14 +125,14 @@ public class NexusIndexerConsumer
         throws ConsumerException
     {
         File artifactFile = new File( managedRepository, path );
-    
+        
         ArtifactContext artifactContext = artifactContextProducer.getArtifactContext( context, artifactFile );
         if ( artifactContext != null )
         {
             try
             {
-                indexer.artifactDiscovered( artifactContext, context );
-             
+                //indexer.artifactDiscovered( artifactContext, context );
+                
                 indexerEngine.index( context, artifactContext );
             }
             catch ( IOException e )
@@ -143,12 +143,13 @@ public class NexusIndexerConsumer
     }
 
     public void completeScan()
-    {
+    {   
         final File indexLocation = new File( managedRepository, ".index" );
         try
         {
-            indexPacker.packIndex( context, indexLocation );
             indexerEngine.endIndexing( context );
+            
+            indexPacker.packIndex( context, indexLocation );
         }
         catch ( IOException e )
         {

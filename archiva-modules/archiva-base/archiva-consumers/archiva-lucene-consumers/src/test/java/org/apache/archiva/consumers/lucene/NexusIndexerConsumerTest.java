@@ -120,7 +120,13 @@ public class NexusIndexerConsumerTest
         ArtifactInfo artifactInfo = (ArtifactInfo) results.iterator().next();
         assertEquals( "org.apache.archiva", artifactInfo.groupId );
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
-        assertEquals( "test-repo", artifactInfo.repository );        
+        assertEquals( "test-repo", artifactInfo.repository );   
+    }
+    
+    public void testIndexerArtifactAlreadyIndexed()
+        throws Exception
+    {
+    
     }
     
     /*public void testIndexerIndexPom()
