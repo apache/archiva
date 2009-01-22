@@ -3,8 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-    <bean id="indexerConsumer" class="org.apache.maven.archiva.consumers.lucene.NexusIndexerConsumer">
+    <bean id="indexerConsumer" class="org.apache.archiva.consumers.lucene.NexusIndexerConsumer">
         <constructor-arg ref="nexusIndexer"/>
         <constructor-arg ref="indexPacker"/>
+        <constructor-arg ref="indexerEngine"/>
     </bean>
 </beans>
