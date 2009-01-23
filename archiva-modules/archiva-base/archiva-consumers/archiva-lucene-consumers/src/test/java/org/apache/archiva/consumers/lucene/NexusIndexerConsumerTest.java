@@ -151,19 +151,33 @@ public class NexusIndexerConsumerTest
         assertEquals( 1, topDocs.totalHits );
     }
     
-    /*
     public void testIndexerIndexArtifactThenPom()
         throws Exception
     {        
         // begin scan
         Date now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
+        nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
+        nexusIndexerConsumer.completeScan();
         
-        // process file
-        //nexusIndexerConsumer.processFile(  )
-        
-        // end scan
+        // scan and index again
+        now = Calendar.getInstance().getTime();
+        nexusIndexerConsumer.beginScan( repositoryConfig, now );
+        nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );        
+        nexusIndexerConsumer.completeScan();
         
         // search!
-    }*/
+        BooleanQuery q = new BooleanQuery();        
+        q.add( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.apache.archiva" ), Occur.SHOULD );
+        q.add( nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "archiva-index-methods-jar-test" ), Occur.SHOULD );
+        
+        IndexSearcher searcher = new IndexSearcher( repositoryConfig.getLocation() + "/.indexer" );
+        TopDocs topDocs = searcher.search( q, null, 10 );
+        
+        assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
+        assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
+        
+        // should return only 1 hit 
+        assertEquals( 1, topDocs.totalHits );
+    }
 }
