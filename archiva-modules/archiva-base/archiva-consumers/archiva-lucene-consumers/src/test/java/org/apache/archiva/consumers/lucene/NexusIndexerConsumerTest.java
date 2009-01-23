@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -96,11 +98,7 @@ public class NexusIndexerConsumerTest
         // begin scan
         Date now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
-        
-        // process file
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
-        
-        // end scan
         nexusIndexerConsumer.completeScan();
         
         // search!
@@ -120,16 +118,41 @@ public class NexusIndexerConsumerTest
         ArtifactInfo artifactInfo = (ArtifactInfo) results.iterator().next();
         assertEquals( "org.apache.archiva", artifactInfo.groupId );
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
-        assertEquals( "test-repo", artifactInfo.repository );   
+        assertEquals( "test-repo", artifactInfo.repository );  
     }
     
     public void testIndexerArtifactAlreadyIndexed()
         throws Exception
     {
-    
+        // begin scan
+        Date now = Calendar.getInstance().getTime();
+        nexusIndexerConsumer.beginScan( repositoryConfig, now );
+        nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
+        nexusIndexerConsumer.completeScan();
+        
+        // scan and index again
+        now = Calendar.getInstance().getTime();
+        nexusIndexerConsumer.beginScan( repositoryConfig, now );
+        nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );        
+        nexusIndexerConsumer.completeScan();
+        
+        // search!
+        BooleanQuery q = new BooleanQuery();        
+        q.add( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.apache.archiva" ), Occur.SHOULD );
+        q.add( nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "archiva-index-methods-jar-test" ), Occur.SHOULD );
+        
+        IndexSearcher searcher = new IndexSearcher( repositoryConfig.getLocation() + "/.indexer" );
+        TopDocs topDocs = searcher.search( q, null, 10 );
+        
+        assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
+        assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
+        
+        // should return only 1 hit - artifact should have just been updated and not added as a separate doc
+        assertEquals( 1, topDocs.totalHits );
     }
     
-    /*public void testIndexerIndexPom()
+    /*
+    public void testIndexerIndexArtifactThenPom()
         throws Exception
     {        
         // begin scan

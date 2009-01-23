@@ -24,7 +24,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -34,10 +39,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.index.ArtifactContext;
 import org.sonatype.nexus.index.ArtifactContextProducer;
+import org.sonatype.nexus.index.ArtifactInfo;
 import org.sonatype.nexus.index.DefaultArtifactContextProducer;
 import org.sonatype.nexus.index.NexusIndexer;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
+import org.sonatype.nexus.index.creator.AbstractIndexCreator;
 import org.sonatype.nexus.index.creator.IndexerEngine;
 import org.sonatype.nexus.index.packer.IndexPacker;
 
@@ -65,6 +72,8 @@ public class NexusIndexerConsumer
     private File managedRepository;
     
     private IndexerEngine indexerEngine;
+    
+    private Set<String> uinfos;
 
     public NexusIndexerConsumer( NexusIndexer indexer, IndexPacker indexPacker, IndexerEngine indexerEngine )
     {
@@ -98,6 +107,7 @@ public class NexusIndexerConsumer
 
         repositoryContent = new ManagedDefaultRepositoryContent();
         repositoryContent.setRepository( repository );
+        uinfos = new HashSet<String>();
 
         synchronized ( indexer )
         {
@@ -107,6 +117,22 @@ public class NexusIndexerConsumer
                     indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository,
                                                 indexDirectory, null, null, NexusIndexer.FULL_INDEX );
                 context.setSearchable( repository.isScanned() );
+                
+                // read index to get all the artifacts already indexed
+                IndexReader r = context.getIndexReader();                
+                for ( int i = 0; i < r.numDocs(); i++ )
+                {
+                    if ( !r.isDeleted( i ) )
+                    {
+                        Document d = r.document( i );          
+                        String uinfo = d.get( ArtifactInfo.UINFO );
+          
+                        if ( uinfo != null )
+                        {
+                            uinfos.add( uinfo );
+                        }
+                    }
+                }
                 
                 indexerEngine.beginIndexing( context );
             }
@@ -124,16 +150,26 @@ public class NexusIndexerConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        File artifactFile = new File( managedRepository, path );
-        
+        File artifactFile = new File( managedRepository, path );        
         ArtifactContext artifactContext = artifactContextProducer.getArtifactContext( context, artifactFile );
+        
         if ( artifactContext != null )
         {
             try
-            {
-                //indexer.artifactDiscovered( artifactContext, context );
+            {                
+                ArtifactInfo ai = artifactContext.getArtifactInfo();                
+                String uinfo = AbstractIndexCreator.getGAV(
+                    ai.groupId, ai.artifactId, ai.version, ai.classifier, ai.packaging );
                 
-                indexerEngine.index( context, artifactContext );
+                // already indexed so update!
+                if ( uinfos.contains( uinfo ) )
+                {
+                    indexerEngine.update( context, artifactContext );
+                }
+                else
+                {
+                    indexerEngine.index( context, artifactContext );
+                }    
             }
             catch ( IOException e )
             {
@@ -147,9 +183,9 @@ public class NexusIndexerConsumer
         final File indexLocation = new File( managedRepository, ".index" );
         try
         {
-            indexerEngine.endIndexing( context );
-            
-            indexPacker.packIndex( context, indexLocation );
+            indexerEngine.endIndexing( context );            
+            indexPacker.packIndex( context, indexLocation );            
+            uinfos = null;
         }
         catch ( IOException e )
         {
