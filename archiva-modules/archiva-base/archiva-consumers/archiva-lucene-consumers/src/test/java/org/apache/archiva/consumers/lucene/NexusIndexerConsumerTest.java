@@ -36,6 +36,7 @@ import org.sonatype.nexus.index.ArtifactInfo;
 import org.sonatype.nexus.index.FlatSearchRequest;
 import org.sonatype.nexus.index.FlatSearchResponse;
 import org.sonatype.nexus.index.NexusIndexer;
+import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.creator.IndexerEngine;
 import org.sonatype.nexus.index.packer.IndexPacker;
 
@@ -105,6 +106,10 @@ public class NexusIndexerConsumerTest
         BooleanQuery q = new BooleanQuery();        
         q.add( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.apache.archiva" ), Occur.SHOULD );
         q.add( nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "archiva-index-methods-jar-test" ), Occur.SHOULD );
+        
+        IndexingContext context = nexusIndexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(), new File( repositoryConfig.getLocation() ),
+                                    new File( repositoryConfig.getLocation(), ".indexer" ), null, null, NexusIndexer.FULL_INDEX );
+        context.setSearchable( true );
         
         FlatSearchRequest request = new FlatSearchRequest( q );
         FlatSearchResponse response = nexusIndexer.searchFlat( request );

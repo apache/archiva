@@ -51,6 +51,12 @@ public class SearchResults
         /* do nothing */
     }
 
+    // for new RepositorySearch
+    public void addHit( String id, SearchResultHit hit )
+    {   
+        hits.put( id, hit );
+    }
+    
     public void addHit( LuceneRepositoryContentRecord record )
     {
         if ( record instanceof FileContentRecord )
@@ -148,6 +154,11 @@ public class SearchResults
     public List<SearchResultHit> getHits()
     {
         return new ArrayList( hits.values() );
+    }
+    
+    public Map<String, SearchResultHit> getHitsMap()
+    {
+        return hits;
     }
 
     public List getRepositories()

@@ -63,8 +63,6 @@ public class NexusIndexerConsumer
 
     private final IndexPacker indexPacker;
 
-    private ManagedRepositoryConfiguration repository;
-
     private ManagedDefaultRepositoryContent repositoryContent;
 
     private IndexingContext context;
@@ -100,10 +98,19 @@ public class NexusIndexerConsumer
 
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
-    {   
-        this.repository = repository;
+    {           
         managedRepository = new File( repository.getLocation() );
-        File indexDirectory = new File( managedRepository, ".indexer" );
+        String indexDir = repository.getIndexDir();
+        
+        File indexDirectory = null;
+        if( indexDir != null && !"".equals( indexDir ) )
+        {
+            indexDirectory = new File( managedRepository, repository.getIndexDir() );
+        }
+        else
+        {
+            indexDirectory = new File( managedRepository, ".indexer" );
+        }
 
         repositoryContent = new ManagedDefaultRepositoryContent();
         repositoryContent.setRepository( repository );
@@ -184,7 +191,8 @@ public class NexusIndexerConsumer
         try
         {
             indexerEngine.endIndexing( context );            
-            indexPacker.packIndex( context, indexLocation );            
+            indexPacker.packIndex( context, indexLocation );
+            indexer.removeIndexingContext( context, false );
             uinfos = null;
         }
         catch ( IOException e )

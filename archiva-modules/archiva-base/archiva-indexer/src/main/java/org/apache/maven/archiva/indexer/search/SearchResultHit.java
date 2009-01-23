@@ -157,4 +157,14 @@ public class SearchResultHit
     {
         this.repositoryId = repositoryId;
     }
+    
+    public void addVersion( String version )
+    {
+        if( versions == null )
+        {
+            versions = new ArrayList<String>();
+        }
+        
+        versions.add( version );
+    }
 }
