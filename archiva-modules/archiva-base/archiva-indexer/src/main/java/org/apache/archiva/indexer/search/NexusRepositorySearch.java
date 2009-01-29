@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.archiva.indexer.util.SearchUtil;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -178,7 +177,8 @@ public class NexusRepositorySearch
                 hit = new SearchResultHit();
                 hit.setArtifactId( artifactInfo.artifactId );
                 hit.setGroupId( artifactInfo.groupId );
-                hit.setRepositoryId( artifactInfo.repository );
+                // do we still need to set the repository id even though we're merging everything?
+                //hit.setRepositoryId( artifactInfo.repository );
                 hit.setUrl( artifactInfo.repository + "/" + artifactInfo.fname );
                 if( !hit.getVersions().contains( artifactInfo.version ) )
                 {

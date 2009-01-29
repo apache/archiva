@@ -44,213 +44,246 @@ public class NexusRepositorySearchTest
     extends PlexusInSpringTestCase
 {
     private RepositorySearch search;
-    
+
     private ArchivaConfiguration archivaConfig;
-    
+
     private NexusIndexer indexer;
-    
+
     private IndexingContext context;
-    
+
     private IndexerEngine indexerEngine;
-    
+
     private ArtifactContextProducer artifactContextProducer;
-    
+
     private MockControl archivaConfigControl;
-    
+
     private Configuration config;
-    
-    private final static String TEST_REPO = "nexus-search-test-repo"; 
-    
+
+    private final static String TEST_REPO_1 = "nexus-search-test-repo";
+
+    private final static String TEST_REPO_2 = "nexus-search-test-repo-2";
+
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
-        
-        indexer = ( NexusIndexer ) lookup( NexusIndexer.class );
-        
+
+        indexer = (NexusIndexer) lookup( NexusIndexer.class );
+
         archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
-        
-        archivaConfig = ( ArchivaConfiguration ) archivaConfigControl.getMock();
-                
+
+        archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
+
         search = new NexusRepositorySearch( indexer, archivaConfig );
-        
-        indexerEngine = ( IndexerEngine ) lookup( IndexerEngine.class );
-        
-        artifactContextProducer = ( ArtifactContextProducer ) lookup( ArtifactContextProducer.class );
-        
+
+        indexerEngine = (IndexerEngine) lookup( IndexerEngine.class );
+
+        artifactContextProducer = (ArtifactContextProducer) lookup( ArtifactContextProducer.class );
+
         config = new Configuration();
-        
+        config.addManagedRepository( createRepositoryConfig( TEST_REPO_1 ) );
+
+        List<File> files = new ArrayList<File>();
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
+
+        createIndex( TEST_REPO_1, files );
+    }
+
+    private ManagedRepositoryConfiguration createRepositoryConfig( String repository )
+    {
         ManagedRepositoryConfiguration repositoryConfig = new ManagedRepositoryConfiguration();
-        repositoryConfig.setId( TEST_REPO );
-        repositoryConfig.setLocation( getBasedir() + "/target/test-classes/" + TEST_REPO );
+        repositoryConfig.setId( repository );
+        repositoryConfig.setLocation( getBasedir() + "/target/test-classes/" + repository );
         repositoryConfig.setLayout( "default" );
-        repositoryConfig.setName( "Nexus Search Test Repository" );
+        repositoryConfig.setName( repository );
         repositoryConfig.setScanned( true );
         repositoryConfig.setSnapshots( false );
         repositoryConfig.setReleases( true );
-        
-        config.addManagedRepository( repositoryConfig );
-        
-        createIndex();
+
+        return repositoryConfig;
     }
-    
+
     @Override
     protected void tearDown()
         throws Exception
     {
-        FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/"+ TEST_REPO + "/.indexer" ) );
-        assertFalse( new File( getBasedir(), "/target/test-classes/"+ TEST_REPO + "/.indexer" ).exists() );
-        
+        FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ) );
+        assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ).exists() );
+
         super.tearDown();
     }
-    
-    private void createIndex()
+
+    private void createIndex( String repository, List<File> filesToBeIndexed )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
         context =
-            indexer.addIndexingContext( TEST_REPO, TEST_REPO, new File( getBasedir(), "/target/test-classes/" + TEST_REPO ),
-                                    new File( getBasedir(), "/target/test-classes/" + TEST_REPO + "/.indexer"), null, null, NexusIndexer.FULL_INDEX );
+            indexer.addIndexingContext( repository, repository, new File( getBasedir(), "/target/test-classes/" +
+                repository ), new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ), null, null,
+                                        NexusIndexer.FULL_INDEX );
         context.setSearchable( true );
-        
+
         indexerEngine.beginIndexing( context );
-        
-        File artifactFile =
-            new File( getBasedir(),
-                      "/target/test-classes/" + TEST_REPO + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" );
-        ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
-        indexerEngine.index( context, ac );
-        
-        artifactFile =
-            new File( getBasedir(),
-                      "/target/test-classes/" + TEST_REPO + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" );
-        ac = artifactContextProducer.getArtifactContext( context, artifactFile );
-        indexerEngine.index( context, ac );
-        
-        artifactFile =
-            new File( getBasedir(),
-                      "/target/test-classes/" + TEST_REPO + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" );
-        ac = artifactContextProducer.getArtifactContext( context, artifactFile );
-        indexerEngine.index( context, ac );
-        
-        indexerEngine.endIndexing( context );     
-        
-        assertTrue( new File( getBasedir(), "/target/test-classes/"+ TEST_REPO + "/.indexer" ).exists() );
+
+        for ( File artifactFile : filesToBeIndexed )
+        {
+            ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
+            indexerEngine.index( context, ac );
+        }
+
+        indexerEngine.endIndexing( context );
+        assertTrue( new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ).exists() );
     }
-    
+
     public void testQuickSearch()
         throws Exception
     {
         List<String> selectedRepos = new ArrayList<String>();
-        selectedRepos.add( TEST_REPO );
-        
+        selectedRepos.add( TEST_REPO_1 );
+
+        // search artifactId
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        
+
         archivaConfigControl.replay();
-        
+
         SearchResults results = search.search( "user", selectedRepos, "archiva-search", null );
-        
+
         archivaConfigControl.verify();
-        
+
         assertNotNull( results );
         assertEquals( 1, results.getTotalHits() );
-        
+
         SearchResultHit hit = results.getHits().get( 0 );
         assertEquals( "org.apache.archiva", hit.getGroupId() );
         assertEquals( "archiva-search", hit.getArtifactId() );
         assertEquals( "1.0", hit.getVersions().get( 0 ) );
-        assertEquals( "nexus-search-test-repo", hit.getRepositoryId() );
-        
+
         archivaConfigControl.reset();
-        
+
+        // search groupId
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        
+
         archivaConfigControl.replay();
-        
+
         results = search.search( "user", selectedRepos, "org.apache.archiva", null );
-        
+
         archivaConfigControl.verify();
-        
+
         assertNotNull( results );
         assertEquals( 2, results.getTotalHits() );
-        
+
         //TODO: search for class & package names
     }
-    
+
     public void testQuickSearchWithPagination()
         throws Exception
     {
         List<String> selectedRepos = new ArrayList<String>();
-        selectedRepos.add( TEST_REPO );
-        
+        selectedRepos.add( TEST_REPO_1 );
+
         // page 1
         SearchResultLimits limits = new SearchResultLimits( 1 );
-        limits.setPageSize( 1 );        
-        
+        limits.setPageSize( 1 );
+
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        
+
         archivaConfigControl.replay();
-        
+
         SearchResults results = search.search( "user", selectedRepos, "org", limits );
-        
+
         archivaConfigControl.verify();
-        
+
         assertNotNull( results );
         assertEquals( 1, results.getTotalHits() );
-        
+
         archivaConfigControl.reset();
-        
+
         // page 2
         limits = new SearchResultLimits( 2 );
-        limits.setPageSize( 1 );   
-        
+        limits.setPageSize( 1 );
+
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        
+
         archivaConfigControl.replay();
-        
+
         results = search.search( "user", selectedRepos, "org", limits );
-        
+
         archivaConfigControl.verify();
-        
+
         assertNotNull( results );
         assertEquals( 1, results.getTotalHits() );
     }
-    
+
     public void testArtifactFoundInMultipleRepositories()
         throws Exception
     {
+        List<File> files = new ArrayList<File>();
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 +
+            "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
+        createIndex( TEST_REPO_2, files );
+
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+        selectedRepos.add( TEST_REPO_2 );
+
+        config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", selectedRepos, "archiva-search", null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 1, results.getTotalHits() );
+
+        SearchResultHit hit = results.getHits().get( 0 );
+        assertEquals( "org.apache.archiva", hit.getGroupId() );
+        assertEquals( "archiva-search", hit.getArtifactId() );
+        assertEquals( 2, hit.getVersions().size() );
+        assertTrue( hit.getVersions().contains( "1.0" ) );
+        assertTrue( hit.getVersions().contains( "1.1" ) );
+
+        archivaConfigControl.reset();
+
+        FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
+        assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
+
         // there should be no duplicates in the search result hit
         // TODO: [BROWSE] in artifact info from browse, display all the repositories where the artifact is found
     }
-    
+
     public void testNoMatchFound()
-        throws Exception 
+        throws Exception
     {
-    
+
     }
-    
+
     public void testNoIndexFound()
         throws Exception
     {
-    
+
     }
-    
+
     public void testSearchWithinSearchResults()
         throws Exception
     {
-    
+
     }
-    
+
     public void testAdvancedSearch()
         throws Exception
     {
-    
+
     }
-    
-    public void testPagination()
-        throws Exception
-    {
-    
-    }
-    
+
 }
