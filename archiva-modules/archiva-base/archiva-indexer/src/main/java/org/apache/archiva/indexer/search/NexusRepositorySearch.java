@@ -86,11 +86,11 @@ public class NexusRepositorySearch
             FlatSearchRequest request = new FlatSearchRequest( q );
             FlatSearchResponse response = indexer.searchFlat( request );
             
-            if( response == null )
+            if( response == null || response.getTotalHits() == 0 )
             {
                 return new SearchResults();
             }
-
+            
             return convertToSearchResults( response, limits );
         }
         catch ( IndexContextInInconsistentStateException e )
@@ -100,6 +100,24 @@ public class NexusRepositorySearch
         catch ( IOException e )
         {
             throw new RepositorySearchException( e );
+        }
+        finally
+        {
+            Map<String, IndexingContext> indexingContexts = indexer.getIndexingContexts();
+            Set<String> keys = indexingContexts.keySet();
+            for( String key : keys )
+            {
+                try                
+                {   
+                    indexer.removeIndexingContext( indexingContexts.get( key ), false );
+                    log.debug( "Indexing context '" + key + "' removed from search." );
+                }
+                catch ( IOException e )
+                {
+                    log.warn( "IOException occurred while removing indexing content '" + key  + "'." );
+                    continue;
+                }
+            }            
         }
     }
     
@@ -143,14 +161,12 @@ public class NexusRepositorySearch
                 }
             }
             catch ( UnsupportedExistingLuceneIndexException e )
-            {
-                // skip repository
+            {                
                 log.warn( "Error accessing index of repository '" + repo + "' : " + e.getMessage() );
                 continue;
             }
             catch ( IOException e )
-            {
-                // skip repository
+            {                
                 log.warn( "IO error occured while accessing index of repository '" + repo + "' : " + e.getMessage() );
                 continue;
             }

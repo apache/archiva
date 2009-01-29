@@ -137,12 +137,14 @@ public class NexusRepositorySearchTest
         }
 
         indexerEngine.endIndexing( context );
+        indexer.removeIndexingContext( context, false );
+        
         assertTrue( new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ).exists() );
     }
 
     public void testQuickSearch()
         throws Exception
-    {
+    {   
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
 
@@ -182,7 +184,7 @@ public class NexusRepositorySearchTest
 
     public void testQuickSearchWithPagination()
         throws Exception
-    {
+    {   
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
 
@@ -258,32 +260,54 @@ public class NexusRepositorySearchTest
         FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
         assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
 
-        // there should be no duplicates in the search result hit
         // TODO: [BROWSE] in artifact info from browse, display all the repositories where the artifact is found
     }
 
     public void testNoMatchFound()
         throws Exception
     {
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
 
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", selectedRepos, "dfghdfkweriuasndsaie", null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 0, results.getTotalHits() );
     }
 
     public void testNoIndexFound()
         throws Exception
     {
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( "non-existing-repo" );
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
 
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", selectedRepos, "org.apache.archiva", null );
+        assertNotNull( results );
+        assertEquals( 0, results.getTotalHits() );
+        
+        archivaConfigControl.verify();            
     }
 
     public void testSearchWithinSearchResults()
         throws Exception
     {
-
+       
     }
 
     public void testAdvancedSearch()
         throws Exception
     {
-
+        
     }
 
 }
