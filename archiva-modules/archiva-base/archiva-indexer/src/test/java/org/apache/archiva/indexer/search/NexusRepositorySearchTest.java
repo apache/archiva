@@ -29,6 +29,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.search.SearchResultHit;
+import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
@@ -174,6 +175,45 @@ public class NexusRepositorySearchTest
         assertEquals( 2, results.getTotalHits() );
         
         //TODO: search for class & package names
+    }
+    
+    public void testQuickSearchWithPagination()
+        throws Exception
+    {
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO );
+        
+        // page 1
+        SearchResultLimits limits = new SearchResultLimits( 1 );
+        limits.setPageSize( 1 );        
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        
+        archivaConfigControl.replay();
+        
+        SearchResults results = search.search( "user", selectedRepos, "org", limits );
+        
+        archivaConfigControl.verify();
+        
+        assertNotNull( results );
+        assertEquals( 1, results.getTotalHits() );
+        
+        archivaConfigControl.reset();
+        
+        // page 2
+        limits = new SearchResultLimits( 2 );
+        limits.setPageSize( 1 );   
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        
+        archivaConfigControl.replay();
+        
+        results = search.search( "user", selectedRepos, "org", limits );
+        
+        archivaConfigControl.verify();
+        
+        assertNotNull( results );
+        assertEquals( 1, results.getTotalHits() );
     }
     
     public void testArtifactFoundInMultipleRepositories()

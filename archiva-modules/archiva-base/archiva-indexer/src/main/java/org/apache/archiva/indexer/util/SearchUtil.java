@@ -59,4 +59,9 @@ public class SearchUtil
 
         return qString;
     }
+    
+    public static String getHitId( String groupId, String artifactId )
+    {
+        return groupId + ":" + artifactId;
+    }
 }

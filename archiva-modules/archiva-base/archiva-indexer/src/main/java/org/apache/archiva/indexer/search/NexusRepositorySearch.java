@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -70,7 +72,6 @@ public class NexusRepositorySearch
         // 1. construct query for:
         //    - regular search
         //    - searching within search results
-        // 2. consider pagination
         // 3. multiple repositories
                         
         BooleanQuery q = new BooleanQuery();
@@ -91,7 +92,7 @@ public class NexusRepositorySearch
                 return new SearchResults();
             }
 
-            return convertToSearchResults( response );
+            return convertToSearchResults( response, limits );
         }
         catch ( IndexContextInInconsistentStateException e )
         {
@@ -157,16 +158,14 @@ public class NexusRepositorySearch
         }
     }
 
-    private SearchResults convertToSearchResults( FlatSearchResponse response )
-    {
-        // TODO: paginate!
-        
+    private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits )
+    {   
         SearchResults results = new SearchResults();
         Set<ArtifactInfo> artifactInfos = response.getResults();
-
+        
         for ( ArtifactInfo artifactInfo : artifactInfos )
         {
-            String id = artifactInfo.groupId + ":" + artifactInfo.artifactId;            
+            String id = SearchUtil.getHitId( artifactInfo.groupId, artifactInfo.artifactId );            
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
 
             SearchResultHit hit = hitsMap.get( id );
@@ -192,7 +191,50 @@ public class NexusRepositorySearch
         
         results.setTotalHits( results.getHitsMap().size() );
         
-        return results;
+        if( limits == null || limits.getSelectedPage() == SearchResultLimits.ALL_PAGES )
+        {   
+            return results;
+        }
+        else
+        {
+            return paginate( limits, results );            
+        }        
+    }
+
+    private SearchResults paginate( SearchResultLimits limits, SearchResults results )
+    {
+        SearchResults paginated = new SearchResults();
+        
+        int fetchCount = limits.getPageSize();
+        int offset = ( limits.getSelectedPage() * limits.getPageSize() );
+
+        // Goto offset.
+        if ( offset <= results.getTotalHits() )
+        {
+            // only process if the offset is within the hit count.
+            for ( int i = 0; i < fetchCount; i++ )
+            {
+                // Stop fetching if we are past the total # of available hits.
+                if ( offset + i > results.getTotalHits() )
+                {
+                    break;
+                }
+                
+                SearchResultHit hit = results.getHits().get( ( offset + i ) - 1 );
+                if( hit != null )
+                {
+                    String id = SearchUtil.getHitId( hit.getGroupId(), hit.getArtifactId() );
+                    paginated.addHit( id, hit );
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }            
+        paginated.setTotalHits( paginated.getHitsMap().size() );
+        
+        return paginated;
     }
 
 }
