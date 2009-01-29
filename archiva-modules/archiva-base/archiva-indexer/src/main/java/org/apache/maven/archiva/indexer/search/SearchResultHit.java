@@ -44,6 +44,7 @@ public class SearchResultHit
     //  Advanced hit, reference to artifactId.
     private String artifactId;
 
+    // TODO: remove/deprecate this field!
     private String version = "";
     
     private String repositoryId = "";

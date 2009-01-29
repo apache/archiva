@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.search.SearchResultHit;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
@@ -69,15 +71,25 @@ public class NexusRepositorySearch
         //    - regular search
         //    - searching within search results
         // 2. consider pagination
-        
+        // 3. multiple repositories
+                        
         BooleanQuery q = new BooleanQuery();
-        // q.add( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.apache.archiva" ), Occur.SHOULD );
-        // q.add( nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "archiva-index-methods-jar-test" ), Occur.SHOULD );
-
+        q.add( indexer.constructQuery( ArtifactInfo.GROUP_ID, term ), Occur.SHOULD );
+        q.add( indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, term ), Occur.SHOULD );
+        q.add( indexer.constructQuery( ArtifactInfo.VERSION, term ), Occur.SHOULD );
+        q.add( indexer.constructQuery( ArtifactInfo.PACKAGING, term ), Occur.SHOULD );
+                
+        // TODO: what about class & package?        
+        
         try
         {
             FlatSearchRequest request = new FlatSearchRequest( q );
             FlatSearchResponse response = indexer.searchFlat( request );
+            
+            if( response == null )
+            {
+                return new SearchResults();
+            }
 
             return convertToSearchResults( response );
         }
@@ -104,22 +116,31 @@ public class NexusRepositorySearch
         {
             try
             {
-                ManagedRepositoryConfiguration repoConfig = archivaConfig.getConfiguration().findManagedRepositoryById( repo );
-                String indexDir = repoConfig.getIndexDir();
-                File indexDirectory = null;
-                if( indexDir != null && !"".equals( indexDir ) )
+                Configuration config = archivaConfig.getConfiguration();
+                ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repo );
+                
+                if( repoConfig != null )
                 {
-                    indexDirectory = new File( repoConfig.getLocation(), repoConfig.getIndexDir() );
+                    String indexDir = repoConfig.getIndexDir();
+                    File indexDirectory = null;
+                    if( indexDir != null && !"".equals( indexDir ) )
+                    {
+                        indexDirectory = new File( repoConfig.getIndexDir() );
+                    }
+                    else
+                    {
+                        indexDirectory = new File( repoConfig.getLocation(), ".indexer" );
+                    }
+                    
+                    IndexingContext context =
+                        indexer.addIndexingContext( repoConfig.getId(), repoConfig.getId(), new File( repoConfig.getLocation() ),
+                                                    indexDirectory, null, null, NexusIndexer.FULL_INDEX );
+                    context.setSearchable( repoConfig.isScanned() );
                 }
                 else
                 {
-                    indexDirectory = new File( repoConfig.getLocation(), ".indexer" );
+                    log.warn( "Repository '" + repo + "' not found in configuration." );
                 }
-                
-                IndexingContext context =
-                    indexer.addIndexingContext( repoConfig.getId(), repoConfig.getId(), new File( repoConfig.getLocation() ),
-                                                indexDirectory, null, null, NexusIndexer.FULL_INDEX );
-                context.setSearchable( repoConfig.isScanned() );
             }
             catch ( UnsupportedExistingLuceneIndexException e )
             {
@@ -138,12 +159,14 @@ public class NexusRepositorySearch
 
     private SearchResults convertToSearchResults( FlatSearchResponse response )
     {
+        // TODO: paginate!
+        
         SearchResults results = new SearchResults();
         Set<ArtifactInfo> artifactInfos = response.getResults();
 
         for ( ArtifactInfo artifactInfo : artifactInfos )
         {
-            String id = artifactInfo.groupId + ":" + artifactInfo.artifactId;
+            String id = artifactInfo.groupId + ":" + artifactInfo.artifactId;            
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
 
             SearchResultHit hit = hitsMap.get( id );
@@ -158,12 +181,17 @@ public class NexusRepositorySearch
                 hit.setGroupId( artifactInfo.groupId );
                 hit.setRepositoryId( artifactInfo.repository );
                 hit.setUrl( artifactInfo.repository + "/" + artifactInfo.fname );
-                hit.addVersion( artifactInfo.version );
+                if( !hit.getVersions().contains( artifactInfo.version ) )
+                {
+                    hit.addVersion( artifactInfo.version );
+                }
             }
 
             results.addHit( id, hit );
         }
-
+        
+        results.setTotalHits( results.getHitsMap().size() );
+        
         return results;
     }
 
