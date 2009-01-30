@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +51,9 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.indexer.search.SearchResultHit;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -130,6 +135,8 @@ public class SearchAction
 
     private boolean fromResultsPage;
 
+    private RepositorySearch nexusSearch;
+        
     public boolean isFromResultsPage()
     {
         return fromResultsPage;
@@ -255,7 +262,16 @@ public class SearchAction
             else
             {
                 completeQueryString = "";
-                results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+                //results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+                try
+                {
+                    results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits );
+                }
+                catch ( RepositorySearchException e )
+                {
+                    addActionError( e.getMessage() );
+                    return ERROR;
+                }
             }
         }
 
@@ -578,5 +594,21 @@ public class SearchAction
     public void setClassName( String className )
     {
         this.className = className;
+    }
+
+    public RepositorySearch getNexusSearch()
+    {
+        if( nexusSearch == null )
+        {
+            WebApplicationContext wac =
+                WebApplicationContextUtils.getRequiredWebApplicationContext( ServletActionContext.getServletContext() );
+            nexusSearch = ( RepositorySearch ) wac.getBean( "nexusSearch" );
+        }
+        return nexusSearch;
+    }
+
+    public void setNexusSearch( RepositorySearch nexusSearch )
+    {
+        this.nexusSearch = nexusSearch;
     }
 }

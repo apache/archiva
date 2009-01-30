@@ -62,6 +62,9 @@ public class NexusRepositorySearch
         this.archivaConfig = archivaConfig;
     }
 
+    /**
+     * @see RepositorySearch#search(String, List, String, SearchResultLimits)
+     */
     public SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
         throws RepositorySearchException
     {   
@@ -120,7 +123,10 @@ public class NexusRepositorySearch
             }            
         }
     }
-    
+       
+    /**
+     * @see RepositorySearch#search(String, SearchFields, SearchResultLimits)
+     */
     public SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
         throws RepositorySearchException
     {
@@ -219,13 +225,17 @@ public class NexusRepositorySearch
 
     private SearchResults paginate( SearchResultLimits limits, SearchResults results )
     {
-        SearchResults paginated = new SearchResults();
-        
+        SearchResults paginated = new SearchResults();        
         int fetchCount = limits.getPageSize();
         int offset = ( limits.getSelectedPage() * limits.getPageSize() );
-
+        
+        if( fetchCount > results.getTotalHits() )
+        {
+            fetchCount = results.getTotalHits();
+        }
+        
         // Goto offset.
-        if ( offset <= results.getTotalHits() )
+        if ( offset < results.getTotalHits() )
         {
             // only process if the offset is within the hit count.
             for ( int i = 0; i < fetchCount; i++ )
@@ -236,7 +246,7 @@ public class NexusRepositorySearch
                     break;
                 }
                 
-                SearchResultHit hit = results.getHits().get( ( offset + i ) - 1 );
+                SearchResultHit hit = results.getHits().get( ( offset + i ) );
                 if( hit != null )
                 {
                     String id = SearchUtil.getHitId( hit.getGroupId(), hit.getArtifactId() );

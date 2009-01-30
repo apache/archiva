@@ -189,7 +189,7 @@ public class NexusRepositorySearchTest
         selectedRepos.add( TEST_REPO_1 );
 
         // page 1
-        SearchResultLimits limits = new SearchResultLimits( 1 );
+        SearchResultLimits limits = new SearchResultLimits( 0 );
         limits.setPageSize( 1 );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
@@ -206,7 +206,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.reset();
 
         // page 2
-        limits = new SearchResultLimits( 2 );
+        limits = new SearchResultLimits( 1 );
         limits.setPageSize( 1 );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
