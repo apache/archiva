@@ -263,7 +263,7 @@ public class NexusRepositorySearch
             for ( int i = 0; i < fetchCount; i++ )
             {
                 // Stop fetching if we are past the total # of available hits.
-                if ( offset + i > results.getTotalHits() )
+                if ( offset + i >= results.getHits().size() )
                 {
                     break;
                 }
@@ -280,7 +280,7 @@ public class NexusRepositorySearch
                 }
             }
         }            
-        paginated.setTotalHits( paginated.getHitsMap().size() );
+        paginated.setTotalHits( results.getTotalHits() );
         
         return paginated;
     }
