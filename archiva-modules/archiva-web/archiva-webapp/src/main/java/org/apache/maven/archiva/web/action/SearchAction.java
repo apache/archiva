@@ -265,7 +265,7 @@ public class SearchAction
                 //results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
                 try
                 {
-                    results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits );
+                    results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );
                 }
                 catch ( RepositorySearchException e )
                 {

@@ -153,7 +153,7 @@ public class NexusRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        SearchResults results = search.search( "user", selectedRepos, "archiva-search", null );
+        SearchResults results = search.search( "user", selectedRepos, "archiva-search", null, null );
 
         archivaConfigControl.verify();
 
@@ -164,7 +164,7 @@ public class NexusRepositorySearchTest
         assertEquals( "org.apache.archiva", hit.getGroupId() );
         assertEquals( "archiva-search", hit.getArtifactId() );
         assertEquals( "1.0", hit.getVersions().get( 0 ) );
-
+        
         archivaConfigControl.reset();
 
         // search groupId
@@ -172,7 +172,7 @@ public class NexusRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        results = search.search( "user", selectedRepos, "org.apache.archiva", null );
+        results = search.search( "user", selectedRepos, "org.apache.archiva", null, null );
 
         archivaConfigControl.verify();
 
@@ -196,7 +196,7 @@ public class NexusRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        SearchResults results = search.search( "user", selectedRepos, "org", limits );
+        SearchResults results = search.search( "user", selectedRepos, "org", limits, null );
 
         archivaConfigControl.verify();
 
@@ -213,7 +213,7 @@ public class NexusRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        results = search.search( "user", selectedRepos, "org", limits );
+        results = search.search( "user", selectedRepos, "org", limits, null );
 
         archivaConfigControl.verify();
 
@@ -241,7 +241,7 @@ public class NexusRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        SearchResults results = search.search( "user", selectedRepos, "archiva-search", null );
+        SearchResults results = search.search( "user", selectedRepos, "archiva-search", null, null );
 
         archivaConfigControl.verify();
 
@@ -273,7 +273,7 @@ public class NexusRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        SearchResults results = search.search( "user", selectedRepos, "dfghdfkweriuasndsaie", null );
+        SearchResults results = search.search( "user", selectedRepos, "dfghdfkweriuasndsaie", null, null );
 
         archivaConfigControl.verify();
 
@@ -291,7 +291,7 @@ public class NexusRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        SearchResults results = search.search( "user", selectedRepos, "org.apache.archiva", null );
+        SearchResults results = search.search( "user", selectedRepos, "org.apache.archiva", null, null );
         assertNotNull( results );
         assertEquals( 0, results.getTotalHits() );
         
@@ -301,7 +301,28 @@ public class NexusRepositorySearchTest
     public void testSearchWithinSearchResults()
         throws Exception
     {
-       
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+        
+        List<String> previousSearchTerms = new ArrayList<String>();
+        previousSearchTerms.add( "archiva-test" );
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", selectedRepos, "1.0", null, previousSearchTerms );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 1, results.getTotalHits() );
+        
+        SearchResultHit hit = results.getHits().get( 0 );
+        assertEquals( "org.apache.archiva", hit.getGroupId() );
+        assertEquals( "archiva-test", hit.getArtifactId() );
+        assertEquals( 1, hit.getVersions().size() );
+        assertEquals( "1.0", hit.getVersions().get( 0 ) );
     }
 
     public void testAdvancedSearch()

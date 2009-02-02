@@ -33,9 +33,11 @@ public interface RepositorySearch
      * @param selectedRepos
      * @param term
      * @param limits
+     * @param previousSearchTerms 
      * @return
      */
-    SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
+    SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
+                          List<String> previousSearchTerms )
         throws RepositorySearchException;
     
     /**

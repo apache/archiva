@@ -63,9 +63,10 @@ public class NexusRepositorySearch
     }
 
     /**
-     * @see RepositorySearch#search(String, List, String, SearchResultLimits)
+     * @see RepositorySearch#search(String, List, String, SearchResultLimits, List)
      */
-    public SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
+    public SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
+                                 List<String> previousSearchTerms )
         throws RepositorySearchException
     {   
         addIndexingContexts( selectedRepos );
@@ -75,15 +76,27 @@ public class NexusRepositorySearch
         //    - regular search
         //    - searching within search results
         // 3. multiple repositories
-                        
-        BooleanQuery q = new BooleanQuery();
-        q.add( indexer.constructQuery( ArtifactInfo.GROUP_ID, term ), Occur.SHOULD );
-        q.add( indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, term ), Occur.SHOULD );
-        q.add( indexer.constructQuery( ArtifactInfo.VERSION, term ), Occur.SHOULD );
-        q.add( indexer.constructQuery( ArtifactInfo.PACKAGING, term ), Occur.SHOULD );
-                
-        // TODO: what about class & package?        
         
+        BooleanQuery q = new BooleanQuery();
+        if( previousSearchTerms == null || previousSearchTerms.isEmpty() )
+        {            
+            constructQuery( term, q );
+        }
+        else
+        {   
+            for( String previousTerm : previousSearchTerms )
+            {
+                BooleanQuery iQuery = new BooleanQuery();
+                constructQuery( previousTerm, iQuery );
+                
+                q.add( iQuery, Occur.MUST );
+            }
+            
+            BooleanQuery iQuery = new BooleanQuery();
+            constructQuery( term, iQuery );
+            q.add( iQuery, Occur.MUST );
+        }        
+                    
         try
         {
             FlatSearchRequest request = new FlatSearchRequest( q );
@@ -122,6 +135,15 @@ public class NexusRepositorySearch
                 }
             }            
         }
+    }
+
+    private void constructQuery( String term, BooleanQuery q )
+    {
+        q.add( indexer.constructQuery( ArtifactInfo.GROUP_ID, term ), Occur.SHOULD );
+        q.add( indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, term ), Occur.SHOULD );
+        q.add( indexer.constructQuery( ArtifactInfo.VERSION, term ), Occur.SHOULD );
+        q.add( indexer.constructQuery( ArtifactInfo.PACKAGING, term ), Occur.SHOULD );
+        q.add( indexer.constructQuery( ArtifactInfo.NAMES, term ), Occur.SHOULD );        
     }
        
     /**
