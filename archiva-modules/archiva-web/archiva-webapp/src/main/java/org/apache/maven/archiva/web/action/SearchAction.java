@@ -255,23 +255,24 @@ public class SearchAction
         }
         else
         {
-            if( searchResultsOnly && !completeQueryString.equals( "" ) )
+            try
             {
-                results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
+                if( searchResultsOnly && !completeQueryString.equals( "" ) )
+                {
+                    //results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );                    
+                    results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );                   
+                }
+                else
+                {
+                    completeQueryString = "";
+                    //results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );                    
+                    results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );                    
+                }
             }
-            else
+            catch ( RepositorySearchException e )
             {
-                completeQueryString = "";
-                //results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
-                try
-                {
-                    results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );
-                }
-                catch ( RepositorySearchException e )
-                {
-                    addActionError( e.getMessage() );
-                    return ERROR;
-                }
+                addActionError( e.getMessage() );
+                return ERROR;
             }
         }
 
