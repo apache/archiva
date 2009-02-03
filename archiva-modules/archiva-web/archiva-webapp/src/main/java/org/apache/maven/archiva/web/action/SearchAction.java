@@ -28,7 +28,6 @@ import java.util.Map;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
-import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -38,7 +37,6 @@ import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.apache.maven.archiva.security.AccessDeniedException;
@@ -84,11 +82,6 @@ public class SearchAction
      * The Search Results.
      */
     private SearchResults results;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private CrossRepositorySearch crossRepoSearch;
     
     /**
      * @plexus.requirement
@@ -213,10 +206,6 @@ public class SearchAction
             return ERROR;
         }
         
-        //results =
-        //    crossRepoSearch.executeFilteredSearch( getPrincipal(), selectedRepos, groupId, artifactId, version,
-        //                                           className, limits );
-
         if ( results.isEmpty() )
         {
             addActionError( "No results found" );
@@ -263,32 +252,22 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        final boolean isbytecodeSearch = SearchUtil.isBytecodeSearch( q );
-        if( isbytecodeSearch )
+        try
         {
-            results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, SearchUtil.removeBytecodeKeyword( q ), limits );
+            if( searchResultsOnly && !completeQueryString.equals( "" ) )
+            {                       
+                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );                   
+            }
+            else
+            {
+                completeQueryString = "";                    
+                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );                    
+            }
         }
-        else
+        catch ( RepositorySearchException e )
         {
-            try
-            {
-                if( searchResultsOnly && !completeQueryString.equals( "" ) )
-                {
-                    //results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );                    
-                    results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );                   
-                }
-                else
-                {
-                    completeQueryString = "";
-                    //results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );                    
-                    results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );                    
-                }
-            }
-            catch ( RepositorySearchException e )
-            {
-                addActionError( e.getMessage() );
-                return ERROR;
-            }
+            addActionError( e.getMessage() );
+            return ERROR;
         }
 
         if ( results.isEmpty() )
@@ -316,22 +295,19 @@ public class SearchAction
         {
             buildCompleteQueryString( q );
         }
-
-        if (!isbytecodeSearch)
+       
+        //Lets get the versions for the artifact we just found and display them
+        //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
+        for (SearchResultHit resultHit : results.getHits())
         {
-            //Lets get the versions for the artifact we just found and display them
-            //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
-            for (SearchResultHit resultHit : results.getHits())
+            final List<String> versions = dao.query(new UniqueVersionConstraint(getObservableRepos(), resultHit.getGroupId(), resultHit.getArtifactId()));
+            if (versions != null && !versions.isEmpty())
             {
-                final List<String> versions = dao.query(new UniqueVersionConstraint(getObservableRepos(), resultHit.getGroupId(), resultHit.getArtifactId()));
-                if (versions != null && !versions.isEmpty())
-                {
-                    resultHit.setVersion(null);
-                    resultHit.setVersions(filterTimestampedSnapshots(versions));
-                }
+                resultHit.setVersion(null);
+                resultHit.setVersions(filterTimestampedSnapshots(versions));
             }
         }
-
+       
         return SUCCESS;
     }
 
