@@ -1,5 +1,8 @@
 package org.apache.archiva.indexer.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,20 +24,36 @@ package org.apache.archiva.indexer.search;
 
 public class SearchFields
 {
+    /**
+     * groupId
+     */
     private String groupId;
 
+    /**
+     * artifactId
+     */
     private String artifactId;
 
+    /**
+     * version
+     */
     private String version;
 
+    /**
+     * packaging (jar, war, pom, etc.)
+     */
     private String packaging;
 
+    /**
+     * class name or package name
+     */
     private String className;
-
-    private String packageName;
-
-    private String repositoryId;
-
+    
+    /**
+     * repositories
+     */
+    private List<String> repositories = new ArrayList<String>();
+    
     public String getGroupId()
     {
         return groupId;
@@ -85,23 +104,13 @@ public class SearchFields
         this.className = className;
     }
 
-    public String getPackageName()
+    public List<String> getRepositories()
     {
-        return packageName;
+        return repositories;
     }
 
-    public void setPackageName( String packageName )
+    public void setRepositories( List<String> repositories )
     {
-        this.packageName = packageName;
-    }
-
-    public String getRepositoryId()
-    {
-        return repositoryId;
-    }
-
-    public void setRepositoryId( String repositoryId )
-    {
-        this.repositoryId = repositoryId;
+        this.repositories = repositories;
     }
 }

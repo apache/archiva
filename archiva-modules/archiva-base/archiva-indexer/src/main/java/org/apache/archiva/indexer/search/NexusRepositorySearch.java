@@ -70,13 +70,7 @@ public class NexusRepositorySearch
         throws RepositorySearchException
     {   
         addIndexingContexts( selectedRepos );
-        
-        // TODO: 
-        // 1. construct query for:
-        //    - regular search
-        //    - searching within search results
-        // 3. multiple repositories
-        
+                
         BooleanQuery q = new BooleanQuery();
         if( previousSearchTerms == null || previousSearchTerms.isEmpty() )
         {            
@@ -97,6 +91,59 @@ public class NexusRepositorySearch
             q.add( iQuery, Occur.MUST );
         }        
                     
+        return search( limits, q );
+    }
+    
+    /**
+     * @see RepositorySearch#search(String, SearchFields, SearchResultLimits)
+     */
+    public SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
+        throws RepositorySearchException
+    {
+        if( searchFields.getRepositories() == null )
+        {
+            throw new RepositorySearchException( "Repositories cannot be null." );
+        }
+        
+        addIndexingContexts( searchFields.getRepositories() );
+        
+        BooleanQuery q = new BooleanQuery();
+        if( searchFields.getGroupId() != null && !"".equals( searchFields.getGroupId() ) )
+        {   
+            q.add( indexer.constructQuery( ArtifactInfo.GROUP_ID, searchFields.getGroupId() ), Occur.MUST );
+        }
+        
+        if( searchFields.getArtifactId() != null && !"".equals( searchFields.getArtifactId() ) )
+        {
+            q.add( indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, searchFields.getArtifactId() ), Occur.MUST );
+        }
+        
+        if( searchFields.getVersion() != null && !"".equals( searchFields.getVersion() ) )
+        {
+            q.add( indexer.constructQuery( ArtifactInfo.VERSION, searchFields.getVersion() ), Occur.MUST );
+        }
+        
+        if( searchFields.getPackaging() != null && !"".equals( searchFields.getPackaging() ) )
+        {
+            q.add( indexer.constructQuery( ArtifactInfo.PACKAGING, searchFields.getPackaging() ), Occur.MUST );
+        }
+        
+        if( searchFields.getClassName() != null && !"".equals( searchFields.getClassName() ) )
+        {
+            q.add( indexer.constructQuery( ArtifactInfo.NAMES, searchFields.getClassName() ), Occur.MUST );
+        }
+        
+        if( q.getClauses() == null || q.getClauses().length <= 0 )
+        {
+            throw new RepositorySearchException( "No search fields set." );
+        }
+        
+        return search( limits, q );        
+    }
+
+    private SearchResults search( SearchResultLimits limits, BooleanQuery q )
+        throws RepositorySearchException
+    {
         try
         {
             FlatSearchRequest request = new FlatSearchRequest( q );
@@ -146,16 +193,7 @@ public class NexusRepositorySearch
         q.add( indexer.constructQuery( ArtifactInfo.NAMES, term ), Occur.SHOULD );        
     }
        
-    /**
-     * @see RepositorySearch#search(String, SearchFields, SearchResultLimits)
-     */
-    public SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
-        throws RepositorySearchException
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    
     private void addIndexingContexts( List<String> selectedRepos )
     {
         for( String repo : selectedRepos )

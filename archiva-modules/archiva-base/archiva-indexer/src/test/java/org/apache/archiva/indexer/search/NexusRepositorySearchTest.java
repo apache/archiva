@@ -330,7 +330,97 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearch()
         throws Exception
     {
+        List<File> files = new ArrayList<File>();
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 +
+            "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
+        createIndex( TEST_REPO_2, files );
+
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+        selectedRepos.add( TEST_REPO_2 );
+
+        config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
         
+        SearchFields searchFields = new SearchFields();
+        searchFields.setGroupId( "org.apache.archiva" );
+        searchFields.setVersion( "1.0" );
+        searchFields.setRepositories( selectedRepos );        
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", searchFields, null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 2, results.getTotalHits() );
+        
+        FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
+        assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
+    }
+    
+    public void testAdvancedSearchWithPagination()
+        throws Exception
+    {
+        List<File> files = new ArrayList<File>();
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 +
+            "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
+        createIndex( TEST_REPO_2, files );
+
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+        selectedRepos.add( TEST_REPO_2 );
+
+        config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
+        
+        SearchFields searchFields = new SearchFields();
+        searchFields.setGroupId( "org.apache.archiva" );
+        searchFields.setVersion( "1.0" );
+        searchFields.setRepositories( selectedRepos );        
+        
+        // page 1
+        
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+        limits.setPageSize( 1 );
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", searchFields, limits );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 2, results.getTotalHits() );
+        assertEquals( 1, results.getHits().size() );
+        
+        // page 2
+        archivaConfigControl.reset();
+        
+        limits = new SearchResultLimits( 1 );
+        limits.setPageSize( 1 );
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
+
+        archivaConfigControl.replay();
+
+        results = search.search( "user", searchFields, limits );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 2, results.getTotalHits() );
+        assertEquals( 1, results.getHits().size() );
+        
+        FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
+        assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
     }
 
 }
