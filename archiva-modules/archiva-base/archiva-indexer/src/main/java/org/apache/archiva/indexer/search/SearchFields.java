@@ -54,6 +54,22 @@ public class SearchFields
      */
     private List<String> repositories = new ArrayList<String>();
     
+    public SearchFields()
+    {
+        
+    }
+    
+    public SearchFields( String groupId, String artifactId, String version, String packaging, String className,
+                         List<String> repositories )
+    {
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version;
+        this.packaging = packaging;
+        this.className = className;
+        this.repositories = repositories;
+    }
+    
     public String getGroupId()
     {
         return groupId;

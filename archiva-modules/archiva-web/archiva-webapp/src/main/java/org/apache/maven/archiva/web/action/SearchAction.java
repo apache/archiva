@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
+import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -198,9 +199,23 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        results =
-            crossRepoSearch.executeFilteredSearch( getPrincipal(), selectedRepos, groupId, artifactId, version,
-                                                   className, limits );
+        SearchFields searchFields = new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
+        
+        
+        // TODO: add packaging in the list of fields for advanced search (UI)
+        try
+        {
+            results = getNexusSearch().search( getPrincipal(), searchFields, limits );
+        }
+        catch ( RepositorySearchException e )
+        {
+            addActionError( e.getMessage() );
+            return ERROR;
+        }
+        
+        //results =
+        //    crossRepoSearch.executeFilteredSearch( getPrincipal(), selectedRepos, groupId, artifactId, version,
+        //                                           className, limits );
 
         if ( results.isEmpty() )
         {
