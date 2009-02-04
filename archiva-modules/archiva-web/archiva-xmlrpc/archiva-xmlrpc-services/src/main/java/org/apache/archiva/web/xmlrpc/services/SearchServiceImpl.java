@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
@@ -35,7 +35,6 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultHit;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
@@ -50,8 +49,7 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 public class SearchServiceImpl
     implements SearchService
 { 
-    
-    private CrossRepositorySearch crossRepoSearch;
+    private RepositorySearch search;
     
     private XmlRpcUserRepositories xmlRpcUserRepositories;
     
@@ -59,13 +57,13 @@ public class SearchServiceImpl
     
     private RepositoryBrowsing repoBrowsing;
     
-    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, CrossRepositorySearch crossRepoSearch,
-                              ArchivaDAO archivaDAO, RepositoryBrowsing repoBrowsing )
+    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, ArchivaDAO archivaDAO,
+                              RepositoryBrowsing repoBrowsing, RepositorySearch search )
     {
         this.xmlRpcUserRepositories = xmlRpcUserRepositories;
-        this.crossRepoSearch = crossRepoSearch;
         this.archivaDAO = archivaDAO;        
         this.repoBrowsing = repoBrowsing;
+        this.search = search;
     }
     
     /*
@@ -90,15 +88,8 @@ public class SearchServiceImpl
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         SearchResults results = null;
         
-        if( SearchUtil.isBytecodeSearch( queryString ) )
-        {
-            results = crossRepoSearch.searchForBytecode( "", observableRepos, SearchUtil.removeBytecodeKeyword( queryString ), limits );
-        }
-        else
-        {
-            results = crossRepoSearch.searchForTerm( "", observableRepos, queryString, limits );
-        }        
-        
+        results = search.search( "", observableRepos, queryString, limits, null );
+                
         List<SearchResultHit> hits = results.getHits();
         for( SearchResultHit hit : hits )
         {   

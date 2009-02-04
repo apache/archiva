@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
@@ -256,6 +257,11 @@ public class RepositoryContentConsumers implements ApplicationContextAware
                 // Nothing known processed this file.  It is invalid!
                 CollectionUtils.forAllDo( selectedInvalidConsumers, closure );
             }
+
+            TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure(repository);
+
+            CollectionUtils.forAllDo(selectedKnownConsumers, scanCompletedClosure);
+            CollectionUtils.forAllDo(selectedKnownConsumers, scanCompletedClosure);
         }
         finally
         {

@@ -25,7 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.indexer.search.RepositorySearchException;
+import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -35,7 +37,6 @@ import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.apache.maven.archiva.security.AccessDeniedException;
@@ -49,6 +50,9 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.indexer.search.SearchResultHit;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -78,11 +82,6 @@ public class SearchAction
      * The Search Results.
      */
     private SearchResults results;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private CrossRepositorySearch crossRepoSearch;
     
     /**
      * @plexus.requirement
@@ -130,6 +129,8 @@ public class SearchAction
 
     private boolean fromResultsPage;
 
+    private RepositorySearch nexusSearch;
+        
     public boolean isFromResultsPage()
     {
         return fromResultsPage;
@@ -191,10 +192,20 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        results =
-            crossRepoSearch.executeFilteredSearch( getPrincipal(), selectedRepos, groupId, artifactId, version,
-                                                   className, limits );
-
+        SearchFields searchFields = new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
+        
+        
+        // TODO: add packaging in the list of fields for advanced search (UI)
+        try
+        {
+            results = getNexusSearch().search( getPrincipal(), searchFields, limits );
+        }
+        catch ( RepositorySearchException e )
+        {
+            addActionError( e.getMessage() );
+            return ERROR;
+        }
+        
         if ( results.isEmpty() )
         {
             addActionError( "No results found" );
@@ -241,22 +252,22 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        final boolean isbytecodeSearch = SearchUtil.isBytecodeSearch( q );
-        if( isbytecodeSearch )
-        {
-            results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, SearchUtil.removeBytecodeKeyword( q ), limits );
-        }
-        else
+        try
         {
             if( searchResultsOnly && !completeQueryString.equals( "" ) )
-            {
-                results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
+            {                       
+                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );                   
             }
             else
             {
-                completeQueryString = "";
-                results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+                completeQueryString = "";                    
+                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );                    
             }
+        }
+        catch ( RepositorySearchException e )
+        {
+            addActionError( e.getMessage() );
+            return ERROR;
         }
 
         if ( results.isEmpty() )
@@ -284,22 +295,19 @@ public class SearchAction
         {
             buildCompleteQueryString( q );
         }
-
-        if (!isbytecodeSearch)
+       
+        //Lets get the versions for the artifact we just found and display them
+        //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
+        for (SearchResultHit resultHit : results.getHits())
         {
-            //Lets get the versions for the artifact we just found and display them
-            //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
-            for (SearchResultHit resultHit : results.getHits())
+            final List<String> versions = dao.query(new UniqueVersionConstraint(getObservableRepos(), resultHit.getGroupId(), resultHit.getArtifactId()));
+            if (versions != null && !versions.isEmpty())
             {
-                final List<String> versions = dao.query(new UniqueVersionConstraint(getObservableRepos(), resultHit.getGroupId(), resultHit.getArtifactId()));
-                if (versions != null && !versions.isEmpty())
-                {
-                    resultHit.setVersion(null);
-                    resultHit.setVersions(filterTimestampedSnapshots(versions));
-                }
+                resultHit.setVersion(null);
+                resultHit.setVersions(filterTimestampedSnapshots(versions));
             }
         }
-
+       
         return SUCCESS;
     }
 
@@ -578,5 +586,21 @@ public class SearchAction
     public void setClassName( String className )
     {
         this.className = className;
+    }
+
+    public RepositorySearch getNexusSearch()
+    {
+        if( nexusSearch == null )
+        {
+            WebApplicationContext wac =
+                WebApplicationContextUtils.getRequiredWebApplicationContext( ServletActionContext.getServletContext() );
+            nexusSearch = ( RepositorySearch ) wac.getBean( "nexusSearch" );
+        }
+        return nexusSearch;
+    }
+
+    public void setNexusSearch( RepositorySearch nexusSearch )
+    {
+        this.nexusSearch = nexusSearch;
     }
 }

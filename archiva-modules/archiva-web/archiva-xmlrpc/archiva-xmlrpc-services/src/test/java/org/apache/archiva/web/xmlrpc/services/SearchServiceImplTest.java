@@ -20,20 +20,15 @@ package org.apache.archiva.web.xmlrpc.services;
  */
  
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
-import org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
@@ -41,32 +36,13 @@ import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
-import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
-import org.apache.maven.archiva.repository.content.PathParser;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.xmlrpc.XmlRpcRequest;
-import org.apache.xmlrpc.common.XmlRpcHttpRequestConfigImpl;
-import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.easymock.ArgumentsMatcher;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
-
-import sun.security.action.GetLongAction;
 
 /**
  * SearchServiceImplTest
@@ -82,10 +58,10 @@ public class SearchServiceImplTest
     
     private XmlRpcUserRepositories userRepos;
     
-    private MockControl crossRepoSearchControl;
+    private MockControl searchControl;
     
-    private CrossRepositorySearch crossRepoSearch;
-    
+    private RepositorySearch search;
+        
     private MockControl archivaDAOControl;
     
     private ArchivaDAO archivaDAO;
@@ -103,17 +79,17 @@ public class SearchServiceImplTest
     {
         userReposControl = MockClassControl.createControl( XmlRpcUserRepositories.class );
         userRepos = ( XmlRpcUserRepositories ) userReposControl.getMock();
-        
-        crossRepoSearchControl = MockControl.createControl( CrossRepositorySearch.class );
-        crossRepoSearch = ( CrossRepositorySearch ) crossRepoSearchControl.getMock();
-        
+                
         archivaDAOControl = MockControl.createControl( ArchivaDAO.class );
         archivaDAO = ( ArchivaDAO ) archivaDAOControl.getMock();
         
         repoBrowsingControl = MockControl.createControl( RepositoryBrowsing.class );
         repoBrowsing = ( RepositoryBrowsing ) repoBrowsingControl.getMock();
         
-        searchService = new SearchServiceImpl( userRepos, crossRepoSearch, archivaDAO, repoBrowsing );
+        searchControl = MockControl.createControl( RepositorySearch.class );
+        search = ( RepositorySearch ) searchControl.getMock();
+        
+        searchService = new SearchServiceImpl( userRepos, archivaDAO, repoBrowsing, search );
         
         artifactDAOControl = MockControl.createControl( ArtifactDAO.class );
         artifactDAO = ( ArtifactDAO ) artifactDAOControl.getMock();
@@ -158,21 +134,20 @@ public class SearchServiceImplTest
         
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         
-        crossRepoSearchControl.expectAndDefaultReturn( 
-                   crossRepoSearch.searchForBytecode( "", observableRepoIds, "MyClassName", limits ), results );
-        
+        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "MyClassName", limits, null ), results );
+    
         archivaDAOControl.expectAndReturn( archivaDAO.getArtifactDAO(), artifactDAO );
         artifactDAOControl.expectAndReturn( artifactDAO.getArtifact( "org.apache.archiva", "archiva-test", "1.0", "", "pom" ), artifact );
         
         userReposControl.replay();
-        crossRepoSearchControl.replay();
+        searchControl.replay();  
         archivaDAOControl.replay();
         artifactDAOControl.replay();
         
         List<Artifact> artifacts = searchService.quickSearch( "bytecode:MyClassName" );
         
         userReposControl.verify();
-        crossRepoSearchControl.verify();
+        searchControl.verify();
         archivaDAOControl.verify();
         artifactDAOControl.verify();
         
@@ -203,21 +178,20 @@ public class SearchServiceImplTest
         
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         
-        crossRepoSearchControl.expectAndDefaultReturn( 
-                   crossRepoSearch.searchForTerm( "", observableRepoIds, "archiva", limits ), results );
-        
+        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ), results );
+     
         archivaDAOControl.expectAndReturn( archivaDAO.getArtifactDAO(), artifactDAO );
         artifactDAOControl.expectAndReturn( artifactDAO.getArtifact( "org.apache.archiva", "archiva-test", "1.0", "", "pom" ), artifact );
         
         userReposControl.replay();
-        crossRepoSearchControl.replay();
+        searchControl.replay();
         archivaDAOControl.replay();
         artifactDAOControl.replay();
         
         List<Artifact> artifacts = searchService.quickSearch( "archiva" );
         
         userReposControl.verify();
-        crossRepoSearchControl.verify();  
+        searchControl.verify();
         archivaDAOControl.verify();
         artifactDAOControl.verify();
         

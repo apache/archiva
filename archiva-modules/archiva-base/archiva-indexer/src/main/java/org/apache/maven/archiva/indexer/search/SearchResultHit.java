@@ -44,6 +44,7 @@ public class SearchResultHit
     //  Advanced hit, reference to artifactId.
     private String artifactId;
 
+    // TODO: remove/deprecate this field!
     private String version = "";
     
     private String repositoryId = "";
@@ -156,5 +157,15 @@ public class SearchResultHit
     public void setRepositoryId( String repositoryId )
     {
         this.repositoryId = repositoryId;
+    }
+    
+    public void addVersion( String version )
+    {
+        if( versions == null )
+        {
+            versions = new ArrayList<String>();
+        }
+        
+        versions.add( version );
     }
 }

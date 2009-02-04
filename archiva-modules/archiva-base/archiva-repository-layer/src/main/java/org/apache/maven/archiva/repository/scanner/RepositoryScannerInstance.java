@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
@@ -144,6 +145,11 @@ public class RepositoryScannerInstance
 
     public void directoryWalkFinished()
     {
+        TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure(repository);
+        
+        CollectionUtils.forAllDo( knownConsumers, scanCompletedClosure );
+        CollectionUtils.forAllDo( invalidConsumers, scanCompletedClosure );
+        
         log.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getLocation() );
         stats.triggerFinished();
     }
