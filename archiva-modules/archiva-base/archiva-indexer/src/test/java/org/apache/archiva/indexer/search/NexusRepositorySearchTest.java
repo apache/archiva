@@ -203,6 +203,7 @@ public class NexusRepositorySearchTest
         assertNotNull( results );
         assertEquals( 1, results.getHits().size() );
         assertEquals( 2, results.getTotalHits() );
+        assertEquals( limits, results.getLimits() );
 
         archivaConfigControl.reset();
 
@@ -221,6 +222,7 @@ public class NexusRepositorySearchTest
         assertNotNull( results );
         assertEquals( 1, results.getHits().size() );
         assertEquals( 2, results.getTotalHits() );
+        assertEquals( limits, results.getLimits() );
     }
 
     public void testArtifactFoundInMultipleRepositories()

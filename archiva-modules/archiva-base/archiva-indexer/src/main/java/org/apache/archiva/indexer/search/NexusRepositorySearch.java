@@ -151,7 +151,9 @@ public class NexusRepositorySearch
             
             if( response == null || response.getTotalHits() == 0 )
             {
-                return new SearchResults();
+                SearchResults results = new SearchResults();
+                results.setLimits( limits );
+                return results;
             }
             
             return convertToSearchResults( response, limits );
@@ -272,6 +274,7 @@ public class NexusRepositorySearch
         }
         
         results.setTotalHits( results.getHitsMap().size() );
+        results.setLimits( limits );
         
         if( limits == null || limits.getSelectedPage() == SearchResultLimits.ALL_PAGES )
         {   
@@ -279,13 +282,15 @@ public class NexusRepositorySearch
         }
         else
         {
-            return paginate( limits, results );            
+            return paginate( results );            
         }        
     }
 
-    private SearchResults paginate( SearchResultLimits limits, SearchResults results )
+    private SearchResults paginate( SearchResults results )
     {
-        SearchResults paginated = new SearchResults();        
+        SearchResultLimits limits = results.getLimits();
+        SearchResults paginated = new SearchResults();  
+        
         int fetchCount = limits.getPageSize();
         int offset = ( limits.getSelectedPage() * limits.getPageSize() );
         
@@ -319,6 +324,7 @@ public class NexusRepositorySearch
             }
         }            
         paginated.setTotalHits( results.getTotalHits() );
+        paginated.setLimits( limits );
         
         return paginated;
     }

@@ -193,9 +193,8 @@ public class SearchAction
         }
 
         SearchFields searchFields = new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
-        
-        
-        // TODO: add packaging in the list of fields for advanced search (UI)
+                
+        // TODO: add packaging in the list of fields for advanced search (UI)?
         try
         {
             results = getNexusSearch().search( getPrincipal(), searchFields, limits );
