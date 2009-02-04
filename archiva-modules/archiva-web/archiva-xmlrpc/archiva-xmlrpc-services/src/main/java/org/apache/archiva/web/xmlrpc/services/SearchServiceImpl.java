@@ -29,6 +29,7 @@ import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
@@ -93,16 +94,28 @@ public class SearchServiceImpl
         for( SearchResultHit hit : hits )
         {   
             ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO(); 
-            ArchivaArtifact pomArtifact = artifactDAO.getArtifact( 
-                       hit.getGroupId(), hit.getArtifactId(), hit.getVersion(), "", "pom" );
-            
-            if( pomArtifact != null )
+            try
             {
-                Artifact artifact = new Artifact( pomArtifact.getModel().getRepositoryId(), pomArtifact.getGroupId(), pomArtifact.getArtifactId(), pomArtifact.getVersion(),
-                                                  pomArtifact.getType(), pomArtifact.getModel().getWhenGathered() );
-                artifacts.add( artifact );
+                ArchivaArtifact pomArtifact = artifactDAO.getArtifact( 
+                           hit.getGroupId(), hit.getArtifactId(), hit.getVersion(), "", "pom" );
+                
+                if( pomArtifact != null )
+                {
+                    Artifact artifact = new Artifact( pomArtifact.getModel().getRepositoryId(), pomArtifact.getGroupId(), pomArtifact.getArtifactId(), pomArtifact.getVersion(),
+                                                      pomArtifact.getType() );
+                                                      //pomArtifact.getType(), pomArtifact.getModel().getWhenGathered() );
+                    artifacts.add( artifact );
+                }
+                else
+                {
+                    continue;
+                }
             }
-            else
+            catch ( ObjectNotFoundException e )
+            {
+                continue;
+            }
+            catch ( ArchivaDatabaseException e )
             {
                 continue;
             }
@@ -128,8 +141,8 @@ public class SearchServiceImpl
         for( ArchivaArtifact archivaArtifact : artifacts )
         {
             Artifact artifact = new Artifact( archivaArtifact.getModel().getRepositoryId(), archivaArtifact.getModel().getGroupId(),
-                          archivaArtifact.getModel().getArtifactId(), archivaArtifact.getModel().getVersion(), archivaArtifact.getType(), 
-                          archivaArtifact.getModel().getWhenGathered() );
+                          archivaArtifact.getModel().getArtifactId(), archivaArtifact.getModel().getVersion(), archivaArtifact.getType() ); 
+                          //archivaArtifact.getModel().getWhenGathered() );
             results.add( artifact );
         }
         
@@ -148,8 +161,8 @@ public class SearchServiceImpl
         for( String version : results.getVersions() )
         {
             ArchivaArtifact pomArtifact = artifactDAO.getArtifact( groupId, artifactId, version, "", "pom" );
-            Artifact artifact = new Artifact( "", groupId, artifactId, version, pomArtifact.getType(), 
-                          pomArtifact.getModel().getWhenGathered() );
+            Artifact artifact = new Artifact( "", groupId, artifactId, version, pomArtifact.getType() ); 
+                          //pomArtifact.getModel().getWhenGathered() );
             
             artifacts.add( artifact );
         }
@@ -213,7 +226,9 @@ public class SearchServiceImpl
         List<ArchivaProjectModel> dependees = repoBrowsing.getUsedBy( "", observableRepos, "org.apache.archiva", "archiva-test", "1.0" );
         for( ArchivaProjectModel model : dependees )
         {
-            Artifact artifact = new Artifact( "", model.getGroupId(), model.getArtifactId(), model.getVersion(), "", model.getWhenIndexed() );
+            Artifact artifact =
+                new Artifact( "", model.getGroupId(), model.getArtifactId(), model.getVersion(), "" );
+                              //model.getWhenIndexed() );
             artifacts.add( artifact );
         }
         

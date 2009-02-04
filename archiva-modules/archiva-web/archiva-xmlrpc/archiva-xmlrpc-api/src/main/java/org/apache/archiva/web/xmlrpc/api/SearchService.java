@@ -27,7 +27,7 @@ import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 
 import com.atlassian.xmlrpc.ServiceObject;
 
-@ServiceObject("Search")
+@ServiceObject("SearchService")
 public interface SearchService
 {
    /*

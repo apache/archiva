@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
+import org.apache.archiva.web.xmlrpc.api.SearchService;
+import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 
@@ -117,6 +119,23 @@ public class SampleClient
             System.out.println( "\nDeleted artifact 'javax.activation:activation:1.1' from repository 'internal' : " +
                 ( (Boolean) success ).booleanValue() );
             */
+            
+            /* quick search */            
+            /*
+             * NOTE: before enabling & invoking search service, make sure that the artifacts you're searching
+             *      for has been indexed already in order to get results
+             *        
+            SearchService searchService = binder.bind( SearchService.class, new URL( args[0] ), authnInfo );
+            List<Artifact> artifacts = searchService.quickSearch( "org" );
+            
+            System.out.println( "\n************ Search Results for 'org' *************" );
+            for( Artifact artifact : artifacts )
+            {
+                System.out.println( "Artifact: " + artifact.getGroupId() + ":" + artifact.getArtifactId() +
+                                    ":" + artifact.getVersion() );
+            }            
+             */
+            
         }
         catch ( BindingException e )
         {

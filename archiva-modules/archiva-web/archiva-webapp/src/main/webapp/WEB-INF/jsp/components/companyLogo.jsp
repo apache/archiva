@@ -27,7 +27,7 @@
       <s:set name="organisationLogo" value="organisationLogo"/>
       <c:choose>
         <c:when test="${!empty (organisationUrl)}">
-          <a href="${companyUrl}">
+          <a href="${organisationUrl}">
             <img src="${organisationLogo}" title="${organisationName}"/>
           </a>
         </c:when>

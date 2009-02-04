@@ -120,10 +120,6 @@
           <role-hint>memory</role-hint>
           <field-name>rbacManager</field-name>
         </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.PlexusContainer</role>
-          <field-name>container</field-name>
-        </requirement>
       </requirements>
     </component>
     
@@ -179,11 +175,6 @@
           <role>org.codehaus.plexus.redback.authorization.rbac.evaluator.PermissionEvaluator</role>
           <role-hint>default</role-hint>
           <field-name>evaluator</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.configuration.UserConfiguration</role>
-          <role-hint>default</role-hint>
-          <field-name>config</field-name>
         </requirement>
       </requirements>
     </component>

@@ -21,7 +21,6 @@ package org.apache.maven.archiva.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;

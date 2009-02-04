@@ -20,7 +20,6 @@ package org.apache.archiva.web.xmlrpc.api.beans;
  */
 
 import java.io.Serializable;
-import java.util.Date;
 
 import com.atlassian.xmlrpc.ServiceBean;
 import com.atlassian.xmlrpc.ServiceBeanField;
@@ -39,22 +38,22 @@ public class Artifact
 
     private String type;
 
-    private Date whenGathered;
+    //private Date whenGathered;
     
     public Artifact()
     {
 
     }
 
-    public Artifact( String repositoryId, String groupId, String artifactId, String version,
-                     String type, Date whenGathered )
+    public Artifact( String repositoryId, String groupId, String artifactId, String version, String type )
+//                     String type, Date whenGathered )
     {   
         this.repositoryId = repositoryId;
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.type = type;
-        this.whenGathered = whenGathered;
+        //this.whenGathered = whenGathered;
     }
 
     public String getGroupId()
@@ -77,10 +76,10 @@ public class Artifact
         return type;
     }
 
-    public Date getWhenGathered()
+    /*public Date getWhenGathered()
     {
         return whenGathered;
-    }
+    }*/
 
     @ServiceBeanField( "groupId" )
     public void setGroupId( String groupId )
@@ -106,11 +105,11 @@ public class Artifact
         this.type = type;
     }
 
-    @ServiceBeanField( "whenGathered" )
+    /*@ServiceBeanField( "whenGathered" )
     public void setWhenGathered( Date whenGathered )
     {
         this.whenGathered = whenGathered;
-    }
+    }*/
 
     public String getRepositoryId()
     {

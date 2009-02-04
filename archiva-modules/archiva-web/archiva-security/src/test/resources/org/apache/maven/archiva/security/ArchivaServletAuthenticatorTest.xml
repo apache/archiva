@@ -97,11 +97,6 @@
           <role-hint>default</role-hint>
           <field-name>evaluator</field-name>
         </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.configuration.UserConfiguration</role>
-          <role-hint>default</role-hint>
-          <field-name>config</field-name>
-        </requirement>
       </requirements>
     </component>
     
