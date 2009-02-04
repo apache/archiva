@@ -94,7 +94,14 @@
         <c:set var="hitsNum">${fn:length(results.hits) + (currentPage  * results.limits.pageSize)}</c:set>
         <c:choose>
           <c:when test="${results.totalHits > results.limits.pageSize}">
-              <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
+            <c:choose>
+              <c:when test="${fn:length(results.hits) < rowCount}">
+                <p>Hist: ${(rowCount * currentPage) + 1} to ${hitsNum} of ${results.totalHits}</p>
+              </c:when>
+              <c:otherwise>
+                <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
+              </c:otherwise>
+            </c:choose>
           </c:when>
           <c:otherwise>
             <p>Hits: 1 to ${hitsNum} of ${results.totalHits}</p>
