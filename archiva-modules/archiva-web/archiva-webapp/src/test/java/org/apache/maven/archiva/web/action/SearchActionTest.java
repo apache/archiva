@@ -182,13 +182,60 @@ public class SearchActionTest
     public void testSearchUserHasNoAccessToAnyRepository()
         throws Exception
     {
-    
+        action.setQ( "archiva" );
+        action.setCurrentPage( 0 );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        
+        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user" );
+        
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
+        
+        archivaXworkUserControl.replay();
+        userReposControl.replay();
+        
+        String result = action.quickSearch();
+        
+        assertEquals( GlobalResults.ACCESS_TO_NO_REPOS, result );        
+        
+        archivaXworkUserControl.verify();
+        userReposControl.verify();        
     }
     
     public void testNoSearchHits()
         throws Exception
     {
-    
+        action.setQ( "archiva" );
+        action.setCurrentPage( 0 );
+        action.setSearchResultsOnly( false );
+        action.setCompleteQueryString( "" );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( "internal" );
+        selectedRepos.add( "snapshots" );
+        
+        SearchResultLimits limits = new SearchResultLimits( action.getCurrentPage() );
+        limits.setPageSize( 30 );
+                
+        SearchResults results = new SearchResults();
+        
+        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user", 2 );
+                
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
+        
+        searchControl.expectAndReturn( search.search( "user", selectedRepos, "archiva", limits, null ), results );
+        
+        archivaXworkUserControl.replay();
+        userReposControl.replay();
+        searchControl.replay();
+        
+        String result = action.quickSearch();
+        
+        assertEquals( Action.INPUT, result );        
+        
+        archivaXworkUserControl.verify();
+        userReposControl.verify();
+        searchControl.verify();
     }
     
     // test pagination or just totalPages?
