@@ -297,13 +297,18 @@ public class SearchAction
        
         //Lets get the versions for the artifact we just found and display them
         //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
-        for (SearchResultHit resultHit : results.getHits())
+        
+        // TODO: do we still need to do this? all hits are already filtered in the NexusRepositorySearch
+        //      before being returned as search results
+        for ( SearchResultHit resultHit : results.getHits() )
         {
-            final List<String> versions = dao.query(new UniqueVersionConstraint(getObservableRepos(), resultHit.getGroupId(), resultHit.getArtifactId()));
-            if (versions != null && !versions.isEmpty())
+            final List<String> versions =
+                dao.query( new UniqueVersionConstraint( getObservableRepos(), resultHit.getGroupId(),
+                                                        resultHit.getArtifactId() ) );
+            if ( versions != null && !versions.isEmpty() )
             {
-                resultHit.setVersion(null);
-                resultHit.setVersions(filterTimestampedSnapshots(versions));
+                resultHit.setVersion( null );
+                resultHit.setVersions( filterTimestampedSnapshots( versions ) );
             }
         }
        
@@ -601,5 +606,35 @@ public class SearchAction
     public void setNexusSearch( RepositorySearch nexusSearch )
     {
         this.nexusSearch = nexusSearch;
+    }
+
+    public ArchivaDAO getDao()
+    {
+        return dao;
+    }
+
+    public void setDao( ArchivaDAO dao )
+    {
+        this.dao = dao;
+    }
+
+    public UserRepositories getUserRepositories()
+    {
+        return userRepositories;
+    }
+
+    public void setUserRepositories( UserRepositories userRepositories )
+    {
+        this.userRepositories = userRepositories;
+    }
+
+    public ArchivaXworkUser getArchivaXworkUser()
+    {
+        return archivaXworkUser;
+    }
+
+    public void setArchivaXworkUser( ArchivaXworkUser archivaXworkUser )
+    {
+        this.archivaXworkUser = archivaXworkUser;
     }
 }
