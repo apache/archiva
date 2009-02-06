@@ -69,8 +69,7 @@
   <table class="settings">
     <tr>
       <td>
-        <b>*</b> To search for Java classes, packages or methods, use the keyword <code>bytecode:</code>
-        before the term. For example: <code>bytecode:MyClass</code>, or <code>bytecode:myMethod</code><br/>  
+        <b>*</b> To search for Java classes or packages, just type the class name or package name in the search box.<br/>  
       </td>
     </tr>
     <tr>
