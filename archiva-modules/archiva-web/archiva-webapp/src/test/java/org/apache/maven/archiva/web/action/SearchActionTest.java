@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
@@ -43,7 +44,7 @@ import com.opensymphony.xwork2.Action;
  * 
  */
 public class SearchActionTest
-    extends PlexusInSpringTestCase
+    extends PlexusInSpringTestCase 
 {
     private SearchAction action;
     
@@ -112,6 +113,8 @@ public class SearchActionTest
         super.tearDown();
     }
     
+    // quick search...
+    
     public void testQuickSearch()
         throws Exception
     {           
@@ -158,7 +161,9 @@ public class SearchActionTest
         
         String result = action.quickSearch();
         
-        assertEquals( Action.SUCCESS, result );        
+        assertEquals( Action.SUCCESS, result );      
+        assertEquals( 1, action.getTotalPages() );
+        assertEquals( 1, action.getResults().getTotalHits() );
         
         archivaXworkUserControl.verify();
         userReposControl.verify();
@@ -169,17 +174,65 @@ public class SearchActionTest
     public void testSearchWithinSearchResults()
         throws Exception
     {
-        // test filter of completeQueryString?
-        // test no need to filter completeQueryString?
-    }
+        action.setQ( "archiva" );
+        action.setCurrentPage( 0 );
+        action.setSearchResultsOnly( true );
+        action.setCompleteQueryString( "org;apache" );
         
-    public void testAdvancedSearch()
-        throws Exception
-    {
+        List<String> parsed = new ArrayList<String>();
+        parsed.add( "org" );
+        parsed.add( "apache" );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( "internal" );
+        selectedRepos.add( "snapshots" );
+        
+        SearchResultLimits limits = new SearchResultLimits( action.getCurrentPage() );
+        limits.setPageSize( 30 );
+        
+        SearchResultHit hit = new SearchResultHit();
+        hit.setGroupId( "org.apache.archiva" );
+        hit.setArtifactId( "archiva-configuration" );
+        hit.setUrl( "url" );
+        hit.addVersion( "1.0" );
+        hit.addVersion( "1.1" );        
+        
+        SearchResults results = new SearchResults();
+        results.setLimits( limits );
+        results.setTotalHits( 1 );
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration" ), hit );
+        
+        List<String> versions = new ArrayList<String>();
+        versions.add( "1.0" );
+        versions.add( "1.1" );
+        
+        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user", 3 );
+                
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos, 2 );
+        
+        searchControl.expectAndReturn( search.search( "user", selectedRepos, "archiva", limits, parsed ), results );
+                
+        daoControl.expectAndReturn( dao.query( new UniqueVersionConstraint( selectedRepos, hit.getGroupId(), hit.getArtifactId() ) ), versions );
+                
+        archivaXworkUserControl.replay();
+        userReposControl.replay();
+        searchControl.replay();
+        daoControl.replay();
+        
+        String result = action.quickSearch();
+        
+        assertEquals( Action.SUCCESS, result );
+        assertEquals( "org;apache;archiva", action.getCompleteQueryString() );
+        assertEquals( 1, action.getTotalPages() );
+        assertEquals( 1, action.getResults().getTotalHits() );
+        
+        archivaXworkUserControl.verify();
+        userReposControl.verify();
+        searchControl.verify();
+        daoControl.verify();
+    }        
     
-    }
-    
-    public void testSearchUserHasNoAccessToAnyRepository()
+    public void testQuickSearchUserHasNoAccessToAnyRepository()
         throws Exception
     {
         action.setQ( "archiva" );
@@ -202,7 +255,7 @@ public class SearchActionTest
         userReposControl.verify();        
     }
     
-    public void testNoSearchHits()
+    public void testQuickSearchNoSearchHits()
         throws Exception
     {
         action.setQ( "archiva" );
@@ -237,13 +290,146 @@ public class SearchActionTest
         userReposControl.verify();
         searchControl.verify();
     }
+        
+    // advanced/filtered search...
     
-    // test pagination or just totalPages?
-    public void testPagination()
+    public void testAdvancedSearchOneRepository()
+        throws Exception
+    {
+        List<String> managedRepos = new ArrayList<String>();
+        managedRepos.add( "internal" );
+        managedRepos.add( "snapshots" );
+        
+        action.setRepositoryId( "internal" );
+        action.setManagedRepositoryList( managedRepos );
+        action.setCurrentPage( 0 );
+        action.setRowCount( 30 );
+        action.setGroupId( "org" );
+        
+        SearchResultLimits limits = new SearchResultLimits( action.getCurrentPage() );
+        limits.setPageSize( 30 );
+        
+        SearchResultHit hit = new SearchResultHit();
+        hit.setGroupId( "org.apache.archiva" );
+        hit.setArtifactId( "archiva-configuration" );
+        hit.setUrl( "url" );
+        hit.addVersion( "1.0" );
+        hit.addVersion( "1.1" );        
+        
+        SearchResults results = new SearchResults();
+        results.setLimits( limits );
+        results.setTotalHits( 1 );
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration" ), hit );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( "internal" );
+        selectedRepos.add( "snapshots" );
+        
+        SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
+        
+        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user" );
+        
+        searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
+        
+        archivaXworkUserControl.replay();
+        searchControl.replay();
+        
+        String result = action.filteredSearch();
+        
+        assertEquals( Action.SUCCESS, result );
+        assertEquals( 1, action.getTotalPages() );
+        assertEquals( 1, action.getResults().getTotalHits() );
+        
+        archivaXworkUserControl.verify();
+        searchControl.verify();
+    }
+    
+    // TODO include this?
+    public void testAdvancedSearchSelectedRepositoryNotInManagedReposList()
         throws Exception
     {
     
     }
+    
+    public void testAdvancedSearchAllRepositories()
+        throws Exception
+    {   
+        List<String> managedRepos = new ArrayList<String>();
+        managedRepos.add( "internal" );
+        managedRepos.add( "snapshots" );
+        
+        action.setRepositoryId( "all" );
+        action.setManagedRepositoryList( managedRepos );
+        action.setCurrentPage( 0 );
+        action.setRowCount( 30 );
+        action.setGroupId( "org" );
+        
+        SearchResultLimits limits = new SearchResultLimits( action.getCurrentPage() );
+        limits.setPageSize( 30 );
+        
+        SearchResultHit hit = new SearchResultHit();
+        hit.setGroupId( "org.apache.archiva" );
+        hit.setArtifactId( "archiva-configuration" );
+        hit.setUrl( "url" );
+        hit.addVersion( "1.0" );
+        hit.addVersion( "1.1" );        
+        
+        SearchResults results = new SearchResults();
+        results.setLimits( limits );
+        results.setTotalHits( 1 );
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration" ), hit );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( "internal" );
+        
+        SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
+        
+        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user", 2 );
+        
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
+        
+        searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
+        
+        archivaXworkUserControl.replay();
+        searchControl.replay();
+        userReposControl.replay();
+        
+        String result = action.filteredSearch();
+        
+        assertEquals( Action.SUCCESS, result );
+        assertEquals( 1, action.getTotalPages() );
+        assertEquals( 1, action.getResults().getTotalHits() );
+        
+        archivaXworkUserControl.verify();
+        searchControl.verify();
+        userReposControl.verify();
+    }
+    
+    public void testAdvancedSearchPagination()
+        throws Exception
+    {
+    
+    }
+    
+    public void testAdvancedSearchNoSearchHits()
+        throws Exception
+    {
+            
+    }
+    
+    public void testAdvancedSearchUserHasNoAccessToAnyRepository()
+        throws Exception
+    {
+        List<String> managedRepos = new ArrayList<String>();
+        
+        action.setManagedRepositoryList( managedRepos );
+        
+        String result = action.filteredSearch();
+        
+        assertEquals( GlobalResults.ACCESS_TO_NO_REPOS, result );
+    }
+    
+    // find artifact..
     
     public void testFindArtifactWithOneHit()
         throws Exception
