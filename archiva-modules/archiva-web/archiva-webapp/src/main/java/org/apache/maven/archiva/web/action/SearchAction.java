@@ -597,6 +597,7 @@ public class SearchAction
 
     public RepositorySearch getNexusSearch()
     {
+        // no need to do this when wiring is already in spring
         if( nexusSearch == null )
         {
             WebApplicationContext wac =
