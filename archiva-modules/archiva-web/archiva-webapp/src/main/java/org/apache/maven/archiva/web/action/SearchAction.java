@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
@@ -344,7 +345,9 @@ public class SearchAction
         }
 
         Constraint constraint = new ArtifactsByChecksumConstraint( q );
-        databaseResults = dao.getArtifactDAO().queryArtifacts( constraint );
+        
+        ArtifactDAO artifactDao = dao.getArtifactDAO();
+        databaseResults = artifactDao.queryArtifacts( constraint );
 
         if ( databaseResults.isEmpty() )
         {

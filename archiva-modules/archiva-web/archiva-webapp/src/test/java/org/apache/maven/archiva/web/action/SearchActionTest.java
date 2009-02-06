@@ -28,10 +28,13 @@ import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.indexer.search.SearchResultHit;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -68,6 +71,10 @@ public class SearchActionTest
     
     private RepositorySearch search;
     
+    private MockControl artifactDaoControl;
+    
+    private ArtifactDAO artifactDao;
+    
     @Override
     protected void setUp() 
         throws Exception
@@ -76,17 +83,14 @@ public class SearchActionTest
         
         action = new SearchAction();
         
-        archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
-        
+        archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );        
         archivaConfig = ( ArchivaConfiguration ) archivaConfigControl.getMock();
         
         daoControl = MockControl.createControl( ArchivaDAO.class );
-        daoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        
+        daoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );        
         dao = ( ArchivaDAO ) daoControl.getMock();
         
-        userReposControl = MockControl.createControl( UserRepositories.class );
-        
+        userReposControl = MockControl.createControl( UserRepositories.class );        
         userRepos = ( UserRepositories ) userReposControl.getMock();
         
         archivaXworkUserControl = MockClassControl.createControl( ArchivaXworkUser.class );
@@ -96,9 +100,12 @@ public class SearchActionTest
         
         searchControl = MockControl.createControl( RepositorySearch.class );
         searchControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        
         search = ( RepositorySearch ) searchControl.getMock();
         
+        artifactDaoControl = MockControl.createControl( ArtifactDAO.class );
+        artifactDaoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
+        artifactDao = ( ArtifactDAO ) artifactDaoControl.getMock();
+                
         action.setArchivaConfiguration( archivaConfig );
         action.setArchivaXworkUser( archivaXworkUser );
         action.setUserRepositories( userRepos );
@@ -344,13 +351,6 @@ public class SearchActionTest
         searchControl.verify();
     }
     
-    // TODO include this?
-    public void testAdvancedSearchSelectedRepositoryNotInManagedReposList()
-        throws Exception
-    {
-    
-    }
-    
     public void testAdvancedSearchAllRepositories()
         throws Exception
     {   
@@ -404,17 +404,46 @@ public class SearchActionTest
         searchControl.verify();
         userReposControl.verify();
     }
-    
-    public void testAdvancedSearchPagination()
-        throws Exception
-    {
-    
-    }
-    
+        
     public void testAdvancedSearchNoSearchHits()
         throws Exception
     {
-            
+        List<String> managedRepos = new ArrayList<String>();
+        managedRepos.add( "internal" );
+        managedRepos.add( "snapshots" );
+        
+        action.setRepositoryId( "internal" );
+        action.setManagedRepositoryList( managedRepos );
+        action.setCurrentPage( 0 );
+        action.setRowCount( 30 );
+        action.setGroupId( "org" );
+        
+        SearchResultLimits limits = new SearchResultLimits( action.getCurrentPage() );
+        limits.setPageSize( 30 );
+                
+        SearchResults results = new SearchResults();
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( "internal" );
+        selectedRepos.add( "snapshots" );
+        
+        SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
+        
+        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user" );
+        
+        searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
+        
+        archivaXworkUserControl.replay();
+        searchControl.replay();
+        
+        String result = action.filteredSearch();
+        
+        assertEquals( Action.INPUT, result );
+        assertFalse( action.getActionErrors().isEmpty() );
+        assertEquals( "No results found",( String ) action.getActionErrors().iterator().next() );
+        
+        archivaXworkUserControl.verify();
+        searchControl.verify();
     }
     
     public void testAdvancedSearchUserHasNoAccessToAnyRepository()
@@ -434,19 +463,85 @@ public class SearchActionTest
     public void testFindArtifactWithOneHit()
         throws Exception
     {
-    
+        action.setQ( "afbcdeaadbcffceabbba1" );
+        
+        List<ArchivaArtifact> dbResults = new ArrayList<ArchivaArtifact>();
+        dbResults.add( new ArchivaArtifact( "org.apache.archiva", "archiva-configuration", "1.0",
+                                           null, "jar" ) );
+        
+        daoControl.expectAndReturn( dao.getArtifactDAO(), artifactDao );
+        
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts( new ArtifactsByChecksumConstraint( action.getQ() ) ), dbResults );
+        
+        daoControl.replay();
+        artifactDaoControl.replay();
+        
+        String result = action.findArtifact();
+        assertEquals( "artifact", result );
+        assertFalse( action.getDatabaseResults().isEmpty() );
+        assertEquals( 1, action.getDatabaseResults().size() );
+        
+        daoControl.verify();
+        artifactDaoControl.verify();
     }
-    
+        
     public void testFindArtifactWithMultipleHits()
         throws Exception
     {
-    
+        action.setQ( "afbcdeaadbcffceabbba1" );
+        
+        List<ArchivaArtifact> dbResults = new ArrayList<ArchivaArtifact>();
+        dbResults.add( new ArchivaArtifact( "org.apache.archiva", "archiva-configuration", "1.0",
+                                           null, "jar" ) );
+        dbResults.add( new ArchivaArtifact( "org.apache.archiva", "archiva-indexer", "1.0",
+                                            null, "jar" ) );
+        
+        daoControl.expectAndReturn( dao.getArtifactDAO(), artifactDao );
+        
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts( new ArtifactsByChecksumConstraint( action.getQ() ) ), dbResults );
+        
+        daoControl.replay();
+        artifactDaoControl.replay();
+        
+        String result = action.findArtifact();
+        assertEquals( "results", result );
+        assertFalse( action.getDatabaseResults().isEmpty() );
+        assertEquals( 2, action.getDatabaseResults().size() );
+        
+        daoControl.verify();
+        artifactDaoControl.verify();
     }
     
     public void testFindArtifactNoChecksumSpecified()
         throws Exception
     {
-    
+        String result = action.findArtifact();
+        
+        assertEquals( Action.INPUT, result );
+        assertFalse( action.getActionErrors().isEmpty() );
+        assertEquals( "Unable to search for a blank checksum", ( String ) action.getActionErrors().iterator().next() );
     }
     
+    public void testFindArtifactNoResults()
+        throws Exception
+    {
+        action.setQ( "afbcdeaadbcffceabbba1" );
+        
+        List<ArchivaArtifact> dbResults = new ArrayList<ArchivaArtifact>();
+        
+        daoControl.expectAndReturn( dao.getArtifactDAO(), artifactDao );
+        
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts( new ArtifactsByChecksumConstraint( action.getQ() ) ), dbResults );
+        
+        daoControl.replay();
+        artifactDaoControl.replay();
+        
+        String result = action.findArtifact();
+        assertEquals( Action.INPUT, result );
+        assertFalse( action.getActionErrors().isEmpty() );
+        assertEquals( "No results found", ( String )action.getActionErrors().iterator().next() );
+        
+        daoControl.verify();
+        artifactDaoControl.verify();
+    }
 }
