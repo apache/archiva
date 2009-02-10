@@ -19,8 +19,6 @@ package org.apache.archiva.indexer.util;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * SearchUtil - utility class for search.
  * 
@@ -28,38 +26,6 @@ import org.apache.commons.lang.StringUtils;
  */
 public class SearchUtil
 {
-    public static final String BYTECODE_KEYWORD = "bytecode:";
-
-    /**
-     * Determines whether the queryString has the bytecode keyword.
-     * 
-     * @param queryString
-     * @return
-     */
-    public static boolean isBytecodeSearch( String queryString )
-    {
-        if ( queryString.startsWith( BYTECODE_KEYWORD ) )
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Removes the bytecode keyword from the query string.
-     * 
-     * @param queryString
-     * @return
-     */
-    public static String removeBytecodeKeyword( String queryString )
-    {
-        String qString = StringUtils.uncapitalize( queryString );
-        qString = StringUtils.remove( queryString, BYTECODE_KEYWORD );
-
-        return qString;
-    }
-    
     public static String getHitId( String groupId, String artifactId )
     {
         return groupId + ":" + artifactId;
