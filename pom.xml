@@ -98,6 +98,7 @@
         <executions>
           <execution>
             <id>generate</id>
+            <phase>generate-resources</phase>
             <goals>
               <goal>descriptor</goal>
             </goals>
