@@ -467,7 +467,7 @@ public class SearchActionTest
         
         List<ArchivaArtifact> dbResults = new ArrayList<ArchivaArtifact>();
         dbResults.add( new ArchivaArtifact( "org.apache.archiva", "archiva-configuration", "1.0",
-                                           null, "jar" ) );
+                                           null, "jar", "test-repo" ) );
         
         daoControl.expectAndReturn( dao.getArtifactDAO(), artifactDao );
         
@@ -492,9 +492,9 @@ public class SearchActionTest
         
         List<ArchivaArtifact> dbResults = new ArrayList<ArchivaArtifact>();
         dbResults.add( new ArchivaArtifact( "org.apache.archiva", "archiva-configuration", "1.0",
-                                           null, "jar" ) );
+                                           null, "jar", "test-repo" ) );
         dbResults.add( new ArchivaArtifact( "org.apache.archiva", "archiva-indexer", "1.0",
-                                            null, "jar" ) );
+                                            null, "jar", "test-repo" ) );
         
         daoControl.expectAndReturn( dao.getArtifactDAO(), artifactDao );
         

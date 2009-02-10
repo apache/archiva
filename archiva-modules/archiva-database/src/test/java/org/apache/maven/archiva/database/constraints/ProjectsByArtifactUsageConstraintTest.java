@@ -38,6 +38,7 @@ import java.util.List;
 public class ProjectsByArtifactUsageConstraintTest
     extends AbstractArchivaDatabaseTestCase
 {
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -80,7 +81,7 @@ public class ProjectsByArtifactUsageConstraintTest
         ArtifactReference ref = toArtifactReference( id );
 
         ArchivaArtifact artifact = new ArchivaArtifact( ref.getGroupId(), ref.getArtifactId(), ref.getVersion(), ref
-            .getClassifier(), ref.getType() );
+            .getClassifier(), ref.getType(), "testable_repo" );
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( "testable_repo" );
         return artifact;
@@ -90,17 +91,17 @@ public class ProjectsByArtifactUsageConstraintTest
         throws Exception
     {
         saveModel( "org.apache.maven.archiva:archiva-configuration:1.0",
-                   new String[] { "org.codehaus.plexus:plexus-digest:1.0::jar" } );
+                   new String[] { "org.codehaus.plexus:plexus-digest:1.0::jar:" } );
 
         saveModel( "org.apache.maven.archiva:archiva-common:1.0", new String[] {
-            "org.codehaus.plexus:plexus-digest:1.0::jar",
-            "junit:junit:3.8.1::jar" } );
+            "org.codehaus.plexus:plexus-digest:1.0::jar:",
+            "junit:junit:3.8.1::jar:" } );
 
         ArchivaArtifact artifact;
 
-        artifact = toArtifact( "org.foo:bar:4.0::jar" );
+        artifact = toArtifact( "org.foo:bar:4.0::jar:" );
         assertConstraint( 0, new ProjectsByArtifactUsageConstraint( artifact ) );
-        artifact = toArtifact( "org.codehaus.plexus:plexus-digest:1.0::jar" );
+        artifact = toArtifact( "org.codehaus.plexus:plexus-digest:1.0::jar:testable_repo" );
         assertConstraint( 2, new ProjectsByArtifactUsageConstraint( artifact ) );
     }
 

@@ -36,7 +36,7 @@ public class ArchivaArtifact
     private String baseVersion;
 
     public ArchivaArtifact( String groupId, String artifactId, String version,
-                            String classifier, String type )
+                            String classifier, String type, String repositoryId )
     {
         if ( empty( groupId ) )
         {
@@ -62,6 +62,12 @@ public class ArchivaArtifact
                 + Keys.toKey( groupId, artifactId, version, classifier, type ) + "]" );
         }
 
+        if ( empty( repositoryId ) )
+        {
+            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty repositoryId ["
+                + Keys.toKey( groupId, artifactId, version, classifier, type ) + "]" );
+        }
+
         model = new ArchivaArtifactModel();
 
         model.setGroupId( groupId );
@@ -70,6 +76,7 @@ public class ArchivaArtifact
         model.setClassifier( StringUtils.defaultString( classifier ) );
         model.setType( type );
         model.setSnapshot( VersionUtil.isSnapshot( version ) );
+        model.setRepositoryId(repositoryId);
         
         this.baseVersion = VersionUtil.getBaseVersion( version );
     }
@@ -81,9 +88,9 @@ public class ArchivaArtifact
         this.baseVersion = VersionUtil.getBaseVersion( model.getVersion() );
     }
     
-    public ArchivaArtifact( ArtifactReference ref )
+    public ArchivaArtifact( ArtifactReference ref, String repositoryId )
     {
-        this( ref.getGroupId(), ref.getArtifactId(), ref.getVersion(), ref.getClassifier(), ref.getType() );
+        this( ref.getGroupId(), ref.getArtifactId(), ref.getVersion(), ref.getClassifier(), ref.getType(), repositoryId );
     }
 
     public ArchivaArtifactModel getModel()
@@ -129,6 +136,11 @@ public class ArchivaArtifact
     public boolean hasClassifier()
     {
         return StringUtils.isNotEmpty( model.getClassifier() );
+    }
+
+    public String getRepositoryId()
+    {
+        return model.getRepositoryId();
     }
 
     @Override

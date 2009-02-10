@@ -61,7 +61,7 @@ public class UniqueFieldConstraintTest
 
     public ArchivaArtifact createArtifact( String groupId )
     {
-        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, "artifactId", "version", "classifier", "jar" );
+        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, "artifactId", "version", "classifier", "jar", "testrepo" );
 
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( "repoId" );

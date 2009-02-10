@@ -51,7 +51,7 @@ public class ManagedRepositoryProjectResolver
         throws ProjectModelException
     {
         ArchivaArtifact artifact = new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference
-            .getVersion(), "", "pom" );
+            .getVersion(), "", "pom", repository.getId() );
 
         File repoFile = repository.toFile( artifact );
 

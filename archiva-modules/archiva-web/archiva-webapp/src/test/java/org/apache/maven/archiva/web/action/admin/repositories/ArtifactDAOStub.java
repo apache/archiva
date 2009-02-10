@@ -39,7 +39,7 @@ public class ArtifactDAOStub
 {
 
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
-                                           String type )
+                                           String type, String repositoryId )
     {
         // TODO Auto-generated method stub
         return null;
@@ -53,7 +53,7 @@ public class ArtifactDAOStub
     }
 
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
-                                        String type )
+                                        String type, String repositoryId )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         // TODO Auto-generated method stub

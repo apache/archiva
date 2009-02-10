@@ -227,7 +227,8 @@ public class ArtifactUpdateDatabaseConsumer
                                                                                 artifact.getArtifactId(),
                                                                                 artifact.getVersion(),
                                                                                 artifact.getClassifier(),
-                                                                                artifact.getType() );
+                                                                                artifact.getType(),
+                                                                                repository.getId());
 
             return liveArtifact;
         }

@@ -97,7 +97,7 @@ public class SearchServiceImpl
             try
             {
                 ArchivaArtifact pomArtifact = artifactDAO.getArtifact( 
-                           hit.getGroupId(), hit.getArtifactId(), hit.getVersion(), "", "pom" );
+                           hit.getGroupId(), hit.getArtifactId(), hit.getVersion(), "", "pom", hit.getRepositoryId() );
                 
                 if( pomArtifact != null )
                 {
@@ -152,16 +152,17 @@ public class SearchServiceImpl
     public List<Artifact> getArtifactVersions( String groupId, String artifactId ) 
         throws Exception
     {
-        List<Artifact> artifacts = new ArrayList<Artifact>();        
-        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
+        final List<Artifact> artifacts = new ArrayList<Artifact>();        
+        final List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
         
-        BrowsingResults results = repoBrowsing.selectArtifactId( "", observableRepos, groupId, artifactId );
-        ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO();
+        final BrowsingResults results = repoBrowsing.selectArtifactId( "", observableRepos, groupId, artifactId );
+        final ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO();
         
-        for( String version : results.getVersions() )
+        for( final String version : results.getVersions() )
         {
-            ArchivaArtifact pomArtifact = artifactDAO.getArtifact( groupId, artifactId, version, "", "pom" );
-            Artifact artifact = new Artifact( "", groupId, artifactId, version, pomArtifact.getType() ); 
+            final Artifact artifact = new Artifact( "", groupId, artifactId, version, "pom" ); 
+            //ArchivaArtifact pomArtifact = artifactDAO.getArtifact( groupId, artifactId, version, "", "pom",  );
+            //Artifact artifact = new Artifact( "", groupId, artifactId, version, pomArtifact.getType() ); 
                           //pomArtifact.getModel().getWhenGathered() );
             
             artifacts.add( artifact );

@@ -51,6 +51,7 @@ public class DuplicateArtifactReportTest
 
     private ArtifactDAO artifactDao;
 
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -72,9 +73,8 @@ public class DuplicateArtifactReportTest
     public ArchivaArtifact createArtifact( String artifactId, String version )
     {
         ArchivaArtifact artifact =
-            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar" );
+            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar", TESTABLE_REPO );
         artifact.getModel().setLastModified( new Date() );
-        artifact.getModel().setRepositoryId( TESTABLE_REPO );
         return artifact;
     }
 

@@ -38,7 +38,7 @@ public class ArtifactsProcessedConstraintTest
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String whenProcessed )
         throws Exception
     {
-        ArchivaArtifact artifact = dao.getArtifactDAO().createArtifact( groupId, artifactId, version, "", "jar" );
+        ArchivaArtifact artifact = dao.getArtifactDAO().createArtifact( groupId, artifactId, version, "", "jar", "testrepo" );
         assertNotNull( "Artifact should not be null.", artifact );
         Date dateWhenProcessed = null;
 
@@ -88,6 +88,7 @@ public class ArtifactsProcessedConstraintTest
         }
     }
 
+    @Override
     protected void setUp()
         throws Exception
     {

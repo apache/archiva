@@ -37,12 +37,15 @@ import com.sun.syndication.feed.synd.SyndFeed;
 public class NewVersionsOfArtifactRssFeedProcessorTest
     extends PlexusInSpringTestCase
 {
+    private static final String TEST_REPO = "test-repo";
+
     private NewVersionsOfArtifactRssFeedProcessor newVersionsProcessor;
 
     private ArtifactDAOStub artifactDAOStub;
 
     private RssFeedGenerator rssFeedGenerator;
 
+    @Override
     public void setUp()
         throws Exception
     {
@@ -65,21 +68,18 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         Date whenGathered = Calendar.getInstance().getTime();
         whenGathered.setTime( 123456789 );
  
-        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
         Date whenGatheredNext = Calendar.getInstance().getTime();
         whenGatheredNext.setTime( 345678912 );      
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGatheredNext );
         artifacts.add( artifact );
 
@@ -111,5 +111,4 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
                       entries.get( 1 ).getTitle() );
         assertEquals( whenGatheredNext, entries.get( 1 ).getPublishedDate() );
     }
-
 }

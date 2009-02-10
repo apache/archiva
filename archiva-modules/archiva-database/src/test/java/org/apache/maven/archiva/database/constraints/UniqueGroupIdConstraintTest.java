@@ -254,7 +254,7 @@ public class UniqueGroupIdConstraintTest
 
     private ArchivaArtifact createArtifact( String repoId, String groupId, String artifactId, String version )
     {
-        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar" );
+        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar", "testrepo" );
         artifact.getModel().setLastModified( new Date() ); // mandatory field.
         artifact.getModel().setRepositoryId( repoId );
         return artifact;

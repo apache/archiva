@@ -50,7 +50,7 @@ public class OlderArtifactsByAgeConstraintTest
     public ArchivaArtifact createArtifact( String artifactId, String version, int daysOld )
     {
         ArchivaArtifact artifact = artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version,
-                                                               "", "jar" );
+                                                               "", "jar", "testable_repo" );
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.DAY_OF_MONTH, ( -1 ) * daysOld );
         artifact.getModel().setLastModified( cal.getTime() );

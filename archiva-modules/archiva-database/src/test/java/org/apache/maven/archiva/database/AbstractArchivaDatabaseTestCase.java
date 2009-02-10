@@ -54,6 +54,7 @@ public abstract class AbstractArchivaDatabaseTestCase
 
     protected ArchivaDAO dao;
 
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -186,7 +187,7 @@ public abstract class AbstractArchivaDatabaseTestCase
     protected ArtifactReference toArtifactReference( String id )
     {
         String parts[] = StringUtils.splitPreserveAllTokens( id, ':' );
-        assertEquals( "Should have 5 parts [" + id + "]", 5, parts.length );
+        assertEquals( "Should have 6 parts [" + id + "]", 6, parts.length );
     
         ArtifactReference ref = new ArtifactReference();
         ref.setGroupId( parts[0] );
@@ -194,7 +195,7 @@ public abstract class AbstractArchivaDatabaseTestCase
         ref.setVersion( parts[2] );
         ref.setClassifier( parts[3] );
         ref.setType( parts[4] );
-    
+        
         assertTrue( "Group ID should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getGroupId() ) );
         assertTrue( "Artifact ID should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getArtifactId() ) );
         assertTrue( "Version should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getVersion() ) );

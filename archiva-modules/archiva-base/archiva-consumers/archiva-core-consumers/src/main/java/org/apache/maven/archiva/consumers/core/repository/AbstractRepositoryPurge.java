@@ -89,7 +89,7 @@ public abstract class AbstractRepositoryPurge
                 
                 ArchivaArtifact artifact =
                     new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
-                                         reference.getClassifier(), reference.getType() );
+                                         reference.getClassifier(), reference.getType(), repository.getId() );
     
                 for ( RepositoryListener listener : listeners )
                 {

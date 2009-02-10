@@ -299,11 +299,14 @@
             The type of artifact.
           </description>
         </field>
-        <field stash.maxSize="50">
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
           <name>repositoryId</name>
-          <identifier>false</identifier>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
-          <required>false</required>
+          <required>true</required>
           <type>String</type>
           <description>
             The repository associated with this content.
@@ -511,6 +514,19 @@
           <required>true</required>
           <description>
             The type of artifact.
+          </description>
+        </field>
+        <field stash.maxSize="50"
+               jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>repositoryId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The repository associated with this content.
           </description>
         </field>
         <field>

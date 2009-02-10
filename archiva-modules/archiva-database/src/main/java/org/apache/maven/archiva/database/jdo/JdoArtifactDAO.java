@@ -49,24 +49,24 @@ public class JdoArtifactDAO
     /* .\ Archiva Artifact \. _____________________________________________________________ */
 
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
-                                           String type )
+                                           String type, String repositoryId )
     {
         ArchivaArtifact artifact;
 
         try
         {
-            artifact = getArtifact( groupId, artifactId, version, classifier, type );
+            artifact = getArtifact( groupId, artifactId, version, classifier, type, repositoryId );
         }
         catch ( ArchivaDatabaseException e )
         {
-            artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
+            artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type, repositoryId );
         }
 
         return artifact;
     }
 
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
-                                        String type )
+                                        String type, String repositoryId )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         ArchivaArtifactModelKey key = new ArchivaArtifactModelKey();
@@ -75,6 +75,7 @@ public class JdoArtifactDAO
         key.setVersion( version );
         key.setClassifier( classifier );
         key.setType( type );
+        key.setRepositoryId( repositoryId );
 
         ArchivaArtifactModel model = (ArchivaArtifactModel) jdo.getObjectById( ArchivaArtifactModel.class, key, null );
 

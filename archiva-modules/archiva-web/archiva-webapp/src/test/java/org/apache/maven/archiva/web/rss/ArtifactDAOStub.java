@@ -40,7 +40,7 @@ public class ArtifactDAOStub
 {
 
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
-                                           String type )
+                                           String type, String repositoryId )
     {
         // TODO Auto-generated method stub
         return null;
@@ -54,7 +54,7 @@ public class ArtifactDAOStub
     }
 
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
-                                        String type )
+                                        String type, String repositoryId )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         // TODO Auto-generated method stub
@@ -69,43 +69,35 @@ public class ArtifactDAOStub
         Date whenGathered = Calendar.getInstance().getTime();
         whenGathered.setTime( 123456789 );
 
-        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.0", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.0", "", "jar", "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.1", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.1", "", "jar", "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "2.0", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "2.0", "", "jar", "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar", "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar", "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar", "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-three", "2.0-SNAPSHOT", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-three", "2.0-SNAPSHOT", "", "jar", "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-four", "1.1-beta-2", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-four", "1.1-beta-2", "", "jar", "test-repo" );
         artifact.getModel().setWhenGathered( whenGathered );
         artifacts.add( artifact );
 

@@ -105,7 +105,6 @@ public class NexusIndexerConsumer
         File indexDirectory = null;
         if( indexDir != null && !"".equals( indexDir ) )
         {
-            //indexDirectory = new File( managedRepository, repository.getIndexDir() );
             indexDirectory = new File( repository.getIndexDir() );
         }
         else

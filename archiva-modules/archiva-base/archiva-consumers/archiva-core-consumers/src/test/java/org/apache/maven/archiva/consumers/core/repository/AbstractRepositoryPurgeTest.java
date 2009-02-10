@@ -145,6 +145,6 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String type )
     {
-        return new ArchivaArtifact( groupId, artifactId, version, null, type );
+        return new ArchivaArtifact( groupId, artifactId, version, null, type, TEST_REPO_ID );
     }
 }

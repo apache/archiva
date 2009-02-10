@@ -165,7 +165,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             
             ArchivaArtifact artifact =
                 new ArchivaArtifact( artifactRef.getGroupId(), artifactRef.getArtifactId(), artifactRef.getVersion(),
-                                     artifactRef.getClassifier(), artifactRef.getType() );
+                                     artifactRef.getClassifier(), artifactRef.getType(), repository.getId() );
             
             for ( String version : snapshotVersions )
             {   

@@ -49,7 +49,7 @@ public class ArtifactsByRepositoryConstraintTest
 
     private ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String type )
     {
-        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, null, type );
+        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, null, type, "test-repo" );
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( "test-repo" );
 

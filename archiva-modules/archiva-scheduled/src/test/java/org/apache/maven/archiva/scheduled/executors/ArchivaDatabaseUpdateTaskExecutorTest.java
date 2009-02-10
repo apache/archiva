@@ -147,7 +147,7 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
 
         ArtifactDAO adao = dao.getArtifactDAO();
 
-        ArchivaArtifact sqlArtifact = adao.createArtifact( "javax.sql", "jdbc", "2.0", "", "jar" );
+        ArchivaArtifact sqlArtifact = adao.createArtifact( "javax.sql", "jdbc", "2.0", "", "jar", repo.getId() );
         sqlArtifact.getModel().setLastModified( new Date() );
         sqlArtifact.getModel().setSize( 1234 );
         sqlArtifact.getModel().setOrigin( "testcase" );
@@ -155,7 +155,7 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
 
         adao.saveArtifact( sqlArtifact );
 
-        ArchivaArtifact artifact = adao.getArtifact( "javax.sql", "jdbc", "2.0", null, "jar" );
+        ArchivaArtifact artifact = adao.getArtifact( "javax.sql", "jdbc", "2.0", null, "jar", repo.getId() );
 
         assertNotNull( artifact );
 

@@ -65,7 +65,7 @@ public class DefaultRepositoryBrowsing
      */
     private DatabaseUpdater dbUpdater;
 
-    public BrowsingResults getRoot( String principle, List<String> observableRepositoryIds )
+    public BrowsingResults getRoot( final String principle, final List<String> observableRepositoryIds )
     {
         List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds ) );
 
@@ -77,8 +77,8 @@ public class DefaultRepositoryBrowsing
         return results;
     }
 
-    public BrowsingResults selectArtifactId( String principle, List<String> observableRepositoryIds, String groupId,
-                                             String artifactId )
+    public BrowsingResults selectArtifactId( final String principle, final List<String> observableRepositoryIds, final String groupId,
+                                             final String artifactId )
     {
         // NOTE: No group Id or artifact Id's should be returned here. 
         List<String> versions = dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
@@ -93,7 +93,7 @@ public class DefaultRepositoryBrowsing
         return results;
     }
 
-    public BrowsingResults selectGroupId( String principle, List<String> observableRepositoryIds, String groupId )
+    public BrowsingResults selectGroupId( final String principle, final List<String> observableRepositoryIds, final String groupId )
     {
         List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds, groupId ) );
         List<String> artifacts = dao.query( new UniqueArtifactIdConstraint( observableRepositoryIds, groupId ) );
@@ -110,14 +110,13 @@ public class DefaultRepositoryBrowsing
         return results;
     }
 
-    public ArchivaProjectModel selectVersion( String principle, List<String> observableRepositoryIds, String groupId,
-                                              String artifactId, String version )
+    public ArchivaProjectModel selectVersion( final String principle, final List<String> observableRepositoryIds, final String groupId,
+                                              final String artifactId, final String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         ArchivaArtifact pomArtifact = getArtifact( principle, observableRepositoryIds, groupId, artifactId, version );
 
         ArchivaProjectModel model;
-        version = pomArtifact.getVersion();
 
         if ( !pomArtifact.getModel().isProcessed() )
         {
@@ -125,13 +124,13 @@ public class DefaultRepositoryBrowsing
             dbUpdater.updateUnprocessed( pomArtifact );
         }
 
-        model = getProjectModel( groupId, artifactId, version );
+        model = getProjectModel( groupId, artifactId, pomArtifact.getVersion() );
 
         return model;
     }
     
-    public String getRepositoryId( String principle, List<String> observableRepositoryIds, String groupId,
-                                   String artifactId, String version )
+    public String getRepositoryId( final String principle, final List<String> observableRepositoryIds, final String groupId,
+                                   final String artifactId, final String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         ArchivaArtifact pomArchivaArtifact =
@@ -140,20 +139,24 @@ public class DefaultRepositoryBrowsing
         return pomArchivaArtifact.getModel().getRepositoryId();
     }
     
-    private ArchivaArtifact getArtifact( String principle, List<String> observableRepositoryIds, String groupId,
-                                         String artifactId, String version )
+    private ArchivaArtifact getArtifact( final String principal, final List<String> observableRepositoryIds, final String groupId,
+                                         final String artifactId, final String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         ArchivaArtifact pomArtifact = null;
 
-        try
+        for (final String repositoryId : observableRepositoryIds)
         {
-            pomArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, version, null, "pom" );
+            try
+            {
+                pomArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, version, null, "pom", repositoryId );
+            }
+            catch ( ObjectNotFoundException e )
+            {
+                pomArtifact = handleGenericSnapshots( groupId, artifactId, version, repositoryId );
+            }
         }
-        catch ( ObjectNotFoundException e )
-        {
-            pomArtifact = handleGenericSnapshots( groupId, artifactId, version, pomArtifact );
-        }
+
 
         if ( pomArtifact == null )
         {
@@ -170,12 +173,12 @@ public class DefaultRepositoryBrowsing
         {
             throw new ObjectNotFoundException( "Unable to find artifact " + Keys.toKey( groupId, artifactId, version )
                 + " in observable repository [" + StringUtils.join( observableRepositoryIds.iterator(), ", " )
-                + "] for user " + principle );
+                + "] for user " + principal );
         }
     }
 
-    public List<ArchivaProjectModel> getUsedBy( String principle, List<String> observableRepositoryIds, String groupId,
-                                                String artifactId, String version )
+    public List<ArchivaProjectModel> getUsedBy( final String principle, final List<String> observableRepositoryIds, final String groupId,
+                                                final String artifactId, final String version )
         throws ArchivaDatabaseException
     {
         ProjectsByArtifactUsageConstraint constraint = new ProjectsByArtifactUsageConstraint( groupId, artifactId,
@@ -208,7 +211,7 @@ public class DefaultRepositoryBrowsing
      *
      * @param versions
      */
-    private void processSnapshots( List<String> versions )
+    private void processSnapshots( final List<String> versions )
     {
         Map<String, String> snapshots = new HashMap<String, String>();
 
@@ -248,10 +251,11 @@ public class DefaultRepositoryBrowsing
      * @param pomArtifact
      * @throws ArchivaDatabaseException
      */
-    private ArchivaArtifact handleGenericSnapshots( String groupId, String artifactId, String version,
-                                                    ArchivaArtifact pomArtifact )
+    private ArchivaArtifact handleGenericSnapshots( final String groupId, final String artifactId, final String version, final String repositoryId )
         throws ArchivaDatabaseException
     {
+        ArchivaArtifact result = null;
+
         if ( VersionUtil.isGenericSnapshot( version ) )
         {
             List<String> versions = dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
@@ -263,14 +267,11 @@ public class DefaultRepositoryBrowsing
                 if ( VersionUtil.getBaseVersion( uniqueVersion ).equals( version ) )
                 {
                     log.info( "Retrieving artifact with version " + uniqueVersion );
-                    pomArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, uniqueVersion, null, "pom" );
-
-                    return pomArtifact;
+                    result = dao.getArtifactDAO().getArtifact( groupId, artifactId, uniqueVersion, null, "pom", repositoryId );
                 }
             }
         }
-
-        return null;
+        return result;
     }
 
     /**

@@ -40,12 +40,15 @@ import com.sun.syndication.feed.synd.SyndFeed;
 public class NewArtifactsRssFeedProcessorTest
     extends PlexusInSpringTestCase
 {
+    private static final String TEST_REPO = "test-repo";
+
     private NewArtifactsRssFeedProcessor newArtifactsProcessor;
 
     private ArtifactDAOStub artifactDAOStub;
 
     private RssFeedGenerator rssFeedGenerator;
 
+    @Override
     public void setUp()
         throws Exception
     {
@@ -66,43 +69,35 @@ public class NewArtifactsRssFeedProcessorTest
         List<ArchivaArtifact> newArtifacts = new ArrayList<ArchivaArtifact>();
         Date whenGathered = Calendar.getInstance().getTime();
 
-        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.0", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.0", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.1", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.1", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "2.0", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "2.0", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-three", "2.0-SNAPSHOT", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-three", "2.0-SNAPSHOT", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-four", "1.1-beta-2", "", "jar" );
-        artifact.getModel().setRepositoryId( "test-repo" );
+        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-four", "1.1-beta-2", "", "jar", TEST_REPO );
         artifact.getModel().setWhenGathered( whenGathered );
         newArtifacts.add( artifact );
 

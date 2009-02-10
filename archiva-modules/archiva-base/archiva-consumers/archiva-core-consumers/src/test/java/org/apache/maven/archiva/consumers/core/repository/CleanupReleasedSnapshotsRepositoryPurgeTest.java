@@ -39,17 +39,14 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 {  
     private ArchivaConfiguration archivaConfiguration;
 
-    private MockControl listenerControl;
-    
     public static final String PATH_TO_RELEASED_SNAPSHOT_IN_DIFF_REPO =
         "org/apache/archiva/released-artifact-in-diff-repo/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.jar";
     
     public static final String PATH_TO_HIGHER_SNAPSHOT_EXISTS_IN_SAME_REPO = "org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar";
 
     public static final String PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO = "org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar";
-
-    private RepositoryListener listener;
     
+    @Override
     protected void setUp()
         throws Exception
     {

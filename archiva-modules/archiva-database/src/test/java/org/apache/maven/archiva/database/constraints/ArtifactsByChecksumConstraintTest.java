@@ -49,7 +49,7 @@ public class ArtifactsByChecksumConstraintTest
 
     private ArtifactDAO artifactDao;
 
-
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -62,7 +62,7 @@ public class ArtifactsByChecksumConstraintTest
     public ArchivaArtifact createArtifact( String artifactId, String version )
     {
         ArchivaArtifact artifact =
-            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar" );
+            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar", "testable_repo" );
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( "testable_repo" );
         return artifact;

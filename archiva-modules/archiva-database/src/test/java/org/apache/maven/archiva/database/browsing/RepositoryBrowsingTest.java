@@ -51,7 +51,7 @@ public class RepositoryBrowsingTest
 
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
     {
-        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar" );
+        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar", "central" );
         artifact.getModel().setLastModified( new Date() ); // mandatory field.
         artifact.getModel().setRepositoryId( "central" );
         return artifact;
@@ -141,6 +141,7 @@ public class RepositoryBrowsingTest
         }
     }
 
+    @Override
     protected void setUp()
         throws Exception
     {

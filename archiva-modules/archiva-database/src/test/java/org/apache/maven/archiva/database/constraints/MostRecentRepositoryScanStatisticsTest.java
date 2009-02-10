@@ -46,6 +46,7 @@ public class MostRecentRepositoryScanStatisticsTest
         return stats;
     }
 
+    @Override
     protected void setUp()
         throws Exception
     {

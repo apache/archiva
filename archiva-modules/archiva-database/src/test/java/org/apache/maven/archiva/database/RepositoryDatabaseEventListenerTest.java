@@ -22,6 +22,7 @@ package org.apache.maven.archiva.database;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
@@ -54,7 +55,7 @@ public class RepositoryDatabaseEventListenerTest
     public ArchivaArtifact createArtifact( String artifactId, String version, ArtifactDAO artifactDao )
     {
         ArchivaArtifact artifact =
-            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar" );
+            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar", "testable_repo" );
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( "testable_repo" );
         return artifact;
@@ -70,16 +71,20 @@ public class RepositoryDatabaseEventListenerTest
         artifactDao.saveArtifact( artifact );
 
         assertEquals( artifact, artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null,
-                                                         "jar" ) );
+                                                         "jar", "testable_repo" ) );
 
-        artifact = new ArchivaArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null, "jar" );
+        artifact = new ArchivaArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null, "jar", "testable_repo" );
         ManagedRepositoryContent repository =
             (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class.getName(), "default" );
+        ManagedRepositoryConfiguration configuration = new ManagedRepositoryConfiguration();
+        configuration.setId("testable_repo");
+        repository.setRepository(configuration);
+        
         listener.deleteArtifact( repository, artifact );
 
         try
         {
-            artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null, "jar" );
+            artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null, "jar", "testable_repo" );
             fail( "Should not find artifact" );
         }
         catch ( ObjectNotFoundException e )

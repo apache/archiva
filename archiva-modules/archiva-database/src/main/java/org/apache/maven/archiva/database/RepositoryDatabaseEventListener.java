@@ -42,14 +42,12 @@ public class RepositoryDatabaseEventListener
         {
             ArchivaArtifact queriedArtifact =
                 artifactDAO.getArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                                         artifact.getClassifier(), artifact.getType() );
+                                         artifact.getClassifier(), artifact.getType() , repository.getId());
             artifactDAO.deleteArtifact( queriedArtifact );
         }
         catch ( ArchivaDatabaseException e )
         {
             // ignored
         }
-
-        // TODO [MRM-37]: re-run the database consumers to clean up
     }
 }
