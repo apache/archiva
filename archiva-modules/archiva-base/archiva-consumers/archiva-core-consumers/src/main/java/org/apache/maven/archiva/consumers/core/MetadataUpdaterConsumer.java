@@ -160,6 +160,10 @@ public class MetadataUpdaterConsumer
     public void processFile( String path )
         throws ConsumerException
     {
+        //Ignore paths like .indexer etc
+        if (path.startsWith("."))
+            return;
+
         try
         {
             ArtifactReference artifact = repository.toArtifactReference( path );
