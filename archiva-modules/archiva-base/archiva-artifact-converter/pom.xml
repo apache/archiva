@@ -61,7 +61,6 @@
         <artifactId>plexus-maven-plugin</artifactId>
         <executions>
           <execution>
-          	<phase>generate-resources</phase>
             <goals>
               <goal>descriptor</goal>
             </goals>

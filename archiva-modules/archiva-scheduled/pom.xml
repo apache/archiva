@@ -90,12 +90,10 @@
         <executions>
           <execution>
             <id>merge</id>
-            <phase>generate-resources</phase>
             <goals>
               <goal>merge-descriptors</goal>
             </goals>
             <configuration>
-              <output>${project.build.directory}/generated-resources/plexus/META-INF/plexus/components.xml</output>
               <descriptors>
                 <descriptor>${basedir}/src/main/resources/META-INF/plexus/components.xml</descriptor>
                 <descriptor>${project.build.directory}/generated-resources/plexus/META-INF/plexus/components.xml</descriptor>

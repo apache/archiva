@@ -54,7 +54,6 @@
         <executions>
           <execution>
             <id>descriptor</id>
-            <phase>generate-resources</phase>
             <goals>
               <goal>descriptor</goal>
             </goals>
