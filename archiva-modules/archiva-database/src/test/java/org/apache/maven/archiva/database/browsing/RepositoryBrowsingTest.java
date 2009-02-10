@@ -23,6 +23,7 @@ import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -127,6 +128,19 @@ public class RepositoryBrowsingTest
         String expectedRootGroupIds[] = new String[] { "commons-lang", "org" };
 
         assertGroupIds( "Browsing Results (root)", results.getGroupIds(), expectedRootGroupIds );
+    }
+
+    public void testViewArtifact()
+        throws Exception
+    {
+        saveTestData();
+
+        RepositoryBrowsing browser = lookupBrowser();
+        ArchivaProjectModel artifact = browser.selectVersion( USER_GUEST, GUEST_REPO_IDS, "org.apache.commons", "commons-lang", "2.0" );
+        assertNotNull( "Artifact should not be null.", artifact );
+		assertEquals( "org.apache.commons", artifact.getGroupId() );
+		assertEquals( "commons-lang", artifact.getArtifactId() );
+		assertEquals( "2.0", artifact.getVersion() );
     }
 
     private void assertGroupIds( String msg, List actualGroupIds, String[] expectedGroupIds )

@@ -20,6 +20,7 @@ package org.apache.maven.archiva.database.browsing;
  */
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.database.constraints.ProjectsByArtifactUsageConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
@@ -65,56 +67,67 @@ public class DefaultRepositoryBrowsing
      */
     private DatabaseUpdater dbUpdater;
 
-    public BrowsingResults getRoot( final String principle, final List<String> observableRepositoryIds )
+    public BrowsingResults getRoot( final String principal, final List<String> observableRepositoryIds )
     {
-        List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds ) );
+        final BrowsingResults results = new BrowsingResults();
 
-        BrowsingResults results = new BrowsingResults();
-        results.setSelectedRepositoryIds( observableRepositoryIds );
-
-        results.setGroupIds( GroupIdFilter.filterGroups( groups ) );
-
+        if (!observableRepositoryIds.isEmpty())
+        {
+            final List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds ) );
+            results.setSelectedRepositoryIds( observableRepositoryIds );
+            results.setGroupIds( GroupIdFilter.filterGroups( groups ) );
+        }
         return results;
     }
 
-    public BrowsingResults selectArtifactId( final String principle, final List<String> observableRepositoryIds, final String groupId,
+    public BrowsingResults selectArtifactId( final String principal, final List<String> observableRepositoryIds, final String groupId,
                                              final String artifactId )
     {
-        // NOTE: No group Id or artifact Id's should be returned here. 
-        List<String> versions = dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
+        final BrowsingResults results = new BrowsingResults( groupId, artifactId );
 
-        BrowsingResults results = new BrowsingResults( groupId, artifactId );
-        results.setSelectedRepositoryIds( observableRepositoryIds );
+        if (!observableRepositoryIds.isEmpty())
+        {
+            // NOTE: No group Id or artifact Id's should be returned here.
+            final List<String> versions = dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
+            results.setSelectedRepositoryIds( observableRepositoryIds );
 
-        processSnapshots( versions );
+            processSnapshots( versions );
 
-        results.setVersions( versions );
-
+            results.setVersions( versions );
+        }
         return results;
     }
 
-    public BrowsingResults selectGroupId( final String principle, final List<String> observableRepositoryIds, final String groupId )
+    public BrowsingResults selectGroupId( final String principal, final List<String> observableRepositoryIds, final String groupId )
     {
-        List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds, groupId ) );
-        List<String> artifacts = dao.query( new UniqueArtifactIdConstraint( observableRepositoryIds, groupId ) );
+        final BrowsingResults results = new BrowsingResults( groupId );
 
-        BrowsingResults results = new BrowsingResults( groupId );
+        if (!observableRepositoryIds.isEmpty())
+        {
+            final List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds, groupId ) );
+            final List<String> artifacts = dao.query( new UniqueArtifactIdConstraint( observableRepositoryIds, groupId ) );
+            
+            // Remove searched for groupId from groups list.
+            // Easier to do this here, vs doing it in the SQL query.
+            CollectionUtils.filter( groups, NotPredicate.getInstance( PredicateUtils.equalPredicate( groupId ) ) );
 
-        // Remove searched for groupId from groups list.
-        // Easier to do this here, vs doing it in the SQL query.
-        CollectionUtils.filter( groups, NotPredicate.getInstance( PredicateUtils.equalPredicate( groupId ) ) );
-
-        results.setGroupIds( groups );
-        results.setArtifacts( artifacts );
+            results.setGroupIds( groups );
+            results.setArtifacts( artifacts );
+        }
 
         return results;
     }
 
-    public ArchivaProjectModel selectVersion( final String principle, final List<String> observableRepositoryIds, final String groupId,
+    public ArchivaProjectModel selectVersion( final String principal, final List<String> observableRepositoryIds, final String groupId,
                                               final String artifactId, final String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        ArchivaArtifact pomArtifact = getArtifact( principle, observableRepositoryIds, groupId, artifactId, version );
+        if (observableRepositoryIds.isEmpty())
+        {
+            throw new ArchivaDatabaseException("There are no observable repositories for the user " + principal);
+        }
+
+        ArchivaArtifact pomArtifact = getArtifact( principal, observableRepositoryIds, groupId, artifactId, version );
 
         ArchivaProjectModel model;
 
@@ -129,14 +142,26 @@ public class DefaultRepositoryBrowsing
         return model;
     }
     
-    public String getRepositoryId( final String principle, final List<String> observableRepositoryIds, final String groupId,
+    public String getRepositoryId( final String principal, final List<String> observableRepositoryIds, final String groupId,
                                    final String artifactId, final String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        ArchivaArtifact pomArchivaArtifact =
-            getArtifact( principle, observableRepositoryIds, groupId, artifactId, version );
+        if (observableRepositoryIds.isEmpty())
+        {
+            throw new ArchivaDatabaseException("There are no observable repositories for the user " + principal);
+        }
 
-        return pomArchivaArtifact.getModel().getRepositoryId();
+        try
+        {
+            ArchivaArtifact pomArchivaArtifact =
+                getArtifact( principal, observableRepositoryIds, groupId, artifactId, version );
+
+            return pomArchivaArtifact.getModel().getRepositoryId();
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            return getNoPomArtifactRepoId( principal, observableRepositoryIds, groupId, artifactId, version, observableRepositoryIds.get(0) );
+        } 
     }
     
     private ArchivaArtifact getArtifact( final String principal, final List<String> observableRepositoryIds, final String groupId,
@@ -150,6 +175,7 @@ public class DefaultRepositoryBrowsing
             try
             {
                 pomArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, version, null, "pom", repositoryId );
+                break;
             }
             catch ( ObjectNotFoundException e )
             {
@@ -157,11 +183,13 @@ public class DefaultRepositoryBrowsing
             }
         }
 
-
         if ( pomArtifact == null )
         {
-            throw new ObjectNotFoundException( "Unable to find artifact [" + Keys.toKey( groupId, artifactId, version )
-                + "]" );
+            String type = getArtifactType( groupId, artifactId, version );
+
+            //We dont want these to persist in the database
+            pomArtifact = new ArchivaArtifact( groupId, artifactId, version, null, type, observableRepositoryIds.get(0) );
+            pomArtifact.getModel().setWhenProcessed(new Date());
         }
 
         // Allowed to see this?
@@ -177,7 +205,7 @@ public class DefaultRepositoryBrowsing
         }
     }
 
-    public List<ArchivaProjectModel> getUsedBy( final String principle, final List<String> observableRepositoryIds, final String groupId,
+    public List<ArchivaProjectModel> getUsedBy( final String principal, final List<String> observableRepositoryIds, final String groupId,
                                                 final String artifactId, final String version )
         throws ArchivaDatabaseException
     {
@@ -258,7 +286,7 @@ public class DefaultRepositoryBrowsing
 
         if ( VersionUtil.isGenericSnapshot( version ) )
         {
-            List<String> versions = dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
+            final List<String> versions = dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
             Collections.sort( versions );
             Collections.reverse( versions );
 
@@ -286,22 +314,74 @@ public class DefaultRepositoryBrowsing
     private ArchivaProjectModel getProjectModel( String groupId, String artifactId, String version )
         throws ArchivaDatabaseException
     {
+        ArchivaProjectModel model = null;
+
         try
         {
-            ArchivaProjectModel model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
+            dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
+        }
+        catch (ObjectNotFoundException e)
+        {
+            log.debug("Unable to find project model for [" + Keys.toKey( groupId, artifactId, version ) + "]", e);
+        }
 
-            if ( model == null )
+        if ( model == null )
+        {
+            model = new ArchivaProjectModel();
+            model.setGroupId(groupId);
+            model.setArtifactId(artifactId);
+            model.setVersion(version);
+        }
+
+        return model;
+    }
+    
+    private String getNoPomArtifactRepoId( String principal, List<String> observableRepos, String groupId, String artifactId, String version, String repositoryId )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        ArchivaArtifact artifact = null;
+        
+        String type = getArtifactType( groupId, artifactId, version );
+        
+        artifact = dao.getArtifactDAO().createArtifact( groupId, artifactId, version, null, type, repositoryId );
+
+        if ( artifact == null )
+        {
+            //Lets not persist these
+            artifact = new ArchivaArtifact( groupId, artifactId, version, null, type, repositoryId );
+        }
+
+        // Allowed to see this?
+        if ( !observableRepos.contains( artifact.getModel().getRepositoryId() ) )
+        {
+            throw new ObjectNotFoundException( "Unable to find artifact " + Keys.toKey( groupId, artifactId, version )
+                + " in observable repository [" + StringUtils.join( observableRepos.iterator(), ", " )
+                + "] for user " + principal );
+        }
+
+        return artifact.getModel().getRepositoryId();
+    }
+    
+    private String getArtifactType( String groupId, String artifactId, String version )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        String type = "jar";
+       
+        try
+        {
+            List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsRelatedConstraint( groupId, artifactId, version ) );
+                    
+            if ( artifacts.size() > 0 )
             {
-                throw new ObjectNotFoundException( "Unable to find project model for ["
-                    + Keys.toKey( groupId, artifactId, version ) + "]" );
+                type = artifacts.get( 0 ).getType();
             }
-
-            return model;
         }
         catch ( ObjectNotFoundException e )
         {
-            throw e;
+            //swallow exception?
         }
+        
+        return type;
     }
     
 }
