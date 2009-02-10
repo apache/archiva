@@ -286,6 +286,16 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
+	<developer>
+      <id>jdumay</id>
+      <name>James William Dumay</name>
+      <email>james@atlassian.com</email>
+      <organization>Atlassian</organization>
+      <roles>
+        <role>PMC Member</role>
+      </roles>
+      <timezone>+11</timezone>
+    </developer>
     <developer>
       <id>joakime</id>
       <name>Joakim Erdfelt</name>
@@ -346,15 +356,14 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
-    <developer>
-      <id>jdumay</id>
-      <name>James William Dumay</name>
-      <email>james@atlassian.com</email>
-      <organization>Atlassian</organization>
+	<developer>
+      <id>martinc</id>
+      <name>Martin Cooper</name>
+      <email>martinc@apache.org</email>
+      <organization>ASF</organization>
       <roles>
         <role>Committer</role>
       </roles>
-      <timezone>+11</timezone>
     </developer>
     <!-- Emeritus Committers -->
     <developer>
@@ -475,7 +484,7 @@
       <name>Michal Stochmialek</name>
     </contributor>
     <contributor>
-      <name>Martin Cooper</name>
+      <name>Jevica Arianne B. Zurbano</name>
     </contributor>
   </contributors>
 
