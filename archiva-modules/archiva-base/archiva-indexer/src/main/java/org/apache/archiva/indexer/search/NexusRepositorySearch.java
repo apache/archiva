@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -248,7 +247,7 @@ public class NexusRepositorySearch
         
         for ( ArtifactInfo artifactInfo : artifactInfos )
         {
-            String id = SearchUtil.getHitId( artifactInfo.groupId, artifactInfo.artifactId );            
+            String id = getHitId( artifactInfo.groupId, artifactInfo.artifactId );            
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
 
             SearchResultHit hit = hitsMap.get( id );
@@ -314,7 +313,7 @@ public class NexusRepositorySearch
                 SearchResultHit hit = results.getHits().get( ( offset + i ) );
                 if( hit != null )
                 {
-                    String id = SearchUtil.getHitId( hit.getGroupId(), hit.getArtifactId() );
+                    String id = getHitId( hit.getGroupId(), hit.getArtifactId() );
                     paginated.addHit( id, hit );
                 }
                 else
@@ -328,5 +327,9 @@ public class NexusRepositorySearch
         
         return paginated;
     }
-
+    
+    private static String getHitId( String groupId, String artifactId )
+    {
+        return groupId + ":" + artifactId;
+    }
 }
