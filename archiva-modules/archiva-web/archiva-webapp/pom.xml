@@ -180,6 +180,10 @@
       <artifactId>archiva-webdav</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-servlet</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-spring-plugin</artifactId>
       <scope>runtime</scope>

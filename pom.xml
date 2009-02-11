@@ -403,6 +403,16 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-repository-api</artifactId>
+        <version>1.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-repository</artifactId>
+        <version>1.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-docs</artifactId>
         <version>1.2-SNAPSHOT</version>
         <type>zip</type>
@@ -417,6 +427,11 @@
       <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-xml-tools</artifactId>
+        <version>1.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-repository-servlet</artifactId>
         <version>1.2-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -468,7 +483,7 @@
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
-        <version>3.2</version>
+        <version>3.2.1</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
@@ -483,7 +498,7 @@
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
-        <version>2.2</version>
+        <version>2.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.derby</groupId>
