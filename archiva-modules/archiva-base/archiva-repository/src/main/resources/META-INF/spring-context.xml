@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+       <bean name="repositoryFactory" class="org.apache.archiva.repository.DefaultRepositoryFactory">
+           <constructor-arg ref="archivaConfiguration"/>
+       </bean>
+       <bean name="systemRepositoryManager" class="org.apache.archiva.repository.DefaultRepositoryManager"/>
+       <bean name="repositoryManagerFactory" class="org.apache.archiva.repository.DefaultRepositoryManagerFactory" init-method="init"/>
+       <bean name="preRepositoryInterceptorFactory" class="org.apache.archiva.repository.DefaultRepositoryInterceptorFactory" init-method="init">
+           <constructor-arg value="org.apache.archiva.repository.api.interceptor.PreRepositoryInterceptor"/>
+       </bean>
+       <bean name="postRepositoryInterceptorFactory" class="org.apache.archiva.repository.DefaultRepositoryInterceptorFactory" init-method="init">
+           <constructor-arg value="org.apache.archiva.repository.api.interceptor.PostRepositoryInterceptor"/>
+       </bean>
+</beans>

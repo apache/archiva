@@ -219,7 +219,6 @@ public class RepositoryMetadataMerge
         {
             Plugin clonedPlugin = new Plugin();
             clonedPlugin.setArtifactId(plugin.getArtifactId());
-            clonedPlugin.setModelEncoding(plugin.getModelEncoding());
             clonedPlugin.setName(plugin.getName());
             clonedPlugin.setPrefix(plugin.getPrefix());
             result.add(plugin);

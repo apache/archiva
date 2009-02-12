@@ -19,6 +19,7 @@ package org.apache.archiva.web.servlet;
  * under the License.
  */
 
+import javax.servlet.ServletConfig;
 import org.apache.archiva.repository.api.RepositoryContext;
 import org.apache.archiva.repository.api.RepositoryManager;
 import org.apache.archiva.repository.api.RepositoryManagerFactory;
@@ -37,28 +38,37 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.archiva.repository.api.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class RepositoryServlet extends HttpServlet
 {
     private static final Logger log = LoggerFactory.getLogger(RepositoryServlet.class);
 
-    private final RepositoryInterceptorFactory<PreRepositoryInterceptor> preRepositoryInterceptorFactory;
+    private RepositoryInterceptorFactory<PreRepositoryInterceptor> preRepositoryInterceptorFactory;
 
-    private final RepositoryInterceptorFactory<PostRepositoryInterceptor> postRepositoryInterceptorFactory;
+    private RepositoryInterceptorFactory<PostRepositoryInterceptor> postRepositoryInterceptorFactory;
 
-    private final RepositoryManagerFactory repositoryManagerFactory;
+    private RepositoryManagerFactory repositoryManagerFactory;
 
     private static final String MKCOL_METHOD = "MKCOL";
 
     private static final String LAST_MODIFIED = "last-modified";
 
-    public RepositoryServlet( RepositoryInterceptorFactory<PreRepositoryInterceptor> preRepositoryInterceptorFactory,
-            RepositoryInterceptorFactory<PostRepositoryInterceptor> postRepositoryInterceptorFactory,
-            RepositoryManagerFactory repositoryManagerFactory)
+    private static final String REPOSITORY_MANAGER_FACTORY = "repositoryManagerFactoryName";
+
+    private static final String PREREPOSITORY_INTERCEPTOR_FACTORY = "preRepositoryInterceptorFactoryName";
+
+    private static final String POSTREPOSITORY_INTERCEPTOR_FACTORY = "postRepositoryInterceptorFactoryName";
+
+    @Override
+    public void init(ServletConfig config) throws ServletException
     {
-        this.preRepositoryInterceptorFactory = preRepositoryInterceptorFactory;
-        this.postRepositoryInterceptorFactory = postRepositoryInterceptorFactory;
-        this.repositoryManagerFactory = repositoryManagerFactory;
+        super.init(config);
+        final ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+        repositoryManagerFactory = (RepositoryManagerFactory)applicationContext.getBean(config.getInitParameter(REPOSITORY_MANAGER_FACTORY));
+        preRepositoryInterceptorFactory = (RepositoryInterceptorFactory<PreRepositoryInterceptor>)applicationContext.getBean(config.getInitParameter(PREREPOSITORY_INTERCEPTOR_FACTORY));
+        postRepositoryInterceptorFactory = (RepositoryInterceptorFactory<PostRepositoryInterceptor>)applicationContext.getBean(config.getInitParameter(POSTREPOSITORY_INTERCEPTOR_FACTORY));
     }
 
     @Override

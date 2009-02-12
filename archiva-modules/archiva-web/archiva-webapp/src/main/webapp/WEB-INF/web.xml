@@ -17,10 +17,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-
-<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
 	<display-name>Apache Archiva</display-name>
 
@@ -90,10 +87,22 @@
 	<servlet>
 		<servlet-name>RepositoryServlet</servlet-name>
 		<servlet-class>
-			org.apache.maven.archiva.webdav.RepositoryServlet
+			org.apache.archiva.web.servlet.RepositoryServlet
 		</servlet-class>
 		<!-- Loading this on startup so as to take advantage of configuration listeners -->
-		<load-on-startup>1</load-on-startup>
+        <init-param>
+            <param-name>preRepositoryInterceptorFactoryName</param-name>
+            <param-value>preRepositoryInterceptorFactory</param-value>
+        </init-param>
+        <init-param>
+            <param-name>postRepositoryInterceptorFactoryName</param-name>
+            <param-value>postRepositoryInterceptorFactory</param-value>
+        </init-param>
+        <init-param>
+            <param-name>repositoryManagerFactoryName</param-name>
+            <param-value>repositoryManagerFactory</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet>

@@ -36,6 +36,7 @@ import org.codehaus.plexus.registry.RegistryListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.collections.map.UnmodifiableMap;
 
 /**
  * RepositoryContentRequest 
@@ -63,6 +64,24 @@ public class RepositoryContentFactory
     {
         managedContentMap = new HashMap<String, ManagedRepositoryContent>();
         remoteContentMap = new HashMap<String, RemoteRepositoryContent>();
+    }
+
+    /**
+     * Gets an unmodifiable map representing the Managed repositories
+     * @return managedContentMap
+     */
+    public Map<String, ManagedRepositoryContent> getManagedContentMap()
+    {
+        return UnmodifiableMap.decorate(managedContentMap);
+    }
+
+    /**
+     * Gets an unmodifiable map representing the Remote repositories
+     * @return remoteContentMap
+     */
+    public Map<String, RemoteRepositoryContent> getRemoteContentMap()
+    {
+        return UnmodifiableMap.decorate(remoteContentMap);
     }
 
     /**
