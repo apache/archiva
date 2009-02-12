@@ -27,4 +27,11 @@
     <property name="serviceLocatorInterface"
       value="org.apache.maven.archiva.proxy.WagonFactory" />
   </bean>
+
+  <bean id="proxyRepositoryManager" class="org.apache.maven.archiva.proxy.ProxyRepositoryManager">
+      <constructor-arg ref="systemRepositoryManager"/>
+      <constructor-arg ref="repositoryProxyConnectors"/>
+      <constructor-arg ref="repositoryContentFactory"/>
+      <constructor-arg ref="repositoryRequest"/>
+  </bean>
 </beans>

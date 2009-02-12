@@ -20,20 +20,18 @@ package org.apache.archiva.web.servlet;
  */
 
 import org.apache.archiva.repository.api.PathUtils;
-import org.apache.archiva.repository.api.MimeTypes;
 import org.apache.archiva.repository.api.RepositoryContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.archiva.repository.api.MimeTypes;
 import org.apache.archiva.repository.api.RequestType;
 import org.apache.commons.codec.binary.Base64;
 
 public class HttpRepositoryContext implements RepositoryContext
 {
-    private static final MimeTypes mimeTypes = new MimeTypes();
-
     private HttpServletRequest request;
     private HttpServletResponse response;
 
@@ -156,6 +154,6 @@ public class HttpRepositoryContext implements RepositoryContext
 
     public String getContentType()
     {
-        return mimeTypes.getMimeType(logicalPath);
+        return MimeTypes.getMimeType(logicalPath);
     }
 }

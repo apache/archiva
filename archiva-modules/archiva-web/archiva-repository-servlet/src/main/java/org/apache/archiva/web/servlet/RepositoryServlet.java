@@ -194,7 +194,7 @@ public class RepositoryServlet extends HttpServlet
         }
         else
         {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not find " + req.getPathInfo());
         }
     }
 }

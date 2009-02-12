@@ -434,8 +434,9 @@ public class ArchivaDavResourceFactory
 
             // At this point the incoming request can either be in default or
             // legacy layout format.
-            boolean fromProxy = fetchContentFromProxies( managedRepository, request, logicalResource );
+//            boolean fromProxy = fetchContentFromProxies( managedRepository, request, logicalResource );
 
+            boolean fromProxy = true;
             try
             {
                 // Perform an adjustment of the resource to the managed

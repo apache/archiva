@@ -119,9 +119,9 @@ public class DefaultRepositoryProxyConnectors
      */
     private UrlFailureCache urlFailureCache;
 
-    private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, List<ProxyConnector>>();
+    private final Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, List<ProxyConnector>>();
 
-    private Map<String, ProxyInfo> networkProxyMap = new HashMap<String, ProxyInfo>();
+    private final Map<String, ProxyInfo> networkProxyMap = new HashMap<String, ProxyInfo>();
 
     /**
      * @plexus.requirement
@@ -146,7 +146,7 @@ public class DefaultRepositoryProxyConnectors
             requestProperties.setProperty( "version", artifact.getVersion() );
             requestProperties.setProperty( "managedRepositoryId", repository.getId() );
 
-            List<ProxyConnector> connectors = getProxyConnectors( repository );
+            List<ProxyConnector> connectors = getProxyConnectors( repository.getId() );
             Map<String, Exception> previousExceptions = new LinkedHashMap<String, Exception>();
             for ( ProxyConnector connector : connectors )
             {
@@ -222,7 +222,7 @@ public class DefaultRepositoryProxyConnectors
             requestProperties.setProperty( "filetype", "resource" );
             requestProperties.setProperty( "managedRepositoryId", repository.getId() );
 
-            List<ProxyConnector> connectors = getProxyConnectors( repository );
+            List<ProxyConnector> connectors = getProxyConnectors( repository.getId() );
             for ( ProxyConnector connector : connectors )
             {
                 if (connector.isDisabled())
@@ -286,7 +286,7 @@ public class DefaultRepositoryProxyConnectors
             boolean metadataNeedsUpdating = false;
             long originalTimestamp = getLastModified( localFile );
 
-            List<ProxyConnector> connectors = getProxyConnectors( repository );
+            List<ProxyConnector> connectors = getProxyConnectors( repository.getId() );
             for ( ProxyConnector connector : connectors )
             {
                 if (connector.isDisabled())
@@ -390,11 +390,11 @@ public class DefaultRepositoryProxyConnectors
     /**
      * Test if the provided ManagedRepositoryContent has any proxies configured for it.
      */
-    public boolean hasProxies( ManagedRepositoryContent repository )
+    public boolean hasProxies( String repositoryId )
     {
         synchronized ( this.proxyConnectorMap )
         {
-            return this.proxyConnectorMap.containsKey( repository.getId() );
+            return this.proxyConnectorMap.containsKey( repositoryId );
         }
     }
 
@@ -457,6 +457,12 @@ public class DefaultRepositoryProxyConnectors
         }
         url = url + remotePath;
         requestProperties.setProperty( "url", url );
+
+        //Whilelist patterns dont work if the first char is a slash
+        if (remotePath.startsWith("/"))
+        {
+            remotePath = remotePath.substring(1);
+        }
 
         // Is a whitelist defined?
         if ( CollectionUtils.isNotEmpty( connector.getWhitelist() ) )
@@ -610,11 +616,11 @@ public class DefaultRepositoryProxyConnectors
             }
         }
 
-        if ( executeConsumers )
-        {
-            // Just-in-time update of the index and database by executing the consumers for this artifact
-            consumers.executeConsumers( connector.getSourceRepository().getRepository(), resource );
-        }
+//        if ( executeConsumers )
+//        {
+//            // Just-in-time update of the index and database by executing the consumers for this artifact
+//            consumers.executeConsumers( connector.getSourceRepository().getRepository(), resource );
+//        }
         
         return resource;
     }
@@ -714,7 +720,7 @@ public class DefaultRepositoryProxyConnectors
         {
             temp = new File(workingDirectory, localFile.getName());
 
-            boolean success = false;
+        boolean success = false;
 
             if ( !localFile.exists() )
             {
@@ -1017,11 +1023,11 @@ public class DefaultRepositoryProxyConnectors
     /**
      * TODO: Ensure that list is correctly ordered based on configuration. See MRM-477
      */
-    public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository )
+    public List<ProxyConnector> getProxyConnectors( String repositoryId )
     {
         synchronized ( this.proxyConnectorMap )
         {
-            List<ProxyConnector> ret = (List<ProxyConnector>) this.proxyConnectorMap.get( repository.getId() );
+            final List<ProxyConnector> ret = (List<ProxyConnector>) this.proxyConnectorMap.get( repositoryId );
             if ( ret == null )
             {
                 return Collections.emptyList();

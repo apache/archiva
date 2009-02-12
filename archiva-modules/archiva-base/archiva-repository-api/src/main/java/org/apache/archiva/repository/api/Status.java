@@ -27,12 +27,6 @@ import java.util.Comparator;
  */
 public final class Status
 {
-    private static final MimeTypes mimeTypes = new MimeTypes();
-
-    private Status()
-    {
-    }
-
     private ResourceType resourceType;
 
     private String contentType;
@@ -172,7 +166,7 @@ public final class Status
         }
         else
         {
-            status.setContentType(mimeTypes.getMimeType(file.getName()));
+            status.setContentType(MimeTypes.getMimeType(file.getName()));
             status.setContentLength(file.length());
             status.setResourceType(ResourceType.Resource);
         }

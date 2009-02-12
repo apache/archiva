@@ -35,19 +35,21 @@ import org.apache.log4j.Logger;
 /**
  * MimeType sniffing for repository Artifacts
  */
-public class MimeTypes
+public final class MimeTypes
 {
     private static final Logger log = Logger.getLogger(MimeTypes.class);
 
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
-
-    private String resource = "/mime.types";
     
-    private Map mimeMap = new HashMap();
+    private static final Map mimeMap = new HashMap();
 
-    public MimeTypes()
+    private MimeTypes()
     {
-        load(resource);
+    }
+
+    static
+    {
+        load("/mime.types");
     }
 
     /**
@@ -56,7 +58,7 @@ public class MimeTypes
      * @param filename the filename to obtain the mime type for.
      * @return a mime type String, or null if filename is null, has no extension, or no mime type is associated with it.
      */
-    public String getMimeType( String filename )
+    public static String getMimeType( String filename )
     {
         String value = null;
         if ( !StringUtils.isEmpty( filename ) )
@@ -79,9 +81,9 @@ public class MimeTypes
 
     }
 
-    private void load( String resourceName )
+    private static void load( String resourceName )
     {
-        ClassLoader cloader = this.getClass().getClassLoader();
+        ClassLoader cloader = MimeTypes.class.getClassLoader();
 
         /* Load up the mime types table */
         URL mimeURL = cloader.getResource( resourceName );
@@ -108,7 +110,7 @@ public class MimeTypes
         }
     }
 
-    private void load( InputStream mimeStream )
+    private static void load( InputStream mimeStream )
     {
         mimeMap.clear();
 
@@ -144,7 +146,7 @@ public class MimeTypes
                     while ( tokenizer.hasMoreTokens() )
                     {
                         String extension = tokenizer.nextToken().toLowerCase();
-                        this.mimeMap.put( extension, type );
+                        MimeTypes.mimeMap.put( extension, type );
                     }
                 }
             }

@@ -77,15 +77,15 @@ public interface RepositoryProxyConnectors
      * @param repository the source repository to look for.
      * @return the List of {@link ProxyConnector} objects.
      */
-    public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository );
+    public List<ProxyConnector> getProxyConnectors( String repositoryId );
 
     /**
      * Tests to see if the provided repository is a source repository for
      * any {@link ProxyConnector} objects.
      * 
-     * @param repository the source repository to look for.
+     * @param repositoryId the source repository to look for.
      * @return true if there are proxy connectors that use the provided 
      *   repository as a source repository.
      */
-    public boolean hasProxies( ManagedRepositoryContent repository );
+    public boolean hasProxies( String repositoryId );
 }

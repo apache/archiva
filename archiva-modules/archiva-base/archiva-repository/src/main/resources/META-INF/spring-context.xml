@@ -6,12 +6,14 @@
        <bean name="repositoryFactory" class="org.apache.archiva.repository.DefaultRepositoryFactory">
            <constructor-arg ref="archivaConfiguration"/>
        </bean>
-       <bean name="systemRepositoryManager" class="org.apache.archiva.repository.DefaultRepositoryManager"/>
-       <bean name="repositoryManagerFactory" class="org.apache.archiva.repository.DefaultRepositoryManagerFactory" init-method="init"/>
-       <bean name="preRepositoryInterceptorFactory" class="org.apache.archiva.repository.DefaultRepositoryInterceptorFactory" init-method="init">
+       <bean name="systemRepositoryManager" class="org.apache.archiva.repository.DefaultRepositoryManager">
+           <constructor-arg ref="repositoryFactory"/>
+       </bean>
+       <bean name="repositoryManagerFactory" class="org.apache.archiva.repository.DefaultRepositoryManagerFactory"/>
+       <bean name="preRepositoryInterceptorFactory" class="org.apache.archiva.repository.DefaultRepositoryInterceptorFactory">
            <constructor-arg value="org.apache.archiva.repository.api.interceptor.PreRepositoryInterceptor"/>
        </bean>
-       <bean name="postRepositoryInterceptorFactory" class="org.apache.archiva.repository.DefaultRepositoryInterceptorFactory" init-method="init">
+       <bean name="postRepositoryInterceptorFactory" class="org.apache.archiva.repository.DefaultRepositoryInterceptorFactory">
            <constructor-arg value="org.apache.archiva.repository.api.interceptor.PostRepositoryInterceptor"/>
        </bean>
 </beans>
