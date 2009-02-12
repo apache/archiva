@@ -54,7 +54,7 @@
 </div>
 
 
-<div id="searchbox" class="xright">
+<div id="topSearchBox">
     <s:form method="get" action="quickSearch" namespace="/" validate="true">
         <s:textfield label="Search for" size="30" name="q"/>
     </s:form>

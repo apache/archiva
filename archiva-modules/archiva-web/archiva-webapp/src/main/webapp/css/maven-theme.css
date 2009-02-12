@@ -343,3 +343,8 @@ blockquote {
 #searchHint {
 	margin: 5%;
 }
+
+#topSearchBox {
+    float: right;
+    padding: 2px 8px;
+}
