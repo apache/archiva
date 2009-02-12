@@ -64,19 +64,36 @@
       <plugin>
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>
-        <version>1.0-alpha-15</version>
         <executions>
           <execution>
             <goals>
               <goal>java</goal>
-              <goal>registry-reader</goal>
-              <goal>registry-writer</goal>
             </goals>
+          </execution>
+		  <execution>
+            <id>archiva-jpox-registry-reader</id>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+            <configuration>
+                <generatorId>registry-reader</generatorId>
+            </configuration>
+          </execution>
+		  <execution>
+            <id>archiva-jpox-registry-writer</id>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+            <configuration>
+                <generatorId>registry-writer</generatorId>
+            </configuration>
           </execution>
         </executions>
         <configuration>
           <version>1.2.0</version>
-          <model>src/main/mdo/configuration.mdo</model>
+		  <models>
+            <model>src/main/mdo/configuration.mdo</model>
+		  </models>
         </configuration>
       </plugin>
       <plugin>

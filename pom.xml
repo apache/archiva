@@ -110,7 +110,22 @@
         <plugin>
           <groupId>org.codehaus.modello</groupId>
           <artifactId>modello-maven-plugin</artifactId>
-          <version>1.0-alpha-15</version>
+          <version>1.0</version>
+		  <configuration>
+			<useJava5>true</useJava5>
+		  </configuration>
+		  <dependencies>
+            <dependency>
+              <groupId>org.codehaus.modello</groupId>
+              <artifactId>modello-plugin-plexus-registry</artifactId>
+              <version>1.0-alpha-21</version>
+            </dependency>
+			<dependency>
+              <groupId>org.codehaus.modello</groupId>
+              <artifactId>modello-plugin-jpox</artifactId>
+              <version>1.0-alpha-21</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

@@ -1112,7 +1112,6 @@ public class MetadataTransferTest
             m.getPlugins().add( p );
         }
 
-        m.setModelEncoding( null );
         RepositoryMetadataWriter.write( m, expectedMetadataXml );
 
         // Compare the file to the actual contents.
@@ -1148,7 +1147,6 @@ public class MetadataTransferTest
             m.getAvailableVersions().addAll( Arrays.asList( expectedVersions ) );
         }
 
-        m.setModelEncoding( null );
         RepositoryMetadataWriter.write( m, expectedMetadataXml );
 
         // Compare the file to the actual contents.
@@ -1176,7 +1174,6 @@ public class MetadataTransferTest
         m.setGroupId( metadata.getGroupId() );
         m.setArtifactId( metadata.getArtifactId() );
         m.setVersion( metadata.getVersion() );
-        m.setModelEncoding( null );
         RepositoryMetadataWriter.write( m, expectedMetadataXml );
 
         // Compare the file to the actual contents.
@@ -1254,7 +1251,6 @@ public class MetadataTransferTest
 
         m.setLastUpdated( expectedDate + expectedTime );
 
-        m.setModelEncoding( null );
         RepositoryMetadataWriter.write( m, expectedMetadataXml );
 
         // Compare the file to the actual contents.
@@ -1290,7 +1286,6 @@ public class MetadataTransferTest
             m.getAvailableVersions().addAll( Arrays.asList( expectedProxyVersions ) );
         }
 
-        m.setModelEncoding( null );
         RepositoryMetadataWriter.write( m, expectedMetadataXml );
 
         // Compare the file to the actual contents.
@@ -1320,7 +1315,6 @@ public class MetadataTransferTest
         m.setGroupId( metadata.getGroupId() );
         m.setArtifactId( metadata.getArtifactId() );
         m.setVersion( metadata.getVersion() );
-        m.setModelEncoding( null );
         RepositoryMetadataWriter.write( m, expectedMetadataXml );
 
         // Compare the file to the actual contents.
