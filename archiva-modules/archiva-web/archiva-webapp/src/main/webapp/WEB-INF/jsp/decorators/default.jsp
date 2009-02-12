@@ -53,8 +53,14 @@
   </div>
 </div>
 
-<div id="leftColumn">
 
+<div id="searchbox" class="xright">
+    <s:form method="get" action="quickSearch" namespace="/" validate="true">
+        <s:textfield label="Search for" size="30" name="q"/>
+    </s:form>
+</div>
+
+<div id="leftColumn">
   <div id="navcolumn">
     <s:action namespace="/components" name="companyInfo" executeResult="true"/>
     <h5>Find</h5>
