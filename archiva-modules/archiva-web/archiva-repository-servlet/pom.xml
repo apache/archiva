@@ -43,6 +43,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.archiva</groupId>
+            <artifactId>archiva-repository</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.archiva</groupId>
             <artifactId>archiva-repository-layer</artifactId>
             <scope>test</scope>
         </dependency>

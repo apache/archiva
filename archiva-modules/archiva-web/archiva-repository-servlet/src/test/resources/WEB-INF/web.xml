@@ -38,7 +38,7 @@
     <param-value>
         classpath*:/META-INF/plexus/components.xml
         classpath*:/META-INF/spring-context.xml
-        target/test-classes/org/apache/maven/archiva/webdav/RepositoryServletTest.xml
+        target/test-classes/org/apache/archiva/web/servlet/RepositoryServletTest.xml
     </param-value>
   </context-param>
 

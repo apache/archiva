@@ -62,20 +62,7 @@
         </properties>
       </configuration>
     </component>
-    
-    <component>
-      <role>org.apache.maven.archiva.webdav.DavServerManager</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.webdav.DefaultDavServerManager</implementation>
-      <description>DefaultDavServerManager</description>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.webdav.DavServerComponent</role>
-          <role-hint>proxied</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-    
+
     <component>
       <role>org.codehaus.plexus.cache.Cache</role>
       <role-hint>url-failures-cache</role-hint>
@@ -101,68 +88,6 @@
       <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
       <role-hint>default</role-hint>
       <implementation>org.codehaus.plexus.redback.system.DefaultSecuritySystem</implementation>
-    </component>
-	
-	<component>
-      <role>org.apache.maven.archiva.webdav.ArchivaDavResourceFactory</role>
-      <implementation>org.apache.maven.archiva.webdav.ArchivaDavResourceFactory</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <field-name>archivaConfiguration</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
-          <field-name>repositoryFactory</field-name>
-        </requirement>        
-        <requirement>
-          <role>org.apache.maven.archiva.repository.content.RepositoryRequest</role>
-          <field-name>repositoryRequest</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.proxy.RepositoryProxyConnectors</role>
-          <field-name>connectors</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>
-          <field-name>metadataTools</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.security.ServletAuthenticator</role>
-          <field-name>servletAuth</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.webdav.util.MimeTypes</role>
-          <field-name>mimeTypes</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator</role>
-          <role-hint>basic</role-hint>
-          <field-name>httpAuth</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
-          <role-hint>default</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.digest.ChecksumFile</role>
-          <field-name>checksum</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.digest.Digester</role>
-          <role-hint>sha1</role-hint>
-          <field-name>digestSha1</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.digest.Digester</role>
-          <role-hint>md5</role-hint>
-          <field-name>digestMd5</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.security.ArchivaXworkUser</role>
-          <field-name>archivaXworkUser</field-name>
-        </requirement>        
-      </requirements>
     </component>
   </components>
 </plexus>
