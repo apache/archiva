@@ -43,6 +43,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-system</artifactId>
     </dependency>
