@@ -162,8 +162,8 @@ public class ArtifactUpdateDatabaseConsumer
             return;
         }
 
-//        try
-//        {
+        try
+        {
             artifact.getModel().setRepositoryId( this.repository.getId() );
 
             // Calculate the hashcodes.
@@ -199,12 +199,12 @@ public class ArtifactUpdateDatabaseConsumer
                 artifact.getModel().setWhenGathered( whenGathered );
             }
 
-            //dao.getArtifactDAO().saveArtifact( artifact );
-//        }
-//        catch ( ArchivaDatabaseException e )
-//        {
-//            triggerConsumerError( DB_ERROR, "Unable to save artifact to database: " + e.getMessage() );
-//        }
+            dao.getArtifactDAO().saveArtifact( artifact );
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            triggerConsumerError( DB_ERROR, "Unable to save artifact to database: " + e.getMessage() );
+        }
     }
 
     /**

@@ -53,6 +53,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
     protected ArchivaDAO dao;
     
+    @Override
     protected void setUp()
         throws Exception
     {
