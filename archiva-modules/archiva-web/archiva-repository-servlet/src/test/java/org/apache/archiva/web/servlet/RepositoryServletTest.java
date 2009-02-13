@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.webdav;
+package org.apache.archiva.web.servlet;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,7 +22,6 @@ package org.apache.maven.archiva.webdav;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.webdav.RepositoryServlet;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebRequest;

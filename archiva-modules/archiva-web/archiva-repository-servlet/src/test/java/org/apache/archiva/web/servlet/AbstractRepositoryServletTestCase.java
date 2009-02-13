@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.webdav;
+package org.apache.archiva.web.servlet;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,7 +29,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.webdav.RepositoryServlet;
+import org.apache.archiva.web.servlet.RepositoryServlet;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import javax.servlet.http.HttpServletResponse;
@@ -168,7 +168,7 @@ public abstract class AbstractRepositoryServletTestCase
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );                
 
         sr = new ServletRunner( getTestFile( "src/test/resources/WEB-INF/web.xml" ) );
-        sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
+        sr.registerServlet( "/repository/*", RepositoryServlet.class.getName() );
         sc = sr.newClient();
     }
 

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.webdav;
+package org.apache.archiva.web.servlet;
 
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;

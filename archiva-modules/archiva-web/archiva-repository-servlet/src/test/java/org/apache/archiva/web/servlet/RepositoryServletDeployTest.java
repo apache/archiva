@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.webdav;
+package org.apache.archiva.web.servlet;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
-import org.apache.maven.archiva.webdav.httpunit.MkColMethodWebRequest;
 
 
 /**
@@ -52,23 +51,6 @@ public class RepositoryServletDeployTest
         WebResponse response = sc.getResponse( request );
         assertResponseCreated( response );
         assertFileContents( "artifact.jar\n", repoRootInternal, "path/to/artifact.jar" );
-    }
-    
-    public void testMkColWithMissingParentCollectionFails()
-        throws Exception
-    {
-        setupCleanRepo( repoRootInternal );
-
-        String putUrl = "http://machine.com/repository/internal/path/to/";
-
-        WebRequest request = new MkColMethodWebRequest( putUrl );
-
-        WebResponse response = sc.getResponse( request );
-        
-        assertEquals(HttpServletResponse.SC_CONFLICT, response.getResponseCode());
-        
-        File mkColLocalPath = new File(repoRootInternal, "path/to/");
-        assertFalse(mkColLocalPath.exists());
     }
     
     protected void assertResponseCreated( WebResponse response )
