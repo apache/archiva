@@ -57,11 +57,11 @@ public class NexusIndexerConsumer
 {
     private static final Logger log = LoggerFactory.getLogger( NexusIndexerConsumer.class );
 
-    private final NexusIndexer indexer;
+    private NexusIndexer indexer;
 
-    private final ArtifactContextProducer artifactContextProducer;
+    private ArtifactContextProducer artifactContextProducer;
 
-    private final IndexPacker indexPacker;
+    private IndexPacker indexPacker;
 
     private ManagedDefaultRepositoryContent repositoryContent;
 

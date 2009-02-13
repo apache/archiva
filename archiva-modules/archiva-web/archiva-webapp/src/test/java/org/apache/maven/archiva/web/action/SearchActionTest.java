@@ -451,11 +451,27 @@ public class SearchActionTest
     {
         List<String> managedRepos = new ArrayList<String>();
         
+        action.setGroupId( "org.apache.archiva" );
         action.setManagedRepositoryList( managedRepos );
         
         String result = action.filteredSearch();
         
         assertEquals( GlobalResults.ACCESS_TO_NO_REPOS, result );
+    }
+    
+    public void testAdvancedSearchNoSpecifiedCriteria()
+        throws Exception
+    {
+        List<String> managedRepos = new ArrayList<String>();
+        
+        action.setManagedRepositoryList( managedRepos );
+        
+        String result = action.filteredSearch();
+        
+        assertEquals( Action.INPUT, result );
+        assertFalse( action.getActionErrors().isEmpty() );
+        assertEquals( "Advanced Search - At least one search criteria must be provided.",
+                      (String) action.getActionErrors().iterator().next() );
     }
     
     // find artifact..

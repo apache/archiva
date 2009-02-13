@@ -25,12 +25,53 @@
 <head>
   <title>Quick Search</title>
   <s:head/>
+  <script type="text/javascript">  
+    function addSearchField(fieldText, field, divName)
+    {     
+      var element = document.getElementById( field );
+      if( element != null )
+      {
+        alert( "Cannot add field! Field has already been added." );
+        return 0;
+      }
+
+      var table = document.getElementById( "dynamicTable" );
+      var row = document.createElement( "TR" );
+      var label = document.createElement("TD");
+      label.innerHTML = fieldText + ": ";	
+     
+      var textfield = document.createElement( "TD" );
+      var inp1 =  document.createElement( "INPUT" );
+      inp1.setAttribute( "type", "text" );
+      inp1.setAttribute( "size", "30" );
+      inp1.setAttribute( "id", field );
+      inp1.setAttribute( "name", field );
+      textfield.appendChild( inp1 );
+
+      row.appendChild( label ); 
+      row.appendChild( textfield );
+      table.appendChild( row );
+    }
+  </script>  
+
   <script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.2.6.pack.js'/>"></script>
   <script type="text/javascript">
     $(document).ready(function(){
     
     $("table.settings").hide();
     $("a.expand").click(function(event){
+      event.preventDefault();
+      $(this).next().toggle("slow");
+    });
+  });
+  </script>
+  
+  <%-- advanced search --%>
+  <script type="text/javascript">
+    $(document).ready(function(){
+    
+    $("table.settings-search").hide();
+    $("a.expand-search").click(function(event){
       event.preventDefault();
       $(this).next().toggle("slow");
     });
@@ -48,30 +89,23 @@
 
 <div id="contentArea">
 <div id="searchBox">
-  <s:form method="get" action="quickSearch" validate="true">
-    <s:textfield label="Search for" size="50" name="q"/>
-    <s:hidden name="completeQueryString" value="%{completeQueryString}"/>        
-    <s:submit value="Search"/>
-  </s:form>
 
-  <s:url id="filteredSearchUrl" action="advancedSearch"/>
-  <s:a href="%{filteredSearchUrl}">
-    Advanced Search >>
-  </s:a>
-
+  <c:url var="iconCreateUrl" value="/images/icons/create.png" />
+  
+  <s:form method="get" id="quickSearch" action="quickSearch" validate="true">    
+    <s:textfield label="Search for" size="50" name="q"/> 
+    <s:hidden name="completeQueryString" value="%{completeQueryString}"/>  
+    <s:submit value="Search"/>      	
+  </s:form>  
   <p>
     <s:actionerror/>
   </p>
 </div>
-<div id="searchHint">
-  
+
+<div id="searchHint">  
   Enter your search terms. A variety of data will be searched for your keywords. <a class="expand" href="#"><img src="<c:url value="/images/icon_info_sml.gif"/>" /></a>
+  
   <table class="settings">
-    <tr>
-      <td>
-        <b>*</b> To search for Java classes or packages, just type the class name or package name in the search box.<br/>  
-      </td>
-    </tr>
     <tr>
       <td>
         <b>*</b> To perform a boolean <code>NOT</code> search, use the keyword <code>NOT</code> after your search
@@ -80,6 +114,28 @@
          <code>myQueryTerm NOT dependency</code> 
       </td>
     </tr>
+    <tr>
+      <td>
+        <b>*</b> To do a filtered or advanced search, select the criteria from the list below and click the <img src="${iconCreateUrl}"/> icon. Specify the term you want to be matched in the created text field.
+      </td>
+    </tr>
+    <tr>
+      <td>    
+        <s:form id="filteredSearch" method="get" action="filteredSearch" validate="true">  
+          <label><strong>Advanced Search Fields: </strong></label><s:select name="searchField" list="searchFields" theme="simple"/> 
+          <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
+            <img src="${iconCreateUrl}" />
+          </s:a>
+          <table id="dynamicTable">          
+            <tr>
+              <td/>
+              <td/>  
+            </tr>
+          </table> 
+          <s:submit value="Search" theme="simple"/>  
+        </s:form>  
+      </td>
+    </tr>    
   </table>
   
 </div>

@@ -425,4 +425,5 @@ public class NexusRepositorySearchTest
         assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
     }
 
+    // TODO: add test when an existing index already exists
 }

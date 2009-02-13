@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction"
  */
-public class SearchAction
+public class SearchAction 
     extends PlexusActionSupport
     implements Preparable
 {
@@ -131,6 +132,8 @@ public class SearchAction
     private boolean fromResultsPage;
 
     private RepositorySearch nexusSearch;
+    
+    private Map<String, String> searchFields;
         
     public boolean isFromResultsPage()
     {
@@ -161,16 +164,49 @@ public class SearchAction
         {
             managedRepositoryList.add( "all" );
         }
+        
+        searchFields = new HashMap<String, String>();
+        searchFields.put( "groupId", "Group ID" );
+        searchFields.put( "artifactId", "Artifact ID" );
+        searchFields.put( "version", "Version" );
+        searchFields.put( "className", "Class/Package Name" ); 
+        searchFields.put( "repositoryId", "Repository" );
+        
+        super.clearErrorsAndMessages();       
+        clearSearchFields();
+    }
+    
+    private void clearSearchFields()
+    {
+        repositoryId = "";
+        artifactId = "";
+        groupId = "";
+        version = "";
+        className = "";     
+        currentPage = 0;
     }
 
     // advanced search MRM-90 -- filtered search
     public String filteredSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
-    {
+    {   
+        // TODO: 
+        // - repositories must be provided as a select box instead of as a textfield!
+        // - what about the row count?
+        // - remove advancedSearch.jsp
+        
+        if ( ( groupId == null || "".equals( groupId ) ) &&
+            ( artifactId == null || "".equals( artifactId ) ) && ( className == null || "".equals( className ) ) &&
+            ( version == null || "".equals( version ) ) )
+        {   
+            addActionError( "Advanced Search - At least one search criteria must be provided." );
+            return INPUT;
+        }
+        
         fromFilterSearch = true;
-
+        
         if ( CollectionUtils.isEmpty( managedRepositoryList ) )
-        {
+        {            
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
@@ -178,22 +214,24 @@ public class SearchAction
 
         limits.setPageSize( rowCount );
         List<String> selectedRepos = new ArrayList<String>();
-
-        if ( repositoryId.equals( "all" ) )
+        
+        if ( repositoryId == null || StringUtils.isBlank( repositoryId ) ||
+            "all".equals( StringUtils.stripToEmpty( repositoryId ) ) )
         {
             selectedRepos = getObservableRepos();
         }
         else
         {
             selectedRepos.add( repositoryId );
-        }
+        }        
 
         if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {
+        {         
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        SearchFields searchFields = new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
+        SearchFields searchFields =
+            new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
                 
         // TODO: add packaging in the list of fields for advanced search (UI)?
         try
@@ -640,5 +678,15 @@ public class SearchAction
     public void setArchivaXworkUser( ArchivaXworkUser archivaXworkUser )
     {
         this.archivaXworkUser = archivaXworkUser;
+    }
+
+    public Map<String, String> getSearchFields()
+    {
+        return searchFields;
+    }
+
+    public void setSearchFields( Map<String, String> searchFields )
+    {
+        this.searchFields = searchFields;
     }
 }
