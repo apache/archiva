@@ -23,7 +23,6 @@ import com.meterware.httpunit.PutMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
-import java.io.File;
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
