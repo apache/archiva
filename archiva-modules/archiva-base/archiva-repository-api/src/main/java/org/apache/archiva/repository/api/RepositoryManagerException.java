@@ -24,6 +24,11 @@ package org.apache.archiva.repository.api;
  */
 public class RepositoryManagerException extends RuntimeException
 {
+    public RepositoryManagerException(String message)
+    {
+        super(message);
+    }
+
     public RepositoryManagerException(String message, Throwable cause)
     {
         super(message, cause);

@@ -25,4 +25,5 @@ package org.apache.archiva.repository.api;
  */
 public interface SystemRepositoryManager extends RepositoryManager
 {
+//    boolean delete(ResourceContext resourceContext);
 }

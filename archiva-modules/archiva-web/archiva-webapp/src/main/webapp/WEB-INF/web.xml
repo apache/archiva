@@ -19,76 +19,76 @@
   -->
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-	<display-name>Apache Archiva</display-name>
+    <display-name>Apache Archiva</display-name>
 
-        <filter>
-          <filter-name>webwork-cleanup</filter-name>
-          <filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
-        </filter>
+    <filter>
+        <filter-name>webwork-cleanup</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+    </filter>
 
-	<filter>
-		<filter-name>sitemesh</filter-name>
-		<filter-class>
+    <filter>
+        <filter-name>sitemesh</filter-name>
+        <filter-class>
 			com.opensymphony.module.sitemesh.filter.PageFilter
-		</filter-class>
-	</filter>
+        </filter-class>
+    </filter>
 
-        <filter>
-          <filter-name>webwork</filter-name>
-          <filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
-        </filter>
+    <filter>
+        <filter-name>webwork</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
+    </filter>
 
 	<!-- this must be before the sitemesh filter -->
-	<filter-mapping>
-		<filter-name>webwork-cleanup</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <filter-mapping>
+        <filter-name>webwork-cleanup</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-	<filter-mapping>
-		<filter-name>sitemesh</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <filter-mapping>
+        <filter-name>sitemesh</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-	<filter-mapping>
-		<filter-name>webwork</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <filter-mapping>
+        <filter-name>webwork</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-	<listener>
-		<listener-class>
+    <listener>
+        <listener-class>
 			org.springframework.web.context.ContextLoaderListener
-		</listener-class>
-	</listener>
-	<listener>
+        </listener-class>
+    </listener>
+    <listener>
 		<!-- TODO: some Spring technique for this? -->
-		<listener-class>
+        <listener-class>
 			org.apache.maven.archiva.web.startup.ArchivaStartup
-		</listener-class>
-	</listener>
+        </listener-class>
+    </listener>
 
-	<context-param>
-		<param-name>contextClass</param-name>
-		<param-value>
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>
 			org.codehaus.plexus.spring.PlexusWebApplicationContext
-		</param-value>
-	</context-param>
+        </param-value>
+    </context-param>
 
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
 			classpath*:META-INF/plexus/components.xml
 			classpath*:META-INF/spring-context.xml
 			/WEB-INF/classes/META-INF/plexus/application.xml
 			/WEB-INF/classes/META-INF/plexus/components.xml
 			/WEB-INF/applicationContext.xml
-		</param-value>
-	</context-param>
+        </param-value>
+    </context-param>
 
-	<servlet>
-		<servlet-name>RepositoryServlet</servlet-name>
-		<servlet-class>
+    <servlet>
+        <servlet-name>RepositoryServlet</servlet-name>
+        <servlet-class>
 			org.apache.archiva.web.servlet.RepositoryServlet
-		</servlet-class>
+        </servlet-class>
 		<!-- Loading this on startup so as to take advantage of configuration listeners -->
         <init-param>
             <param-name>preRepositoryInterceptorFactoryName</param-name>
@@ -103,67 +103,67 @@
             <param-value>repositoryManagerFactory</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
-	</servlet>
+    </servlet>
 
-	<servlet>
-		<servlet-name>XmlRpcServlet</servlet-name>
-		<servlet-class>
+    <servlet>
+        <servlet-name>XmlRpcServlet</servlet-name>
+        <servlet-class>
 			com.atlassian.xmlrpc.spring.BinderSpringXmlRpcServlet
-		</servlet-class>
-		<init-param>
-			<param-name>serviceListBeanName</param-name>
-			<param-value>xmlrpcServicesList</param-value>
-		</init-param>
-		<init-param>
-			<param-name>authHandlerBeanName</param-name>
-			<param-value>xmlRpcAuthenticator</param-value>
-		</init-param>
-		<init-param>
-		  <param-name>enabledForExtensions</param-name>
-		  <param-value>true</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
+        </servlet-class>
+        <init-param>
+            <param-name>serviceListBeanName</param-name>
+            <param-value>xmlrpcServicesList</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authHandlerBeanName</param-name>
+            <param-value>xmlRpcAuthenticator</param-value>
+        </init-param>
+        <init-param>
+            <param-name>enabledForExtensions</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
-	<servlet>
-		<servlet-name>RssFeedServlet</servlet-name>
-		<servlet-class>
+    <servlet>
+        <servlet-name>RssFeedServlet</servlet-name>
+        <servlet-class>
 			org.apache.maven.archiva.web.rss.RssFeedServlet
-		</servlet-class>
-	</servlet>
+        </servlet-class>
+    </servlet>
 
-	<servlet-mapping>
-		<servlet-name>RssFeedServlet</servlet-name>
-		<url-pattern>/feeds/*</url-pattern>
-	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RssFeedServlet</servlet-name>
+        <url-pattern>/feeds/*</url-pattern>
+    </servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>RepositoryServlet</servlet-name>
-		<url-pattern>/repository/*</url-pattern>
-	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RepositoryServlet</servlet-name>
+        <url-pattern>/repository/*</url-pattern>
+    </servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>XmlRpcServlet</servlet-name>
-		<url-pattern>/xmlrpc</url-pattern>
-	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>XmlRpcServlet</servlet-name>
+        <url-pattern>/xmlrpc</url-pattern>
+    </servlet-mapping>
 
-	<resource-ref>
-		<res-ref-name>jdbc/users</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
-		<res-sharing-scope>Shareable</res-sharing-scope>
-	</resource-ref>
-	<resource-ref>
-		<res-ref-name>jdbc/archiva</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
-		<res-sharing-scope>Shareable</res-sharing-scope>
-	</resource-ref>
-	<resource-ref>
-		<res-ref-name>mail/Session</res-ref-name>
-		<res-type>javax.mail.Session</res-type>
-		<res-auth>Container</res-auth>
-		<res-sharing-scope>Shareable</res-sharing-scope>
-	</resource-ref>
+    <resource-ref>
+        <res-ref-name>jdbc/users</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
+    <resource-ref>
+        <res-ref-name>jdbc/archiva</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
+    <resource-ref>
+        <res-ref-name>mail/Session</res-ref-name>
+        <res-type>javax.mail.Session</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
 
 </web-app>

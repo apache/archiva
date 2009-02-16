@@ -96,7 +96,7 @@ public final class IndexWriter
         for( Status status : sortedResources)
         {
             //Ignore hidden directories
-            if (!status.getName().startsWith("."))
+            if (!status.getName().startsWith(".") || status.getName().startsWith(".index"))
             {
                 writeHyperlink(writer, status);
             }

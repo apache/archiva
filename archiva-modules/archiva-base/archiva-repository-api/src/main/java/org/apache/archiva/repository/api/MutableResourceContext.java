@@ -1,21 +1,4 @@
-/*
- *  Copyright 2009 jdumay.
- * 
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *  under the License.
- */
-
-package org.apache.maven.archiva.proxy;
+package org.apache.archiva.repository.api;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -36,8 +19,10 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.archiva.repository.api.ResourceContext;
-
+/**
+ * Wraps a ResourceContext instance and allows its members to be overloaded
+ * @author jdumay
+ */
 public class MutableResourceContext implements ResourceContext
 {
     private final ResourceContext context;
@@ -69,11 +54,19 @@ public class MutableResourceContext implements ResourceContext
         return repositoryId;
     }
 
+    /**
+     * Sets the logicalPath overriding the internal logical path value
+     * @param logicalPath
+     */
     public void setLogicalPath(String logicalPath)
     {
         this.logicalPath = logicalPath;
     }
 
+    /**
+     * Sets the repositoryId overriding the internal logical path value
+     * @param repositoryId
+     */
     public void setRepositoryId(String repositoryId)
     {
         this.repositoryId = repositoryId;

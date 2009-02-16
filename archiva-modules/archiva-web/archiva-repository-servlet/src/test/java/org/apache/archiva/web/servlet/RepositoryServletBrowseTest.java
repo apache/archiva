@@ -92,7 +92,7 @@ public class RepositoryServletBrowseTest
         
         request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar/" );
         response = sc.getResponse( request );
-        assertEquals( "Response", HttpServletResponse.SC_NOT_FOUND, response.getResponseCode() );
+        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
     }
     
     

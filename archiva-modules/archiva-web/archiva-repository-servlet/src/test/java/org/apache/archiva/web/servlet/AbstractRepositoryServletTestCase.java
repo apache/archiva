@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.Hashtable;
 import junit.framework.Assert;
 
 /**
@@ -147,14 +148,14 @@ public abstract class AbstractRepositoryServletTestCase
     protected void setUp()
         throws Exception
     {
-        super.setUp();
-
         String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
         System.setProperty( "appserver.base", appserverBase );
 
         File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
         FileUtils.copyFile( testConf, testConfDest );
+
+        super.setUp();
 
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
@@ -168,7 +169,13 @@ public abstract class AbstractRepositoryServletTestCase
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );                
 
         sr = new ServletRunner( getTestFile( "src/test/resources/WEB-INF/web.xml" ) );
-        sr.registerServlet( "/repository/*", RepositoryServlet.class.getName() );
+
+        final Hashtable<String, String> params = new Hashtable<String, String>();
+        params.put(RepositoryServlet.REPOSITORY_MANAGER_FACTORY, "repositoryManagerFactory");
+        params.put(RepositoryServlet.PREREPOSITORY_INTERCEPTOR_FACTORY, "preRepositoryInterceptorFactory");
+        params.put(RepositoryServlet.POSTREPOSITORY_INTERCEPTOR_FACTORY, "postRepositoryInterceptorFactory");
+
+        sr.registerServlet( "/repository/*", RepositoryServlet.class.getName(), params );
         sc = sr.newClient();
     }
 
@@ -176,6 +183,12 @@ public abstract class AbstractRepositoryServletTestCase
     protected String getPlexusConfigLocation()
     {
         return "org/apache/archiva/web/servlet/RepositoryServletTest.xml";
+    }
+
+    @Override
+    protected String getSpringConfigLocation()
+    {
+        return super.getSpringConfigLocation();
     }
 
     @Override

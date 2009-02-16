@@ -55,11 +55,11 @@ public class RepositoryServlet extends HttpServlet
 
     private static final String LAST_MODIFIED = "last-modified";
 
-    private static final String REPOSITORY_MANAGER_FACTORY = "repositoryManagerFactoryName";
+    public static final String REPOSITORY_MANAGER_FACTORY = "repositoryManagerFactoryName";
 
-    private static final String PREREPOSITORY_INTERCEPTOR_FACTORY = "preRepositoryInterceptorFactoryName";
+    public static final String PREREPOSITORY_INTERCEPTOR_FACTORY = "preRepositoryInterceptorFactoryName";
 
-    private static final String POSTREPOSITORY_INTERCEPTOR_FACTORY = "postRepositoryInterceptorFactoryName";
+    public static final String POSTREPOSITORY_INTERCEPTOR_FACTORY = "postRepositoryInterceptorFactoryName";
 
     @Override
     public void init(ServletConfig config) throws ServletException

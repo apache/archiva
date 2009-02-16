@@ -6,9 +6,16 @@
        <bean name="repositoryFactory" class="org.apache.archiva.repository.DefaultRepositoryFactory">
            <constructor-arg ref="archivaConfiguration"/>
        </bean>
-       <bean name="systemRepositoryManager" class="org.apache.archiva.repository.DefaultRepositoryManager">
+       <bean name="systemRepositoryManager" class="org.apache.archiva.repository.DefaultRepositoryManager" lazy-init="true">
            <constructor-arg ref="repositoryFactory"/>
        </bean>
+
+       <bean name="groupRepositoryManager" class="org.apache.archiva.repository.GroupRepositoryManager">
+           <constructor-arg ref="archivaConfiguration"/>
+           <constructor-arg ref="proxyRepositoryManager"/>
+           <constructor-arg ref="systemRepositoryManager"/>
+       </bean>
+
        <bean name="repositoryManagerFactory" class="org.apache.archiva.repository.DefaultRepositoryManagerFactory"/>
        <bean name="preRepositoryInterceptorFactory" class="org.apache.archiva.repository.DefaultRepositoryInterceptorFactory">
            <constructor-arg value="org.apache.archiva.repository.api.interceptor.PreRepositoryInterceptor"/>

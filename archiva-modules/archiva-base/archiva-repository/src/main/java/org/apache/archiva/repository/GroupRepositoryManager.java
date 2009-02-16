@@ -21,48 +21,107 @@ package org.apache.archiva.repository;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import org.apache.archiva.repository.api.MutableResourceContext;
 import org.apache.archiva.repository.api.RepositoryManager;
+import org.apache.archiva.repository.api.RepositoryManagerException;
 import org.apache.archiva.repository.api.RepositoryManagerWeight;
 import org.apache.archiva.repository.api.ResourceContext;
 import org.apache.archiva.repository.api.Status;
 import org.apache.archiva.repository.api.SystemRepositoryManager;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 
 @RepositoryManagerWeight(400)
 public class GroupRepositoryManager implements RepositoryManager
 {
+    private final ArchivaConfiguration archivaConfiguration;
+
     private final RepositoryManager proxyRepositoryManager;
 
-    private final SystemRepositoryManager repositoryManager;
+    private final SystemRepositoryManager systemRepositoryManager;
 
-    public GroupRepositoryManager(RepositoryManager proxyRepositoryManager, SystemRepositoryManager repositoryManager)
+    public GroupRepositoryManager(ArchivaConfiguration archivaConfiguration, RepositoryManager proxyRepositoryManager, SystemRepositoryManager systemRepositoryManager)
     {
+        this.archivaConfiguration = archivaConfiguration;
         this.proxyRepositoryManager = proxyRepositoryManager;
-        this.repositoryManager = repositoryManager;
+        this.systemRepositoryManager = systemRepositoryManager;
     }
 
     public boolean exists(String repositoryId)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return (getGroupConfiguration(repositoryId) != null);
     }
 
     public ResourceContext handles(ResourceContext context)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (getGroupConfiguration(context.getRepositoryId()) != null)
+        {
+            return context;
+        }
+        return null;
     }
 
     public boolean read(ResourceContext context, OutputStream os)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
+        for (String repositoryId : groupConfiguration.getRepositories() )
+        {
+            final MutableResourceContext resourceContext = new MutableResourceContext(context);
+            resourceContext.setRepositoryId(repositoryId);
+            if (systemRepositoryManager.read(context, os))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean write(ResourceContext context, InputStream is)
+    {
+        throw new RepositoryManagerException("Repository Groups are not writable: " + context.getRepositoryId());
     }
 
     public List<Status> stat(ResourceContext context)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
+
+        final LinkedHashMap<String, Status> statusMap = new LinkedHashMap<String, Status>();
+        for (final String repositoryId : groupConfiguration.getRepositories())
+        {
+            final MutableResourceContext resourceContext = new MutableResourceContext(context);
+            resourceContext.setRepositoryId(repositoryId);
+
+            ResourceContext rc = proxyRepositoryManager.handles(resourceContext);
+            if (rc != null)
+            {
+                addStatResultToMap(statusMap, rc, proxyRepositoryManager);
+            }
+            else
+            {
+                rc = systemRepositoryManager.handles(resourceContext);
+                if (rc != null)
+                {
+                    addStatResultToMap(statusMap, rc, systemRepositoryManager);
+                }
+            }
+        }
+        return new ArrayList<Status>(statusMap.values());
     }
 
-    public boolean write(ResourceContext context, InputStream is)
+    private void addStatResultToMap(final Map<String, Status> statusMap, final ResourceContext resourceContext, final RepositoryManager repositoryManager)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (final Status status : repositoryManager.stat(resourceContext))
+        {
+            statusMap.put(status.getName(), status);
+        }
+    }
+
+    private RepositoryGroupConfiguration getGroupConfiguration(final String repositoryId)
+    {
+        return archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( repositoryId );
     }
 }

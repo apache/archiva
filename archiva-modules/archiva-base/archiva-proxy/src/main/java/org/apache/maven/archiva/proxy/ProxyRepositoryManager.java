@@ -19,6 +19,7 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import org.apache.archiva.repository.api.MutableResourceContext;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -34,6 +35,8 @@ import org.apache.archiva.repository.api.RepositoryManagerWeight;
 import org.apache.archiva.repository.api.ResourceContext;
 import org.apache.archiva.repository.api.Status;
 import org.apache.archiva.repository.api.SystemRepositoryManager;
+import org.apache.maven.archiva.configuration.ConfigurationEvent;
+import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
