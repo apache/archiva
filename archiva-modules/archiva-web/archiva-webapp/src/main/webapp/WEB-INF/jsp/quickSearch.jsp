@@ -126,7 +126,11 @@
           <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
             <img src="${iconCreateUrl}" />
           </s:a>
-          <table id="dynamicTable">          
+          <table id="dynamicTable">    
+            <tr>
+              <td><label>Repository: </td>
+              <td><s:select name="repositoryId" list="managedRepositoryList" theme="simple"/></td> 
+            </tr>       
             <tr>
               <td/>
               <td/>  

@@ -170,7 +170,6 @@ public class SearchAction
         searchFields.put( "artifactId", "Artifact ID" );
         searchFields.put( "version", "Version" );
         searchFields.put( "className", "Class/Package Name" ); 
-        searchFields.put( "repositoryId", "Repository" );
         
         super.clearErrorsAndMessages();       
         clearSearchFields();
