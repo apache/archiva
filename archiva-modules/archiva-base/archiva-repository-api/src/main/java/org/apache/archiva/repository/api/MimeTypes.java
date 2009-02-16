@@ -49,7 +49,7 @@ public final class MimeTypes
 
     static
     {
-        load("/mime.types");
+        load("mime.types");
     }
 
     /**
