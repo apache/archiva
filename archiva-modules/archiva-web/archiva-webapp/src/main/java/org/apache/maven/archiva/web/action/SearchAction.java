@@ -170,6 +170,7 @@ public class SearchAction
         searchFields.put( "artifactId", "Artifact ID" );
         searchFields.put( "version", "Version" );
         searchFields.put( "className", "Class/Package Name" ); 
+        searchFields.put( "rowCount", "Row Count" );
         
         super.clearErrorsAndMessages();       
         clearSearchFields();
@@ -182,18 +183,14 @@ public class SearchAction
         groupId = "";
         version = "";
         className = "";     
+        rowCount = 30;
         currentPage = 0;
     }
 
     // advanced search MRM-90 -- filtered search
     public String filteredSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
-    {   
-        // TODO: 
-        // - repositories must be provided as a select box instead of as a textfield!
-        // - what about the row count?
-        // - remove advancedSearch.jsp
-        
+    {           
         if ( ( groupId == null || "".equals( groupId ) ) &&
             ( artifactId == null || "".equals( artifactId ) ) && ( className == null || "".equals( className ) ) &&
             ( version == null || "".equals( version ) ) )
@@ -210,7 +207,6 @@ public class SearchAction
         }
 
         SearchResultLimits limits = new SearchResultLimits( currentPage );
-
         limits.setPageSize( rowCount );
         List<String> selectedRepos = new ArrayList<String>();
         

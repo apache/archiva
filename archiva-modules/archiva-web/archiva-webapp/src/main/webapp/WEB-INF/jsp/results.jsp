@@ -76,57 +76,35 @@
   <div id="searchBoxResults">
 
     <c:if test="${fromFilterSearch == true}">
-    <table>
-    <tr>
-      <td>
-        <b>*</b> To do a filtered or advanced search, select the criteria from the list below and click the <img src="${iconCreateUrl}"/> icon. Specify the term you want to be matched in the created text field.
-      </td>
-    </tr>
-    <tr>
-      <td>
-      <s:form id="filteredSearch" method="get" action="filteredSearch" validate="true">
-         <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}" theme="simple"/>  
-         <label><strong>Advanced Search Fields: </strong></label><s:select name="searchField" list="searchFields" theme="simple"/> 
-         <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
-            <img src="${iconCreateUrl}" />
-         </s:a>
-         <table id="dynamicTable">
-           <tr>
-             <td><label>Repository: </td>
-             <td><s:select name="repositoryId" list="managedRepositoryList" theme="simple"/></td> 
-           </tr>          
-           <tr>
-             <td/>
-             <td/>  
-           </tr>
-         </table> 
-         <s:submit value="Search" theme="simple"/>  
-       </s:form>  
-       </td>
-     </tr>
-     </table>
-
-      <%--
-      <s:form method="get" action="filteredSearch" validate="true">
-        <s:textfield label="Row Count" size="50" name="rowCount"/>
-        <s:textfield label="Group Id" size="50" name="groupId"/>
-        <s:textfield label="Artifact Id" size="50" name="artifactId"/>
-        <s:textfield label="Version" size="50" name="version"/>
-        <s:textfield label="Class / Package" size="50" name="className"/>
-        <s:select name="repositoryId" label="Repository ID" list="managedRepositoryList"/>
-        <s:hidden name="completeQueryString" value="%{#attr.completeQueryString}"/>
-        <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}"/>
-        <s:submit label="Go!"/>
-      </s:form>
-  
-      <s:url id="indexUrl" action="index"/>
-      <s:a href="%{indexUrl}">
-        Quick Search Page
-      </s:a>
-      <script type="text/javascript">
-        document.getElementById("filteredSearch_groupId").focus();
-      </script>
-      --%>
+      <table>
+        <tr>
+          <td>
+            <b>*</b> To do a filtered or advanced search, select the criteria from the list below and click the <img src="${iconCreateUrl}"/> icon. Specify the term you want to be matched in the created text field.
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <s:form id="filteredSearch" method="get" action="filteredSearch" validate="true">
+            <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}" theme="simple"/>  
+            <label><strong>Advanced Search Fields: </strong></label><s:select name="searchField" list="searchFields" theme="simple"/> 
+            <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
+              <img src="${iconCreateUrl}" />
+            </s:a>
+            <table id="dynamicTable">
+              <tr>
+                <td><label>Repository: </td>
+                <td><s:select name="repositoryId" list="managedRepositoryList" theme="simple"/></td> 
+              </tr>          
+              <tr>
+                <td/>
+                <td/>  
+              </tr>
+            </table> 
+            <s:submit value="Search" theme="simple"/>  
+          </s:form>  
+          </td>
+        </tr>
+      </table>
     </c:if>
     <c:if test="${fromFilterSearch == false}">
       <s:form method="get" action="quickSearch" validate="true">
