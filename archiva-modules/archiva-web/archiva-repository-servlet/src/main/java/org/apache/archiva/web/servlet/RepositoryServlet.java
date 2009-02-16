@@ -64,11 +64,29 @@ public class RepositoryServlet extends HttpServlet
     @Override
     public void init(ServletConfig config) throws ServletException
     {
+        final String repositoryManagerFactoryName = config.getInitParameter(REPOSITORY_MANAGER_FACTORY);
+        if (repositoryManagerFactoryName == null)
+        {
+            throw new ServletException(REPOSITORY_MANAGER_FACTORY + " cannot be null");
+        }
+
+        final String preRepositoryInterceptorFactoryName = config.getInitParameter(PREREPOSITORY_INTERCEPTOR_FACTORY);
+        if (preRepositoryInterceptorFactoryName == null)
+        {
+            throw new ServletException(PREREPOSITORY_INTERCEPTOR_FACTORY + " cannot be null");
+        }
+
+        final String postRepositoryInterceptorFactoryName = config.getInitParameter(POSTREPOSITORY_INTERCEPTOR_FACTORY);
+        if (postRepositoryInterceptorFactoryName == null)
+        {
+            throw new ServletException(POSTREPOSITORY_INTERCEPTOR_FACTORY + " cannot be null");
+        }
+
         super.init(config);
         final ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
-        repositoryManagerFactory = (RepositoryManagerFactory)applicationContext.getBean(config.getInitParameter(REPOSITORY_MANAGER_FACTORY));
-        preRepositoryInterceptorFactory = (RepositoryInterceptorFactory<PreRepositoryInterceptor>)applicationContext.getBean(config.getInitParameter(PREREPOSITORY_INTERCEPTOR_FACTORY));
-        postRepositoryInterceptorFactory = (RepositoryInterceptorFactory<PostRepositoryInterceptor>)applicationContext.getBean(config.getInitParameter(POSTREPOSITORY_INTERCEPTOR_FACTORY));
+        repositoryManagerFactory = (RepositoryManagerFactory)applicationContext.getBean(repositoryManagerFactoryName);
+        preRepositoryInterceptorFactory = (RepositoryInterceptorFactory<PreRepositoryInterceptor>)applicationContext.getBean(preRepositoryInterceptorFactoryName);
+        postRepositoryInterceptorFactory = (RepositoryInterceptorFactory<PostRepositoryInterceptor>)applicationContext.getBean(postRepositoryInterceptorFactoryName);
     }
 
     @Override
