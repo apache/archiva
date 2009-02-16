@@ -26,6 +26,8 @@ import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -59,6 +61,12 @@ public class ArchivaStartup
         }
     }
 
-    public void contextDestroyed(ServletContextEvent contextEvent) {
+    public void contextDestroyed(ServletContextEvent contextEvent)
+    {
+        ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(contextEvent.getServletContext());
+        if (applicationContext != null && applicationContext instanceof ClassPathXmlApplicationContext)
+        {
+            ((ClassPathXmlApplicationContext)applicationContext).close();
+        }
     }
 }
