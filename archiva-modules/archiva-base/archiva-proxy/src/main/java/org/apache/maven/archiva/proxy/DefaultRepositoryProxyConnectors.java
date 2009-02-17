@@ -210,7 +210,7 @@ public class DefaultRepositoryProxyConnectors
         File workingDir = createWorkingDirectory(repository);
         try
         {
-            File localFile = new File( repository.getRepoRoot(), path );
+            File localFile = new File( repository.getLocalPath(), path );
 
             // no update policies for these paths
             if ( localFile.exists() )
@@ -279,7 +279,7 @@ public class DefaultRepositoryProxyConnectors
         File workingDir = createWorkingDirectory(repository);
         try
         {
-            File localFile = new File(repository.getRepoRoot(), logicalPath);
+            File localFile = new File(repository.getLocalPath(), logicalPath);
 
             Properties requestProperties = new Properties();
             requestProperties.setProperty( "filetype", "metadata" );
@@ -384,7 +384,7 @@ public class DefaultRepositoryProxyConnectors
                                   String targetPath )
     {
         String repoPath = metadataTools.getRepositorySpecificName( targetRepository, targetPath );
-        return new File( repository.getRepoRoot(), repoPath );
+        return new File( repository.getLocalPath(), repoPath );
     }
 
     /**
@@ -861,7 +861,7 @@ public class DefaultRepositoryProxyConnectors
         //TODO: This is ugly - lets actually clean this up when we get the new repository api
         try
         {
-            File tmpDir = File.createTempFile(".workingdirectory", null, new File(repository.getRepoRoot()));
+            File tmpDir = File.createTempFile(".workingdirectory", null, repository.getLocalPath());
             tmpDir.delete();
             tmpDir.mkdirs();
             return tmpDir;

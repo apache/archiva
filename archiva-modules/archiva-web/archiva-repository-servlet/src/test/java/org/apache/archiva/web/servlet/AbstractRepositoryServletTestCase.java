@@ -148,14 +148,14 @@ public abstract class AbstractRepositoryServletTestCase
     protected void setUp()
         throws Exception
     {
+        super.setUp();
+
         String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
         System.setProperty( "appserver.base", appserverBase );
 
         File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
         FileUtils.copyFile( testConf, testConfDest );
-
-        super.setUp();
 
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
@@ -166,15 +166,14 @@ public abstract class AbstractRepositoryServletTestCase
 
         CacheManager.getInstance().removeCache( "url-failures-cache" );
 
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );                
-
-        sr = new ServletRunner( getTestFile( "src/test/resources/WEB-INF/web.xml" ) );
+        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         final Hashtable<String, String> params = new Hashtable<String, String>();
         params.put(RepositoryServlet.REPOSITORY_MANAGER_FACTORY, "repositoryManagerFactory");
         params.put(RepositoryServlet.PREREPOSITORY_INTERCEPTOR_FACTORY, "preRepositoryInterceptorFactory");
         params.put(RepositoryServlet.POSTREPOSITORY_INTERCEPTOR_FACTORY, "postRepositoryInterceptorFactory");
 
+        sr = new ServletRunner( getTestFile( "src/test/resources/WEB-INF/web.xml" ) );
         sr.registerServlet( "/repository/*", RepositoryServlet.class.getName(), params );
         sc = sr.newClient();
     }

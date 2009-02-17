@@ -129,7 +129,7 @@ public class MetadataUpdaterConsumer
         try
         {
             this.repository = repositoryFactory.getManagedRepositoryContent( repoConfig.getId() );
-            this.repositoryDir = new File( repository.getRepoRoot() );
+            this.repositoryDir = repository.getLocalPath();
             this.scanStartTimestamp = System.currentTimeMillis();
         }
         catch ( RepositoryNotFoundException e )

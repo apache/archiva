@@ -19,31 +19,29 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.archiva.repository.api.Repository;
 import org.apache.archiva.repository.api.RepositoryFactory;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
 
 public class DefaultRepositoryFactory implements RepositoryFactory
 {
-    private final ArchivaConfiguration archivaConfiguration;
+    private final RepositoryContentFactory repositoryContentFactory;
 
-    public DefaultRepositoryFactory(ArchivaConfiguration archivaConfiguration)
+    public DefaultRepositoryFactory(RepositoryContentFactory repositoryContentFactory)
     {
-        this.archivaConfiguration = archivaConfiguration;
+        this.repositoryContentFactory = repositoryContentFactory;
     }
 
     public Map<String, Repository> getRepositories()
     {
+        final Map<String, ManagedRepositoryContent> contentMap = repositoryContentFactory.getManagedContentMap();
         final HashMap<String, Repository> repositories = new HashMap<String, Repository>();
-        for (final ManagedRepositoryConfiguration configuration : archivaConfiguration.getConfiguration().getManagedRepositories())
+        for (final String repositoryId : contentMap.keySet())
         {
-            final DefaultRepository repository = new DefaultRepository(configuration.getId(), configuration.getName(), new File(configuration.getLocation()));
-            repositories.put(configuration.getId(), repository);
-            repository.getLocalPath().mkdirs();
+            repositories.put(repositoryId, contentMap.get(repositoryId));
         }
         return repositories;
     }

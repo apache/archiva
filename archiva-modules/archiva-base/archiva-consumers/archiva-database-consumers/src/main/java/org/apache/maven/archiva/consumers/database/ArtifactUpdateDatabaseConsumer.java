@@ -143,7 +143,7 @@ public class ArtifactUpdateDatabaseConsumer
         try
         {
             this.repository = repositoryFactory.getManagedRepositoryContent( repo.getId() );
-            this.repositoryDir = new File( repository.getRepoRoot() );
+            this.repositoryDir = repository.getLocalPath();
             this.whenGathered = whenGathered;
         }
         catch(RepositoryException e)

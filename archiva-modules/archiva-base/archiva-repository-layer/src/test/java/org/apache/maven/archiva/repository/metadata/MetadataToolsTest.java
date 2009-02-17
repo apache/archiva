@@ -347,7 +347,7 @@ public class MetadataToolsTest
                                  ProjectReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        File metadataFile = new File( repository.getRepoRoot(), tools.toPath( reference ) );
+        File metadataFile = new File( repository.getLocalPath(), tools.toPath( reference ) );
         String actualMetadata = FileUtils.readFileToString( metadataFile, null );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
@@ -362,7 +362,7 @@ public class MetadataToolsTest
                                  VersionedReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        File metadataFile = new File( repository.getRepoRoot(), tools.toPath( reference ) );
+        File metadataFile = new File( repository.getLocalPath(), tools.toPath( reference ) );
         String actualMetadata = FileUtils.readFileToString( metadataFile, null );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
@@ -536,7 +536,7 @@ public class MetadataToolsTest
 
         File srcRepoDir = new File( "src/test/repositories/metadata-repository" );
         File srcDir = new File( srcRepoDir, path );
-        File destDir = new File( repo.getRepoRoot(), path );
+        File destDir = new File( repo.getLocalPath(), path );
 
         assertTrue( "Source Dir exists: " + srcDir, srcDir.exists() );
         destDir.mkdirs();

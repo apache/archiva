@@ -99,7 +99,7 @@ public class DatabaseCleanupRemoveArtifactConsumer
             ManagedRepositoryContent repositoryContent =
                 repositoryFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
 
-            File file = new File( repositoryContent.getRepoRoot(), repositoryContent.toPath( artifact ) );
+            File file = new File( repositoryContent.getLocalPath(), repositoryContent.toPath( artifact ) );
 
             if( !file.exists() )
             {                    

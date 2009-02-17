@@ -51,7 +51,7 @@ public class MutableResourceContext implements ResourceContext
         {
             return repositoryId;
         }
-        return repositoryId;
+        return context.getRepositoryId();
     }
 
     /**

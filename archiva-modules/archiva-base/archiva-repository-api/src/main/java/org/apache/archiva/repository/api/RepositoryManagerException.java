@@ -33,4 +33,9 @@ public class RepositoryManagerException extends RuntimeException
     {
         super(message, cause);
     }
+
+    public RepositoryManagerException(Throwable cause)
+    {
+        super(cause.getMessage(), cause);
+    }
 }

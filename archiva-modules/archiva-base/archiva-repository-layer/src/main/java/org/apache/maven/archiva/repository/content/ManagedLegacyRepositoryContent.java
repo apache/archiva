@@ -192,14 +192,19 @@ public class ManagedLegacyRepositoryContent
         return foundArtifacts;
     }
 
-    public String getRepoRoot()
+    public File getLocalPath()
     {
-        return repository.getLocation();
+        return new File(repository.getLocation());
     }
 
     public ManagedRepositoryConfiguration getRepository()
     {
         return repository;
+    }
+
+    public String getName()
+    {
+        return repository.getName();
     }
 
     public Set<String> getVersions( ProjectReference reference )

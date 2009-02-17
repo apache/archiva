@@ -165,7 +165,7 @@ public class HttpProxyTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         addConnector();
 
-        File expectedFile = new File( new File( managedDefaultRepository.getRepoRoot() ), path );
+        File expectedFile = new File( managedDefaultRepository.getLocalPath(), path );
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Attempt the proxy fetch.

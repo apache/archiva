@@ -63,7 +63,7 @@ public class ManagedDefaultRepositoryContent
         throws ContentNotFoundException
     {
         String path = toMetadataPath( reference );
-        File projectPath = new File( getRepoRoot(), path );
+        File projectPath = new File( getLocalPath(), path );
         
         File projectDir = projectPath.getParentFile();
         if( projectDir.exists() && projectDir.isDirectory() )
@@ -81,6 +81,11 @@ public class ManagedDefaultRepositoryContent
         {
             throw new ContentNotFoundException( "Unable to delete non-existing project directory." );
         }
+    }
+
+    public String getName()
+    {
+        return repository.getName();
     }
 
     public String getId()
@@ -137,9 +142,9 @@ public class ManagedDefaultRepositoryContent
         return foundArtifacts;
     }
 
-    public String getRepoRoot()
+    public File getLocalPath()
     {
-        return repository.getLocation();
+        return new File(repository.getLocation());
     }
 
     public ManagedRepositoryConfiguration getRepository()

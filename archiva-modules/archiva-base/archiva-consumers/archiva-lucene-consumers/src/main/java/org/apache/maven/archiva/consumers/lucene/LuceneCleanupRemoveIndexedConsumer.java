@@ -87,7 +87,7 @@ public class LuceneCleanupRemoveIndexedConsumer
             ManagedRepositoryContent repoContent =
                 repoFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
 
-            File file = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
+            File file = new File( repoContent.getLocalPath(), repoContent.toPath( artifact ) );
             
             if( !file.exists() )
             {   

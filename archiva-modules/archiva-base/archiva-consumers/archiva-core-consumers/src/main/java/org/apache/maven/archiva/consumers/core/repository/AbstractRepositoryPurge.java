@@ -65,9 +65,9 @@ public abstract class AbstractRepositoryPurge
     protected String toRelativePath( File artifactFile )
     {
         String artifactPath = artifactFile.getAbsolutePath();
-        if ( artifactPath.startsWith( repository.getRepoRoot() ) )
+        if ( artifactPath.startsWith( repository.getLocalPath().getAbsolutePath() ) )
         {
-            artifactPath = artifactPath.substring( repository.getRepoRoot().length() );
+            artifactPath = artifactPath.substring( repository.getLocalPath().getAbsolutePath().length() );
         }
 
         return artifactPath;

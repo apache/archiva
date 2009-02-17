@@ -179,7 +179,7 @@ public class RepositoryRequest
             return false;
         }
 
-        String pathParts[] = StringUtils.splitPreserveAllTokens( requestedPath, '/' );
+        String pathParts[] = StringUtils.split( requestedPath, '/' );
         return pathParts.length == 3;
     }
 

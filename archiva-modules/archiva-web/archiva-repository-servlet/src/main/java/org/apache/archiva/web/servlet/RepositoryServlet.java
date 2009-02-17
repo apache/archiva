@@ -173,6 +173,7 @@ public class RepositoryServlet extends HttpServlet
         if ("PUT".equals(req.getMethod()))
         {
             repositoryManager.write(context, req.getInputStream());
+            resp.setStatus(HttpServletResponse.SC_CREATED);
             return;
         }
 

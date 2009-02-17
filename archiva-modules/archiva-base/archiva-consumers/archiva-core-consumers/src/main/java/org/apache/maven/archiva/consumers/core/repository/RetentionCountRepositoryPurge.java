@@ -55,7 +55,7 @@ public class RetentionCountRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getRepoRoot(), path );
+            File artifactFile = new File( repository.getLocalPath(), path );
 
             if ( !artifactFile.exists() )
             {

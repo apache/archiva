@@ -35,8 +35,6 @@ import org.apache.archiva.repository.api.RepositoryManagerWeight;
 import org.apache.archiva.repository.api.ResourceContext;
 import org.apache.archiva.repository.api.Status;
 import org.apache.archiva.repository.api.SystemRepositoryManager;
-import org.apache.maven.archiva.configuration.ConfigurationEvent;
-import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -96,12 +94,14 @@ public class ProxyRepositoryManager implements RepositoryManager
 
     public List<Status> stat(ResourceContext context)
     {
+        final MutableResourceContext resourceContext = new MutableResourceContext(context);
+
         //Return the stat() result from the system repository if we are simply getting a collection
 
         ManagedRepositoryContent managedRepository = null;
         try
         {
-            managedRepository = repositoryFactory.getManagedRepositoryContent(context.getRepositoryId());
+            managedRepository = repositoryFactory.getManagedRepositoryContent(resourceContext.getRepositoryId());
         }
         catch (RepositoryNotFoundException e)
         {
@@ -116,13 +116,13 @@ public class ProxyRepositoryManager implements RepositoryManager
         boolean isCollection = false;
         try
         {
-            this.repositoryRequest.toArtifactReference(context.getLogicalPath());
+            this.repositoryRequest.toArtifactReference(resourceContext.getLogicalPath());
         }
         catch (LayoutException e)
         {
             try
             {
-                repositoryRequest.toNativePath(context.getLogicalPath(), managedRepository);
+                repositoryRequest.toNativePath(resourceContext.getLogicalPath(), managedRepository);
             }
             catch (LayoutException ex)
             {
@@ -135,7 +135,7 @@ public class ProxyRepositoryManager implements RepositoryManager
             return repositoryManager.stat(context);
         }
 
-        final Status status = doProxy(managedRepository, context);
+        final Status status = doProxy(managedRepository, resourceContext);
         if (status != null)
         {
             return Arrays.asList(status);
@@ -148,10 +148,11 @@ public class ProxyRepositoryManager implements RepositoryManager
         return repositoryManager.write(context, is);
     }
 
-    private Status doProxy( ManagedRepositoryContent managedRepository, ResourceContext context )
+    private Status doProxy( ManagedRepositoryContent managedRepository, MutableResourceContext context )
         throws RepositoryManagerException
     {
-        File resourceFile = new File( managedRepository.getRepoRoot(), context.getLogicalPath() );
+        File resourceFile = new File( managedRepository.getLocalPath(), context.getLogicalPath() );
+        final boolean previouslyExisted = resourceFile.exists();
         
         // At this point the incoming request can either be in default or
         // legacy layout format.
@@ -166,7 +167,11 @@ public class ProxyRepositoryManager implements RepositoryManager
         }
         catch ( LayoutException e )
         {
-            return Status.fromFile(resourceFile);
+            if (previouslyExisted)
+            {
+                return Status.fromFile(resourceFile);
+            }
+            return null;
         }
 
         // Attempt to fetch the resource from any defined proxy.
@@ -180,7 +185,7 @@ public class ProxyRepositoryManager implements RepositoryManager
         return status;
     }
 
-    private Status fetchContentFromProxies( ManagedRepositoryContent managedRepository, ResourceContext context )
+    private Status fetchContentFromProxies( ManagedRepositoryContent managedRepository, MutableResourceContext context )
         throws RepositoryManagerException
     {
         if ( repositoryRequest.isSupportFile( context.getLogicalPath() ) )
@@ -214,9 +219,7 @@ public class ProxyRepositoryManager implements RepositoryManager
                 applyServerSideRelocation( managedRepository, artifact );
 
                 File proxiedFile = repositoryProxyConnectors.fetchFromProxies( managedRepository, artifact );
-
-                MutableResourceContext resourceContext = new MutableResourceContext(context);
-                resourceContext.setLogicalPath(managedRepository.toPath( artifact ));
+                context.setLogicalPath(managedRepository.toPath( artifact ));
 
                 if (proxiedFile != null)
                 {
@@ -233,7 +236,7 @@ public class ProxyRepositoryManager implements RepositoryManager
             throw new RepositoryManagerException(e.getMessage(), e);
         }
 
-        File resourceFile = new File(managedRepository.getRepoRoot(), context.getLogicalPath());
+        File resourceFile = new File(managedRepository.getLocalPath(), context.getLogicalPath());
         if (resourceFile.exists())
         {
             return Status.fromFile(resourceFile);

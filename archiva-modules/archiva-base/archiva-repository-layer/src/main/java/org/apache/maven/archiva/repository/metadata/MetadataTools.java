@@ -350,7 +350,7 @@ public class MetadataTools
                                                         ProjectReference reference, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
-        File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
+        File metadataFile = new File( managedRepository.getLocalPath(), metadataPath );
         
         if ( !metadataFile.exists() || !metadataFile.isFile() )
         {
@@ -375,7 +375,7 @@ public class MetadataTools
                                                         String logicalResource, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, logicalResource );
-        File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
+        File metadataFile = new File( managedRepository.getLocalPath(), metadataPath );
         
         if ( !metadataFile.exists() || !metadataFile.isFile() )
         {
@@ -400,7 +400,7 @@ public class MetadataTools
                                                         VersionedReference reference, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
-        File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
+        File metadataFile = new File( managedRepository.getLocalPath(), metadataPath );
         
         if ( !metadataFile.exists() || !metadataFile.isFile() )
         {
@@ -423,7 +423,7 @@ public class MetadataTools
     
     public void updateMetadata( ManagedRepositoryContent managedRepository, String logicalResource) throws RepositoryMetadataException
     {
-        final File metadataFile = new File(managedRepository.getRepoRoot(), logicalResource);
+        final File metadataFile = new File(managedRepository.getLocalPath(), logicalResource);
         ArchivaRepositoryMetadata metadata = null;
         
         //Gather and merge all metadata available
@@ -492,7 +492,7 @@ public class MetadataTools
     private List<ArchivaRepositoryMetadata> getMetadatasForManagedRepository( ManagedRepositoryContent managedRepository, String logicalResource )
     {
         List<ArchivaRepositoryMetadata> metadatas = new ArrayList<ArchivaRepositoryMetadata>();
-        File file = new File(managedRepository.getRepoRoot(), logicalResource);
+        File file = new File(managedRepository.getLocalPath(), logicalResource);
         if (file.exists())
         {
             try
@@ -547,7 +547,7 @@ public class MetadataTools
     public void updateMetadata( ManagedRepositoryContent managedRepository, ProjectReference reference )
         throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
     {
-        File metadataFile = new File( managedRepository.getRepoRoot(), toPath( reference ) );
+        File metadataFile = new File( managedRepository.getLocalPath(), toPath( reference ) );
 
         long lastUpdated = getExistingLastUpdated( metadataFile );
 
@@ -750,7 +750,7 @@ public class MetadataTools
     public void updateMetadata( ManagedRepositoryContent managedRepository, VersionedReference reference )
         throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
     {
-        File metadataFile = new File( managedRepository.getRepoRoot(), toPath( reference ) );
+        File metadataFile = new File( managedRepository.getLocalPath(), toPath( reference ) );
 
         long lastUpdated = getExistingLastUpdated( metadataFile );
 
@@ -912,7 +912,7 @@ public class MetadataTools
             path = path.substring( 0, idx );
         }
 
-        File repoDir = new File( managedRepository.getRepoRoot(), path );
+        final File repoDir = new File( managedRepository.getLocalPath(), path );
 
         if ( !repoDir.exists() )
         {
@@ -926,7 +926,7 @@ public class MetadataTools
                 + repoDir.getAbsolutePath() );
         }
 
-        File repoFiles[] = repoDir.listFiles();
+        final File repoFiles[] = repoDir.listFiles();
         for ( int i = 0; i < repoFiles.length; i++ )
         {
             if ( repoFiles[i].isDirectory() )
@@ -935,7 +935,7 @@ public class MetadataTools
                 continue;
             }
 
-            String relativePath = PathUtil.getRelative( managedRepository.getRepoRoot(), repoFiles[i] );
+            String relativePath = PathUtil.getRelative( managedRepository.getLocalPath().getAbsolutePath(), repoFiles[i] );
 
             if ( filetypes.matchesArtifactPattern( relativePath ) )
             {

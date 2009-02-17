@@ -28,7 +28,7 @@
       value="org.apache.maven.archiva.proxy.WagonFactory" />
   </bean>
 
-  <bean id="proxyRepositoryManager" class="org.apache.maven.archiva.proxy.ProxyRepositoryManager">
+  <bean id="proxyRepositoryManager" class="org.apache.maven.archiva.proxy.ProxyRepositoryManager" lazy-init="true">
       <constructor-arg ref="systemRepositoryManager"/>
       <constructor-arg ref="repositoryProxyConnectors"/>
       <constructor-arg ref="repositoryContentFactory"/>

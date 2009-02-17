@@ -28,6 +28,7 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 
 import java.io.File;
 import java.util.Set;
+import org.apache.archiva.repository.api.Repository;
 
 /**
  * ManagedRepositoryContent interface for interacting with a managed repository in an abstract way, 
@@ -35,7 +36,7 @@ import java.util.Set;
  *
  * @version $Id$
  */
-public interface ManagedRepositoryContent
+public interface ManagedRepositoryContent extends Repository
 {
     /**
      * Delete from the managed repository all files / directories associated with the
@@ -46,19 +47,6 @@ public interface ManagedRepositoryContent
      */
     public void deleteVersion( VersionedReference reference )
         throws ContentNotFoundException;
-
-    /**
-     * <p>
-     * Convenience method to get the repository id.
-     * </p>
-     * 
-     * <p>
-     * Equivalent to calling <code>.getRepository().getId()</code>
-     * </p>
-     * 
-     * @return the repository id.
-     */
-    public String getId();
 
     /**
      * <p>
@@ -78,20 +66,7 @@ public interface ManagedRepositoryContent
      */
     public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
         throws ContentNotFoundException, LayoutException;
-
-    /**
-     * <p>
-     * Convenience method to get the repository (on disk) root directory.
-     * </p>
-     * 
-     * <p>
-     * Equivalent to calling <code>.getRepository().getLocation()</code>
-     * </p>
-     * 
-     * @return the repository (on disk) root directory.
-     */
-    public String getRepoRoot();
-
+    
     /**
      * Get the repository configuration associated with this
      * repository content.

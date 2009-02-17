@@ -466,7 +466,7 @@ public abstract class AbstractProxyTestCase
         managedDefaultRepository = createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath,
                                                      "default" );
 
-        managedDefaultDir = new File( managedDefaultRepository.getRepoRoot() );
+        managedDefaultDir = managedDefaultRepository.getLocalPath();
 
         ManagedRepositoryConfiguration repoConfig = managedDefaultRepository.getRepository();
 
@@ -480,7 +480,7 @@ public abstract class AbstractProxyTestCase
         managedLegacyRepository = createRepository( ID_LEGACY_MANAGED, "Legacy Managed Repository",
                                                     REPOPATH_LEGACY_MANAGED_TARGET, "legacy" );
 
-        managedLegacyDir = new File( managedLegacyRepository.getRepoRoot() );
+        managedLegacyDir = managedLegacyRepository.getLocalPath();
 
         repoConfig = managedLegacyRepository.getRepository();
 
