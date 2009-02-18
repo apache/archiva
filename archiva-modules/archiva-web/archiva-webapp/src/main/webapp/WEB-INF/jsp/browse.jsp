@@ -110,13 +110,13 @@
           <th>Artifact ID</th>
           <td>${sharedModel.artifactId}</td>
         </tr>        
-        <c:if test="${sharedModel.packaging != null}">
+        <c:if test="${(sharedModel.packaging != null) && (!empty sharedModel.packaging)}">
         <tr>
           <th>Packaging</th>
           <td><code>${sharedModel.packaging}</code></td>
         </tr>
         </c:if>
-        <c:if test="${sharedModel.name != null}">
+        <c:if test="${(sharedModel.name != null) && (!empty sharedModel.name)}">
         <tr>
           <th>Name</th>
           <td><code>${sharedModel.name}</code></td>
@@ -127,7 +127,7 @@
           <th>Organisation</th>
           <td>
             <c:choose>
-              <c:when test="${sharedModel.organization.url != null}">
+              <c:when test="${(sharedModel.organization.url != null) && (!empty sharedModel.organization.url)}">
                 <a href="${sharedModel.organization.url}">${sharedModel.organization.name}</a>
               </c:when>
               <c:otherwise>
