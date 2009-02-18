@@ -44,26 +44,27 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * RepositoryContentConsumerUtil 
- *
+ * RepositoryContentConsumerUtil
+ * 
  * @version $Id$
  */
-public class RepositoryContentConsumers implements ApplicationContextAware
+public class RepositoryContentConsumers
+    implements ApplicationContextAware
 {
     private ApplicationContext applicationContext;
-    
+
     private ArchivaConfiguration archivaConfiguration;
 
     private List<KnownRepositoryContentConsumer> selectedKnownConsumers;
 
     private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
 
-    public RepositoryContentConsumers(ArchivaConfiguration archivaConfiguration)
+    public RepositoryContentConsumers( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
     }
 
-    public void setApplicationContext(ApplicationContext applicationContext)
+    public void setApplicationContext( ApplicationContext applicationContext )
         throws BeansException
     {
         this.applicationContext = applicationContext;
@@ -71,13 +72,12 @@ public class RepositoryContentConsumers implements ApplicationContextAware
 
     /**
      * <p>
-     * Get the list of Ids associated with those {@link KnownRepositoryContentConsumer} that have
-     * been selected in the configuration to execute.
+     * Get the list of Ids associated with those {@link KnownRepositoryContentConsumer} that have been selected in the
+     * configuration to execute.
      * </p>
-     * 
      * <p>
-     * NOTE: This list can be larger and contain entries that might not exist or be available
-     * in the classpath, or as a component.
+     * NOTE: This list can be larger and contain entries that might not exist or be available in the classpath, or as a
+     * component.
      * </p>
      * 
      * @return the list of consumer ids that have been selected by the configuration.
@@ -90,13 +90,12 @@ public class RepositoryContentConsumers implements ApplicationContextAware
 
     /**
      * <p>
-     * Get the list of Ids associated with those {@link InvalidRepositoryContentConsumer} that have
-     * been selected in the configuration to execute.
+     * Get the list of Ids associated with those {@link InvalidRepositoryContentConsumer} that have been selected in the
+     * configuration to execute.
      * </p>
-     * 
      * <p>
-     * NOTE: This list can be larger and contain entries that might not exist or be available
-     * in the classpath, or as a component.
+     * NOTE: This list can be larger and contain entries that might not exist or be available in the classpath, or as a
+     * component.
      * </p>
      * 
      * @return the list of consumer ids that have been selected by the configuration.
@@ -108,8 +107,8 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     }
 
     /**
-     * Get the map of {@link String} ids to {@link KnownRepositoryContentConsumer} implementations,
-     * for those consumers that have been selected according to the active configuration. 
+     * Get the map of {@link String} ids to {@link KnownRepositoryContentConsumer} implementations, for those consumers
+     * that have been selected according to the active configuration.
      * 
      * @return the map of String ids to {@link KnownRepositoryContentConsumer} objects.
      */
@@ -126,14 +125,15 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     }
 
     /**
-     * Get the map of {@link String} ids to {@link InvalidRepositoryContentConsumer} implementations,
-     * for those consumers that have been selected according to the active configuration. 
+     * Get the map of {@link String} ids to {@link InvalidRepositoryContentConsumer} implementations, for those
+     * consumers that have been selected according to the active configuration.
      * 
      * @return the map of String ids to {@link InvalidRepositoryContentConsumer} objects.
      */
     public Map<String, InvalidRepositoryContentConsumer> getSelectedInvalidConsumersMap()
     {
-        Map<String, InvalidRepositoryContentConsumer> consumerMap = new HashMap<String, InvalidRepositoryContentConsumer>();
+        Map<String, InvalidRepositoryContentConsumer> consumerMap =
+            new HashMap<String, InvalidRepositoryContentConsumer>();
 
         for ( InvalidRepositoryContentConsumer consumer : getSelectedInvalidConsumers() )
         {
@@ -144,11 +144,10 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     }
 
     /**
-     * Get the list of {@link KnownRepositoryContentConsumer} objects that are
-     * selected according to the active configuration.
+     * Get the list of {@link KnownRepositoryContentConsumer} objects that are selected according to the active
+     * configuration.
      * 
-     * @return the list of {@link KnownRepositoryContentConsumer} that have been selected
-     *         by the active configuration.
+     * @return the list of {@link KnownRepositoryContentConsumer} that have been selected by the active configuration.
      */
     public synchronized List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
     {
@@ -171,11 +170,10 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     }
 
     /**
-     * Get the list of {@link InvalidRepositoryContentConsumer} objects that are
-     * selected according to the active configuration.
+     * Get the list of {@link InvalidRepositoryContentConsumer} objects that are selected according to the active
+     * configuration.
      * 
-     * @return the list of {@link InvalidRepositoryContentConsumer} that have been selected
-     *         by the active configuration.
+     * @return the list of {@link InvalidRepositoryContentConsumer} that have been selected by the active configuration.
      */
     public synchronized List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
     {
@@ -198,32 +196,31 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     }
 
     /**
-     * Get the list of {@link KnownRepositoryContentConsumer} objects that are
-     * available and present in the classpath and as components in the IoC.
+     * Get the list of {@link KnownRepositoryContentConsumer} objects that are available and present in the classpath
+     * and as components in the IoC.
      * 
-     * @return the list of all available {@link KnownRepositoryContentConsumer} present in the classpath 
-     *         and as a component in the IoC.
+     * @return the list of all available {@link KnownRepositoryContentConsumer} present in the classpath and as a
+     *         component in the IoC.
      */
     public List<KnownRepositoryContentConsumer> getAvailableKnownConsumers()
     {
-        return new ArrayList(applicationContext.getBeansOfType(KnownRepositoryContentConsumer.class).values());
+        return new ArrayList( applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class ).values() );
     }
 
     /**
-     * Get the list of {@link InvalidRepositoryContentConsumer} objects that are
-     * available and present in the classpath and as components in the IoC.
+     * Get the list of {@link InvalidRepositoryContentConsumer} objects that are available and present in the classpath
+     * and as components in the IoC.
      * 
-     * @return the list of all available {@link InvalidRepositoryContentConsumer} present in the classpath 
-     *         and as a component in the IoC.
+     * @return the list of all available {@link InvalidRepositoryContentConsumer} present in the classpath and as a
+     *         component in the IoC.
      */
     public List<InvalidRepositoryContentConsumer> getAvailableInvalidConsumers()
     {
-        return new ArrayList(applicationContext.getBeansOfType(InvalidRepositoryContentConsumer.class).values());
+        return new ArrayList( applicationContext.getBeansOfType( InvalidRepositoryContentConsumer.class ).values() );
     }
 
     /**
-     * A convienence method to execute all of the active selected consumers for a 
-     * particular arbitrary file.
+     * A convienence method to execute all of the active selected consumers for a particular arbitrary file.
      * 
      * @param repository the repository configuration to use.
      * @param localFile the local file to execute the consumers against.
@@ -232,7 +229,7 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     {
         // Run the repository consumers
         try
-        {   
+        {
             Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime() );
 
             List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
@@ -254,20 +251,21 @@ public class RepositoryContentConsumers implements ApplicationContextAware
 
             if ( predicate.getWantedFileCount() <= 0 )
             {
-                // Nothing known processed this file.  It is invalid!
+                // Nothing known processed this file. It is invalid!
                 CollectionUtils.forAllDo( selectedInvalidConsumers, closure );
             }
 
-            TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure(repository);
+            TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository );
 
-            CollectionUtils.forAllDo(selectedKnownConsumers, scanCompletedClosure);
+            CollectionUtils.forAllDo( selectedKnownConsumers, scanCompletedClosure );
         }
         finally
         {
-            /* TODO: This is never called by the repository scanner instance, so not calling here either - but it probably should be?
-                        CollectionUtils.forAllDo( availableKnownConsumers, triggerCompleteScan );
-                        CollectionUtils.forAllDo( availableInvalidConsumers, triggerCompleteScan );
-            */
+            /*
+             * TODO: This is never called by the repository scanner instance, so not calling here either - but it
+             * probably should be? CollectionUtils.forAllDo( availableKnownConsumers, triggerCompleteScan );
+             * CollectionUtils.forAllDo( availableInvalidConsumers, triggerCompleteScan );
+             */
         }
     }
 
@@ -280,12 +278,12 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     {
         this.selectedInvalidConsumers = selectedInvalidConsumers;
     }
-    
+
     protected Date getStartTime()
-    {   
+    {
         return new Date( System.currentTimeMillis() );
     }
-    
+
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
