@@ -89,6 +89,12 @@ public class RepositoryBrowsingTest
 
         artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1-SNAPSHOT" );
         artifactDao.saveArtifact( artifact );
+        
+        artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1-20070522.143249-1" );
+        artifactDao.saveArtifact( artifact );
+        
+        artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1-20070522.153141-2" );
+        artifactDao.saveArtifact( artifact );
 
         artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1.1" );
         artifactDao.saveArtifact( artifact );
@@ -141,6 +147,22 @@ public class RepositoryBrowsingTest
 		assertEquals( "org.apache.commons", artifact.getGroupId() );
 		assertEquals( "commons-lang", artifact.getArtifactId() );
 		assertEquals( "2.0", artifact.getVersion() );
+    }
+    
+    public void testSelectArtifactId()
+        throws Exception
+    {
+        saveTestData();
+        
+        RepositoryBrowsing browser = lookupBrowser();
+        BrowsingResults results =
+            browser.selectArtifactId( USER_GUEST, GUEST_REPO_IDS, "org.apache.maven.shared", "test-two" );
+        assertNotNull( "Browsing results should not be null.", results );
+        assertEquals( 4, results.getVersions().size() );
+        assertTrue( results.getVersions().contains( "2.0" ) );
+        assertTrue( results.getVersions().contains( "2.1-SNAPSHOT" ) );
+        assertTrue( results.getVersions().contains( "2.1.1" ) );
+        assertTrue( results.getVersions().contains( "2.1-alpha-1" ) ); 
     }
 
     private void assertGroupIds( String msg, List actualGroupIds, String[] expectedGroupIds )

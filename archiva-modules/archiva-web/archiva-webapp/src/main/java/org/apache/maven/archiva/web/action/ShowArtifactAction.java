@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
@@ -94,6 +95,8 @@ public class ShowArtifactAction
     private List mailingLists;
 
     private List dependencies;
+    
+    private List<String> snapshotVersions;
 
     /**
      * Show the versioned project information tab. TODO: Change name to 'project'
@@ -103,14 +106,30 @@ public class ShowArtifactAction
     {
         try
         {
-            this.model =
-                repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+            if( VersionUtil.isSnapshot( version ) )
+            {                
+                this.model =
+                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+                                
+                this.snapshotVersions =
+                    repoBrowsing.getTimestampedSnapshots( getObservableRepos(), groupId, artifactId, version );
+                if( this.snapshotVersions.contains( version ) )
+                {
+                    this.snapshotVersions.remove( version );
+                }
+            }
+            else
+            {
+                this.model =
+                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+            }
+            
             this.repositoryId =
                 repoBrowsing.getRepositoryId( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
         }
         catch ( ObjectNotFoundException e )
         {
-            getLogger().debug(e.getMessage(), e);
+            getLogger().debug( e.getMessage(), e );
             addActionError( e.getMessage() );
             return ERROR;
         }
@@ -290,6 +309,16 @@ public class ShowArtifactAction
     public void setRepositoryId( String repositoryId )
     {
         this.repositoryId = repositoryId;
+    }
+
+    public List<String> getSnapshotVersions()
+    {
+        return snapshotVersions;
+    }
+
+    public void setSnapshotVersions( List<String> snapshotVersions )
+    {
+        this.snapshotVersions = snapshotVersions;
     }
 
 }

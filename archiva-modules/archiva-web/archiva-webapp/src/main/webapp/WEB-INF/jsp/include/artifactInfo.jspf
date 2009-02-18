@@ -90,6 +90,23 @@
       </td>
     </tr>
   </c:if>
+  <c:if test="${(snapshotVersions != null) && (!empty snapshotVersions)}">
+    <tr>
+      <th>Other Versions</th>
+      <td>
+        <c:forEach items="${snapshotVersions}" var="snapshot">         
+          <c:set var="url">
+            <s:url action="showArtifact" namespace="/">
+              <s:param name="groupId" value="%{#attr.model.groupId}"/>
+              <s:param name="artifactId" value="%{#attr.model.artifactId}"/>
+              <s:param name="version" value="%{#attr.snapshot}"/>
+            </s:url>
+          </c:set>
+          <a href="${url}">${snapshot}</a>
+        </c:forEach>
+      </td>
+    </tr>
+  </c:if>
   <%-- TODO: deployment timestamp
     <tr>
       <th>Deployment Date</th>
