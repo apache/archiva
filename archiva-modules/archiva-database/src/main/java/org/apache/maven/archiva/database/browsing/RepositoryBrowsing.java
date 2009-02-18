@@ -91,7 +91,7 @@ public interface RepositoryBrowsing
         throws ObjectNotFoundException, ArchivaDatabaseException;
     
     /**
-     * Get the timestamped versions or versions with build numbers of the given SNAPSHOT artifact.
+     * Get the other versions of the given SNAPSHOT version.
      * 
      * @param observableRepositoryIds
      * @param groupId
@@ -101,7 +101,7 @@ public interface RepositoryBrowsing
      * @throws ObjectNotFoundException
      * @throws ArchivaDatabaseException
      */
-    public List<String> getTimestampedSnapshots( List<String> observableRepositoryIds,
+    public List<String> getOtherSnapshotVersions( List<String> observableRepositoryIds,
                                                               String groupId, String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException; 
                                                                   

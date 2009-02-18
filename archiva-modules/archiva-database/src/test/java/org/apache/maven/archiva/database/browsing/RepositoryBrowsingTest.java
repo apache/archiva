@@ -164,7 +164,37 @@ public class RepositoryBrowsingTest
         assertTrue( results.getVersions().contains( "2.1.1" ) );
         assertTrue( results.getVersions().contains( "2.1-alpha-1" ) ); 
     }
-
+    
+    public void testGetOtherSnapshotVersionsRequestedVersionIsGeneric()
+        throws Exception
+    {
+        saveTestData();
+        
+        RepositoryBrowsing browser = lookupBrowser();
+        List<String> results =
+            browser.getOtherSnapshotVersions( GUEST_REPO_IDS, "org.apache.maven.shared", "test-two", "2.1-SNAPSHOT" );
+        assertNotNull( "Returned list of versions should not be null.", results );
+        assertEquals( 3, results.size() );
+        assertTrue( results.contains( "2.1-SNAPSHOT" ) );
+        assertTrue( results.contains( "2.1-20070522.143249-1" ) );
+        assertTrue( results.contains( "2.1-20070522.153141-2" ) ); 
+    }
+    
+    public void testGetOtherSnapshotVersionsRequestedVersionIsUnique()
+        throws Exception
+    {
+        saveTestData();
+        
+        RepositoryBrowsing browser = lookupBrowser();
+        List<String> results =
+            browser.getOtherSnapshotVersions( GUEST_REPO_IDS, "org.apache.maven.shared", "test-two", "2.1-20070522.143249-1" );
+        assertNotNull( "Returned list of versions should not be null.", results );
+        assertEquals( 3, results.size() );
+        assertTrue( results.contains( "2.1-SNAPSHOT" ) );
+        assertTrue( results.contains( "2.1-20070522.143249-1" ) );
+        assertTrue( results.contains( "2.1-20070522.153141-2" ) ); 
+    }
+    
     private void assertGroupIds( String msg, List actualGroupIds, String[] expectedGroupIds )
     {
         assertEquals( msg + ": groupIds.length", expectedGroupIds.length, actualGroupIds.size() );

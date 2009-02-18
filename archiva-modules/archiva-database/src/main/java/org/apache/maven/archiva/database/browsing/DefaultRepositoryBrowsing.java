@@ -180,9 +180,9 @@ public class DefaultRepositoryBrowsing
     }
 
     /**
-     * @see RepositoryBrowsing#getTimestampedSnapshots(List, String, String, String)
+     * @see RepositoryBrowsing#getOtherSnapshotVersions(List, String, String, String)
      */
-    public List<String> getTimestampedSnapshots( List<String> observableRepositoryIds, String groupId,
+    public List<String> getOtherSnapshotVersions( List<String> observableRepositoryIds, String groupId,
                                                  String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
@@ -194,14 +194,15 @@ public class DefaultRepositoryBrowsing
                 dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
 
             for ( String uniqueVersion : versions )
-            {
-                if ( VersionUtil.getBaseVersion( uniqueVersion ).equals( version ) )
+            {   
+                if ( VersionUtil.getBaseVersion( uniqueVersion ).equals( version ) || 
+                        VersionUtil.getBaseVersion( uniqueVersion ).equals( VersionUtil.getBaseVersion( version ) ) )
                 {
                     if ( !timestampedVersions.contains( uniqueVersion ) )
                     {
                         timestampedVersions.add( uniqueVersion );
                     }
-                }
+                }      
             }
         }
 

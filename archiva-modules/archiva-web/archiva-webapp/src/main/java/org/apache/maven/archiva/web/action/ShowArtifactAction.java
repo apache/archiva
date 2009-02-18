@@ -112,7 +112,7 @@ public class ShowArtifactAction
                     repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
                                 
                 this.snapshotVersions =
-                    repoBrowsing.getTimestampedSnapshots( getObservableRepos(), groupId, artifactId, version );
+                    repoBrowsing.getOtherSnapshotVersions( getObservableRepos(), groupId, artifactId, version );
                 if( this.snapshotVersions.contains( version ) )
                 {
                     this.snapshotVersions.remove( version );
