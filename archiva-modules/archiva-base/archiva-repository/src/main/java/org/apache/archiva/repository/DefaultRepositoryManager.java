@@ -137,8 +137,7 @@ public class DefaultRepositoryManager implements SystemRepositoryManager
                 }
                 return result;
             }
-            return Collections.EMPTY_LIST;
         }
-        return null;
+        return Collections.EMPTY_LIST;
     }
 }

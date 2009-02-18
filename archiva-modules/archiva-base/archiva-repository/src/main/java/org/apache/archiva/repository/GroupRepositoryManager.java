@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.archiva.repository.api.InvalidOperationException;
 import org.apache.archiva.repository.api.MutableResourceContext;
 import org.apache.archiva.repository.api.RepositoryManager;
-import org.apache.archiva.repository.api.RepositoryManagerException;
 import org.apache.archiva.repository.api.RepositoryManagerWeight;
 import org.apache.archiva.repository.api.ResourceContext;
 import org.apache.archiva.repository.api.Status;
@@ -82,7 +82,7 @@ public class GroupRepositoryManager implements RepositoryManager
     
     public boolean write(ResourceContext context, InputStream is)
     {
-        throw new RepositoryManagerException("Repository Groups are not writable: " + context.getRepositoryId());
+        throw new InvalidOperationException("Repository Groups are not writable: " + context.getRepositoryId());
     }
 
     public List<Status> stat(ResourceContext context)

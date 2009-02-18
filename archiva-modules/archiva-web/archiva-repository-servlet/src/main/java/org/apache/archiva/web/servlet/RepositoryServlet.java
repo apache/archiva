@@ -35,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.archiva.repository.api.InvalidOperationException;
 import org.apache.archiva.repository.api.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,14 +124,21 @@ public class RepositoryServlet extends HttpServlet
     }
 
     private void handleRequest(final HttpServletRequest req, final HttpServletResponse resp)
-        throws IOException
+        throws IOException, ServletException
     {
         log.debug("Request started");
         HttpRepositoryContext context = new HttpRepositoryContext(req, resp);
         log.debug("Running PreRepositoryInterceptors");
         executePreRepositoryInterceptors(context);
         log.debug("Executing Repository Manager");
-        runRepositoryManager(context, req, resp);
+        try
+        {
+            runRepositoryManager(context, req, resp);
+        }
+        catch (InvalidOperationException e)
+        {
+            resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getMessage());
+        }
         log.debug("Running PostRepositoryInterceptors");
         executePostRepositoryInterceptors(context);
         log.debug("Request Completed");
@@ -207,7 +215,10 @@ public class RepositoryServlet extends HttpServlet
 
                 if (withBody)
                 {
-                    repositoryManager.read(context, resp.getOutputStream());
+                    if (!repositoryManager.read(context, resp.getOutputStream()))
+                    {
+                        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    }
                 }
             }
         }
