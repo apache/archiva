@@ -74,16 +74,6 @@ public abstract class AbstractRepositoryServletTestCase
         assertEquals( "File Contents of <" + actualFile.getAbsolutePath() + ">", expectedContents, actualContents );
     }
 
-    protected void assertRepositoryValid( RepositoryServlet servlet, String repoId )
-    {
-//        ManagedRepositoryConfiguration repository = servlet.getRepository( repoId );
-//        assertNotNull( "Archiva Managed Repository id:<" + repoId + "> should exist.", repository );
-//        File repoRoot = new File( repository.getLocation() );
-//        assertTrue( "Archiva Managed Repository id:<" + repoId + "> should have a valid location on disk.", repoRoot
-//            .exists()
-//            && repoRoot.isDirectory() );
-    }
-
     protected void assertResponseOK( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );

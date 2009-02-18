@@ -34,8 +34,8 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.collections.map.UnmodifiableMap;
 
 /**
@@ -62,8 +62,8 @@ public class RepositoryContentFactory
 
     public RepositoryContentFactory()
     {
-        managedContentMap = new HashMap<String, ManagedRepositoryContent>();
-        remoteContentMap = new HashMap<String, RemoteRepositoryContent>();
+        managedContentMap = new ConcurrentHashMap<String, ManagedRepositoryContent>();
+        remoteContentMap = new ConcurrentHashMap<String, RemoteRepositoryContent>();
     }
 
     /**
@@ -72,6 +72,21 @@ public class RepositoryContentFactory
      */
     public Map<String, ManagedRepositoryContent> getManagedContentMap()
     {
+        if (managedContentMap.isEmpty())
+        {
+            for (final ManagedRepositoryConfiguration configuration : archivaConfiguration.getConfiguration().getManagedRepositories())
+            {
+                try
+                {
+                    managedContentMap.put(configuration.getId(), createManagedRepositoryContent(configuration));
+                }
+                catch (RepositoryException e)
+                {
+                    //Do nothing
+                }
+            }
+        }
+
         return UnmodifiableMap.decorate(managedContentMap);
     }
 
@@ -81,6 +96,21 @@ public class RepositoryContentFactory
      */
     public Map<String, RemoteRepositoryContent> getRemoteContentMap()
     {
+        if (remoteContentMap.isEmpty())
+        {
+            for (final RemoteRepositoryConfiguration configuration : archivaConfiguration.getConfiguration().getRemoteRepositories())
+            {
+                try
+                {
+                    remoteContentMap.put(configuration.getId(), createRemoteRepositoryContent(configuration));
+                }
+                catch ( RepositoryException e )
+                {
+                    // Do nothing
+                }
+            }
+        }
+
         return UnmodifiableMap.decorate(remoteContentMap);
     }
 
@@ -102,26 +132,13 @@ public class RepositoryContentFactory
             return repo;
         }
 
-        ManagedRepositoryConfiguration repoConfig = archivaConfiguration.getConfiguration()
-            .findManagedRepositoryById( repoId );
-        if ( repoConfig == null )
+        ManagedRepositoryConfiguration configuration = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
+        if ( configuration == null )
         {
             throw new RepositoryNotFoundException( "Unable to find managed repository configuration for id:" + repoId );
         }
 
-        try
-        {
-            repo = (ManagedRepositoryContent) container.lookup( ManagedRepositoryContent.class, repoConfig.getLayout() );
-            repo.setRepository( repoConfig );
-            managedContentMap.put( repoId, repo );
-        }
-        catch ( ComponentLookupException e )
-        {
-            throw new RepositoryException( "Specified layout [" + repoConfig.getLayout()
-                + "] on managed repository id [" + repoId + "] is not valid.", e );
-        }
-
-        return repo;
+        return createManagedRepositoryContent(configuration);
     }
 
     public RemoteRepositoryContent getRemoteRepositoryContent( String repoId )
@@ -134,27 +151,49 @@ public class RepositoryContentFactory
             return repo;
         }
 
-        RemoteRepositoryConfiguration repoConfig = archivaConfiguration.getConfiguration()
-            .findRemoteRepositoryById( repoId );
-        if ( repoConfig == null )
+        RemoteRepositoryConfiguration configuration = archivaConfiguration.getConfiguration().findRemoteRepositoryById( repoId );
+        if ( configuration == null )
         {
             throw new RepositoryNotFoundException( "Unable to find remote repository configuration for id:" + repoId );
         }
 
+        return createRemoteRepositoryContent(configuration);
+    }
+
+    private RemoteRepositoryContent createRemoteRepositoryContent(RemoteRepositoryConfiguration configuration)
+        throws RepositoryException
+    {
+        RemoteRepositoryContent repositoryContent = null;
         try
         {
-            repo = (RemoteRepositoryContent) container.lookup( RemoteRepositoryContent.class, repoConfig.getLayout() );
-            repo.setRepository( repoConfig );
-            remoteContentMap.put( repoId, repo );
+            repositoryContent = (RemoteRepositoryContent) container.lookup( RemoteRepositoryContent.class, configuration.getLayout() );
+            repositoryContent.setRepository( configuration );
         }
         catch ( ComponentLookupException e )
         {
-            throw new RepositoryException( "Specified layout [" + repoConfig.getLayout()
-                + "] on remote repository id [" + repoId + "] is not valid.", e );
+            throw new RepositoryException( "Specified layout [" + configuration.getLayout()
+                + "] on remote repository id [" + configuration.getId() + "] is not valid.", e );
         }
-
-        return repo;
+        return repositoryContent;
     }
+
+    private ManagedRepositoryContent createManagedRepositoryContent(ManagedRepositoryConfiguration configuration)
+        throws RepositoryException
+    {
+        ManagedRepositoryContent repositoryContent = null;
+        try
+        {
+            repositoryContent = (ManagedRepositoryContent) container.lookup( ManagedRepositoryContent.class, configuration.getLayout() );
+            repositoryContent.setRepository( configuration );
+        }
+        catch ( ComponentLookupException e )
+        {
+            throw new RepositoryException( "Specified layout [" + configuration.getLayout()
+                + "] on managed repository id [" + configuration.getId() + "] is not valid.", e );
+        }
+        return repositoryContent;
+    }
+
 
     public void contextualize( Context context )
         throws ContextException

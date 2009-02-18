@@ -39,62 +39,6 @@ public class RepositoryServletTest
 {
     private static final String REQUEST_PATH = "http://machine.com/repository/internal/";
 
-    private static final String NEW_REPOSITORY_ID = "new-id";
-
-    private static final String NEW_REPOSITORY_NAME = "New Repository";
-
-    public void testGetRepository()
-        throws Exception
-    {
-        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
-        assertNotNull( servlet );
-
-        assertRepositoryValid( servlet, REPOID_INTERNAL );
-    }
-//
-//    public void testGetRepositoryAfterDelete()
-//        throws Exception
-//    {
-//        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
-//        assertNotNull( servlet );
-//
-//        ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
-//        Configuration c = archivaConfiguration.getConfiguration();
-//        c.removeManagedRepository( c.findManagedRepositoryById( REPOID_INTERNAL ) );
-//        saveConfiguration( archivaConfiguration );
-//
-//        ManagedRepositoryConfiguration repository = servlet.getRepository( REPOID_INTERNAL );
-//        assertNull( repository );
-//    }
-//
-//    public void testGetRepositoryAfterAdd()
-//        throws Exception
-//    {
-//        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
-//        assertNotNull( servlet );
-//
-//        ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
-//        Configuration c = archivaConfiguration.getConfiguration();
-//        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
-//        repo.setId( NEW_REPOSITORY_ID );
-//        repo.setName( NEW_REPOSITORY_NAME );
-//        File repoRoot = new File( getBasedir(), "target/test-repository-root" );
-//        if ( !repoRoot.exists() )
-//        {
-//            repoRoot.mkdirs();
-//        }
-//        repo.setLocation( repoRoot.getAbsolutePath() );
-//        c.addManagedRepository( repo );
-//        saveConfiguration( archivaConfiguration );
-//
-//        ManagedRepositoryConfiguration repository = servlet.getRepository( NEW_REPOSITORY_ID );
-//        assertNotNull( repository );
-//        assertEquals( NEW_REPOSITORY_NAME, repository.getName() );
-//
-//        // check other is still intact
-//        assertRepositoryValid( servlet, REPOID_INTERNAL );
-//    }
-
     public void testGetRepositoryInvalidPathPassthroughPresent()
         throws Exception
     {
@@ -116,6 +60,6 @@ public class RepositoryServletTest
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = sc.getResponse( request );
         assertResponseNotFound( response );
-        assertEquals( "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path.", response.getResponseMessage() );
+        assertEquals( "Could not find /internal/.index/filecontent/foo.bar", response.getResponseMessage() );
     }
 }

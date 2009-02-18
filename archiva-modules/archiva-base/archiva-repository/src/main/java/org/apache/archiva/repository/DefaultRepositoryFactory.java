@@ -23,11 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.archiva.repository.api.Repository;
 import org.apache.archiva.repository.api.RepositoryFactory;
+import org.apache.log4j.Logger;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 
 public class DefaultRepositoryFactory implements RepositoryFactory
 {
+    private static final Logger log = Logger.getLogger(DefaultRepositoryFactory.class);
+
     private final RepositoryContentFactory repositoryContentFactory;
 
     public DefaultRepositoryFactory(RepositoryContentFactory repositoryContentFactory)
@@ -41,7 +44,14 @@ public class DefaultRepositoryFactory implements RepositoryFactory
         final HashMap<String, Repository> repositories = new HashMap<String, Repository>();
         for (final String repositoryId : contentMap.keySet())
         {
-            repositories.put(repositoryId, contentMap.get(repositoryId));
+            final ManagedRepositoryContent content = contentMap.get(repositoryId);
+
+            if (!content.getLocalPath().exists() && !content.getLocalPath().mkdirs())
+            {
+                log.error("Directory could not be created for repository <" + content.getId() + "> with missing directory");
+            }
+
+            repositories.put(repositoryId, content);
         }
         return repositories;
     }
