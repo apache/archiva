@@ -425,3 +425,14 @@ div.infobox {
 div.buttons {
 	text-align: center;
 }
+
+div.versions {
+    border: 1px dashed #DFDEDE;
+	margin-bottom: 15px;
+	padding: 5px;
+}
+
+div.versions a.expand {
+    font-size: 7pt;
+	color: gray;	
+}

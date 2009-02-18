@@ -318,7 +318,7 @@ public class DefaultRepositoryBrowsing
 
         try
         {
-            dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
+            model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
         }
         catch (ObjectNotFoundException e)
         {

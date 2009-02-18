@@ -26,6 +26,19 @@
 <head>
   <title>Browse Repository</title>
   <s:head/>
+  
+  <script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.2.6.pack.js'/>"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+    
+    $("table.infoTable").hide();
+    $("a.expand").click(function(event){
+      event.preventDefault();
+      $(this).next().toggle("slow");
+    });
+  });
+  </script>
+  
 </head>
 
 <body>
@@ -83,21 +96,92 @@
   </c:if>  
   
   <c:if test="${not empty results.versions}">
-    <div id="nameColumn">
-      <h2>Versions</h2>
-      <ul>
-        <c:forEach items="${results.versions}" var="version">
-          <c:set var="url">
-            <s:url action="showArtifact" namespace="/">
-              <s:param name="groupId" value="%{#attr.results.selectedGroupId}"/>
-              <s:param name="artifactId" value="%{#attr.results.selectedArtifactId}"/>
-              <s:param name="version" value="%{#attr.version}"/>
-            </s:url>
-          </c:set>
-          <li><a href="${url}">${version}/</a></li>
-        </c:forEach>
-      </ul>
-    </div>
+    <%-- show shared project information (MRM-1041) --%>    
+    
+    <h2>Versions</h2>
+    <div id="nameColumn" class="versions">  
+      <a class="expand" href="#">Artifact Info</a>      
+      <table class="infoTable">        
+        <tr>
+          <th>Group ID</th>
+          <td>${sharedModel.groupId}</td>
+        </tr>
+        <tr>
+          <th>Artifact ID</th>
+          <td>${sharedModel.artifactId}</td>
+        </tr>        
+        <c:if test="${sharedModel.packaging != null}">
+        <tr>
+          <th>Packaging</th>
+          <td><code>${sharedModel.packaging}</code></td>
+        </tr>
+        </c:if>
+        <c:if test="${sharedModel.name != null}">
+        <tr>
+          <th>Name</th>
+          <td><code>${sharedModel.name}</code></td>
+        </tr>
+        </c:if>
+        <c:if test="${sharedModel.organization != null}">
+        <tr>
+          <th>Organisation</th>
+          <td>
+            <c:choose>
+              <c:when test="${sharedModel.organization.url != null}">
+                <a href="${sharedModel.organization.url}">${sharedModel.organization.name}</a>
+              </c:when>
+              <c:otherwise>
+                ${sharedModel.organization.name}
+              </c:otherwise>
+            </c:choose>
+          </td>
+        </tr>
+        </c:if>
+        <c:if test="${sharedModel.issueManagement != null}">
+        <tr>
+          <th>Issue Tracker</th>
+          <td>
+            <c:choose>
+              <c:when test="${!empty (sharedModel.issueManagement.url)}">
+                <a href="${sharedModel.issueManagement.url}">${sharedModel.issueManagement.system}</a>
+              </c:when>
+              <c:otherwise>
+                ${sharedModel.issueManagement.system}
+              </c:otherwise>
+            </c:choose>
+          </td>
+        </tr>
+        </c:if>
+        <c:if test="${sharedModel.ciManagement != null}">
+        <tr>
+          <th>Continuous Integration</th>
+          <td>
+            <c:choose>
+              <c:when test="${!empty (sharedModel.ciManagement.url)}">
+                <a href="${sharedModel.ciManagement.url}">${sharedModel.ciManagement.system}</a>
+              </c:when>
+              <c:otherwise>
+                ${sharedModel.ciManagement.system}
+              </c:otherwise>
+            </c:choose>
+          </td>
+        </tr>
+        </c:if>
+      </table>
+    </div>      
+
+    <ul>
+      <c:forEach items="${results.versions}" var="version">
+        <c:set var="url">
+          <s:url action="showArtifact" namespace="/">
+            <s:param name="groupId" value="%{#attr.results.selectedGroupId}"/>
+            <s:param name="artifactId" value="%{#attr.results.selectedArtifactId}"/>
+            <s:param name="version" value="%{#attr.version}"/>
+          </s:url>
+        </c:set>
+        <li><a href="${url}">${version}/</a></li>
+      </c:forEach>
+    </ul>    
   </c:if>  
 
 </div>

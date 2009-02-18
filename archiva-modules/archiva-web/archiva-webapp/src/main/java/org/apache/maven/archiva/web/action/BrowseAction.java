@@ -25,10 +25,12 @@ import java.util.List;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.*;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 
 /**
  * Browse the repository.
@@ -63,7 +65,9 @@ public class BrowseAction
     private String artifactId;
     
     private String repositoryId;
-
+    
+    private ArchivaProjectModel sharedModel;
+    
     public String browse()
     {
         List<String> selectedRepos = getObservableRepos();
@@ -117,10 +121,87 @@ public class BrowseAction
         {
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
-
         
         this.results = repoBrowsing.selectArtifactId( getPrincipal(), selectedRepos, groupId, artifactId );
+
+        populateSharedModel();
+        
         return SUCCESS;
+    }
+
+    private void populateSharedModel()
+    {
+        sharedModel = new ArchivaProjectModel();
+        sharedModel.setGroupId( groupId );
+        sharedModel.setArtifactId( artifactId );
+        boolean isFirstVersion = true;
+                
+        for( String version :  this.results.getVersions() )
+        {            
+            try
+            {
+                ArchivaProjectModel model =
+                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+                
+                if( isFirstVersion )
+                {
+                    sharedModel = model;
+                }
+                else
+                {
+                    if ( sharedModel.getPackaging() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getPackaging(), model.getPackaging() ) )
+                    {
+                        sharedModel.setPackaging( null );
+                    }
+                    
+                    if ( sharedModel.getName() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getName(), model.getName() ) )
+                    {
+                        sharedModel.setName( "" );
+                    }
+
+                    if ( sharedModel.getDescription() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getDescription(), model.getDescription() ) )
+                    {
+                        sharedModel.setDescription( null );
+                    }
+
+                    if ( sharedModel.getIssueManagement() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(), model.getIssueManagement().getUrl() ) )
+                    {
+                        sharedModel.setIssueManagement( null );
+                    }
+
+                    if ( sharedModel.getCiManagement() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(), model.getCiManagement().getUrl() ) )
+                    {
+                        sharedModel.setCiManagement( null );
+                    }
+
+                    if ( sharedModel.getOrganization() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(), model.getOrganization().getName() ) )
+                    {
+                        sharedModel.setOrganization( null );
+                    }
+
+                    if ( sharedModel.getUrl() != null && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), model.getUrl() ) )
+                    {
+                        sharedModel.setUrl( null );
+                    }
+                }
+                
+                isFirstVersion = false;
+            }
+            catch ( ObjectNotFoundException e )
+            {
+                getLogger().debug( e.getMessage(), e );
+            }
+            catch ( ArchivaDatabaseException e )
+            {
+                getLogger().debug( e.getMessage(), e );
+            }
+        }        
     }
     
     private String getPrincipal()
@@ -183,5 +264,15 @@ public class BrowseAction
     public void setRepositoryId(String repositoryId){
     	
     	this.repositoryId = repositoryId;
+    }
+
+    public ArchivaProjectModel getSharedModel()
+    {
+        return sharedModel;
+    }
+
+    public void setSharedModel( ArchivaProjectModel sharedModel )
+    {
+        this.sharedModel = sharedModel;
     }
 }
