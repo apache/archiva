@@ -261,7 +261,6 @@ public class RepositoryContentConsumers implements ApplicationContextAware
             TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure(repository);
 
             CollectionUtils.forAllDo(selectedKnownConsumers, scanCompletedClosure);
-            CollectionUtils.forAllDo(selectedKnownConsumers, scanCompletedClosure);
         }
         finally
         {
