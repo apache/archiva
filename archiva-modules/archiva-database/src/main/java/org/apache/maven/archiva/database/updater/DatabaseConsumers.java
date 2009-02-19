@@ -25,42 +25,39 @@ import org.apache.commons.collections.functors.OrPredicate;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * DatabaseConsumers 
  *
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseConsumers"
  */
 public class DatabaseConsumers
-    implements Initializable
-{
-    /**
-     * @plexus.requirement
-     */
+    implements ApplicationContextAware
+{    
     private ArchivaConfiguration archivaConfiguration;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer"
-     */
-    private List availableUnprocessedConsumers;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer"
-     */
-    private List availableCleanupConsumers;
 
     private Predicate selectedCleanupConsumers;
 
     private Predicate selectedUnprocessedConsumers;
+    
+    private ApplicationContext applicationContext;
 
+    public DatabaseConsumers( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+        
+        Predicate permanentConsumers = new PermanentConsumerPredicate();
+
+        selectedCleanupConsumers = new OrPredicate( permanentConsumers, new SelectedCleanupConsumersPredicate() );
+        selectedUnprocessedConsumers = new OrPredicate( permanentConsumers, new SelectedUnprocessedConsumersPredicate() );
+    }
+    
     class SelectedUnprocessedConsumersPredicate
         implements Predicate
     {
@@ -99,15 +96,12 @@ public class DatabaseConsumers
         }
     }
 
-    public void initialize()
-        throws InitializationException
+    public void setApplicationContext( ApplicationContext applicationContext )
+        throws BeansException
     {
-        Predicate permanentConsumers = new PermanentConsumerPredicate();
-
-        selectedCleanupConsumers = new OrPredicate( permanentConsumers, new SelectedCleanupConsumersPredicate() );
-        selectedUnprocessedConsumers = new OrPredicate( permanentConsumers, new SelectedUnprocessedConsumersPredicate() );
+        this.applicationContext = applicationContext;
     }
-
+    
     /**
      * Get the {@link List} of {@link DatabaseUnprocessedArtifactConsumer} objects
      * for those consumers selected due to the configuration.
@@ -117,7 +111,7 @@ public class DatabaseConsumers
     public List getSelectedUnprocessedConsumers()
     {
         List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( availableUnprocessedConsumers, selectedUnprocessedConsumers ) );
+        ret.addAll( CollectionUtils.select( getAvailableUnprocessedConsumers(), selectedUnprocessedConsumers ) );
         return ret;
     }
 
@@ -130,7 +124,7 @@ public class DatabaseConsumers
     public List getSelectedCleanupConsumers()
     {
         List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( availableCleanupConsumers, selectedCleanupConsumers ) );
+        ret.addAll( CollectionUtils.select( getAvailableCleanupConsumers(), selectedCleanupConsumers ) );
         return ret;
     }
 
@@ -141,8 +135,8 @@ public class DatabaseConsumers
      * @return the list of all available {@link DatabaseUnprocessedArtifactConsumer} objects.
      */
     public List getAvailableUnprocessedConsumers()
-    {
-        return Collections.unmodifiableList( this.availableUnprocessedConsumers );
+    {       
+        return new ArrayList( applicationContext.getBeansOfType( DatabaseUnprocessedArtifactConsumer.class ).values() );
     }
 
     /**
@@ -153,6 +147,6 @@ public class DatabaseConsumers
      */
     public List getAvailableCleanupConsumers()
     {
-        return Collections.unmodifiableList( this.availableCleanupConsumers );
+        return new ArrayList( applicationContext.getBeansOfType( DatabaseCleanupConsumer.class ).values() );
     }
 }

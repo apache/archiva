@@ -8,4 +8,10 @@
         <constructor-arg ref="indexPacker"/>
         <constructor-arg ref="indexerEngine"/>
     </bean>
+    
+    <bean id="indexCleanupConsumer" class="org.apache.archiva.consumers.lucene.LuceneCleanupRemoveIndexedConsumer">
+        <constructor-arg ref="repositoryContentFactory"/>
+        <constructor-arg ref="nexusIndexer#archiva"/>
+        <constructor-arg ref="indexerEngine"/>
+    </bean>
 </beans>

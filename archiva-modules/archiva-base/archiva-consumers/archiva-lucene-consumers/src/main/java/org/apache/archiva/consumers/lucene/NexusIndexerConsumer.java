@@ -134,6 +134,9 @@ public class NexusIndexerConsumer
                         Document d = r.document( i );          
                         String uinfo = d.get( ArtifactInfo.UINFO );
           
+                     // should we add a check here if the contents of the document still exist in the file system
+                     // for cases when there is already an existing index & the contents of that index doesn't exist
+                     // in the file system & in the database? 
                         if ( uinfo != null )
                         {
                             uinfos.add( uinfo );
