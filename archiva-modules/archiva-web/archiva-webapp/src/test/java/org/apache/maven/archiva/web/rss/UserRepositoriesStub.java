@@ -26,6 +26,8 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
+import org.codehaus.plexus.redback.rbac.RbacManagerException;
 
 /**
  * UserRepositories stub used for testing. 
@@ -56,6 +58,12 @@ public class UserRepositoriesStub
         throws PrincipalNotFoundException, ArchivaSecurityException
     {
         // TODO Auto-generated method stub
+        return false;
+    }
+    
+    public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
+        throws RbacManagerException, RbacObjectNotFoundException
+    {
         return false;
     }
 

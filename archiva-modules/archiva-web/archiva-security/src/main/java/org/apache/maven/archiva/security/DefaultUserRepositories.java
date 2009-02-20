@@ -20,13 +20,19 @@ package org.apache.maven.archiva.security;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.rbac.RBACManager;
+import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
+import org.codehaus.plexus.redback.rbac.RbacManagerException;
+import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
@@ -160,5 +166,48 @@ public class DefaultUserRepositories
         {
             throw new ArchivaSecurityException( e.getMessage() );
         }
+    }
+    
+    public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
+        throws RbacManagerException, RbacObjectNotFoundException
+    {
+        boolean isAuthorized = false;
+        String delimiter = " - ";
+        
+        try
+        {
+            Collection roleList = rbacManager.getEffectivelyAssignedRoles( principal );
+            
+            Iterator it = roleList.iterator();
+            
+            while ( it.hasNext() )
+            {
+                Role role = (Role) it.next();
+                
+                String roleName = role.getName();
+                
+                if ( roleName.startsWith( ArchivaRoleConstants.REPOSITORY_MANAGER_ROLE_PREFIX ) )
+                {
+                    int delimiterIndex = roleName.indexOf( delimiter );
+                    String resourceName = roleName.substring( delimiterIndex + delimiter.length() );
+                    
+                    if ( resourceName.equals( repoId ) )
+                    {
+                        isAuthorized = true;
+                        break;
+                    }
+                }
+            }
+        }
+        catch ( RbacObjectNotFoundException e )
+        {
+            throw new RbacObjectNotFoundException( "Unable to find user " + principal + "" );
+        }
+        catch ( RbacManagerException e )
+        {
+            throw new RbacManagerException( "Unable to get roles for user " + principal + "" );
+        }
+        
+        return isAuthorized;
     }
 }

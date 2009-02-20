@@ -25,11 +25,15 @@ import org.apache.commons.collections.functors.OrPredicate;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,6 +44,8 @@ import java.util.List;
 public class DatabaseConsumers
     implements ApplicationContextAware
 {    
+    private Logger log = LoggerFactory.getLogger( DatabaseConsumers.class );
+    
     private ArchivaConfiguration archivaConfiguration;
 
     private Predicate selectedCleanupConsumers;
@@ -148,5 +154,38 @@ public class DatabaseConsumers
     public List getAvailableCleanupConsumers()
     {
         return new ArrayList( applicationContext.getBeansOfType( DatabaseCleanupConsumer.class ).values() );
+    }
+    
+    /**
+     * Execute the cleanup consumers to cleanup the specified artifact from the database and index.
+     * 
+     * @param artifact
+     */
+    public void executeCleanupConsumer( ArchivaArtifact artifact )
+    {
+        List consumers = getSelectedCleanupConsumers();
+        Iterator it = consumers.iterator();
+        while ( it.hasNext() )
+        {
+            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
+            consumer.beginScan();
+        }
+        
+        if ( CollectionUtils.isEmpty( consumers ) )
+        {
+            log.warn( "There are no selected consumers for artifact cleanup." );
+            return;
+        }
+        
+        ProcessArchivaArtifactClosure processArtifactClosure = new ProcessArchivaArtifactClosure();
+        processArtifactClosure.setArtifact( artifact );
+        
+        CollectionUtils.forAllDo( consumers, processArtifactClosure );
+        
+        while ( it.hasNext() )
+        {
+            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
+            consumer.completeScan();
+        }
     }
 }

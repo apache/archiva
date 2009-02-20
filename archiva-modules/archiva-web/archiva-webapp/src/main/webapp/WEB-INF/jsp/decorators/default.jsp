@@ -80,7 +80,7 @@
       </li>
     </ul>
 
-    <redback:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
+    <redback:ifAnyAuthorized permissions="archiva-delete-artifact,archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
       <h5>Manage</h5>
       <ul>
         <redback:ifAuthorized permission="archiva-access-reports">
@@ -109,6 +109,11 @@
           </li>
           <li class="none">
             <my:currentWWUrl action="upload" namespace="/">Upload Artifact</my:currentWWUrl>
+          </li>
+        </redback:ifAuthorized>
+        <redback:ifAuthorized permission="archiva-delete-artifact">
+          <li class="none">
+            <my:currentWWUrl action="deleteArtifact" namespace="/">Delete Artifact</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
           <%-- TODO: future options here.

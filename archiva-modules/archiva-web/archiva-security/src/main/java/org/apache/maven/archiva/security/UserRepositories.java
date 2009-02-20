@@ -19,6 +19,9 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
+import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
+import org.codehaus.plexus.redback.rbac.RbacManagerException;
+
 import java.util.List;
 
 /**
@@ -60,5 +63,17 @@ public interface UserRepositories
      */
     public boolean isAuthorizedToUploadArtifacts( String principal, String repoId)
         throws PrincipalNotFoundException, ArchivaSecurityException;
+     
+    /**
+     * Check if user is authorized to delete artifacts in the repository.
+     * 
+     * @param principal
+     * @param repoId
+     * @return
+     * @throws RbacManagerException
+     * @throws RbacObjectNotFoundException
+     */
+    public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
+        throws RbacManagerException, RbacObjectNotFoundException;
     
 }
