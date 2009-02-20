@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.search;
+package org.apache.archiva.indexer.search;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * SearchResultHit 
  *
- * @version $Id$
+ * @version $Id: SearchResultHit.java 740552 2009-02-04 01:09:17Z oching $
  */
 public class SearchResultHit
 {

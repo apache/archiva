@@ -29,6 +29,9 @@ import java.util.Map;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResultLimits;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -37,10 +40,6 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.indexer.search.SearchResultLimits;
-import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
@@ -51,7 +50,6 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
-import org.apache.maven.archiva.indexer.search.SearchResultHit;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -189,7 +187,7 @@ public class SearchAction
 
     // advanced search MRM-90 -- filtered search
     public String filteredSearch()
-        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
+        throws MalformedURLException
     {           
         if ( ( groupId == null || "".equals( groupId ) ) &&
             ( artifactId == null || "".equals( artifactId ) ) && ( className == null || "".equals( className ) ) &&
@@ -265,7 +263,7 @@ public class SearchAction
     }
 
     public String quickSearch()
-        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
+        throws MalformedURLException
     {
         /* TODO: give action message if indexing is in progress.
          * This should be based off a count of 'unprocessed' artifacts.

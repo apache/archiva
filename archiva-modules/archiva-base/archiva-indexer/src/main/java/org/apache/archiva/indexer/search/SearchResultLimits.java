@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.search;
+package org.apache.archiva.indexer.search;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -23,7 +23,7 @@ package org.apache.maven.archiva.indexer.search;
  * SearchResultLimits - used to provide the search some limits on how the results are returned.
  * This can provide paging for the 
  *
- * @version $Id$
+ * @version $Id: SearchResultLimits.java 718864 2008-11-19 06:33:35Z brett $
  */
 public class SearchResultLimits
 {

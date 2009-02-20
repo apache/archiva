@@ -21,8 +21,6 @@ package org.apache.archiva.indexer.search;
 
 import java.util.List;
 
-import org.apache.maven.archiva.indexer.search.SearchResultLimits;
-import org.apache.maven.archiva.indexer.search.SearchResults;
 
 public interface RepositorySearch
 {

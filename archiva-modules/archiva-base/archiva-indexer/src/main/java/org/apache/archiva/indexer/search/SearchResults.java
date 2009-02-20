@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.search;
+package org.apache.archiva.indexer.search;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,10 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * SearchResults 
  *
- * @version $Id$
+ * @version $Id: SearchResults.java 742859 2009-02-10 05:35:05Z jdumay $
  */
 public class SearchResults
 {

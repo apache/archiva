@@ -25,15 +25,15 @@ import java.util.List;
 
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchFields;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResultLimits;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
-import org.apache.maven.archiva.indexer.search.SearchResultHit;
-import org.apache.maven.archiva.indexer.search.SearchResultLimits;
-import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.UserRepositories;
