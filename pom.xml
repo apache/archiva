@@ -1094,7 +1094,7 @@
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-4</wagon.version>
-    <redback.version>1.2-beta-2</redback.version>
+    <redback.version>1.2-SNAPSHOT</redback.version>
     <jetty.version>6.1.6</jetty.version>
     <binder.version>0.9</binder.version>
     <spring.version>2.5.6</spring.version>
