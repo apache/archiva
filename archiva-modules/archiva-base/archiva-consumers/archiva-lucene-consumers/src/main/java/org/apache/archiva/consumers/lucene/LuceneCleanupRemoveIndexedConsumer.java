@@ -41,7 +41,6 @@ import org.sonatype.nexus.index.NexusIndexer;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 import org.sonatype.nexus.index.creator.AbstractIndexCreator;
-import org.sonatype.nexus.index.creator.IndexerEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,22 +63,17 @@ public class LuceneCleanupRemoveIndexedConsumer
 
     private ArtifactContextProducer artifactContextProducer;
 
-    private IndexerEngine indexerEngine;
-
     private IndexingContext context;
 
-    public LuceneCleanupRemoveIndexedConsumer( RepositoryContentFactory repoFactory, NexusIndexer indexer,
-                                               IndexerEngine indexerEngine )
+    public LuceneCleanupRemoveIndexedConsumer( RepositoryContentFactory repoFactory, NexusIndexer indexer )
     {
         this.repoFactory = repoFactory;
         this.indexer = indexer;
-        this.indexerEngine = indexerEngine;
         this.artifactContextProducer = new DefaultArtifactContextProducer();
     }
 
     public void beginScan()
     {
-        // TODO Auto-generated method stub
 
     }
 
@@ -136,7 +130,6 @@ public class LuceneCleanupRemoveIndexedConsumer
                     context.setSearchable( repository.isScanned() );
 
                     File artifactFile = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
-                    System.out.println( "artifactFile :: " + artifactFile.getAbsolutePath() );
 
                     if ( !artifactFile.exists() )
                     {
@@ -147,7 +140,7 @@ public class LuceneCleanupRemoveIndexedConsumer
                         {
                             //indexerEngine.remove( context, artifactContext );
 
-                            // hack for deleting documents - indexer engine's isn't working for me
+                            // hack for deleting documents - indexer engine's remove(...) isn't working for me
                             removeDocuments( artifactContext );
                         }
                     }
@@ -167,7 +160,7 @@ public class LuceneCleanupRemoveIndexedConsumer
             throw new ConsumerException( "Can't run index cleanup consumer: " + e.getMessage() );
         }
     }
-    
+
     private void removeDocuments( ArtifactContext ac )
         throws IOException
     {
@@ -208,5 +201,10 @@ public class LuceneCleanupRemoveIndexedConsumer
     public void setRepositoryContentFactory( RepositoryContentFactory repoFactory )
     {
         this.repoFactory = repoFactory;
+    }
+
+    public void setArtifactContextProducer( ArtifactContextProducer artifactContextProducer )
+    {
+        this.artifactContextProducer = artifactContextProducer;
     }
 }
