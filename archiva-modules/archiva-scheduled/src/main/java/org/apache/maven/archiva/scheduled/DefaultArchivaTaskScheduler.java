@@ -207,6 +207,12 @@ public class DefaultArchivaTaskScheduler
             log.warn( "Skipping job, no cron expression for " + repoConfig.getId() );
             return;
         }
+        
+        if ( !repoConfig.isScanned() )
+        {
+            log.warn( "Skipping job, repository scannable has been disabled for " + repoConfig.getId() );
+            return;
+        }
 
         // get the cron string for these database scanning jobs
         String cronString = repoConfig.getRefreshCronExpression();
