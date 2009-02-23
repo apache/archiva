@@ -135,7 +135,7 @@
           <c:when test="${results.totalHits > results.limits.pageSize}">
             <c:choose>
               <c:when test="${fn:length(results.hits) < rowCount}">
-                <p>Hist: ${(rowCount * currentPage) + 1} to ${hitsNum} of ${results.totalHits}</p>
+                <p>Hits: ${(rowCount * currentPage) + 1} to ${hitsNum} of ${results.totalHits}</p>
               </c:when>
               <c:otherwise>
                 <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
