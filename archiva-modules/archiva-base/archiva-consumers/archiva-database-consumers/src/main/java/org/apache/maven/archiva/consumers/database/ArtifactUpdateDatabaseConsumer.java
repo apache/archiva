@@ -57,7 +57,7 @@ import java.util.List;
 public class ArtifactUpdateDatabaseConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener, Initializable
-{
+{                                                                  
     private static final String TYPE_NOT_ARTIFACT = "file-not-artifact";
 
     private static final String DB_ERROR = "db-error";
@@ -161,10 +161,13 @@ public class ArtifactUpdateDatabaseConsumer
         {
             return;
         }
-
+        
         try
         {
-            artifact.getModel().setRepositoryId( this.repository.getId() );
+            if( artifact.getModel().getRepositoryId() == null )
+            {
+                artifact.getModel().setRepositoryId( this.repository.getId() );
+            }
 
             // Calculate the hashcodes.
             File artifactFile = new File( this.repositoryDir, path );
