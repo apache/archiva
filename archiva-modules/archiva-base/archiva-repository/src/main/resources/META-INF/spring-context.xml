@@ -22,6 +22,9 @@
            <constructor-arg ref="archivaConfiguration"/>
            <constructor-arg ref="proxyRepositoryManager"/>
            <constructor-arg ref="systemRepositoryManager"/>
+           <constructor-arg ref="legacyRepositoryManager"/>
+           <constructor-arg ref="repositoryRequest"/>
+           <constructor-arg ref="metadataTools"/>
        </bean>
 
        <bean name="repositoryManagerFactory" class="org.apache.archiva.repository.DefaultRepositoryManagerFactory" lazy-init="true"/>

@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,13 +51,24 @@ import java.util.Map;
  */
 public class XMLReader
 {
-    private URL xmlUrl;
-
     private String documentType;
 
     private Document document;
 
     private Map<String, String> namespaceMap = new HashMap<String, String>();
+
+    public XMLReader( String type, InputStream inputStream )
+        throws XMLException
+    {
+        try
+        {
+            init(type, inputStream);
+        }
+        catch (DocumentException e)
+        {
+            throw new XMLException( "Unable to parse " + documentType + "from stream: " + e.getMessage(), e );
+        }
+    }
 
     public XMLReader( String type, File file )
         throws XMLException
@@ -95,26 +107,36 @@ public class XMLReader
     private void init( String type, URL url )
         throws XMLException
     {
-        this.documentType = type;
-        this.xmlUrl = url;
-
-        InputStream in = null;
-        SAXReader reader = new SAXReader();
-        
         try
         {
-            in = url.openStream();
-            InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
-            LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
-            this.document = reader.read( latinReader );
-        }
-        catch ( DocumentException e )
-        {
-            throw new XMLException( "Unable to parse " + documentType + " xml " + xmlUrl + ": " + e.getMessage(), e );
+            init(type, url.openStream());
         }
         catch ( IOException e )
         {
             throw new XMLException( "Unable to open stream to " + url + ": " + e.getMessage(), e );
+        }
+        catch ( DocumentException e )
+        {
+            throw new XMLException( "Unable to parse " + documentType + " xml " + url + ": " + e.getMessage(), e );
+        }
+    }
+
+    private void init ( String type, InputStream in )
+        throws XMLException, DocumentException
+    {
+        this.documentType = type;
+        
+        SAXReader reader = new SAXReader();
+        
+        try
+        {
+            InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
+            LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
+            this.document = reader.read( latinReader );
+        }
+        catch ( UnsupportedEncodingException e)
+        {
+            throw new XMLException(e.getMessage(), e);
         }
         finally
         {

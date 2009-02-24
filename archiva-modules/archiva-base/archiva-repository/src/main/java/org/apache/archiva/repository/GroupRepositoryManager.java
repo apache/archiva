@@ -19,8 +19,16 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.CharArrayWriter;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,27 +36,50 @@ import java.util.Map;
 import org.apache.archiva.repository.api.InvalidOperationException;
 import org.apache.archiva.repository.api.MutableResourceContext;
 import org.apache.archiva.repository.api.RepositoryManager;
+import org.apache.archiva.repository.api.RepositoryManagerException;
 import org.apache.archiva.repository.api.RepositoryManagerWeight;
 import org.apache.archiva.repository.api.ResourceContext;
 import org.apache.archiva.repository.api.Status;
 import org.apache.archiva.repository.api.SystemRepositoryManager;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.content.RepositoryRequest;
+import org.apache.maven.archiva.repository.metadata.MetadataTools;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataMerge;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RepositoryManagerWeight(400)
 public class GroupRepositoryManager implements RepositoryManager
 {
+    private static final Logger log = LoggerFactory.getLogger(GroupRepositoryManager.class);
+
     private final ArchivaConfiguration archivaConfiguration;
 
     private final RepositoryManager proxyRepositoryManager;
 
     private final SystemRepositoryManager systemRepositoryManager;
 
-    public GroupRepositoryManager(ArchivaConfiguration archivaConfiguration, RepositoryManager proxyRepositoryManager, SystemRepositoryManager systemRepositoryManager)
+    private final LegacyRepositoryManager legacyRepositoryManager;
+
+    private final RepositoryRequest repositoryRequest;
+
+    private final MetadataTools metadataTools;
+
+    public GroupRepositoryManager(ArchivaConfiguration archivaConfiguration, RepositoryManager proxyRepositoryManager, SystemRepositoryManager systemRepositoryManager, LegacyRepositoryManager legacyRepositoryManager, RepositoryRequest repositoryRequest, MetadataTools metadataTools)
     {
         this.archivaConfiguration = archivaConfiguration;
         this.proxyRepositoryManager = proxyRepositoryManager;
         this.systemRepositoryManager = systemRepositoryManager;
+        this.legacyRepositoryManager = legacyRepositoryManager;
+        this.repositoryRequest = repositoryRequest;
+        this.metadataTools = metadataTools;
     }
 
     public boolean exists(String repositoryId)
@@ -67,17 +98,88 @@ public class GroupRepositoryManager implements RepositoryManager
 
     public boolean read(ResourceContext context, OutputStream os)
     {
-        final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
-        for (String repositoryId : groupConfiguration.getRepositories() )
+        if (!isMetadataRequest(context))
         {
-            final MutableResourceContext resourceContext = new MutableResourceContext(context);
-            resourceContext.setRepositoryId(repositoryId);
-            if (systemRepositoryManager.read(context, os))
+            final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
+            for (final String repositoryId : groupConfiguration.getRepositories() )
             {
+                final MutableResourceContext resourceContext = new MutableResourceContext(context);
+                resourceContext.setRepositoryId(repositoryId);
+                if (systemRepositoryManager.read(context, os))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else if (isProjectReference(context.getLogicalPath()))
+        {
+            final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
+            ArchivaRepositoryMetadata mainMetadata = null;
+            for (final String repositoryId : groupConfiguration.getRepositories() )
+            {
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final MutableResourceContext resourceContext = new MutableResourceContext(context);
+                resourceContext.setRepositoryId(repositoryId);
+
+                if (systemRepositoryManager.read(context, baos))
+                {
+                    try
+                    {
+                        ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read(new ByteArrayInputStream(baos.toByteArray()));
+                        if (metadata != null && mainMetadata != null)
+                        {
+                            mainMetadata = RepositoryMetadataMerge.merge(mainMetadata, metadata);
+                        }
+                        else if (metadata != null && mainMetadata == null)
+                        {
+                            mainMetadata = metadata;
+                        }
+                    }
+                    catch (RepositoryMetadataException e)
+                    {
+                        log.error("Could not merge " + resourceContext.getLogicalPath() + "from repository " + context.getRepositoryId(), e);
+                    }
+                }
+            }
+
+            try
+            {
+                final OutputStreamWriter writer = new OutputStreamWriter(os);
+                if (context.getLogicalPath().endsWith(".md5"))
+                {
+                    writer.write(DigestUtils.md5Hex(getMetadataAsByteArray(mainMetadata)));
+                }
+                else if (context.getLogicalPath().endsWith(".sha1"))
+                {
+                    writer.write(DigestUtils.shaHex(getMetadataAsByteArray(mainMetadata)));
+                }
+                else
+                {
+                    RepositoryMetadataWriter.write(mainMetadata, writer);
+                }
+                writer.flush();
                 return true;
+            }
+            catch (IOException e)
+            {
+                throw new RepositoryManagerException("Could complete request in repository " + context.getRepositoryId() + " for " + context.getLogicalPath(), e);
+            }
+            catch (RepositoryMetadataException e)
+            {
+                throw new RepositoryManagerException("Could complete request in repository " + context.getRepositoryId() + " for " + context.getLogicalPath(), e);
             }
         }
         return false;
+    }
+    
+    private byte[] getMetadataAsByteArray(ArchivaRepositoryMetadata metadata)
+        throws RepositoryMetadataException
+    {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final OutputStreamWriter writer = new OutputStreamWriter(baos);
+        RepositoryMetadataWriter.write(metadata, writer);
+        return baos.toByteArray();
     }
     
     public boolean write(ResourceContext context, InputStream is)
@@ -102,10 +204,18 @@ public class GroupRepositoryManager implements RepositoryManager
             }
             else
             {
-                rc = systemRepositoryManager.handles(resourceContext);
+                rc = legacyRepositoryManager.handles(resourceContext);
                 if (rc != null)
                 {
-                    addStatResultToMap(statusMap, rc, systemRepositoryManager);
+                    addStatResultToMap(statusMap, rc, proxyRepositoryManager);
+                }
+                else
+                {
+                    rc = systemRepositoryManager.handles(resourceContext);
+                    if (rc != null)
+                    {
+                        addStatResultToMap(statusMap, rc, systemRepositoryManager);
+                    }
                 }
             }
         }
@@ -123,5 +233,23 @@ public class GroupRepositoryManager implements RepositoryManager
     private RepositoryGroupConfiguration getGroupConfiguration(final String repositoryId)
     {
         return archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( repositoryId );
+    }
+
+    private boolean isMetadataRequest(ResourceContext context)
+    {
+        return repositoryRequest.isMetadata(context.getLogicalPath()) && context.getLogicalPath().endsWith( "metadata.xml.sha1" ) && context.getLogicalPath().endsWith( "metadata.xml.md5" );
+    }
+
+    private boolean isProjectReference( String requestedResource )
+    {
+       try
+       {
+           metadataTools.toVersionedReference( requestedResource );
+           return false;
+       }
+       catch ( RepositoryMetadataException re )
+       {
+           return true;
+       }
     }
 }

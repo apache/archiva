@@ -28,6 +28,7 @@ import org.apache.maven.archiva.xml.XMLReader;
 import org.dom4j.Element;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -50,48 +51,74 @@ public class RepositoryMetadataReader
         try
         {
             XMLReader xml = new XMLReader( "metadata", metadataFile );
-
-            ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-
-            metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );
-            metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
-            metadata.setVersion( xml.getElementText( "//metadata/version" ) );
-            metadata.setFileLastModified( new Date( metadataFile.lastModified() ) );
-            metadata.setFileSize( metadataFile.length() );
-            metadata.setWhenIndexed( null );
-
-            metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
-            metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );
-            metadata.setReleasedVersion( xml.getElementText( "//metadata/versioning/release" ) );
-            metadata.setAvailableVersions( xml.getElementListText( "//metadata/versioning/versions/version" ) );
-
-            Element snapshotElem = xml.getElement( "//metadata/versioning/snapshot" );
-            if ( snapshotElem != null )
-            {
-                SnapshotVersion snapshot = new SnapshotVersion();
-                snapshot.setTimestamp( snapshotElem.elementTextTrim( "timestamp" ) );
-                String tmp = snapshotElem.elementTextTrim( "buildNumber" );
-                if( NumberUtils.isNumber( tmp ))
-                {
-                    snapshot.setBuildNumber( NumberUtils.toInt( tmp ) );
-                }
-                metadata.setSnapshotVersion( snapshot );
-            }
-
-            for ( Element plugin : xml.getElementList( "//metadata/plugins/plugin" ) )
-            {
-                Plugin p = new Plugin();
-                p.setPrefix( plugin.elementTextTrim( "prefix" ) );
-                p.setArtifactId( plugin.elementTextTrim( "artifactId" ) );
-                p.setName( plugin.elementTextTrim( "name" ) );
-                metadata.addPlugin( p );
-            }
-
-            return metadata;
+            return getArchivaRepositoryMetadata(xml);
         }
-        catch ( XMLException e )
+        catch (XMLException e)
         {
             throw new RepositoryMetadataException( e.getMessage(), e );
         }
+    }
+
+    /**
+     * Read and return the {@link ArchivaRepositoryMetadata} object from the provided xml stream.
+     *
+     * @param inputStream InputStream to the maven-metadata.xml file to read.
+     * @return the archiva repository metadata object that represents the provided file contents.
+     * @throws RepositoryMetadataException
+     */
+    public static ArchivaRepositoryMetadata read( InputStream inputStream )
+        throws RepositoryMetadataException
+    {
+        try
+        {
+            XMLReader xml = new XMLReader( "metadata", inputStream );
+            return getArchivaRepositoryMetadata(xml);
+        }
+        catch (XMLException e)
+        {
+            throw new RepositoryMetadataException( e.getMessage(), e );
+        }
+    }
+
+    private static ArchivaRepositoryMetadata getArchivaRepositoryMetadata(XMLReader xml)
+        throws XMLException
+    {
+        ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
+
+        metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );
+        metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
+        metadata.setVersion( xml.getElementText( "//metadata/version" ) );
+//            metadata.setFileLastModified( new Date( metadataFile.lastModified() ) );
+//            metadata.setFileSize( metadataFile.length() );
+        metadata.setWhenIndexed( null );
+
+        metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
+        metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );
+        metadata.setReleasedVersion( xml.getElementText( "//metadata/versioning/release" ) );
+        metadata.setAvailableVersions( xml.getElementListText( "//metadata/versioning/versions/version" ) );
+
+        Element snapshotElem = xml.getElement( "//metadata/versioning/snapshot" );
+        if ( snapshotElem != null )
+        {
+            SnapshotVersion snapshot = new SnapshotVersion();
+            snapshot.setTimestamp( snapshotElem.elementTextTrim( "timestamp" ) );
+            String tmp = snapshotElem.elementTextTrim( "buildNumber" );
+            if( NumberUtils.isNumber( tmp ))
+            {
+                snapshot.setBuildNumber( NumberUtils.toInt( tmp ) );
+            }
+            metadata.setSnapshotVersion( snapshot );
+        }
+
+        for ( Element plugin : xml.getElementList( "//metadata/plugins/plugin" ) )
+        {
+            Plugin p = new Plugin();
+            p.setPrefix( plugin.elementTextTrim( "prefix" ) );
+            p.setArtifactId( plugin.elementTextTrim( "artifactId" ) );
+            p.setName( plugin.elementTextTrim( "name" ) );
+            metadata.addPlugin( p );
+        }
+
+        return metadata;
     }
 }

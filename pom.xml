@@ -620,6 +620,11 @@
         <version>1.0-alpha-22</version>
       </dependency>
       <dependency>
+    <groupId>bouncycastle</groupId>
+    <artifactId>bcprov-jdk15</artifactId>
+    <version>140</version>
+</dependency>
+      <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-digest</artifactId>
         <version>1.1</version>

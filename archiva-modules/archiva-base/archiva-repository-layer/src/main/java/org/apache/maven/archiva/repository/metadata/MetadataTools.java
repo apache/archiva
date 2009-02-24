@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
+import org.apache.archiva.repository.api.Repository;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -371,7 +372,7 @@ public class MetadataTools
         }
     }
     
-    public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
+    public ArchivaRepositoryMetadata readProxyMetadata( Repository managedRepository,
                                                         String logicalResource, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, logicalResource );
@@ -421,7 +422,7 @@ public class MetadataTools
         }
     }
     
-    public void updateMetadata( ManagedRepositoryContent managedRepository, String logicalResource) throws RepositoryMetadataException
+    public void updateMetadata( Repository managedRepository, String logicalResource) throws RepositoryMetadataException
     {
         final File metadataFile = new File(managedRepository.getLocalPath(), logicalResource);
         ArchivaRepositoryMetadata metadata = null;
@@ -489,7 +490,7 @@ public class MetadataTools
         return result;
     }
     
-    private List<ArchivaRepositoryMetadata> getMetadatasForManagedRepository( ManagedRepositoryContent managedRepository, String logicalResource )
+    private List<ArchivaRepositoryMetadata> getMetadatasForManagedRepository( Repository managedRepository, String logicalResource )
     {
         List<ArchivaRepositoryMetadata> metadatas = new ArrayList<ArchivaRepositoryMetadata>();
         File file = new File(managedRepository.getLocalPath(), logicalResource);
