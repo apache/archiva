@@ -33,7 +33,6 @@
   <modules>
     <module>archiva-base</module>
     <module>archiva-database</module>
-    <module>archiva-security</module>
     <module>archiva-reporting</module>
     <module>archiva-scheduled</module>
     <module>archiva-web</module>
