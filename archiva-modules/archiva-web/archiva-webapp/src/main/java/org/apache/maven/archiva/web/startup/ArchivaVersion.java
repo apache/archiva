@@ -40,6 +40,11 @@ public class ArchivaVersion
     {
     }
 
+    static
+    {
+        determineVersion();
+    }
+
     public static String determineVersion(  )
     {
         if ( version != null )
