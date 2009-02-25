@@ -69,7 +69,10 @@ public class DefaultRepositoryManager implements SystemRepositoryManager
         FileInputStream fis = null;
         try
         {
-            fis = new FileInputStream(new File(repository.getLocalPath(), context.getLogicalPath()));
+            final File localResource = new File(repository.getLocalPath(), context.getLogicalPath());
+            if (!localResource.exists())
+                return false;
+            fis = new FileInputStream(localResource);
             IOUtils.copyLarge(fis, os);
             return true;
         }

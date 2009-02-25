@@ -98,23 +98,9 @@ public class GroupRepositoryManager implements RepositoryManager
 
     public boolean read(ResourceContext context, OutputStream os)
     {
-        if (!isMetadataRequest(context))
+        final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
+        if (isMetadataRequest(context) && isProjectReference(context))
         {
-            final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
-            for (final String repositoryId : groupConfiguration.getRepositories() )
-            {
-                final MutableResourceContext resourceContext = new MutableResourceContext(context);
-                resourceContext.setRepositoryId(repositoryId);
-                if (systemRepositoryManager.read(context, os))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        else if (isProjectReference(context.getLogicalPath()))
-        {
-            final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
             ArchivaRepositoryMetadata mainMetadata = null;
             for (final String repositoryId : groupConfiguration.getRepositories() )
             {
@@ -122,7 +108,7 @@ public class GroupRepositoryManager implements RepositoryManager
                 final MutableResourceContext resourceContext = new MutableResourceContext(context);
                 resourceContext.setRepositoryId(repositoryId);
 
-                if (systemRepositoryManager.read(context, baos))
+                if (systemRepositoryManager.read(resourceContext, baos))
                 {
                     try
                     {
@@ -159,6 +145,7 @@ public class GroupRepositoryManager implements RepositoryManager
                     RepositoryMetadataWriter.write(mainMetadata, writer);
                 }
                 writer.flush();
+                writer.close();
                 return true;
             }
             catch (IOException e)
@@ -170,16 +157,10 @@ public class GroupRepositoryManager implements RepositoryManager
                 throw new RepositoryManagerException("Could complete request in repository " + context.getRepositoryId() + " for " + context.getLogicalPath(), e);
             }
         }
-        return false;
-    }
-    
-    private byte[] getMetadataAsByteArray(ArchivaRepositoryMetadata metadata)
-        throws RepositoryMetadataException
-    {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final OutputStreamWriter writer = new OutputStreamWriter(baos);
-        RepositoryMetadataWriter.write(metadata, writer);
-        return baos.toByteArray();
+        else
+        {
+            return readFromGroup(groupConfiguration, context, os);
+        }
     }
     
     public boolean write(ResourceContext context, InputStream is)
@@ -190,7 +171,7 @@ public class GroupRepositoryManager implements RepositoryManager
     public List<Status> stat(ResourceContext context)
     {
         final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
-
+        
         final LinkedHashMap<String, Status> statusMap = new LinkedHashMap<String, Status>();
         for (final String repositoryId : groupConfiguration.getRepositories())
         {
@@ -230,6 +211,29 @@ public class GroupRepositoryManager implements RepositoryManager
         }
     }
 
+    private boolean readFromGroup(final RepositoryGroupConfiguration groupConfiguration, ResourceContext context, OutputStream os)
+    {
+        for (final String repositoryId : groupConfiguration.getRepositories())
+        {
+            final MutableResourceContext resourceContext = new MutableResourceContext(context);
+            resourceContext.setRepositoryId(repositoryId);
+            if (systemRepositoryManager.read(resourceContext, os))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private byte[] getMetadataAsByteArray(ArchivaRepositoryMetadata metadata)
+        throws RepositoryMetadataException
+    {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final OutputStreamWriter writer = new OutputStreamWriter(baos);
+        RepositoryMetadataWriter.write(metadata, writer);
+        return baos.toByteArray();
+    }
+
     private RepositoryGroupConfiguration getGroupConfiguration(final String repositoryId)
     {
         return archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( repositoryId );
@@ -237,14 +241,14 @@ public class GroupRepositoryManager implements RepositoryManager
 
     private boolean isMetadataRequest(ResourceContext context)
     {
-        return repositoryRequest.isMetadata(context.getLogicalPath()) && context.getLogicalPath().endsWith( "metadata.xml.sha1" ) && context.getLogicalPath().endsWith( "metadata.xml.md5" );
+        return repositoryRequest.isMetadata(context.getLogicalPath()) || context.getLogicalPath().endsWith( "metadata.xml.sha1" ) || context.getLogicalPath().endsWith( "metadata.xml.md5" );
     }
 
-    private boolean isProjectReference( String requestedResource )
+    private boolean isProjectReference( ResourceContext context )
     {
        try
        {
-           metadataTools.toVersionedReference( requestedResource );
+           metadataTools.toVersionedReference( context.getLogicalPath() );
            return false;
        }
        catch ( RepositoryMetadataException re )
