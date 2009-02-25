@@ -497,11 +497,6 @@ public class DefaultRepositoryProxyConnectors
             return null;
         }
 
-        // MRM-631 - the lightweight wagon does not reset these - remove if we switch to httpclient based wagon
-        String previousHttpProxyHost = System.getProperty( "http.proxyHost" );
-        String previousHttpProxyPort = System.getProperty( "http.proxyPort" );
-        String previousProxyExclusions = System.getProperty( "http.nonProxyHosts" );
-
         File tmpMd5 = null;
         File tmpSha1 = null;
         File tmpResource = null;
@@ -550,32 +545,6 @@ public class DefaultRepositoryProxyConnectors
                 try
                 {
                     wagon.disconnect();
-
-                    // MRM-631 - the lightweight wagon does not reset these - remove if we switch to httpclient based wagon
-                    if ( previousHttpProxyHost != null )
-                    {
-                        System.setProperty( "http.proxyHost", previousHttpProxyHost );
-                    }
-                    else
-                    {
-                        System.getProperties().remove( "http.proxyHost" );
-                    }
-                    if ( previousHttpProxyPort != null )
-                    {
-                        System.setProperty( "http.proxyPort", previousHttpProxyPort );
-                    }
-                    else
-                    {
-                        System.getProperties().remove( "http.proxyPort" );
-                    }
-                    if ( previousProxyExclusions != null )
-                    {
-                        System.setProperty( "http.nonProxyHosts", previousProxyExclusions );
-                    }
-                    else
-                    {
-                        System.getProperties().remove( "http.nonProxyHosts" );
-                    }
                 }
                 catch ( ConnectionException e )
                 {
