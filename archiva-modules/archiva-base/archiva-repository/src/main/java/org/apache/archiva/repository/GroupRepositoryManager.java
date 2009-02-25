@@ -251,7 +251,7 @@ public class GroupRepositoryManager implements RepositoryManager
            metadataTools.toVersionedReference( context.getLogicalPath() );
            return false;
        }
-       catch ( RepositoryMetadataException re )
+       catch ( RepositoryMetadataException e )
        {
            return true;
        }
