@@ -62,6 +62,12 @@
         </properties>
       </configuration>
     </component>
+
+    <component>
+      <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.archiva.web.servlet.BypassSecuritySystem</implementation>
+    </component>
     
     <component>
       <role>org.codehaus.plexus.cache.Cache</role>

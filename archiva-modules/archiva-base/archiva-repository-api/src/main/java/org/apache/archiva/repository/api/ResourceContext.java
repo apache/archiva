@@ -35,4 +35,10 @@ public interface ResourceContext
      * @return
      */
     String getRepositoryId();
+
+    /**
+     * Get the principal used for the resource request
+     * @return
+     */
+    String getPrincipal();
 }

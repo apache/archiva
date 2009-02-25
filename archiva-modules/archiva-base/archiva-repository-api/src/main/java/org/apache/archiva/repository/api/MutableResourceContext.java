@@ -31,6 +31,8 @@ public class MutableResourceContext implements ResourceContext
 
     private String repositoryId;
 
+    private String principal;
+
     public MutableResourceContext(ResourceContext context)
     {
         this.context = context;
@@ -52,6 +54,24 @@ public class MutableResourceContext implements ResourceContext
             return repositoryId;
         }
         return context.getRepositoryId();
+    }
+
+    public String getPrincipal()
+    {
+        if (principal != null)
+        {
+            return principal;
+        }
+        return context.getPrincipal();
+    }
+
+    /**
+     * Sets the principal overriding the internal principal value
+     * @param principal
+     */
+    public void setPrincipal(String principal)
+    {
+        this.principal = principal;
     }
 
     /**
