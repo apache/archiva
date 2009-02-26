@@ -218,7 +218,7 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = sc.getResponse( request ); 
                 
         assertNotNull( "Should have received a response", response );
-        assertEquals( "Should have been an 401 response code.", HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode() );
+        assertEquals( "Should have been an 200 response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
     }
     
     // MRM-872
