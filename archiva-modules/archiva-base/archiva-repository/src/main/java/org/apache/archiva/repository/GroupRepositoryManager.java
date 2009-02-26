@@ -21,14 +21,10 @@ package org.apache.archiva.repository;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.CharArrayWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,7 +41,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
@@ -94,16 +89,6 @@ public class GroupRepositoryManager implements RepositoryManager
             return context;
         }
         return null;
-    }
-
-    private MutableResourceContext getMetadataLogicalPathWithoutChecksum(ResourceContext resourceContext)
-    {
-        MutableResourceContext context = new MutableResourceContext(resourceContext);
-        if (context.getLogicalPath().endsWith(".md5") || context.getLogicalPath().endsWith(".sha1"))
-        {
-            context.setLogicalPath(context.getLogicalPath().substring(0, context.getLogicalPath().lastIndexOf('.')));
-        }
-        return context;
     }
 
     public boolean read(ResourceContext context, OutputStream os)
@@ -230,6 +215,16 @@ public class GroupRepositoryManager implements RepositoryManager
 
             statusMap.put(status.getName(), status);
         }
+    }
+
+    private MutableResourceContext getMetadataLogicalPathWithoutChecksum(ResourceContext resourceContext)
+    {
+        MutableResourceContext context = new MutableResourceContext(resourceContext);
+        if (context.getLogicalPath().endsWith(".md5") || context.getLogicalPath().endsWith(".sha1"))
+        {
+            context.setLogicalPath(context.getLogicalPath().substring(0, context.getLogicalPath().lastIndexOf('.')));
+        }
+        return context;
     }
 
     private boolean readFromGroup(final RepositoryGroupConfiguration groupConfiguration, ResourceContext context, OutputStream os)
