@@ -136,7 +136,7 @@
           <my:currentWWUrl action="proxyConnectors" namespace="/admin">Proxy Connectors</my:currentWWUrl>
         </li>
         <li class="none">
-          <my:currentWWUrl action="legacyArtifactPath" namespace="/admin">Legacy support</my:currentWWUrl>
+          <my:currentWWUrl action="legacyArtifactPath" namespace="/admin">Legacy Support</my:currentWWUrl>
         </li>
         <li class="none">
           <my:currentWWUrl action="networkProxies" namespace="/admin">Network Proxies</my:currentWWUrl>
