@@ -96,6 +96,16 @@ public class GroupRepositoryManager implements RepositoryManager
         return null;
     }
 
+    private MutableResourceContext getMetadataLogicalPathWithoutChecksum(ResourceContext resourceContext)
+    {
+        MutableResourceContext context = new MutableResourceContext(resourceContext);
+        if (context.getLogicalPath().endsWith(".md5") || context.getLogicalPath().endsWith(".sha1"))
+        {
+            context.setLogicalPath(context.getLogicalPath().substring(0, context.getLogicalPath().lastIndexOf('.')));
+        }
+        return context;
+    }
+
     public boolean read(ResourceContext context, OutputStream os)
     {
         final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
@@ -105,7 +115,7 @@ public class GroupRepositoryManager implements RepositoryManager
             for (final String repositoryId : groupConfiguration.getRepositories() )
             {
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                final MutableResourceContext resourceContext = new MutableResourceContext(context);
+                final MutableResourceContext resourceContext = getMetadataLogicalPathWithoutChecksum(context);
                 resourceContext.setRepositoryId(repositoryId);
 
                 if (systemRepositoryManager.read(resourceContext, baos))
@@ -127,6 +137,11 @@ public class GroupRepositoryManager implements RepositoryManager
                         log.error("Could not merge " + resourceContext.getLogicalPath() + "from repository " + context.getRepositoryId(), e);
                     }
                 }
+            }
+
+            if (mainMetadata == null)
+            {
+                throw new RepositoryManagerException("Could not merge repository metadata for path " + context.getLogicalPath() + " in repository group " + context.getRepositoryId());
             }
 
             try
@@ -175,7 +190,7 @@ public class GroupRepositoryManager implements RepositoryManager
         final LinkedHashMap<String, Status> statusMap = new LinkedHashMap<String, Status>();
         for (final String repositoryId : groupConfiguration.getRepositories())
         {
-            final MutableResourceContext resourceContext = new MutableResourceContext(context);
+            final MutableResourceContext resourceContext = getMetadataLogicalPathWithoutChecksum(context);
             resourceContext.setRepositoryId(repositoryId);
 
             ResourceContext rc = proxyRepositoryManager.handles(resourceContext);
@@ -207,6 +222,12 @@ public class GroupRepositoryManager implements RepositoryManager
     {
         for (final Status status : repositoryManager.stat(resourceContext))
         {
+            //Metadata requests do not have determinable response lengths
+            if (isMetadataRequest(resourceContext) && isProjectReference(resourceContext))
+            {
+                status.setContentLength(-1);
+            }
+
             statusMap.put(status.getName(), status);
         }
     }

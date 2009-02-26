@@ -209,7 +209,11 @@ public class RepositoryServlet extends HttpServlet
             else
             {
                 resp.setStatus(HttpServletResponse.SC_OK);
-                resp.setContentLength((int)status.getContentLength());
+
+                if (status.getContentLength() >= 0)
+                {
+                    resp.setContentLength((int)status.getContentLength());
+                }
                 resp.setContentType(status.getContentType());
                 resp.setDateHeader(LAST_MODIFIED, status.getLastModified());
 

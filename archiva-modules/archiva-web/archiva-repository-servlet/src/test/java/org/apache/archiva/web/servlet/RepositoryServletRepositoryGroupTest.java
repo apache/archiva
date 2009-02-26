@@ -260,15 +260,6 @@ public class RepositoryServletRepositoryGroupTest
         assertTrue( "Versions list contains version 2.0", metadata.getAvailableVersions().contains( "2.0" ) );
         assertTrue( "Versions list contains version 2.5", metadata.getAvailableVersions().contains( "2.5" ) );
         
-        //check if the checksum files were generated
-        File checksumFileSha1 = new File( repoRootFirst, resourceName + ".sha1" );
-        checksumFileSha1.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( checksumFileSha1, "3290853214d3687134", null );
-        
-        File checksumFileMd5 = new File( repoRootFirst, resourceName + ".md5" );
-        checksumFileMd5.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( checksumFileMd5, "98745897234eda12836423", null );
-        
         // request the sha1 checksum of the metadata
         request =
             new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/" +
@@ -276,7 +267,7 @@ public class RepositoryServletRepositoryGroupTest
         response = sc.getResource( request );
         
         assertResponseOK( response );
-        assertEquals( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml", response.getText() );
+        assertEquals( "add113b0d7f8c6adb92a5015a7a3701081edf998", response.getText() );
         
         // request the md5 checksum of the metadata
         request =
@@ -285,7 +276,7 @@ public class RepositoryServletRepositoryGroupTest
         response = sc.getResource( request );
                 
         assertResponseOK( response );
-        assertEquals( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml", response.getText().trim() );
+        assertEquals( "5b85ea4aa5f52bb76760041a52f98de8", response.getText().trim() );
     }
         
     protected void assertResponseMethodNotAllowed( WebResponse response )
