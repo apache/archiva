@@ -97,7 +97,7 @@ public class GroupRepositoryManager implements RepositoryManager
         if (isMetadataRequest(context) && isProjectReference(context))
         {
             ArchivaRepositoryMetadata mainMetadata = null;
-            for (final String repositoryId : groupConfiguration.getRepositories() )
+            for (final String repositoryId : new ArrayList<String>(groupConfiguration.getRepositories()) )
             {
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 final MutableResourceContext resourceContext = getMetadataLogicalPathWithoutChecksum(context);
@@ -173,7 +173,7 @@ public class GroupRepositoryManager implements RepositoryManager
         final RepositoryGroupConfiguration groupConfiguration = getGroupConfiguration(context.getRepositoryId());
         
         final LinkedHashMap<String, Status> statusMap = new LinkedHashMap<String, Status>();
-        for (final String repositoryId : groupConfiguration.getRepositories())
+        for (final String repositoryId : new ArrayList<String>(groupConfiguration.getRepositories()))
         {
             final MutableResourceContext resourceContext = getMetadataLogicalPathWithoutChecksum(context);
             resourceContext.setRepositoryId(repositoryId);
@@ -229,7 +229,7 @@ public class GroupRepositoryManager implements RepositoryManager
 
     private boolean readFromGroup(final RepositoryGroupConfiguration groupConfiguration, ResourceContext context, OutputStream os)
     {
-        for (final String repositoryId : groupConfiguration.getRepositories())
+        for (final String repositoryId : new ArrayList<String>(groupConfiguration.getRepositories()))
         {
             final MutableResourceContext resourceContext = new MutableResourceContext(context);
             resourceContext.setRepositoryId(repositoryId);

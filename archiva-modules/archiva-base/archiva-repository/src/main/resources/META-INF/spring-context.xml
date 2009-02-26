@@ -3,6 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+       <bean name="auditLoggingPostRepositoryInteceptor" class="org.apache.archiva.repository.AuditLoggingPostRepositoryInterceptor"/>
+
        <bean name="repositoryFactory" class="org.apache.archiva.repository.DefaultRepositoryFactory" lazy-init="true">
            <constructor-arg ref="repositoryContentFactory"/>
        </bean>

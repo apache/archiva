@@ -41,6 +41,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.model.DistributionManagement;

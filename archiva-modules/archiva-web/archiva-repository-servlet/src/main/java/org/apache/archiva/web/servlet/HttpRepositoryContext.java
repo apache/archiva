@@ -66,6 +66,11 @@ public class HttpRepositoryContext implements RepositoryContext
         }
     }
 
+    public String getRemoteIP()
+    {
+        return request.getRemoteAddr();
+    }
+
     private static String getPrincipal(HttpServletRequest request)
     {
         String header = request.getHeader( "Authorization" );

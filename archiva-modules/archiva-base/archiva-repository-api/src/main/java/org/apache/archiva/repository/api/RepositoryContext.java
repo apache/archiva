@@ -72,7 +72,13 @@ public interface RepositoryContext extends ResourceContext
 
     /**
      * Gets the ContentType of the Response
-     * @return
+     * @return contentType
      */
     String getContentType();
+
+    /**
+     * Gets the IP Address of the requester
+     * @return ipAdress
+     */
+    String getRemoteIP();
 }
