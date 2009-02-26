@@ -173,6 +173,16 @@ public final class Status
         return status;
     }
 
+    @Override
+    public String toString()
+    {
+        if (getResourceType() != null && getName() != null)
+        {
+            return "Name: " + getName() + " Type: " + getResourceType();
+        }
+        return super.toString();
+    }
+
     /**
      * Comparator for Status names
      */
