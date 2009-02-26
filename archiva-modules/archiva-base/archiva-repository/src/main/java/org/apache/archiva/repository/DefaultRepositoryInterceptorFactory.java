@@ -47,10 +47,10 @@ public class DefaultRepositoryInterceptorFactory implements RepositoryIntercepto
         if (repositoryInterceptors == null)
         {
             repositoryInterceptors = new ArrayList<RepositoryInterceptor>();
-            Map beans = beanFactory.getBeansOfType(interceptorType);
+            final Map beans = beanFactory.getBeansOfType(interceptorType);
             if (beans != null)
             {
-                repositoryInterceptors.addAll(repositoryInterceptors);
+                repositoryInterceptors.addAll(beans.values());
             }
         }
         return repositoryInterceptors;
