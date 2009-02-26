@@ -616,11 +616,11 @@ public class DefaultRepositoryProxyConnectors
             }
         }
 
-//        if ( executeConsumers )
-//        {
-//            // Just-in-time update of the index and database by executing the consumers for this artifact
-//            consumers.executeConsumers( connector.getSourceRepository().getRepository(), resource );
-//        }
+        if ( executeConsumers )
+        {
+            // Just-in-time update of the index and database by executing the consumers for this artifact
+            consumers.executeConsumers( connector.getSourceRepository().getRepository(), resource );
+        }
         
         return resource;
     }
