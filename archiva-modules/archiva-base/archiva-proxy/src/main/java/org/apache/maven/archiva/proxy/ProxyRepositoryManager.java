@@ -89,7 +89,32 @@ public class ProxyRepositoryManager implements RepositoryManager
 
     public boolean read(ResourceContext context, OutputStream os)
     {
-        return repositoryManager.read(context, os);
+        final MutableResourceContext resourceContext = new MutableResourceContext(context);
+        final ManagedRepositoryContent managedRepository = getManagedRepositoryContent(context);
+        try
+        {
+            performPathAjustment(resourceContext, managedRepository);
+
+            final ArtifactReference artifactReference = managedRepository.toArtifactReference(resourceContext.getLogicalPath());
+            if (artifactReference != null)
+            {
+                try
+                {
+                    applyServerSideRelocation(managedRepository, artifactReference);
+                }
+                catch (ProxyDownloadException e)
+                {
+                    log.error(e.getMessage(), e);
+                }
+                resourceContext.setLogicalPath(managedRepository.toPath(artifactReference));
+            }
+        }
+        catch (LayoutException e)
+        {
+            //Ignore
+        }
+
+        return repositoryManager.read(resourceContext, os);
     }
 
     public List<Status> stat(ResourceContext context)
@@ -97,40 +122,8 @@ public class ProxyRepositoryManager implements RepositoryManager
         final MutableResourceContext resourceContext = new MutableResourceContext(context);
 
         //Return the stat() result from the system repository if we are simply getting a collection
-
-        ManagedRepositoryContent managedRepository = null;
-        try
-        {
-            managedRepository = repositoryFactory.getManagedRepositoryContent(resourceContext.getRepositoryId());
-        }
-        catch (RepositoryNotFoundException e)
-        {
-            throw new RepositoryManagerException(e.getMessage(), e);
-        }
-        catch (RepositoryException e)
-        {
-            throw new RepositoryManagerException(e.getMessage(), e);
-        }
-
-        //Check if logical path can be mushed into a valid path. This is so ugly.
-        boolean isCollection = false;
-        try
-        {
-            this.repositoryRequest.toArtifactReference(resourceContext.getLogicalPath());
-        }
-        catch (LayoutException e)
-        {
-            try
-            {
-                repositoryRequest.toNativePath(resourceContext.getLogicalPath(), managedRepository);
-            }
-            catch (LayoutException ex)
-            {
-                isCollection = true;
-            }
-        }
-
-        if (isCollection)
+        final ManagedRepositoryContent managedRepository = getManagedRepositoryContent(context);
+        if (isCollection(context, managedRepository))
         {
             return repositoryManager.stat(context);
         }
@@ -147,6 +140,56 @@ public class ProxyRepositoryManager implements RepositoryManager
     {
         return repositoryManager.write(context, is);
     }
+    
+    private boolean performPathAjustment(MutableResourceContext resourceContext, ManagedRepositoryContent managedRepository)
+    {
+        try
+        {
+            String localResourcePath = repositoryRequest.toNativePath( resourceContext.getLogicalPath(), managedRepository );
+            resourceContext.setLogicalPath(localResourcePath);
+            return true;
+        }
+        catch (LayoutException e)
+        {
+            return false;
+        }
+    }
+
+    private ManagedRepositoryContent getManagedRepositoryContent(ResourceContext resourceContext)
+    {
+        try
+        {
+            return repositoryFactory.getManagedRepositoryContent(resourceContext.getRepositoryId());
+        }
+        catch (RepositoryNotFoundException e)
+        {
+            throw new RepositoryManagerException(e.getMessage(), e);
+        }
+        catch (RepositoryException e)
+        {
+            throw new RepositoryManagerException(e.getMessage(), e);
+        }
+    }
+
+    private boolean isCollection(ResourceContext resourceContext, ManagedRepositoryContent managedRepository)
+    {
+        try
+        {
+            this.repositoryRequest.toArtifactReference(resourceContext.getLogicalPath());
+        }
+        catch (LayoutException e)
+        {
+            try
+            {
+                repositoryRequest.toNativePath(resourceContext.getLogicalPath(), managedRepository);
+            }
+            catch (LayoutException ex)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private Status doProxy( ManagedRepositoryContent managedRepository, MutableResourceContext context )
         throws RepositoryManagerException
@@ -158,14 +201,8 @@ public class ProxyRepositoryManager implements RepositoryManager
         // legacy layout format.
         Status status = fetchContentFromProxies( managedRepository, context );
 
-        try
-        {
-            // Perform an adjustment of the resource to the managed
-            // repository expected path.
-            String localResourcePath = repositoryRequest.toNativePath( context.getLogicalPath(), managedRepository );
-            resourceFile = new File( managedRepository.getId(), localResourcePath );
-        }
-        catch ( LayoutException e )
+
+        if (!performPathAjustment(context, managedRepository))
         {
             if (previouslyExisted)
             {
