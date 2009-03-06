@@ -22,9 +22,10 @@
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 
 <div id="companyLogo">
-    <s:if test="%{organisationLogo != null}">
+  <s:set name="organisationLogo" value="organisationLogo"/>
+  <c:choose>
+    <c:when test="${!empty (organisationLogo)}">
       <s:set name="organisationUrl" value="organisationUrl"/>
-      <s:set name="organisationLogo" value="organisationLogo"/>
       <c:choose>
         <c:when test="${!empty (organisationUrl)}">
           <a href="${organisationUrl}">
@@ -35,10 +36,11 @@
           <img src="${organisationLogo}" title="${organisationName}"/>
         </c:otherwise>
       </c:choose>
-    </s:if>
-    <s:else>
-        <my:currentWWUrl action="index" namespace="/">
-          <img src="<c:url value='/images/archiva.png' />"/>
-        </my:currentWWUrl>
-    </s:else>
+    </c:when>
+    <c:otherwise>
+      <my:currentWWUrl action="index" namespace="/">
+        <img src="<c:url value='/images/archiva.png' />"/>
+      </my:currentWWUrl>
+    </c:otherwise>
+  </c:choose>
 </div>
