@@ -111,16 +111,16 @@
           <groupId>org.codehaus.modello</groupId>
           <artifactId>modello-maven-plugin</artifactId>
           <version>1.0</version>
-		  <configuration>
-			<useJava5>true</useJava5>
-		  </configuration>
-		  <dependencies>
+          <configuration>
+            <useJava5>true</useJava5>
+          </configuration>
+          <dependencies>
             <dependency>
               <groupId>org.codehaus.modello</groupId>
               <artifactId>modello-plugin-plexus-registry</artifactId>
               <version>1.0-alpha-21</version>
             </dependency>
-			<dependency>
+            <dependency>
               <groupId>org.codehaus.modello</groupId>
               <artifactId>modello-plugin-jpox</artifactId>
               <version>1.0-alpha-21</version>
@@ -836,7 +836,7 @@
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-          </exclusion>	
+          </exclusion>  
         </exclusions>
       </dependency>
       
@@ -920,12 +920,12 @@
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-http-lightweight</artifactId>
         <version>${wagon.version}</version>
-	<exclusions>
-	    <exclusion>
-		<groupId>nekohtml</groupId>
-		<artifactId>xercesMinimal</artifactId>
-	    </exclusion>
-	</exclusions>
+        <exclusions>
+          <exclusion>
+            <groupId>nekohtml</groupId>
+            <artifactId>xercesMinimal</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
