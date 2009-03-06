@@ -105,6 +105,10 @@ public class ArchivaServletAuthenticator
             }
             
             User user = securitySystem.getUserManager().findUser( principal );
+            if ( user == null )
+            {
+                throw new UnauthorizedException( "The security system had an internal error - please check your system logs" );
+            }
             if ( user.isLocked() )
             {
                 throw new UnauthorizedException( "User account is locked." );
