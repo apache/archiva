@@ -70,30 +70,30 @@
               <goal>java</goal>
             </goals>
           </execution>
-		  <execution>
+          <execution>
             <id>archiva-jpox-registry-reader</id>
             <goals>
-                <goal>generate</goal>
+              <goal>generate</goal>
             </goals>
             <configuration>
-                <generatorId>registry-reader</generatorId>
+              <generatorId>registry-reader</generatorId>
             </configuration>
           </execution>
-		  <execution>
+          <execution>
             <id>archiva-jpox-registry-writer</id>
             <goals>
-                <goal>generate</goal>
+              <goal>generate</goal>
             </goals>
             <configuration>
-                <generatorId>registry-writer</generatorId>
+              <generatorId>registry-writer</generatorId>
             </configuration>
           </execution>
         </executions>
         <configuration>
           <version>1.2.0</version>
-		  <models>
+          <models>
             <model>src/main/mdo/configuration.mdo</model>
-		  </models>
+          </models>
         </configuration>
       </plugin>
       <plugin>
