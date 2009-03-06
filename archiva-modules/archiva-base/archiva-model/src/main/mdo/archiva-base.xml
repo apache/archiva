@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 <model jpox.mapping-in-package="true"
        jpox.table-prefix="ARCHIVA_"
-       xsd.namespace="http://maven.apache.org/archiva/MODEL-1.0.0"
-       xsd.target-namespace="http://maven.apache.org/archiva/MODEL-1.0.0">
+       xsd.namespace="http://archiva.apache.org/model/1.2.0"
+       xsd.target-namespace="http://archiva.apache.org/model/1.2.0">
   <id>archiva-base-model</id>
   <name>ArchivaBaseModel</name>
-  <version>1.0.0</version>
+  <version>1.2.0</version>
   <description>Archiva Model</description>
   <defaults>
     <default>
@@ -407,7 +407,7 @@
           <type>Date</type>
           <required>false</required>
           <description>
-            When this artifact was gathered or disovered from the repository.
+            When this artifact was gathered or discovered from the repository.
           </description>
         </field>
       </fields>
@@ -611,20 +611,20 @@
           ]]></code>
         </codeSegment>
         <codeSegment>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <code>
-            public void updateTimestamp()
-            {
-            setLastUpdatedTimestamp( new java.util.Date() );
-            }
+    public void updateTimestamp()
+    {
+        setLastUpdatedTimestamp( new java.util.Date() );
+    }
 
-            public void setLastUpdatedTimestamp( java.util.Date date )
-            {
-            java.util.TimeZone timezone = java.util.TimeZone.getTimeZone( "UTC" );
-            java.text.DateFormat fmt = new java.text.SimpleDateFormat( "yyyyMMddHHmmss" );
-            fmt.setTimeZone( timezone );
-            setLastUpdated( fmt.format( date ) );
-            }
+    public void setLastUpdatedTimestamp( java.util.Date date )
+    {
+        java.util.TimeZone timezone = java.util.TimeZone.getTimeZone( "UTC" );
+        java.text.DateFormat fmt = new java.text.SimpleDateFormat( "yyyyMMddHHmmss" );
+        fmt.setTimeZone( timezone );
+        setLastUpdated( fmt.format( date ) );
+    }
           </code>
         </codeSegment>
       </codeSegments>
@@ -2203,41 +2203,37 @@
             The number of new files discovered.
           </description>
         </field>
-        <field>
+        <field jpox.null-value="default">
           <name>totalProjectCount</name>
-          <version>1.0.0+</version>
+          <version>1.2.0+</version>
           <identifier>false</identifier>
-          <required>true</required>
           <type>long</type>
           <description>
             The total number of unique projects in the repository.
           </description>
         </field>
-        <field>
+        <field jpox.null-value="default">
           <name>totalGroupCount</name>
-          <version>1.0.0+</version>
+          <version>1.2.0+</version>
           <identifier>false</identifier>
-          <required>true</required>
           <type>long</type>
           <description>
             The total number of unique groups in the repository.
           </description>
         </field>
-        <field>
+        <field jpox.null-value="default">
           <name>totalArtifactCount</name>
-          <version>1.0.0+</version>
+          <version>1.2.0+</version>
           <identifier>false</identifier>
-          <required>true</required>
           <type>long</type>
           <description>
             The total number of artifacts in the repository. 
           </description>
         </field>
-        <field>
+        <field jpox.null-value="default">
           <name>totalSize</name>
-          <version>1.0.0+</version>
+          <version>1.2.0+</version>
           <identifier>false</identifier>
-          <required>true</required>
           <type>long</type>
           <description>
             The total size in bytes of the repository.
