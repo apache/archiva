@@ -33,21 +33,29 @@
   <div id="searchBox">
     <s:if test="%{#application['uiOptions'].appletFindEnabled}">
       <script type="text/javascript">
-        function generateMd5( file, defVal )
+        function handleChecksum( form )
         {
-          if ( file )
+          if ( form.file.value )
           {
-            var s = document.ChecksumApplet.generateMd5(file);
+            var s = document.ChecksumApplet.generateMd5( form.file.value );
             // If there is a space, it's an error message, not a checksum
             if ( s.indexOf(" ") >= 0 )
             {
               alert(s);
-              return "";
+              return false;
             }
             else
-              return s;
+            {
+              form.file.disabled = true;
+              form.q.value = s;
+            }
           }
-          return defVal;
+          else
+          {
+            form.file.disabled = true;
+            form.q.value = form.md5.value;
+          }
+          return true;
         }
       </script>
 
@@ -55,8 +63,7 @@
         <span class="errorMessage">JavaScript is disabled: using the file browser will not work.</span>
       </noscript>
 
-      <s:form method="POST" action="checksumSearch" namespace="/"
-               onsubmit="this.q.value = generateMd5(this.file.value,this.md5.value); this.file.disabled = true;">
+      <s:form method="POST" action="checksumSearch" namespace="/" onsubmit="return handleChecksum(this);">
         <s:hidden name="q"/>
         <tr>
           <td class="tdLabel"><label for="checksumSearch_file" class="label">Search for:</label></td>
