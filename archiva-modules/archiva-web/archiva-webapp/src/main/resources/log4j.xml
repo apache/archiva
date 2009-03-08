@@ -37,6 +37,11 @@
     <appender-ref ref="auditlog" />
   </logger>
   
+  <logger name="org.codehaus.redback">
+    <level value="info"/>
+    <appender-ref ref="rolling" />
+  </logger>
+
   <logger name="org.codehaus.plexus.redback">
     <level value="info"/>
     <appender-ref ref="rolling" />
