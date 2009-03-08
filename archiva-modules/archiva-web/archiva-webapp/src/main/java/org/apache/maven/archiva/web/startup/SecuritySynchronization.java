@@ -146,8 +146,13 @@ public class SecuritySynchronization
         for ( Entry<String, EnvironmentCheck> entry : checkers.entrySet() )
         {
             EnvironmentCheck check = entry.getValue();
-            log.info( "Running Environment Check: " + entry.getKey() );
-            check.validateEnvironment( violations );
+            List<String> v = new ArrayList<String>();
+            check.validateEnvironment( v );
+            log.info( "Environment Check: " + entry.getKey() + " -> " + v.size() + " violation(s)" );
+            for ( String s : v )
+            {
+                violations.add( "[" + entry.getKey() + "] " + s );
+            }
         }
 
         if ( CollectionUtils.isNotEmpty( violations ) )
