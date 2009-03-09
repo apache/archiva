@@ -42,7 +42,7 @@ import com.opensymphony.xwork2.Validateable;
  * 
  * TODO change name to ShowVersionedAction to conform to terminology.
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction" instantiation-strategy="per-lookup"
  */
 public class ShowArtifactAction
     extends PlexusActionSupport

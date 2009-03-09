@@ -47,7 +47,7 @@ import java.util.Map;
  * DeleteManagedRepositoryAction
  * 
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
 public class DeleteManagedRepositoryAction
     extends AbstractManagedRepositoriesAction

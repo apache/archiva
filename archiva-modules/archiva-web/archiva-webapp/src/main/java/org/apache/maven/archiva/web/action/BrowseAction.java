@@ -38,7 +38,7 @@ import org.apache.maven.archiva.security.*;
  * @todo cache browsing results.
  * @todo implement repository selectors (all or specific repository)
  * @todo implement security around browse (based on repository id at first)
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction" instantiation-strategy="per-lookup"
  */
 public class BrowseAction
     extends PlexusActionSupport

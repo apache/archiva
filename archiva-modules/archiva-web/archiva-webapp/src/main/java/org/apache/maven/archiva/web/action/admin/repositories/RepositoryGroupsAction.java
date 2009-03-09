@@ -39,7 +39,7 @@ import org.apache.maven.archiva.web.util.ContextUtils;
  * RepositoryGroupsAction
  * 
  * @version
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryGroupsAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryGroupsAction" instantiation-strategy="per-lookup"
  */
 public class RepositoryGroupsAction
     extends AbstractRepositoriesAdminAction

@@ -36,7 +36,7 @@ import java.io.IOException;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="editManagedRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="editManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
 public class EditManagedRepositoryAction
     extends AbstractManagedRepositoriesAction

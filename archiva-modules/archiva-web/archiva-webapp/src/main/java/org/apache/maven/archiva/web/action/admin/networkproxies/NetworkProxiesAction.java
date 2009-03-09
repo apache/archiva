@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="networkProxiesAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="networkProxiesAction" instantiation-strategy="per-lookup"
  */
 public class NetworkProxiesAction
     extends PlexusActionSupport

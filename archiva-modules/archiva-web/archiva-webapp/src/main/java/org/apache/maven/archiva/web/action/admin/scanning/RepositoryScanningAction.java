@@ -49,7 +49,7 @@ import java.util.Map;
  * RepositoryScanningAction
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryScanningAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryScanningAction" instantiation-strategy="per-lookup"
  */
 public class RepositoryScanningAction
     extends PlexusActionSupport

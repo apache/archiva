@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRemoteRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRemoteRepositoryAction" instantiation-strategy="per-lookup"
  */
 public class DeleteRemoteRepositoryAction
     extends AbstractRemoteRepositoriesAction

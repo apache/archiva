@@ -69,7 +69,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 /**
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport" instantiation-strategy="per-lookup"
  */
 public class GenerateReportAction
     extends PlexusActionSupport

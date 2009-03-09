@@ -66,7 +66,7 @@ import com.opensymphony.xwork2.Validateable;
 /**
  * Delete an artifact. Metadata will be updated if one exists, otherwise it would be created.
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteArtifactAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteArtifactAction" instantiation-strategy="per-lookup"
  */
 public class DeleteArtifactAction
     extends PlexusActionSupport

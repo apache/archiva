@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortProxyConnectorsAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortProxyConnectorsAction" instantiation-strategy="per-lookup"
  */
 public class SortProxyConnectorsAction
     extends AbstractProxyConnectorAction

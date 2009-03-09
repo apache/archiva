@@ -40,7 +40,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
  * ConfigureNetworkProxyAction
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="configureNetworkProxyAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="configureNetworkProxyAction" instantiation-strategy="per-lookup"
  */
 public class ConfigureNetworkProxyAction
     extends PlexusActionSupport

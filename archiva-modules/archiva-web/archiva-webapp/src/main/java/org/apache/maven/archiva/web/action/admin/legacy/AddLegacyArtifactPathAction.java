@@ -34,7 +34,7 @@ import org.apache.maven.archiva.web.action.PlexusActionSupport;
  * Add a LegacyArtifactPath to archiva configuration
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addLegacyArtifactPathAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addLegacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
 public class AddLegacyArtifactPathAction
     extends PlexusActionSupport

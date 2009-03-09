@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.action.admin.appearance;
+package org.apache.maven.archiva.web.action;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,12 +19,15 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-/**
- * Stores the organisation information for displaying on the page.
- *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="organisationInfo" instantiation-strategy="per-lookup"
- */
-public class OrganisationInfoAction
-    extends AbstractAppearanceAction
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+
+import com.opensymphony.xwork2.Action;
+
+public class ShowArtifactActionTest
+    extends PlexusInSpringTestCase
 {
+    public void testInstantiation()
+    {
+        assertFalse( lookup( Action.class, "showArtifactAction" ) == lookup( Action.class, "showArtifactAction" ) );
+    }
 }

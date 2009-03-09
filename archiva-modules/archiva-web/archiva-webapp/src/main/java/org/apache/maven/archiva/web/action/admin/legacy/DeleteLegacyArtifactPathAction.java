@@ -33,7 +33,7 @@ import org.codehaus.plexus.registry.RegistryException;
  *
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteLegacyArtifactPathAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteLegacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
 public class DeleteLegacyArtifactPathAction
     extends PlexusActionSupport

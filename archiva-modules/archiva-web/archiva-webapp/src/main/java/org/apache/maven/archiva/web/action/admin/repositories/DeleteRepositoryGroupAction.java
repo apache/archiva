@@ -29,7 +29,7 @@ import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
  * DeleteRepositoryGroupAction
  * 
  * @version
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRepositoryGroupAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRepositoryGroupAction" instantiation-strategy="per-lookup"
  */
 public class DeleteRepositoryGroupAction 
     extends AbstractRepositoriesAdminAction

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.rss;
+package org.apache.maven.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

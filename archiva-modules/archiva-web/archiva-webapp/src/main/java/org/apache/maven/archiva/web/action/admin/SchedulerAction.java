@@ -37,7 +37,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
 /**
  * Configures the application.
  *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="schedulerAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="schedulerAction" instantiation-strategy="per-lookup"
  */
 public class SchedulerAction
     extends PlexusActionSupport

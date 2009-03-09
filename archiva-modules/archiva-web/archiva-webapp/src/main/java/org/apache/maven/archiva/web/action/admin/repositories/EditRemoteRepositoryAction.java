@@ -33,7 +33,7 @@ import java.io.IOException;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="editRemoteRepositoryAction" 
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="editRemoteRepositoryAction" instantiation-strategy="per-lookup" 
  */
 public class EditRemoteRepositoryAction
     extends AbstractRemoteRepositoriesAction

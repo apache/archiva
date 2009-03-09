@@ -48,7 +48,7 @@ import java.util.Map;
  * Shows the Repositories Tab for the administrator.
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoriesAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoriesAction" instantiation-strategy="per-lookup"
  */
 public class RepositoriesAction
     extends PlexusActionSupport

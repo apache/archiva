@@ -57,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * Search all indexed fields by the given criteria.
  *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
  */
 public class SearchAction 
     extends PlexusActionSupport

@@ -42,7 +42,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
  * DatabaseAction
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="databaseAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="databaseAction" instantiation-strategy="per-lookup"
  */
 public class DatabaseAction
     extends PlexusActionSupport

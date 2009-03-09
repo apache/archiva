@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -20,31 +19,26 @@
 
 <plexus>
   <components>
-    <!--
-     | Logger manager
-     -->
     <component>
       <role>org.codehaus.plexus.logging.LoggerManager</role>
       <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
       <lifecycle-handler>basic</lifecycle-handler>
     </component>
-
-	<component>
-	  <role>org.apache.maven.archiva.database.ArtifactDAO</role>
-	  <role-hint>jdo</role-hint>
-	  <implementation>org.apache.maven.archiva.web.rss.ArtifactDAOStub</implementation>	  
-	</component>
-	
-	<component>
-	  <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
-	  <role-hint>default</role-hint>
-	  <implementation>org.apache.maven.archiva.web.rss.SecuritySystemStub</implementation>
-	</component>
-	
-	<component>
-	  <role>org.apache.maven.archiva.security.UserRepositories</role>
-	  <role-hint>default</role-hint>
-	  <implementation>org.apache.maven.archiva.security.UserRepositoriesStub</implementation>
-	</component>
+    <component>
+      <role>org.apache.maven.archiva.database.ArchivaDAO</role>
+      <role-hint>jdo</role-hint>
+      <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArchivaDAOStub</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+          <field-name>configuration</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.apache.maven.archiva.security.UserRepositories</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.archiva.security.UserRepositoriesStub</implementation>
+    </component>
   </components>
 </plexus>
