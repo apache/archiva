@@ -148,11 +148,11 @@ public class NexusIndexerConsumer
             }
             catch ( UnsupportedExistingLuceneIndexException e )
             {
-                log.error( "Could not create index at " + indexDirectory.getAbsoluteFile(), e );
+                throw new ConsumerException( "Could not create index at " + indexDirectory.getAbsoluteFile(), e );
             }
             catch ( IOException e )
             {
-                log.error( "Could not create index at " + indexDirectory.getAbsoluteFile(), e );
+                throw new ConsumerException( "Could not create index at " + indexDirectory.getAbsoluteFile(), e );
             }
         }
     }
