@@ -160,6 +160,12 @@ public class NexusIndexerConsumer
     public void processFile( String path )
         throws ConsumerException
     {
+        if ( context == null )
+        {
+            // didn't start correctly, so skip
+            return;
+        }
+        
         File artifactFile = new File( managedRepository, path );        
         ArtifactContext artifactContext = artifactContextProducer.getArtifactContext( context, artifactFile );
         
