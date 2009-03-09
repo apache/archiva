@@ -1449,7 +1449,6 @@
       <fields>
         <field stash.maxSize="250">
           <name>name</name>
-          <identifier>true</identifier>
           <version>1.0.0+</version>
           <description><![CDATA[The full name of the organization.]]></description>
           <type>String</type>
@@ -1544,7 +1543,6 @@
       <fields>
         <field stash.maxSize="250">
           <name>url</name>
-          <identifier>true</identifier>
           <version>1.0.0+</version>
           <description><![CDATA[URL for the issue management system used by the project.]]></description>
           <type>String</type>
@@ -1572,7 +1570,6 @@
       <fields>
         <field stash.maxSize="250">
           <name>url</name>
-          <identifier>true</identifier>
           <version>1.0.0+</version>
           <description>
             <![CDATA[URL for the continuous integration system used by the project if it has a web interface.]]></description>
@@ -1607,7 +1604,6 @@
       <fields>
         <field stash.maxSize="250">
           <name>email</name>
-          <identifier>true</identifier>
           <version>1.0.0+</version>
           <description><![CDATA[The email address of the individual.]]></description>
           <type>String</type>
