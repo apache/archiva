@@ -333,14 +333,14 @@ public class DefaultRepositoryBrowsing
                 {
                     try
                     {
-                        log.info( "Retrieving artifact with version " + uniqueVersion );
+                        log.debug( "Retrieving artifact with version " + uniqueVersion );
                         result =
                             dao.getArtifactDAO().getArtifact( groupId, artifactId, uniqueVersion, null, "pom", repositoryId );
                         break;
                     }
-                    catch ( ArchivaDatabaseException e )
+                    catch ( ObjectNotFoundException e )
                     {
-                        log.warn( "Artifact '" + groupId + ":" + artifactId + ":" + uniqueVersion +
+                        log.debug( "Artifact '" + groupId + ":" + artifactId + ":" + uniqueVersion +
                             "' in repository '" + repositoryId + "' not found in the database." );
                         continue;
                     }
