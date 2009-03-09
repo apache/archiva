@@ -111,18 +111,15 @@ public class DownloadArtifact
 
             if ( relatedArtifacts != null && relatedArtifacts.size() > 0 )
             {
-                String repoId = ( (ArchivaArtifact) relatedArtifacts.get( 0 ) ).getModel().getRepositoryId();
-                ManagedRepositoryContent repo = repositoryFactory.getManagedRepositoryContent( repoId );
-
-                String prefix = req.getContextPath() + "/repository/" + repoId;
+                String prefix = req.getContextPath() + "/repository/";
 
                 if ( mini )
                 {
-                    appendMini( sb, prefix, repo, relatedArtifacts );
+                    appendMini( sb, prefix, relatedArtifacts );
                 }
                 else
                 {
-                    appendNormal( sb, prefix, repo, relatedArtifacts );
+                    appendNormal( sb, prefix, relatedArtifacts );
                 }
             }
         }
@@ -162,14 +159,13 @@ public class DownloadArtifact
         /* do nothing */
     }
 
-    private void appendMini( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
-                             List<ArchivaArtifact> relatedArtifacts )
+    private void appendMini( StringBuffer sb, String prefix, List<ArchivaArtifact> relatedArtifacts )
     {
         // TODO: write 1 line download link for main artifact.
     }
 
-    private void appendNormal( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
-                               List<ArchivaArtifact> relatedArtifacts )
+    private void appendNormal( StringBuffer sb, String prefix, List<ArchivaArtifact> relatedArtifacts )
+        throws RepositoryNotFoundException, RepositoryException
     {
         /*
          * <div class="download">
@@ -209,14 +205,17 @@ public class DownloadArtifact
         sb.append( "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" );
         for ( ArchivaArtifact artifact : relatedArtifacts )
         {
+            String repoId = artifact.getModel().getRepositoryId();
+            ManagedRepositoryContent repo = repositoryFactory.getManagedRepositoryContent( repoId );
+
             sb.append( "\n<tr>" );
 
             sb.append( "<td class=\"icon\">" );
-            appendImageLink( sb, prefix, repo, artifact );
+            appendImageLink( sb, prefix + repoId, repo, artifact );
             sb.append( "</td>" );
 
             sb.append( "<td class=\"type\">" );
-            appendLink( sb, prefix, repo, artifact );
+            appendLink( sb, prefix + repoId, repo, artifact );
             sb.append( "</td>" );
 
             sb.append( "<td class=\"size\">" );
