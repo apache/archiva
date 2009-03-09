@@ -32,7 +32,7 @@
 <div id="contentArea">
   <div id="searchBox">
     <s:if test="%{#application['uiOptions'].appletFindEnabled}">
-      <script src="js/webtoolkit.md5.js"></script>
+      <script src="js/md5.js"></script>
       <script type="text/javascript">
         function handleChecksum()
         {
@@ -54,7 +54,7 @@
             }
             else if ( f.files[0].getAsBinary )
             {
-              document.checksumSearch.q.value = MD5(f.files[0].getAsBinary());
+              document.checksumSearch.q.value = hex_md5(f.files[0].getAsBinary());
             }
             else
             {
