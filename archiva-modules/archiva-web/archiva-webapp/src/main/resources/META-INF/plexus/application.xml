@@ -220,7 +220,6 @@
        user.manager.impl=ldap
        ldap.bind.authenticator.enabled=true
        redback.default.admin=admin
-       redback.default.guest=guest
        security.policy.password.expiration.enabled=false
 
        ldap.config.hostname=ldap.hostname
