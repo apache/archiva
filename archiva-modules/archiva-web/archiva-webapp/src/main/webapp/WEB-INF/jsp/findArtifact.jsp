@@ -25,37 +25,42 @@
   <s:head/>
 </head>
 
-<body onload="document.checksumSearch.file.disabled = false">
+<body onload="document.checksumSearch.f.disabled = false">
 
 <h1>Find Artifact</h1>
 
 <div id="contentArea">
   <div id="searchBox">
     <s:if test="%{#application['uiOptions'].appletFindEnabled}">
+      <script src="js/webtoolkit.md5.js"></script>
       <script type="text/javascript">
-        function handleChecksum( form )
+        function handleChecksum()
         {
-          if ( form.file.value )
+          var f = document.checksumSearch.f
+          if ( f.value )
           {
-            var s = document.ChecksumApplet.generateMd5( form.file.value );
-            // If there is a space, it's an error message, not a checksum
-            if ( s.indexOf(" ") >= 0 )
+            if ( f.value.indexOf("/") >= 0 || f.value.indexOf("\\") >= 0)
             {
-              alert(s);
-              return false;
+              var s = document.ChecksumApplet.generateMd5( f.value );
+              // If there is a space, it's an error message, not a checksum
+              if ( s.indexOf(" ") >= 0 )
+              {
+                alert(s);
+              }
+              else
+              {
+                document.checksumSearch.q.value = s;
+              }
+            }
+            else if ( f.files[0].getAsBinary )
+            {
+              document.checksumSearch.q.value = MD5(f.files[0].getAsBinary());
             }
             else
             {
-              form.file.disabled = true;
-              form.q.value = s;
+                alert('This browser is not supported');
             }
           }
-          else
-          {
-            form.file.disabled = true;
-            form.q.value = form.md5.value;
-          }
-          return true;
         }
       </script>
 
@@ -63,15 +68,14 @@
         <span class="errorMessage">JavaScript is disabled: using the file browser will not work.</span>
       </noscript>
 
-      <s:form method="POST" action="checksumSearch" namespace="/" onsubmit="return handleChecksum(this);">
-        <s:hidden name="q"/>
+      <s:form method="POST" action="checksumSearch" namespace="/" onsubmit="this.f.disabled = true; return true;">
         <tr>
           <td class="tdLabel"><label for="checksumSearch_file" class="label">Search for:</label></td>
           <td>
-            <input type="file" name="file" size="50" value="" id="checksumSearch_file"/>
+            <input type="file" name="f" size="50" value="" id="checksumSearch_f" onchange="handleChecksum();"/>
           </td>
         </tr>
-        <s:textfield label="Checksum" size="50" name="md5"/>
+        <s:textfield label="Checksum" size="50" name="q"/>
         <s:submit value="Search"/>
       </s:form>
 

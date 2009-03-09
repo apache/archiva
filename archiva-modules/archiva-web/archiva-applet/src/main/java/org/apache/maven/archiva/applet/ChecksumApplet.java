@@ -72,7 +72,7 @@ public class ChecksumApplet
                 }
                 catch ( FileNotFoundException e )
                 {
-                    return "Couldn't find the file. " + e.getMessage();
+                    return "Couldn't find the file: " + e.getMessage();
                 }
                 catch ( IOException e )
                 {
@@ -88,8 +88,9 @@ public class ChecksumApplet
     {
         MessageDigest digest = MessageDigest.getInstance( "MD5" );
 
-        long total = new File( file ).length();
-        InputStream fis = new FileInputStream( file );
+        File f = new File( file );
+        long total = f.length();
+        InputStream fis = new FileInputStream( f );
         try
         {
             long totalRead = 0;
