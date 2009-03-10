@@ -19,6 +19,8 @@ package org.apache.maven.archiva.repository.project.resolvers;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -26,8 +28,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
-
-import java.io.File;
+import org.apache.maven.archiva.xml.XMLException;
 
 /**
  * Resolve Project from managed repository. 
@@ -55,7 +56,14 @@ public class ManagedRepositoryProjectResolver
 
         File repoFile = repository.toFile( artifact );
 
-        return reader.read( repoFile );
+        try
+        {
+            return reader.read( repoFile );
+        }
+        catch ( XMLException e )
+        {
+            throw new ProjectModelException( e.getMessage(), e );
+        }
     }
 
 }

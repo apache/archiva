@@ -28,9 +28,9 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
+import org.apache.maven.archiva.xml.XMLException;
 
 /**
  * ProjectReaderConsumer 
@@ -117,7 +117,7 @@ public class ProjectReaderConsumer
                 System.err.println( "Got null model on " + pomFile );
             }
         }
-        catch ( ProjectModelException e )
+        catch ( XMLException e )
         {
             System.err.println( "Unable to process: " + pomFile );
             e.printStackTrace( System.out );

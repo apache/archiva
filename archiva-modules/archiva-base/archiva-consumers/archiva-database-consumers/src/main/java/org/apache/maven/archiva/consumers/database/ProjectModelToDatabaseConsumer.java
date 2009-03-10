@@ -41,11 +41,11 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel300Reader;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
+import org.apache.maven.archiva.xml.XMLException;
 import org.codehaus.plexus.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,9 +178,9 @@ public class ProjectModelToDatabaseConsumer
             }
 
         }
-        catch ( ProjectModelException e )
+        catch ( XMLException e )
         {
-            log.warn( "Unable to read project model " + artifactFile + " : " + e.getMessage(), e );
+            log.warn( "Unable to read project model " + artifactFile + " : " + e.getMessage() );
 
             addProblem( artifact, "Unable to read project model " + artifactFile + " : " + e.getMessage() );
         }

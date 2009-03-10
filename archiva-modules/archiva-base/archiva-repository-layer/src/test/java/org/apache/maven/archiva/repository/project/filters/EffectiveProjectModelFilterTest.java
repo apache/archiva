@@ -32,6 +32,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.resolvers.ManagedRepositoryProjectResolver;
+import org.apache.maven.archiva.xml.XMLException;
 
 import java.io.File;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class EffectiveProjectModelFilterTest
     }
 
     private ArchivaProjectModel createArchivaProjectModel( String path )
-        throws ProjectModelException
+        throws XMLException
     {
         ProjectModelReader reader = new ProjectModel400Reader();
 
