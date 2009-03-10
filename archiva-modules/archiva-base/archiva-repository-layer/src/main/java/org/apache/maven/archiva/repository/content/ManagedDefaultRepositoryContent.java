@@ -19,6 +19,11 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -30,11 +35,6 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * ManagedDefaultRepositoryContent 
@@ -89,7 +89,7 @@ public class ManagedDefaultRepositoryContent
     }
 
     public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
-        throws ContentNotFoundException, LayoutException
+        throws ContentNotFoundException
     {
         File artifactFile = toFile( reference );
         File repoDir = artifactFile.getParentFile();
@@ -122,14 +122,21 @@ public class ManagedDefaultRepositoryContent
 
             if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
-                ArtifactReference artifact = toArtifactReference( relativePath );
-                
-                // Test for related, groupId / artifactId / version must match.
-                if ( artifact.getGroupId().equals( reference.getGroupId() )
-                    && artifact.getArtifactId().equals( reference.getArtifactId() )
-                    && artifact.getVersion().equals( reference.getVersion() ) )
+                try
                 {
-                    foundArtifacts.add( artifact );
+                    ArtifactReference artifact = toArtifactReference( relativePath );
+                    
+                    // Test for related, groupId / artifactId / version must match.
+                    if ( artifact.getGroupId().equals( reference.getGroupId() )
+                        && artifact.getArtifactId().equals( reference.getArtifactId() )
+                        && artifact.getVersion().equals( reference.getVersion() ) )
+                    {
+                        foundArtifacts.add( artifact );
+                    }
+                }
+                catch ( LayoutException e )
+                {
+                    log.debug( "Not processing file that is not an artifact: " + e.getMessage() );
                 }
             }
         }
@@ -209,7 +216,7 @@ public class ManagedDefaultRepositoryContent
     }
 
     public Set<String> getVersions( VersionedReference reference )
-        throws ContentNotFoundException, LayoutException
+        throws ContentNotFoundException
     {
         String path = toMetadataPath( reference );
 
@@ -255,9 +262,16 @@ public class ManagedDefaultRepositoryContent
 
             if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
-                ArtifactReference artifact = toArtifactReference( relativePath );
-
-                foundVersions.add( artifact.getVersion() );
+                try
+                {
+                    ArtifactReference artifact = toArtifactReference( relativePath );
+    
+                    foundVersions.add( artifact.getVersion() );
+                }
+                catch ( LayoutException e )
+                {
+                    log.debug( "Not processing file that is not an artifact: " + e.getMessage() );
+                }
             }
         }
 

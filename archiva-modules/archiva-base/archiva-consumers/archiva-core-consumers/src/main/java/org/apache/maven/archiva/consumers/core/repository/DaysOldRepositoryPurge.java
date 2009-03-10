@@ -135,13 +135,13 @@ public class DaysOldRepositoryPurge
                 }
             }
         }
-        catch ( LayoutException le )
-        {
-            throw new RepositoryPurgeException( le.getMessage(), le );
-        }
         catch ( ContentNotFoundException e )
         {
             throw new RepositoryPurgeException( e.getMessage(), e );
+        }
+        catch ( LayoutException e )
+        {
+            log.debug( "Not processing file that is not an artifact: " + e.getMessage() );
         }
     }
 
@@ -179,7 +179,6 @@ public class DaysOldRepositoryPurge
     }
 
     private void doPurgeAllRelated( ArtifactReference reference )
-        throws LayoutException
     {
         try
         {
@@ -188,8 +187,8 @@ public class DaysOldRepositoryPurge
         }
         catch ( ContentNotFoundException e )
         {
-            // Nothing to do here.
-            // TODO: Log this?
+            // Nothing to do here - it means the repository would have been constructed incorrectly
+            log.debug( e.getMessage(), e );
         }
     }
 }

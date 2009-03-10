@@ -160,19 +160,19 @@ public class MetadataUpdaterConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        //Ignore paths like .indexer etc
-        if (path.startsWith("."))
-            return;
-
-        try
+        // Ignore paths like .indexer etc
+        if ( !path.startsWith( "." ) )
         {
-            ArtifactReference artifact = repository.toArtifactReference( path );
-            updateVersionMetadata( artifact, path );
-            updateProjectMetadata( artifact, path );
-        }
-        catch ( LayoutException e )
-        {
-            throw new ConsumerException( "Unable to convert to artifact reference: " + path, e );
+            try
+            {
+                ArtifactReference artifact = repository.toArtifactReference( path );
+                updateVersionMetadata( artifact, path );
+                updateProjectMetadata( artifact, path );
+            }
+            catch ( LayoutException e )
+            {
+                log.info( "Not processing path that is not an artifact: " + path + " (" + e.getMessage() + ")" );
+            }
         }
     }
 

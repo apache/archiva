@@ -26,6 +26,8 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AbstractDefaultRepositoryContent - common methods for working with default (maven 2) layout.
@@ -34,6 +36,8 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
  */
 public abstract class AbstractDefaultRepositoryContent
 {
+    protected Logger log = LoggerFactory.getLogger( AbstractDefaultRepositoryContent.class );
+
     public static final String MAVEN_METADATA = "maven-metadata.xml";
 
     protected static final char PATH_SEPARATOR = '/';

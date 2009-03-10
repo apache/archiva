@@ -28,6 +28,8 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all repository purge tasks.
@@ -36,6 +38,8 @@ import org.apache.maven.archiva.repository.events.RepositoryListener;
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
 {
+    protected Logger log = LoggerFactory.getLogger( AbstractRepositoryPurge.class );
+
     protected final ManagedRepositoryContent repository;
     
 	protected final List<RepositoryListener> listeners;
