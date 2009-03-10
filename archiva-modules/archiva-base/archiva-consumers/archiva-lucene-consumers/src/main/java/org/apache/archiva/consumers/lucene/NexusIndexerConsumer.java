@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -186,6 +187,11 @@ public class NexusIndexerConsumer
                 {
                     indexerEngine.index( context, artifactContext );
                 }    
+            }
+            catch ( ZipException e )
+            {
+                // invalid JAR file
+                log.info( e.getMessage() );
             }
             catch ( IOException e )
             {
