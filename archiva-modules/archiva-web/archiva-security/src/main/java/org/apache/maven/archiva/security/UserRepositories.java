@@ -44,6 +44,18 @@ public interface UserRepositories
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException;
     
     /**
+     * Get the list of writable repository ids for the user specified.
+     * 
+     * @param principal the principle to obtain the observable repository ids from.
+     * @return the list of observable repository ids.
+     * @throws PrincipalNotFoundException
+     * @throws AccessDeniedException
+     * @throws ArchivaSecurityException
+     */
+    public List<String> getManagableRepositoryIds( String principal )
+        throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException;
+    
+    /**
      * Create any missing repository roles for the provided repository id.
      * 
      * @param repoId the repository id to work off of.

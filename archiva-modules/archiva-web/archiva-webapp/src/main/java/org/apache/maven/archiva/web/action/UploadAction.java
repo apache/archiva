@@ -57,6 +57,7 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelWriter;
 import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
+import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
@@ -295,8 +296,7 @@ public class UploadAction
 
     public void prepare()
     {
-        managedRepoIdList =
-            new ArrayList<String>( configuration.getConfiguration().getManagedRepositoriesAsMap().keySet() );
+        managedRepoIdList = getManagableRepos();
     }
 
     public String input()
@@ -622,6 +622,28 @@ public class UploadAction
         this.auditListeners.remove( listener );
     }
     
+    private List<String> getManagableRepos()
+    {
+        try
+        {
+            return userRepositories.getManagableRepositoryIds( getPrincipal() );
+        }
+        catch ( PrincipalNotFoundException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+        }
+        catch ( AccessDeniedException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+            // TODO: pass this onto the screen.
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+        }
+        return Collections.emptyList();
+    }
+
     private void triggerAuditEvent( String user, String repositoryId, String resource, String action )
     {
         AuditEvent event = new AuditEvent( repositoryId, user, resource, action );

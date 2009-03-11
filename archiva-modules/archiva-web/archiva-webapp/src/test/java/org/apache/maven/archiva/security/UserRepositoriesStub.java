@@ -67,4 +67,11 @@ public class UserRepositoriesStub
         return false;
     }
 
+    public List<String> getManagableRepositoryIds( String principal )
+        throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

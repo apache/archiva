@@ -80,7 +80,7 @@
       </li>
     </ul>
 
-    <redback:ifAnyAuthorized permissions="archiva-delete-artifact,archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
+    <redback:ifAnyAuthorized permissions="archiva-upload-repository,archiva-delete-artifact,archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
       <h5>Manage</h5>
       <ul>
         <redback:ifAuthorized permission="archiva-access-reports">
@@ -88,11 +88,6 @@
             <my:currentWWUrl action="pickReport" namespace="/report">Reports</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
-          <%-- POSTPONED to 1.1 series
-                <li class="none">
-                  <a href="#">Synchronisation</a>
-                </li>
-          --%>
         <redback:ifAuthorized permission="archiva-manage-users">
           <li class="none">
             <my:currentWWUrl action="userlist" namespace="/security">User Management</my:currentWWUrl>
@@ -107,6 +102,8 @@
           <li class="none">
             <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>
           </li>
+        </redback:ifAuthorized>
+        <redback:ifAuthorized permission="archiva-upload-repository">
           <li class="none">
             <my:currentWWUrl action="upload" namespace="/">Upload Artifact</my:currentWWUrl>
           </li>

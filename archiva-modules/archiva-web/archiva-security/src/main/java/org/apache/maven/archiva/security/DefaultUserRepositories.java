@@ -73,7 +73,22 @@ public class DefaultUserRepositories
     public List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
     {
+        String operation = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
 
+        return getAccessibleRepositoryIds( principal, operation );
+    }
+
+    public List<String> getManagableRepositoryIds( String principal )
+        throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
+    {
+        String operation = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
+
+        return getAccessibleRepositoryIds( principal, operation );
+    }
+
+    private List<String> getAccessibleRepositoryIds( String principal, String operation )
+        throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
+    {
         try
         {
             User user = securitySystem.getUserManager().findUser( principal );
@@ -100,8 +115,7 @@ public class DefaultUserRepositories
                 try
                 {
                     String repoId = repo.getId();
-                    if ( securitySystem.isAuthorized( securitySession,
-                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, repoId ) )
+                    if ( securitySystem.isAuthorized( securitySession, operation, repoId ) )
                     {
                         repoIds.add( repoId );
                     }
