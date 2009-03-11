@@ -37,7 +37,6 @@ import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
@@ -68,8 +67,6 @@ public class DavResourceTest extends PlexusInSpringTestCase
 
     private ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
     
-    private ArchivaXworkUser archivaXworkUser;
-
     @Override
     protected void setUp()
         throws Exception
@@ -87,7 +84,6 @@ public class DavResourceTest extends PlexusInSpringTestCase
         lockManager = new SimpleLockManager();
         resource.addLockManager(lockManager);
         consumers = (RepositoryContentConsumers)getApplicationContext().getBean("repositoryContentConsumers");
-        archivaXworkUser = (ArchivaXworkUser) getApplicationContext().getBean( PlexusToSpringUtils.buildSpringId( ArchivaXworkUser.class ) );
     }
 
     @Override
@@ -102,7 +98,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
     private DavResource getDavResource(String logicalPath, File file)
     {
         return new ArchivaDavResource( file.getAbsolutePath(), logicalPath, repository, session, resourceLocator,
-                                       resourceFactory, mimeTypes, Collections.emptyList(), consumers, archivaXworkUser );
+                                       resourceFactory, mimeTypes, Collections.emptyList(), consumers );
     }
     
     public void testDeleteNonExistantResourceShould404()
@@ -303,7 +299,7 @@ public class DavResourceTest extends PlexusInSpringTestCase
 
         public DavResource createResource(DavResourceLocator locator, DavSession session) throws DavException {
             return new ArchivaDavResource( baseDir.getAbsolutePath(), "/", repository, session, resourceLocator,
-                                           resourceFactory, mimeTypes, Collections.emptyList(), consumers, archivaXworkUser );
+                                           resourceFactory, mimeTypes, Collections.emptyList(), consumers );
         }
     }
 }

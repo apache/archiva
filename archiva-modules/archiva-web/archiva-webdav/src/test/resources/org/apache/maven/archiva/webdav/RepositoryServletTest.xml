@@ -158,10 +158,6 @@
           <role-hint>md5</role-hint>
           <field-name>digestMd5</field-name>
         </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.security.ArchivaXworkUser</role>
-          <field-name>archivaXworkUser</field-name>
-        </requirement>        
       </requirements>
     </component>
   </components>

@@ -32,6 +32,7 @@ import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class ArchivaDavSessionProvider
             boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
             
             // safety check for MRM-911            
-            String guest = archivaXworkUser.getGuest();
+            String guest = UserManager.GUEST_USERNAME;
             try
             {
                 if( servletAuth.isAuthorized( guest, 

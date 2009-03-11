@@ -39,6 +39,7 @@ import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.codehaus.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
@@ -263,6 +264,8 @@ public class RepositoryServletSecurityTest
         servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, result ),
                                            new AuthenticationException( "Authentication error" ) );
         
+        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), null );
+        
         // check if guest has write access
         servletAuth.isAuthorized( "guest", "internal", true );
         servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
@@ -354,6 +357,7 @@ public class RepositoryServletSecurityTest
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
 
@@ -401,6 +405,7 @@ public class RepositoryServletSecurityTest
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), null );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
 
@@ -481,6 +486,7 @@ public class RepositoryServletSecurityTest
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
         

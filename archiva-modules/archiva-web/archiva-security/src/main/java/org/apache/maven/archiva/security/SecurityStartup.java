@@ -33,6 +33,7 @@ import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
+import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
@@ -88,7 +89,7 @@ public class SecurityStartup
         {
             String repoId = repoConfig.getId();
 
-            String principal = archivaXworkUser.getGuest();
+            String principal = UserManager.GUEST_USERNAME;
 
             try
             {

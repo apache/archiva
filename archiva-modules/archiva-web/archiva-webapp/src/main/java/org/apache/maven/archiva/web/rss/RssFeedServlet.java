@@ -50,6 +50,7 @@ import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
@@ -271,7 +272,7 @@ public class RssFeedServlet
 
                 if ( usernamePassword == null || usernamePassword.trim().equals( "" ) )
                 {
-                    repoIds = getObservableRepos( archivaXworkUser.getGuest() );
+                    repoIds = getObservableRepos( UserManager.GUEST_USERNAME );
                 }
                 else
                 {
@@ -281,7 +282,7 @@ public class RssFeedServlet
             }
             else
             {
-                repoIds = getObservableRepos( archivaXworkUser.getGuest() );
+                repoIds = getObservableRepos( UserManager.GUEST_USERNAME );
             }
         }
         else

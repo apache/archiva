@@ -25,7 +25,6 @@ import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.registry.Registry;
 
 /**
  * ArchivaXworkUser
@@ -37,35 +36,20 @@ public class ArchivaXworkUser
 {
     public String getActivePrincipal( Map<String, Object> sessionMap )
     {
-        if ( sessionMap == null )
-        {
-            return getGuest();
-        }
-
         SecuritySession securitySession =
             (SecuritySession) sessionMap.get( SecuritySystemConstants.SECURITY_SESSION_KEY );
 
         if ( securitySession == null )
         {
-            securitySession = (SecuritySession) sessionMap.get( SecuritySession.ROLE );
-        }
-
-        if ( securitySession == null )
-        {
-            return getGuest();
+            return UserManager.GUEST_USERNAME;
         }
 
         User user = securitySession.getUser();
         if ( user == null )
         {
-            return getGuest();
+            return UserManager.GUEST_USERNAME;
         }
 
         return (String) user.getPrincipal();
-    }
-
-    public String getGuest()
-    {
-        return UserManager.GUEST_USERNAME;
     }
 }

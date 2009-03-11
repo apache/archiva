@@ -57,14 +57,11 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.webdav.util.IndexWriter;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-
-import com.opensymphony.xwork2.ActionContext;
 
 /**
  */
@@ -96,22 +93,21 @@ public class ArchivaDavResource
     private final MimeTypes mimeTypes;
 
     private List<AuditListener> auditListeners;
-    
-    private ArchivaXworkUser archivaXworkUser;
 
+    private String principal;
+    
 	public static final String COMPLIANCE_CLASS = "1, 2";
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryContentConsumers consumers, ArchivaXworkUser archivaXworkUser )
+                               RepositoryContentConsumers consumers )
     {
         this.localResource = new File( localResource ); 
         this.logicalResource = logicalResource;
         this.locator = locator;
         this.factory = factory;
         this.session = session;
-        this.archivaXworkUser = archivaXworkUser;
         
         // TODO: push into locator as well as moving any references out of the resource factory
         this.repository = repository;
@@ -123,14 +119,15 @@ public class ArchivaDavResource
     }
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
-                               String remoteAddr, DavSession session, ArchivaDavResourceLocator locator,
+                               String remoteAddr, String principal, DavSession session, ArchivaDavResourceLocator locator,
                                DavResourceFactory factory, MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryContentConsumers consumers, ArchivaXworkUser archivaXworkUser )
+                               RepositoryContentConsumers consumers )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
-              consumers, archivaXworkUser );
+              consumers );
 
         this.remoteAddr = remoteAddr;
+        this.principal = principal;
     }
 
     public String getComplianceClass()
@@ -618,8 +615,7 @@ public class ArchivaDavResource
 
     private void triggerAuditEvent( String remoteIP, String repositoryId, String resource, String action )
     {
-        String activePrincipal = archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
-        AuditEvent event = new AuditEvent( repositoryId, activePrincipal, resource, action );
+        AuditEvent event = new AuditEvent( repositoryId, principal, resource, action );
         event.setRemoteIP( remoteIP );
 
         for ( AuditListener listener : auditListeners )
