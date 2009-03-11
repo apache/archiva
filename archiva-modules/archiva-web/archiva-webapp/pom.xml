@@ -319,7 +319,7 @@
                Specifically setting this to false to avoid accidental jar file creation. -->
           <archiveClasses>false</archiveClasses>
           <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml</dependentWarExcludes>
-          <warSourceExcludes>WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar</warSourceExcludes>
+          <warSourceExcludes>WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar,WEB-INF/lib/slf4j-api-1.5.6.jar,WEB-INF/lib/slf4j-log4j12-1.5.6.jar</warSourceExcludes>
         </configuration>
         <!-- TODO: would be good to make the jetty plugin aware of these and remove the below -->
         <executions>
