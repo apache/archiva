@@ -21,18 +21,31 @@
     </layout>
   </appender>
 
-  <!-- Help identify bugs during testing -->
+  <appender name="redbackAuditLog" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="${appserver.base}/logs/archiva-security-audit.log" />
+    <param name="append" value="true" />
+    <param name="datePattern" value="'.'yyyy-MM-dd" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} - %X{redback.currentUser} - %m%n"/>
+    </layout>
+  </appender>
+
+  <logger name="org.codehaus.plexus.redback.struts2.action.AuditEvent" additivity="false">
+    <level value="info" />
+    <appender-ref ref="redbackAuditLog" />
+  </logger>
+
+  <logger name="org.apache.archiva">
+    <level value="info"/>
+    <appender-ref ref="rolling" />
+  </logger>
+  
   <logger name="org.apache.maven.archiva">
     <level value="info"/>
     <appender-ref ref="rolling" />
   </logger>
   
-  <logger name="org.apache.maven.archiva.repository.scanner">
-    <level value="info" />
-    <appender-ref ref="rolling" />
-  </logger>
-
-  <logger name="org.apache.archiva.AuditLog">
+  <logger name="org.apache.archiva.AuditLog" additivity="false">
     <level value="info" />
     <appender-ref ref="auditlog" />
   </logger>
