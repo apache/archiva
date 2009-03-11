@@ -30,6 +30,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
@@ -45,7 +46,6 @@ import org.slf4j.LoggerFactory;
  * ConfigurationSynchronization
  *
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.web.startup.SecuritySynchronization"
  * role-hint="default"
  */
@@ -53,7 +53,7 @@ public class SecuritySynchronization
     implements RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( SecuritySynchronization.class );
-    
+
     /**
      * @plexus.requirement role-hint="default"
      */
@@ -73,6 +73,11 @@ public class SecuritySynchronization
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
+
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaXworkUser archivaXworkUser;
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
@@ -96,18 +101,18 @@ public class SecuritySynchronization
             // manage roles for repositories
             try
             {
-                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoConfig
-                    .getId() ) )
+                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
+                                                       repoConfig.getId() ) )
                 {
-                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoConfig
-                        .getId() );
+                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
+                                                     repoConfig.getId() );
                 }
 
-                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoConfig
-                    .getId() ) )
+                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER,
+                                                       repoConfig.getId() ) )
                 {
-                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoConfig
-                        .getId() );
+                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER,
+                                                     repoConfig.getId() );
                 }
             }
             catch ( RoleManagerException e )
@@ -137,8 +142,8 @@ public class SecuritySynchronization
     {
         if ( ( checkers == null ) || CollectionUtils.isEmpty( checkers.values() ) )
         {
-            throw new ArchivaException( "Unable to initialize the Redback Security Environment, "
-                + "no Environment Check components found." );
+            throw new ArchivaException(
+                "Unable to initialize the Redback Security Environment, " + "no Environment Check components found." );
         }
 
         List<String> violations = new ArrayList<String>();
@@ -172,8 +177,8 @@ public class SecuritySynchronization
             msg.append( "======================================================================" );
             log.error( msg.toString() );
 
-            throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size()
-                + "] violation(s) encountered, See log for details." );
+            throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size() +
+                "] violation(s) encountered, See log for details." );
         }
     }
 
@@ -182,10 +187,9 @@ public class SecuritySynchronization
         for ( ManagedRepositoryConfiguration repoConfig : repos )
         {
             String repoId = repoConfig.getId();
-            
-            // TODO: Use the Redback / UserConfiguration..getString( "redback.default.guest" ) to get the right name.
-            String principal = "guest";
-            
+
+            String principal = archivaXworkUser.getGuest();
+
             try
             {
                 UserAssignment ua;
@@ -204,8 +208,9 @@ public class SecuritySynchronization
             }
             catch ( RbacManagerException e )
             {
-                log.warn( "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId )
-                                      + "] to " + principal + " user.", e );
+                log.warn(
+                    "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) + "] to " +
+                        principal + " user.", e );
             }
         }
     }

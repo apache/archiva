@@ -36,10 +36,6 @@ public class ArchivaRoleConstants
 
     public static final String GUEST_ROLE = "Guest";
     
-    // principals
-    
-    public static final String PRINCIPAL_GUEST = "guest";
-
     // dynamic role prefixes
     public static final String REPOSITORY_MANAGER_ROLE_PREFIX = "Repository Manager";
 

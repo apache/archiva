@@ -39,17 +39,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * SecurityStartup 
+ * SecurityStartup
  *
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.security.SecurityStartup"
  */
 public class SecurityStartup
     implements RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( SecurityStartup.class );
-    
+
     /**
      * @plexus.requirement
      */
@@ -70,6 +69,11 @@ public class SecurityStartup
      */
     private ArchivaConfiguration archivaConfiguration;
 
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaXworkUser archivaXworkUser;
+
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isManagedRepositories( propertyName ) )
@@ -84,8 +88,7 @@ public class SecurityStartup
         {
             String repoId = repoConfig.getId();
 
-            // TODO: Use the Redback / UserConfiguration..getString( "redback.default.guest" ) to get the right name.
-            String principal = "guest";
+            String principal = archivaXworkUser.getGuest();
 
             try
             {
@@ -106,8 +109,8 @@ public class SecurityStartup
             catch ( RbacManagerException e )
             {
                 log.warn(
-                                  "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId )
-                                      + "] to " + principal + " user.", e );
+                    "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) + "] to " +
+                        principal + " user.", e );
             }
         }
     }
@@ -156,8 +159,8 @@ public class SecurityStartup
     {
         if ( ( checkers == null ) || CollectionUtils.isEmpty( checkers.values() ) )
         {
-            throw new ArchivaException( "Unable to initialize the Redback Security Environment, "
-                + "no Environment Check components found." );
+            throw new ArchivaException(
+                "Unable to initialize the Redback Security Environment, " + "no Environment Check components found." );
         }
 
         List<String> violations = new ArrayList<String>();
@@ -186,8 +189,8 @@ public class SecurityStartup
             msg.append( "======================================================================" );
             log.error( msg.toString() );
 
-            throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size()
-                + "] violation(s) encountered, See log for details." );
+            throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size() +
+                "] violation(s) encountered, See log for details." );
         }
     }
 

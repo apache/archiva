@@ -85,8 +85,6 @@ public class RepositoryServletSecurityTest
 
     private HttpAuthenticator httpAuth;
 
-    private ArchivaXworkUser archivaXworkUser;
-
     private RepositoryServlet servlet;
     
     public void setUp()
@@ -125,8 +123,7 @@ public class RepositoryServletSecurityTest
         httpAuthControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         httpAuth = (HttpAuthenticator) httpAuthControl.getMock();
 
-        archivaXworkUser = new ArchivaXworkUser();
-        archivaXworkUser.setGuest( "guest" );
+        ArchivaXworkUser archivaXworkUser = (ArchivaXworkUser) lookup( ArchivaXworkUser.class );
 
         davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth, archivaXworkUser );      
     }

@@ -24,34 +24,25 @@ import java.util.Map;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.plexus.redback.users.User;
+import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.registry.Registry;
 
 /**
- * ArchivaXworkUser 
+ * ArchivaXworkUser
  *
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.security.ArchivaXworkUser"
  */
 public class ArchivaXworkUser
 {
-    /**
-     * @plexus.requirement role-hint="commons-configuration"
-     */
-    private Registry registry;
-    
-    private static final String KEY = "org.codehaus.plexus.redback";
-    
-    private static String guest;
-            
     public String getActivePrincipal( Map<String, Object> sessionMap )
-    {   
+    {
         if ( sessionMap == null )
         {
             return getGuest();
         }
 
-    	SecuritySession securitySession =
+        SecuritySession securitySession =
             (SecuritySession) sessionMap.get( SecuritySystemConstants.SECURITY_SESSION_KEY );
 
         if ( securitySession == null )
@@ -64,28 +55,17 @@ public class ArchivaXworkUser
             return getGuest();
         }
 
-        User user = securitySession.getUser();        
+        User user = securitySession.getUser();
         if ( user == null )
         {
             return getGuest();
         }
 
         return (String) user.getPrincipal();
-    }    
-   
+    }
+
     public String getGuest()
     {
-        if( guest == null || "".equals( guest ) )
-        {
-            Registry subset = registry.getSubset( KEY );
-            guest = subset.getString( "redback.default.guest", ArchivaRoleConstants.PRINCIPAL_GUEST );
-        }
-        
-        return guest;
-    }
-    
-    public void setGuest( String guesT )
-    {
-        guest = guesT;
+        return UserManager.GUEST_USERNAME;
     }
 }
