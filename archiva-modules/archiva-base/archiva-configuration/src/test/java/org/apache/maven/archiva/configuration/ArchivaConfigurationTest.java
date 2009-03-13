@@ -186,10 +186,11 @@ public class ArchivaConfigurationTest
     public void testGetConfigurationSystemOverride()
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
 
         System.setProperty( "org.apache.maven.archiva.webapp.ui.appletFindEnabled", "false" );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
 
         try
         {
