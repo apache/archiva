@@ -138,9 +138,14 @@ public class DefaultArchivaConfiguration
      */
     private boolean isConfigurationDefaulted = false;
 
-    private static final String KEY = "org.apache.maven.archiva";   
+    private static final String KEY = "org.apache.maven.archiva";
 
-    public synchronized Configuration getConfiguration()
+    public Configuration getConfiguration()
+    {
+        return loadConfiguration();
+    }
+
+    private synchronized Configuration loadConfiguration()
     {
         if ( configuration == null )
         {
@@ -642,13 +647,13 @@ public class DefaultArchivaConfiguration
             expressionEvaluator.addExpressionSource( new SystemPropertyExpressionSource() );
             userConfigFilename = expressionEvaluator.expand( userConfigFilename );
             altConfigFilename = expressionEvaluator.expand( altConfigFilename );
+            loadConfiguration();
         }
         catch ( EvaluatorException e )
         {
             throw new InitializationException( "Unable to evaluate expressions found in "
                 + "userConfigFilename or altConfigFilename." );
         }
-
         registry.addChangeListener( this );
     }
 
