@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -163,7 +163,7 @@ public class SearchAction
             managedRepositoryList.add( "all" );
         }
         
-        searchFields = new HashMap<String, String>();
+        searchFields = new LinkedHashMap<String, String>();
         searchFields.put( "groupId", "Group ID" );
         searchFields.put( "artifactId", "Artifact ID" );
         searchFields.put( "version", "Version" );

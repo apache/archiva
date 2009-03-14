@@ -100,20 +100,8 @@
   <p>
     <s:actionerror/>
   </p>
-</div>
-
-<div id="searchHint">  
-  Enter your search terms. A variety of data will be searched for your keywords. <a class="expand" href="#"><img src="<c:url value="/images/icon_info_sml.gif"/>" /></a>
-  
-  <table class="settings">
-    <tr>
-      <td>
-        <b>*</b> To perform a boolean <code>NOT</code> search, use the keyword <code>NOT</code> after your search
-         term, followed by the term you want to exclude. For example, to exclude artifacts with 
-         a dependency on the artifact you are searching for from showing up in the search results:  
-         <code>myQueryTerm NOT dependency</code> 
-      </td>
-    </tr>
+  <a class="expand-search" href="#"><strong>Advanced Search >></strong></a>
+  <table class="settings-search">
     <tr>
       <td>
         <b>*</b> To do a filtered or advanced search, select the criteria from the list below and click the <img src="${iconCreateUrl}"/> icon. Specify the term you want to be matched in the created text field.
@@ -141,8 +129,23 @@
       </td>
     </tr>    
   </table>
-  
 </div>
+
+<div id="searchHint">  
+  Enter your search terms. A variety of data will be searched for your keywords. <a class="expand" href="#"><img src="<c:url value="/images/icon_info_sml.gif"/>" /></a>
+  
+  <table class="settings">
+    <tr>
+      <td>
+        <b>*</b> To perform a boolean <code>NOT</code> search, use the keyword <code>NOT</code> after your search
+         term, followed by the term you want to exclude. For example, to exclude artifacts with 
+         a dependency on the artifact you are searching for from showing up in the search results:  
+         <code>myQueryTerm NOT dependency</code> 
+      </td>
+    </tr>
+  </table>  
+</div>
+
 </div>
 </body>
 </html>
