@@ -109,6 +109,39 @@ public abstract class AbstractProxyConnectorFormAction
      */
     protected ProxyConnectorConfiguration connector;
 
+    protected List<String> escapePatterns( List<String> patterns )
+    {   
+        List<String> escapedPatterns = new ArrayList<String>();
+        if( patterns != null )
+        {
+            for( String pattern : patterns )
+            {
+                escapedPatterns.add( StringUtils.replace( pattern, "\\", "\\\\" ) );
+            }
+        }
+        
+        return escapedPatterns;
+    }
+    
+    protected List<String> unescapePatterns( List<String> patterns )
+    {
+        List<String> rawPatterns = new ArrayList<String>();
+        if( patterns != null )
+        {
+            for( String pattern : patterns )
+            {
+                rawPatterns.add( StringUtils.replace( pattern, "\\\\", "\\" ) );
+            }
+        }
+        
+        return rawPatterns;
+    }
+    
+    private String escapePattern( String pattern )
+    {
+        return StringUtils.replace( pattern, "\\", "\\\\" );
+    }
+        
     public String addBlackListPattern()
     {
         String pattern = getBlackListPattern();
@@ -117,13 +150,13 @@ public abstract class AbstractProxyConnectorFormAction
         {
             addActionError( "Cannot add a blank black list pattern." );
         }
-
+        
         if ( !hasActionErrors() )
         {
-            getConnector().getBlackListPatterns().add( pattern );
+            getConnector().getBlackListPatterns().add( escapePattern( pattern ) );
             setBlackListPattern( null );
         }
-
+        
         return INPUT;
     }
 
@@ -163,10 +196,10 @@ public abstract class AbstractProxyConnectorFormAction
 
         if ( !hasActionErrors() )
         {
-            getConnector().getWhiteListPatterns().add( pattern );
+            getConnector().getWhiteListPatterns().add( escapePattern( pattern ) );
             setWhiteListPattern( null );
         }
-
+        
         return INPUT;
     }
 
@@ -231,20 +264,21 @@ public abstract class AbstractProxyConnectorFormAction
     public String removeBlackListPattern()
     {
         String pattern = getPattern();
-
+        
         if ( StringUtils.isBlank( pattern ) )
         {
             addActionError( "Cannot remove a blank black list pattern." );
         }
 
-        if ( !getConnector().getBlackListPatterns().contains( pattern ) )
+        if ( !getConnector().getBlackListPatterns().contains( pattern ) && 
+            !getConnector().getBlackListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
         {
             addActionError( "Non-existant black list pattern [" + pattern + "], no black list pattern removed." );
         }
 
         if ( !hasActionErrors() )
         {
-            getConnector().getBlackListPatterns().remove( pattern );
+            getConnector().getBlackListPatterns().remove( escapePattern( pattern ) );
         }
 
         setBlackListPattern( null );
@@ -287,14 +321,15 @@ public abstract class AbstractProxyConnectorFormAction
             addActionError( "Cannot remove a blank white list pattern." );
         }
 
-        if ( !getConnector().getWhiteListPatterns().contains( pattern ) )
+        if ( !getConnector().getWhiteListPatterns().contains( pattern ) &&
+                !getConnector().getWhiteListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
         {
             addActionError( "Non-existant white list pattern [" + pattern + "], no white list pattern removed." );
         }
 
         if ( !hasActionErrors() )
         {
-            getConnector().getWhiteListPatterns().remove( pattern );
+            getConnector().getWhiteListPatterns().remove( escapePattern( pattern ) );
         }
 
         setWhiteListPattern( null );

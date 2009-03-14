@@ -47,7 +47,7 @@ public class EditProxyConnectorAction
     {
         super.prepare();
 
-        connector = findProxyConnector( source, target );
+        connector = findProxyConnector( source, target );        
     }
 
     public String input()
@@ -57,6 +57,13 @@ public class EditProxyConnectorAction
             addActionError( "Unable to edit non existant proxy connector with source [" + source + "] and target ["
                 + target + "]" );
             return ERROR;
+        }
+        
+        if( connector != null )
+        {
+         // MRM-1135
+            connector.setBlackListPatterns( escapePatterns( connector.getBlackListPatterns() ) );
+            connector.setWhiteListPatterns( escapePatterns( connector.getWhiteListPatterns() ) );
         }
 
         return INPUT;
@@ -86,6 +93,10 @@ public class EditProxyConnectorAction
             return INPUT;
         }
 
+        // MRM-1135
+        connector.setBlackListPatterns( unescapePatterns( connector.getBlackListPatterns() ) );
+        connector.setWhiteListPatterns( unescapePatterns( connector.getWhiteListPatterns() ) );
+        
         addProxyConnector( connector );
         return saveConfiguration();
     }
