@@ -47,7 +47,7 @@ public class DeleteLegacyArtifactPathAction
 
     public String delete()
     {
-        getLogger().info( "remove [" + path + "] from legacy artifact path resolution" );
+        log.info( "remove [" + path + "] from legacy artifact path resolution" );
         Configuration configuration = archivaConfiguration.getConfiguration();
         for ( Iterator iterator = configuration.getLegacyArtifactPaths().iterator(); iterator.hasNext(); )
         {

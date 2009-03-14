@@ -21,15 +21,6 @@
 <plexus>
   <components>
     <!--
-     | Logger manager
-     -->
-    <component>
-      <role>org.codehaus.plexus.logging.LoggerManager</role>
-      <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
-      <lifecycle-handler>basic</lifecycle-handler>
-    </component>
-
-    <!--
      | Configuration
      -->
     <component>
@@ -102,8 +93,7 @@
       <role-hint>default</role-hint>
       <implementation>org.codehaus.plexus.redback.system.DefaultSecuritySystem</implementation>
     </component>
-	
-	<component>
+    <component>
       <role>org.apache.maven.archiva.webdav.ArchivaDavResourceFactory</role>
       <implementation>org.apache.maven.archiva.webdav.ArchivaDavResourceFactory</implementation>
       <requirements>

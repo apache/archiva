@@ -20,11 +20,6 @@
 <plexus>
   <components>  
     <component>
-      <role>org.codehaus.plexus.logging.LoggerManager</role>
-      <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
-      <lifecycle-handler>basic</lifecycle-handler>
-    </component>
-    <component>
       <role>org.codehaus.plexus.redback.role.RoleManager</role>
       <role-hint>default</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.RoleManagerStub</implementation>

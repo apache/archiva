@@ -413,15 +413,15 @@ public class SearchAction
         }
         catch ( PrincipalNotFoundException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         catch ( AccessDeniedException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         catch ( ArchivaSecurityException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
     }

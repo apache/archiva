@@ -33,6 +33,24 @@
     <dependency>
       <groupId>com.atlassian.xmlrpc</groupId>
       <artifactId>atlassian-xmlrpc-binder</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl104-over-slf4j</artifactId>
+      <!-- Exec plugin doesn't use runtime scope - odd -->
+      <scope>compile</scope> 
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <!-- Exec plugin doesn't use runtime scope - odd -->
+      <scope>compile</scope> 
     </dependency>
   </dependencies>
   <build>
@@ -53,35 +71,6 @@
             <argument>${password}</argument>
           </arguments>
         </configuration>
-      </plugin>
-      <!-- override parent config, commons-logging cannot be excluded from atlassian-xml-rpc-binder - NoClassDef error occurs -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.0-alpha-3</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <bannedDependencies>
-                  <excludes>
-                    <exclude>org.codehaus.plexus:plexus-container-default</exclude>                    
-                    <exclude>velocity:velocity-dep</exclude>
-                    <exclude>classworlds:classworlds</exclude>
-                    <exclude>javax.transaction:jta</exclude>
-                    <exclude>javax.sql:jdbc-stdext</exclude>
-                    <exclude>ant:ant-optional</exclude>
-                    <!-- exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude -->
-                    <exclude>xom:xom</exclude>
-                  </excludes>
-                </bannedDependencies>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

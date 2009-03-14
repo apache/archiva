@@ -56,17 +56,18 @@
       <version>7</version>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl104-over-slf4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <build>
@@ -74,7 +75,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>1.0.1</version>
+        <version>1.2</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -109,6 +110,16 @@
               <mainClass>org.apache.maven.archiva.cli.ArchivaCli</mainClass>
             </manifest>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <executable>java</executable>
+          <mainClass>org.apache.maven.archiva.cli.ArchivaCli</mainClass>
+          <arguments>
+          </arguments>
         </configuration>
       </plugin>
     </plugins>

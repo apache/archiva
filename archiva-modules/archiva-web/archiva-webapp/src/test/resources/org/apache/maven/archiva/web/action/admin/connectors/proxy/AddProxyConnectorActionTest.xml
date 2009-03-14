@@ -20,12 +20,6 @@
 <plexus>
   <components>
     <component>
-      <role>org.codehaus.plexus.logging.LoggerManager</role>
-      <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
-      <lifecycle-handler>basic</lifecycle-handler>
-    </component>
-
-    <component>
       <role>org.codehaus.plexus.cache.Cache</role>
       <role-hint>url-failures-cache</role-hint>
       <implementation>org.codehaus.plexus.cache.ehcache.EhcacheCache</implementation>

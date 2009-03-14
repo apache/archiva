@@ -21,6 +21,8 @@ package org.apache.maven.archiva.policies;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,9 +37,10 @@ import java.util.Properties;
  * role-hint="propagate-errors"
  */
 public class PropagateErrorsDownloadPolicy
-    extends AbstractLogEnabled
     implements DownloadErrorPolicy
 {
+    private Logger log = LoggerFactory.getLogger( PropagateErrorsDownloadPolicy.class );
+    
     /**
      * Signifies any error should stop searching for other proxies.
      */
@@ -76,7 +79,7 @@ public class PropagateErrorsDownloadPolicy
         if ( IGNORE.equals( policySetting ) )
         {
             // Ignore.
-            getLogger().debug( "Error policy set to IGNORE." );
+            log.debug( "Error policy set to IGNORE." );
             return false;
         }
 

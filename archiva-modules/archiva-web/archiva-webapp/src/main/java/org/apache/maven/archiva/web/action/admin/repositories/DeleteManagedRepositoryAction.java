@@ -175,7 +175,7 @@ public class DeleteManagedRepositoryAction
 
         for ( ArchivaArtifact artifact : artifacts )
         {
-            getLogger().info( "Removing artifact " + artifact + " from the database." );
+            log.info( "Removing artifact " + artifact + " from the database." );
             try
             {
                 archivaDAO.getArtifactDAO().deleteArtifact( artifact );
@@ -188,12 +188,12 @@ public class DeleteManagedRepositoryAction
             }
             catch ( ObjectNotFoundException oe )
             {
-                getLogger().info( "Project model of artifact " + artifact + " does not exist in the database. " +
+                log.info( "Project model of artifact " + artifact + " does not exist in the database. " +
                                       "Moving on to the next artifact." );
             }
             catch ( ArchivaDatabaseException ae )
             {
-                getLogger().info( "Unable to delete artifact " + artifact + " from the database. " +
+                log.info( "Unable to delete artifact " + artifact + " from the database. " +
                                       "Moving on to the next artifact." );
             }
         }

@@ -129,7 +129,7 @@ public class ShowArtifactAction
         }
         catch ( ObjectNotFoundException e )
         {
-            getLogger().debug( e.getMessage(), e );
+            log.debug( e.getMessage(), e );
             addActionError( e.getMessage() );
             return ERROR;
         }
@@ -213,16 +213,16 @@ public class ShowArtifactAction
         }
         catch ( PrincipalNotFoundException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         catch ( AccessDeniedException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
             // TODO: pass this onto the screen.
         }
         catch ( ArchivaSecurityException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
     }

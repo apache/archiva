@@ -132,7 +132,7 @@ public class DatabaseAction
         }
         catch ( RegistryException e )
         {
-            getLogger().error( e.getMessage(), e );
+            log.error( e.getMessage(), e );
             addActionError( "Error in saving configuration" );
             return INPUT;
         }

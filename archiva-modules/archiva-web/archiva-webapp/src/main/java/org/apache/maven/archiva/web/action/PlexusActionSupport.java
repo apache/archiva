@@ -19,36 +19,28 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.opensymphony.xwork2.ActionSupport;
 import java.util.Map;
+
 import org.apache.struts2.interceptor.SessionAware;
-import org.codehaus.plexus.logging.LogEnabled;
-import org.codehaus.plexus.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * LogEnabled and SessionAware ActionSupport
  */
 public abstract class PlexusActionSupport
     extends ActionSupport
-    implements LogEnabled, SessionAware
+    implements SessionAware
 {
     protected Map session;
 
-    private Logger logger;
-
+    protected Logger log = LoggerFactory.getLogger( getClass() );
+    
     public void setSession( Map map )
     {
         //noinspection AssignmentToCollectionOrArrayFieldFromParameter
         this.session = map;
-    }
-
-    public void enableLogging( Logger logger )
-    {
-        this.logger = logger;
-    }
-
-    protected Logger getLogger()
-    {
-        return logger;
     }
 }

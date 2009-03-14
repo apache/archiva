@@ -96,18 +96,18 @@ public class RepositoryScanningAction
     public void addActionError( String anErrorMessage )
     {
         super.addActionError( anErrorMessage );
-        getLogger().warn( "[ActionError] " + anErrorMessage );
+        log.warn( "[ActionError] " + anErrorMessage );
     }
 
     public void addActionMessage( String aMessage )
     {
         super.addActionMessage( aMessage );
-        getLogger().info( "[ActionMessage] " + aMessage );
+        log.info( "[ActionMessage] " + aMessage );
     }
 
     public String addFiletypePattern()
     {
-        getLogger().info( "Add New File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
+        log.info( "Add New File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
 
         if ( !isValidFiletypeCommand() )
         {
@@ -207,7 +207,7 @@ public class RepositoryScanningAction
 
     public String removeFiletypePattern()
     {
-        getLogger().info( "Remove File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
+        log.info( "Remove File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
 
         if ( !isValidFiletypeCommand() )
         {

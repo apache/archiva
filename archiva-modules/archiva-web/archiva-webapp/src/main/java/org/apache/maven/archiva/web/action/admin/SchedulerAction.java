@@ -157,14 +157,14 @@ public class SchedulerAction
     public void addActionMessage( String aMessage )
     {
         super.addActionMessage( aMessage );
-        getLogger().info( "[ActionMessage] " + aMessage );
+        log.info( "[ActionMessage] " + aMessage );
     }
 
     @Override
     public void addActionError( String anErrorMessage )
     {
         super.addActionError( anErrorMessage );
-        getLogger().warn( "[ActionError] " + anErrorMessage );
+        log.warn( "[ActionError] " + anErrorMessage );
     }
 
     public SecureActionBundle getSecureActionBundle()

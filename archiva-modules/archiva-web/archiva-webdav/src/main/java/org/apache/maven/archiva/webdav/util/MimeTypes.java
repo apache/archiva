@@ -19,12 +19,6 @@ package org.apache.maven.archiva.webdav.util;
  * under the License.
  */
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +31,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * MimeTypes 
  *
@@ -45,7 +46,6 @@ import java.util.StringTokenizer;
  * @plexus.component role="org.apache.maven.archiva.webdav.util.MimeTypes"
  */
 public class MimeTypes
-    extends AbstractLogEnabled
     implements Initializable
 {
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
@@ -54,6 +54,8 @@ public class MimeTypes
     
     private Map mimeMap = new HashMap();
 
+    private Logger log = LoggerFactory.getLogger( MimeTypes.class );
+    
     /**
      * Get the Mime Type for the provided filename.
      * 
@@ -93,7 +95,7 @@ public class MimeTypes
     {
         if ( !file.exists() || !file.isFile() || !file.canRead() )
         {
-            getLogger().error( "Unable to load mime types from file " + file.getAbsolutePath() + " : not a readable file." );
+            log.error( "Unable to load mime types from file " + file.getAbsolutePath() + " : not a readable file." );
             return;
         }
 
@@ -105,7 +107,7 @@ public class MimeTypes
         }
         catch ( FileNotFoundException e )
         {
-            getLogger().error( "Unable to load mime types from file " + file.getAbsolutePath() + " : " + e.getMessage(), e );
+            log.error( "Unable to load mime types from file " + file.getAbsolutePath() + " : " + e.getMessage(), e );
         }
         finally
         {
@@ -134,7 +136,7 @@ public class MimeTypes
         }
         catch ( IOException e )
         {
-            getLogger().error( "Unable to load mime map " + resourceName + " : " + e.getMessage(), e );
+            log.error( "Unable to load mime map " + resourceName + " : " + e.getMessage(), e );
         }
         finally
         {
@@ -185,7 +187,7 @@ public class MimeTypes
         }
         catch ( IOException e )
         {
-            getLogger().error( "Unable to read mime types from input stream : " + e.getMessage(), e );
+            log.error( "Unable to read mime types from input stream : " + e.getMessage(), e );
         }
         finally
         {
