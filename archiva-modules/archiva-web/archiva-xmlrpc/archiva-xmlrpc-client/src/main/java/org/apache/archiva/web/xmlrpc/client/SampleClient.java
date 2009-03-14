@@ -23,8 +23,6 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
-import org.apache.archiva.web.xmlrpc.api.SearchService;
-import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 
