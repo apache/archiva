@@ -1,0 +1,32 @@
+ ------
+Deleting an Artifact
+ ------
+25 February 2009
+ ------
+
+Deleting an Artifact
+
+  The Delete Artifact feature allows artifacts to be deleted from the managed repositories.
+
+----
+  User must have a Repository Manager role to a repository to be able to delete artifacts from it.
+----
+
+  To delete artifacts, perform these steps:
+
+  1. From the left navigation menu, click <<Delete Artifact>>. This displays the Delete Artifact page.
+
+  2. Supply the necessary values for the following fields:
+
+    * Group Id: The group id of the artifact to be deleted.
+
+    * Artifact Id:The name of the artifact to be deleted.
+
+    * Version: The specific version of the artifact to be deleted.
+
+    * Repository Id: Select from the drop-down list the name of the managed repository where the artifact is located.
+
+
+  3. Click Submit.
+
+  If the artifact exists in the specified repository, it will be overwritten and the metadata.xml will also be updated.

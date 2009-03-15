@@ -164,10 +164,13 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
   
 * Deploying via the {Web UI} Form
 
-  The easiest way to deploy in the repository is via the Web UI form, which can be accessed in the 'Upload Artifact' section.
+  The easiest way to deploy in the repository is via the Web UI form, which can be accessed in the <<Upload Artifact>> section.
   Just follow these steps:
 
-  [[1]] Fill up the following required fields:
+  [[1]] In Archiva, click the <<Upload Artifact>> option in the left menu. You should see a form similar to
+  the one at the end of this section.
+
+  [[2]] Fill in the following required fields:
 
   * Group Id - the groupId of the artifact to be deployed.
 
@@ -181,16 +184,16 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
 
   []
 
-  [[2]] Select the repository you want to deploy to. Please note that if you do not have write permission to the repository,
-   you will not be allowed to deploy in it.
+  [[3]] Select the repository you want to deploy to. Please note that if you do not have write permission to the repository,
+   you will not be allowed to deploy on it.
 
-  [[3]] Now, if you want Archiva to generate a pom for the artifact, check the Generate Maven 2 POM field.
+  [[4]] Now, if you want Archiva to generate a pom for the artifact, check the Generate Maven 2 POM field.
    (Right now, only Maven 2 poms can be generated.)  Alternately, supply a POM file to be deployed alongside the artifact.
 
-  [[4]] Click Submit and a message will be displayed notifying you if the upload/deployment was successful or not.
+  [[5]] Click Submit and a message will be displayed notifying you if the upload/deployment was successful or not.
 
   []
-  
+
   These are the files that will be in your repository after deployment:
 
   * artifact 
@@ -201,6 +204,10 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
 
   * maven-metadata.xml.sha1 and maven-metadata.xml.md5 (these will be generated for newly created maven-metadata.xml files, otherwise
   they will just be updated)
+
+  []
+
+[../images/upload-artifact.jpg] Upload Artifact
 
 ~~TODO: information for Maven 1, ant tasks, ivy, etc.
 
