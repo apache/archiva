@@ -227,6 +227,12 @@ public class GenerateReportAction
                 	return ERROR;
                 }
                 
+                if( startDateInDF.after( endDateInDF ) )
+                {
+                    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                    return INPUT;
+                }
+                
                 // multiple repos
                 generateReportForMultipleRepos(repoContentStatsDao, startDateInDF, endDateInDF, true);                
             }
@@ -241,6 +247,12 @@ public class GenerateReportAction
                 	startDateInDF = getStartDateInDateFormat();                	
                 	endDateInDF = getEndDateInDateFormat();
                 	 
+                	if( startDateInDF.after( endDateInDF ) )
+                    {
+                	    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                	    return INPUT;
+                    }
+                	
                     List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
                            new RepositoryContentStatisticsByRepositoryConstraint( selectedRepo, startDateInDF, endDateInDF ) );
                     
@@ -322,6 +334,12 @@ public class GenerateReportAction
                 	return ERROR;
                 }
                 
+                if( startDateInDF.after( endDateInDF ) )
+                {
+                    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                    return INPUT;
+                }
+                
              // multiple repos
                 generateReportForMultipleRepos( repoContentStatsDao, startDateInDF, endDateInDF, false );
             }
@@ -332,6 +350,12 @@ public class GenerateReportAction
                 {                 
                 	startDateInDF = getStartDateInDateFormat();
                 	endDateInDF = getEndDateInDateFormat();
+                	
+                	if( startDateInDF.after( endDateInDF ) )
+                    {
+                	    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                	    return INPUT;
+                    }
                 	
                     List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
                            new RepositoryContentStatisticsByRepositoryConstraint( selectedRepo, startDateInDF, endDateInDF ) );
