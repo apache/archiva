@@ -31,6 +31,7 @@ import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstr
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
@@ -85,6 +86,7 @@ public class ArchivaRepositoryScanningTaskExecutor
         log.info( "Initialized " + this.getClass().getName() );
     }
 
+    @SuppressWarnings("unchecked")
     public void executeTask( Task task )
         throws TaskExecutionException
     {
@@ -107,7 +109,7 @@ public class ArchivaRepositoryScanningTaskExecutor
 
             long sinceWhen = RepositoryScanner.FRESH_SCAN;
 
-            List<RepositoryContentStatistics> results = dao.query( new MostRecentRepositoryScanStatistics( arepo.getId() ) );
+            List<RepositoryContentStatistics> results = (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( arepo.getId() ) );
 
             if ( CollectionUtils.isNotEmpty( results ) )
             {
@@ -129,6 +131,7 @@ public class ArchivaRepositoryScanningTaskExecutor
         }    
     }
 
+    @SuppressWarnings("unchecked")
     private RepositoryContentStatistics constructRepositoryStatistics( ManagedRepositoryConfiguration arepo,
                                                                        long sinceWhen,
                                                                        List<RepositoryContentStatistics> results,
@@ -145,7 +148,7 @@ public class ArchivaRepositoryScanningTaskExecutor
         // total artifact count
         try
         {
-            List artifacts = dao.getArtifactDAO().queryArtifacts( 
+            List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts( 
                       new ArtifactsByRepositoryConstraint( arepo.getId(), stats.getWhenGathered(), "groupId", true ) );            
             dbstats.setTotalArtifactCount( artifacts.size() );
         }
@@ -166,10 +169,10 @@ public class ArchivaRepositoryScanningTaskExecutor
         List<String> repos = new ArrayList<String>();
         repos.add( arepo.getId() ); 
         
-        List<String> groupIds = dao.query( new UniqueGroupIdConstraint( repos ) );
+        List<String> groupIds = (List<String>) dao.query( new UniqueGroupIdConstraint( repos ) );
         dbstats.setTotalGroupCount( groupIds.size() );
                 
-        List<Object[]> artifactIds = dao.query( new UniqueArtifactIdConstraint( arepo.getId(), true ) );
+        List<Object[]> artifactIds = (List<Object[]>) dao.query( new UniqueArtifactIdConstraint( arepo.getId(), true ) );
         dbstats.setTotalProjectCount( artifactIds.size() );
                         
         return dbstats;

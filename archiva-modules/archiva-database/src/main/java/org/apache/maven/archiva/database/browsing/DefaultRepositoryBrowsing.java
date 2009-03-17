@@ -68,13 +68,14 @@ public class DefaultRepositoryBrowsing
     /**
      * @see RepositoryBrowsing#getRoot(String, List)
      */
+    @SuppressWarnings("unchecked")
     public BrowsingResults getRoot( final String principal, final List<String> observableRepositoryIds )
     {
         final BrowsingResults results = new BrowsingResults();
 
         if ( !observableRepositoryIds.isEmpty() )
         {
-            final List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds ) );
+            final List<String> groups = (List<String>) dao.query( new UniqueGroupIdConstraint( observableRepositoryIds ) );
             results.setSelectedRepositoryIds( observableRepositoryIds );
             results.setGroupIds( GroupIdFilter.filterGroups( groups ) );
         }
@@ -84,6 +85,7 @@ public class DefaultRepositoryBrowsing
     /**
      * @see RepositoryBrowsing#selectArtifactId(String, List, String, String)
      */
+    @SuppressWarnings("unchecked")
     public BrowsingResults selectArtifactId( final String principal, final List<String> observableRepositoryIds,
                                              final String groupId, final String artifactId )
     {
@@ -93,7 +95,7 @@ public class DefaultRepositoryBrowsing
         {
             // NOTE: No group Id or artifact Id's should be returned here.
             List<String> versions =
-                dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
+                (List<String>) dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
             results.setSelectedRepositoryIds( observableRepositoryIds );
 
             results.setVersions( processSnapshots( versions ) );
@@ -104,6 +106,7 @@ public class DefaultRepositoryBrowsing
     /**
      * @see RepositoryBrowsing#selectGroupId(String, List, String)
      */
+    @SuppressWarnings("unchecked")
     public BrowsingResults selectGroupId( final String principal, final List<String> observableRepositoryIds,
                                           final String groupId )
     {
@@ -111,9 +114,9 @@ public class DefaultRepositoryBrowsing
 
         if ( !observableRepositoryIds.isEmpty() )
         {
-            final List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds, groupId ) );
+            final List<String> groups = (List<String>) dao.query( new UniqueGroupIdConstraint( observableRepositoryIds, groupId ) );
             final List<String> artifacts =
-                dao.query( new UniqueArtifactIdConstraint( observableRepositoryIds, groupId ) );
+                (List<String>) dao.query( new UniqueArtifactIdConstraint( observableRepositoryIds, groupId ) );
 
             // Remove searched for groupId from groups list.
             // Easier to do this here, vs doing it in the SQL query.
@@ -179,6 +182,7 @@ public class DefaultRepositoryBrowsing
     /**
      * @see RepositoryBrowsing#getOtherSnapshotVersions(List, String, String, String)
      */
+    @SuppressWarnings("unchecked")
     public List<String> getOtherSnapshotVersions( List<String> observableRepositoryIds, String groupId,
                                                  String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
@@ -188,7 +192,7 @@ public class DefaultRepositoryBrowsing
         if ( VersionUtil.isSnapshot( version ) )
         {
             List<String> versions =
-                dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
+                (List<String>) dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
 
             for ( String uniqueVersion : versions )
             {   
@@ -259,7 +263,7 @@ public class DefaultRepositoryBrowsing
         if ( results == null )
         {
             // defensive. to honor contract as specified. never null.
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         return results;
@@ -312,6 +316,7 @@ public class DefaultRepositoryBrowsing
      * @param pomArtifact
      * @throws ArchivaDatabaseException
      */
+    @SuppressWarnings("unchecked")
     private ArchivaArtifact handleGenericSnapshots( final String groupId, final String artifactId,
                                                     final String version, final String repositoryId )
         throws ArchivaDatabaseException
@@ -320,7 +325,7 @@ public class DefaultRepositoryBrowsing
 
         if ( VersionUtil.isGenericSnapshot( version ) )
         {
-            final List<String> versions = dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
+            final List<String> versions = (List<String>) dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
             Collections.sort( versions );
             Collections.reverse( versions );
 

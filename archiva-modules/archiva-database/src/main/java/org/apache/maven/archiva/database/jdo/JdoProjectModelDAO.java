@@ -73,10 +73,11 @@ public class JdoProjectModelDAO
         return (ArchivaProjectModel) jdo.getObjectById( ArchivaProjectModel.class, key, null );
     }
 
+    @SuppressWarnings("unchecked")
     public List<ArchivaProjectModel> queryProjectModels( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return jdo.queryObjects( ArchivaProjectModel.class, constraint );
+        return (List<ArchivaProjectModel>) jdo.queryObjects( ArchivaProjectModel.class, constraint );
     }
 
     public ArchivaProjectModel saveProjectModel( ArchivaProjectModel model )

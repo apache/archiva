@@ -152,12 +152,13 @@ public class GenerateReportAction
     
     private InputStream inputStream;
     
+    @SuppressWarnings("unchecked")
     public void prepare()
     {
         repositoryIds = new ArrayList<String>();
         repositoryIds.add( ALL_REPOSITORIES ); // comes first to be first in the list
-        repositoryIds.addAll(
-            dao.query( new UniqueFieldConstraint( RepositoryProblem.class.getName(), "repositoryId" ) ) );
+        repositoryIds.addAll( (List<String>) dao.query( new UniqueFieldConstraint( RepositoryProblem.class.getName(),
+                                                                                   "repositoryId" ) ) );
         
         availableRepositories = new ArrayList<String>();
      
@@ -449,7 +450,7 @@ public class GenerateReportAction
         {   
             try
             {                
-                List contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
+                List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
                          new RepositoryContentStatisticsByRepositoryConstraint( repo, startDateInDF, endDateInDF ) );
 
                 if ( contentStats == null || contentStats.isEmpty() )

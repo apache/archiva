@@ -67,7 +67,7 @@ public class RepositoryContentStatisticsByRepositoryConstraintTest
         throws Exception
     {
         Constraint constraint = new RepositoryContentStatisticsByRepositoryConstraint( "internal" );
-        List results = dao.getRepositoryContentStatisticsDAO().queryRepositoryContentStatistics( constraint );
+        List<RepositoryContentStatistics> results = dao.getRepositoryContentStatisticsDAO().queryRepositoryContentStatistics( constraint );
         assertNotNull( "Stats: results (not null)", results );
         assertEquals( "Stats: results.size", 4, results.size() );
 
@@ -83,7 +83,7 @@ public class RepositoryContentStatisticsByRepositoryConstraintTest
         Constraint constraint =
             new RepositoryContentStatisticsByRepositoryConstraint( "internal", toDate( "2007/10/18 8:00:00" ),
                                                                    toDate( "2007/10/20 8:00:00" ) );
-        List results = dao.getRepositoryContentStatisticsDAO().queryRepositoryContentStatistics( constraint );
+        List<RepositoryContentStatistics> results = dao.getRepositoryContentStatisticsDAO().queryRepositoryContentStatistics( constraint );
         assertNotNull( "Stats: results (not null)", results );
         assertEquals( "Stats: results.size", 3, results.size() );
 

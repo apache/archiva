@@ -19,17 +19,17 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
-import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
-
 import java.util.Date;
 import java.util.List;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.spi.JDOImplHelper;
+
+import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifactModel;
+import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
 
 /**
  * JdoArtifactDAOTest 
@@ -76,7 +76,7 @@ public class JdoArtifactDAOTest
         assertEquals( "org.apache.maven.archiva:archiva-test-module:1.0::jar:testrepo", savedKeyId );
 
         // Test that something has been saved.
-        List artifacts = artiDao.queryArtifacts( null );
+        List<ArchivaArtifact> artifacts = artiDao.queryArtifacts( null );
         assertNotNull( artifacts );
         assertEquals( 1, artifacts.size() );
 

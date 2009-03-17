@@ -94,6 +94,7 @@ public class RepositoriesAction
         return bundle;
     }
 
+    @SuppressWarnings("unchecked")
     public void prepare()
     {
         Configuration config = archivaConfiguration.getConfiguration();
@@ -109,7 +110,7 @@ public class RepositoriesAction
         for ( ManagedRepositoryConfiguration repo : managedRepositories )
         {
             List<RepositoryContentStatistics> results =
-                dao.query( new MostRecentRepositoryScanStatistics( repo.getId() ) );
+                (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( repo.getId() ) );
             if ( !results.isEmpty() )
             {
                 repositoryStatistics.put( repo.getId(), results.get( 0 ) );

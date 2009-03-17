@@ -108,7 +108,7 @@ public class ProjectsByArtifactUsageConstraintTest
     private void assertConstraint( int expectedHits, DeclarativeConstraint constraint )
         throws Exception
     {
-        List results = dao.getProjectModelDAO().queryProjectModels( constraint );
+        List<ArchivaProjectModel> results = dao.getProjectModelDAO().queryProjectModels( constraint );
         assertNotNull( "Projects By Artifact Usage: Not Null", results );
         assertEquals( "Projects By Artifact Usage: Results.size", expectedHits, results.size() );
     }

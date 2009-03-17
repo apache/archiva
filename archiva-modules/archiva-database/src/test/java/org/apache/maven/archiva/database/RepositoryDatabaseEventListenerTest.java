@@ -42,6 +42,7 @@ public class RepositoryDatabaseEventListenerTest
         listener = (RepositoryListener) lookup( RepositoryListener.class.getName(), "database" );
     }
 
+    @SuppressWarnings("unchecked")
     public void testWiring()
     {
         List<RepositoryListener> listeners =

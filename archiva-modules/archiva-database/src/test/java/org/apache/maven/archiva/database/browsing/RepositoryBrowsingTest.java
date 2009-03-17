@@ -195,7 +195,7 @@ public class RepositoryBrowsingTest
         assertTrue( results.contains( "2.1-20070522.153141-2" ) ); 
     }
     
-    private void assertGroupIds( String msg, List actualGroupIds, String[] expectedGroupIds )
+    private void assertGroupIds( String msg, List<String> actualGroupIds, String[] expectedGroupIds )
     {
         assertEquals( msg + ": groupIds.length", expectedGroupIds.length, actualGroupIds.size() );
 

@@ -112,12 +112,13 @@ public class UniqueArtifactIdConstraintTest
         artifactDao.saveArtifact( artifact );
     }
     
+    @SuppressWarnings("unchecked")
     private void assertConstraintWithMultipleResultTypes( String[] artifactIds, SimpleConstraint constraint )
         throws Exception
     {
         String prefix = "Unique Artifact IDs: ";
     
-        List<Object[]> results = dao.query( constraint );
+        List<Object[]> results = (List<Object[]>) dao.query( constraint );
         assertNotNull( prefix + "Not Null", results );
         assertEquals( prefix + "Results.size", artifactIds.length, results.size() );
     
@@ -134,11 +135,12 @@ public class UniqueArtifactIdConstraintTest
         }
     }
     
+    @SuppressWarnings("unchecked")
     private void assertConstraint( String[] artifactIds, SimpleConstraint constraint )
     {
         String prefix = "Unique Artifact IDs: ";
 
-        List<String> results = dao.query( constraint );
+        List<String> results = (List<String>) dao.query( constraint );
         assertNotNull( prefix + "Not Null", results );
         assertEquals( prefix + "Results.size", artifactIds.length, results.size() );
 

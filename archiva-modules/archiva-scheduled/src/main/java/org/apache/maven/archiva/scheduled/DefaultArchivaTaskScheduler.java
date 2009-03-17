@@ -151,10 +151,11 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig )
     {
         List<RepositoryScanStatistics> results =
-            dao.query( new MostRecentRepositoryScanStatistics( repoConfig.getId() ) );
+            (List<RepositoryScanStatistics>) dao.query( new MostRecentRepositoryScanStatistics( repoConfig.getId() ) );
 
         if ( results != null && !results.isEmpty() )
         {
@@ -320,6 +321,7 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
+    @SuppressWarnings("unchecked")
     public boolean isProcessingAnyRepositoryTask()
         throws ArchivaException
     {
@@ -337,6 +339,7 @@ public class DefaultArchivaTaskScheduler
         return !queue.isEmpty();
     }
 
+    @SuppressWarnings("unchecked")
     public boolean isProcessingRepositoryTask( String repositoryId )
         throws ArchivaException
     {
@@ -354,6 +357,7 @@ public class DefaultArchivaTaskScheduler
         return CollectionUtils.exists( queue, new RepositoryTaskSelectionPredicate( repositoryId ) );
     }
 
+    @SuppressWarnings("unchecked")
     public boolean isProcessingDatabaseTask()
         throws ArchivaException
     {

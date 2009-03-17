@@ -67,10 +67,11 @@ public class JdoDatabaseUpdater
         updateAllProcessed();
     }
 
+    @SuppressWarnings("unchecked")
     public void updateAllUnprocessed()
         throws ArchivaDatabaseException
     {
-        List unprocessedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> unprocessedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
 
         beginConsumerLifecycle( dbConsumers.getSelectedUnprocessedConsumers() );
 
@@ -79,10 +80,10 @@ public class JdoDatabaseUpdater
             // Process each consumer.
             Predicate predicate = UnprocessedArtifactPredicate.getInstance();
 
-            Iterator it = IteratorUtils.filteredIterator( unprocessedArtifacts.iterator(), predicate );
+            Iterator<ArchivaArtifact> it = IteratorUtils.filteredIterator( unprocessedArtifacts.iterator(), predicate );
             while ( it.hasNext() )
             {
-                ArchivaArtifact artifact = (ArchivaArtifact) it.next();
+                ArchivaArtifact artifact = it.next();
                 updateUnprocessed( artifact );
             }
         }
@@ -92,10 +93,11 @@ public class JdoDatabaseUpdater
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void updateAllProcessed()
         throws ArchivaDatabaseException
     {
-        List processedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( true ) );
+        List<ArchivaArtifact> processedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( true ) );
 
         beginConsumerLifecycle( dbConsumers.getSelectedCleanupConsumers() );
 
@@ -104,10 +106,10 @@ public class JdoDatabaseUpdater
             // Process each consumer.
             Predicate predicate = NotPredicate.getInstance( UnprocessedArtifactPredicate.getInstance() );
 
-            Iterator it = IteratorUtils.filteredIterator( processedArtifacts.iterator(), predicate );
+            Iterator<ArchivaArtifact> it = IteratorUtils.filteredIterator( processedArtifacts.iterator(), predicate );
             while ( it.hasNext() )
             {
-                ArchivaArtifact artifact = (ArchivaArtifact) it.next();
+                ArchivaArtifact artifact = it.next();
                 updateProcessed( artifact );
             }
         }
@@ -117,22 +119,18 @@ public class JdoDatabaseUpdater
         }
     }
 
-    private void endConsumerLifecycle( List consumers )
+    private void endConsumerLifecycle( List<ArchivaArtifactConsumer> consumers )
     {
-        Iterator it = consumers.iterator();
-        while ( it.hasNext() )
+        for ( ArchivaArtifactConsumer consumer : consumers )
         {
-            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
             consumer.completeScan();
         }
     }
 
-    private void beginConsumerLifecycle( List consumers )
+    private void beginConsumerLifecycle( List<ArchivaArtifactConsumer> consumers )
     {
-        Iterator it = consumers.iterator();
-        while ( it.hasNext() )
+        for ( ArchivaArtifactConsumer consumer : consumers )
         {
-            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
             consumer.beginScan();
         }
     }
@@ -140,7 +138,7 @@ public class JdoDatabaseUpdater
     public void updateUnprocessed( ArchivaArtifact artifact )
         throws ArchivaDatabaseException
     {
-        List consumers = dbConsumers.getSelectedUnprocessedConsumers();
+        List<ArchivaArtifactConsumer> consumers = dbConsumers.getSelectedUnprocessedConsumers();
 
         if ( CollectionUtils.isEmpty( consumers ) )
         {
@@ -158,7 +156,7 @@ public class JdoDatabaseUpdater
     public void updateProcessed( ArchivaArtifact artifact )
         throws ArchivaDatabaseException
     {
-        List consumers = dbConsumers.getSelectedCleanupConsumers();
+        List<ArchivaArtifactConsumer> consumers = dbConsumers.getSelectedCleanupConsumers();
 
         if ( CollectionUtils.isEmpty( consumers ) )
         {

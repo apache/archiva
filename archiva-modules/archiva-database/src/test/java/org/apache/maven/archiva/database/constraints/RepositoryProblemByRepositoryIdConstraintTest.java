@@ -86,7 +86,7 @@ public class RepositoryProblemByRepositoryIdConstraintTest
     private void assertConstraint( int expectedHits, Constraint constraint )
         throws Exception
     {
-        List results = repoProblemDao.queryRepositoryProblems( constraint );
+        List<RepositoryProblem> results = repoProblemDao.queryRepositoryProblems( constraint );
         assertNotNull( "Repository Problems by Repository Id: Not Null", results );
         assertEquals( "Repository Problems by Repository Id: Results.size", expectedHits, results.size() );
     }

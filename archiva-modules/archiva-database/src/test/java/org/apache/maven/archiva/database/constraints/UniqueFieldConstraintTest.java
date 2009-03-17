@@ -110,7 +110,7 @@ public class UniqueFieldConstraintTest
     private void assertConstraint( int expectedHits, SimpleConstraint constraint )
         throws Exception
     {
-        List results = archivaDao.query( constraint );
+        List<?> results = archivaDao.query( constraint );
         assertNotNull( "Repository Problems: Not Null", results );
         assertEquals( "Repository Problems: Results.size", expectedHits, results.size() );
     }

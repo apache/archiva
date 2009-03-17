@@ -44,7 +44,7 @@ public class DatabaseConsumersTest
         throws Exception
     {
         DatabaseConsumers dbconsumers = lookupDbConsumers();
-        List available = dbconsumers.getAvailableCleanupConsumers();
+        List<DatabaseCleanupConsumer> available = dbconsumers.getAvailableCleanupConsumers();
         assertNotNull( "Available Cleanup Consumers should never be null.", available );
 
         assertTrue( "Available Cleanup Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
@@ -54,7 +54,7 @@ public class DatabaseConsumersTest
         throws Exception
     {
         DatabaseConsumers dbconsumers = lookupDbConsumers();
-        List available = dbconsumers.getAvailableUnprocessedConsumers();
+        List<DatabaseUnprocessedArtifactConsumer> available = dbconsumers.getAvailableUnprocessedConsumers();
         assertNotNull( "Available Unprocessed Consumers should never be null.", available );
 
         assertTrue( "Available Unprocessed Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
@@ -64,7 +64,7 @@ public class DatabaseConsumersTest
         throws Exception
     {
         DatabaseConsumers dbconsumers = lookupDbConsumers();
-        List available = dbconsumers.getSelectedCleanupConsumers();
+        List<ArchivaArtifactConsumer> available = dbconsumers.getSelectedCleanupConsumers();
         assertNotNull( "Selected Cleanup Consumers should never be null.", available );
 
         assertTrue( "Selected Cleanup Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
@@ -74,7 +74,7 @@ public class DatabaseConsumersTest
         throws Exception
     {
         DatabaseConsumers dbconsumers = lookupDbConsumers();
-        List available = dbconsumers.getSelectedUnprocessedConsumers();
+        List<ArchivaArtifactConsumer> available = dbconsumers.getSelectedUnprocessedConsumers();
         assertNotNull( "Selected Unprocessed Consumers should never be null.", available );
 
         assertTrue( "Selected Unprocessed Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );

@@ -19,6 +19,9 @@ package org.apache.maven.archiva.database.updater;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.OrPredicate;
@@ -31,10 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * DatabaseConsumers 
@@ -114,9 +113,10 @@ public class DatabaseConsumers
      * 
      * @return the list of selected {@link DatabaseUnprocessedArtifactConsumer} objects.
      */
-    public List getSelectedUnprocessedConsumers()
+    @SuppressWarnings("unchecked")
+    public List<ArchivaArtifactConsumer> getSelectedUnprocessedConsumers()
     {
-        List ret = new ArrayList();
+        List<ArchivaArtifactConsumer> ret = new ArrayList<ArchivaArtifactConsumer>();
         ret.addAll( CollectionUtils.select( getAvailableUnprocessedConsumers(), selectedUnprocessedConsumers ) );
         return ret;
     }
@@ -127,9 +127,10 @@ public class DatabaseConsumers
      * 
      * @return the list of selected {@link DatabaseCleanupConsumer} objects.
      */
-    public List getSelectedCleanupConsumers()
+    @SuppressWarnings("unchecked")
+    public List<ArchivaArtifactConsumer> getSelectedCleanupConsumers()
     {
-        List ret = new ArrayList();
+        List<ArchivaArtifactConsumer> ret = new ArrayList<ArchivaArtifactConsumer>();
         ret.addAll( CollectionUtils.select( getAvailableCleanupConsumers(), selectedCleanupConsumers ) );
         return ret;
     }
@@ -140,9 +141,10 @@ public class DatabaseConsumers
      * 
      * @return the list of all available {@link DatabaseUnprocessedArtifactConsumer} objects.
      */
-    public List getAvailableUnprocessedConsumers()
+    @SuppressWarnings("unchecked")
+    public List<DatabaseUnprocessedArtifactConsumer> getAvailableUnprocessedConsumers()
     {       
-        return new ArrayList( applicationContext.getBeansOfType( DatabaseUnprocessedArtifactConsumer.class ).values() );
+        return new ArrayList<DatabaseUnprocessedArtifactConsumer>( applicationContext.getBeansOfType( DatabaseUnprocessedArtifactConsumer.class ).values() );
     }
 
     /**
@@ -151,9 +153,10 @@ public class DatabaseConsumers
      * 
      * @return the list of all available {@link DatabaseCleanupConsumer} objects.
      */
-    public List getAvailableCleanupConsumers()
+    @SuppressWarnings("unchecked")
+    public List<DatabaseCleanupConsumer> getAvailableCleanupConsumers()
     {
-        return new ArrayList( applicationContext.getBeansOfType( DatabaseCleanupConsumer.class ).values() );
+        return new ArrayList<DatabaseCleanupConsumer>( applicationContext.getBeansOfType( DatabaseCleanupConsumer.class ).values() );
     }
     
     /**
@@ -163,11 +166,9 @@ public class DatabaseConsumers
      */
     public void executeCleanupConsumer( ArchivaArtifact artifact )
     {
-        List consumers = getSelectedCleanupConsumers();
-        Iterator it = consumers.iterator();
-        while ( it.hasNext() )
+        List<ArchivaArtifactConsumer> consumers = getSelectedCleanupConsumers();
+        for ( ArchivaArtifactConsumer consumer : consumers )
         {
-            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
             consumer.beginScan();
         }
         
@@ -182,9 +183,8 @@ public class DatabaseConsumers
         
         CollectionUtils.forAllDo( consumers, processArtifactClosure );
         
-        while ( it.hasNext() )
+        for ( ArchivaArtifactConsumer consumer : consumers )
         {
-            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
             consumer.completeScan();
         }
     }

@@ -82,7 +82,7 @@ public class ArtifactsRelatedConstraintTest
     private void assertConstraint( int expectedHits, Constraint constraint )
         throws Exception
     {
-        List results = artifactDao.queryArtifacts( constraint );
+        List<ArchivaArtifact> results = artifactDao.queryArtifacts( constraint );
         assertNotNull( "Related Artifacts: Not Null", results );
         assertEquals( "Related Artifacts: Results.size", expectedHits, results.size() );
     }

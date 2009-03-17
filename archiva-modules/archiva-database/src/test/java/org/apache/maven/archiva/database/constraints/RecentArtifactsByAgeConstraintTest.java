@@ -97,7 +97,7 @@ public class RecentArtifactsByAgeConstraintTest
     private void assertConstraint( int expectedHits, Constraint constraint )
         throws Exception
     {
-        List results = artifactDao.queryArtifacts( constraint );
+        List<ArchivaArtifact> results = artifactDao.queryArtifacts( constraint );
         assertNotNull( "Recent Artifacts By Age: Not Null", results );
         assertEquals( "Recent Artifacts By Age: Results.size", expectedHits, results.size() );
     }

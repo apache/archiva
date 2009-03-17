@@ -231,12 +231,13 @@ public class UniqueGroupIdConstraintTest
                           new UniqueGroupIdConstraint( observableRepositories ) );
     }   
     
+    @SuppressWarnings("unchecked")
     private void assertConstraint( String[] expectedGroupIds, SimpleConstraint constraint )
         throws Exception
     {
         String prefix = "Unique Group IDs: ";
 
-        List<String> results = dao.query( constraint );
+        List<String> results = (List<String>) dao.query( constraint );
         assertNotNull( prefix + "Not Null", results );
         assertEquals( prefix + "Results.size", expectedGroupIds.length, results.size() );
 

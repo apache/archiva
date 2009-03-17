@@ -40,7 +40,7 @@ public class MostRecentRepositoryScanStatistics
         super.params = new Object[]{repoId};
     }
 
-    public Class getResultClass()
+    public Class<?> getResultClass()
     {
         return RepositoryContentStatistics.class;
     }

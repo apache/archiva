@@ -40,7 +40,7 @@ public interface ProjectModelResolutionListener
      * @see #resolutionSuccess(VersionedReference, ProjectModelResolver, ArchivaProjectModel)
      * @see #resolutionNotFound(VersionedReference, List)
      */
-    public void resolutionStart( VersionedReference projectRef, List resolverList );
+    public void resolutionStart( VersionedReference projectRef, List<ProjectModelResolver> resolverList );
 
     /**
      * Indicates that a resolution against a specific resolver is about 
@@ -92,5 +92,5 @@ public interface ProjectModelResolutionListener
      * @param resolverList the {@link List} of {@link ProjectModelResolver}'s that was be searched.
      * @see #resolutionStart(VersionedReference, List)
      */
-    public void resolutionNotFound( VersionedReference projectRef, List resolverList );
+    public void resolutionNotFound( VersionedReference projectRef, List<ProjectModelResolver> resolverList );
 }

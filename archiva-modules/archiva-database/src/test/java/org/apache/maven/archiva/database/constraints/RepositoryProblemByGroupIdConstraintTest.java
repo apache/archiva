@@ -19,13 +19,13 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.model.RepositoryProblem;
-
-import java.util.List;
 
 /**
  * RepositoryProblemByGroupIdConstraintTest
@@ -89,7 +89,7 @@ public class RepositoryProblemByGroupIdConstraintTest
     private void assertConstraint( int expectedHits, Constraint constraint )
         throws Exception
     {
-        List results = repoProblemDao.queryRepositoryProblems( constraint );
+        List<RepositoryProblem> results = repoProblemDao.queryRepositoryProblems( constraint );
         assertNotNull( "Repository Problems by Group Id: Not Null", results );
         assertEquals( "Repository Problems by Group Id: Results.size", expectedHits, results.size() );
     }

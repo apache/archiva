@@ -48,12 +48,11 @@ public class JdoRepositoryContentStatisticsDAO
         jdo.removeObject( stats );
     }
 
-    public List queryRepositoryContentStatistics( Constraint constraint )
+    @SuppressWarnings("unchecked")
+    public List<RepositoryContentStatistics> queryRepositoryContentStatistics( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        List results = jdo.queryObjects( RepositoryContentStatistics.class, constraint );
-        
-        return results;
+        return (List<RepositoryContentStatistics>) jdo.queryObjects( RepositoryContentStatistics.class, constraint );
     }
 
     public RepositoryContentStatistics saveRepositoryContentStatistics( RepositoryContentStatistics stats )

@@ -34,25 +34,26 @@ import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.Preparable;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -68,8 +69,6 @@ public class SearchAction
      */
 
     private ArchivaConfiguration archivaConfiguration;
-
-    private Map<String, ManagedRepositoryConfiguration> managedRepositories;
 
     private String q;
 
@@ -97,7 +96,7 @@ public class SearchAction
 
     private static final String ARTIFACT = "artifact";
 
-    private List databaseResults;
+    private List<ArchivaArtifact> databaseResults;
     
     private int currentPage = 0;
     
@@ -262,6 +261,7 @@ public class SearchAction
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     public String quickSearch()
         throws MalformedURLException
     {
@@ -335,8 +335,8 @@ public class SearchAction
         for ( SearchResultHit resultHit : results.getHits() )
         {
             final List<String> versions =
-                dao.query( new UniqueVersionConstraint( getObservableRepos(), resultHit.getGroupId(),
-                                                        resultHit.getArtifactId() ) );
+                (List<String>) dao.query( new UniqueVersionConstraint( getObservableRepos(), resultHit.getGroupId(),
+                                                    resultHit.getArtifactId() ) );
             if ( versions != null && !versions.isEmpty() )
             {
                 resultHit.setVersion( null );
@@ -400,6 +400,7 @@ public class SearchAction
         return INPUT;
     }
 
+    @SuppressWarnings("unchecked")
     private String getPrincipal()
     {
         return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
@@ -481,7 +482,7 @@ public class SearchAction
         return results;
     }
 
-    public List getDatabaseResults()
+    public List<ArchivaArtifact> getDatabaseResults()
     {
         return databaseResults;
     }
@@ -543,7 +544,6 @@ public class SearchAction
 
     public void setManagedRepositories( Map<String, ManagedRepositoryConfiguration> managedRepositories )
     {
-        this.managedRepositories = managedRepositories;
     }
 
     public String getGroupId()

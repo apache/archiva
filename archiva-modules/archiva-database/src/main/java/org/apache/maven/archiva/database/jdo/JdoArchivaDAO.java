@@ -65,7 +65,7 @@ public class JdoArchivaDAO
     private RepositoryContentStatisticsDAO repositoryContentStatisticsDAO;
 
 
-    public List query( SimpleConstraint constraint )
+    public List<?> query( SimpleConstraint constraint )
     {
         return jdo.queryObjects( constraint );
     }

@@ -51,7 +51,7 @@ public class JdoRepositoryContentStatisticsDAOTest
         assertEquals( "1[OID]org.apache.maven.archiva.model.RepositoryContentStatistics", savedKeyId );
 
         // query
-        List results =
+        List<RepositoryContentStatistics> results =
            repoContentStatisticsDAO.queryRepositoryContentStatistics( new RepositoryContentStatisticsByRepositoryConstraint(
                                                                                                                               "internal" ) );
         assertNotNull( results );

@@ -19,13 +19,12 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * ArtifactsProcessedConstraintTest 
@@ -55,7 +54,7 @@ public class ArtifactsProcessedConstraintTest
         return artifact;
     }
 
-    public void assertResults( String type, List results, String expectedArtifacts[] )
+    public void assertResults( String type, List<ArchivaArtifact> results, String expectedArtifacts[] )
     {
         assertNotNull( "Results[" + type + "] should not be null.", results );
         assertEquals( "Results[" + type + "].size", expectedArtifacts.length, results.size() );
@@ -65,10 +64,8 @@ public class ArtifactsProcessedConstraintTest
             String artifactId = expectedArtifacts[i];
 
             int found = 0;
-            Iterator it = results.iterator();
-            while ( it.hasNext() )
+            for ( ArchivaArtifact artifact : results )
             {
-                ArchivaArtifact artifact = (ArchivaArtifact) it.next();
                 if ( artifactId.equals( artifact.getArtifactId() ) )
                 {
                     found++;
@@ -107,14 +104,14 @@ public class ArtifactsProcessedConstraintTest
     public void testNotProcessed()
         throws Exception
     {
-        List results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
         assertResults( "not-processed", results, new String[] { "archiva-common", "archiva-database" } );
     }
 
     public void testProcessed()
         throws Exception
     {
-        List results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( true ) );
+        List<ArchivaArtifact> results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( true ) );
         assertResults( "processed", results, new String[] { "archiva-utils", "archiva-old" } );
     }
 
@@ -122,7 +119,7 @@ public class ArtifactsProcessedConstraintTest
         throws Exception
     {
         Date since = toDate( "2006/01/01 12:00:00" );
-        List results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( since ) );
+        List<ArchivaArtifact> results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( since ) );
         assertResults( "processed", results, new String[] { "archiva-utils" } );
     }
 
@@ -130,7 +127,7 @@ public class ArtifactsProcessedConstraintTest
         throws Exception
     {
         Date since = toDate( "2001/01/01 12:00:00" );
-        List results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( since ) );
+        List<ArchivaArtifact> results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( since ) );
         assertResults( "processed", results, new String[] { "archiva-utils", "archiva-old" } );
     }
 }

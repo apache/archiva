@@ -193,7 +193,7 @@ public class ArtifactsByChecksumConstraintTest
     private void assertConstraint( String msg, int count, ArtifactsByChecksumConstraint constraint )
         throws Exception
     {
-        List results = artifactDao.queryArtifacts( constraint );
+        List<ArchivaArtifact> results = artifactDao.queryArtifacts( constraint );
         assertNotNull( msg + ": Not Null", results );
         assertEquals( msg + ": Results.size", count, results.size() );
     }
