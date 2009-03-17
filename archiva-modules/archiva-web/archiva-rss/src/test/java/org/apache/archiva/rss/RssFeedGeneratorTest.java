@@ -44,6 +44,7 @@ public class RssFeedGeneratorTest
         generator = (RssFeedGenerator) lookup( RssFeedGenerator.class );
     }
 
+    @SuppressWarnings("unchecked")
     public void testNewFeed()
         throws Exception
     {

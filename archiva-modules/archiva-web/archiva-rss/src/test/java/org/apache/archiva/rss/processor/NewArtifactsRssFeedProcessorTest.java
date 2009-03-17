@@ -63,6 +63,7 @@ public class NewArtifactsRssFeedProcessorTest
         newArtifactsProcessor.setArtifactDAO( artifactDAOStub );
     }
 
+    @SuppressWarnings("unchecked")
     public void testProcess()
         throws Exception
     {

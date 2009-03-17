@@ -60,6 +60,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         newVersionsProcessor.setArtifactDAO( artifactDAOStub );
     }
 
+    @SuppressWarnings("unchecked")
     public void testProcess()
         throws Exception
     {
