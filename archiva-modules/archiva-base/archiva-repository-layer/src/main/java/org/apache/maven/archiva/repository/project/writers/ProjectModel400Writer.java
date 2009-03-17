@@ -505,6 +505,7 @@ public class ProjectModel400Writer
     /**
      * Fix the default namespace on all elements recursively.
      */
+    @SuppressWarnings("unchecked")
     private void fixDefaultNamespace( Element elem )
     {
         elem.remove( elem.getNamespace() );

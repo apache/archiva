@@ -68,6 +68,7 @@ public class ProjectModelExpressionFilter
      * 
      * @param model the model to correct.
      */
+    @SuppressWarnings("unchecked")
     public ArchivaProjectModel filter( final ArchivaProjectModel model )
         throws ProjectModelException
     {

@@ -37,14 +37,14 @@ import org.apache.maven.archiva.repository.project.ProjectModelResolver;
  */
 public class ProjectModelResolverStack
 {
-    private List resolvers;
+    private List<ProjectModelResolver> resolvers;
 
-    private List listeners;
+    private List<ProjectModelResolutionListener> listeners;
 
     public ProjectModelResolverStack()
     {
-        this.resolvers = new ArrayList();
-        this.listeners = new ArrayList();
+        this.resolvers = new ArrayList<ProjectModelResolver>();
+        this.listeners = new ArrayList<ProjectModelResolutionListener>();
     }
 
     public void addListener( ProjectModelResolutionListener listener )
@@ -81,11 +81,11 @@ public class ProjectModelResolverStack
 
         triggerResolutionStart( projectRef, this.resolvers );
 
-        Iterator it = this.resolvers.iterator();
+        Iterator<ProjectModelResolver> it = this.resolvers.iterator();
 
         while ( it.hasNext() )
         {
-            ProjectModelResolver resolver = (ProjectModelResolver) it.next();
+            ProjectModelResolver resolver = it.next();
 
             try
             {
@@ -149,10 +149,10 @@ public class ProjectModelResolverStack
 
     private void triggerResolutionAttempting( VersionedReference projectRef, ProjectModelResolver resolver )
     {
-        Iterator it = this.listeners.iterator();
+        Iterator<ProjectModelResolutionListener> it = this.listeners.iterator();
         while ( it.hasNext() )
         {
-            ProjectModelResolutionListener listener = (ProjectModelResolutionListener) it.next();
+            ProjectModelResolutionListener listener = it.next();
 
             try
             {
@@ -167,10 +167,10 @@ public class ProjectModelResolverStack
 
     private void triggerResolutionError( VersionedReference projectRef, ProjectModelResolver resolver, Exception cause )
     {
-        Iterator it = this.listeners.iterator();
+        Iterator<ProjectModelResolutionListener> it = this.listeners.iterator();
         while ( it.hasNext() )
         {
-            ProjectModelResolutionListener listener = (ProjectModelResolutionListener) it.next();
+            ProjectModelResolutionListener listener = it.next();
 
             try
             {
@@ -185,10 +185,10 @@ public class ProjectModelResolverStack
 
     private void triggerResolutionMiss( VersionedReference projectRef, ProjectModelResolver resolver )
     {
-        Iterator it = this.listeners.iterator();
+        Iterator<ProjectModelResolutionListener> it = this.listeners.iterator();
         while ( it.hasNext() )
         {
-            ProjectModelResolutionListener listener = (ProjectModelResolutionListener) it.next();
+            ProjectModelResolutionListener listener = it.next();
 
             try
             {
@@ -201,12 +201,12 @@ public class ProjectModelResolverStack
         }
     }
 
-    private void triggerResolutionNotFound( VersionedReference projectRef, List resolvers )
+    private void triggerResolutionNotFound( VersionedReference projectRef, List<ProjectModelResolver> resolvers )
     {
-        Iterator it = this.listeners.iterator();
+        Iterator<ProjectModelResolutionListener> it = this.listeners.iterator();
         while ( it.hasNext() )
         {
-            ProjectModelResolutionListener listener = (ProjectModelResolutionListener) it.next();
+            ProjectModelResolutionListener listener = it.next();
 
             try
             {
@@ -219,12 +219,12 @@ public class ProjectModelResolverStack
         }
     }
 
-    private void triggerResolutionStart( VersionedReference projectRef, List resolvers )
+    private void triggerResolutionStart( VersionedReference projectRef, List<ProjectModelResolver> resolvers )
     {
-        Iterator it = this.listeners.iterator();
+        Iterator<ProjectModelResolutionListener> it = this.listeners.iterator();
         while ( it.hasNext() )
         {
-            ProjectModelResolutionListener listener = (ProjectModelResolutionListener) it.next();
+            ProjectModelResolutionListener listener = it.next();
 
             try
             {
@@ -240,10 +240,10 @@ public class ProjectModelResolverStack
     private void triggerResolutionSuccess( VersionedReference projectRef, ProjectModelResolver resolver,
                                            ArchivaProjectModel model )
     {
-        Iterator it = this.listeners.iterator();
+        Iterator<ProjectModelResolutionListener> it = this.listeners.iterator();
         while ( it.hasNext() )
         {
-            ProjectModelResolutionListener listener = (ProjectModelResolutionListener) it.next();
+            ProjectModelResolutionListener listener = it.next();
 
             try
             {

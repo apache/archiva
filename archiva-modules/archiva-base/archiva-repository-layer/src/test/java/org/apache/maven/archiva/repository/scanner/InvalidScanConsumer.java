@@ -54,12 +54,12 @@ public class InvalidScanConsumer
         /* do nothing */
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return null;
     }

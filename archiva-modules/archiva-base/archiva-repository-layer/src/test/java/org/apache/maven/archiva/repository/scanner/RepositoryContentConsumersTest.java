@@ -321,18 +321,19 @@ public class RepositoryContentConsumersTest
         return path;
     }
 
-    private static Map convertToMap(List objects)
-    {
-        HashMap map = new HashMap();
-        for (Object o : objects)
-        {
-            map.put(o, o);
-        }
-        return map;
-    }
-
+    @SuppressWarnings("unchecked")
     public class MockApplicationContext implements ApplicationContext
     {
+        private Map convertToMap(List objects)
+        {
+            HashMap map = new HashMap();
+            for (Object o : objects)
+            {
+                map.put(o, o);
+            }
+            return map;
+        }
+
         private List<KnownRepositoryContentConsumer> knownRepositoryContentConsumer;
 
         private List<InvalidRepositoryContentConsumer> invalidRepositoryContentConsumers;

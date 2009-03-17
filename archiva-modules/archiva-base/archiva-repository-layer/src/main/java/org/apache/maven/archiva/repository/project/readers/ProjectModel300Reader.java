@@ -139,6 +139,7 @@ public class ProjectModel300Reader
         return getDependencyList( xml, new String[] { "dependencies" } );
     }
 
+    @SuppressWarnings("unchecked")
     private List<Dependency> getDependencyList( XMLReader xml, String parts[] )
         throws XMLException
     {
@@ -200,6 +201,7 @@ public class ProjectModel300Reader
         return individuals;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Individual> getIndividuals( XMLReader xml, boolean isCommitor, String xpathExpr )
         throws XMLException
     {
@@ -270,6 +272,7 @@ public class ProjectModel300Reader
         return issueMgmt;
     }
 
+    @SuppressWarnings("unchecked")
     private List<License> getLicenses( XMLReader xml )
         throws XMLException
     {
@@ -297,6 +300,7 @@ public class ProjectModel300Reader
         return licenses;
     }
 
+    @SuppressWarnings("unchecked")
     private List<MailingList> getMailingLists( XMLReader xml )
         throws XMLException
     {
@@ -351,6 +355,7 @@ public class ProjectModel300Reader
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private Properties getProperties( Element elemProperties )
     {
         if ( elemProperties == null )

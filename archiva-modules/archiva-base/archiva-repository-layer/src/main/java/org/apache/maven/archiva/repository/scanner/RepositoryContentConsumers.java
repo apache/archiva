@@ -202,9 +202,10 @@ public class RepositoryContentConsumers
      * @return the list of all available {@link KnownRepositoryContentConsumer} present in the classpath and as a
      *         component in the IoC.
      */
+    @SuppressWarnings("unchecked")
     public List<KnownRepositoryContentConsumer> getAvailableKnownConsumers()
     {
-        return new ArrayList( applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class ).values() );
+        return new ArrayList<KnownRepositoryContentConsumer>( applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class ).values() );
     }
 
     /**
@@ -214,9 +215,10 @@ public class RepositoryContentConsumers
      * @return the list of all available {@link InvalidRepositoryContentConsumer} present in the classpath and as a
      *         component in the IoC.
      */
+    @SuppressWarnings("unchecked")
     public List<InvalidRepositoryContentConsumer> getAvailableInvalidConsumers()
     {
-        return new ArrayList( applicationContext.getBeansOfType( InvalidRepositoryContentConsumer.class ).values() );
+        return new ArrayList<InvalidRepositoryContentConsumer>( applicationContext.getBeansOfType( InvalidRepositoryContentConsumer.class ).values() );
     }
 
     /**

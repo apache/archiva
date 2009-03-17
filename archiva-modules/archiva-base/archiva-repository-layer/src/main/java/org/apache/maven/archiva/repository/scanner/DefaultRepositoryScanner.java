@@ -31,8 +31,6 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.codehaus.plexus.util.DirectoryWalker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * DefaultRepositoryScanner
@@ -43,8 +41,6 @@ import org.slf4j.LoggerFactory;
 public class DefaultRepositoryScanner
     implements RepositoryScanner
 {
-    private Logger log = LoggerFactory.getLogger( DefaultRepositoryScanner.class );
-    
     /**
      * @plexus.requirement
      */

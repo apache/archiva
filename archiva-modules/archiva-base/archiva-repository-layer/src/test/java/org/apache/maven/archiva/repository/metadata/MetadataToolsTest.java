@@ -378,12 +378,6 @@ public class MetadataToolsTest
         assertEquals( "Repository Specific Metadata Path", expected, actual );
     }
 
-    private void assertUpdatedProjectMetadata( String artifactId, String[] expectedVersions )
-        throws Exception
-    {
-        assertUpdatedProjectMetadata( artifactId, expectedVersions, null, null );
-    }
-
     private void assertUpdatedProjectMetadata( String artifactId, String[] expectedVersions, String latestVersion,
                                                String releaseVersion )
         throws Exception

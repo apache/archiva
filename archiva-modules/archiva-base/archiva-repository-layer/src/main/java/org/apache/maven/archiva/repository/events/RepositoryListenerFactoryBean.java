@@ -21,7 +21,6 @@ package org.apache.maven.archiva.repository.events;
 
 import java.util.List;
 
-import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
@@ -49,7 +48,8 @@ public class RepositoryListenerFactoryBean
         return applicationContext.getBeansOfType( RepositoryListener.class ).values();
     }
 
-    public Class getObjectType()
+    @SuppressWarnings("unchecked")
+    public Class<List> getObjectType()
     {
         return List.class;
     }

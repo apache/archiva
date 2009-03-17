@@ -50,6 +50,7 @@ import org.dom4j.Element;
  *
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 public class ProjectModel400Reader
     implements ProjectModelReader
 {

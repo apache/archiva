@@ -40,11 +40,11 @@ public class KnownScanConsumer
 {
     private int processCount = 0;
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
     private boolean processUnmodified = false;
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
@@ -55,7 +55,7 @@ public class KnownScanConsumer
         this.includes.addAll( Arrays.asList( includesArray ) );
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return includes;
     }

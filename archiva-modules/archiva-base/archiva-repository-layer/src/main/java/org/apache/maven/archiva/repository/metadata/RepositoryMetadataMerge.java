@@ -20,14 +20,13 @@ package org.apache.maven.archiva.repository.metadata;
  */
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.model.SnapshotVersion;
-
-import java.util.Iterator;
-import java.util.List;
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.Plugin;
+import org.apache.maven.archiva.model.SnapshotVersion;
 
 /**
  * RepositoryMetadataMerge 
@@ -170,7 +169,7 @@ public class RepositoryMetadataMerge
         return main;
     }
     
-    private static List mergePlugins(List mainPlugins, List sourcePlugins)
+    private static List<Plugin> mergePlugins(List<Plugin> mainPlugins, List<Plugin> sourcePlugins)
     {
         if ( sourcePlugins == null )
         {
@@ -182,12 +181,10 @@ public class RepositoryMetadataMerge
             return clonePlugins( sourcePlugins );
         }
         
-        List merged = clonePlugins( mainPlugins );
+        List<Plugin> merged = clonePlugins( mainPlugins );
         
-        Iterator it = sourcePlugins.iterator();
-        while ( it.hasNext() )
+        for ( Plugin plugin : sourcePlugins )
         {
-            Plugin plugin = (Plugin) it.next();
             if ( !merged.contains( plugin ) )
             {
                 merged.add( plugin );
@@ -213,7 +210,7 @@ public class RepositoryMetadataMerge
             return null;
         }
         
-        ArrayList result = new ArrayList();
+        List<Plugin> result = new ArrayList<Plugin>();
         
         for (Plugin plugin : plugins)
         {
@@ -227,7 +224,7 @@ public class RepositoryMetadataMerge
         return result;
     }
 
-    private static List mergeAvailableVersions( List mainAvailableVersions, List sourceAvailableVersions )
+    private static List<String> mergeAvailableVersions( List<String> mainAvailableVersions, List<String> sourceAvailableVersions )
     {
         if ( sourceAvailableVersions == null )
         {
@@ -239,12 +236,10 @@ public class RepositoryMetadataMerge
             return ArchivaModelCloner.cloneAvailableVersions( sourceAvailableVersions );
         }
 
-        List merged = ArchivaModelCloner.cloneAvailableVersions( mainAvailableVersions );
+        List<String> merged = ArchivaModelCloner.cloneAvailableVersions( mainAvailableVersions );
 
-        Iterator it = sourceAvailableVersions.iterator();
-        while ( it.hasNext() )
+        for ( String sourceVersion : sourceAvailableVersions )
         {
-            String sourceVersion = (String) it.next();
             if ( !merged.contains( sourceVersion ) )
             {
                 merged.add( sourceVersion );

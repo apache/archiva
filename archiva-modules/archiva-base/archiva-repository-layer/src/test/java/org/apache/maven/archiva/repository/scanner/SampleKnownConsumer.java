@@ -55,12 +55,12 @@ public class SampleKnownConsumer
         /* nothing to do */
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return null;
     }
