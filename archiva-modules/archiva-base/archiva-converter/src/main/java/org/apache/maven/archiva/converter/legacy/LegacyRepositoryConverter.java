@@ -42,6 +42,6 @@ public interface LegacyRepositoryConverter
      * @throws RepositoryConversionException 
      */
     void convertLegacyRepository( File legacyRepositoryDirectory, File destinationRepositoryDirectory,
-                                  List fileExclusionPatterns )
+                                  List<String> fileExclusionPatterns )
         throws RepositoryConversionException;
 }

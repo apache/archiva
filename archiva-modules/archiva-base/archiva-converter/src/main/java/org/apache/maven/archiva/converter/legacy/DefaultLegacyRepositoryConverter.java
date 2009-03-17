@@ -21,6 +21,8 @@ package org.apache.maven.archiva.converter.legacy;
 
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
@@ -65,7 +67,7 @@ public class DefaultLegacyRepositoryConverter
     private RepositoryScanner repoScanner;
 
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
-                                         List fileExclusionPatterns )
+                                         List<String> fileExclusionPatterns )
         throws RepositoryConversionException
     {
         try
@@ -85,11 +87,11 @@ public class DefaultLegacyRepositoryConverter
             legacyConverterConsumer.setExcludes( fileExclusionPatterns );
             legacyConverterConsumer.setDestinationRepository( repository );
 
-            List knownConsumers = new ArrayList();
+            List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
             knownConsumers.add( legacyConverterConsumer );
 
-            List invalidConsumers = Collections.EMPTY_LIST;
-            List ignoredContent = new ArrayList();
+            List<InvalidRepositoryContentConsumer> invalidConsumers = Collections.emptyList();
+            List<String> ignoredContent = new ArrayList<String>();
             ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
 
             repoScanner.scan( legacyRepository, knownConsumers, invalidConsumers, ignoredContent,
