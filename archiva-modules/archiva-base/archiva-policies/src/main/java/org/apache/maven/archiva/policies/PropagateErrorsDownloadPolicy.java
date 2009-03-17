@@ -19,16 +19,15 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PropagateErrorsPolicy - a policy applied on error to determine how to treat the error.

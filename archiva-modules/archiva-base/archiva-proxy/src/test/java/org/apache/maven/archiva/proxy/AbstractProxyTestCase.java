@@ -200,6 +200,7 @@ public abstract class AbstractProxyTestCase
         assertNull( "Found file: " + downloadedFile + "; but was expecting a failure", downloadedFile );
     }
 
+    @SuppressWarnings("unchecked")
     protected void assertNoTempFiles( File expectedFile )
     {
         File workingDir = expectedFile.getParentFile();

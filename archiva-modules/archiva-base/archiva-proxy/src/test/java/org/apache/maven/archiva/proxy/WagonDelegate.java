@@ -88,6 +88,7 @@ public class WagonDelegate
         return delegate.resourceExists( resourceName );
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getFileList( String destinationDirectory )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
@@ -150,6 +151,7 @@ public class WagonDelegate
         delegate.connect( source, authenticationInfo, proxyInfoProvider );
     }
 
+    @SuppressWarnings("deprecation")
     public void openConnection()
         throws ConnectionException, AuthenticationException
     {

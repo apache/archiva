@@ -49,11 +49,11 @@ public class ProjectDependenciesConsumer
      */
     private String description;
 
-    private List includes;
+    private List<String> includes;
 
     public ProjectDependenciesConsumer()
     {
-        this.includes = new ArrayList();
+        this.includes = new ArrayList<String>();
         this.includes.add( "pom" );
     }
 
@@ -82,7 +82,7 @@ public class ProjectDependenciesConsumer
         /* do nothing */
     }
 
-    public List getIncludedTypes()
+    public List<String> getIncludedTypes()
     {
         return includes;
     }
