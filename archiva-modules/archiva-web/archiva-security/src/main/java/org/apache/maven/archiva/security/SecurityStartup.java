@@ -70,11 +70,6 @@ public class SecurityStartup
      */
     private ArchivaConfiguration archivaConfiguration;
 
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaXworkUser archivaXworkUser;
-
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isManagedRepositories( propertyName ) )

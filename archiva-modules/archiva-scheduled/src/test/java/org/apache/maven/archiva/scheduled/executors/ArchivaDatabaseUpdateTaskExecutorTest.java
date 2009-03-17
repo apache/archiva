@@ -19,6 +19,16 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
+import java.io.File;
+import java.net.URL;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
@@ -30,17 +40,6 @@ import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.jpox.SchemaTool;
-
-import java.io.File;
-import java.net.URL;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 
 /**
  * ArchivaDatabaseUpdateTaskExecutorTest
@@ -102,10 +101,8 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
 
         Properties properties = jdoFactory.getProperties();
 
-        for ( Iterator it = properties.entrySet().iterator(); it.hasNext(); )
+        for ( Map.Entry<Object, Object> entry : properties.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) it.next();
-
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 
@@ -160,12 +157,12 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
         assertNotNull( artifact );
 
         // Test for artifact existance.
-        List artifactList = adao.queryArtifacts( null );
+        List<ArchivaArtifact> artifactList = adao.queryArtifacts( null );
         assertNotNull( "Artifact list should not be null.", artifactList );
         assertEquals( "Artifact list size", 1, artifactList.size() );
         
         // Test for unprocessed artifacts.
-        List unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
         assertNotNull( "Unprocessed Results should not be null.", unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected.", 1, unprocessedResultList.size() );
 
@@ -182,7 +179,7 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
         assertEquals( "Artifact list size", 1, artifactList.size() );
         
         // Test for processed artifacts.
-        List processedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( true ) );
+        List<ArchivaArtifact> processedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( true ) );
         assertNotNull( "Processed Results should not be null.", processedResultList );
         assertEquals( "Incorrect number of processed artifacts detected.", 1, processedResultList.size() );
     }

@@ -56,7 +56,7 @@ public class TestDatabaseCleanupConsumer
         countComplete++;
     }
 
-    public List getIncludedTypes()
+    public List<String> getIncludedTypes()
     {
         return null;
     }

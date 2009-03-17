@@ -21,17 +21,15 @@ package org.apache.maven.archiva.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
+import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
 import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
@@ -198,14 +196,10 @@ public class DefaultUserRepositories
         
         try
         {
-            Collection roleList = rbacManager.getEffectivelyAssignedRoles( principal );
+            Collection<Role> roleList = rbacManager.getEffectivelyAssignedRoles( principal );
             
-            Iterator it = roleList.iterator();
-            
-            while ( it.hasNext() )
+            for ( Role role : roleList )
             {
-                Role role = (Role) it.next();
-                
                 String roleName = role.getName();
                 
                 if ( roleName.startsWith( ArchivaRoleConstants.REPOSITORY_MANAGER_ROLE_PREFIX ) )

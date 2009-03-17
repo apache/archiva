@@ -19,27 +19,27 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
-import org.jpox.SchemaTool;
-
 import java.io.File;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
+import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
+import org.jpox.SchemaTool;
 
 /**
  * ArchivaRepositoryScanningTaskExecutorTest 
@@ -101,10 +101,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         Properties properties = jdoFactory.getProperties();
 
-        for ( Iterator it = properties.entrySet().iterator(); it.hasNext(); )
+        for ( Map.Entry<Object, Object> entry : properties.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) it.next();
-
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 
@@ -158,7 +156,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         taskExecutor.executeTask( repoTask );
 
         ArtifactDAO adao = dao.getArtifactDAO();
-        List unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
         
         assertNotNull( unprocessedResultList );
         assertEquals("Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );
