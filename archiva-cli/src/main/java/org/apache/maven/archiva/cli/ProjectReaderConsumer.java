@@ -59,13 +59,13 @@ public class ProjectReaderConsumer
 
     private ManagedRepositoryConfiguration repo;
 
-    private List includes;
+    private List<String> includes;
 
     public ProjectReaderConsumer()
     {
         reader = new ProjectModel400Reader();
 
-        includes = new ArrayList();
+        includes = new ArrayList<String>();
         includes.add( "**/*.pom" );
     }
 
@@ -84,12 +84,12 @@ public class ProjectReaderConsumer
         return false;
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return includes;
     }

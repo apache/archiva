@@ -19,6 +19,16 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
+import java.io.File;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
@@ -30,17 +40,6 @@ import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.jpox.SchemaTool;
-
-import java.io.File;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 
 /**
  * AbstractArchivaDatabaseTestCase 
@@ -103,10 +102,8 @@ public abstract class AbstractArchivaDatabaseTestCase
 
         Properties properties = jdoFactory.getProperties();
 
-        for ( Iterator it = properties.entrySet().iterator(); it.hasNext(); )
+        for ( Map.Entry<Object,Object> entry : properties.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) it.next();
-
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 

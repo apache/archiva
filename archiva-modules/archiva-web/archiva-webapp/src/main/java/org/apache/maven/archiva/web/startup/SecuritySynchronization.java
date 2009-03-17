@@ -30,7 +30,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
@@ -74,11 +73,6 @@ public class SecuritySynchronization
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaXworkUser archivaXworkUser;
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {

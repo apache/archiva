@@ -19,9 +19,8 @@ package org.apache.maven.archiva.applet;
  * under the License.
  */
 
-import javax.swing.*;
 import java.applet.Applet;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,6 +30,9 @@ import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
+
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
 
 /**
  * Applet that takes a file on the local filesystem and checksums it for sending to the server.
@@ -58,9 +60,9 @@ public class ChecksumApplet
     public String generateMd5( final String file )
         throws IOException, NoSuchAlgorithmException
     {
-        Object o = AccessController.doPrivileged( new PrivilegedAction()
+        return AccessController.doPrivileged( new PrivilegedAction<String>()
         {
-            public Object run()
+            public String run()
             {
                 try
                 {
@@ -80,7 +82,6 @@ public class ChecksumApplet
                 }
             }
         } );
-        return (String) o;
     }
 
     protected String checksumFile( String file )

@@ -58,7 +58,7 @@ public interface ArtifactDAO
                                         String type, String repositoryId )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public List /*<ArchivaArtifact>*/queryArtifacts( Constraint constraint )
+    public List<ArchivaArtifact> queryArtifacts( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
     public ArchivaArtifact saveArtifact( ArchivaArtifact artifact )

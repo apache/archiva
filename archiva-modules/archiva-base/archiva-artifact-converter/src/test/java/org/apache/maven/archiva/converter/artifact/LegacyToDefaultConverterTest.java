@@ -19,6 +19,15 @@ package org.apache.maven.archiva.converter.artifact;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -29,17 +38,6 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
 
 /**
  * LegacyToDefaultConverterTest 
@@ -736,18 +734,20 @@ public class LegacyToDefaultConverterTest
 
         boolean found = false;
         String pattern = "^" + Messages.getString( "invalid.source.pom" ).replaceFirst( "\\{0\\}", ".*" ) + "$";
-        for ( Iterator it = artifactConverter.getWarnings().values().iterator(); it.hasNext() && !found; )
+        for ( List<String> messages : artifactConverter.getWarnings().values() )
         {
-            List messages = (List) it.next();
-
-            for ( Iterator itmsgs = messages.iterator(); itmsgs.hasNext(); )
+            for ( String message : messages )
             {
-                String message = (String) itmsgs.next();
                 if ( message.matches( pattern ) )
                 {
                     found = true;
                     break;
                 }
+            }
+            
+            if ( found )
+            {
+                break;
             }
         }
 
@@ -763,22 +763,19 @@ public class LegacyToDefaultConverterTest
     {
         // test multiple artifacts are converted
 
-        List artifacts = new ArrayList();
+        List<Artifact> artifacts = new ArrayList<Artifact>();
         artifacts.add( createArtifact( "test", "artifact-one", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-two", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-three", "1.0.0" ) );
 
-        for ( Iterator it = artifacts.iterator(); it.hasNext(); )
+        for ( Artifact artifact : artifacts )
         {
-            Artifact arti = (Artifact) it.next();
-            artifactConverter.convert( arti, targetRepository );
+            artifactConverter.convert( artifact, targetRepository );
             checkSuccess( artifactConverter );
         }
 
-        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        for ( Artifact artifact : artifacts )
         {
-            Artifact artifact = (Artifact) i.next();
-
             File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
             assertTrue( "Check artifact created", artifactFile.exists() );
             assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
@@ -954,9 +951,8 @@ public class LegacyToDefaultConverterTest
     private int countWarningMessages( ArtifactConverter converter )
     {
         int count = 0;
-        for ( Iterator it = converter.getWarnings().values().iterator(); it.hasNext(); )
+        for ( List<String> values : converter.getWarnings().values() )
         {
-            List values = (List) it.next();
             count += values.size();
         }
         return count;
@@ -967,28 +963,25 @@ public class LegacyToDefaultConverterTest
         assertNotNull( "Warnings should never be null.", converter.getWarnings() );
         assertTrue( "Expecting 1 or more Warnings", countWarningMessages( converter ) > 0 );
 
-        for ( Iterator it = converter.getWarnings().values().iterator(); it.hasNext(); )
+        for ( List<String> messages : converter.getWarnings().values() )
         {
-            List messages = (List) it.next();
             if ( messages.contains( reason ) )
             {
-                /* No need to check any furthor */
+                /* No need to check any further */
                 return;
             }
         }
 
         /* didn't find it. */
 
-        for ( Iterator it = converter.getWarnings().entrySet().iterator(); it.hasNext(); )
+        for ( Map.Entry<Artifact,List<String>> entry : converter.getWarnings().entrySet() )
         {
-            Map.Entry entry = (Entry) it.next();
             Artifact artifact = (Artifact) entry.getKey();
             System.out.println( "-Artifact: " + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
                 + artifact.getVersion() );
-            List messages = (List) entry.getValue();
-            for ( Iterator itmsgs = messages.iterator(); itmsgs.hasNext(); )
+            List<String> messages = entry.getValue();
+            for ( String message : messages )
             {
-                String message = (String) itmsgs.next();
                 System.out.println( "  " + message );
             }
         }

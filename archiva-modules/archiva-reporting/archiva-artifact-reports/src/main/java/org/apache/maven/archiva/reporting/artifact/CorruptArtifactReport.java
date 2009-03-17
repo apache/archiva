@@ -19,6 +19,7 @@ package org.apache.maven.archiva.reporting.artifact;
  * under the License.
  */
 
+import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.reporting.DynamicReportSource;
 import org.apache.maven.archiva.reporting.DataLimits;
 import org.apache.maven.archiva.database.ArchivaDAO;
@@ -56,13 +57,13 @@ public class CorruptArtifactReport
         constraint = new RepositoryProblemByTypeConstraint( PROBLEM_TYPE_CORRUPT_ARTIFACT );
     }
 
-    public List getData()
+    public List<RepositoryProblem> getData()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         return dao.getRepositoryProblemDAO().queryRepositoryProblems( constraint );
     }
 
-    public List getData( DataLimits limits )
+    public List<RepositoryProblem> getData( DataLimits limits )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         return dao.getRepositoryProblemDAO().queryRepositoryProblems( constraint );

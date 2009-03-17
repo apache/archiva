@@ -47,12 +47,12 @@ public class ArtifactCountConsumer
      */
     private String description;
 
-    private List includes;
+    private List<String> includes;
 
     public ArtifactCountConsumer()
     {
         // TODO: shouldn't this use filetypes?
-        includes = new ArrayList();
+        includes = new ArrayList<String>();
         includes.add( "**/*.pom" );
         includes.add( "**/*.jar" );
         includes.add( "**/*.war" );
@@ -82,12 +82,12 @@ public class ArtifactCountConsumer
         return false;
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return includes;
     }

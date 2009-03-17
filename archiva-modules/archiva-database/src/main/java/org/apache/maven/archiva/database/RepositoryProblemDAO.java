@@ -51,7 +51,7 @@ public interface RepositoryProblemDAO
      * This is the only list of options created in this DAO.
      */
 
-    public List /*<RepositoryProblem>*/queryRepositoryProblems( Constraint constraint )
+    public List <RepositoryProblem> queryRepositoryProblems( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
     public RepositoryProblem saveRepositoryProblem( RepositoryProblem problem )
