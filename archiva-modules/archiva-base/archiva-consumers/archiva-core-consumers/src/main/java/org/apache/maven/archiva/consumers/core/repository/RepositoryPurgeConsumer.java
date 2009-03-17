@@ -20,6 +20,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,8 +41,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Consumer for removing old snapshots in the repository based on the criteria
