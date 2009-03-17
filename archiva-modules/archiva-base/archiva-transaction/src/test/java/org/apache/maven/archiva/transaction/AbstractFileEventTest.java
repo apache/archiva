@@ -35,8 +35,9 @@ import java.util.List;
 public abstract class AbstractFileEventTest
     extends PlexusInSpringTestCase
 {
-    protected List digesters;
+    protected List<Digester> digesters;
 
+    @SuppressWarnings("unchecked")
     public void setUp()
         throws Exception
     {

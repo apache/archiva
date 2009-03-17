@@ -40,28 +40,28 @@ import java.util.Map;
 public abstract class AbstractTransactionEvent
     implements TransactionEvent
 {
-    private Map backups = new HashMap();
+    private Map<File, File> backups = new HashMap<File, File>();
 
-    private List createdDirs = new ArrayList();
+    private List<File> createdDirs = new ArrayList<File>();
 
-    private List createdFiles = new ArrayList();
+    private List<File> createdFiles = new ArrayList<File>();
 
     /**
      * {@link List}&lt;{@link Digester}>
      */
-    private List digesters;
+    private List<Digester> digesters;
 
     protected AbstractTransactionEvent()
     {
-        this( new ArrayList( 0 ) );
+        this( new ArrayList<Digester>( 0 ) );
     }
 
-    protected AbstractTransactionEvent( List digesters )
+    protected AbstractTransactionEvent( List<Digester> digesters )
     {
         this.digesters = digesters;
     }
 
-    protected List getDigesters()
+    protected List<Digester> getDigesters()
     {
         return digesters;
     }
@@ -75,7 +75,7 @@ public abstract class AbstractTransactionEvent
     protected void mkDirs( File dir )
         throws IOException
     {
-        List createDirs = new ArrayList();
+        List<File> createDirs = new ArrayList<File>();
 
         File parent = dir;
         while ( !parent.exists() || !parent.isDirectory() )
@@ -127,7 +127,7 @@ public abstract class AbstractTransactionEvent
     protected void revertFilesCreated()
         throws IOException
     {
-        Iterator it = createdFiles.iterator();
+        Iterator<File> it = createdFiles.iterator();
         while ( it.hasNext() )
         {
             File file = (File) it.next();
@@ -154,11 +154,9 @@ public abstract class AbstractTransactionEvent
     protected void restoreBackups()
         throws IOException
     {
-        Iterator it = backups.entrySet().iterator();
-        while ( it.hasNext() )
+        for ( Map.Entry<File, File> entry : backups.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) it.next();
-            FileUtils.copyFile( (File) entry.getValue(), (File) entry.getKey() );
+            FileUtils.copyFile( entry.getValue(), entry.getKey() );
         }
     }
 
@@ -182,10 +180,8 @@ public abstract class AbstractTransactionEvent
     protected void createChecksums( File file, boolean force )
         throws IOException
     {
-        Iterator it = getDigesters().iterator();
-        while ( it.hasNext() )
+        for ( Digester digester : getDigesters() )
         {
-            Digester digester = (Digester) it.next();
             File checksumFile = new File( file.getAbsolutePath() + "." + getDigesterFileExtension( digester ) );
             if ( checksumFile.exists() )
             {

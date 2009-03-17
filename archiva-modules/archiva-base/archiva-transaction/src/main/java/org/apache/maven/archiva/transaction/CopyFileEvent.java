@@ -19,13 +19,12 @@ package org.apache.maven.archiva.transaction;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.digest.Digester;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.digest.Digester;
 
 /**
  * Event to copy a file.
@@ -45,7 +44,7 @@ public class CopyFileEvent
      * @param destination
      * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
      */
-    public CopyFileEvent( File source, File destination, List digesters )
+    public CopyFileEvent( File source, File destination, List<Digester> digesters )
     {
         super( digesters );
         this.source = source;
@@ -75,10 +74,8 @@ public class CopyFileEvent
     private void copyChecksums()
         throws IOException
     {
-        Iterator it = getDigesters().iterator();
-        while ( it.hasNext() )
+        for ( Digester digester : getDigesters() )
         {
-            Digester digester = (Digester) it.next();
             copyChecksum( getDigesterFileExtension( digester ) );
         }
     }
