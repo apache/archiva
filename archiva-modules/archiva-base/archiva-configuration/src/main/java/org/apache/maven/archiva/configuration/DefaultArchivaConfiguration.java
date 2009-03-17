@@ -160,6 +160,7 @@ public class DefaultArchivaConfiguration
         return configuration;
     }
 
+    @SuppressWarnings("unchecked")
     private Configuration load()
     {   
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
@@ -399,6 +400,7 @@ public class DefaultArchivaConfiguration
         return registry.getSubset( KEY );
     }
 
+    @SuppressWarnings("unchecked")
     public synchronized void save( Configuration configuration )
         throws RegistryException, IndeterminateConfigurationException
     {

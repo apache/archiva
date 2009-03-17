@@ -674,9 +674,6 @@ public class ArchivaConfigurationTest
 
                 Configuration configuration = archivaConfiguration.getConfiguration();
 
-                ManagedRepositoryConfiguration repository =
-                    (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
-
                 assertEquals( "check cron expression", "0 0,15 0 * * ?",
                               configuration.getDatabaseScanning().getCronExpression() );
             }
