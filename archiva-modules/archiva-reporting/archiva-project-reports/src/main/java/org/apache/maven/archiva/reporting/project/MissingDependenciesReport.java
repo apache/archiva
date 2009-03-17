@@ -39,7 +39,7 @@ import java.util.List;
  *                   role-hint="missing-dependencies"
  */
 public class MissingDependenciesReport
-    implements DynamicReportSource
+    implements DynamicReportSource<RepositoryProblem>
 {
     public static final String PROBLEM_TYPE_MISSING_DEPENDENCY = "missing-dependency";
 

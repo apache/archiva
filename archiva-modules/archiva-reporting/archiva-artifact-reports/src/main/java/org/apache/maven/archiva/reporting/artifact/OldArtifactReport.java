@@ -38,7 +38,7 @@ import org.apache.maven.archiva.reporting.DynamicReportSource;
  *                   role-hint="old-artifacts"
  */
 public class OldArtifactReport
-    implements DynamicReportSource
+    implements DynamicReportSource<ArchivaArtifact>
 {
     /**
      * @plexus.configuration default-value="Old Artifacts Report"

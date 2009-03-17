@@ -35,14 +35,14 @@ public class DefaultReportingManager
     /**
      * @plexus.requirement role="org.apache.maven.archiva.reporting.DynamicReportSource"
      */
-    private Map reportSourceMap;
+    private Map<String, DynamicReportSource<?>> reportSourceMap;
 
-    public DynamicReportSource getReport( String id )
+    public DynamicReportSource<?> getReport( String id )
     {
-        return (DynamicReportSource) reportSourceMap.get( id );
+        return reportSourceMap.get( id );
     }
 
-    public Map getAvailableReports()
+    public Map<String, DynamicReportSource<?>> getAvailableReports()
     {
         return reportSourceMap;
     }

@@ -39,7 +39,7 @@ import java.util.List;
  *                   role-hint="duplicate-artifacts"
  */
 public class DuplicateArtifactReport
-    implements DynamicReportSource
+    implements DynamicReportSource<RepositoryProblem>
 {
     public static final String PROBLEM_TYPE_DUPLICATE_ARTIFACTS = "duplicate-artifacts";
 

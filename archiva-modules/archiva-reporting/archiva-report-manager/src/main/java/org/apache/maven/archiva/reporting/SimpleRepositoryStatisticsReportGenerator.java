@@ -27,6 +27,7 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +122,7 @@ public class SimpleRepositoryStatisticsReportGenerator
             try
             {
                 //TODO use the repo content stats whenGathered date instead of endDate for single repo reports
-                List types = artifactDao.queryArtifacts( 
+                List<ArchivaArtifact> types = artifactDao.queryArtifacts( 
                          new ArtifactsByRepositoryConstraint( repository, JAR_TYPE, endDate, "whenGathered" ) );
                 repoStatistics.setJarCount( types.size() );
                 

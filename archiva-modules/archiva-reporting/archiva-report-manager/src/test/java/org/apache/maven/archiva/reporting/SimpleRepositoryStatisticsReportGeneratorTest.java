@@ -342,7 +342,7 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         
         try
         {
-            List<RepositoryStatistics> data = generator.generateReport( repoContentStats, REPO, startDate, endDate, limits );
+            generator.generateReport( repoContentStats, REPO, startDate, endDate, limits );
             fail( "An ArchivaReportException should have been thrown." );
         }
         catch ( ArchivaReportException a )

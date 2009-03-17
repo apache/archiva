@@ -39,7 +39,7 @@ import java.util.List;
  *                   role-hint="artifact-location"
  */
 public class LocationArtifactsReport
-    implements DynamicReportSource
+    implements DynamicReportSource<RepositoryProblem>
 {
     public static final String PROBLEM_TYPE_BAD_ARTIFACT_LOCATION = "bad-artifact-location";
     

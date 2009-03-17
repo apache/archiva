@@ -39,7 +39,7 @@ import java.util.List;
  *                   role-hint="metadata"
  */
 public class MetadataReport
-    implements DynamicReportSource
+    implements DynamicReportSource<RepositoryProblem>
 {
     public static final String PROBLEM_TYPE_METADATA = "metadata";
     

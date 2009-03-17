@@ -38,7 +38,7 @@ import org.apache.maven.archiva.reporting.DynamicReportSource;
  *                   role-hint="old-snapshots"
  */
 public class OldSnapshotArtifactReport
-    implements DynamicReportSource
+    implements DynamicReportSource<ArchivaArtifact>
 {
     /**
      * @plexus.configuration default-value="Old Snapshots Report"

@@ -36,7 +36,7 @@ import java.util.List;
  * <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class CorruptArtifactReport
-    implements DynamicReportSource
+    implements DynamicReportSource<RepositoryProblem>
 {
     public static final String PROBLEM_TYPE_CORRUPT_ARTIFACT = "corrupt-artifact";
 

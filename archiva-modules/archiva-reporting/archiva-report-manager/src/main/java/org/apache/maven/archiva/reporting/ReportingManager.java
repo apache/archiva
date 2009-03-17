@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public interface ReportingManager
 {
-    public DynamicReportSource getReport( String id );
+    public DynamicReportSource<?> getReport( String id );
 
-    public Map /*<String,DynamicReportSource>*/getAvailableReports();
+    public Map<String,DynamicReportSource<?>> getAvailableReports();
 }
