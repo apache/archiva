@@ -25,10 +25,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.archiva.indexer.search.RepositorySearch;
-import org.apache.archiva.indexer.search.SearchResultHit;
-import org.apache.archiva.indexer.search.SearchResultLimits;
-import org.apache.archiva.indexer.search.SearchResults;
-import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
@@ -379,7 +375,7 @@ public class SearchServiceImplTest
         
         try
         {
-            List<Dependency> dependencies = searchService.getDependencies( "org.apache.archiva", "archiva-test", "1.0" );
+            searchService.getDependencies( "org.apache.archiva", "archiva-test", "1.0" );
             fail( "An exception should have been thrown." );
         }
         catch ( Exception e )
@@ -415,7 +411,7 @@ public class SearchServiceImplTest
         observableRepoIds.add( "repo1.mirror" );
         observableRepoIds.add( "public.releases" );
         
-        List dependeeModels = new ArrayList();
+        List<ArchivaProjectModel> dependeeModels = new ArrayList<ArchivaProjectModel>();
         ArchivaProjectModel dependeeModel = new ArchivaProjectModel();
         dependeeModel.setGroupId( "org.apache.archiva" );
         dependeeModel.setArtifactId( "archiva-dependee-one" );

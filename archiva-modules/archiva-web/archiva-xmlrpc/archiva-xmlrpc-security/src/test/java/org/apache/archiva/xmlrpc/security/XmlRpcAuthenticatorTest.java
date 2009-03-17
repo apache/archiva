@@ -177,6 +177,7 @@ public class XmlRpcAuthenticatorTest
         configControl.replay();
         
         boolean isAuthorized = authenticator.isAuthorized( xmlRpcRequest );
+        assertTrue( isAuthorized );
         
         xmlRpcRequestControl.verify();
         configControl.verify();

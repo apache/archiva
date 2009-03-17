@@ -156,7 +156,6 @@ public class SearchServiceImpl
         final List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
         
         final BrowsingResults results = repoBrowsing.selectArtifactId( "", observableRepos, groupId, artifactId );
-        final ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO();
         
         for( final String version : results.getVersions() )
         {

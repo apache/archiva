@@ -96,7 +96,6 @@ public class ManagedRepository
     public int hashCode()
     {
         int result = 17;
-        long tmp;
         result = 37 * result + ( id != null ? id.hashCode() : 0 );
         return result;
     } 
