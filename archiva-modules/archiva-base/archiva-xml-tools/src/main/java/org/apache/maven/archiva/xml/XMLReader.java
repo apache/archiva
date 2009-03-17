@@ -204,6 +204,7 @@ public class XMLReader
     /**
      * Remove namespaces from element recursively.
      */
+    @SuppressWarnings("unchecked")
     public void removeNamespaces( Element elem )
     {
         elem.setQName( QName.get( elem.getName(), Namespace.NO_NAMESPACE, elem.getQualifiedName() ) );
@@ -275,6 +276,7 @@ public class XMLReader
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Element> getElementList( String xpathExpr )
         throws XMLException
     {

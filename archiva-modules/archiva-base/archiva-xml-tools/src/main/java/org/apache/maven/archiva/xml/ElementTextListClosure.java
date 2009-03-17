@@ -33,7 +33,7 @@ import java.util.List;
 public class ElementTextListClosure
     implements Closure
 {
-    private List list = new ArrayList();
+    private List<String> list = new ArrayList<String>();
 
     public void execute( Object input )
     {
@@ -44,7 +44,7 @@ public class ElementTextListClosure
         }
     }
 
-    public List getList()
+    public List<String> getList()
     {
         return list;
     }
