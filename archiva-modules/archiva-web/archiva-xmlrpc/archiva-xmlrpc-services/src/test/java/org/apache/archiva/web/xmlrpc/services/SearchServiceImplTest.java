@@ -286,14 +286,12 @@ public class SearchServiceImplTest
         
         userReposControl.replay();
         repoBrowsingControl.replay();
-        archivaDAOControl.replay();
         artifactDAOControl.replay();
         
         List<Artifact> artifacts = searchService.getArtifactVersions( "org.apache.archiva", "archiva-test" );
         
         userReposControl.verify();
         repoBrowsingControl.verify();
-        archivaDAOControl.verify();
         artifactDAOControl.verify();
         
         assertNotNull( artifacts );
