@@ -37,8 +37,6 @@ import java.io.File;
  */
 public class IndexWriter
 {
-    private final DavResource resource;
-
     private final String logicalResource;
     
     private final List<File> localResources;
@@ -47,7 +45,6 @@ public class IndexWriter
     
     public IndexWriter(DavResource resource, File localResource, String logicalResource)
     {
-        this.resource = resource;
         this.localResources = new ArrayList<File>();
         this.localResources.add( localResource );
         this.logicalResource = logicalResource;
@@ -56,7 +53,6 @@ public class IndexWriter
     
     public IndexWriter( DavResource resource, List<File> localResources, String logicalResource )
     {
-        this.resource = resource;
         this.logicalResource = logicalResource;
         this.localResources = localResources;
         this.isVirtual = true;

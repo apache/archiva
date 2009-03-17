@@ -85,6 +85,7 @@ public class ArchivaDavSessionProviderTest extends TestCase
         assertNull(request.getDavSession());
     }
     
+    @SuppressWarnings("unchecked")
     private class HttpServletRequestMock implements HttpServletRequest
     {
         public Object getAttribute(String arg0) {

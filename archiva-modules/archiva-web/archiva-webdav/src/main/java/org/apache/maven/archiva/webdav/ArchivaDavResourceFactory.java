@@ -44,7 +44,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
 import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -80,7 +79,6 @@ import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -986,7 +984,7 @@ public class ArchivaDavResourceFactory
     {  
        try
        {           
-           VersionedReference versionRef = metadataTools.toVersionedReference( requestedResource );           
+           metadataTools.toVersionedReference( requestedResource );           
            return false;
        }
        catch ( RepositoryMetadataException re )

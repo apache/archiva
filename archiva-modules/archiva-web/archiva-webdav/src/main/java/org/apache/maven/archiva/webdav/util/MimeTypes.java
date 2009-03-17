@@ -52,7 +52,7 @@ public class MimeTypes
 
     private String resource = "org/apache/maven/archiva/webdav/util/mime.types";
     
-    private Map mimeMap = new HashMap();
+    private Map<String, String> mimeMap = new HashMap<String, String>();
 
     private Logger log = LoggerFactory.getLogger( MimeTypes.class );
     

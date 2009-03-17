@@ -31,11 +31,11 @@ import java.util.List;
  */
 public class WebdavMethodUtil
 {
-    private static final List READ_METHODS;
+    private static final List<String> READ_METHODS;
 
     static
     {
-        READ_METHODS = new ArrayList();
+        READ_METHODS = new ArrayList<String>();
         READ_METHODS.add( "HEAD" );
         READ_METHODS.add( "GET" );
         READ_METHODS.add( "PROPFIND" );

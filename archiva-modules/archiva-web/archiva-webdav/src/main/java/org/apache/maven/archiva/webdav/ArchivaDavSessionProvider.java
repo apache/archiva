@@ -34,27 +34,20 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  */
 public class ArchivaDavSessionProvider
     implements DavSessionProvider
 {
-    private Logger log = LoggerFactory.getLogger( ArchivaDavSessionProvider.class );
-
     private ServletAuthenticator servletAuth;
 
     private HttpAuthenticator httpAuth;
-    
-    private ArchivaXworkUser archivaXworkUser;
     
     public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth, ArchivaXworkUser archivaXworkUser )
     {
         this.servletAuth = servletAuth;
         this.httpAuth = httpAuth;
-        this.archivaXworkUser = archivaXworkUser;
     }
 
     public boolean attachSession( WebdavRequest request )

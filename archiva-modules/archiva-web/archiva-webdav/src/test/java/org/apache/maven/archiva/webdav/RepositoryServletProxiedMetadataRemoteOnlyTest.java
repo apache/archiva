@@ -19,7 +19,6 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.io.File;
 
 /**
  * RepositoryServlet Tests, Proxied, Get of Metadata, exists on remote repository only. 
@@ -45,7 +44,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         String expectedMetadata = createVersionMetadata( "org.apache.archiva", "archivatest-maven-plugin",
                                                          version, timestamp, buildNumber, lastUpdated);
 
-        File metadataFile = populateRepo( remoteSnapshots, path, expectedMetadata );
+        populateRepo( remoteSnapshots, path, expectedMetadata );
 
         setupConnector( REPOID_INTERNAL, remoteSnapshots );
         setupConnector( REPOID_INTERNAL, remotePrivateSnapshots );
@@ -74,7 +73,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         String expectedMetadata = createVersionMetadata( "org.apache.maven.plugins", "maven-assembly-plugin", version,
                                                          timestamp, buildNumber, lastUpdated );
 
-        File metadataFile = populateRepo( remoteSnapshots, path, expectedMetadata );
+        populateRepo( remoteSnapshots, path, expectedMetadata );
 
         setupConnector( REPOID_INTERNAL, remoteSnapshots );
         setupConnector( REPOID_INTERNAL, remotePrivateSnapshots );
@@ -99,7 +98,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         String expectedMetadata = createVersionMetadata( "org.apache.archiva", "archivatest-maven-plugin",
                                                          "4.0-alpha-2" );
 
-        File managedFile = populateRepo( remoteSnapshots, path, expectedMetadata );
+        populateRepo( remoteSnapshots, path, expectedMetadata );
 
         setupConnector( REPOID_INTERNAL, remoteSnapshots );
         setupConnector( REPOID_INTERNAL, remotePrivateSnapshots );
@@ -126,7 +125,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         String expectedMetadata = createProjectMetadata( "org.apache.archiva", "archivatest-maven-plugin",
                                                          latest, release, new String[] { "1.0-alpha-4" } );
 
-        File managedFile = populateRepo( remoteSnapshots, path, expectedMetadata );
+        populateRepo( remoteSnapshots, path, expectedMetadata );
 
         setupConnector( REPOID_INTERNAL, remoteSnapshots );
         setupConnector( REPOID_INTERNAL, remotePrivateSnapshots );
@@ -150,7 +149,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         String path = "org/apache/archiva/maven-metadata.xml";
         String expectedMetadata = createGroupMetadata( "org.apache.archiva", new String[] { "archivatest-maven-plugin" } );
 
-        File managedFile = populateRepo( remoteSnapshots, path, expectedMetadata );
+        populateRepo( remoteSnapshots, path, expectedMetadata );
 
         setupConnector( REPOID_INTERNAL, remoteSnapshots );
         setupConnector( REPOID_INTERNAL, remotePrivateSnapshots );
