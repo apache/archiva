@@ -35,7 +35,6 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.collections.list.TypedList;
-import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.dependency.graph.DependencyGraph;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphEdge;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphKeys;
