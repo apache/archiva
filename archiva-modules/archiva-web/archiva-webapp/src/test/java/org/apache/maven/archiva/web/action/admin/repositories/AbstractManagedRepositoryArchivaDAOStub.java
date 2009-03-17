@@ -28,6 +28,7 @@ import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 
 /**
  * AbstractManagedRepositoryArchivaDAOStub
@@ -52,7 +53,7 @@ public class AbstractManagedRepositoryArchivaDAOStub
      */
     private RepositoryContentStatisticsDAO repoContentStatisticsDAO;
 
-    public List query( SimpleConstraint constraint )
+    public List<RepositoryContentStatistics> query( SimpleConstraint constraint )
     {
         return null;
     }

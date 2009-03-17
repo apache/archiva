@@ -20,7 +20,7 @@ package org.apache.maven.archiva.web.action;
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.archiva.indexer.search.RepositorySearch;
@@ -153,7 +153,7 @@ public class SearchActionTest
         versions.add( "1.0" );
         versions.add( "1.1" );
         
-        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user", 3 );
+        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user", 3 );
                 
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos, 2 );
         
@@ -176,6 +176,11 @@ public class SearchActionTest
         userReposControl.verify();
         searchControl.verify();
         daoControl.verify();
+    }
+
+    private String getActivePrincipal()
+    {
+        return archivaXworkUser.getActivePrincipal( Collections.<String,Object>emptyMap() );
     }
     
     public void testSearchWithinSearchResults()
@@ -213,7 +218,7 @@ public class SearchActionTest
         versions.add( "1.0" );
         versions.add( "1.1" );
         
-        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user", 3 );
+        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user", 3 );
                 
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos, 2 );
         
@@ -247,7 +252,7 @@ public class SearchActionTest
         
         List<String> selectedRepos = new ArrayList<String>();
         
-        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user" );
+        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user" );
         
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
@@ -279,7 +284,7 @@ public class SearchActionTest
                 
         SearchResults results = new SearchResults();
         
-        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user", 2 );
+        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user", 2 );
                 
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
@@ -334,7 +339,7 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user" );
+        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user" );
         
         searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
         
@@ -384,7 +389,7 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user", 2 );
+        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user", 2 );
         
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
@@ -429,7 +434,7 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( archivaXworkUser.getActivePrincipal( new HashMap() ), "user" );
+        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user" );
         
         searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
         

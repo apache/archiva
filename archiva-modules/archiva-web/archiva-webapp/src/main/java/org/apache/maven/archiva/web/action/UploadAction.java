@@ -121,29 +121,9 @@ public class UploadAction
     private File artifactFile;
 
     /**
-     * The content type of the artifact to be deployed.
-     */
-    private String artifactContentType;
-
-    /**
-     * The original filename of the uploaded artifact file.
-     */
-    private String artifactFilename;
-
-    /**
      * The temporary file representing the pom to be deployed alongside the artifact.
      */
     private File pomFile;
-
-    /**
-     * The content type of the pom file.
-     */
-    private String pomContentType;
-
-    /**
-     * The original filename of the uploaded pom file.
-     */
-    private String pomFilename;
 
     /**
      * The repository where the artifact is to be deployed.
@@ -191,12 +171,12 @@ public class UploadAction
 
     public void setArtifactContentType( String contentType )
     {
-        this.artifactContentType = StringUtils.trim( contentType );
+        StringUtils.trim( contentType );
     }
 
     public void setArtifactFileName( String filename )
     {
-        this.artifactFilename = StringUtils.trim( filename );
+        StringUtils.trim( filename );
     }
 
     public void setPom( File file )
@@ -206,12 +186,12 @@ public class UploadAction
 
     public void setPomContentType( String contentType )
     {
-        this.pomContentType = StringUtils.trim( contentType );
+        StringUtils.trim( contentType );
     }
 
     public void setPomFileName( String filename )
     {
-        this.pomFilename = StringUtils.trim( filename );
+        StringUtils.trim( filename );
     }
 
     public String getGroupId()
@@ -314,11 +294,7 @@ public class UploadAction
         packaging = "";
         classifier = "";
         artifactFile = null;
-        artifactContentType = "";
-        artifactFilename = "";
         pomFile = null;
-        pomContentType = "";
-        pomFilename = "";
         repositoryId = "";
         generatePom = false;
     }
@@ -456,6 +432,7 @@ public class UploadAction
         }
     }
 
+    @SuppressWarnings("unchecked")
     private String getPrincipal()
     {
         return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );

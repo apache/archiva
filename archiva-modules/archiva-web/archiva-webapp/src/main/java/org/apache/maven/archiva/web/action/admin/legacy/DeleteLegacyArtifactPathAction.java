@@ -49,7 +49,7 @@ public class DeleteLegacyArtifactPathAction
     {
         log.info( "remove [" + path + "] from legacy artifact path resolution" );
         Configuration configuration = archivaConfiguration.getConfiguration();
-        for ( Iterator iterator = configuration.getLegacyArtifactPaths().iterator(); iterator.hasNext(); )
+        for ( Iterator<LegacyArtifactPath> iterator = configuration.getLegacyArtifactPaths().iterator(); iterator.hasNext(); )
         {
             LegacyArtifactPath legacyArtifactPath = (LegacyArtifactPath) iterator.next();
             if (legacyArtifactPath.match( path ))

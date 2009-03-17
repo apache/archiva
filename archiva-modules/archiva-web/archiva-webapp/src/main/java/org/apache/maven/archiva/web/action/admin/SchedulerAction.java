@@ -43,10 +43,6 @@ public class SchedulerAction
     extends PlexusActionSupport
     implements SecureAction
 {
-    private static final String REPO_SUCCESS = "repoSucces";
-    
-    private static final String DB_SUCCESS = "dbSuccess";
-    
     /**
      * @plexus.requirement
      */

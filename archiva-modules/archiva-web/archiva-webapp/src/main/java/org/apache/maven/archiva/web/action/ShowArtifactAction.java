@@ -28,6 +28,8 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.Dependency;
+import org.apache.maven.archiva.model.MailingList;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
@@ -85,16 +87,11 @@ public class ShowArtifactAction
     /**
      * The list of artifacts that depend on this versioned project.
      */
-    private List dependees;
+    private List<ArchivaProjectModel> dependees;
 
-    /**
-     * The reports associated with this versioned project.
-     */
-    private List reports;
+    private List<MailingList> mailingLists;
 
-    private List mailingLists;
-
-    private List dependencies;
+    private List<Dependency> dependencies;
     
     private List<String> snapshotVersions;
 
@@ -168,10 +165,8 @@ public class ShowArtifactAction
     public String reports()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        System.out.println( "#### In reports." );
         // TODO: hook up reports on project - this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId,
         // version );
-        System.out.println( "#### Found " + reports.size() + " reports." );
 
         return SUCCESS;
     }
@@ -200,6 +195,7 @@ public class ShowArtifactAction
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     private String getPrincipal()
     {
         return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
@@ -281,22 +277,17 @@ public class ShowArtifactAction
         this.version = version;
     }
 
-    public List getReports()
-    {
-        return reports;
-    }
-
-    public List getMailingLists()
+    public List<MailingList> getMailingLists()
     {
         return mailingLists;
     }
 
-    public List getDependencies()
+    public List<Dependency> getDependencies()
     {
         return dependencies;
     }
 
-    public List getDependees()
+    public List<ArchivaProjectModel> getDependees()
     {
         return dependees;
     }

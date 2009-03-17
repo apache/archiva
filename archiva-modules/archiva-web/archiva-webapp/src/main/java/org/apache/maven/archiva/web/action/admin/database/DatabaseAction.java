@@ -19,7 +19,9 @@ package org.apache.maven.archiva.web.action.admin.database;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Preparable;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -27,16 +29,14 @@ import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.admin.scanning.AdminRepositoryConsumerComparator;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
-
-import java.util.Collections;
-import java.util.List;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * DatabaseAction
@@ -63,22 +63,22 @@ public class DatabaseAction
     /**
      * List of available {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
      */
-    private List unprocessedConsumers;
+    private List<AdminDatabaseConsumer> unprocessedConsumers;
 
     /**
      * List of enabled {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
      */
-    private List enabledUnprocessedConsumers;
+    private List<String> enabledUnprocessedConsumers;
 
     /**
      * List of {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
      */
-    private List cleanupConsumers;
+    private List<AdminDatabaseConsumer> cleanupConsumers;
 
     /**
      * List of enabled {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
      */
-    private List enabledCleanupConsumers;
+    private List<String> enabledCleanupConsumers;
 
     public void prepare()
         throws Exception
@@ -93,12 +93,12 @@ public class DatabaseAction
         addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getUnprocessedConsumers() );
         CollectionUtils.forAllDo( databaseConsumers.getAvailableUnprocessedConsumers(), addAdminDbConsumer );
         this.unprocessedConsumers = addAdminDbConsumer.getList();
-        Collections.sort( this.unprocessedConsumers, AdminRepositoryConsumerComparator.getInstance() );
+        Collections.sort( this.unprocessedConsumers, AdminDatabaseConsumerComparator.getInstance() );
 
         addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getCleanupConsumers() );
         CollectionUtils.forAllDo( databaseConsumers.getAvailableCleanupConsumers(), addAdminDbConsumer );
         this.cleanupConsumers = addAdminDbConsumer.getList();
-        Collections.sort( this.cleanupConsumers, AdminRepositoryConsumerComparator.getInstance() );
+        Collections.sort( this.cleanupConsumers, AdminDatabaseConsumerComparator.getInstance() );
     }
 
     public String updateUnprocessedConsumers()
@@ -166,32 +166,32 @@ public class DatabaseAction
         this.cron = cron;
     }
 
-    public List getCleanupConsumers()
+    public List<AdminDatabaseConsumer> getCleanupConsumers()
     {
         return cleanupConsumers;
     }
 
-    public List getUnprocessedConsumers()
+    public List<AdminDatabaseConsumer> getUnprocessedConsumers()
     {
         return unprocessedConsumers;
     }
 
-    public List getEnabledUnprocessedConsumers()
+    public List<String> getEnabledUnprocessedConsumers()
     {
         return enabledUnprocessedConsumers;
     }
 
-    public void setEnabledUnprocessedConsumers( List enabledUnprocessedConsumers )
+    public void setEnabledUnprocessedConsumers( List<String> enabledUnprocessedConsumers )
     {
         this.enabledUnprocessedConsumers = enabledUnprocessedConsumers;
     }
 
-    public List getEnabledCleanupConsumers()
+    public List<String> getEnabledCleanupConsumers()
     {
         return enabledCleanupConsumers;
     }
 
-    public void setEnabledCleanupConsumers( List enabledCleanupConsumers )
+    public void setEnabledCleanupConsumers( List<String> enabledCleanupConsumers )
     {
         this.enabledCleanupConsumers = enabledCleanupConsumers;
     }

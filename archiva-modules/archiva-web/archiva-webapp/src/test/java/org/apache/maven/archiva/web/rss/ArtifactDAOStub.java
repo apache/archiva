@@ -61,7 +61,7 @@ public class ArtifactDAOStub
         return null;
     }
 
-    public List queryArtifacts( Constraint constraint )
+    public List<ArchivaArtifact> queryArtifacts( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();

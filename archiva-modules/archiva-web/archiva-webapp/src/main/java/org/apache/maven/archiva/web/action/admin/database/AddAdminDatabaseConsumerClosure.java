@@ -33,11 +33,11 @@ import java.util.List;
 public class AddAdminDatabaseConsumerClosure
     implements Closure
 {
-    private List list = new ArrayList();
+    private List<AdminDatabaseConsumer> list = new ArrayList<AdminDatabaseConsumer>();
 
-    private List selectedIds;
+    private List<String> selectedIds;
 
-    public AddAdminDatabaseConsumerClosure( List selectedIds )
+    public AddAdminDatabaseConsumerClosure( List<String> selectedIds )
     {
         this.selectedIds = selectedIds;
     }
@@ -59,7 +59,7 @@ public class AddAdminDatabaseConsumerClosure
         }
     }
 
-    public List getList()
+    public List<AdminDatabaseConsumer> getList()
     {
         return list;
     }

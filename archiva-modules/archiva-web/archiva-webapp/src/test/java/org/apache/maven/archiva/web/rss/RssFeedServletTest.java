@@ -19,8 +19,6 @@ package org.apache.maven.archiva.web.rss;
  * under the License.
  */
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.Encoder;
@@ -113,7 +111,8 @@ public class RssFeedServletTest
 
         try
         {
-            WebResponse response = client.getResponse( "http://localhost/feeds?invalid_param=xxx" );
+            client.getResponse( "http://localhost/feeds?invalid_param=xxx" );
+            fail( "Expected exception" );
         }
         catch ( HttpException he )
         {
@@ -139,7 +138,8 @@ public class RssFeedServletTest
         
         try
         {
-            WebResponse response = client.getResponse( request );
+            client.getResponse( request );
+            fail( "Expected exception" );
         }
         catch ( HttpException he )
         {            
@@ -165,7 +165,8 @@ public class RssFeedServletTest
         
         try
         {
-            WebResponse response = client.getResponse( request );
+            client.getResponse( request );
+            fail( "Expected exception" );
         }
         catch ( HttpException he )
         {            

@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -177,7 +178,7 @@ public class RepositoryGroupsActionTest
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
         
-        java.util.List repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
+        List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
     }
@@ -207,7 +208,7 @@ public class RepositoryGroupsActionTest
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
         
-        java.util.List repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
+        List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
         
@@ -256,7 +257,7 @@ public class RepositoryGroupsActionTest
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
         
-        java.util.List repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
+        List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
         
@@ -307,7 +308,7 @@ public class RepositoryGroupsActionTest
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
         
-        java.util.List repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
+        List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
         
@@ -343,7 +344,7 @@ public class RepositoryGroupsActionTest
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
         
-        java.util.List repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
+        List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
         

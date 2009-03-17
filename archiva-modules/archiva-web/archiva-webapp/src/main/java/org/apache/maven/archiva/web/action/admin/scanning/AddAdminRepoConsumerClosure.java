@@ -33,11 +33,11 @@ import java.util.List;
 public class AddAdminRepoConsumerClosure
     implements Closure
 {
-    private List list = new ArrayList();
+    private List<AdminRepositoryConsumer> list = new ArrayList<AdminRepositoryConsumer>();
 
-    private List selectedIds;
+    private List<String> selectedIds;
 
-    public AddAdminRepoConsumerClosure( List selectedIds )
+    public AddAdminRepoConsumerClosure( List<String> selectedIds )
     {
         this.selectedIds = selectedIds;
     }
@@ -58,7 +58,7 @@ public class AddAdminRepoConsumerClosure
         }
     }
 
-    public List getList()
+    public List<AdminRepositoryConsumer> getList()
     {
         return list;
     }

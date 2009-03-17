@@ -213,8 +213,6 @@ public class DeleteArtifactAction
             TimeZone timezone = TimeZone.getTimeZone( "UTC" );
             DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
             fmt.setTimeZone( timezone );
-            String timestamp = fmt.format( lastUpdatedTimestamp );
-
             ManagedRepositoryConfiguration repoConfig =
                 configuration.getConfiguration().findManagedRepositoryById( repositoryId );
 
@@ -296,6 +294,7 @@ public class DeleteArtifactAction
         }
     }
 
+    @SuppressWarnings("unchecked")
     private String getPrincipal()
     {
         return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );

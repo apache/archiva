@@ -60,7 +60,7 @@ public class ProjectModelDAOStub
         return projectModel;
     }
 
-    public List queryProjectModels( Constraint constraint )
+    public List<ArchivaProjectModel> queryProjectModels( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         // TODO Auto-generated method stub

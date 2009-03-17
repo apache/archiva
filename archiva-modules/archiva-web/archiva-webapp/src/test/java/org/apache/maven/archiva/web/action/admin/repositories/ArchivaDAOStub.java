@@ -44,7 +44,7 @@ public class ArchivaDAOStub
 {
     private ArchivaConfiguration configuration;
 
-    public List query( SimpleConstraint constraint )
+    public List<RepositoryContentStatistics> query( SimpleConstraint constraint )
     {
         Assert.assertEquals( RepositoryContentStatistics.class, constraint.getResultClass() );
         

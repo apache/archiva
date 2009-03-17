@@ -65,29 +65,29 @@ public class RepositoryScanningAction
      */
     private RepositoryContentConsumers repoconsumerUtil;
 
-    private Map fileTypeMap;
+    private Map<String, FileType> fileTypeMap;
 
-    private List fileTypeIds;
+    private List<String> fileTypeIds;
 
     /**
      * List of {@link AdminRepositoryConsumer} objects for consumers of known content.
      */
-    private List knownContentConsumers;
+    private List<AdminRepositoryConsumer> knownContentConsumers;
 
     /**
      * List of enabled {@link AdminRepositoryConsumer} objects for consumers of known content.
      */
-    private List enabledKnownContentConsumers;
+    private List<String> enabledKnownContentConsumers;
 
     /**
      * List of {@link AdminRepositoryConsumer} objects for consumers of invalid/unknown content.
      */
-    private List invalidContentConsumers;
+    private List<AdminRepositoryConsumer> invalidContentConsumers;
 
     /**
      * List of enabled {@link AdminRepositoryConsumer} objects for consumers of invalid/unknown content.
      */
-    private List enabledInvalidContentConsumers;
+    private List<String> enabledInvalidContentConsumers;
 
     private String pattern;
 
@@ -141,22 +141,22 @@ public class RepositoryScanningAction
         return fileTypeId;
     }
 
-    public List getFileTypeIds()
+    public List<String> getFileTypeIds()
     {
         return fileTypeIds;
     }
 
-    public Map getFileTypeMap()
+    public Map<String, FileType> getFileTypeMap()
     {
         return fileTypeMap;
     }
 
-    public List getInvalidContentConsumers()
+    public List<AdminRepositoryConsumer> getInvalidContentConsumers()
     {
         return invalidContentConsumers;
     }
 
-    public List getKnownContentConsumers()
+    public List<AdminRepositoryConsumer> getKnownContentConsumers()
     {
         return knownContentConsumers;
     }
@@ -200,7 +200,7 @@ public class RepositoryScanningAction
         this.invalidContentConsumers = addAdminRepoConsumer.getList();
         Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
 
-        fileTypeIds = new ArrayList();
+        fileTypeIds = new ArrayList<String>();
         fileTypeIds.addAll( fileTypeMap.keySet() );
         Collections.sort( fileTypeIds );
     }
@@ -298,22 +298,22 @@ public class RepositoryScanningAction
         return SUCCESS;
     }
 
-    public List getEnabledInvalidContentConsumers()
+    public List<String> getEnabledInvalidContentConsumers()
     {
         return enabledInvalidContentConsumers;
     }
 
-    public void setEnabledInvalidContentConsumers( List enabledInvalidContentConsumers )
+    public void setEnabledInvalidContentConsumers( List<String> enabledInvalidContentConsumers )
     {
         this.enabledInvalidContentConsumers = enabledInvalidContentConsumers;
     }
 
-    public List getEnabledKnownContentConsumers()
+    public List<String> getEnabledKnownContentConsumers()
     {
         return enabledKnownContentConsumers;
     }
 
-    public void setEnabledKnownContentConsumers( List enabledKnownContentConsumers )
+    public void setEnabledKnownContentConsumers( List<String> enabledKnownContentConsumers )
     {
         this.enabledKnownContentConsumers = enabledKnownContentConsumers;
     }

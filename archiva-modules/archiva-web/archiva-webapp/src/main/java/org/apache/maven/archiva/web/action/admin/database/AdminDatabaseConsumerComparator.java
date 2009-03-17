@@ -27,7 +27,7 @@ import java.util.Comparator;
  * @version $Id$
  */
 public class AdminDatabaseConsumerComparator
-    implements Comparator
+    implements Comparator<AdminDatabaseConsumer>
 {
     private static AdminDatabaseConsumerComparator INSTANCE = new AdminDatabaseConsumerComparator();
 
@@ -36,7 +36,7 @@ public class AdminDatabaseConsumerComparator
         return INSTANCE;
     }
 
-    public int compare( Object o1, Object o2 )
+    public int compare( AdminDatabaseConsumer o1, AdminDatabaseConsumer o2 )
     {
         if ( o1 == null && o2 == null )
         {
@@ -53,14 +53,8 @@ public class AdminDatabaseConsumerComparator
             return -1;
         }
 
-        if ( ( o1 instanceof AdminDatabaseConsumer ) && ( o2 instanceof AdminDatabaseConsumer ) )
-        {
-            String id1 = ( (AdminDatabaseConsumer) o1 ).getId();
-            String id2 = ( (AdminDatabaseConsumer) o2 ).getId();
-            return id1.compareToIgnoreCase( id2 );
-        }
-
-        return 0;
+        String id1 = o1.getId();
+        String id2 = o2.getId();
+        return id1.compareToIgnoreCase( id2 );
     }
-
 }

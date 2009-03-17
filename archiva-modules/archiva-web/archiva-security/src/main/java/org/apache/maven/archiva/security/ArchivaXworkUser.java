@@ -34,7 +34,7 @@ import org.codehaus.plexus.redback.users.UserManager;
  */
 public class ArchivaXworkUser
 {
-    public String getActivePrincipal( Map<String, Object> sessionMap )
+    public String getActivePrincipal( Map<String, ?> sessionMap )
     {
         SecuritySession securitySession =
             (SecuritySession) sessionMap.get( SecuritySystemConstants.SECURITY_SESSION_KEY );

@@ -34,13 +34,13 @@ public abstract class PlexusActionSupport
     extends ActionSupport
     implements SessionAware
 {
-    protected Map session;
+    protected Map<?, ?> session;
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
     
+    @SuppressWarnings("unchecked")
     public void setSession( Map map )
     {
-        //noinspection AssignmentToCollectionOrArrayFieldFromParameter
         this.session = map;
     }
 }

@@ -19,15 +19,14 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import com.opensymphony.xwork2.util.ValueStack;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.struts2.components.Component;
-import org.apache.struts2.views.jsp.TagUtils;
-
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+
+import org.apache.struts2.components.Component;
 import org.apache.struts2.views.jsp.ComponentTagSupport;
+
+import com.opensymphony.xwork2.util.ValueStack;
 
 /**
  * DownloadArtifactTag 

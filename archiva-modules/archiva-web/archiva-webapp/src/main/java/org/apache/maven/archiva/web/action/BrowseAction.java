@@ -204,6 +204,7 @@ public class BrowseAction
         }        
     }
     
+    @SuppressWarnings("unchecked")
     private String getPrincipal()
     {
         return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );

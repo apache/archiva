@@ -159,6 +159,7 @@ public class EditProxyConnectorActionTest
         assertEquals( 1, connector.getWhiteListPatterns().size() );
     }
 
+    @SuppressWarnings("unchecked")
     public void testEditProxyConnectorCommit()
         throws Exception
     {
@@ -375,6 +376,7 @@ public class EditProxyConnectorActionTest
         assertEquals( TEST_TARGET_ID, connector.getTargetRepoId() );
     }
 
+    @SuppressWarnings("unchecked")
     private Configuration createInitialConfiguration()
     {
         Configuration config = new Configuration();
