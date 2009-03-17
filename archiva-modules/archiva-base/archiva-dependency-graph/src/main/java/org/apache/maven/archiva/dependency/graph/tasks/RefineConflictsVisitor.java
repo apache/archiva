@@ -129,10 +129,12 @@ public class RefineConflictsVisitor
                 return -1;
             }
 
-            String version1 = o1.artifact.getVersion();
-            String version2 = o2.artifact.getVersion();
-
-            return VersionComparator.getInstance().compare( version1, version2 );
+//            String version1 = o1.artifact.getVersion();
+//            String version2 = o2.artifact.getVersion();
+//
+//            VersionComparator.getInstance().compare( version1, version2 );
+            
+            return 0;
         }
     }
 

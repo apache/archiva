@@ -185,15 +185,15 @@ public abstract class AbstractDependencyGraphFactoryTestCase
 
         CollectionUtils.transform( actualNodes, new ToKeyTransformer() );
 
-        Collection<DependencyGraphNode> missingActualKeys = CollectionUtils.subtract( actualNodes, expectedNodeKeys );
-        for ( DependencyGraphNode key : missingActualKeys )
+        Collection<String> missingActualKeys = CollectionUtils.subtract( actualNodes, expectedNodeKeys );
+        for ( String key : missingActualKeys )
         {
             sb.append( "\n (Extra Actual) " ).append( key );
             fail = true;
         }
 
-        Collection<DependencyGraphNode> missingExpectedKeys = CollectionUtils.subtract( expectedNodeKeys, actualNodes );
-        for ( DependencyGraphNode key : missingExpectedKeys )
+        Collection<String> missingExpectedKeys = CollectionUtils.subtract( expectedNodeKeys, actualNodes );
+        for ( String key : missingExpectedKeys )
         {
             sb.append( "\n (Extra Expected) " ).append( key );
             fail = true;
@@ -237,8 +237,8 @@ public abstract class AbstractDependencyGraphFactoryTestCase
 
             CollectionUtils.transform( actualNodes, new ToKeyTransformer() );
 
-            Collection<DependencyGraphNode> missingActualKeys = CollectionUtils.subtract( actualNodes, expectedNodeKeys );
-            for ( DependencyGraphNode key : missingActualKeys )
+            Collection<String> missingActualKeys = CollectionUtils.subtract( actualNodes, expectedNodeKeys );
+            for ( String key : missingActualKeys )
             {
                 sb.append( "\n (Extra Actual) " ).append( key );
             }
