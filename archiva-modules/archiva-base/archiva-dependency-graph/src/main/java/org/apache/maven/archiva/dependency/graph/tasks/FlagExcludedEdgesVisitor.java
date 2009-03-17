@@ -19,6 +19,8 @@ package org.apache.maven.archiva.dependency.graph.tasks;
  * under the License.
  */
 
+import java.util.Stack;
+
 import org.apache.maven.archiva.dependency.graph.DependencyGraph;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphEdge;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphKeys;
@@ -26,9 +28,6 @@ import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
 import org.apache.maven.archiva.dependency.graph.walk.BaseVisitor;
 import org.apache.maven.archiva.dependency.graph.walk.DependencyGraphVisitor;
 import org.apache.maven.archiva.model.ArtifactReference;
-
-import java.util.Iterator;
-import java.util.Stack;
 
 /**
  * FlagExcludedEdgesVisitor 
@@ -39,7 +38,7 @@ public class FlagExcludedEdgesVisitor
     extends BaseVisitor
     implements DependencyGraphVisitor
 {
-    private Stack nodePath = new Stack();
+    private Stack<DependencyGraphNode> nodePath = new Stack<DependencyGraphNode>();
 
     public void discoverEdge( DependencyGraphEdge edge )
     {
@@ -47,11 +46,8 @@ public class FlagExcludedEdgesVisitor
         
         // Process for excluded edges.
         String toKey = DependencyGraphKeys.toManagementKey( artifact );
-        Iterator it = this.nodePath.iterator();
-        while ( it.hasNext() )
+        for ( DependencyGraphNode pathNode : this.nodePath )
         {
-            DependencyGraphNode pathNode = (DependencyGraphNode) it.next();
-        
             // Process dependency declared exclusions.
             if ( pathNode.getExcludes().contains( toKey ) )
             {

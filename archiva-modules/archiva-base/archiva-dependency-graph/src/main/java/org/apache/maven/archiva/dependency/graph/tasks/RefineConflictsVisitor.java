@@ -19,6 +19,16 @@ package org.apache.maven.archiva.dependency.graph.tasks;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
@@ -35,17 +45,6 @@ import org.apache.maven.archiva.dependency.graph.walk.BaseVisitor;
 import org.apache.maven.archiva.dependency.graph.walk.DependencyGraphVisitor;
 import org.apache.maven.archiva.model.ArtifactReference;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * RefineConflictsVisitor 
  *
@@ -56,14 +55,11 @@ public class RefineConflictsVisitor
     implements DependencyGraphVisitor
 {
     class DepthComparator
-        implements Comparator
+        implements Comparator<NodeLocation>
     {
-        public int compare( Object obj0, Object obj1 )
+        public int compare( NodeLocation obj0, NodeLocation obj1 )
         {
-            NodeLocation nodeLoc0 = (NodeLocation) obj0;
-            NodeLocation nodeLoc1 = (NodeLocation) obj1;
-
-            return nodeLoc0.depth - nodeLoc1.depth;
+            return obj0.depth - obj1.depth;
         }
     }
 
@@ -114,9 +110,9 @@ public class RefineConflictsVisitor
     }
 
     class NodeLocationVersionComparator
-        implements Comparator
+        implements Comparator<NodeLocation>
     {
-        public int compare( Object o1, Object o2 )
+        public int compare( NodeLocation o1, NodeLocation o2 )
         {
             if ( o1 == null && o2 == null )
             {
@@ -133,15 +129,10 @@ public class RefineConflictsVisitor
                 return -1;
             }
 
-            if ( ( o1 instanceof NodeLocation ) && ( o2 instanceof NodeLocation ) )
-            {
-                String version1 = ( (NodeLocation) o1 ).artifact.getVersion();
-                String version2 = ( (NodeLocation) o2 ).artifact.getVersion();
+            String version1 = o1.artifact.getVersion();
+            String version2 = o2.artifact.getVersion();
 
-                VersionComparator.getInstance().compare( version1, version2 );
-            }
-
-            return 0;
+            return VersionComparator.getInstance().compare( version1, version2 );
         }
     }
 
@@ -169,17 +160,18 @@ public class RefineConflictsVisitor
         }
     }
 
-    private List conflictingArtifacts;
+    private List<DependencyGraphNode> conflictingArtifacts;
 
-    private Map foundNodesMap = new HashMap();
+    private Map<String,NodeLocation> foundNodesMap = new HashMap<String, NodeLocation>();
 
     private int currentDepth = 0;
 
     private DependencyGraph currentGraph;
 
+    @SuppressWarnings("unchecked")
     public RefineConflictsVisitor()
     {
-        conflictingArtifacts = TypedList.decorate( new ArrayList(), ArtifactReference.class );
+        conflictingArtifacts = TypedList.decorate( new ArrayList<ArtifactReference>(), ArtifactReference.class );
     }
 
     public void discoverGraph( DependencyGraph graph )
@@ -195,16 +187,14 @@ public class RefineConflictsVisitor
 
         currentDepth++;
 
-        List edgesFrom = currentGraph.getEdgesFrom( node );
-        Iterator it = edgesFrom.iterator();
-        while ( it.hasNext() )
+        List<DependencyGraphEdge> edgesFrom = currentGraph.getEdgesFrom( node );
+        for ( DependencyGraphEdge edge : edgesFrom )
         {
-            DependencyGraphEdge edge = (DependencyGraphEdge) it.next();
             if ( this.conflictingArtifacts.contains( edge.getNodeTo() ) )
             {
                 String nodeKey = DependencyGraphKeys.toKey( edge.getNodeTo() );
                 // Check for existing NodeLocation with same key
-                NodeLocation nodeloc = (NodeLocation) this.foundNodesMap.get( nodeKey );
+                NodeLocation nodeloc = this.foundNodesMap.get( nodeKey );
 
                 if ( ( nodeloc == null ) || ( currentDepth < nodeloc.depth ) )
                 {
@@ -229,23 +219,22 @@ public class RefineConflictsVisitor
         DependencyGraphNode winningNode = graph.getNode( winningArtifact );
 
         // Gather up Losing Nodes.
-        Set losingNodes = new HashSet();
+        Set<NodeLocation> losingNodes = new HashSet<NodeLocation>();
         Predicate losersPredicate = NotPredicate.getInstance( new NodeLocationPredicate( winningArtifact ) );
         CollectionUtils.select( this.foundNodesMap.values(), losersPredicate, losingNodes );
 
         // Swing losing nodes to winning node.
-        Iterator it = losingNodes.iterator();
-        while ( it.hasNext() )
+        for ( NodeLocation losingNodeLoc : losingNodes )
         {
-            NodeLocation losingNodeLoc = (NodeLocation) it.next();
             DependencyGraphNode losingNode = graph.getNode( losingNodeLoc.artifact );
             DependencyGraphUtils.collapseNodes( graph, losingNode, winningNode );
         }
     }
 
-    private ArtifactReference findWinningArtifact( Collection nodes )
+    @SuppressWarnings("unchecked")
+    private ArtifactReference findWinningArtifact( Collection<NodeLocation> nodes )
     {
-        List remainingNodes = new ArrayList();
+        List<NodeLocation> remainingNodes = new ArrayList<NodeLocation>();
         remainingNodes.addAll( nodes );
 
         /* .\ Filter by Depth \.____________________________________________________ */
@@ -254,7 +243,7 @@ public class RefineConflictsVisitor
         Collections.sort( remainingNodes, new DepthComparator() );
 
         // Determine 'closest' node depth.
-        NodeLocation nearestNode = (NodeLocation) remainingNodes.get( 0 );
+        NodeLocation nearestNode = remainingNodes.get( 0 );
         int nearest = nearestNode.depth;
 
         // Filter out distant nodes. 
@@ -265,7 +254,7 @@ public class RefineConflictsVisitor
         if ( remainingNodes.size() == 1 )
         {
             // A winner!
-            NodeLocation nodeloc = (NodeLocation) remainingNodes.get( 0 );
+            NodeLocation nodeloc = remainingNodes.get( 0 );
             return nodeloc.artifact;
         }
 
@@ -275,7 +264,7 @@ public class RefineConflictsVisitor
         // Determine which one is 'newest' based on version id.
         Collections.sort( remainingNodes, new ReverseComparator( new NodeLocationVersionComparator() ) );
 
-        NodeLocation nodeloc = (NodeLocation) remainingNodes.get( 0 );
+        NodeLocation nodeloc = remainingNodes.get( 0 );
         return nodeloc.artifact;
     }
 
@@ -285,12 +274,12 @@ public class RefineConflictsVisitor
         currentDepth--;
     }
 
-    public List getConflictingArtifacts()
+    public List<DependencyGraphNode> getConflictingArtifacts()
     {
         return conflictingArtifacts;
     }
 
-    public void addAllConflictingArtifacts( Collection nodes )
+    public void addAllConflictingArtifacts( Collection<DependencyGraphNode> nodes )
     {
         this.conflictingArtifacts.addAll( nodes );
     }

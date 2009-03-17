@@ -58,7 +58,7 @@ public class DepManDeepVersionDependencyGraphTest
         assertNotNull( "Graph shouldn't be null.", graph );
 
         String expectedRootRef = "net.example.depman.deepversion:A:1.0";
-        List expectedNodes = new ArrayList();
+        List<String> expectedNodes = new ArrayList<String>();
 
         // Check for all nodes, regardless of scope.
         expectedNodes.clear();

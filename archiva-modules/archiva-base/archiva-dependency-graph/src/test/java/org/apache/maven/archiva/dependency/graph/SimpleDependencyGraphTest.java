@@ -19,12 +19,12 @@ package org.apache.maven.archiva.dependency.graph;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.archiva.dependency.DependencyGraphFactory;
 import org.apache.maven.archiva.model.DependencyScope;
 import org.apache.maven.archiva.model.VersionedReference;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * SimpleDependencyGraphTest 
@@ -54,13 +54,13 @@ public class SimpleDependencyGraphTest
         // Test the results.
         assertNotNull( "Graph shouldn't be null.", graph );
 
-        List expectedNodes = new ArrayList();
+        List<String> expectedNodes = new ArrayList<String>();
         expectedNodes.add( "org.apache.maven.archiva:archiva-commons:1.0::pom" );
         expectedNodes.add( "org.codehaus.plexus:plexus-digest:1.0::jar" );
         expectedNodes.add( "junit:junit:3.8.1::jar" );
         assertNodes( graph, expectedNodes );
 
-        List expectedEdges = new ArrayList();
+        List<ExpectedEdge> expectedEdges = new ArrayList<ExpectedEdge>();
         expectedEdges.add( new ExpectedEdge( "org.apache.maven.archiva:archiva-commons:1.0::pom",
                                              "org.codehaus.plexus:plexus-digest:1.0::jar" ) );
         expectedEdges.add( new ExpectedEdge( "org.codehaus.plexus:plexus-digest:1.0::jar", "junit:junit:3.8.1::jar" ) );

@@ -50,7 +50,7 @@ public class DependencyGraph
 
     private DependencyGraphNode rootNode;
 
-    private Set edges = new HashSet();
+    private Set<DependencyGraphEdge> edges = new HashSet<DependencyGraphEdge>();
 
     private ListOrderedMap nodes = new ListOrderedMap();
 
@@ -71,12 +71,13 @@ public class DependencyGraph
         this.rootNode = root;
     }
 
-    public Collection getEdges()
+    public Collection<DependencyGraphEdge> getEdges()
     {
         return edges;
     }
 
-    public Collection getNodes()
+    @SuppressWarnings("unchecked")
+    public Collection<DependencyGraphNode> getNodes()
     {
         return nodes.values();
     }
@@ -172,9 +173,9 @@ public class DependencyGraph
      * @param node the node to use as the 'from' side of an edge.
      * @return the edges from the provided node.
      */
-    public List getEdgesFrom( DependencyGraphNode node )
+    public List<DependencyGraphEdge> getEdgesFrom( DependencyGraphNode node )
     {
-        List ret = new ArrayList();
+        List<DependencyGraphEdge> ret = new ArrayList<DependencyGraphEdge>();
         CollectionUtils.select( this.edges, new EdgeFromPredicate( node.getArtifact() ), ret );
         return ret;
     }
@@ -185,9 +186,9 @@ public class DependencyGraph
      * @param node the node to use as the 'to' side of an edge.
      * @return the edges to the provided node.
      */
-    public List getEdgesTo( DependencyGraphNode node )
+    public List<DependencyGraphEdge> getEdgesTo( DependencyGraphNode node )
     {
-        List ret = new ArrayList();
+        List<DependencyGraphEdge> ret = new ArrayList<DependencyGraphEdge>();
         CollectionUtils.select( this.edges, new EdgeToPredicate( node.getArtifact() ), ret );
         return ret;
     }
@@ -210,7 +211,7 @@ public class DependencyGraph
 
     public void removeNode( DependencyGraphNode node )
     {
-        List edges = getEdgesFrom( node );
+        List<DependencyGraphEdge> edges = getEdgesFrom( node );
         if ( !edges.isEmpty() )
         {
             System.out.println( "Removing node left <" + edges + "> hanging <from> edges." );

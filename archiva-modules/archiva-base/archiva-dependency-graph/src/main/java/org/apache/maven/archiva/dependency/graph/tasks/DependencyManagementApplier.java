@@ -19,6 +19,9 @@ package org.apache.maven.archiva.dependency.graph.tasks;
  * under the License.
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.dependency.graph.DependencyGraph;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphBuilder;
@@ -30,11 +33,6 @@ import org.apache.maven.archiva.dependency.graph.walk.BaseVisitor;
 import org.apache.maven.archiva.dependency.graph.walk.DependencyGraphVisitor;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Takes a stack of DependencyManagement objects and applies them to the node in question.
@@ -58,7 +56,7 @@ public class DependencyManagementApplier
      * Performing graph changes of this scope during a walk of graph is hazardous,
      * as you will be moving nodes around, mergeing nodes, dropping edges, etc.
      */
-    private Map nodeVersionChanges = new HashMap();
+    private Map<ArtifactReference, String> nodeVersionChanges = new HashMap<ArtifactReference, String>();
 
     private int nodesAdded = 0;
 
@@ -76,11 +74,8 @@ public class DependencyManagementApplier
 
         depStack.push( node );
 
-        List edgesFrom = graph.getEdgesFrom( node );
-        Iterator it = edgesFrom.iterator();
-        while ( it.hasNext() )
+        for ( DependencyGraphEdge edge : graph.getEdgesFrom( node ) )
         {
-            DependencyGraphEdge edge = (DependencyGraphEdge) it.next();
             Rules rules = depStack.getRules( edge );
 
             if ( rules == null )
@@ -137,11 +132,9 @@ public class DependencyManagementApplier
     {
         super.finishGraph( graph );
 
-        Iterator it = this.nodeVersionChanges.keySet().iterator();
-        while ( it.hasNext() )
+        for ( ArtifactReference ref : this.nodeVersionChanges.keySet() )
         {
-            ArtifactReference ref = (ArtifactReference) it.next();
-            String toVersion = (String) this.nodeVersionChanges.get( ref );
+            String toVersion = this.nodeVersionChanges.get( ref );
 
             collapseVersions( graph, ref, ref.getVersion(), toVersion );
         }

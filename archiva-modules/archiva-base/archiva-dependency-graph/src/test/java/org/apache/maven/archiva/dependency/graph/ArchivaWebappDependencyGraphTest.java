@@ -60,7 +60,7 @@ public class ArchivaWebappDependencyGraphTest
       assertNotNull( "Graph shouldn't be null.", graph );
 
       String expectedRootRef = "org.apache.maven.archiva:archiva-webapp:1.0-alpha-2-SNAPSHOT";
-      List expectedNodes = new ArrayList();
+      List<String> expectedNodes = new ArrayList<String>();
 
       // Check for all nodes, regardless of scope.
       expectedNodes.clear();

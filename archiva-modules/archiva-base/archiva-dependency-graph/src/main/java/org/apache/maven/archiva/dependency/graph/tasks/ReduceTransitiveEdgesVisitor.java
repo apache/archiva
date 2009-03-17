@@ -19,19 +19,18 @@ package org.apache.maven.archiva.dependency.graph.tasks;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.maven.archiva.dependency.graph.DependencyGraph;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphEdge;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphKeys;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
 import org.apache.maven.archiva.dependency.graph.walk.DependencyGraphVisitor;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Perform a transitive reduction of the graph. 
@@ -50,21 +49,18 @@ public class ReduceTransitiveEdgesVisitor
     }
 
     class EdgeInfoDepthComparator
-        implements Comparator
+        implements Comparator<EdgeInfo>
     {
-        public int compare( Object obj0, Object obj1 )
+        public int compare( EdgeInfo obj0, EdgeInfo obj1 )
         {
-            EdgeInfo edgeInfo0 = (EdgeInfo) obj0;
-            EdgeInfo edgeInfo1 = (EdgeInfo) obj1;
-
-            return edgeInfo0.depth - edgeInfo1.depth;
+            return obj0.depth - obj1.depth;
         }
     }
 
     /**
      * A Map of &lt;(Node To) ArtifactReference, Map of &lt;(Node From) ArtifactReference, EdgeInfo&gt;&gt;
      */
-    private Map /*<ArtifactReference,<ArtifactReference,EdgeInfo>>*/nodeDistanceMap = new HashMap();
+    private Map<String, Map<String, EdgeInfo>> nodeDistanceMap = new HashMap<String, Map<String, EdgeInfo>>();
 
     private int currentDepth;
 
@@ -87,12 +83,12 @@ public class ReduceTransitiveEdgesVisitor
         String nodeFrom = DependencyGraphKeys.toKey( edge.getNodeFrom() );
 
         // Get sub-map
-        Map edgeInfoMap = (Map) nodeDistanceMap.get( nodeTo );
+        Map<String,EdgeInfo> edgeInfoMap = nodeDistanceMap.get( nodeTo );
 
         // Create sub-map if not present (yet)
         if ( edgeInfoMap == null )
         {
-            edgeInfoMap = new HashMap();
+            edgeInfoMap = new HashMap<String,EdgeInfo>();
             nodeDistanceMap.put( nodeTo, edgeInfoMap );
         }
 
@@ -136,16 +132,13 @@ public class ReduceTransitiveEdgesVisitor
 
         // Now we prune/remove the edges that are transitive in nature.
 
-        Comparator edgeInfoDepthComparator = new EdgeInfoDepthComparator();
+        Comparator<EdgeInfo> edgeInfoDepthComparator = new EdgeInfoDepthComparator();
 
-        Iterator it = nodeDistanceMap.values().iterator();
-        while ( it.hasNext() )
+        for ( Map<String, EdgeInfo> edgeInfoMap : nodeDistanceMap.values() )
         {
-            Map edgeInfoMap = (Map) it.next();
-
             if ( edgeInfoMap.size() > 1 )
             {
-                List edgeInfos = new ArrayList();
+                List<EdgeInfo> edgeInfos = new ArrayList<EdgeInfo>();
                 edgeInfos.addAll( edgeInfoMap.values() );
                 Collections.sort( edgeInfos, edgeInfoDepthComparator );
 

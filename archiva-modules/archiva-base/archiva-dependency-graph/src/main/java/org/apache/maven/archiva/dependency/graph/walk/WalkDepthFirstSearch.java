@@ -19,6 +19,9 @@ package org.apache.maven.archiva.dependency.graph.walk;
  * under the License.
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.maven.archiva.dependency.graph.DependencyGraph;
@@ -26,10 +29,6 @@ import org.apache.maven.archiva.dependency.graph.DependencyGraphEdge;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
 import org.apache.maven.archiva.dependency.graph.functors.EdgeDisabledPredicate;
 import org.apache.maven.archiva.model.ArtifactReference;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Perform a walk of the graph using the DepthFirstSearch algorithm.
@@ -41,7 +40,7 @@ import java.util.Map;
 public class WalkDepthFirstSearch
     implements DependencyGraphWalker
 {
-    private Map nodeVisitStates = new HashMap();
+    private Map<ArtifactReference, Integer> nodeVisitStates = new HashMap<ArtifactReference, Integer>();
 
     private Predicate edgePredicate;
 
@@ -105,10 +104,8 @@ public class WalkDepthFirstSearch
 
         visitor.discoverNode( node );
 
-        Iterator edges = graph.getEdgesFrom( node ).iterator();
-        while ( edges.hasNext() )
+        for ( DependencyGraphEdge e : graph.getEdgesFrom( node ) )
         {
-            DependencyGraphEdge e = (DependencyGraphEdge) edges.next();
             if ( this.edgePredicate.evaluate( e ) )
             {
                 visitEdge( graph, e, visitor );
@@ -129,10 +126,9 @@ public class WalkDepthFirstSearch
     {
         nodeVisitStates.clear();
 
-        Iterator nodes = graph.getNodes().iterator();
-        while ( nodes.hasNext() )
+        for ( DependencyGraphNode node : graph.getNodes() )
         {
-            setNodeVisitState( (DependencyGraphNode) nodes.next(), UNSEEN );
+            setNodeVisitState( node, UNSEEN );
         }
 
         visitor.discoverGraph( graph );

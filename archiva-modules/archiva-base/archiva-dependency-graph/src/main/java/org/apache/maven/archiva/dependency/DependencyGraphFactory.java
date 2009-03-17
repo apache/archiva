@@ -19,6 +19,9 @@ package org.apache.maven.archiva.dependency;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.archiva.dependency.graph.DependencyGraph;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.archiva.dependency.graph.GraphListener;
@@ -37,10 +40,6 @@ import org.apache.maven.archiva.dependency.graph.tasks.UpdateScopesTask;
 import org.apache.maven.archiva.model.DependencyScope;
 import org.apache.maven.archiva.model.VersionedReference;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * DependencyGraphFactory 
  *
@@ -54,21 +53,21 @@ public class DependencyGraphFactory
 
     private ReduceScopeTask taskReduceScope;
 
-    private List listeners;
+    private List<GraphListener> listeners;
 
     private DependencyGraphBuilder graphBuilder;
 
-    private List tasks;
+    private List<GraphTask> tasks;
 
     public DependencyGraphFactory()
     {
-        listeners = new ArrayList();
+        listeners = new ArrayList<GraphListener>();
 
         taskFlagCyclicEdges = new FlagCyclicEdgesTask();
         taskPopulateGraph = new PopulateGraphMasterTask();
         taskReduceScope = new ReduceScopeTask( DependencyScope.TEST );
 
-        tasks = new ArrayList();
+        tasks = new ArrayList<GraphTask>();
 
         /* Take the basic graph, and expand the nodes fully, including depman.
          */
@@ -124,10 +123,8 @@ public class DependencyGraphFactory
 
         triggerGraphPhase( GraphPhaseEvent.GRAPH_NEW, null, graph );
 
-        Iterator it = this.tasks.iterator();
-        while ( it.hasNext() )
+        for ( GraphTask task : this.tasks )
         {
-            GraphTask task = (GraphTask) it.next();
             try
             {
                 triggerGraphPhase( GraphPhaseEvent.GRAPH_TASK_PRE, task, graph );
@@ -174,10 +171,8 @@ public class DependencyGraphFactory
 
     private void triggerGraphError( GraphTaskException e, DependencyGraph graph )
     {
-        Iterator it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( GraphListener listener : listeners )
         {
-            GraphListener listener = (GraphListener) it.next();
             listener.graphError( e, graph );
         }
     }
@@ -186,10 +181,8 @@ public class DependencyGraphFactory
     {
         GraphPhaseEvent evt = new GraphPhaseEvent( type, task, graph );
 
-        Iterator it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( GraphListener listener : listeners )
         {
-            GraphListener listener = (GraphListener) it.next();
             listener.graphPhaseEvent( evt );
         }
     }

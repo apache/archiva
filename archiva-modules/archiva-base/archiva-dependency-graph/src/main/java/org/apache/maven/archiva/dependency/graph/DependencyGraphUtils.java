@@ -19,6 +19,10 @@ package org.apache.maven.archiva.dependency.graph;
  * under the License.
  */
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.AndPredicate;
@@ -32,11 +36,6 @@ import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.DependencyScope;
 import org.apache.maven.archiva.model.Exclusion;
 import org.apache.maven.archiva.model.VersionedReference;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Utilities for manipulating the DependencyGraph. 
@@ -99,25 +98,18 @@ public class DependencyGraphUtils
 
         boolean isRootNode = graph.getRootNode().equals( fromNode );
 
-        Iterator it;
-
         if ( CollectionUtils.isNotEmpty( model.getDependencyManagement() ) )
         {
-            it = model.getDependencyManagement().iterator();
-            while ( it.hasNext() )
+            for ( Dependency dependency : model.getDependencyManagement() )
             {
-                Dependency dependency = (Dependency) it.next();
                 fromNode.addDependencyManagement( dependency );
             }
         }
 
         if ( CollectionUtils.isNotEmpty( model.getDependencies() ) )
         {
-            it = model.getDependencies().iterator();
-            while ( it.hasNext() )
+            for ( Dependency dependency : model.getDependencies() )
             {
-                Dependency dependency = (Dependency) it.next();
-
                 String scope = dependency.getScope();
 
                 // Test scopes *NOT* from root node can be skipped.
@@ -138,10 +130,8 @@ public class DependencyGraphUtils
 
                 if ( CollectionUtils.isNotEmpty( dependency.getExclusions() ) )
                 {
-                    Iterator itexclusion = dependency.getExclusions().iterator();
-                    while ( itexclusion.hasNext() )
+                    for ( Exclusion exclusion : dependency.getExclusions() )
                     {
-                        Exclusion exclusion = (Exclusion) itexclusion.next();
                         toNode.addExclude( exclusion );
                     }
                 }
@@ -198,12 +188,8 @@ public class DependencyGraphUtils
             }
 
             // Remove edges FROM orphaned node.
-            List edgesFrom = graph.getEdgesFrom( orphanedNode );
-
-            Iterator it = edgesFrom.iterator();
-            while ( it.hasNext() )
+            for ( DependencyGraphEdge edge : graph.getEdgesFrom( orphanedNode ) )
             {
-                DependencyGraphEdge edge = (DependencyGraphEdge) it.next();
                 graph.removeEdge( edge );
             }
 
@@ -226,12 +212,10 @@ public class DependencyGraphUtils
      */
     public static void collapseNodes( DependencyGraph graph, DependencyGraphNode nodeFROM, DependencyGraphNode nodeTO )
     {
-        Iterator it;
-
-        Set edgesToRemove = new HashSet();
+        Set<DependencyGraphEdge> edgesToRemove = new HashSet<DependencyGraphEdge>();
 
         // 1) Remove all of the edge.from references from nodeFROM
-        List fromEdges = graph.getEdgesFrom( nodeFROM );
+        List<DependencyGraphEdge> fromEdges = graph.getEdgesFrom( nodeFROM );
         if ( CollectionUtils.isNotEmpty( fromEdges ) )
         {
             edgesToRemove.addAll( fromEdges );
@@ -240,12 +224,9 @@ public class DependencyGraphUtils
         // 2) Swing all of the edge.to references from nodeFROM to nodeTO.
         //        System.out.println( "Swinging incoming edges from " + nodeFROM );
         //        System.out.println( "                          to " + nodeTO );
-        List toEdges = graph.getEdgesTo( nodeFROM );
-        it = toEdges.iterator();
-        while ( it.hasNext() )
+        List<DependencyGraphEdge> toEdges = graph.getEdgesTo( nodeFROM );
+        for ( DependencyGraphEdge edge : toEdges )
         {
-            DependencyGraphEdge edge = (DependencyGraphEdge) it.next();
-
             // Identify old edge to remove.
             edgesToRemove.add( edge );
 
@@ -258,10 +239,8 @@ public class DependencyGraphUtils
         }
 
         // Actually remove the old edges.
-        it = edgesToRemove.iterator();
-        while ( it.hasNext() )
+        for ( DependencyGraphEdge edge : edgesToRemove )
         {
-            DependencyGraphEdge edge = (DependencyGraphEdge) it.next();
             graph.removeEdge( edge );
         }
 

@@ -60,7 +60,7 @@ public class ContinuumStoreDependencyGraphTest
       assertNotNull( "Graph shouldn't be null.", graph );
 
       String expectedRootRef = "org.apache.maven.continuum:continuum-store:1.1-SNAPSHOT";
-      List expectedNodes = new ArrayList();
+      List<String> expectedNodes = new ArrayList<String>();
 
       // Check for all nodes, regardless of scope.
       expectedNodes.clear();

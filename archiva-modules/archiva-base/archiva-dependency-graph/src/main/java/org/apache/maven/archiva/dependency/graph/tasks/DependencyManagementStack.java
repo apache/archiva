@@ -19,6 +19,13 @@ package org.apache.maven.archiva.dependency.graph.tasks;
  * under the License.
  */
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
 import org.apache.commons.collections.iterators.ReverseListIterator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphEdge;
@@ -27,14 +34,6 @@ import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.Exclusion;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
 
 /**
  * DependencyManagementStack 
@@ -49,23 +48,21 @@ public class DependencyManagementStack
 
         public String scope;
 
-        public Set exclusions = new HashSet();
+        public Set<String> exclusions = new HashSet<String>();
 
-        public void addAllExclusions( List depExclusions )
+        public void addAllExclusions( List<Exclusion> depExclusions )
         {
-            Iterator it = depExclusions.iterator();
-            while ( it.hasNext() )
+            for ( Exclusion ref : depExclusions )
             {
-                Exclusion ref = (Exclusion) it.next();
                 String key = DependencyGraphKeys.toManagementKey( ref );
                 exclusions.add( key );
             }
         }
     }
 
-    private Stack depmanStack = new Stack();
+    private Stack<DependencyGraphNode> depmanStack = new Stack<DependencyGraphNode>();
 
-    private Map depMap = new HashMap();
+    private Map<String, Rules> depMap = new HashMap<String, Rules>();
 
     private void generateDepMap()
     {
@@ -82,12 +79,10 @@ public class DependencyManagementStack
         }
     }
 
-    private void addDependencies( List dependencies )
+    private void addDependencies( List<Dependency> dependencies )
     {
-        Iterator it = dependencies.iterator();
-        while ( it.hasNext() )
+        for ( Dependency dep : dependencies )
         {
-            Dependency dep = (Dependency) it.next();
             String key = DependencyGraphKeys.toManagementKey( dep );
 
             Rules merged = (Rules) depMap.get( key );

@@ -38,13 +38,13 @@ public class UpdateScopesVisitor
     extends BaseVisitor
     implements DependencyGraphVisitor
 {
-    private Stack scopeStack;
+    private Stack<String> scopeStack;
 
     private Predicate rootEdgePredicate;
 
     public UpdateScopesVisitor()
     {
-        scopeStack = new Stack();
+        scopeStack = new Stack<String>();
         // Default setting.
         scopeStack.add( DependencyScope.COMPILE );
     }

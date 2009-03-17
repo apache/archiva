@@ -30,7 +30,7 @@ import java.util.List;
 class WalkCollector
     implements DependencyGraphVisitor
 {
-    private List walkPath = new ArrayList();
+    private List<String> walkPath = new ArrayList<String>();
 
     private int countDiscoverGraph = 0;
 
@@ -75,7 +75,7 @@ class WalkCollector
         countFinishNode++;
     }
 
-    public List getCollectedPath()
+    public List<String> getCollectedPath()
     {
         return walkPath;
     }

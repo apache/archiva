@@ -19,6 +19,12 @@ package org.apache.maven.archiva.dependency.graph.tasks;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.maven.archiva.dependency.graph.DependencyGraph;
@@ -30,13 +36,6 @@ import org.apache.maven.archiva.dependency.graph.functors.ToArtifactReferenceTra
 import org.apache.maven.archiva.dependency.graph.walk.DependencyGraphWalker;
 import org.apache.maven.archiva.dependency.graph.walk.WalkDepthFirstSearch;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 /**
  * RefineConflictsTask 
  *
@@ -46,19 +45,17 @@ public class RefineConflictsTask
     implements GraphTask, PotentialCyclicEdgeProducer
 {
 
+    @SuppressWarnings("unchecked")
     public void executeTask( DependencyGraph graph )
     {
-        Iterator it;
         DependencyGraphWalker walker = new WalkDepthFirstSearch();
         RefineConflictsVisitor refineConflictsVisitor = new RefineConflictsVisitor();
         
         MultiValueMap depMap = new MultiValueMap();
 
         // Identify deps that need to be resolved.
-        it = graph.getNodes().iterator();
-        while ( it.hasNext() )
+        for ( DependencyGraphNode node : graph.getNodes() )
         {
-            DependencyGraphNode node = (DependencyGraphNode) it.next();
             String key = DependencyGraphKeys.toManagementKey( node.getArtifact() );
             // This will add this node to the specified key, not replace a previous one.
             depMap.put( key, node );
@@ -67,14 +64,14 @@ public class RefineConflictsTask
         // Process those depMap entries with more than 1 value. 
         ToArtifactReferenceTransformer nodeToArtifact = new ToArtifactReferenceTransformer();
 
-        it = depMap.entrySet().iterator();
+        Iterator<Map.Entry<String,Collection<DependencyGraphNode>>> it = depMap.entrySet().iterator();
         while ( it.hasNext() )
         {
-            Map.Entry entry = (Entry) it.next();
-            Collection nodes = (Collection) entry.getValue();
+            Map.Entry<String,Collection<DependencyGraphNode>> entry = it.next();
+            Collection<DependencyGraphNode> nodes = entry.getValue();
             if ( nodes.size() > 1 )
             {
-                List conflictingArtifacts = new ArrayList();
+                List<DependencyGraphNode> conflictingArtifacts = new ArrayList<DependencyGraphNode>();
                 conflictingArtifacts.addAll( nodes );
                 CollectionUtils.transform( conflictingArtifacts, nodeToArtifact );
 
