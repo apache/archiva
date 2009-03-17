@@ -32,9 +32,7 @@ import java.util.Map;
  */
 public class SearchResults
 {
-    private List repositories = new ArrayList();
-
-    private Map<String, SearchResultHit> hits = new HashMap();
+    private Map<String, SearchResultHit> hits = new HashMap<String, SearchResultHit>();
 
     private int totalHits;
 
@@ -58,7 +56,7 @@ public class SearchResults
      */
     public List<SearchResultHit> getHits()
     {
-        return new ArrayList( hits.values() );
+        return new ArrayList<SearchResultHit>( hits.values() );
     }
     
     public Map<String, SearchResultHit> getHitsMap()
@@ -66,19 +64,9 @@ public class SearchResults
         return hits;
     }
 
-    public List getRepositories()
-    {
-        return repositories;
-    }
-
     public boolean isEmpty()
     {
         return hits.isEmpty();
-    }
-
-    public void setRepositories( List repositories )
-    {
-        this.repositories = repositories;
     }
 
     public SearchResultLimits getLimits()
