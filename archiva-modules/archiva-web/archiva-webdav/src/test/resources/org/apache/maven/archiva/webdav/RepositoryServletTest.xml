@@ -93,6 +93,17 @@
       <role-hint>default</role-hint>
       <implementation>org.apache.maven.archiva.webdav.BypassSecuritySystem</implementation>
     </component>
+    
+    <component>
+      <role>org.apache.maven.archiva.security.ServletAuthenticator</role>
+      <implementation>org.apache.maven.archiva.webdav.MockServletAuthenticator</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
+          <field-name>securitySystem</field-name>
+        </requirement>
+      </requirements>
+    </component>
 	
 	<component>
       <role>org.apache.maven.archiva.webdav.ArchivaDavResourceFactory</role>

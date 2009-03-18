@@ -125,26 +125,45 @@ public class IndexWriter
         else 
         {            
             // virtual repository - filter unique directories
-            Map<String, File> uniqueChildFiles = new HashMap<String, File>();
+            Map<String, List<String>> uniqueChildFiles = new HashMap<String, List<String>>();
             List<String> sortedList = new ArrayList<String>();
             for( File resource : localResources )
-            {
+            {   
                 List<File> files = new ArrayList<File>( Arrays.asList( resource.listFiles() ) ); 
-                                                
                 for ( File file : files )
                 {   
+                    List<String> mergedChildFiles = new ArrayList<String>();
                     if( uniqueChildFiles.get( file.getName() ) == null )
                     {
-                        uniqueChildFiles.put( file.getName(), file );
-                        sortedList.add( file.getName() );
-                    }                    
+                        mergedChildFiles.add( file.getAbsolutePath() );                        
+                    }
+                    else
+                    {
+                        mergedChildFiles = uniqueChildFiles.get( file.getName() );
+                        if( !mergedChildFiles.contains( file.getAbsolutePath() ) )
+                        {
+                            mergedChildFiles.add( file.getAbsolutePath() );
+                        }
+                    }
+                    uniqueChildFiles.put( file.getName(), mergedChildFiles );
+                    sortedList.add( file.getName() );
                 }
             }
              
             Collections.sort( sortedList );
+            List<String> written = new ArrayList<String>();
             for ( String fileName : sortedList )
-            {
-                writeHyperlink( writer, fileName, ( (File) uniqueChildFiles.get( fileName ) ).isDirectory());
+            {   
+                List<String> childFilesFromMap = uniqueChildFiles.get( fileName );
+                for( String childFilePath : childFilesFromMap )
+                {   
+                    File childFile = new File( childFilePath );
+                    if( !written.contains( childFile.getName() ) )
+                    {   
+                        written.add( childFile.getName() );
+                        writeHyperlink( writer, fileName, childFile.isDirectory() );                        
+                    }
+                }
             }
         }
     }

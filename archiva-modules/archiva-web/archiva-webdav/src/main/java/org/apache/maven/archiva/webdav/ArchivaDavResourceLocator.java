@@ -37,6 +37,10 @@ public class ArchivaDavResourceLocator
     private final String repositoryId;
 
     private final DavLocatorFactory davLocatorFactory;
+    
+    // retains the trailing '/' at the end of the path, which is used to determine if it is a
+    //      virtual repo browse request
+    private final String origResourcePath;
 
     public ArchivaDavResourceLocator( String prefix, String resourcePath, String repositoryId,
                                       DavLocatorFactory davLocatorFactory )
@@ -63,8 +67,10 @@ public class ArchivaDavResourceLocator
 
         href = hrefPrefix + escapedPath;
         
+        this.origResourcePath = path;
+        
         //Remove trailing slashes otherwise Text.getRelativeParent fails
-        if (resourcePath.endsWith("/") && resourcePath.length() > 1)
+        if ( resourcePath.endsWith( "/" ) && resourcePath.length() > 1 )
         {
             path = resourcePath.substring( 0, resourcePath.length() - 1 );
         }
@@ -154,5 +160,10 @@ public class ArchivaDavResourceLocator
             return hashCode() == other.hashCode();
         }
         return false;
+    }
+
+    public String getOrigResourcePath()
+    {
+        return origResourcePath;
     }
 }

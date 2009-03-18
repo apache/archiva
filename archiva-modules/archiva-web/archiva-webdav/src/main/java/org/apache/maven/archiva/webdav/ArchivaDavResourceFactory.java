@@ -192,7 +192,7 @@ public class ArchivaDavResourceFactory
             repositories.addAll( repoGroupConfig.getRepositories() );
 
             // handle browse requests for virtual repos
-            if ( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ).endsWith( "/" ) )
+            if ( RepositoryPathUtil.getLogicalResource( archivaLocator.getOrigResourcePath() ).endsWith( "/" ) )
             {
                 return getResource( request, repositories, archivaLocator );
             }

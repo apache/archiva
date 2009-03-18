@@ -27,6 +27,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
@@ -210,17 +211,7 @@ public class RepositoryServletRepositoryGroupTest
          
         assertResponseMethodNotAllowed( response );
     }
-    
-    public void testBrowseRepositoryGroup()
-        throws Exception
-    {
-        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS );
-        WebResponse response = sc.getResponse( request ); 
-                
-        assertNotNull( "Should have received a response", response );
-        assertEquals( "Should have been an 401 response code.", HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode() );
-    }
-    
+        
     // MRM-872
     public void testGetMergedMetadata()
         throws Exception
@@ -286,6 +277,32 @@ public class RepositoryServletRepositoryGroupTest
                 
         assertResponseOK( response );
         assertEquals( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml", response.getText().trim() );
+    }
+    
+    // MRM-901
+    public void testBrowseWithTwoArtifactsWithSameGroupIdInRepos()
+        throws Exception
+    {
+        String resourceName = "dummy/dummy-artifact/1.0/dummy-artifact-1.0.txt";
+        
+        File dummyInternalResourceFile = new File( repoRootFirst, resourceName );
+        dummyInternalResourceFile.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( dummyInternalResourceFile, "first", null );
+        
+        resourceName = "dummy/dummy-artifact/2.0/dummy-artifact-2.0.txt";
+        
+        File dummyReleasesResourceFile = new File( repoRootLast, resourceName );
+        dummyReleasesResourceFile.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( dummyReleasesResourceFile, "last", null );
+        
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/dummy-artifact/" );
+        WebResponse response = sc.getResource( request );
+        
+        assertResponseOK( response );
+        assertTrue( StringUtils.contains( response.getText(), "Collection" ) );
+        assertTrue( StringUtils.contains( response.getText(), "dummy/dummy-artifact" ) );
+        assertTrue( StringUtils.contains( response.getText(), "1.0" ) );
+        assertTrue( StringUtils.contains( response.getText(), "2.0" ) );
     }
         
     protected void assertResponseMethodNotAllowed( WebResponse response )
