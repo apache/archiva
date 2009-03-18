@@ -76,8 +76,8 @@ public class AddLegacyArtifactPathAction
 
     public String commit()
     {
-        this.legacyArtifactPath.setArtifact(
-            this.groupId + ":" + this.artifactId + ":" +  this.classifier + ":" +  this.version + ":" + this.type );
+        this.legacyArtifactPath.setArtifact( this.groupId + ":" + this.artifactId + ":" + this.version + ":" +
+            this.classifier + ":" + this.type );
 
         // Check the proposed Artifact macthes the path
         ArtifactReference artifact = new ArtifactReference();
