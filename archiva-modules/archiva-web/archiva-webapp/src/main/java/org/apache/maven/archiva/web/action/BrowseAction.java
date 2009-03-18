@@ -143,6 +143,11 @@ public class BrowseAction
                 ArchivaProjectModel model =
                     repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
                 
+                if( model == null )
+                {
+                    continue;
+                }
+                
                 if( isFirstVersion )
                 {
                     sharedModel = model;
@@ -167,19 +172,19 @@ public class BrowseAction
                         sharedModel.setDescription( null );
                     }
 
-                    if ( sharedModel.getIssueManagement() != null &&
+                    if ( sharedModel.getIssueManagement() != null && model.getIssueManagement() != null &&
                         !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(), model.getIssueManagement().getUrl() ) )
                     {
                         sharedModel.setIssueManagement( null );
                     }
 
-                    if ( sharedModel.getCiManagement() != null &&
+                    if ( sharedModel.getCiManagement() != null && model.getCiManagement() != null &&
                         !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(), model.getCiManagement().getUrl() ) )
                     {
                         sharedModel.setCiManagement( null );
                     }
 
-                    if ( sharedModel.getOrganization() != null &&
+                    if ( sharedModel.getOrganization() != null && model.getOrganization() != null && 
                         !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(), model.getOrganization().getName() ) )
                     {
                         sharedModel.setOrganization( null );
