@@ -54,7 +54,10 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
+import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 
@@ -186,7 +189,7 @@ public class DeleteArtifactAction
 
     public void prepare()
     {
-        managedRepos = new ArrayList<String>( configuration.getConfiguration().getManagedRepositoriesAsMap().keySet() );
+        managedRepos = getManagableRepos();
     }
 
     public String input()
@@ -410,6 +413,28 @@ public class DeleteArtifactAction
     public void removeAuditListener( AuditListener listener )
     {
         this.auditListeners.remove( listener );
+    }
+
+    private List<String> getManagableRepos()
+    {
+        try
+        {
+            return userRepositories.getManagableRepositoryIds( getPrincipal() );
+        }
+        catch ( PrincipalNotFoundException e )
+        {
+            log.warn( e.getMessage(), e );
+        }
+        catch ( AccessDeniedException e )
+        {
+            log.warn( e.getMessage(), e );
+            // TODO: pass this onto the screen.
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            log.warn( e.getMessage(), e );
+        }
+        return Collections.emptyList();
     }
 
     private void triggerAuditEvent( String user, String repositoryId, String resource, String action )

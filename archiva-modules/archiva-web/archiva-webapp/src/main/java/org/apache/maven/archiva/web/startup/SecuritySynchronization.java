@@ -102,11 +102,21 @@ public class SecuritySynchronization
                     roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
                                                      repoConfig.getId() );
                 }
+                else
+                {
+                    roleManager.verifyTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
+                                                     repoConfig.getId() );
+                }
 
                 if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER,
                                                        repoConfig.getId() ) )
                 {
                     roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER,
+                                                     repoConfig.getId() );
+                }
+                else
+                {
+                    roleManager.verifyTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER,
                                                      repoConfig.getId() );
                 }
             }

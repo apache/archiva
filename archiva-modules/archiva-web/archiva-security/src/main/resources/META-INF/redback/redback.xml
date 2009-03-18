@@ -196,8 +196,7 @@
               <id>archiva-delete-artifact</id>
               <name>Delete Artifact</name>
               <operation>archiva-delete-artifact</operation>
-              <resource>global</resource>
-              <permanent>true</permanent>
+              <resource>${resource}</resource>
             </permission>
             <permission>
               <id>archiva-edit-repository</id>
