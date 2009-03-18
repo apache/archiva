@@ -35,33 +35,32 @@ import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
+import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.audit.Auditable;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
+import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.repository.ContentNotFoundException;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-
 import org.apache.struts2.ServletActionContext;
+
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -394,7 +393,11 @@ public class DeleteArtifactAction
                 addActionError( "Invalid version." );
             }
         }
-        catch ( RbacManagerException e )
+        catch ( AccessDeniedException e )
+        {
+            addActionError( e.getMessage() );
+        }
+        catch ( ArchivaSecurityException e )
         {
             addActionError( e.getMessage() );
         }

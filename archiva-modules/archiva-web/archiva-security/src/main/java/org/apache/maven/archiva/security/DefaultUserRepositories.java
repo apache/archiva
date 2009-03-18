@@ -20,17 +20,12 @@ package org.apache.maven.archiva.security;
  */
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
-import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
@@ -38,6 +33,8 @@ import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DefaultUserRepositories
@@ -54,11 +51,6 @@ public class DefaultUserRepositories
     private SecuritySystem securitySystem;
 
     /**
-     * @plexus.requirement role-hint="cached"
-     */
-    private RBACManager rbacManager;
-
-    /**
      * @plexus.requirement role-hint="default"
      */
     private RoleManager roleManager;
@@ -67,6 +59,8 @@ public class DefaultUserRepositories
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
+    
+    private Logger log = LoggerFactory.getLogger( DefaultUserRepositories.class );
 
     public List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
@@ -87,49 +81,59 @@ public class DefaultUserRepositories
     private List<String> getAccessibleRepositoryIds( String principal, String operation )
         throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
     {
+        SecuritySession securitySession = createSession( principal );
+
+        List<String> repoIds = new ArrayList<String>();
+
+        List<ManagedRepositoryConfiguration> repos =
+            archivaConfiguration.getConfiguration().getManagedRepositories();
+
+        for ( ManagedRepositoryConfiguration repo : repos )
+        {
+            try
+            {
+                String repoId = repo.getId();
+                if ( securitySystem.isAuthorized( securitySession, operation, repoId ) )
+                {
+                    repoIds.add( repoId );
+                }
+            }
+            catch ( AuthorizationException e )
+            {
+                // swallow.
+                log.debug( "Not authorizing '" + principal + "' for repository '" + repo.getId() + "': "
+                    + e.getMessage() );
+            }
+        }
+
+        return repoIds;
+    }
+
+    private SecuritySession createSession( String principal )
+        throws ArchivaSecurityException, AccessDeniedException
+    {
+        User user;
         try
         {
-            User user = securitySystem.getUserManager().findUser( principal );
+            user = securitySystem.getUserManager().findUser( principal );
             if ( user == null )
             {
-                throw new ArchivaSecurityException( "The security system had an internal error - please check your system logs" );
+                throw new ArchivaSecurityException(
+                    "The security system had an internal error - please check your system logs" );
             }
-
-            if ( user.isLocked() )
-            {
-                throw new AccessDeniedException( "User " + principal + "(" + user.getFullName() + ") is locked." );
-            }
-
-            AuthenticationResult authn = new AuthenticationResult( true, principal, null );
-            SecuritySession securitySession = new DefaultSecuritySession( authn, user );
-
-            List<String> repoIds = new ArrayList<String>();
-
-            List<ManagedRepositoryConfiguration> repos =
-                archivaConfiguration.getConfiguration().getManagedRepositories();
-
-            for ( ManagedRepositoryConfiguration repo : repos )
-            {
-                try
-                {
-                    String repoId = repo.getId();
-                    if ( securitySystem.isAuthorized( securitySession, operation, repoId ) )
-                    {
-                        repoIds.add( repoId );
-                    }
-                }
-                catch ( AuthorizationException e )
-                {
-                    // swallow.
-                }
-            }
-
-            return repoIds;
         }
         catch ( UserNotFoundException e )
         {
             throw new PrincipalNotFoundException( "Unable to find principal " + principal + "" );
         }
+
+        if ( user.isLocked() )
+        {
+            throw new AccessDeniedException( "User " + principal + "(" + user.getFullName() + ") is locked." );
+        }
+
+        AuthenticationResult authn = new AuthenticationResult( true, principal, null );
+        return new DefaultSecuritySession( authn, user );
     }
 
     public void createMissingRepositoryRoles( String repoId )
@@ -160,27 +164,11 @@ public class DefaultUserRepositories
     {
         try
         {
-            User user = securitySystem.getUserManager().findUser( principal );
-            if ( user == null )
-            {
-                throw new ArchivaSecurityException( "The security system had an internal error - please check your system logs" );
-            }
-
-            if ( user.isLocked() )
-            {
-                throw new AccessDeniedException( "User " + principal + "(" + user.getFullName() + ") is locked." );
-            }
-
-            AuthenticationResult authn = new AuthenticationResult( true, principal, null );
-            SecuritySession securitySession = new DefaultSecuritySession( authn, user );
+            SecuritySession securitySession = createSession( principal );
 
             return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
                                                 repoId );
 
-        }
-        catch ( UserNotFoundException e )
-        {
-            throw new PrincipalNotFoundException( "Unable to find principal " + principal + "" );
         }
         catch ( AuthorizationException e )
         {
@@ -189,41 +177,19 @@ public class DefaultUserRepositories
     }
     
     public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
-        throws RbacManagerException, RbacObjectNotFoundException
+        throws AccessDeniedException, ArchivaSecurityException
     {
-        boolean isAuthorized = false;
-        String delimiter = " - ";
-        
         try
         {
-            Collection<Role> roleList = rbacManager.getEffectivelyAssignedRoles( principal );
-            
-            for ( Role role : roleList )
-            {
-                String roleName = role.getName();
-                
-                if ( roleName.startsWith( ArchivaRoleConstants.REPOSITORY_MANAGER_ROLE_PREFIX ) )
-                {
-                    int delimiterIndex = roleName.indexOf( delimiter );
-                    String resourceName = roleName.substring( delimiterIndex + delimiter.length() );
-                    
-                    if ( resourceName.equals( repoId ) )
-                    {
-                        isAuthorized = true;
-                        break;
-                    }
-                }
-            }
+            SecuritySession securitySession = createSession( principal );
+
+            return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_DELETE,
+                                                repoId );
+
         }
-        catch ( RbacObjectNotFoundException e )
+        catch ( AuthorizationException e )
         {
-            throw new RbacObjectNotFoundException( "Unable to find user " + principal + "" );
+            throw new ArchivaSecurityException( e.getMessage() );
         }
-        catch ( RbacManagerException e )
-        {
-            throw new RbacManagerException( "Unable to get roles for user " + principal + "" );
-        }
-        
-        return isAuthorized;
     }
 }
