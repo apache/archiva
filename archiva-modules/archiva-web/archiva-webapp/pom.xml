@@ -354,10 +354,10 @@
             <configuration>
               <tasks>
                 <delete includeemptydirs="true">
-                  <fileset dir="${basedir}/src/main/webapp/WEB-INF/lib" includes="**/struts2*.jar" />
+                  <fileset dir="${basedir}/src/main/webapp/WEB-INF/lib" includes="struts2*.jar" />
                 </delete>
                 <delete includeemptydirs="true">
-                  <fileset dir="${basedir}/src/main/webapp/WEB-INF/classes" includes="**/struts.*" />
+                  <fileset dir="${basedir}/src/main/webapp/WEB-INF/classes" includes="struts.xml,struts-security.xml" />
                 </delete>
               </tasks>
             </configuration>
