@@ -158,6 +158,67 @@ public class EffectiveProjectModelFilterTest
                           effectiveModel.getVersion() );
         }
     }
+    
+    /*
+     * Test before and after the properties are evaluated. pom snippet: <maven.version>2.0.5</maven.version>
+     * <wagon.version>1.0-beta-2</wagon.version> <plexus-security.version>1.0-alpha-10-SNAPSHOT</plexus-security.version>
+     */
+    public void testEffectiveProjectProperty()
+        throws Exception
+    {
+        initTestResolverFactory();
+        EffectiveProjectModelFilter filter = lookupEffective();
+
+        String pomFile = "/org/apache/maven/archiva/archiva/1.0-SNAPSHOT/archiva-1.0-SNAPSHOT.pom";
+        ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY + pomFile );
+
+        String plexusSecurityVersion = "1.0-alpha-10-SNAPSHOT";
+        String wagonVersion = "1.0-beta-2";
+
+        boolean passedPlexusVersionChecking = false;
+        boolean passedWagonVersionChecking = false;
+
+        List<Dependency> startDeps = startModel.getDependencyManagement();
+        for ( Dependency startDep : startDeps )
+        {
+            if ( "org.codehaus.plexus.security".equals( startDep.getGroupId() ) )
+            {
+                assertEquals( startDep.getVersion(), "${plexus-security.version}" );
+            }
+            else if ( "org.apache.maven.wagon".equals( startDep.getGroupId() ) )
+            {
+                assertEquals( startDep.getVersion(), "${wagon.version}" );
+            }
+        }
+
+        ArchivaProjectModel effectiveModel = filter.filter( startModel );
+
+        List<Dependency> effectiveDeps = effectiveModel.getDependencyManagement();
+        for ( Dependency dependency : effectiveDeps )
+        {
+            if ( "org.codehaus.plexus.security".equals( dependency.getGroupId() ) )
+            {
+                assertEquals( dependency.getVersion(), plexusSecurityVersion );
+
+                if ( !passedPlexusVersionChecking )
+                {
+                    passedPlexusVersionChecking = true;
+                }
+            }
+            else if ( "org.apache.maven.wagon".equals( dependency.getGroupId() ) )
+            {
+                assertEquals( dependency.getVersion(), wagonVersion );
+
+                if ( !passedWagonVersionChecking )
+                {
+                    passedWagonVersionChecking = true;
+                }
+            }
+
+        }
+        assertTrue( passedPlexusVersionChecking );
+        assertTrue( passedWagonVersionChecking );
+    }
 
     private ProjectModelResolverFactory initTestResolverFactory()
         throws Exception

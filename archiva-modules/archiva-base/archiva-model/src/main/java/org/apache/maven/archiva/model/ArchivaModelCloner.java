@@ -65,6 +65,7 @@ public class ArchivaModelCloner
         cloned.setPlugins( clonePlugins( model.getPlugins() ) );
         cloned.setReports( cloneReports( model.getReports() ) );
         cloned.setDependencyManagement( cloneDependencies( model.getDependencyManagement() ) );
+        cloned.setProperties( clone(model.getProperties() ) );
 
         return cloned;
     }
