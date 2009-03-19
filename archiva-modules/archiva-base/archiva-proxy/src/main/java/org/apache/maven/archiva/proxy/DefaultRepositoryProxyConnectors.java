@@ -958,8 +958,18 @@ public class DefaultRepositoryProxyConnectors
             return false;
         }
 
+        if ( !path.startsWith( "/" ) )
+        {
+            path = "/" + path;
+        }
+        
         for ( String pattern : patterns )
         {
+            if ( !pattern.startsWith( "/" ) )
+            {
+                pattern = "/" + pattern;
+            }
+            
             if ( SelectorUtils.matchPath( pattern, path, false ) )
             {
                 return true;
