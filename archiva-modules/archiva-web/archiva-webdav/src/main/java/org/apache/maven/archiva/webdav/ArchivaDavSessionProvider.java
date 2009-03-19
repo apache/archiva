@@ -66,16 +66,15 @@ public class ArchivaDavSessionProvider
         }
         catch ( AuthenticationException e )
         {   
-            boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
-            
             // safety check for MRM-911            
             String guest = UserManager.GUEST_USERNAME;
             try
             {
-                if( servletAuth.isAuthorized( guest, 
-                      ( ( ArchivaDavResourceLocator ) request.getRequestLocator() ).getRepositoryId(), isPut ) )
+                if ( servletAuth.isAuthorized( guest,
+                                               ( (ArchivaDavResourceLocator) request.getRequestLocator() ).getRepositoryId(),
+                                               WebdavMethodUtil.getMethodPermission( request.getMethod() ) ) )
                 {
-                    request.setDavSession(new ArchivaDavSession());
+                    request.setDavSession( new ArchivaDavSession() );
                     return true;
                 }
             }

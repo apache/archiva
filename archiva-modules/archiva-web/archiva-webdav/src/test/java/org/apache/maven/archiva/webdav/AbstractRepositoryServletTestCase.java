@@ -97,6 +97,13 @@ public abstract class AbstractRepositoryServletTestCase
             .getResponseCode() );
     }
 
+    protected void assertResponseInternalServerError( WebResponse response )
+    {
+        assertNotNull( "Should have recieved a response", response );
+        Assert.assertEquals( "Should have been an 500/Internal Server Error response code.", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response
+            .getResponseCode() );
+    }
+
     protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();

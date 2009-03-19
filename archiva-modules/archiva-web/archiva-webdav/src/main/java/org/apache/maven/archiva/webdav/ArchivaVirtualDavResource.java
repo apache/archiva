@@ -59,8 +59,6 @@ import org.joda.time.format.ISODateTimeFormat;
 public class ArchivaVirtualDavResource
     implements DavResource
 {
-    public static final String HIDDEN_PATH_PREFIX = ".";
-    
     private static final String COMPLIANCE_CLASS = "1";
 
     private ArchivaDavResourceLocator locator;

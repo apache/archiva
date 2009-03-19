@@ -32,6 +32,7 @@ import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -56,9 +57,7 @@ import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
 /**
- * RepositoryServletSecurityTest
- * 
- * Test the flow of the authentication and authorization checks. This does not necessarily
+ * RepositoryServletSecurityTest Test the flow of the authentication and authorization checks. This does not necessarily
  * perform redback security checking.
  * 
  * @version $Id$
@@ -87,7 +86,7 @@ public class RepositoryServletSecurityTest
     private HttpAuthenticator httpAuth;
 
     private RepositoryServlet servlet;
-    
+
     public void setUp()
         throws Exception
     {
@@ -126,7 +125,7 @@ public class RepositoryServletSecurityTest
 
         ArchivaXworkUser archivaXworkUser = (ArchivaXworkUser) lookup( ArchivaXworkUser.class );
 
-        davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth, archivaXworkUser );      
+        davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth, archivaXworkUser );
     }
 
     protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
@@ -182,11 +181,11 @@ public class RepositoryServletSecurityTest
 
         if ( repoRootInternal.exists() )
         {
-            FileUtils.deleteDirectory(repoRootInternal);
+            FileUtils.deleteDirectory( repoRootInternal );
         }
 
         servlet = null;
-        
+
         super.tearDown();
     }
 
@@ -209,21 +208,21 @@ public class RepositoryServletSecurityTest
         AuthenticationResult result = new AuthenticationResult();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
-                           new AuthenticationException( "Authentication error" ) );
-        
-        servletAuth.isAuthorized( "guest", "internal", true );        
+                                           new AuthenticationException( "Authentication error" ) );
+
+        servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
         servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
         servletAuthControl.setThrowable( new UnauthorizedException( "'guest' has no write access to repository" ) );
 
         httpAuthControl.replay();
         servletAuthControl.replay();
-        
+
         servlet.service( ic.getRequest(), ic.getResponse() );
-        
+
         httpAuthControl.verify();
         servletAuthControl.verify();
 
-        //assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode());
+        // assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode());
     }
 
     // test deploy with invalid user, but guest has write access to repo
@@ -247,30 +246,30 @@ public class RepositoryServletSecurityTest
         archivaDavResourceFactory.setServletAuth( servletAuth );
 
         servlet.setResourceFactory( archivaDavResourceFactory );
-        
+
         AuthenticationResult result = new AuthenticationResult();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
                                            new AuthenticationException( "Authentication error" ) );
-        
-        servletAuth.isAuthorized( "guest", "internal", true );
+
+        servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
         servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
         servletAuthControl.setReturnValue( true );
-                
-     // ArchivaDavResourceFactory#isAuthorized()
+
+        // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true) ), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, result ),
                                            new AuthenticationException( "Authentication error" ) );
-        
+
         httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), null );
-        
+
         // check if guest has write access
-        servletAuth.isAuthorized( "guest", "internal", true );
+        servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
         servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
         servletAuthControl.setReturnValue( true );
-        
+
         httpAuthControl.replay();
         servletAuthControl.replay();
 
@@ -291,13 +290,13 @@ public class RepositoryServletSecurityTest
         String putUrl = "http://machine.com/repository/internal/path/to/artifact.jar";
         InputStream is = getClass().getResourceAsStream( "/artifact.jar" );
         assertNotNull( "artifact.jar inputstream", is );
-        
+
         WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        
-        InvocationContext ic = sc.newInvocation( request ); 
+
+        InvocationContext ic = sc.newInvocation( request );
         servlet = (RepositoryServlet) ic.getServlet();
         servlet.setDavSessionProvider( davSessionProvider );
-        
+
         ArchivaDavResourceFactory archivaDavResourceFactory = (ArchivaDavResourceFactory) servlet.getResourceFactory();
         archivaDavResourceFactory.setHttpAuth( httpAuth );
         archivaDavResourceFactory.setServletAuth( servletAuth );
@@ -306,23 +305,26 @@ public class RepositoryServletSecurityTest
         AuthenticationResult result = new AuthenticationResult();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
-        
-     // ArchivaDavResourceFactory#isAuthorized()
+
+        // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndThrow( servletAuth.isAuthorized( null, session, "internal", true ),
+        servletAuthControl.expectAndThrow(
+                                           servletAuth.isAuthorized( null, session, "internal",
+                                                                     ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
                                            new UnauthorizedException( "User not authorized" ) );
-                
+
         httpAuthControl.replay();
         servletAuthControl.replay();
-        
+
         servlet.service( ic.getRequest(), ic.getResponse() );
 
         httpAuthControl.verify();
         servletAuthControl.verify();
-        
+
         // assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode());
     }
 
@@ -359,7 +361,10 @@ public class RepositoryServletSecurityTest
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
+        servletAuthControl.expectAndReturn(
+                                            servletAuth.isAuthorized( null, session, "internal",
+                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
+                                            true );
 
         httpAuthControl.replay();
         servletAuthControl.replay();
@@ -388,7 +393,7 @@ public class RepositoryServletSecurityTest
         InvocationContext ic = sc.newInvocation( request );
         servlet = (RepositoryServlet) ic.getServlet();
         servlet.setDavSessionProvider( davSessionProvider );
-        
+
         ArchivaDavResourceFactory archivaDavResourceFactory = (ArchivaDavResourceFactory) servlet.getResourceFactory();
         archivaDavResourceFactory.setHttpAuth( httpAuth );
         archivaDavResourceFactory.setServletAuth( servletAuth );
@@ -399,15 +404,21 @@ public class RepositoryServletSecurityTest
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
                                            new AuthenticationException( "Authentication error" ) );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthorized( "guest", "internal", false ), true );
-        
-     // ArchivaDavResourceFactory#isAuthorized()
+        servletAuthControl.expectAndReturn(
+                                            servletAuth.isAuthorized( "guest", "internal",
+                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ),
+                                            true );
+
+        // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), null );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
+        servletAuthControl.expectAndReturn(
+                                            servletAuth.isAuthorized( null, session, "internal",
+                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
+                                            true );
 
         httpAuthControl.replay();
         servletAuthControl.replay();
@@ -442,7 +453,10 @@ public class RepositoryServletSecurityTest
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
                                            new AuthenticationException( "Authentication error" ) );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthorized( "guest", "internal", false ), false );
+        servletAuthControl.expectAndReturn(
+                                            servletAuth.isAuthorized( "guest", "internal",
+                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ),
+                                            false );
 
         httpAuthControl.replay();
         servletAuthControl.replay();
@@ -477,24 +491,27 @@ public class RepositoryServletSecurityTest
         archivaDavResourceFactory.setServletAuth( servletAuth );
 
         servlet.setResourceFactory( archivaDavResourceFactory );
-        
+
         AuthenticationResult result = new AuthenticationResult();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
-        
-     // ArchivaDavResourceFactory#isAuthorized()
+
+        // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
         httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthorized( null, session, "internal", true ), true );
-        
+        servletAuthControl.expectAndReturn(
+                                            servletAuth.isAuthorized( null, session, "internal",
+                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
+                                            true );
+
         httpAuthControl.replay();
         servletAuthControl.replay();
 
         WebResponse response = sc.getResponse( request );
-        
+
         httpAuthControl.verify();
         servletAuthControl.verify();
 
@@ -524,27 +541,30 @@ public class RepositoryServletSecurityTest
         archivaDavResourceFactory.setServletAuth( servletAuth );
 
         servlet.setResourceFactory( archivaDavResourceFactory );
-        
+
         AuthenticationResult result = new AuthenticationResult();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
 
-     // ArchivaDavResourceFactory#isAuthorized()
+        // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndThrow( servletAuth.isAuthorized( null, session, "internal", true ),
+        servletAuthControl.expectAndThrow(
+                                           servletAuth.isAuthorized( null, session, "internal",
+                                                                     ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
                                            new UnauthorizedException( "User not authorized to read repository." ) );
-        
+
         httpAuthControl.replay();
         servletAuthControl.replay();
-        
+
         WebResponse response = sc.getResponse( request );
 
         httpAuthControl.verify();
         servletAuthControl.verify();
-        
+
         assertEquals( HttpServletResponse.SC_UNAUTHORIZED, response.getResponseCode() );
     }
 }

@@ -193,7 +193,7 @@ public class RepositoryServletRepositoryGroupTest
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_INVALID_REPOS + "/" + resourceName );
         WebResponse response = sc.getResponse( request );
         
-        assertResponseNotFound( response );
+        assertResponseInternalServerError( response );
     }
     
     /*

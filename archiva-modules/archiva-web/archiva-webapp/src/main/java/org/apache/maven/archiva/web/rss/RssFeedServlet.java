@@ -38,6 +38,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.ServletAuthenticator;
@@ -293,8 +294,9 @@ public class RssFeedServlet
                 AuthenticationResult result = httpAuth.getAuthenticationResult( req, null );
                 SecuritySession securitySession = httpAuth.getSecuritySession( req.getSession( true ) );
 
-                if ( servletAuth.isAuthenticated( req, result ) &&
-                    servletAuth.isAuthorized( req, securitySession, repoId, false ) )
+                if ( servletAuth.isAuthenticated( req, result )
+                    && servletAuth.isAuthorized( req, securitySession, repoId,
+                                                 ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) )
                 {
                     return true;
                 }

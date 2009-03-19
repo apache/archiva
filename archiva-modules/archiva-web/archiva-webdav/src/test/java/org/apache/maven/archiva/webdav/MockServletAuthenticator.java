@@ -26,7 +26,7 @@ public class MockServletAuthenticator
     extends ArchivaServletAuthenticator
 {
     @Override
-    public boolean isAuthorized( String principal, String repoId, boolean isWriteRequest )
+    public boolean isAuthorized( String principal, String repoId, String permission )
         throws UnauthorizedException
     {
         return true;
