@@ -28,11 +28,6 @@
           <field-name>securitySystem</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.redback.rbac.RBACManager</role>
-          <role-hint>memory</role-hint>
-          <field-name>rbacManager</field-name>
-        </requirement>
-        <requirement>
           <role>org.codehaus.plexus.redback.role.RoleManager</role>
           <role-hint>default</role-hint>
           <field-name>roleManager</field-name>
