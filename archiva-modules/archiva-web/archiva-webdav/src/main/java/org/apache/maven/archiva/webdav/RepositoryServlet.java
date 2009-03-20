@@ -44,7 +44,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
@@ -195,9 +194,7 @@ public class RepositoryServlet
         HttpAuthenticator httpAuth =
             (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
         
-        ArchivaXworkUser archivaXworkUser =
-            (ArchivaXworkUser) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaXworkUser.class.getName() ) );
-        sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth, archivaXworkUser );
+        sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
     }
 
     public void configurationEvent( ConfigurationEvent event )

@@ -23,7 +23,6 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
@@ -44,7 +43,7 @@ public class ArchivaDavSessionProvider
 
     private HttpAuthenticator httpAuth;
     
-    public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth, ArchivaXworkUser archivaXworkUser )
+    public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth )
     {
         this.servletAuth = servletAuth;
         this.httpAuth = httpAuth;

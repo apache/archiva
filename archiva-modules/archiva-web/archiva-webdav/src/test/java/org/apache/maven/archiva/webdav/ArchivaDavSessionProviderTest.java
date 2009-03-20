@@ -62,7 +62,7 @@ public class ArchivaDavSessionProviderTest extends TestCase
         throws Exception
     {
         super.setUp();
-        sessionProvider = new ArchivaDavSessionProvider(new ServletAuthenticatorMock(), new HttpAuthenticatorMock(), null);
+        sessionProvider = new ArchivaDavSessionProvider( new ServletAuthenticatorMock(), new HttpAuthenticatorMock() );
         request = new WebdavRequestImpl(new HttpServletRequestMock(), null);
     }
     

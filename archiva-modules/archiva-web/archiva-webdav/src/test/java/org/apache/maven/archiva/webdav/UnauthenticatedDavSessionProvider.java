@@ -28,7 +28,7 @@ public class UnauthenticatedDavSessionProvider extends ArchivaDavSessionProvider
 {
     public UnauthenticatedDavSessionProvider()
     {
-        super(null, null, null);
+        super( null, null );
     }
     
     @Override

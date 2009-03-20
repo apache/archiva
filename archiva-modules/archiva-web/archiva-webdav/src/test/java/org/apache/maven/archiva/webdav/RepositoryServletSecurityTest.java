@@ -33,7 +33,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -123,9 +122,7 @@ public class RepositoryServletSecurityTest
         httpAuthControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         httpAuth = (HttpAuthenticator) httpAuthControl.getMock();
 
-        ArchivaXworkUser archivaXworkUser = (ArchivaXworkUser) lookup( ArchivaXworkUser.class );
-
-        davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth, archivaXworkUser );
+        davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
     }
 
     protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
