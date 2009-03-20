@@ -150,6 +150,7 @@ public class SearchActionTest
         searchControl.replay();
         daoControl.replay();
         
+        action.setPrincipal( "user" );
         String result = action.quickSearch();
         
         assertEquals( Action.SUCCESS, result );      
@@ -206,6 +207,7 @@ public class SearchActionTest
         searchControl.replay();
         daoControl.replay();
         
+        action.setPrincipal( "user" );
         String result = action.quickSearch();
         
         assertEquals( Action.SUCCESS, result );
@@ -230,6 +232,7 @@ public class SearchActionTest
         
         userReposControl.replay();
         
+        action.setPrincipal( "user" );
         String result = action.quickSearch();
         
         assertEquals( GlobalResults.ACCESS_TO_NO_REPOS, result );        
@@ -261,6 +264,7 @@ public class SearchActionTest
         userReposControl.replay();
         searchControl.replay();
         
+        action.setPrincipal( "user" );
         String result = action.quickSearch();
         
         assertEquals( Action.INPUT, result );        
@@ -357,7 +361,8 @@ public class SearchActionTest
         
         searchControl.replay();
         userReposControl.replay();
-        
+
+        action.setPrincipal( "user" );
         String result = action.filteredSearch();
         
         assertEquals( Action.SUCCESS, result );

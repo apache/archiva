@@ -53,6 +53,8 @@ public abstract class PlexusActionSupport
      */
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
+    private String principal;
+
     @SuppressWarnings("unchecked")
     public void setSession( Map map )
     {
@@ -116,6 +118,15 @@ public abstract class PlexusActionSupport
     @SuppressWarnings( "unchecked" )
     protected String getPrincipal()
     {
+        if ( principal != null )
+        {
+            return principal;
+        }
         return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+    }
+    
+    void setPrincipal( String principal )
+    {
+        this.principal = principal;
     }
 }
