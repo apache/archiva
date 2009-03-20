@@ -35,7 +35,6 @@ import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstrai
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
@@ -60,8 +59,6 @@ public class SearchActionTest
     private MockControl userReposControl;
     
     private UserRepositories userRepos;
-    
-    private MockControl archivaXworkUserControl;
     
     private MockControl searchControl;
     
@@ -143,15 +140,12 @@ public class SearchActionTest
         versions.add( "1.0" );
         versions.add( "1.1" );
         
-        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user", 3 );
-                
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos, 2 );
         
         searchControl.expectAndReturn( search.search( "user", selectedRepos, "archiva", limits, null ), results );
                 
         daoControl.expectAndReturn( dao.query( new UniqueVersionConstraint( selectedRepos, hit.getGroupId(), hit.getArtifactId() ) ), versions );
                 
-        archivaXworkUserControl.replay();
         userReposControl.replay();
         searchControl.replay();
         daoControl.replay();
@@ -162,7 +156,6 @@ public class SearchActionTest
         assertEquals( 1, action.getTotalPages() );
         assertEquals( 1, action.getResults().getTotalHits() );
         
-        archivaXworkUserControl.verify();
         userReposControl.verify();
         searchControl.verify();
         daoControl.verify();
@@ -203,15 +196,12 @@ public class SearchActionTest
         versions.add( "1.0" );
         versions.add( "1.1" );
         
-        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user", 3 );
-                
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos, 2 );
         
         searchControl.expectAndReturn( search.search( "user", selectedRepos, "archiva", limits, parsed ), results );
                 
         daoControl.expectAndReturn( dao.query( new UniqueVersionConstraint( selectedRepos, hit.getGroupId(), hit.getArtifactId() ) ), versions );
                 
-        archivaXworkUserControl.replay();
         userReposControl.replay();
         searchControl.replay();
         daoControl.replay();
@@ -223,7 +213,6 @@ public class SearchActionTest
         assertEquals( 1, action.getTotalPages() );
         assertEquals( 1, action.getResults().getTotalHits() );
         
-        archivaXworkUserControl.verify();
         userReposControl.verify();
         searchControl.verify();
         daoControl.verify();
@@ -237,18 +226,14 @@ public class SearchActionTest
         
         List<String> selectedRepos = new ArrayList<String>();
         
-        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user" );
-        
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
-        archivaXworkUserControl.replay();
         userReposControl.replay();
         
         String result = action.quickSearch();
         
         assertEquals( GlobalResults.ACCESS_TO_NO_REPOS, result );        
         
-        archivaXworkUserControl.verify();
         userReposControl.verify();        
     }
     
@@ -269,13 +254,10 @@ public class SearchActionTest
                 
         SearchResults results = new SearchResults();
         
-        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user", 2 );
-                
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
         searchControl.expectAndReturn( search.search( "user", selectedRepos, "archiva", limits, null ), results );
         
-        archivaXworkUserControl.replay();
         userReposControl.replay();
         searchControl.replay();
         
@@ -283,7 +265,6 @@ public class SearchActionTest
         
         assertEquals( Action.INPUT, result );        
         
-        archivaXworkUserControl.verify();
         userReposControl.verify();
         searchControl.verify();
     }
@@ -324,11 +305,8 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user" );
-        
         searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
         
-        archivaXworkUserControl.replay();
         searchControl.replay();
         
         String result = action.filteredSearch();
@@ -337,7 +315,6 @@ public class SearchActionTest
         assertEquals( 1, action.getTotalPages() );
         assertEquals( 1, action.getResults().getTotalHits() );
         
-        archivaXworkUserControl.verify();
         searchControl.verify();
     }
     
@@ -374,13 +351,10 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user", 2 );
-        
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
         searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
         
-        archivaXworkUserControl.replay();
         searchControl.replay();
         userReposControl.replay();
         
@@ -390,7 +364,6 @@ public class SearchActionTest
         assertEquals( 1, action.getTotalPages() );
         assertEquals( 1, action.getResults().getTotalHits() );
         
-        archivaXworkUserControl.verify();
         searchControl.verify();
         userReposControl.verify();
     }
@@ -419,11 +392,8 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user" );
-        
         searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
         
-        archivaXworkUserControl.replay();
         searchControl.replay();
         
         String result = action.filteredSearch();
@@ -432,7 +402,6 @@ public class SearchActionTest
         assertFalse( action.getActionErrors().isEmpty() );
         assertEquals( "No results found",( String ) action.getActionErrors().iterator().next() );
         
-        archivaXworkUserControl.verify();
         searchControl.verify();
     }
     
