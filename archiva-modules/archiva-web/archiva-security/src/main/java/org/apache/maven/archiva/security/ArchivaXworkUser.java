@@ -40,6 +40,11 @@ public final class ArchivaXworkUser
     
     public static String getActivePrincipal( Map<String, ?> sessionMap )
     {
+        if ( sessionMap == null )
+        {
+            return UserManager.GUEST_USERNAME;
+        }
+        
         SecuritySession securitySession =
             (SecuritySession) sessionMap.get( SecuritySystemConstants.SECURITY_SESSION_KEY );
 

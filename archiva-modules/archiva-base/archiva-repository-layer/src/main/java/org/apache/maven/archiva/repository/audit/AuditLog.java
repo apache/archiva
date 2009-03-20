@@ -46,7 +46,7 @@ public class AuditLog
         StringBuffer msg = new StringBuffer();
         msg.append( checkNull( event.getRepositoryId() ) ).append( DELIM );
         msg.append( event.getUserId() ).append( DELIM );
-        msg.append( event.getRemoteIP() ).append( DELIM );
+        msg.append( checkNull( event.getRemoteIP() ) ).append( DELIM );
         msg.append( '\"' ).append( checkNull( event.getResource() ) ).append( '\"' ).append( DELIM );
         msg.append( '\"' ).append( event.getAction() ).append( '\"' );
 

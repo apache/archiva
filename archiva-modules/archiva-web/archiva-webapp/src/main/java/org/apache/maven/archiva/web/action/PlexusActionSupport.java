@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.audit.Auditable;
@@ -75,7 +77,7 @@ public abstract class PlexusActionSupport
     protected void triggerAuditEvent( String repositoryId, String resource, String action )
     {
         AuditEvent event = new AuditEvent( repositoryId, getPrincipal(), resource, action );
-        event.setRemoteIP( ServletActionContext.getRequest().getRemoteAddr() );
+        event.setRemoteIP( getRemoteAddr() );
     
         for ( AuditListener listener : auditListeners )
         {
@@ -86,7 +88,7 @@ public abstract class PlexusActionSupport
     protected void triggerAuditEvent( String resource, String action )
     {
         AuditEvent event = new AuditEvent( getPrincipal(), resource, action );
-        event.setRemoteIP( ServletActionContext.getRequest().getRemoteAddr() );
+        event.setRemoteIP( getRemoteAddr() );
         
         for ( AuditListener listener : auditListeners )
         {
@@ -97,12 +99,18 @@ public abstract class PlexusActionSupport
     protected void triggerAuditEvent( String action )
     {
         AuditEvent event = new AuditEvent( getPrincipal(), action );
-        event.setRemoteIP( ServletActionContext.getRequest().getRemoteAddr() );
+        event.setRemoteIP( getRemoteAddr() );
         
         for ( AuditListener listener : auditListeners )
         {
             listener.auditEvent( event );
         }
+    }
+
+    private String getRemoteAddr()
+    {
+        HttpServletRequest request = ServletActionContext.getRequest();
+        return request != null ? request.getRemoteAddr() : null;
     }
 
     @SuppressWarnings( "unchecked" )
