@@ -28,6 +28,8 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
@@ -46,7 +48,7 @@ import com.opensymphony.xwork2.Preparable;
  */
 public class DatabaseAction
     extends PlexusActionSupport
-    implements Preparable, SecureAction
+    implements Preparable, SecureAction, Auditable
 {
     /**
      * @plexus.requirement
@@ -103,22 +105,39 @@ public class DatabaseAction
 
     public String updateUnprocessedConsumers()
     {
+        List<String> oldConsumers = archivaConfiguration.getConfiguration().getDatabaseScanning().getUnprocessedConsumers();
+        
         archivaConfiguration.getConfiguration().getDatabaseScanning().setUnprocessedConsumers(
             enabledUnprocessedConsumers );
+        
+        filterAddedConsumers( oldConsumers, enabledUnprocessedConsumers );
+        filterRemovedConsumers( oldConsumers, enabledUnprocessedConsumers );
 
         return saveConfiguration();
     }
 
     public String updateCleanupConsumers()
     {
+        List<String> oldConsumers = archivaConfiguration.getConfiguration().getDatabaseScanning().getCleanupConsumers();
+        
         archivaConfiguration.getConfiguration().getDatabaseScanning().setCleanupConsumers( enabledCleanupConsumers );
+        
+        filterAddedConsumers( oldConsumers, enabledCleanupConsumers );
+        filterRemovedConsumers( oldConsumers, enabledCleanupConsumers );
 
         return saveConfiguration();
     }
 
     public String updateSchedule()
     {
+        String oldCron = archivaConfiguration.getConfiguration().getDatabaseScanning().getCronExpression();
+        
         archivaConfiguration.getConfiguration().getDatabaseScanning().setCronExpression( cron );
+        
+        if ( !oldCron.equals( cron ) )
+        {
+            triggerAuditEvent( AuditEvent.DB_SCHEDULE + " " + cron );
+        }
 
         return saveConfiguration();
     }
@@ -194,5 +213,27 @@ public class DatabaseAction
     public void setEnabledCleanupConsumers( List<String> enabledCleanupConsumers )
     {
         this.enabledCleanupConsumers = enabledCleanupConsumers;
+    }
+    
+    private void filterAddedConsumers( List<String> oldList, List<String> newList )
+    {
+        for ( String consumer : newList )
+        {
+            if ( !oldList.contains( consumer ) )
+            {
+                triggerAuditEvent( consumer, AuditEvent.ENABLE_DB_CONSUMER );
+            }
+        }
+    }
+    
+    private void filterRemovedConsumers( List<String> oldList, List<String> newList )
+    {
+        for ( String consumer : oldList )
+        {
+            if ( !newList.contains( consumer ) )
+            {
+                triggerAuditEvent( consumer, AuditEvent.DISABLE_DB_CONSUMER );
+            }
+        }
     }
 }

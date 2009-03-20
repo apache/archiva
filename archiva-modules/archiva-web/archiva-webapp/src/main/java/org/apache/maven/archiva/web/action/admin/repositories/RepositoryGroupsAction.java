@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.web.util.ContextUtils;
 
 /**
@@ -130,6 +131,7 @@ public class RepositoryGroupsAction
         }
             
         configuration.addRepositoryGroup( repositoryGroup );
+        triggerAuditEvent( AuditEvent.ADD_REPO_GROUP + " " + repoGroupId );
         return saveConfiguration( configuration );
     }
     
@@ -157,6 +159,8 @@ public class RepositoryGroupsAction
         // save repository group configuration
         group.addRepository( repoId );
         config.addRepositoryGroup( group );
+        
+        triggerAuditEvent( repoId, null, AuditEvent.ADD_REPO_TO_GROUP + " " + repoGroupId );
     	
         return saveConfiguration( config );
     }
@@ -185,6 +189,8 @@ public class RepositoryGroupsAction
         // save repository group configuration
         group.removeRepository( repoId );
         config.addRepositoryGroup( group );
+        
+        triggerAuditEvent( repoId, null, AuditEvent.DELETE_REPO_FROM_GROUP + " " + repoGroupId );
     	
         return saveConfiguration( config );
     }

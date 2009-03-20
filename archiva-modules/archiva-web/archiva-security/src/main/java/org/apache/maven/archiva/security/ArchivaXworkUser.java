@@ -30,11 +30,15 @@ import org.codehaus.plexus.redback.users.UserManager;
  * ArchivaXworkUser
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.security.ArchivaXworkUser"
  */
-public class ArchivaXworkUser
+public final class ArchivaXworkUser
 {
-    public String getActivePrincipal( Map<String, ?> sessionMap )
+    private ArchivaXworkUser()
+    {
+        // no touchy
+    }
+    
+    public static String getActivePrincipal( Map<String, ?> sessionMap )
     {
         SecuritySession securitySession =
             (SecuritySession) sessionMap.get( SecuritySystemConstants.SECURITY_SESSION_KEY );

@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.action;
 import java.util.Collections;
 import java.util.List;
 
-import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -52,11 +51,6 @@ public class BrowseAction
      * @plexus.requirement
      */
     private UserRepositories userRepositories;
-    
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaXworkUser archivaXworkUser;
     
     private BrowsingResults results;
 
@@ -207,12 +201,6 @@ public class BrowseAction
                 log.debug( e.getMessage(), e );
             }
         }        
-    }
-    
-    @SuppressWarnings("unchecked")
-    private String getPrincipal()
-    {
-        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
     
     private List<String> getObservableRepos()

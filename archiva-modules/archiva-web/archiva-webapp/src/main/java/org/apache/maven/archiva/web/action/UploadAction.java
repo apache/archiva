@@ -48,7 +48,6 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
-import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
@@ -61,10 +60,7 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 
-import org.apache.struts2.ServletActionContext;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.io.FilenameUtils;
@@ -86,11 +82,6 @@ public class UploadAction
      private RepositoryContentConsumers consumers;
      
      /**
-      * @plexus.requirement
-      */
-     private ArchivaXworkUser archivaXworkUser;
-    
-    /**
      * The groupId of the artifact to be deployed.
      */
     private String groupId;
@@ -154,11 +145,6 @@ public class UploadAction
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
-    
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.repository.audit.AuditListener"
-     */
-    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
     
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -413,7 +399,7 @@ public class UploadAction
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deployed to repository \'" + repositoryId + "\'";
                         
-            triggerAuditEvent( getPrincipal(), repositoryId, groupId + ":" + artifactId + ":" + version, AuditEvent.UPLOAD_FILE );
+            triggerAuditEvent( repositoryId, groupId + ":" + artifactId + ":" + version, AuditEvent.UPLOAD_FILE );
             
             addActionMessage( msg );
 
@@ -430,12 +416,6 @@ public class UploadAction
             addActionError( "Repository exception: " + rep.getMessage() );
             return ERROR;
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private String getPrincipal()
-    {
-        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
 
     private void copyFile( File sourceFile, File targetPath, String targetFilename )
@@ -584,21 +564,6 @@ public class UploadAction
         }
     }
     
-    public void addAuditListener( AuditListener listener )
-    {
-        this.auditListeners.add( listener );
-    }
-
-    public void clearAuditListeners()
-    {
-        this.auditListeners.clear();
-    }
-
-    public void removeAuditListener( AuditListener listener )
-    {
-        this.auditListeners.remove( listener );
-    }
-    
     private List<String> getManagableRepos()
     {
         try
@@ -619,16 +584,5 @@ public class UploadAction
             log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
-    }
-
-    private void triggerAuditEvent( String user, String repositoryId, String resource, String action )
-    {
-        AuditEvent event = new AuditEvent( repositoryId, user, resource, action );
-        event.setRemoteIP( ServletActionContext.getRequest().getRemoteAddr() );
-        
-        for ( AuditListener listener : auditListeners )
-        {
-            listener.auditEvent( event );
-        }
     }
 }

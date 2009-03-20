@@ -19,12 +19,20 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.AuditListener;
+import org.apache.maven.archiva.repository.audit.Auditable;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -32,15 +40,74 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 public abstract class PlexusActionSupport
     extends ActionSupport
-    implements SessionAware
+    implements SessionAware, Auditable
 {
     protected Map<?, ?> session;
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
-    
+
+    /**
+     * @plexus.requirement role="org.apache.maven.archiva.repository.audit.AuditListener"
+     */
+    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+
     @SuppressWarnings("unchecked")
     public void setSession( Map map )
     {
         this.session = map;
+    }
+
+    public void addAuditListener( AuditListener listener )
+    {
+        this.auditListeners.add( listener );
+    }
+
+    public void clearAuditListeners()
+    {
+        this.auditListeners.clear();
+    }
+
+    public void removeAuditListener( AuditListener listener )
+    {
+        this.auditListeners.remove( listener );
+    }
+
+    protected void triggerAuditEvent( String repositoryId, String resource, String action )
+    {
+        AuditEvent event = new AuditEvent( repositoryId, getPrincipal(), resource, action );
+        event.setRemoteIP( ServletActionContext.getRequest().getRemoteAddr() );
+    
+        for ( AuditListener listener : auditListeners )
+        {
+            listener.auditEvent( event );
+        }
+    }
+
+    protected void triggerAuditEvent( String resource, String action )
+    {
+        AuditEvent event = new AuditEvent( getPrincipal(), resource, action );
+        event.setRemoteIP( ServletActionContext.getRequest().getRemoteAddr() );
+        
+        for ( AuditListener listener : auditListeners )
+        {
+            listener.auditEvent( event );
+        }
+    }
+
+    protected void triggerAuditEvent( String action )
+    {
+        AuditEvent event = new AuditEvent( getPrincipal(), action );
+        event.setRemoteIP( ServletActionContext.getRequest().getRemoteAddr() );
+        
+        for ( AuditListener listener : auditListeners )
+        {
+            listener.auditEvent( event );
+        }
+    }
+
+    @SuppressWarnings( "unchecked" )
+    protected String getPrincipal()
+    {
+        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
 }

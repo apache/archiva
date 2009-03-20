@@ -45,14 +45,12 @@ import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 
 /**
@@ -86,11 +84,6 @@ public class SearchAction
      * @plexus.requirement
      */
     private UserRepositories userRepositories;
-    
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaXworkUser archivaXworkUser;
     
     private static final String RESULTS = "results";
 
@@ -400,12 +393,6 @@ public class SearchAction
         return INPUT;
     }
 
-    @SuppressWarnings("unchecked")
-    private String getPrincipal()
-    {
-        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
-    }
-
     private List<String> getObservableRepos()
     {
         try
@@ -661,16 +648,6 @@ public class SearchAction
     public void setUserRepositories( UserRepositories userRepositories )
     {
         this.userRepositories = userRepositories;
-    }
-
-    public ArchivaXworkUser getArchivaXworkUser()
-    {
-        return archivaXworkUser;
-    }
-
-    public void setArchivaXworkUser( ArchivaXworkUser archivaXworkUser )
-    {
-        this.archivaXworkUser = archivaXworkUser;
     }
 
     public Map<String, String> getSearchFields()

@@ -25,6 +25,7 @@ import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 
@@ -111,6 +112,7 @@ public class EditManagedRepositoryAction
         try
         {
             addRepository( repository, configuration );
+            triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO );
             addRepositoryRoles( repository );
             result = saveConfiguration( configuration );
         }

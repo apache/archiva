@@ -32,6 +32,10 @@ import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+ 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.io.File;
@@ -74,6 +78,10 @@ public class DatabaseCleanupRemoveArtifactConsumer
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
+    
+    private Logger logger = LoggerFactory.getLogger( "org.apache.archiva.AuditLog" );
+    
+    private static final char DELIM = ' ';
 
     public void beginScan()
     {
@@ -104,6 +112,8 @@ public class DatabaseCleanupRemoveArtifactConsumer
             if( !file.exists() )
             {                    
                 artifactDAO.deleteArtifact( artifact );
+                
+                triggerAuditEvent( repositoryContent.getRepository().getId(), artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion(), AuditEvent.REMOVE_SCANNED );
 
                 // Remove all repository problems related to this artifact
                 Constraint artifactConstraint = new RepositoryProblemByArtifactConstraint( artifact );
@@ -158,5 +168,13 @@ public class DatabaseCleanupRemoveArtifactConsumer
     public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
     {
         this.repositoryFactory = repositoryFactory;
+    }
+    
+    private void triggerAuditEvent( String repoId, String resource, String action )
+    {
+        String msg = repoId + DELIM + "<db-scan>" + DELIM + "<system>" + DELIM + '\"' + resource + '\"' +
+            DELIM + '\"' + action + '\"';
+        
+        logger.info( msg );
     }
 }

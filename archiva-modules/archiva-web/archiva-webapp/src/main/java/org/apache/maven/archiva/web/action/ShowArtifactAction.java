@@ -34,9 +34,7 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Validateable;
 
 /**
@@ -62,13 +60,6 @@ public class ShowArtifactAction
      */
     private UserRepositories userRepositories;
     
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaXworkUser archivaXworkUser;
-
-    /* .\ Input Parameters \.________________________________________ */
-
     private String groupId;
 
     private String artifactId;
@@ -193,12 +184,6 @@ public class ShowArtifactAction
         this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
 
         return SUCCESS;
-    }
-
-    @SuppressWarnings("unchecked")
-    private String getPrincipal()
-    {
-        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
 
     private List<String> getObservableRepos()

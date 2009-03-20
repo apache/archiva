@@ -24,6 +24,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 
 import java.io.IOException;
@@ -81,6 +82,7 @@ public class EditRemoteRepositoryAction
         try
         {
             addRepository( repository, configuration );
+            triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_REMOTE_REPO );
             result = saveConfiguration( configuration );
         }
         catch ( IOException e )

@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.archiva.indexer.search.RepositorySearch;
@@ -35,11 +34,10 @@ import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
 
 import com.opensymphony.xwork2.Action;
 
@@ -64,8 +62,6 @@ public class SearchActionTest
     private UserRepositories userRepos;
     
     private MockControl archivaXworkUserControl;
-    
-    private ArchivaXworkUser archivaXworkUser;
     
     private MockControl searchControl;
     
@@ -93,11 +89,6 @@ public class SearchActionTest
         userReposControl = MockControl.createControl( UserRepositories.class );        
         userRepos = ( UserRepositories ) userReposControl.getMock();
         
-        archivaXworkUserControl = MockClassControl.createControl( ArchivaXworkUser.class );
-        archivaXworkUserControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        
-        archivaXworkUser = ( ArchivaXworkUser ) archivaXworkUserControl.getMock();
-        
         searchControl = MockControl.createControl( RepositorySearch.class );
         searchControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         search = ( RepositorySearch ) searchControl.getMock();
@@ -107,7 +98,6 @@ public class SearchActionTest
         artifactDao = ( ArtifactDAO ) artifactDaoControl.getMock();
                 
         action.setArchivaConfiguration( archivaConfig );
-        action.setArchivaXworkUser( archivaXworkUser );
         action.setUserRepositories( userRepos );
         action.setDao( dao );
         action.setNexusSearch( search );
@@ -153,7 +143,7 @@ public class SearchActionTest
         versions.add( "1.0" );
         versions.add( "1.1" );
         
-        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user", 3 );
+        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user", 3 );
                 
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos, 2 );
         
@@ -178,11 +168,6 @@ public class SearchActionTest
         daoControl.verify();
     }
 
-    private String getActivePrincipal()
-    {
-        return archivaXworkUser.getActivePrincipal( Collections.<String,Object>emptyMap() );
-    }
-    
     public void testSearchWithinSearchResults()
         throws Exception
     {
@@ -218,7 +203,7 @@ public class SearchActionTest
         versions.add( "1.0" );
         versions.add( "1.1" );
         
-        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user", 3 );
+        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user", 3 );
                 
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos, 2 );
         
@@ -252,7 +237,7 @@ public class SearchActionTest
         
         List<String> selectedRepos = new ArrayList<String>();
         
-        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user" );
+        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user" );
         
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
@@ -284,7 +269,7 @@ public class SearchActionTest
                 
         SearchResults results = new SearchResults();
         
-        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user", 2 );
+        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user", 2 );
                 
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
@@ -339,7 +324,7 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user" );
+        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user" );
         
         searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
         
@@ -389,7 +374,7 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user", 2 );
+        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user", 2 );
         
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
         
@@ -434,7 +419,7 @@ public class SearchActionTest
         
         SearchFields searchFields = new SearchFields( "org", null, null, null, null, selectedRepos );
         
-        archivaXworkUserControl.expectAndReturn( getActivePrincipal(), "user" );
+        archivaXworkUserControl.expectAndReturn( UserManager.GUEST_USERNAME, "user" );
         
         searchControl.expectAndReturn( search.search( "user", searchFields, limits ), results );
         

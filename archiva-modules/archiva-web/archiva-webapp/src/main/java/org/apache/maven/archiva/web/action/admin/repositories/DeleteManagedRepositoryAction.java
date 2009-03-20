@@ -34,6 +34,7 @@ import org.apache.maven.archiva.database.constraints.RepositoryContentStatistics
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 
@@ -107,6 +108,7 @@ public class DeleteManagedRepositoryAction
             Configuration configuration = archivaConfiguration.getConfiguration();
             cleanupRepositoryData( existingRepository );
             removeRepository( repoid, configuration );
+            triggerAuditEvent( repoid, null, AuditEvent.DELETE_MANAGED_REPO );
             result = saveConfiguration( configuration );
 
             if ( result.equals( SUCCESS ) )

@@ -23,34 +23,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * AuditLog - Audit Log. 
- *
- * @version $Id$
+ * AuditLog - Audit Log.
  * 
- * @plexus.component role="org.apache.maven.archiva.repository.audit.AuditListener"
- *                   role-hint="logging"
+ * @version $Id$
+ * @plexus.component role="org.apache.maven.archiva.repository.audit.AuditListener" role-hint="logging"
  */
 public class AuditLog
     implements AuditListener
 {
     public static final Logger logger = LoggerFactory.getLogger( "org.apache.archiva.AuditLog" );
-    
-    private static final char DELIM = ' '; 
+
+    private static final String NONE = "-";
+
+    private static final char DELIM = ' ';
 
     /**
      * Creates a log message in the following format ...
-     * 
      * "{repository_id} {user_id} {remote_ip} \"{resource}\" \"{action}\""
      */
     public void auditEvent( AuditEvent event )
     {
         StringBuffer msg = new StringBuffer();
-        msg.append( event.getRepositoryId() ).append( DELIM );
+        msg.append( checkNull( event.getRepositoryId() ) ).append( DELIM );
         msg.append( event.getUserId() ).append( DELIM );
         msg.append( event.getRemoteIP() ).append( DELIM );
-        msg.append( '\"' ).append( event.getResource() ).append( '\"' ).append( DELIM );
+        msg.append( '\"' ).append( checkNull( event.getResource() ) ).append( '\"' ).append( DELIM );
         msg.append( '\"' ).append( event.getAction() ).append( '\"' );
 
         logger.info( msg.toString() );
+    }
+
+    private String checkNull( String s )
+    {
+        return s != null ? s : NONE;
     }
 }
