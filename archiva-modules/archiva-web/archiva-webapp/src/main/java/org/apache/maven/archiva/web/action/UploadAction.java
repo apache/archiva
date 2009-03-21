@@ -549,7 +549,7 @@ public class UploadAction
                 addActionError( "Please add a file to upload." );
             }
             
-            if ( !VersionUtil.isVersion( version ) )
+            if ( version == null || !VersionUtil.isVersion( version ) )
             {
                 addActionError( "Invalid version." );
             }            
