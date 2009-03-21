@@ -40,7 +40,9 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,6 +58,8 @@ import javax.servlet.jsp.PageContext;
 public class DownloadArtifact
     extends Component
 {
+    private static final String DEFAULT_DOWNLOAD_IMAGE = "download-type-other.png";
+
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -81,6 +85,18 @@ public class DownloadArtifact
 
     private DecimalFormat decimalFormat;
 
+    private static final Map<String, String> DOWNLOAD_IMAGES = new HashMap<String,String>();
+
+    static
+    {
+        DOWNLOAD_IMAGES.put( "jar", "download-type-jar.png" );
+        DOWNLOAD_IMAGES.put( "java-source", "download-type-jar.png" );
+        DOWNLOAD_IMAGES.put( "pom", "download-type-pom.png" );
+        DOWNLOAD_IMAGES.put( "maven-plugin", "download-type-maven-plugin.png" );
+        DOWNLOAD_IMAGES.put( "maven-archetype", "download-type-archetype.png" );
+        DOWNLOAD_IMAGES.put( "maven-skin", "download-type-skin.png" );
+    }
+    
     public DownloadArtifact( ValueStack stack, PageContext pageContext )
     {
         super( stack );
@@ -238,8 +254,14 @@ public class DownloadArtifact
                                   ArchivaArtifact artifact )
     {
         String type = artifact.getType();
-        String linkText = "<img src=\"" + req.getContextPath() + "/images/download-type-" + type + ".png\" />";
+        String linkText = "<img src=\"" + req.getContextPath() + "/images/" + getDownloadImage( type ) + "\" />";
         appendLink( sb, prefix, repo, artifact, linkText );
+    }
+
+    private String getDownloadImage( String type )
+    {
+        String name = DOWNLOAD_IMAGES.get( type );
+        return name != null ? name : DEFAULT_DOWNLOAD_IMAGE;
     }
 
     private static void appendLink( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
