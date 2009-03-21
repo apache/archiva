@@ -209,5 +209,8 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
 
 [../images/upload-artifact.jpg] Upload Artifact
 
+  <Note:> The maximum size of the file that can be uploaded is 10M by default. To alter the setting, change <<<struts.multipart.maxSize>>> in the file
+   <<<WEB-INF/classes/struts.properties>>> in the Archiva web application (located under <<<apps/archiva>>> in the standalone distribution).
+
 ~~TODO: information for Maven 1, ant tasks, ivy, etc.
 
