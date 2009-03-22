@@ -4,8 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <bean id="repositoryContentConsumers" class="org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers" scope="prototype">
-      <constructor-arg>
-        <ref bean="archivaConfiguration"/>
-      </constructor-arg>
+      <constructor-arg ref="archivaConfiguration"/>
     </bean>
 </beans>

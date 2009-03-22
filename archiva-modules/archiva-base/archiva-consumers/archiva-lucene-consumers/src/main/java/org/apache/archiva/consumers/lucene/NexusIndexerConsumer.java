@@ -202,17 +202,20 @@ public class NexusIndexerConsumer
 
     public void completeScan()
     {   
-        final File indexLocation = new File( managedRepository, ".index" );
-        try
+        synchronized( indexer )
         {
-            indexerEngine.endIndexing( context );            
-            indexPacker.packIndex( context, indexLocation );
-            indexer.removeIndexingContext( context, false );
-            uinfos = null;
-        }
-        catch ( IOException e )
-        {
-            log.error( "Could not pack index" + indexLocation.getAbsolutePath(), e );
+            final File indexLocation = new File( managedRepository, ".index" );
+            try
+            {
+                indexerEngine.endIndexing( context );            
+                indexPacker.packIndex( context, indexLocation );
+                indexer.removeIndexingContext( context, false );
+                uinfos = null;
+            }
+            catch ( IOException e )
+            {
+                log.error( "Could not pack index" + indexLocation.getAbsolutePath(), e );
+            }
         }
     }
 

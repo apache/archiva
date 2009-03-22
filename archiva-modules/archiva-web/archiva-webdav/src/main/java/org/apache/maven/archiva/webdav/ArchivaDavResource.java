@@ -53,15 +53,25 @@ import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
+import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.executors.ArchivaRepositoryScanningTaskExecutor;
+import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.webdav.util.IndexWriter;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
@@ -97,11 +107,17 @@ public class ArchivaDavResource
     private String principal;
     
 	public static final String COMPLIANCE_CLASS = "1, 2";
+	
+	private ArchivaTaskScheduler scheduler;
+	
+	private ArchivaRepositoryScanningTaskExecutor taskExecutor;
+	
+	private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryContentConsumers consumers )
+                               RepositoryContentConsumers consumers, ArchivaTaskScheduler scheduler, TaskExecutor taskExecutor )
     {
         this.localResource = new File( localResource ); 
         this.logicalResource = logicalResource;
@@ -116,15 +132,17 @@ public class ArchivaDavResource
         this.mimeTypes = mimeTypes;
         this.consumers = consumers;
         this.auditListeners = auditListeners;
+        this.scheduler = scheduler;
+        this.taskExecutor = ( ArchivaRepositoryScanningTaskExecutor ) taskExecutor;
     }
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                String remoteAddr, String principal, DavSession session, ArchivaDavResourceLocator locator,
                                DavResourceFactory factory, MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryContentConsumers consumers )
+                               RepositoryContentConsumers consumers, ArchivaTaskScheduler scheduler, TaskExecutor taskExecutor )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
-              consumers );
+              consumers, scheduler, taskExecutor );
 
         this.remoteAddr = remoteAddr;
         this.principal = principal;
@@ -303,8 +321,7 @@ public class ArchivaDavResource
                     inputContext.getContentLength() + " but was " + localFile.length() );
             }
             
-            // Just-in-time update of the index and database by executing the consumers for this artifact
-            consumers.executeConsumers( repository, localFile );
+            executeConsumers( localFile );            
             
             triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
@@ -621,6 +638,53 @@ public class ArchivaDavResource
         for ( AuditListener listener : auditListeners )
         {
             listener.auditEvent( event );
+        }
+    }
+    
+    private void executeConsumers( File localFile )
+    {
+        try
+        {
+            RepositoryTask currentTaskInExecution = ( RepositoryTask ) taskExecutor.getCurrentTaskInExecution();
+            if( currentTaskInExecution != null || scheduler.isProcessingAnyRepositoryTask() )
+            {   
+                // check if the repository is already queued to be scanned
+                if( scheduler.isProcessingRepositoryTaskWithName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repository.getId() )
+                        || scheduler.isProcessingRepositoryTaskWithName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repository.getId() + ":" + localFile.getName() ) )
+                {
+                    // no need to execute the consumers since repo is already queued
+                    return;
+                }
+                else
+                {
+                    // schedule the task
+                    RepositoryTask task = new RepositoryTask();
+                    task.setRepositoryId( repository.getId() );
+                    task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repository.getId() + ":" + localFile.getName() );
+                    task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+                    task.setResourceFile( localFile );
+                    
+                    try
+                    {
+                        scheduler.queueRepositoryTask( task );
+                    }
+                    catch ( TaskQueueException e )
+                    {
+                        log.error( "Unable to queue repository task to execute consumers on resource file ['" +
+                            localFile.getName() + "']." );
+                    }
+                }
+            }
+            else
+            {
+                // Just-in-time update of the index and database by executing the consumers for this artifact
+                consumers.executeConsumers( repository, localFile );
+            }
+        }
+        catch ( ArchivaException e )
+        {
+            log.error( "Unable to queue repository task to execute consumers on resource file ['" +
+                       localFile.getName() + "']." );
         }
     }
 }

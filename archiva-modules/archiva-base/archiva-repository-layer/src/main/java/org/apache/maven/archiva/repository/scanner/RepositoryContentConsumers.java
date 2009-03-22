@@ -61,7 +61,7 @@ public class RepositoryContentConsumers
 
     public RepositoryContentConsumers( ArchivaConfiguration archivaConfiguration )
     {
-        this.archivaConfiguration = archivaConfiguration;
+        this.archivaConfiguration = archivaConfiguration;      
     }
 
     public void setApplicationContext( ApplicationContext applicationContext )
@@ -222,7 +222,10 @@ public class RepositoryContentConsumers
     }
 
     /**
-     * A convienence method to execute all of the active selected consumers for a particular arbitrary file.
+     * A convenience method to execute all of the active selected consumers for a particular arbitrary file.
+     * NOTE: Make sure that there is no repository scanning task executing before invoking this so as to prevent
+     * the index writer/reader of the current index-content consumer executing from getting closed. For an example,
+     * see ArchivaDavResource#executeConsumers( File ). 
      * 
      * @param repository the repository configuration to use.
      * @param localFile the local file to execute the consumers against.

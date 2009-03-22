@@ -160,7 +160,70 @@
           <role-hint>md5</role-hint>
           <field-name>digestMd5</field-name>
         </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
+          <role-hint>repository-scanning</role-hint>
+          <field-name>taskExecutor</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.scheduled.ArchivaTaskScheduler</role>
+          <field-name>scheduler</field-name>
+        </requirement>
       </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.jdo.JdoFactory</role>
+      <role-hint>archiva</role-hint>
+      <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>
+      
+      <configuration>
+        <!-- Database Configuration -->
+        <driverName>org.hsqldb.jdbcDriver</driverName>
+        <url>jdbc:hsqldb:mem:TESTDB</url>
+        <userName>sa</userName>
+        <password></password>
+        
+        <!-- JPOX and JDO configuration -->
+        <persistenceManagerFactoryClass>org.jpox.PersistenceManagerFactoryImpl</persistenceManagerFactoryClass>
+        <otherProperties>
+          <property>
+            <name>javax.jdo.PersistenceManagerFactoryClass</name>
+            <value>org.jpox.PersistenceManagerFactoryImpl</value>
+          </property>
+          <property>
+            <name>org.jpox.autoCreateSchema</name>
+            <value>true</value>
+          </property>
+          <property>
+            <name>org.jpox.validateTables</name>
+            <value>false</value>
+          </property>
+          <property>
+            <name>org.jpox.validateConstraints</name>
+            <value>false</value>
+          </property>
+          <property>
+            <name>org.jpox.validateColumns</name>
+            <value>false</value>
+          </property>
+          <property>
+            <name>org.jpox.autoStartMechanism</name>
+            <value>None</value>
+          </property>
+          <property>
+            <name>org.jpox.transactionIsolation</name>
+            <value>READ_UNCOMMITTED</value>
+          </property>
+          <property>
+            <name>org.jpox.poid.transactionIsolation</name>
+            <value>READ_UNCOMMITTED</value>
+          </property>
+          <property>
+            <name>org.jpox.rdbms.dateTimezone</name>
+            <value>JDK_DEFAULT_TIMEZONE</value>
+          </property>
+        </otherProperties>
+      </configuration>
     </component>
   </components>
 </plexus>

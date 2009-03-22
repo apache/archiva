@@ -46,7 +46,7 @@ public class TriggerScanCompletedClosure
         {
             RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
             consumer.completeScan();
-            log.info( "Consumer [" + consumer.getId() + "] completed for repository [" + repository.getId() + "]" );
+            log.debug( "Consumer [" + consumer.getId() + "] completed for repository [" + repository.getId() + "]" );
         }
     }
 }

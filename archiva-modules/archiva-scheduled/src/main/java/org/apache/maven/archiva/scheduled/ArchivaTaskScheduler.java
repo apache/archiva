@@ -44,6 +44,9 @@ public interface ArchivaTaskScheduler
 
     public boolean isProcessingRepositoryTask( String repositoryId )
         throws ArchivaException;
+    
+    public boolean isProcessingRepositoryTaskWithName( String taskName )
+        throws ArchivaException;
 
     public void queueDatabaseTask( DatabaseTask task )
         throws TaskQueueException;

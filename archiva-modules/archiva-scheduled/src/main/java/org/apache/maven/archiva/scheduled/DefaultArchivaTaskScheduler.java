@@ -31,6 +31,7 @@ import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskNameSelectionPredicate;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskSelectionPredicate;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
@@ -325,36 +326,63 @@ public class DefaultArchivaTaskScheduler
     public boolean isProcessingAnyRepositoryTask()
         throws ArchivaException
     {
-        List<? extends Task> queue = null;
-
-        try
+        synchronized( repositoryScanningQueue )
         {
-            queue = repositoryScanningQueue.getQueueSnapshot();
+            List<? extends Task> queue = null;
+    
+            try
+            {
+                queue = repositoryScanningQueue.getQueueSnapshot();
+            }
+            catch ( TaskQueueException e )
+            {
+                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+            }
+    
+            return !queue.isEmpty();
         }
-        catch ( TaskQueueException e )
-        {
-            throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
-        }
-
-        return !queue.isEmpty();
     }
 
     @SuppressWarnings("unchecked")
     public boolean isProcessingRepositoryTask( String repositoryId )
         throws ArchivaException
     {
-        List<? extends Task> queue = null;
-
-        try
+        synchronized( repositoryScanningQueue )
         {
-            queue = repositoryScanningQueue.getQueueSnapshot();
+            List<? extends Task> queue = null;
+    
+            try
+            {
+                queue = repositoryScanningQueue.getQueueSnapshot();
+            }
+            catch ( TaskQueueException e )
+            {
+                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+            }
+    
+            return CollectionUtils.exists( queue, new RepositoryTaskSelectionPredicate( repositoryId ) );
         }
-        catch ( TaskQueueException e )
+    }
+    
+    @SuppressWarnings("unchecked")
+    public boolean isProcessingRepositoryTaskWithName( String taskName )
+        throws ArchivaException
+    {
+        synchronized( repositoryScanningQueue )
         {
-            throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+            List<? extends Task> queue = null;
+    
+            try
+            {
+                queue = repositoryScanningQueue.getQueueSnapshot();
+            }
+            catch ( TaskQueueException e )
+            {
+                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+            }
+    
+            return CollectionUtils.exists( queue, new RepositoryTaskNameSelectionPredicate( taskName ) );
         }
-
-        return CollectionUtils.exists( queue, new RepositoryTaskSelectionPredicate( repositoryId ) );
     }
 
     @SuppressWarnings("unchecked")
@@ -378,7 +406,10 @@ public class DefaultArchivaTaskScheduler
     public void queueRepositoryTask( RepositoryTask task )
         throws TaskQueueException
     {
-        repositoryScanningQueue.put( task );
+        synchronized( repositoryScanningQueue )
+        {
+            repositoryScanningQueue.put( task );
+        }
     }
 
     public void queueDatabaseTask( DatabaseTask task )

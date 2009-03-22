@@ -1,5 +1,7 @@
 package org.apache.maven.archiva.scheduled.tasks;
 
+import java.io.File;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -35,6 +37,8 @@ public class RepositoryTask
     String queuePolicy;
 
     long maxExecutionTime;
+    
+    File resourceFile;
     
     public String getRepositoryId()
     {
@@ -74,5 +78,15 @@ public class RepositoryTask
     public void setQueuePolicy( String queuePolicy )
     {
         this.queuePolicy = queuePolicy;
+    }
+
+    public File getResourceFile()
+    {
+        return resourceFile;
+    }
+
+    public void setResourceFile( File resourceFile )
+    {
+        this.resourceFile = resourceFile;
     }
 }
