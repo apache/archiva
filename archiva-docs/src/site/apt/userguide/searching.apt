@@ -57,7 +57,7 @@ Searching
 
   Archiva can also search the index for java classes, packages, and methods and return a list of artifacts containing the
   query string. In the previous versions, we need to append the keyword 'bytecode:' before the query string in the search box
-  (like 'bytecode:myMethod'). But since version 1.2-M2, we no longer need to type the keyword. Just type the java class or package name
+  (like 'bytecode:myMethod'). But since version 1.2, we no longer need to type the keyword. Just type the java class or package name
   in the search box.. and voila!
   
   The 'Search Results Only' option saves the previous search criteria and use it together with the new query string for

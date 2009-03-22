@@ -1,10 +1,10 @@
  -----
- Release Notes for Archiva 1.2-M2
+ Release Notes for Archiva 1.2
  -----
 
-Release Notes for Archiva 1.2-M2
+Release Notes for Archiva 1.2
 
-  The Apache Archiva team would like to announce the release of Archiva 1.2-M2.  Archiva is {{{http://archiva.apache.org/download.html}
+  The Apache Archiva team would like to announce the release of Archiva 1.2.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -32,25 +32,213 @@ Release Notes for Archiva 1.2-M2
    Repository statistics are now available to help in monitoring the Archiva repositories. Statistics include the number of artifacts and size
    of the repository, the number of plugins, jars, wars, etc. For more details about this feature, see {{{adminguide/reports.html}Reports}}.
 
-** Advanced Search
+** Search
 
    An advanced or filter search feature is added for more specific searching of artifacts. More details are available in {{{userguide/searching.html}Searching}}.
+   Archiva is also now using the Nexus index format for it's index.
 
 ~~TODO
 
 ** Web Services
 
    A web service for administrative tasks has been provided. It uses the Atlassian XML-RPC Binder which leverages the Apache XML-RPC.
+   For instructions on how to use this feature, see {{{adminguide/web-services.html}Using Archiva Web Services}}.
+
+** Delete Artifact
+
+   Artifacts can now be deleted from the web application. More details on how to use this feature is available in {{{userguide/delete-artifact.html}Deleting an Artifact}}.
 
 ~~TODO
 
 * Release Notes
 
-  The Archiva 1.2-M2 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.2 feature set can be seen in the {{{tour/index.html} feature tour}}.
 
-* Changes in Archiva 1.2-M2
+* Changes in Archiva 1.2
 
-  *Date TBA*
+  *22 March 2009*
+
+** Sub-task
+
+    * [MRM-1038] - merge versions in search results
+
+    * [MRM-1039] - remove metadata files from search results
+
+    * [MRM-1040] - for snapshots in search results just show SNAPSHOT, not timestamps
+
+    * [MRM-1041] - artifact version list should show basic shared project information rather than having to drill into one version
+
+    * [MRM-1042] - snapshot should go to a page that shows a list of versions (go to latest, but list previous snapshots)
+
+    * [MRM-1043] - improve appearance and flexibility of Advanced search (maybe change to "add term" buttons on the default search)
+
+    * [MRM-1044] - class/package search is still flaky
+
+    * [MRM-1046] - Write some decent tests for SearchAction
+
+** Bug
+
+    * [MRM-609] - Search results contains links with \ characters in them on Windows
+
+    * [MRM-616] - When running on IBM JDK 1.5:  java.security.NoSuchProviderException: no such provider: SUN
+
+    * [MRM-731] - variable in url pom are not replaced.
+
+    * [MRM-836] - The organization is incorrect when displaying an artifacts's Info via browsing or searching.
+
+    * [MRM-842] - Issue tracker is incorrect when displaying an artifacts's Info via browsing or searching.
+
+    * [MRM-901] - Repository groups does not display groups that have the same groupId
+
+    * [MRM-921] - user management role does not display the user management menu
+
+    * [MRM-922] - access to upload page with managed repository role
+
+    * [MRM-933] - Incorrect search results hit count (ex. Hits: -6 to 23 of 39) for bytecode search
+
+    * [MRM-962] - Upload Artifact action should trim its fields
+
+    * [MRM-989] - download-type-javadoc.png is missing
+
+    * [MRM-996] - HttpProxyTransferTest fails on Windows
+
+    * [MRM-1000] - AdministrationServiceImplTest fails on Windows
+
+    * [MRM-1004] - RepositoryServlet tests fail intermittently on Windows
+
+    * [MRM-1011] - Organisation link on logo points to somewhere
+
+    * [MRM-1013] - Fresh installation of Archiva with LDAP authentication does not survive restart of the servlet container
+
+    * [MRM-1020] - Fix the crazy alpaca on Windows
+
+    * [MRM-1027] - Indices are not cleaned up when deleting artifact via web services
+
+    * [MRM-1028] - Find Artifact doesn't show up in the navigation menu after migration to struts 2
+
+    * [MRM-1032] - Pick Report - Repository Statistics: End Date can be set earlier than Start Date
+
+    * [MRM-1034] - Browse artifact error does not show correct error message
+
+    * [MRM-1047] - Archiva allows deployment by user with expired password
+
+    * [MRM-1050] - Unable to remove user
+
+    * [MRM-1057] -  Archiva user-admin should be able to view useredit after logging in from "Security Alert" page
+
+    * [MRM-1062] - Find Artifact broken
+
+    * [MRM-1073] - Errors on when upgrading from v1.1.3 to v1.2-M1
+
+    * [MRM-1075] - Error 500 when accessing repository url
+
+    * [MRM-1076] - NPE in NexusIndexConsumer when executed when an artifact is deployed in the Archiva repository
+
+    * [MRM-1092] - Typo in Search results page
+
+    * [MRM-1095] - Archiva keeps scanning repositories, even if scanning disabled in the web UI
+
+    * [MRM-1096] - No icon for maven-plugin on artifact-details view.
+
+    * [MRM-1101] - Audit log shows user guest when deploying files from Maven
+
+    * [MRM-1105] - Legacy artifact path not properly stored when entered from Archiva UI
+
+    * [MRM-1106] - NPE when starting Archiva
+
+    * [MRM-1108] - empty logoLocation can be set for the organisation, but does not show the default logo
+
+    * [MRM-1109] - environment checks do not indicate which caused a violation
+
+    * [MRM-1110] - some redback log statements are not visible in Archiva logs
+
+    * [MRM-1117] - move advanced search out of the 'info' popup on the quick search page
+
+    * [MRM-1121] - NPE in browse at artifact level
+
+    * [MRM-1122] - reduce verbosity of logging during scanning
+
+    * [MRM-1133] - delete artifact role not added on upgrade from previous version
+
+    * [MRM-1135] - Cannot remove a whitelist entry containing backslashes
+
+    * [MRM-1136] - Archiva don't want to download a snapshot of a maven plugin (merged metadata are empty)
+
+    * [MRM-1137] - Cannot upload artifact to WEB UI any more
+
+    * [MRM-1138] - Fix java.lang.NullPointerException: configuration can not be null on startup
+
+    * [MRM-1139] - war:inplace blindly copies everything (including WEB-INF/lib/**) into the archiva-webapp.
+
+    * [MRM-1140] - centralise logging through slf4j
+
+    * [MRM-1147] - handling leading / on whitelists is ambiguous
+
+** Improvement
+
+    * [MRM-176] - prevent potential out of memory problems in large search results
+
+    * [MRM-732] - search should tokenize on a hypthen
+
+    * [MRM-737] - Don't list metadata files in the search results
+
+    * [MRM-799] - Better handling of artifacts with missing poms
+
+    * [MRM-937] - Rename audit.log to archiva-audit.log to avoid conflicts
+
+    * [MRM-975] - Refresh of Archiva templates and stylesheets to match site styles
+
+    * [MRM-1015] - Move consumer API's from plexus to spring
+
+    * [MRM-1016] - Minor usability enhancement for the web app footer
+
+    * [MRM-1037] - Search Usability
+
+    * [MRM-1074] - Typo of Legacy Support option on the left nav menu
+
+    * [MRM-1081] - Archiva model should be updated so that the ARTIFACT table includes repositoryId as a primary key
+
+    * [MRM-1084] - Upgrade modello maven plugin to 1.0 to support Java 5 generics
+
+    * [MRM-1091] - Upgrade appassembler plugin from 1.0-beta-2 to 1.0
+
+    * [MRM-1093] - Log configuration and repository changes made.
+
+    * [MRM-1098] - upgrade to wagon 1.0-beta-5
+
+    * [MRM-1099] - Updated Archiva User Guide
+
+    * [MRM-1130] - add security audit log
+
+** New Feature
+
+    * [MRM-206] - Add xml-rpc search
+
+    * [MRM-749] - Support m2eclipse index format creation
+
+    * [MRM-913] - Ability to delete an artifact from the web interface
+
+    * [MRM-1083] - Add artifact search box to the default decorator
+
+** Task
+
+    * [MRM-938] - Remove 'redback.default.guest' usage in ArchivaXworkUser once this property is removed in redback
+
+    * [MRM-991] - Update screenshots in documentation to reflect the changes in the UI
+
+    * [MRM-1031] - Upgrade to jackrabbit-webdav 1.5.0
+
+    * [MRM-1036] - Add documentation on how to use Archiva web services
+
+    * [MRM-1068] - Upgrade to redback-1.2-beta-2
+
+    * [MRM-1079] - Update LuceneCleanupRemoveIndexerConsumer to use the new index format
+
+    * [MRM-1082] - Upgrade from plexus-maven-plugin to the plexus-component-metadata plugin
+
+    * [MRM-1094] - Update docs on search to reflect the search re-vamp for 1.2-M2
+
+    * [MRM-1107] - upgrade to Redback 1.2
 
 * Changes in Archiva 1.2-M1
 
