@@ -106,13 +106,13 @@ public class ArchivaDavResource
 
     private String principal;
     
-	public static final String COMPLIANCE_CLASS = "1, 2";
-	
-	private ArchivaTaskScheduler scheduler;
-	
-	private ArchivaRepositoryScanningTaskExecutor taskExecutor;
-	
-	private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
+    public static final String COMPLIANCE_CLASS = "1, 2";
+    
+    private ArchivaTaskScheduler scheduler;
+    
+    private ArchivaRepositoryScanningTaskExecutor taskExecutor;
+    
+    private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
