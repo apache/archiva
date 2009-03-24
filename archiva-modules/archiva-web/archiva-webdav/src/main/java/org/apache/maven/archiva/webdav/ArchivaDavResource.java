@@ -313,6 +313,7 @@ public class ArchivaDavResource
                 IOUtils.closeQuietly( stream );
             }
             
+            // TODO: a bad deployment shouldn't delete an existing file - do we need to write to a temporary location first?
             if ( inputContext.getContentLength() != localFile.length() )
             {
                 FileUtils.deleteQuietly( localFile );
