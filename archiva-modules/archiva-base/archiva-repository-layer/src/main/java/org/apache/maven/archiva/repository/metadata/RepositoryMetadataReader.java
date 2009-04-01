@@ -51,7 +51,9 @@ public class RepositoryMetadataReader
         try
         {
             XMLReader xml = new XMLReader( "metadata", metadataFile );
-
+            // invoke this to remove namespaces, see MRM-1136
+            xml.removeNamespaces();
+            
             ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
 
             metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );

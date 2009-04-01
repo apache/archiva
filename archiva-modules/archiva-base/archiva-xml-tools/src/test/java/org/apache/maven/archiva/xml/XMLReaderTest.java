@@ -92,5 +92,18 @@ public class XMLReaderTest
         List names = reader.getElementList( "//basic/names/name" );
         assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
     }
+    
+    // MRM-1136 or MRM-1152
+    public void testProxiedMetadataRead()
+        throws XMLException
+    {
+        File xmlFile = getExampleXml( "maven-metadata-codehaus-snapshots.xml" );
+        XMLReader reader = new XMLReader( "metadata", xmlFile );        
+        reader.removeNamespaces();
+        
+        Element groupId = reader.getElement( "//metadata/groupId" );        
+        assertNotNull( groupId );
+        assertEquals( "org.codehaus.mojo", groupId.getTextTrim() );   
+    }
 
 }
