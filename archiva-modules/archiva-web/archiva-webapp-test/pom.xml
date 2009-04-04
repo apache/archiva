@@ -88,6 +88,16 @@
     <testSourceDirectory>src/test/it</testSourceDirectory>
     <plugins>
       <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>testResources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>dependency-maven-plugin</artifactId>
         <executions>
@@ -136,22 +146,22 @@
             <configuration>
               <tasks>
                 <copy todir="${project.build.directory}/appserver-base">
-                  <fileset dir="src/test/resources/appserver-base" />
+                  <fileset dir="src/test/it-resources/appserver-base" />
                 </copy>
                 <copy todir="${project.build.directory}/repository">
-                  <fileset dir="src/test/resources/repository" />
+                  <fileset dir="src/test/it-resources/repository" />
                 </copy>
                 <copy todir="${project.build.directory}/index">
-                  <fileset dir="src/test/resources/index" />
+                  <fileset dir="src/test/it-resources/index" />
                 </copy>
                 <copy todir="${project.build.directory}/snapshots">
-                  <fileset dir="src/test/resources/snapshots" />
+                  <fileset dir="src/test/it-resources/snapshots" />
                 </copy>
                 <copy todir="${project.build.directory}/projects">
-                  <fileset dir="src/test/resources/projects" />
+                  <fileset dir="src/test/it-resources/projects" />
                 </copy>
                 <copy todir="${project.build.directory}/local-repo">
-                  <fileset dir="src/test/resources/local-repo" />
+                  <fileset dir="src/test/it-resources/local-repo" />
                 </copy>
               </tasks>
             </configuration>
