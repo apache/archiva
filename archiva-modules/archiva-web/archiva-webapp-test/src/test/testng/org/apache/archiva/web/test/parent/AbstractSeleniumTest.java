@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
+import org.codehaus.plexus.util.StringUtils;
+
 import org.testng.Assert;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
@@ -56,7 +58,13 @@ public abstract class AbstractSeleniumTest {
 	
 	    String seleniumHost	= p.getProperty( "SELENIUM_HOST" );
 	    int seleniumPort = Integer.parseInt( ( p.getProperty( "SELENIUM_PORT" ) ) );
-	    String seleniumBrowser = p.getProperty( "SELENIUM_BROWSER" );
+
+        String seleniumBrowser = System.getProperty( "browser" );
+        if ( StringUtils.isEmpty( seleniumBrowser ) )
+        {
+            seleniumBrowser = p.getProperty( "SELENIUM_BROWSER" );
+        }
+
 	    final Selenium s = new DefaultSelenium( seleniumHost, seleniumPort, seleniumBrowser, baseUrl );
 	    selenium = new ThreadLocal<Selenium>()
 	    {

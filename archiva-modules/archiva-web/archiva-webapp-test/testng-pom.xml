@@ -172,6 +172,14 @@
             <goals>
               <goal>test</goal>
             </goals>
+            <configuration>
+              <systemProperties>
+                <property>
+                  <name>browser</name>
+                  <value>${selenium.browser}</value>
+                </property>
+              </systemProperties>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -364,22 +372,48 @@
     <profile>
       <id>firefox</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>!browser</name>
+        </property>
       </activation>
       <properties>
-        <browser>*firefox</browser>
+        <selenium.browser>*firefox</selenium.browser>
       </properties>
     </profile>
     <profile>
       <id>iexplore</id>
+      <activation>
+        <property>
+          <name>browser</name>
+          <value>iexplore</value>
+        </property>
+      </activation>
       <properties>
-        <browser>*iexplore</browser>
+        <selenium.browser>*iexplore</selenium.browser>
+      </properties>
+    </profile>
+    <profile>
+      <id>safari</id>
+      <activation>
+        <property>
+          <name>browser</name>
+          <value>safari</value>
+        </property>
+      </activation>
+      <properties>
+        <selenium.browser>*safari</selenium.browser>
       </properties>
     </profile>
     <profile>
       <id>otherbrowser</id>
+      <activation>
+        <property>
+          <name>browser</name>
+          <value>other</value>
+        </property>
+      </activation>
       <properties>
-        <browser>*custom ${browserPath}</browser>
+        <selenium.browser>*custom ${browserPath}</selenium.browser>
       </properties>
     </profile>
   </profiles>
