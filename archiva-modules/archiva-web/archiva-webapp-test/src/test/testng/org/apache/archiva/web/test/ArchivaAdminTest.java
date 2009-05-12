@@ -20,7 +20,6 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
-import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
@@ -30,16 +29,14 @@ import org.testng.annotations.Test;
 public class ArchivaAdminTest 
 	extends AbstractArchivaTest
 {
-	@BeforeSuite
+    @BeforeSuite
     public void initializeContinuum()
         throws Exception
     {
         super.open();
-        System.out.println( "open" );
         getSelenium().open( baseUrl );
-        System.out.println( "URL" );
         String title = getSelenium().getTitle();
-        if ( title.equals( "Create Admin User" ) )
+        if ( title.equals( "Apache Archiva \\ Create Admin User" ) )
         {
             assertCreateAdmin();
             String fullname = p.getProperty( "ADMIN_FULLNAME" );
@@ -47,8 +44,6 @@ public class ArchivaAdminTest
             String mail = p.getProperty( "ADMIN_EMAIL" );
             String password = p.getProperty( "ADMIN_PASSWORD" );
             submitAdminData( fullname, mail, password );            
-            assertLoginPage();
-            submitUserData( username, password, false, true );
             assertAuthenticatedPage( username );
             submit();
             clickLinkWithText( "Logout" );
@@ -62,11 +57,13 @@ public class ArchivaAdminTest
     {
         super.open();
     }
+
+    
     public void displayLandingPage()
     {
-        getSelenium().open( baseUrl + "index.action" );
+        getSelenium().open( baseUrl );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        Assert.assertEquals( "Apache Archiva \\ Quick Search", getSelenium().getTitle() );
+        assertPage( "Apache Archiva \\ Quick Search" );
     }
 
     @Override

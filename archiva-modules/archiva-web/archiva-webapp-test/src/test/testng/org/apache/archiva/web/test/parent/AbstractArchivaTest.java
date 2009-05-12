@@ -25,7 +25,7 @@ public abstract class AbstractArchivaTest
 
 	public void assertCreateAdmin()
 	{
-			assertPage( "Create Admin User" );
+			assertPage( "Apache Archiva \\ Create Admin User" );
 			assertTextPresent( "Username" );
         	assertFieldValue( "admin", "user.username" );
        		assertTextPresent( "Full Name*" );
@@ -42,7 +42,7 @@ public abstract class AbstractArchivaTest
 	public void submitAdminData( String fullname, String email, String password )
     	{
         	setFieldValue( "user.fullName", fullname );
-        	setFieldValue( "user.emaim", email );
+        	setFieldValue( "user.email", email );
         	setFieldValue( "user.password", password );
        	 	setFieldValue( "user.confirmPassword", password );
         	submit();

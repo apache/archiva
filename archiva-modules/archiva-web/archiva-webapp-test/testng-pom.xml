@@ -74,8 +74,14 @@
     <dependency>
       <groupId>org.openqa.selenium.client-drivers</groupId>
       <artifactId>selenium-java-client-driver</artifactId>
-      <version>0.8.1</version>
+      <version>1.0-SNAPSHOT</version>
       <scope>test</scope>
+      <exclusions>
+	<exclusion>
+	  <groupId>commons-logging</groupId>
+	  <artifactId>commons-logging</artifactId>
+	</exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Dependency for MavenConnectionTest -->
@@ -143,7 +149,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>selenium-maven-plugin</artifactId>
-        <version>1.0-beta-1</version>
+        <version>1.0-rc-1</version>
         <executions>
           <execution>
             <id>start-selenium</id>
@@ -273,7 +279,7 @@
                       <fileset dir="src/test/${container.name}" />
                     </copy>
                     <copy
-                      todir="${project.build.directory}/installs/${container.name}/apache-tomcat-5.5.26/apache-tomcat-5.5.26/common/lib">
+                      todir="${project.build.directory}/installs/${container.name}/apache-tomcat-5.5.27/apache-tomcat-5.5.27/common/lib">
                       <fileset dir="${project.build.directory}/providedDependencies">
                         <include name="**/*.jar" />
                       </fileset>
@@ -366,7 +372,7 @@
       </activation>
       <properties>
         <container.name>tomcat5x</container.name>
-        <container.url>http://archive.apache.org/dist/tomcat/tomcat-5/v5.5.26/bin/apache-tomcat-5.5.26.zip</container.url>
+        <container.url>http://archive.apache.org/dist/tomcat/tomcat-5/v5.5.27/bin/apache-tomcat-5.5.27.zip</container.url>
       </properties>
     </profile>
     <profile>
