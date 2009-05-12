@@ -112,8 +112,8 @@ Deploying to Repository
   You can also deploy to the Archiva server using traditional means such as SCP, FTP, etc. For more information on these deployment
   techniques, refer to the Maven documentation.
 
-  Note that once the files are deployed into the location of the Archiva managed repository, they will not be detected by Archiva until the
-  next scan takes place, so the interval should be configured to a reasonably frequent setting.
+  Once the files are deployed into the location of the Archiva managed repository, they should immediately appear in the Browse page.
+  The artifacts should also be searcheable as long as the <<<index-content>>> repository consumer is enabled.
   
 ** Deploying Third-Party Artifacts to Archiva using Maven
 
