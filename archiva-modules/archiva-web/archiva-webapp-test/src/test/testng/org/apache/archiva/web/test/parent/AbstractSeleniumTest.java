@@ -137,7 +137,7 @@ public abstract class AbstractSeleniumTest {
 		Assert.assertTrue( isElementPresent( "link=" + text ), "The link '" + text + "' isî't present." );
 	}
 	
-	public void assertLinkNotPresenu( String text )
+	public void assertLinkNotPresent( String text )
 	{
 		Assert.assertFalse( isElementPresent( "link=" + text ), "The link('" + text + "' is present." );
 	}

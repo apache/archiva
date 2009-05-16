@@ -1,5 +1,9 @@
 package org.apache.archiva.web.test.parent;
 
+import java.io.File;
+
+import org.apache.archiva.web.test.XPathExpressionUtil;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,7 +26,51 @@ package org.apache.archiva.web.test.parent;
 public abstract class AbstractArchivaTest 
 	extends AbstractSeleniumTest
 {
+	protected String username;
+	protected String fullname;
+	
+	public String getUserEmail()
+	{
+		String email = p.getProperty("USERROLE_EMAIL");
+		return email;
+	}
+	
+	public String getUserRolePassword() 
+	{
+		String password = p.getProperty("USERROLE_PASSWORD");
+		return password;
+	}
 
+	public String getUserRoleNewPassword() 
+	{
+		String password_new = p.getProperty( "NEW_USERROLE_PASSWORD" );
+		return password_new;
+	}
+
+	public String getBasedir()
+    {
+        String basedir = System.getProperty( "basedir" );
+
+        if ( basedir == null )
+        {
+            basedir = new File( "" ).getAbsolutePath();
+        }
+
+        return basedir;
+    }
+	
+	public String getAdminUsername()
+	{
+		String adminUsername = p.getProperty( "ADMIN_USERNAME" );
+		return adminUsername;
+	}
+	
+	public String getAdminPassword()
+	{
+		String adminPassword = p.getProperty( "ADMIN_PASSWORD" );
+		return adminPassword;
+	}
+	
 	public void assertCreateAdmin()
 	{
 			assertPage( "Apache Archiva \\ Create Admin User" );
@@ -104,27 +152,6 @@ public abstract class AbstractArchivaTest
 	}
 	
 	
-/*	//Find Artifact
-	public void goToFindArtifactPage()
-	{
-		clickLinkWithText( "Find Artifact" );
-		assertFindArtifactPage();
-	}
-	
-	public void assertFindArtifactPage()
-	{
-		//assertPage( "Apache Archiva \\ Find Artifact" );
-		assertTextPresent( "Find Artifact" );
-		assertTextPresent( "Search For" );
-		assertElementPresent( "f" );
-		assertTextPresent( "Checksum" );
-		assertElementPresent( "q" );
-		assertButtonWithValuePresent( "Search" );
-		assertTextPresent( "This allows you to search the repository using the checksum of an artifact that you are trying to identify. You can either specify the checksum to look for directly, or scan a local artifact file. " );
-		assertTextPresent( "Tï scan a local file, select the file you would like to locate in the remote repository. Ôhe entire file will not  be uploaded$to the server. See the progress bar below for progress of locally creating a checksum that is uploaded to the server ifter you hit ");
-	}
-	
-
 	//User Management
 	public void goToUserManagementPage()
 	{
@@ -134,7 +161,7 @@ public abstract class AbstractArchivaTest
 	
 	public void assertUserManagementPage()
 	{
-		//assertPage( "Apache Archiva \\ [Admin] User List" );
+		assertPage( "Apache Archiva \\ [Admin] User List" );
 		assertTextPresent( "[Admin] List of Users in Role: Any" );
 		assertTextPresent( "Navigation" );
 		assertImgWithAlt( "First" );
@@ -162,23 +189,240 @@ public abstract class AbstractArchivaTest
 		assertTextPresent( "Roles Matrix" );
 	}
 	
-	//User Role
+/*	//User Role
 	public void goToUserRolesPage()
 	{
 		clickLinkWithText( "User Roles" );
 		assertUserRolesPage();
-	}
+	}*/
 	
 	public void assertUserRolesPage()
 	{
-		//assertPage( "Apache Archiva \\ [Admin] Role List" );
-		assertTextPresent( "[Admin] Role List" );
-		assertTextPresent( "Role Name" );
-		assertTextPresent( "Role Description" );
-		String userRoles = "Guest,Registered User,System Administrator,User Administrator,Global Repository Observer,Archiva Guest,Archiva System Administrator,Global Repository Manager,Archiva User Administrator,Repository Observer - internal,Repository Manager - internal,Repository Observer - snapshots,Repository Manager - snapshots";
+		assertPage( "Apache Archiva \\ [Admin] User Edit" );
+		assertTextPresent( "[Admin] User Roles" );
+		assertTextPresent( "Username" );
+		assertTextPresent( "Full Name" );
+		String userRoles = "Guest,Registered User,System Administrator,User Administrator,Global Repository Observer,Global Repository Manager,Repository Observer,Repository Manager,internal,snapshots";
 		String[] arrayRole = userRoles.split( "," );
 		for ( String userroles : arrayRole )
-			assertLinkPresent( userroles );
+			assertTextPresent( userroles );
+	}
+	
+	public void assertDeleteUserPage( String username )
+	 {
+	        assertPage( "Apache Archiva \\ [Admin] User Delete" ); //TODO
+	        assertTextPresent( "[Admin] User Delete" );
+	        assertTextPresent( "The following user will be deleted:" );
+	        assertTextPresent( "Username: " + username );
+	        assertButtonWithValuePresent( "Delete User" );
+	 }
+	
+	public void createUser( String userName, String fullName, String email, String password, boolean valid )
+	{
+		createUser( userName, fullName, email, password, password, valid );
+	}
+	
+	private void createUser( String userName, String fullName, String emailAd, String password, String confirmPassword, boolean valid ) 
+	{
+		login( getAdminUsername() , getAdminPassword() );
+		clickLinkWithText( "User Management" );
+		clickButtonWithValue( "Create New User" );
+		assertCreateUserPage();
+        setFieldValue( "user.username", userName );
+        setFieldValue( "user.fullName", fullName );
+        setFieldValue( "user.email", emailAd );
+        setFieldValue( "user.password", password );
+        setFieldValue( "user.confirmPassword", confirmPassword );
+        submit();
+        
+        assertUserRolesPage( );
+        clickButtonWithValue( "Submit" );
+        
+        if (valid )
+        {
+        	String[] columnValues = {userName, fullName, emailAd};
+            assertElementPresent( XPathExpressionUtil.getTableRow( columnValues ) );
+        }
+        else
+        {
+            assertCreateUserPage();
+        }
+	}
+	
+	public void deleteUser( String userName, String fullName, String emailAdd )
+    {
+        deleteUser( userName, fullName, emailAdd, false, false );
+    }
+	
+	public void deleteUser(String userName, String fullName, String emailAd, boolean validated, boolean locked)
+	{
+		String[] columnValues = {userName, fullName, emailAd};
+		//clickLinkWithText( "userlist" );
+		clickLinkWithXPath( "//table[@id='ec_table']/tbody[2]/tr[3]/td[7]/a/img" );
+		assertDeleteUserPage( userName );
+        submit();
+        assertElementNotPresent( XPathExpressionUtil.getTableRow( columnValues ) );
+	}
+
+    public void login( String username, String password )
+    {
+        login( username, password, true, "Login Page" );
+    }
+	
+	public void login( String username, String password, boolean valid, String assertReturnPage )
+    {
+        if ( isLinkPresent( "Login" ) )
+        {
+            goToLoginPage();
+
+            submitLoginPage( username, password, false, valid, assertReturnPage );
+        }
+    }
+    
+    public void submitLoginPage( String username, String password )
+    {
+        submitLoginPage( username, password, false, true, "Login Page" );
+    }
+
+    public void submitLoginPage( String username, String password, boolean validUsernamePassword )
+    {
+        submitLoginPage( username, password, false, validUsernamePassword, "Login Page" );
+    }
+
+    public void submitLoginPage( String username, String password, boolean rememberMe, boolean validUsernamePassword,
+                                 String assertReturnPage )
+    {
+        assertLoginPage();
+        setFieldValue( "username", username );
+        setFieldValue( "password", password );
+        if ( rememberMe )
+        {
+            checkField( "rememberMe" );
+        }
+        clickButtonWithValue( "Login" );
+
+        if ( validUsernamePassword )
+        {
+            assertTextPresent( "Current User:" );
+            assertTextPresent( username );
+            assertLinkPresent( "Edit Details" );
+            assertLinkPresent( "Logout" );
+        }
+        else
+        {
+            if ( "Login Page".equals( assertReturnPage ) )
+            {
+                assertLoginPage();
+            }
+            else
+            {
+                assertPage( assertReturnPage );
+            }
+        }
+    }
+    
+	 // User Roles
+	public void assertUserRoleCheckBoxPresent(String value) 
+	{
+		getSelenium()	.isElementPresent("xpath=//input[@id='addRolesToUser_addNDSelectedRoles' and @name='addNDSelectedRoles' and @value='"	+ value + "']");
+	}
+
+	public void assertResourceRolesCheckBoxPresent(String value) {
+		getSelenium().isElementPresent("xpath=//input[@name='addDSelectedRoles' and @value='" + value + "']");
+	}
+
+	public void checkUserRoleWithValue(String value) 
+	{
+		assertUserRoleCheckBoxPresent(value);
+		getSelenium().click( "xpath=//input[@id='addRolesToUser_addNDSelectedRoles' and @name='addNDSelectedRoles' and @value='" + value + "']");
+	}
+
+	public void checkResourceRoleWithValue(String value) 
+	{
+		assertResourceRolesCheckBoxPresent(value);
+		getSelenium().click( "xpath=//input[@name='addDSelectedRoles' and @value='" + value + "']" );
+	}
+	
+	
+	 public void changePassword(String oldPassword, String newPassword) {
+		assertPage("Apache Archiva \\ Change Password");
+		setFieldValue("existingPassword", oldPassword);
+		setFieldValue("newPassword", newPassword);
+		setFieldValue("newPasswordConfirm", newPassword);
+		clickButtonWithValue("Change Password");
+	}
+	
+	 public void assertCreateUserPage() 
+	 {
+		assertPage( "Apache Archiva \\ [Admin] User Create" );
+		assertTextPresent( "[Admin] User Create" );
+		assertTextPresent( "Username*:" );
+		assertElementPresent( "user.username" );
+		assertTextPresent( "Full Name*:");
+		assertElementPresent( "user.fullName" );
+		assertTextPresent( "Email Address*:" );
+		assertElementPresent( "user.email" );
+		assertTextPresent( "Password*:" );
+		assertElementPresent( "user.password" );
+		assertTextPresent( "Confirm Password*:" );
+		assertElementPresent( "user.confirmPassword" );
+		assertButtonWithValuePresent( "Create User" );
+	}
+	 
+	public void assertLeftNavMenuWithRole( String role )
+	{
+		if ( role.equals( "Guest" ) || role.equals( "Registered User" )  || role.equals( "Global Repository Observer" ) || role.equals( "Repository Observer - internal" ) || role.equals( "Repository Observer - snapshots" ) )
+		{
+			assertTextPresent( "Search" );
+			assertLinkPresent( "Find Artifact" );
+			assertLinkPresent( "Browse" );
+			assertLinkNotPresent( "Repositories" );
+		}
+		else if ( role.equals( "User Administrator" ) )
+		{
+			assertTextPresent( "Search" );
+			assertLinkPresent( "Find Artifact" );
+			assertLinkPresent( "Browse" );
+			assertLinkPresent( "User Management" );
+			assertLinkPresent( "User Roles" );
+			assertLinkNotPresent( "Repositories" );
+		}
+		else if ( role.equals( "Global Repository Manager" ) || role.equals( "Repository Manager - internal" ) || role.equals( "Repository Manager - snapshots" ) )
+		{
+			assertTextPresent( "Search" );
+			assertLinkPresent( "Find Artifact" );
+			assertLinkPresent( "Browse" );
+			assertLinkPresent( "Upload Artifact" );
+			assertLinkPresent( "Delete Artifact" );
+			assertLinkNotPresent( "Repositories" );
+		}
+		else 
+		{
+			assertTextPresent( "Search" );
+			String navMenu = "Find Artifact,Browse,Reports,User Management,User Roles,Appearance,Upload Artifact,Delete Artifact,Repository Groups,Repositories,Proxy Connectors,Legacy Support,Network Proxies,Repository Scanning,Database";
+			String[] arrayMenu = navMenu.split( "," );
+			for (String navmenu : arrayMenu )
+				assertLinkPresent( navmenu );
+		}
+	}
+/*	//Find Artifact
+	public void goToFindArtifactPage()
+	{
+		clickLinkWithText( "Find Artifact" );
+		assertFindArtifactPage();
+	}
+	
+	public void assertFindArtifactPage()
+	{
+		//assertPage( "Apache Archiva \\ Find Artifact" );
+		assertTextPresent( "Find Artifact" );
+		assertTextPresent( "Search For" );
+		assertElementPresent( "f" );
+		assertTextPresent( "Checksum" );
+		assertElementPresent( "q" );
+		assertButtonWithValuePresent( "Search" );
+		assertTextPresent( "This allows you to search the repository using the checksum of an artifact that you are trying to identify. You can either specify the checksum to look for directly, or scan a local artifact file. " );
+		assertTextPresent( "Tï scan a local file, select the file you would like to locate in the remote repository. Ôhe entire file will not  be uploaded$to the server. See the progress bar below for progress of locally creating a checksum that is uploaded to the server ifter you hit ");
 	}
 	
 	//Appearance

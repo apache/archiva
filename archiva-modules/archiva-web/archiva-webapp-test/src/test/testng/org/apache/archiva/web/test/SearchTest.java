@@ -34,6 +34,7 @@ public class SearchTest
 		assertTextPresent( "No results found" );
 	}
     
+	@Test (dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testSearchExistingArtifact()
 	{
 		searchForArtifact( p.getProperty( "ARTIFACT_ARTIFACTID" ) );
@@ -42,6 +43,7 @@ public class SearchTest
 		assertLinkPresent( "test" );
 	}
 	
+	@Test (dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testViewSearchedArtifact()
     {
 		searchForArtifact( p.getProperty( "ARTIFACT_ARTIFACTID" ) );
