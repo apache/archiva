@@ -36,14 +36,14 @@ public class ReportsTest
 		assertTextPresent( "Please select a repository (or repositories) from the list." );
 	}
 	
-/*	@Test(dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
+	@Test(dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
 	public void testRepositoryStatisticsWithoutDate()
 	{
 		String repositoryName = p.getProperty( "REPOSITORY_NAME" ) ;
 		compareRepositories( "label=" + repositoryName, "", "" );
 		//TODO
-		assertTextPresent( "Statistics Report" );
-	}*/
+		//assertTextPresent( "Statistics Report" );
+	}
 	
 	@Test(dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
 	public void testRepositoryStatisticsEndEarlierThanStart()
@@ -57,7 +57,7 @@ public class ReportsTest
 		assertTextPresent( "Start Date must be earlier than the End Date" );
 	}
 		
-/*	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )	
+	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )	
 	public void testRepositoryStatistics()
 	{
 		String repositoryName = p.getProperty( "REPOSITORY_NAME" ) ;
@@ -65,19 +65,19 @@ public class ReportsTest
 		String endDate = p.getProperty( "END_DATE" );
 		compareRepositories( "label=" + repositoryName, startDate, endDate );
 		//assertTextPresent( "Statistics for Repository '" + repositoryName + "'" );
-		assertPage( "Apache Archiva \\ Reports" );
-		assertTextPresent( "Statistics Report" );
-	}*/
+		//assertPage( "Apache Archiva \\ Reports" );
+		//assertTextPresent( "Statistics Report" );
+	}
 	
-/*	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
+	/* @Test( dependsOnMethods = { "testRepositoryStatistics" } )
 	public void testRepositoriesStatisticComparisonReport()
 	{
-		goToReportsPage();
+		//goToReportsPage();
 		clickButtonWithValue( "-->>" , false );
 		clickButtonWithValue( "View Statistics" );
 		assertTextPresent( "Statistics Report" );
 	}
-	*/
+	
 	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testRepositoryHealthWithoutDefect()
 	{
@@ -89,10 +89,10 @@ public class ReportsTest
 		assertTextPresent( "The operation generated an empty report." );
 	}
 	
-/*	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
+	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testRepositoryHealthWithoutGroupId()
 	{
-		//goToReportsPage();
+		goToReportsPage();
 		clickButtonWithValue( "Show Report" );
 		assertPage( "Apache Archiva \\ Reports" );
 		assertTextPresent( "The operation generated an empty report." );

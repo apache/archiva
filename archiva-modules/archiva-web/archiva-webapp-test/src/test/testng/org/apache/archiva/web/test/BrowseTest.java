@@ -22,7 +22,7 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractBrowseTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "browse" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "browse" }, dependsOnMethods = { "testAddArtifactNullValues" } )
 public class BrowseTest 
 	extends AbstractBrowseTest
 {

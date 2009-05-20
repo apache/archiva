@@ -1,5 +1,7 @@
 package org.apache.archiva.web.test.parent;
 
+import java.io.File;
+
 public abstract class AbstractArtifactManagementTest 
 	extends AbstractArchivaTest
 {
@@ -30,8 +32,9 @@ public abstract class AbstractArtifactManagementTest
 	
 	public String getArtifactFilePath()
 	{
-		String artifactFilePath = p.getProperty( "ARTIFACTFILEPATH" ) ;
-		return artifactFilePath;
+		File f = new File( "" );
+		String artifactFilePath = f.getAbsolutePath();
+		return artifactFilePath + "/src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar" ;
 	}
 	
 	public String getRepositoryId()
@@ -51,7 +54,7 @@ public abstract class AbstractArtifactManagementTest
 		clickLinkWithText( "Delete Artifact" );
 		assertDeleteArtifactPage();
 	}
-	
+		
 	public void addArtifact( String groupId, String artifactId, String version, String packaging, String artifactFilePath, String repositoryId )
 	{
 		addArtifact(groupId, artifactId, version, packaging, true,  artifactFilePath, repositoryId);
@@ -78,7 +81,7 @@ public abstract class AbstractArtifactManagementTest
 	
 	public void deleteArtifact( String groupId, String artifactId, String version, String repositoryId )
 	{
-		goToAddArtifactPage();
+		goToDeleteArtifactPage();
 		setFieldValue( "groupId" , groupId );
 		setFieldValue( "artifactId" , artifactId );
 		setFieldValue( "version" , version );

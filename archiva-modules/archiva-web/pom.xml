@@ -39,7 +39,7 @@
 
   <profiles>
     <profile>
-      <id>webapp-test</id>
+      <id>it</id>
       <modules>
         <module>archiva-webapp-test</module>        
       </modules>

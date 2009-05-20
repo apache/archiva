@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 public class ArtifactManagementTest
 	extends AbstractArtifactManagementTest
 {
+
 	
 	public void testAddArtifactNullValues()
 	{
@@ -30,6 +31,7 @@ public class ArtifactManagementTest
 	@Test(dependsOnMethods = { "testAddArtifactNoGroupId" } )
 	public void testAddArtifactNoArtifactId()
 	{
+		
 		addArtifact( getGroupId() , " ", getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
 		assertTextPresent( "You must enter an artifactId." );
 	}
@@ -39,6 +41,13 @@ public class ArtifactManagementTest
 	{
 		addArtifact( getGroupId() , getArtifactId(), " ", getPackaging() , getArtifactFilePath(), getRepositoryId() );
 		assertTextPresent( "You must enter a version." );
+	}
+	
+	@Test(dependsOnMethods = { "testAddArtifactNoGroupId" } )
+	public void testAddArtifactInvalidVersion()
+	{
+		addArtifact( getGroupId() , getArtifactId(), "asdf", getPackaging() , getArtifactFilePath(), getRepositoryId() );
+		assertTextPresent( "Invalid version." );
 	}
 	
 	@Test(dependsOnMethods = { "testAddArtifactNoGroupId" } )
@@ -59,5 +68,48 @@ public class ArtifactManagementTest
 	{
 		addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
 		assertTextPresent( "Artifact 'test:test:1.0' was successfully deployed to repository 'internal'" );
+	}
+	
+	public void testAddArtifactValidValues1()
+	{
+		String groupId = p.getProperty( "GROUPID1" );
+		String artifactId = p.getProperty( "ARTIFACTID1" );
+		String version = p.getProperty( "VERSION1" );
+		String packaging = p.getProperty( "PACKAGING1" );
+		String repositoryId = p.getProperty( "REPOSITORYID1" );
+		addArtifact( groupId , artifactId, version, packaging , getArtifactFilePath(), repositoryId );
+		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deployed to repository 'internal'" );
+	}
+	
+	@Test(dependsOnMethods = { "testAddArtifactValidValues1" } )
+	public void testDeleteArtifact()
+	{
+		deleteArtifact( "delete", "delete", "1.0", "internal");
+		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deleted from repository 'internal'" );
+	}
+	
+	public void testDeleteArtifactNoGroupId()
+	{
+		deleteArtifact( " ", "delete", "1.0", "internal");
+		assertTextPresent( "You must enter a groupId." );
+	}
+	
+	public void testDeleteArtifactNoArtifactId()
+	{
+		deleteArtifact( "delete", " ", "1.0", "internal");
+		assertTextPresent( "You must enter an artifactId." );
+	}
+	
+	public void testDeleteArtifactNoVersion()
+	{
+		deleteArtifact( "delete", "delete", " ", "internal");
+		assertTextPresent( "Invalid version." );
+		assertTextPresent( "You must enter a version." );
+	}
+	
+	public void testDeleteArtifactInvalidVersion()
+	{
+		deleteArtifact( "delete", "delete", "asdf", "internal");
+		assertTextPresent( "Invalid version." );
 	}
 }
