@@ -13,3 +13,5 @@ Installing Apache Archiva
 
     * {{{webapp.html} Installing as a web application}}
 
+    * {{{upgrade.html} Upgrading to a new version}}
+

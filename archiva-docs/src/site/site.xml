@@ -48,6 +48,7 @@
       <item name="Installing Archiva"        href="/adminguide/installing.html" collapse="true">
         <item name="Installing Standalone"   href="/adminguide/standalone.html" />
         <item name="Installing as a WAR"     href="/adminguide/webapp.html" />
+        <item name="Upgrading to a New Version"     href="/adminguide/upgrade.html" />
       </item>
       <item name="Databases"                 href="/adminguide/databases.html" />
       <item name="Security"                  href="/adminguide/security.html" collapse="true">

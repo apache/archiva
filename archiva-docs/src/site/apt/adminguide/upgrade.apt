@@ -1,0 +1,23 @@
+ ------
+ Upgrading Archiva
+ ------
+
+Upgrading Archiva
+
+   Upgrading Archiva is straightforward if the directions for separating the base from the installation above are followed. Simply retain the <<<data/repositories>>> and <<<data/databases/users>>> directories,
+   and the configuration files (in the conf directory, or the other locations specified above) and use a new extracted installation of Archiva.
+
+   Note that the <<<users>>> database must always be retained as it contains the permissions and user information across versions. However,
+   in order to take advantage of the improvements in search in Archiva 1.1 (and higher versions), s.a. search by java class/package/method, the archiva database must
+   be re-created. So you need to delete the <<<data/databases/archiva>>> directory, delete the <<<.index>>> directories of your respective repositories, and execute the repository and database scanners after
+   starting Archiva.
+
+   The repository data is portable across versions, and multiple versions can be configured to look at the same repositories (though not run simultaneously).
+
+* Upgrading Archiva from 1.1 to 1.2
+
+   Because of the changes in the search implementation in 1.2, a few additional steps need to be performed when upgrading Archiva from 1.x to
+   1.2. Since the format of the index has changed in 1.2, the old index directory (which is located at <<</path/to/repo/.index>>> by default) needs to
+   be removed. And in order for the artifacts in the repository to be indexed again, the last modified date of the artifacts need to be updated.
+   To do this, just execute <<find [REPOSITORY_DIRECTORY_NAME] | xargs touch>> at the base directory where the repository resides. Execute the repository
+   scanning so that the new index will be generated.
