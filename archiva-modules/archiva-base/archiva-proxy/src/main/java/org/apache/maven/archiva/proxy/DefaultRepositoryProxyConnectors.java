@@ -466,11 +466,11 @@ public class DefaultRepositoryProxyConnectors
             String emsg = "Transfer not attempted on " + url + " : " + e.getMessage();
             if ( fileExists( resource ) )
             {
-                log.info( emsg + ": using already present local file." );
+                log.debug( emsg + ": using already present local file." );
                 return resource;
             }
 
-            log.info( emsg );
+            log.warn( emsg );
             return null;
         }
 
@@ -546,7 +546,7 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( PolicyViolationException e )
             {
-                log.info( "Transfer invalidated from " + url + " : " + e.getMessage() );
+                log.warn( "Transfer invalidated from " + url + " : " + e.getMessage() );
                 executeConsumers = false;
                 if ( !fileExists( tmpResource ) )
                 {
