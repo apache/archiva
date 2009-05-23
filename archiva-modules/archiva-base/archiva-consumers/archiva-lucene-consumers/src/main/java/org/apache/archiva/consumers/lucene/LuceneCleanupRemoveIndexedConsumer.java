@@ -19,10 +19,6 @@ package org.apache.archiva.consumers.lucene;
  * under the License.
  */
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -35,12 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.index.ArtifactContext;
 import org.sonatype.nexus.index.ArtifactContextProducer;
-import org.sonatype.nexus.index.ArtifactInfo;
 import org.sonatype.nexus.index.DefaultArtifactContextProducer;
 import org.sonatype.nexus.index.NexusIndexer;
+import org.sonatype.nexus.index.context.DefaultIndexingContext;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
-import org.sonatype.nexus.index.creator.AbstractIndexCreator;
+import org.sonatype.nexus.index.IndexerEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,37 +55,41 @@ public class LuceneCleanupRemoveIndexedConsumer
 
     private RepositoryContentFactory repoFactory;
 
-    private NexusIndexer indexer;
-
     private ArtifactContextProducer artifactContextProducer;
 
     private IndexingContext context;
-
-    public LuceneCleanupRemoveIndexedConsumer( RepositoryContentFactory repoFactory, NexusIndexer indexer )
+    
+    private IndexerEngine indexerEngine;
+    
+    //TODO - deng - use indexerEngine to remove documents instead of directly using the IndexingContext!
+    
+    public LuceneCleanupRemoveIndexedConsumer( RepositoryContentFactory repoFactory, IndexerEngine indexerEngine )
     {
         this.repoFactory = repoFactory;
-        this.indexer = indexer;
+        this.indexerEngine = indexerEngine;
         this.artifactContextProducer = new DefaultArtifactContextProducer();
     }
-
+  
     public void beginScan()
     {
-
     }
 
     public void completeScan()
     {
-        try
+        /*synchronized( indexerEngine )
         {
-            context.getIndexWriter().close();
+            try
+            {
+                //context.getIndexWriter().close();
 
-            //indexerEngine.endIndexing( context );
-            indexer.removeIndexingContext( context, false );
-        }
-        catch ( IOException e )
-        {
-            log.error( e.getMessage() );
-        }
+                //indexerEngine.endIndexing( context );
+                //indexer.removeIndexingContext( context, false );
+            }
+            catch ( IOException e )
+            {
+                log.error( e.getMessage() );
+            }
+        }        */
     }
 
     public List<String> getIncludedTypes()
@@ -101,11 +101,21 @@ public class LuceneCleanupRemoveIndexedConsumer
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
     {
-        try
-        {
-            ManagedRepositoryContent repoContent =
-                repoFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
-
+        //synchronized( context )
+        //{
+            // TODO - deng - block this if there is the nexus indexer consumer is executing?
+            ManagedRepositoryContent repoContent = null;
+            
+            try
+            {
+               repoContent =
+                    repoFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
+            }
+            catch ( RepositoryException e )
+            {
+                throw new ConsumerException( "Can't run index cleanup consumer: " + e.getMessage() );
+            }
+    
             ManagedRepositoryConfiguration repository = repoContent.getRepository();
             String indexDir = repository.getIndexDir();
             File managedRepository = new File( repository.getLocation() );
@@ -118,70 +128,81 @@ public class LuceneCleanupRemoveIndexedConsumer
             else
             {
                 indexDirectory = new File( managedRepository, ".indexer" );
+            }    
+           
+            try
+            {
+                context =
+                    new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository,
+                                                indexDirectory, null, null, NexusIndexer.FULL_INDEX, false );
+                //context =
+                //    indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository,
+                //                                indexDirectory, null, null, NexusIndexer.FULL_INDEX );
+                context.setSearchable( repository.isScanned() );
+            }
+            catch ( UnsupportedExistingLuceneIndexException e )
+            {
+                log.warn( "Unsupported index format.", e );
+                return;
+            }
+            catch ( IOException e )
+            {   
+                log.warn( "Unable to open index at " + indexDirectory.getAbsoluteFile(), e );
+                return;
             }
 
-            synchronized ( indexer )
+            try
             {
-                try
+                File artifactFile = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
+                
+                if ( !artifactFile.exists() )
                 {
-                    context =
-                        indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository,
-                                                    indexDirectory, null, null, NexusIndexer.FULL_INDEX );
-                    context.setSearchable( repository.isScanned() );
+                    ArtifactContext artifactContext =
+                        artifactContextProducer.getArtifactContext( context, artifactFile );
 
-                    File artifactFile = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
-
-                    if ( !artifactFile.exists() )
+                    if ( artifactContext != null )
                     {
-                        ArtifactContext artifactContext =
-                            artifactContextProducer.getArtifactContext( context, artifactFile );
+                        //indexerEngine.remove( context, artifactContext );
 
-                        if ( artifactContext != null )
-                        {
-                            //indexerEngine.remove( context, artifactContext );
-
-                            // hack for deleting documents - indexer engine's remove(...) isn't working for me
-                            removeDocuments( artifactContext );
-                        }
+                        indexerEngine.remove( context, artifactContext );
+                        
+                        context.close( false );
+                        // hack for deleting documents - indexer engine's remove(...) isn't working for me
+                        //removeDocuments( artifactContext );
                     }
                 }
-                catch ( UnsupportedExistingLuceneIndexException e )
-                {
-                    log.error( "Unsupported index format.", e );
-                }
-                catch ( IOException e )
-                {
-                    log.error( "Unable to open index at " + indexDirectory.getAbsoluteFile(), e );
-                }
-            }
-        }
-        catch ( RepositoryException e )
-        {
-            throw new ConsumerException( "Can't run index cleanup consumer: " + e.getMessage() );
-        }
+            }                
+            catch ( IOException e )
+            {
+                log.error( "Unable to open index at " + indexDirectory.getAbsoluteFile(), e );
+            }           
+       // }
     }
 
-    private void removeDocuments( ArtifactContext ac )
+   /* private void removeDocuments( ArtifactContext ac )
         throws IOException
     {
-        IndexWriter w = context.getIndexWriter();
-
-        ArtifactInfo ai = ac.getArtifactInfo();
-        String uinfo = AbstractIndexCreator.getGAV( ai.groupId, ai.artifactId, ai.version, ai.classifier, ai.packaging );
-
-        Document doc = new Document();
-        doc.add( new Field( ArtifactInfo.DELETED, uinfo, Field.Store.YES, Field.Index.NO ) );
-        doc.add( new Field( ArtifactInfo.LAST_MODIFIED, Long.toString( System.currentTimeMillis() ), Field.Store.YES,
-                            Field.Index.NO ) );
-
-        w.addDocument( doc );
-
-        w.deleteDocuments( new Term( ArtifactInfo.UINFO, uinfo ) );
-
-        w.commit();
-
-        context.updateTimestamp();
-    }
+        synchronized( indexerEngine )
+        {
+            IndexWriter w = context.getIndexWriter();
+    
+            ArtifactInfo ai = ac.getArtifactInfo();
+            String uinfo = AbstractIndexCreator.getGAV( ai.groupId, ai.artifactId, ai.version, ai.classifier, ai.packaging );
+    
+            Document doc = new Document();
+            doc.add( new Field( ArtifactInfo.DELETED, uinfo, Field.Store.YES, Field.Index.NO ) );
+            doc.add( new Field( ArtifactInfo.LAST_MODIFIED, Long.toString( System.currentTimeMillis() ), Field.Store.YES,
+                                Field.Index.NO ) );
+    
+            w.addDocument( doc );
+    
+            w.deleteDocuments( new Term( ArtifactInfo.UINFO, uinfo ) );
+    
+            w.commit();
+    
+            context.updateTimestamp();
+        }
+    }*/
 
     public String getDescription()
     {

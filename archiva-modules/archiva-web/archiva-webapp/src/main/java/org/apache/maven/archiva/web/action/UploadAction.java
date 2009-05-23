@@ -56,6 +56,9 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelWriter;
 import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
+import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
@@ -65,6 +68,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
@@ -145,6 +149,11 @@ public class UploadAction
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaTaskScheduler scheduler;
     
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -345,7 +354,8 @@ public class UploadAction
             try
             {
                 copyFile( artifactFile, targetPath, filename );
-                consumers.executeConsumers( repoConfig, repository.toFile( artifactReference ) );
+                queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );
+                //consumers.executeConsumers( repoConfig, repository.toFile( artifactReference ) );
             }
             catch ( IOException ie )
             {
@@ -365,7 +375,8 @@ public class UploadAction
                 try
                 {
                     File generatedPomFile = createPom( targetPath, pomFilename );
-                    consumers.executeConsumers( repoConfig, generatedPomFile );
+                    queueRepositoryTask( repoConfig.getId(), generatedPomFile );
+                    //consumers.executeConsumers( repoConfig, generatedPomFile );
                 }
                 catch ( IOException ie )
                 {
@@ -384,7 +395,8 @@ public class UploadAction
                 try
                 {                    
                     copyFile( pomFile, targetPath, pomFilename );
-                    consumers.executeConsumers( repoConfig, new File( targetPath, pomFilename ) );
+                    queueRepositoryTask( repoConfig.getId(), new File( targetPath, pomFilename ) );
+                    //consumers.executeConsumers( repoConfig, new File( targetPath, pomFilename ) );
                 }
                 catch ( IOException ie )
                 {
@@ -584,5 +596,20 @@ public class UploadAction
             log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
+    }
+    
+    private void queueRepositoryTask( String repositoryId, File localFile )
+    {
+        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile.getName(), localFile );
+        
+        try
+        {
+            scheduler.queueRepositoryTask( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( "Unable to queue repository task to execute consumers on resource file ['" +
+                localFile.getName() + "']." );
+        }
     }
 }

@@ -107,17 +107,18 @@ public class ArchivaRepositoryScanningTaskExecutor
             throw new TaskExecutionException("Unable to execute RepositoryTask with blank repository Id.");
         }
 
-        log.info( "Executing task from queue with job name: " + repoTask.getName() );
-
         ManagedRepositoryConfiguration arepo = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoTask.getRepositoryId() );
         
         // execute consumers on resource file if set
         if( repoTask.getResourceFile() != null )
         {
+            log.debug( "Executing task from queue with job name: " + repoTask.getName() );
             consumers.executeConsumers( arepo, repoTask.getResourceFile() );
         }
         else
         {
+            log.info( "Executing task from queue with job name: " + repoTask.getName() );
+            
             // otherwise, execute consumers on whole repository
             try
             {   

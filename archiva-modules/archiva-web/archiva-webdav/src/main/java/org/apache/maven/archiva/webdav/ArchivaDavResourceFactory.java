@@ -83,6 +83,7 @@ import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
+import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
@@ -179,6 +180,11 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement
      */
     private ArchivaTaskScheduler scheduler;
+    
+    /**
+     * @plexus.requirement role-hint="repository-scanning"
+     */
+    private TaskQueueExecutor repoScanningTaskQueueExecutor;
 
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
@@ -271,7 +277,7 @@ public class ArchivaDavResourceFactory
                             new ArchivaDavResource( metadataChecksum.getAbsolutePath(), logicalResource.getPath(),
                                                     null, request.getRemoteAddr(), activePrincipal,
                                                     request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                    auditListeners, consumers, scheduler, taskExecutor );
+                                                    auditListeners, scheduler );
                     }
                 }
                 else
@@ -306,7 +312,7 @@ public class ArchivaDavResourceFactory
                                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                                         null, request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                        auditListeners, consumers, scheduler, taskExecutor );
+                                                        auditListeners, scheduler );
                         }
                         catch ( RepositoryMetadataException r )
                         {
@@ -411,7 +417,7 @@ public class ArchivaDavResourceFactory
                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                         managedRepository.getRepository(), request.getRemoteAddr(), activePrincipal,
                                         request.getDavSession(), archivaLocator, this, mimeTypes, auditListeners,
-                                        consumers, scheduler, taskExecutor );
+                                        scheduler );
 
             if ( WebdavMethodUtil.isReadMethod( request.getMethod() ) )
             {
@@ -442,7 +448,7 @@ public class ArchivaDavResourceFactory
                                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                                         managedRepository.getRepository(), request.getRemoteAddr(),
                                                         activePrincipal, request.getDavSession(), archivaLocator, this,
-                                                        mimeTypes, auditListeners, consumers, scheduler, taskExecutor );
+                                                        mimeTypes, auditListeners, scheduler );
                         }
                         catch ( LayoutException e )
                         {
@@ -517,7 +523,7 @@ public class ArchivaDavResourceFactory
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource );
         DavResource resource =
             new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource, managedRepository.getRepository(),
-                                    davSession, archivaLocator, this, mimeTypes, auditListeners, consumers, scheduler, taskExecutor );
+                                    davSession, archivaLocator, this, mimeTypes, auditListeners, scheduler );
 
         resource.addLockManager( lockManager );
         return resource;

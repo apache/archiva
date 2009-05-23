@@ -37,7 +37,6 @@ import org.sonatype.nexus.index.ArtifactInfo;
 import org.sonatype.nexus.index.FlatSearchRequest;
 import org.sonatype.nexus.index.FlatSearchResponse;
 import org.sonatype.nexus.index.NexusIndexer;
-import org.sonatype.nexus.index.context.IndexContextInInconsistentStateException;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 
@@ -154,10 +153,6 @@ public class NexusRepositorySearch
             }
             
             return convertToSearchResults( response, limits );
-        }
-        catch ( IndexContextInInconsistentStateException e )
-        {
-            throw new RepositorySearchException( e );
         }
         catch ( IOException e )
         {

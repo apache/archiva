@@ -37,7 +37,7 @@ import org.sonatype.nexus.index.FlatSearchRequest;
 import org.sonatype.nexus.index.FlatSearchResponse;
 import org.sonatype.nexus.index.NexusIndexer;
 import org.sonatype.nexus.index.context.IndexingContext;
-import org.sonatype.nexus.index.creator.IndexerEngine;
+import org.sonatype.nexus.index.IndexerEngine;
 import org.sonatype.nexus.index.packer.IndexPacker;
 
 public class NexusIndexerConsumerTest
@@ -65,7 +65,9 @@ public class NexusIndexerConsumerTest
         
         indexerEngine = ( IndexerEngine ) lookup( IndexerEngine.class );
         
-        nexusIndexerConsumer = new NexusIndexerConsumer( nexusIndexer, indexPacker, indexerEngine );
+        //nexusIndexerConsumer = new NexusIndexerConsumer( nexusIndexer, indexPacker, indexerEngine );
+        
+        nexusIndexerConsumer = new NexusIndexerConsumer( indexPacker, indexerEngine );
                 
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
@@ -152,8 +154,8 @@ public class NexusIndexerConsumerTest
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
         assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
         
-        // should return only 1 hit - artifact should have just been updated and not added as a separate doc
-        assertEquals( 1, topDocs.totalHits );
+        // should return 2 hits - this will be filtered out by the NexusRespositorySearch when it returns the results!
+        assertEquals( 2, topDocs.totalHits );
     }
     
     public void testIndexerIndexArtifactThenPom()
@@ -184,5 +186,5 @@ public class NexusIndexerConsumerTest
         
         // should return only 1 hit 
         assertEquals( 1, topDocs.totalHits );
-    }
+    }    
 }

@@ -55,6 +55,7 @@ import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.registry.RegistryException;
 
 /**
@@ -312,10 +313,7 @@ public class AdministrationServiceImpl
             }
         }
 
-        RepositoryTask task = new RepositoryTask();
-        task.setRepositoryId( repoId );
-        task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repoId );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoId, "" );
 
         taskScheduler.queueRepositoryTask( task );          
         

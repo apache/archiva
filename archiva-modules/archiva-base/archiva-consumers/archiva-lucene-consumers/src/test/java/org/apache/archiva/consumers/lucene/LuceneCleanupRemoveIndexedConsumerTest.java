@@ -32,9 +32,7 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.sonatype.nexus.index.ArtifactContext;
 import org.sonatype.nexus.index.ArtifactContextProducer;
-import org.sonatype.nexus.index.ArtifactInfo;
-import org.sonatype.nexus.index.NexusIndexer;
-import org.sonatype.nexus.index.context.DefaultIndexingContext;
+import org.sonatype.nexus.index.IndexerEngine;
 import org.sonatype.nexus.index.context.IndexingContext;
 
 public class LuceneCleanupRemoveIndexedConsumerTest
@@ -42,15 +40,15 @@ public class LuceneCleanupRemoveIndexedConsumerTest
 {
     private LuceneCleanupRemoveIndexedConsumer consumer;
 
-    private MockControl indexerControl;
-
-    private NexusIndexer indexer;
-
     private RepositoryContentFactory repoFactory;
 
     private MockControl repoFactoryControl;
 
     private ManagedRepositoryConfiguration repositoryConfig;
+    
+    private MockControl indexerEngineControl;
+    
+    private IndexerEngine indexerEngine;
 
     private MockControl contextProducerControl;
 
@@ -65,14 +63,14 @@ public class LuceneCleanupRemoveIndexedConsumerTest
     {
         super.setUp();
 
-        indexerControl = MockControl.createControl( NexusIndexer.class );
-        indexerControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        indexer = (NexusIndexer) indexerControl.getMock();
-
+        indexerEngineControl = MockControl.createControl( IndexerEngine.class );
+        indexerEngineControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
+        indexerEngine = (IndexerEngine) indexerEngineControl.getMock();
+        
         repoFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
         repoFactory = (RepositoryContentFactory) repoFactoryControl.getMock();
 
-        consumer = new LuceneCleanupRemoveIndexedConsumer( repoFactory, indexer );
+        consumer = new LuceneCleanupRemoveIndexedConsumer( repoFactory, indexerEngine );
 
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
@@ -85,6 +83,7 @@ public class LuceneCleanupRemoveIndexedConsumerTest
         repositoryConfig.setIndexDir( getBasedir() + "/target/test-classes/test-repo/.cleanup-index" );
 
         contextProducerControl = MockControl.createControl( ArtifactContextProducer.class );
+        contextProducerControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         artifactContextProducer = (ArtifactContextProducer) contextProducerControl.getMock();
 
         consumer.setArtifactContextProducer( artifactContextProducer );
@@ -109,37 +108,27 @@ public class LuceneCleanupRemoveIndexedConsumerTest
         ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
         repoContent.setRepository( repositoryConfig );
 
-        IndexingContext context =
-            new DefaultIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
-                                        new File( repositoryConfig.getLocation() ),
-                                        new File( repositoryConfig.getIndexDir() ), null, null,
-                                        NexusIndexer.FULL_INDEX, false );
-
+        IndexingContext context = null; 
+            
         File artifactFile =
             new File( repositoryConfig.getLocation(),
                       "org/apache/archiva/archiva-lucene-consumers/1.2/archiva-lucene-consumers-1.2.jar" );
-        ArtifactInfo ai = new ArtifactInfo( "test-repo", "org.apache.archiva", "archiva-lucene-consumers", "1.2", null );
-
+       
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( repositoryConfig.getId() ),
                                             repoContent );
-        indexerControl.expectAndReturn( indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
-                                                                    new File( repositoryConfig.getLocation() ),
-                                                                    new File( repositoryConfig.getIndexDir() ), null,
-                                                                    null, NexusIndexer.FULL_INDEX ), context );
-        contextProducerControl.expectAndReturn( artifactContextProducer.getArtifactContext( context, artifactFile ), ac );
-        acControl.expectAndReturn( ac.getArtifactInfo(), ai );
-
-        repoFactoryControl.replay();
-        indexerControl.replay();
+        contextProducerControl.expectAndReturn( artifactContextProducer.getArtifactContext( context, artifactFile ), ac );        
+        indexerEngine.remove( context, ac );
+        indexerEngineControl.setDefaultVoidCallable();
+        
+        repoFactoryControl.replay();      
         contextProducerControl.replay();
-        acControl.replay();
-
+        indexerEngineControl.replay();
+       
         consumer.processArchivaArtifact( artifact );
 
-        repoFactoryControl.verify();
-        indexerControl.verify();
+        repoFactoryControl.verify();       
         contextProducerControl.verify();
-        acControl.verify();
+        indexerEngineControl.verify();       
     }
 
     public void testProcessArtifactArtifactExists()
@@ -150,25 +139,13 @@ public class LuceneCleanupRemoveIndexedConsumerTest
         ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
         repoContent.setRepository( repositoryConfig );
 
-        IndexingContext context =
-            new DefaultIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
-                                        new File( repositoryConfig.getLocation() ),
-                                        new File( repositoryConfig.getIndexDir() ), null, null,
-                                        NexusIndexer.FULL_INDEX, false );
-
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( repositoryConfig.getId() ),
                                             repoContent );
-        indexerControl.expectAndReturn( indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
-                                                                    new File( repositoryConfig.getLocation() ),
-                                                                    new File( repositoryConfig.getIndexDir() ), null,
-                                                                    null, NexusIndexer.FULL_INDEX ), context );
 
         repoFactoryControl.replay();
-        indexerControl.replay();
 
         consumer.processArchivaArtifact( artifact );
 
         repoFactoryControl.verify();
-        indexerControl.verify();
     }
 }

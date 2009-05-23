@@ -33,9 +33,10 @@ import org.easymock.MockControl;
 import org.sonatype.nexus.index.ArtifactContext;
 import org.sonatype.nexus.index.ArtifactContextProducer;
 import org.sonatype.nexus.index.NexusIndexer;
+import org.sonatype.nexus.index.context.DefaultIndexingContext;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
-import org.sonatype.nexus.index.creator.IndexerEngine;
+import org.sonatype.nexus.index.IndexerEngine;
 
 public class NexusRepositorySearchTest
     extends PlexusInSpringTestCase
@@ -119,13 +120,15 @@ public class NexusRepositorySearchTest
     private void createIndex( String repository, List<File> filesToBeIndexed )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
-        context =
-            indexer.addIndexingContext( repository, repository, new File( getBasedir(), "/target/test-classes/" +
-                repository ), new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ), null, null,
-                                        NexusIndexer.FULL_INDEX );
+        context = new DefaultIndexingContext( repository, repository, new File( getBasedir(), "/target/test-classes/" +
+                    repository ), new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ), null, null,
+                    NexusIndexer.FULL_INDEX, false );
+            //indexer.addIndexingContext( repository, repository, new File( getBasedir(), "/target/test-classes/" +
+            //    repository ), new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ), null, null,
+            //                            NexusIndexer.FULL_INDEX );
         context.setSearchable( true );
 
-        indexerEngine.beginIndexing( context );
+        //indexerEngine.beginIndexing( context );
 
         for ( File artifactFile : filesToBeIndexed )
         {
@@ -133,8 +136,9 @@ public class NexusRepositorySearchTest
             indexerEngine.index( context, ac );
         }
 
-        indexerEngine.endIndexing( context );
-        indexer.removeIndexingContext( context, false );
+        context.close( false );
+        //indexerEngine.endIndexing( context );
+        //indexer.removeIndexingContext( context, false );
         
         assertTrue( new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ).exists() );
     }

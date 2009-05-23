@@ -42,6 +42,7 @@ import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
 
 public class DavResourceTest
     extends PlexusInSpringTestCase
@@ -67,6 +68,8 @@ public class DavResourceTest
     private RepositoryContentConsumers consumers;
 
     private ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
+    
+    private TaskQueueExecutor repoScanningTaskQueueExecutor;
 
     @Override
     protected void setUp()
@@ -100,8 +103,7 @@ public class DavResourceTest
     private DavResource getDavResource( String logicalPath, File file )
     {
         return new ArchivaDavResource( file.getAbsolutePath(), logicalPath, repository, session, resourceLocator,
-                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), consumers,
-                                       null, null );
+                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null );
     }
 
     public void testDeleteNonExistantResourceShould404()
@@ -308,7 +310,7 @@ public class DavResourceTest
         {
             return new ArchivaDavResource( baseDir.getAbsolutePath(), "/", repository, session, resourceLocator,
                                            resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
-                                           consumers, null, null );
+                                           null );
         }
     }
 }

@@ -35,6 +35,11 @@
     <appender-ref ref="redbackAuditLog" />
   </logger>
 
+ <logger name="org.apache.archiva.consumers">
+    <level value="info"/>
+    <appender-ref ref="rolling" />
+  </logger>
+  
   <logger name="org.apache.archiva">
     <level value="info"/>
     <appender-ref ref="rolling" />

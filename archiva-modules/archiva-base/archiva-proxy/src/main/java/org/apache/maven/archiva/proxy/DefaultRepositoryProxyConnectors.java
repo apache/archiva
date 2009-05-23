@@ -55,7 +55,9 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
@@ -68,6 +70,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,12 +130,12 @@ public class DefaultRepositoryProxyConnectors
     /**
      * @plexus.requirement
      */
-    private RepositoryContentConsumers consumers;
-
+    private WagonFactory wagonFactory;
+    
     /**
      * @plexus.requirement
      */
-    private WagonFactory wagonFactory;
+    private ArchivaTaskScheduler scheduler;
 
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException
@@ -470,7 +473,7 @@ public class DefaultRepositoryProxyConnectors
                 return resource;
             }
 
-            log.warn( emsg );
+            log.debug( emsg );
             return null;
         }
 
@@ -573,10 +576,26 @@ public class DefaultRepositoryProxyConnectors
         if ( executeConsumers )
         {
             // Just-in-time update of the index and database by executing the consumers for this artifact
-            consumers.executeConsumers( connector.getSourceRepository().getRepository(), resource );
+            //consumers.executeConsumers( connector.getSourceRepository().getRepository(), resource );
+            queueRepositoryTask( connector.getSourceRepository().getRepository().getId(), resource );
         }
 
         return resource;
+    }    
+    
+    private void queueRepositoryTask( String repositoryId, File localFile )
+    {
+        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile.getName(), localFile );
+        
+        try
+        {
+            scheduler.queueRepositoryTask( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( "Unable to queue repository task to execute consumers on resource file ['" +
+                localFile.getName() + "']." );
+        }
     }
 
     /**

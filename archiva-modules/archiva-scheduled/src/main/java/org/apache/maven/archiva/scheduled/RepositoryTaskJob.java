@@ -21,6 +21,7 @@ package org.apache.maven.archiva.scheduled;
 
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.scheduler.AbstractJob;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -58,9 +59,8 @@ public class RepositoryTaskJob
         TaskQueue taskQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
         String queuePolicy = dataMap.get( TASK_QUEUE_POLICY ).toString();
 
-        RepositoryTask task = new RepositoryTask();
+        RepositoryTask task = TaskCreator.createRepositoryTask( (String) dataMap.get( TASK_REPOSITORY ), "" );
         task.setName( context.getJobDetail().getName() );
-        task.setRepositoryId( (String) dataMap.get( TASK_REPOSITORY ) );
 
         try
         {

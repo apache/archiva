@@ -33,6 +33,7 @@ import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskNameSelectionPredicate;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskSelectionPredicate;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
@@ -169,25 +170,14 @@ public class DefaultArchivaTaskScheduler
     // MRM-848: Pre-configured repository initially appear to be empty
     private synchronized void queueInitialRepoScan( ManagedRepositoryConfiguration repoConfig )
     {
-        String repoId = repoConfig.getId();
-
-        RepositoryTask task = new RepositoryTask();
-        task.setRepositoryId( repoId );
-        task.setName( REPOSITORY_JOB + ":" + repoId + ":initial-scan" );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
-
-        boolean scheduleTask = false;
+        String repoId = repoConfig.getId();        
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoId, "initial-scan" );
 
         if ( queuedRepos.contains( repoId ) )
         {
             log.error( "Repository [" + repoId + "] is currently being processed or is already queued." );
         }
         else
-        {
-            scheduleTask = true;
-        }
-
-        if ( scheduleTask )
         {
             try
             {
@@ -408,6 +398,24 @@ public class DefaultArchivaTaskScheduler
     {
         synchronized( repositoryScanningQueue )
         {
+            if( task.getResourceFile() != null )
+            {
+                try
+                {
+                    if( isProcessingRepositoryTaskWithName( task.getName() ) )
+                    {
+                        log.debug( "Repository task '" + task.getName() + "' is already queued. Skipping task.." );
+                        return;
+                    }
+                }
+                catch ( ArchivaException e )
+                {
+                    log.warn( "Error occurred while checking if repository task '" + task.getName() +
+                        "' is already queued." );
+                }
+            }
+            
+            // add check if the task is already queued if it is a file scan 
             repositoryScanningQueue.put( task );
         }
     }

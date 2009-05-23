@@ -26,6 +26,7 @@ import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
@@ -58,11 +59,8 @@ public class SchedulerAction
             return SUCCESS;
         }
 
-        RepositoryTask task = new RepositoryTask();
-        task.setRepositoryId( repoid );
-        task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repoid );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
-
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoid, "" ); 
+        
         boolean scheduleTask = false;
 
         try

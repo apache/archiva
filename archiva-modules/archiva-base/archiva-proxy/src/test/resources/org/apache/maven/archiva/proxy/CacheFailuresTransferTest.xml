@@ -74,12 +74,12 @@
           <field-name>postDownloadPolicies</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
-          <field-name>consumers</field-name>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.policies.urlcache.UrlFailureCache</role>
           <field-name>urlFailureCache</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.scheduled.ArchivaTaskScheduler</role>
+          <field-name>scheduler</field-name>
         </requirement>
       </requirements>
     </component>
@@ -103,6 +103,12 @@
         <!-- 30 minutes = 1800 seconds  -->
         <time-to-live-seconds>1800</time-to-live-seconds>
       </configuration>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.archiva.database.ArchivaDAO</role>
+      <role-hint>jdo</role-hint>
+      <implementation>org.apache.maven.archiva.proxy.stubs.ArchivaDAOStub</implementation>
     </component>
   </components>
 </component-set>
