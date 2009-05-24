@@ -100,14 +100,6 @@ public class EffectiveProjectModelFilter
         // Clone submitted project (so that we don't mess with it) 
         effectiveProject = ArchivaModelCloner.clone( project );
         
-        System.out.println( "++++[EFFECTIVE Project] effectiveProject --> " + effectiveProject  );
-        IssueManagement iM = effectiveProject.getIssueManagement();
-        if( iM != null )
-        {
-            System.out.println( "++++[EFFECTIVE Project] issue mgnt URL --> " + iM.getUrl() + " $$ " +
-                iM.getIssueManagementUrl() );
-        }
-
         DEBUG( "Starting build of effective with: " + effectiveProject );
 
         // Merge in all the parent poms.

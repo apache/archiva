@@ -156,24 +156,6 @@ public class ProjectModelToDatabaseConsumer
         try
         {
             model = reader.read( artifactFile );
-
-            Organization organization = model.getOrganization();
-            if( organization != null )
-            {
-                log.info( "++++ [AfterRead] organization NAME --> " + organization.getName() + " : " + organization.getOrganizationName() );
-            }
-            
-            IssueManagement iM = model.getIssueManagement();
-            if( iM != null )
-            {
-                log.info( "++++ [AfterRead] issueMgnt url --> " + iM.getUrl() + " : " + iM.getIssueManagementUrl() );
-            }
-            
-            CiManagement ci = model.getCiManagement();
-            if( ci != null )
-            {
-                log.info( "++++ [AfterRead] ci url --> " + ci.getUrl() + " : " + ci.getCiUrl() );
-            }
             
             // The version should be updated to the artifact/filename version if it is a unique snapshot
             if ( VersionUtil.isUniqueSnapshot( artifact.getVersion() ) )
@@ -184,24 +166,6 @@ public class ProjectModelToDatabaseConsumer
             // Resolve the project model (build effective model, resolve expressions)
             model = effectiveModelFilter.filter( model );
             
-            organization = model.getOrganization();
-            if( organization != null )
-            {
-                log.info( "++++ [AfterFilter] organization NAME --> " + organization.getName() + " : " + organization.getOrganizationName() );
-            }
-            
-            iM = model.getIssueManagement();
-            if( iM != null )
-            {
-                log.info( "++++ [AfterFilter] issueMgnt url --> " + iM.getUrl() + " : " + iM.getIssueManagementUrl() );
-            }
-            
-            ci = model.getCiManagement();
-            if( ci != null )
-            {
-                log.info( "++++ [AfterFilter] ci url --> " + ci.getUrl() + " : " + ci.getCiUrl() );
-            }
-
             if ( isValidModel( model, repo, artifact ) )
             {
                 log.debug( "Adding project model to database - " + Keys.toKey( model ) );
@@ -209,25 +173,7 @@ public class ProjectModelToDatabaseConsumer
                 // Clone model, since DAO while detachingCopy resets its contents
                 // This changes contents of the cache in EffectiveProjectModelFilter
                 model = ArchivaModelCloner.clone( model );
-                
-                organization = model.getOrganization();
-                if( organization != null )
-                {
-                    log.info( "++++ [AfterClone] organization NAME --> " + organization.getName() + " : " + organization.getOrganizationName() );
-                }
-                
-                iM = model.getIssueManagement();
-                if( iM != null )
-                {
-                    log.info( "++++ [AfterClone] issueMgnt url --> " + iM.getUrl() + " : " + iM.getIssueManagementUrl() );
-                }
-                
-                ci = model.getCiManagement();
-                if( ci != null )
-                {
-                    log.info( "++++ [AfterClone] ci url --> " + ci.getUrl() + " : " + ci.getCiUrl() );
-                }
-                
+                                
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else
