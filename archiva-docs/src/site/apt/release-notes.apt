@@ -1,10 +1,10 @@
  -----
- Release Notes for Archiva 1.2
+ Release Notes for Archiva 1.2.1
  -----
 
-Release Notes for Archiva 1.2
+Release Notes for Archiva 1.2.1
 
-  The Apache Archiva team would like to announce the release of Archiva 1.2.  Archiva is {{{http://archiva.apache.org/download.html}
+  The Apache Archiva team would like to announce the release of Archiva 1.2.1.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -19,40 +19,50 @@ Release Notes for Archiva 1.2
 
   * The Audit log filename has been renamed to <<<archiva-audit.log>>> instead of <<<audit.log>>> so that the log directory can be shared with other applications.
 
-* New in Archiva 1.2
+* Major Fixes in Archiva 1.2.1
 
-** Struts 2
+** Indexing and Search
 
-   The Archiva web application has been migrated from Webwork to Struts 2.
+   The NPE problems in 1.2 have been fixed. See the Indexing section in {{{userguide/searching.html}Searching}} documentation for the
+   changes made.
 
-~~TODO add more info
+** Database upgrade problems
 
-** Repository Statistics
-
-   Repository statistics are now available to help in monitoring the Archiva repositories. Statistics include the number of artifacts and size
-   of the repository, the number of plugins, jars, wars, etc. For more details about this feature, see {{{adminguide/reports.html}Reports}}.
-
-** Search
-
-   An advanced or filter search feature is added for more specific searching of artifacts. More details are available in {{{userguide/searching.html}Searching}}.
-   Archiva is also now using the Nexus index format for it's index.
-
-~~TODO
-
-** Web Services
-
-   A web service for administrative tasks has been provided. It uses the Atlassian XML-RPC Binder which leverages the Apache XML-RPC.
-   For instructions on how to use this feature, see {{{adminguide/web-services.html}Using Archiva Web Services}}.
-
-** Delete Artifact
-
-   Artifacts can now be deleted from the web application. More details on how to use this feature is available in {{{userguide/delete-artifact.html}Deleting an Artifact}}.
+   Database upgrade problems from 1.1.x to 1.2.x have been fixed.
 
 ~~TODO
 
 * Release Notes
 
-  The Archiva 1.2 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.2.1 feature set can be seen in the {{{tour/index.html} feature tour}}.
+
+* Changes in Archiva 1.2.1
+
+  *24 May 2009*
+
+** Bug
+
+    * [MRM-1143] - Nexus indexer throws NPE on repository scan
+
+    * [MRM-1157] - Update from 1.1.3 to 1.2 fails with create table error
+
+    * [MRM-1160] - Nexus Indexer throws NPE intermittently on retrieval
+
+    * [MRM-1161] - indexing causes NullPointer when getting a SNAPSHOT that has been deployed with maven 2.1
+
+    * [MRM-1167] - Quicksearch from the xmlrpc api returns no results
+
+    * [MRM-1172] - Invalid version validation error when uploading a jar with a four-part version number
+
+    * [MRM-1176] - SQLSyntaxErrorException is thrown when browsing for artifacts after upgrading from 1.3.1 to 1.2
+
+    * [MRM-1179] - NPE retrieving artifacts via http/webdav that are proxied
+
+    * [MRM-1188] - Index cleanup consumer fails when there is a current indexing task being executed (e.g. during repo scan, during artifact deployment or during proxy)
+
+** Improvement
+
+    * [MRM-1165] - Move out upgrade instructions from 'Installing Standalone' into it's own page
 
 * Changes in Archiva 1.2
 

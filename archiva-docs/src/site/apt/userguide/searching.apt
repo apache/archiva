@@ -48,7 +48,8 @@ Searching
   indexing task and queues it in an indexing task queue. This indexing task is in turn executed by a task executor and
   that's where the actual indexing happens. A similar indexing task is also created and queued as artifacts are deployed
   in the Archiva repository or proxied from a remote repository. The reason behind this is to avoid multiple or simultaneous
-  update of the index (a repository scan might be executing while artifacts are being deployed in the repository). 
+  update of the index (a repository scan might be executing while artifacts are being deployed in the repository). <Note:>
+  This behavior applies for versions starting 1.2.1.
 
 * What Can Be Searched?
 
