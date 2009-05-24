@@ -212,5 +212,8 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
   <Note:> The maximum size of the file that can be uploaded is 10M by default. To alter the setting, change <<<struts.multipart.maxSize>>> in the file
    <<<WEB-INF/classes/struts.properties>>> in the Archiva web application (located under <<<apps/archiva>>> in the standalone distribution).
 
+  The upload form also provides validation checks against the required fields and the version. In Archiva 1.2.1, the version checking has been
+  loosened. See {{{http://jira.codehaus.org/browse/MRM-1172}MRM-1172}} for more details.
+
 ~~TODO: information for Maven 1, ant tasks, ivy, etc.
 
