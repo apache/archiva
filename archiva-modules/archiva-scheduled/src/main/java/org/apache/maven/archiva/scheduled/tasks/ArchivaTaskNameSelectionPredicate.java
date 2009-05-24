@@ -22,12 +22,12 @@ package org.apache.maven.archiva.scheduled.tasks;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 
-public class RepositoryTaskNameSelectionPredicate
+public class ArchivaTaskNameSelectionPredicate
     implements Predicate
 {
     private String taskName;
 
-    public RepositoryTaskNameSelectionPredicate( String taskName )
+    public ArchivaTaskNameSelectionPredicate( String taskName )
     {
         this.taskName = taskName;
     }
@@ -36,9 +36,9 @@ public class RepositoryTaskNameSelectionPredicate
     {
         boolean satisfies = false;
 
-        if ( object instanceof RepositoryTask )
+        if ( object instanceof ArchivaTask )
         {
-            RepositoryTask task = (RepositoryTask) object;
+            ArchivaTask task = (ArchivaTask) object;
             return StringUtils.equals( taskName, task.getName() );
         }
 

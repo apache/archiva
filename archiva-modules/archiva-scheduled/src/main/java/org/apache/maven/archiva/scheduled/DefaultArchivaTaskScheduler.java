@@ -29,9 +29,10 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
+import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskNameSelectionPredicate;
+import org.apache.maven.archiva.scheduled.tasks.ArchivaTaskNameSelectionPredicate;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskSelectionPredicate;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
@@ -80,6 +81,11 @@ public class DefaultArchivaTaskScheduler
      * @plexus.requirement role-hint="repository-scanning"
      */
     private TaskQueue repositoryScanningQueue;
+    
+    /**
+     * @plexus.requirement role-hint="indexing"
+     */
+    private TaskQueue indexingQueue;
 
     /**
      * @plexus.requirement
@@ -102,6 +108,8 @@ public class DefaultArchivaTaskScheduler
     public static final String REPOSITORY_JOB = "repository-job";
 
     public static final String REPOSITORY_JOB_TRIGGER = "repository-job-trigger";
+    
+    public static final String INDEXING_JOB = "indexing-job";
 
     public static final String CRON_HOURLY = "0 0 * * * ?";
 
@@ -153,6 +161,255 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
+    public void stop()
+        throws StoppingException
+    {
+        try
+        {
+            scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );
+
+            for ( String job : jobs )
+            {
+                scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
+            }
+            jobs.clear();
+            queuedRepos.clear();
+        }
+        catch ( SchedulerException e )
+        {
+            throw new StoppingException( "Unable to unschedule tasks", e );
+        }
+    }
+
+    /**
+     * @see ArchivaTaskScheduler#scheduleDatabaseTasks()
+     */
+    public void scheduleDatabaseTasks()
+        throws TaskExecutionException
+    {
+        try
+        {
+            scheduleDatabaseJobs();
+        }
+        catch ( SchedulerException e )
+        {
+            throw new TaskExecutionException( "Unable to schedule repository jobs: " + e.getMessage(), e );
+
+        }
+    }
+
+    /**
+     * @see ArchivaTaskScheduler#isProcessingAnyRepositoryTask()
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isProcessingAnyRepositoryTask()
+        throws ArchivaException
+    {
+        synchronized( repositoryScanningQueue )
+        {
+            List<? extends Task> queue = null;
+    
+            try
+            {
+                queue = repositoryScanningQueue.getQueueSnapshot();
+            }
+            catch ( TaskQueueException e )
+            {
+                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+            }
+    
+            return !queue.isEmpty();
+        }
+    }
+
+    /**
+     * @see ArchivaTaskScheduler#isProcessingRepositoryTask(String)
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isProcessingRepositoryTask( String repositoryId )
+        throws ArchivaException
+    {
+        synchronized( repositoryScanningQueue )
+        {
+            List<? extends Task> queue = null;
+    
+            try
+            {
+                queue = repositoryScanningQueue.getQueueSnapshot();
+            }
+            catch ( TaskQueueException e )
+            {
+                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+            }
+    
+            return CollectionUtils.exists( queue, new RepositoryTaskSelectionPredicate( repositoryId ) );
+        }
+    }
+    
+    /**
+     * @see ArchivaTaskScheduler#isProcessingIndexingTaskWithName(String)
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isProcessingRepositoryTaskWithName( String taskName )
+        throws ArchivaException
+    {
+        synchronized( repositoryScanningQueue )
+        {
+            List<? extends Task> queue = null;
+    
+            try
+            {
+                queue = repositoryScanningQueue.getQueueSnapshot();
+            }
+            catch ( TaskQueueException e )
+            {
+                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+            }
+    
+            return CollectionUtils.exists( queue, new ArchivaTaskNameSelectionPredicate( taskName ) );
+        }
+    }
+
+    /**
+     * @see ArchivaTaskScheduler#isProcessingIndexingTaskWithName(String)
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isProcessingIndexingTaskWithName( String taskName )
+        throws ArchivaException
+    {
+        synchronized( indexingQueue )
+        {
+            List<? extends Task> queue = null;
+            
+            try
+            {
+                queue = indexingQueue.getQueueSnapshot();
+            }
+            catch ( TaskQueueException e )
+            {
+                throw new ArchivaException( "Unable to get indexing scanning queue:" + e.getMessage(), e );
+            }
+    
+            return CollectionUtils.exists( queue, new ArchivaTaskNameSelectionPredicate( taskName ) );
+        }
+    }
+    
+    /**
+     * @see ArchivaTaskScheduler#isProcessingDatabaseTask()
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isProcessingDatabaseTask()
+        throws ArchivaException
+    {
+        List<? extends Task> queue = null;
+
+        try
+        {
+            queue = databaseUpdateQueue.getQueueSnapshot();
+        }
+        catch ( TaskQueueException e )
+        {
+            throw new ArchivaException( "Unable to get database update queue:" + e.getMessage(), e );
+        }
+
+        return !queue.isEmpty();
+    }
+
+    /**
+     * @see ArchivaTaskScheduler#queueRepositoryTask(RepositoryTask)
+     */
+    public void queueRepositoryTask( RepositoryTask task )
+        throws TaskQueueException
+    {
+        synchronized( repositoryScanningQueue )
+        {
+            if( task.getResourceFile() != null )
+            {
+                try
+                {
+                    if( isProcessingRepositoryTaskWithName( task.getName() ) )
+                    {
+                        log.debug( "Repository task '" + task.getName() + "' is already queued. Skipping task.." );
+                        return;
+                    }
+                }
+                catch ( ArchivaException e )
+                {
+                    log.warn( "Error occurred while checking if repository task '" + task.getName() +
+                        "' is already queued." );
+                }
+            }
+            
+            // add check if the task is already queued if it is a file scan 
+            repositoryScanningQueue.put( task );
+        }
+    }
+
+    /**
+     * @see ArchivaTaskScheduler#queueDatabaseTask(DatabaseTask)
+     */
+    public void queueDatabaseTask( DatabaseTask task )
+        throws TaskQueueException
+    {
+        databaseUpdateQueue.put( task );
+    }
+    
+    /**
+     * @see ArchivaTaskScheduler#queueIndexingTask(ArtifactIndexingTask)
+     */
+    public void queueIndexingTask( ArtifactIndexingTask task )
+        throws TaskQueueException
+    {
+        indexingQueue.put( task );
+    }
+
+    public void configurationEvent( ConfigurationEvent event )
+    {
+        if ( event.getType() == ConfigurationEvent.SAVED )
+        {
+            try
+            {
+                scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );
+
+                scheduleDatabaseJobs();
+            }
+            catch ( SchedulerException e )
+            {
+                log.error( "Error restarting the database scanning job after property change." );
+            }
+
+            for ( String job : jobs )
+            {
+                try
+                {
+                    scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
+                }
+                catch ( SchedulerException e )
+                {
+                    log.error( "Error restarting the repository scanning job after property change." );
+                }
+            }
+            jobs.clear();
+
+            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration().getManagedRepositories();
+
+            for ( ManagedRepositoryConfiguration repoConfig : repositories )
+            {
+                if ( repoConfig.getRefreshCronExpression() != null )
+                {
+                    try
+                    {
+                        scheduleRepositoryJobs( repoConfig );
+                    }
+                    catch ( SchedulerException e )
+                    {
+                        log.error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
+                    }
+                }
+            }
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig )
     {
@@ -276,200 +533,5 @@ public class DefaultArchivaTaskScheduler
                 "ParseException in database scanning cron expression, disabling database scanning: " + e.getMessage() );
         }
 
-    }
-
-    public void stop()
-        throws StoppingException
-    {
-        try
-        {
-            scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );
-
-            for ( String job : jobs )
-            {
-                scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
-            }
-            jobs.clear();
-            queuedRepos.clear();
-        }
-        catch ( SchedulerException e )
-        {
-            throw new StoppingException( "Unable to unschedule tasks", e );
-        }
-    }
-
-    public void scheduleDatabaseTasks()
-        throws TaskExecutionException
-    {
-        try
-        {
-            scheduleDatabaseJobs();
-        }
-        catch ( SchedulerException e )
-        {
-            throw new TaskExecutionException( "Unable to schedule repository jobs: " + e.getMessage(), e );
-
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public boolean isProcessingAnyRepositoryTask()
-        throws ArchivaException
-    {
-        synchronized( repositoryScanningQueue )
-        {
-            List<? extends Task> queue = null;
-    
-            try
-            {
-                queue = repositoryScanningQueue.getQueueSnapshot();
-            }
-            catch ( TaskQueueException e )
-            {
-                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
-            }
-    
-            return !queue.isEmpty();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public boolean isProcessingRepositoryTask( String repositoryId )
-        throws ArchivaException
-    {
-        synchronized( repositoryScanningQueue )
-        {
-            List<? extends Task> queue = null;
-    
-            try
-            {
-                queue = repositoryScanningQueue.getQueueSnapshot();
-            }
-            catch ( TaskQueueException e )
-            {
-                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
-            }
-    
-            return CollectionUtils.exists( queue, new RepositoryTaskSelectionPredicate( repositoryId ) );
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    public boolean isProcessingRepositoryTaskWithName( String taskName )
-        throws ArchivaException
-    {
-        synchronized( repositoryScanningQueue )
-        {
-            List<? extends Task> queue = null;
-    
-            try
-            {
-                queue = repositoryScanningQueue.getQueueSnapshot();
-            }
-            catch ( TaskQueueException e )
-            {
-                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
-            }
-    
-            return CollectionUtils.exists( queue, new RepositoryTaskNameSelectionPredicate( taskName ) );
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public boolean isProcessingDatabaseTask()
-        throws ArchivaException
-    {
-        List<? extends Task> queue = null;
-
-        try
-        {
-            queue = databaseUpdateQueue.getQueueSnapshot();
-        }
-        catch ( TaskQueueException e )
-        {
-            throw new ArchivaException( "Unable to get database update queue:" + e.getMessage(), e );
-        }
-
-        return !queue.isEmpty();
-    }
-
-    public void queueRepositoryTask( RepositoryTask task )
-        throws TaskQueueException
-    {
-        synchronized( repositoryScanningQueue )
-        {
-            if( task.getResourceFile() != null )
-            {
-                try
-                {
-                    if( isProcessingRepositoryTaskWithName( task.getName() ) )
-                    {
-                        log.debug( "Repository task '" + task.getName() + "' is already queued. Skipping task.." );
-                        return;
-                    }
-                }
-                catch ( ArchivaException e )
-                {
-                    log.warn( "Error occurred while checking if repository task '" + task.getName() +
-                        "' is already queued." );
-                }
-            }
-            
-            // add check if the task is already queued if it is a file scan 
-            repositoryScanningQueue.put( task );
-        }
-    }
-
-    public void queueDatabaseTask( DatabaseTask task )
-        throws TaskQueueException
-    {
-        databaseUpdateQueue.put( task );
-    }
-
-    public void configurationEvent( ConfigurationEvent event )
-    {
-        if ( event.getType() == ConfigurationEvent.SAVED )
-        {
-            try
-            {
-                scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );
-
-                scheduleDatabaseJobs();
-            }
-            catch ( SchedulerException e )
-            {
-                log.error( "Error restarting the database scanning job after property change." );
-            }
-
-            for ( String job : jobs )
-            {
-                try
-                {
-                    scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
-                }
-                catch ( SchedulerException e )
-                {
-                    log.error( "Error restarting the repository scanning job after property change." );
-                }
-            }
-            jobs.clear();
-
-            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration().getManagedRepositories();
-
-            for ( ManagedRepositoryConfiguration repoConfig : repositories )
-            {
-                if ( repoConfig.getRefreshCronExpression() != null )
-                {
-                    try
-                    {
-                        scheduleRepositoryJobs( repoConfig );
-                    }
-                    catch ( SchedulerException e )
-                    {
-                        log.error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
-                    }
-                }
-            }
-        }
     }
 }

@@ -22,36 +22,26 @@ package org.apache.archiva.consumers.lucene;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.sonatype.nexus.index.ArtifactInfo;
-import org.sonatype.nexus.index.FlatSearchRequest;
-import org.sonatype.nexus.index.FlatSearchResponse;
-import org.sonatype.nexus.index.NexusIndexer;
-import org.sonatype.nexus.index.context.IndexingContext;
-import org.sonatype.nexus.index.IndexerEngine;
-import org.sonatype.nexus.index.packer.IndexPacker;
 
+/**
+ * NexusIndexerConsumerTest
+ */
 public class NexusIndexerConsumerTest
     extends PlexusInSpringTestCase
 {
     private KnownRepositoryContentConsumer nexusIndexerConsumer;
         
     private ManagedRepositoryConfiguration repositoryConfig;
-
-    private NexusIndexer nexusIndexer;
-
-    private IndexPacker indexPacker;
-
-    private IndexerEngine indexerEngine;
+    
+    private ArchivaTaskScheduler scheduler;
     
     @Override
     protected void setUp() 
@@ -59,15 +49,9 @@ public class NexusIndexerConsumerTest
     {
         super.setUp();
         
-        nexusIndexer = ( NexusIndexer ) lookup( NexusIndexer.class );
+        scheduler = ( ArchivaTaskScheduler ) lookup( ArchivaTaskScheduler.class );
         
-        indexPacker = ( IndexPacker ) lookup( IndexPacker.class );
-        
-        indexerEngine = ( IndexerEngine ) lookup( IndexerEngine.class );
-        
-        //nexusIndexerConsumer = new NexusIndexerConsumer( nexusIndexer, indexPacker, indexerEngine );
-        
-        nexusIndexerConsumer = new NexusIndexerConsumer( indexPacker, indexerEngine );
+        nexusIndexerConsumer = new NexusIndexerConsumer( scheduler );
                 
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
@@ -98,44 +82,39 @@ public class NexusIndexerConsumerTest
     public void testIndexerIndexArtifact()
         throws Exception
     {        
+        File artifactFile =
+            new File( repositoryConfig.getLocation(),
+                      "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
+
+        ArtifactIndexingTask task =
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
+        
         // begin scan
         Date now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
         nexusIndexerConsumer.completeScan();
-        
-        // search!
-        BooleanQuery q = new BooleanQuery();        
-        q.add( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.apache.archiva" ), Occur.SHOULD );
-        q.add( nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "archiva-index-methods-jar-test" ), Occur.SHOULD );
-        
-        IndexingContext context = nexusIndexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(), new File( repositoryConfig.getLocation() ),
-                                    new File( repositoryConfig.getLocation(), ".indexer" ), null, null, NexusIndexer.FULL_INDEX );
-        context.setSearchable( true );
-        
-        FlatSearchRequest request = new FlatSearchRequest( q );
-        FlatSearchResponse response = nexusIndexer.searchFlat( request );
-        
-        assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
-        assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
-        assertEquals( 1, response.getTotalHits() );
-        
-        Set<ArtifactInfo> results = response.getResults();
-        
-        ArtifactInfo artifactInfo = (ArtifactInfo) results.iterator().next();
-        assertEquals( "org.apache.archiva", artifactInfo.groupId );
-        assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
-        assertEquals( "test-repo", artifactInfo.repository );  
+                
+        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );        
     }
     
     public void testIndexerArtifactAlreadyIndexed()
         throws Exception
     {
+        File artifactFile =
+            new File( repositoryConfig.getLocation(),
+                      "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
+
+        ArtifactIndexingTask task =
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
+        
         // begin scan
         Date now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
         nexusIndexerConsumer.completeScan();
+        
+        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );
         
         // scan and index again
         now = Calendar.getInstance().getTime();
@@ -143,29 +122,33 @@ public class NexusIndexerConsumerTest
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );        
         nexusIndexerConsumer.completeScan();
         
-        // search!
-        BooleanQuery q = new BooleanQuery();        
-        q.add( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.apache.archiva" ), Occur.SHOULD );
-        q.add( nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "archiva-index-methods-jar-test" ), Occur.SHOULD );
-        
-        IndexSearcher searcher = new IndexSearcher( repositoryConfig.getLocation() + "/.indexer" );
-        TopDocs topDocs = searcher.search( q, null, 10 );
-        
-        assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
-        assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
-        
-        // should return 2 hits - this will be filtered out by the NexusRespositorySearch when it returns the results!
-        assertEquals( 2, topDocs.totalHits );
+        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );        
     }
     
     public void testIndexerIndexArtifactThenPom()
         throws Exception
-    {        
+    {    
+        File artifactFile =
+            new File( repositoryConfig.getLocation(),
+                      "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
+
+        ArtifactIndexingTask task =
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
+        
         // begin scan
         Date now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
         nexusIndexerConsumer.completeScan();
+        
+        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );
+        
+        artifactFile =
+            new File( repositoryConfig.getLocation(),
+                      "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );
+
+        task =
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
         
         // scan and index again
         now = Calendar.getInstance().getTime();
@@ -173,18 +156,12 @@ public class NexusIndexerConsumerTest
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );        
         nexusIndexerConsumer.completeScan();
         
-        // search!
-        BooleanQuery q = new BooleanQuery();        
-        q.add( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.apache.archiva" ), Occur.SHOULD );
-        q.add( nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "archiva-index-methods-jar-test" ), Occur.SHOULD );
-        
-        IndexSearcher searcher = new IndexSearcher( repositoryConfig.getLocation() + "/.indexer" );
-        TopDocs topDocs = searcher.search( q, null, 10 );
-        
-        assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
-        assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
-        
-        // should return only 1 hit 
-        assertEquals( 1, topDocs.totalHits );
-    }    
+        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );
+    }  
+    
+    @Override
+    protected String getPlexusConfigLocation()
+    {
+        return "/org/apache/archiva/consumers/lucene/LuceneConsumersTest.xml";
+    }
 }

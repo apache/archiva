@@ -25,7 +25,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
 
 /**
- *
+ * TaskCreator
+ * 
+ * Convenience class for creating Archiva tasks.
  */
 public class TaskCreator
 {
@@ -49,6 +51,20 @@ public class TaskCreator
     {
         RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix );
         task.setResourceFile( resourceFile );
+        
+        return task;
+    }
+    
+    public static ArtifactIndexingTask createIndexingTask( String repositoryId, File resource,
+                                                           String action )
+    {
+        ArtifactIndexingTask task = new ArtifactIndexingTask();
+        task.setRepositoryId( repositoryId );
+        task.setName( DefaultArchivaTaskScheduler.INDEXING_JOB + ":" + repositoryId + ":" + resource.getName() + ":" +
+            action );
+        task.setAction( action );
+        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+        task.setResourceFile( resource );
         
         return task;
     }

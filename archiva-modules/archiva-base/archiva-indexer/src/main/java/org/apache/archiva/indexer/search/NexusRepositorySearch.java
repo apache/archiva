@@ -66,8 +66,12 @@ public class NexusRepositorySearch
         throws RepositorySearchException
     {   
         addIndexingContexts( selectedRepos );
-                
+        
+        // since upgrade to nexus 2.0.0, query has changed from g:[QUERIED TERM]* to g:*[QUERIED TERM]*
+        //      resulting to more wildcard searches so we need to increase max clause count
+        BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE );
         BooleanQuery q = new BooleanQuery();
+        
         if( previousSearchTerms == null || previousSearchTerms.isEmpty() )
         {            
             constructQuery( term, q );
@@ -85,7 +89,7 @@ public class NexusRepositorySearch
             BooleanQuery iQuery = new BooleanQuery();
             constructQuery( term, iQuery );
             q.add( iQuery, Occur.MUST );
-        }        
+        }      
                     
         return search( limits, q );
     }

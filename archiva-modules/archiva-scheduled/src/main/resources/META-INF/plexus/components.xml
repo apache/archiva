@@ -100,5 +100,45 @@
       </configuration>
     </component>
   </components>
+  
+  <!--
+   |
+   |  Indexing Task Queue / Executor
+   |
+   -->
+   <component>
+      <role>org.codehaus.plexus.taskqueue.TaskQueue</role>
+      <role-hint>indexing</role-hint>
+      <implementation>org.codehaus.plexus.taskqueue.DefaultTaskQueue</implementation>
+      <lifecycle-handler>plexus-configurable</lifecycle-handler>
+      <configuration>
+        <task-entry-evaluators>
+        </task-entry-evaluators>
+        <task-exit-evaluators>
+        </task-exit-evaluators>
+        <task-viability-evaluators>
+        </task-viability-evaluators>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
+      <role-hint>indexing</role-hint>
+      <implementation>org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor</implementation>
+      <instantiation-strategy>singleton</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
+          <role-hint>indexing</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.taskqueue.TaskQueue</role>
+          <role-hint>indexing</role-hint>
+        </requirement>
+      </requirements>
+      <configuration>
+        <name>indexing</name>
+      </configuration>
+    </component>
 
 </component-set>

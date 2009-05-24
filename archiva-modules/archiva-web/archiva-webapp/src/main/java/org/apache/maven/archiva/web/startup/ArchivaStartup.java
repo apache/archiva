@@ -47,6 +47,7 @@ public class ArchivaStartup
         ArchivaTaskScheduler taskScheduler = (ArchivaTaskScheduler) wac.getBean(PlexusToSpringUtils.buildSpringId(ArchivaTaskScheduler.class));
         wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "database-update"));
         wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "repository-scanning"));
+        wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "indexing"));
 
         try
         {

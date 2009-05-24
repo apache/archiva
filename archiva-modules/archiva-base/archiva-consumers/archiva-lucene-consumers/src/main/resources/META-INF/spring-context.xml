@@ -3,15 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-    <bean id="indexerConsumer" class="org.apache.archiva.consumers.lucene.NexusIndexerConsumer">      
-        <constructor-arg ref="indexPacker"/>
-        <constructor-arg ref="indexerEngine"/>
-        <!-- <constructor-arg ref="indexingContextMap"/>  -->
+    <bean id="indexerConsumer" class="org.apache.archiva.consumers.lucene.NexusIndexerConsumer" lazy-init="true">      
+        <constructor-arg ref="archivaTaskScheduler"/>
     </bean>
     
-    <bean id="indexCleanupConsumer" class="org.apache.archiva.consumers.lucene.LuceneCleanupRemoveIndexedConsumer">
+    <bean id="indexCleanupConsumer" class="org.apache.archiva.consumers.lucene.LuceneCleanupRemoveIndexedConsumer" lazy-init="true">
         <constructor-arg ref="repositoryContentFactory"/>
-        <constructor-arg ref="indexerEngine"/>
-        <!--  <constructor-arg ref="nexusIndexer#archiva"/>  -->
+        <constructor-arg ref="archivaTaskScheduler"/>
     </bean>
 </beans>

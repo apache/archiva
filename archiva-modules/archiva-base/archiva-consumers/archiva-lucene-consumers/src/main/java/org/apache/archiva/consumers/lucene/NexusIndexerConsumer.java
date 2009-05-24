@@ -20,30 +20,22 @@ package org.apache.archiva.consumers.lucene;
  */
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.zip.ZipException;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
+import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.nexus.index.ArtifactContext;
-import org.sonatype.nexus.index.ArtifactContextProducer;
-import org.sonatype.nexus.index.DefaultArtifactContextProducer;
-import org.sonatype.nexus.index.NexusIndexer;
-import org.sonatype.nexus.index.context.DefaultIndexingContext;
-import org.sonatype.nexus.index.context.IndexingContext;
-import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
-import org.sonatype.nexus.index.IndexerEngine;
-import org.sonatype.nexus.index.packer.IndexPacker;
-import org.sonatype.nexus.index.packer.IndexPackingRequest;
 
 /**
  * Consumer for indexing the repository to provide search and IDE integration features.
@@ -54,34 +46,16 @@ public class NexusIndexerConsumer
 {
     private static final Logger log = LoggerFactory.getLogger( NexusIndexerConsumer.class );
 
-    private ArtifactContextProducer artifactContextProducer;
-
-    private IndexPacker indexPacker;
-
     private ManagedDefaultRepositoryContent repositoryContent;
 
-    private IndexingContext context;
-
     private File managedRepository;
-    
-    private IndexerEngine indexerEngine;
-    
-    //private IndexingContextMap indexingContextMap;
-    
-    public NexusIndexerConsumer( IndexPacker indexPacker, IndexerEngine indexerEngine )
+        
+    private ArchivaTaskScheduler scheduler;
+       
+    public NexusIndexerConsumer( ArchivaTaskScheduler scheduler )
     {
-        this.indexPacker = indexPacker;
-        this.indexerEngine = indexerEngine;        
-        this.artifactContextProducer = new DefaultArtifactContextProducer();
+        this.scheduler = scheduler;
     }
-    
-   /* public NexusIndexerConsumer( IndexPacker indexPacker, IndexerEngine indexerEngine, IndexingContextMap indexingContextMap )
-    {
-        this.indexPacker = indexPacker;
-        this.indexerEngine = indexerEngine;
-        this.indexingContextMap = indexingContextMap;
-        this.artifactContextProducer = new DefaultArtifactContextProducer();
-    }*/
     
     public String getDescription()
     {
@@ -100,107 +74,34 @@ public class NexusIndexerConsumer
 
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
-    {   
-        //synchronized( context )
-        //{            
-            log.debug( "Begin indexing of repository '" + repository.getId() + "'..");
-            
-            managedRepository = new File( repository.getLocation() );
-            String indexDir = repository.getIndexDir();
-            
-            File indexDirectory = null;
-            if( indexDir != null && !"".equals( indexDir ) )
-            {
-                indexDirectory = new File( repository.getIndexDir() );
-            }
-            else
-            {
-                indexDirectory = new File( managedRepository, ".indexer" );
-            }
+    {       
+        managedRepository = new File( repository.getLocation() );
 
-            repositoryContent = new ManagedDefaultRepositoryContent();
-            repositoryContent.setRepository( repository );
-            
-            try
-            {   
-                context =
-                    new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository,
-                                                indexDirectory, null, null, NexusIndexer.FULL_INDEX, false );
-                
-                //context = indexingContextMap.addIndexingContext( repository.getId(), repository.getId(), managedRepository,
-                //                                indexDirectory, null, null, NexusIndexer.FULL_INDEX, false );
-                
-                context.setSearchable( repository.isScanned() );
-                
-                //indexerEngine.beginIndexing( context );
-            }
-            catch ( UnsupportedExistingLuceneIndexException e )
-            {
-                throw new ConsumerException( "Could not create index at " + indexDirectory.getAbsoluteFile(), e );
-            }
-            catch ( IOException e )
-            {
-                throw new ConsumerException( "Could not create index at " + indexDirectory.getAbsoluteFile(), e );
-            }
-        //}
+        repositoryContent = new ManagedDefaultRepositoryContent();
+        repositoryContent.setRepository( repository );
     }
     
     public void processFile( String path )
         throws ConsumerException
     {
-        synchronized ( indexerEngine )
+        File artifactFile = new File( managedRepository, path );
+                
+        ArtifactIndexingTask task =
+            TaskCreator.createIndexingTask( repositoryContent.getId(), artifactFile, ArtifactIndexingTask.ADD );
+        try
         {
-            if ( context == null )
-            {
-                // didn't start correctly, so skip
-                return;
-            }
-            
-            File artifactFile = new File( managedRepository, path );        
-            ArtifactContext artifactContext = artifactContextProducer.getArtifactContext( context, artifactFile );
-            
-            if ( artifactContext != null )
-            {
-                try
-                {                                           
-                    indexerEngine.index( context, artifactContext );                        
-                }
-                catch ( ZipException e )
-                {
-                    // invalid JAR file
-                    log.info( e.getMessage() );
-                }
-                catch ( IOException e )
-                {
-                    throw new ConsumerException( e.getMessage(), e );
-                }
-            }
+            log.debug( "Queueing indexing task + '" + task.getName() + "' to add or update the artifact in the index." );
+            scheduler.queueIndexingTask( task );
         }
+        catch ( TaskQueueException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }        
     }
 
     public void completeScan()
     {   
-        //synchronized( context )
-        //{
-            log.debug( "End indexing of repository '" + context.getRepositoryId() + "'..");
-            
-            final File indexLocation = new File( managedRepository, ".index" );
-            try
-            {
-                //indexerEngine.endIndexing( context );
-                
-                IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
-                indexPacker.packIndex( request );
-
-                //indexingContextMap.removeIndexingContext( context.getId() );
-                
-                context.close( false );
-            }
-            catch ( IOException e )
-            {
-                log.error( "Could not pack index" + indexLocation.getAbsolutePath(), e );
-            }
-        //}
+        
     }
 
     public List<String> getExcludes()
