@@ -51,10 +51,10 @@ http://svn.apache.org/repos/asf/archiva/tags/archiva-1.2/archiva-modules/archiva
           <mainClass>org.apache.archiva.web.xmlrpc.client.SampleClient</mainClass>
           <arguments>
             <!--
-                 URL: ex. http://127.0.0.1:9091/xmlrpc
+                 URL: ex. http://127.0.0.1:8080/archiva/xmlrpc
                  USERNAME & PASSWORD: Archiva credentials
             -->
-            <argument>http://127.0.0.1:9091/xmlrpc</argument>
+            <argument>http://127.0.0.1:8080/archiva/xmlrpc</argument>
             <argument>admin</argument>
             <argument>${password}</argument>
           </arguments>
