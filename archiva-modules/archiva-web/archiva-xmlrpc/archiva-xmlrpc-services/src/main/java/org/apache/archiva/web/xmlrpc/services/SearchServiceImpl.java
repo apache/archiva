@@ -40,6 +40,8 @@ import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SearchServiceImpl
@@ -49,6 +51,8 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 public class SearchServiceImpl
     implements SearchService
 { 
+    private Logger log = LoggerFactory.getLogger( SearchServiceImpl.class );
+                                                 
     private RepositorySearch search;
     
     private XmlRpcUserRepositories xmlRpcUserRepositories;
@@ -89,35 +93,43 @@ public class SearchServiceImpl
         SearchResults results = null;
         
         results = search.search( "", observableRepos, queryString, limits, null );
-                
+        
         List<SearchResultHit> hits = results.getHits();
+        
         for( SearchResultHit hit : hits )
         {   
             ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO(); 
-            try
+              
+            List<String> versions = hit.getVersions();
+            if( versions != null )
             {
-                ArchivaArtifact pomArtifact = artifactDAO.getArtifact( 
-                           hit.getGroupId(), hit.getArtifactId(), hit.getVersion(), "", "pom", hit.getRepositoryId() );
-                
-                if( pomArtifact != null )
-                {
-                    Artifact artifact = new Artifact( pomArtifact.getModel().getRepositoryId(), pomArtifact.getGroupId(), pomArtifact.getArtifactId(), pomArtifact.getVersion(),
-                                                      pomArtifact.getType() );
-                                                      //pomArtifact.getType(), pomArtifact.getModel().getWhenGathered() );
-                    artifacts.add( artifact );
+                for( String version : versions )
+                {   
+                    for( String repo : observableRepos )
+                    {
+                        try
+                        {
+                            ArchivaArtifact pomArtifact = artifactDAO.getArtifact( 
+                                  hit.getGroupId(), hit.getArtifactId(), version, null, "pom", repo );
+                            if( pomArtifact != null )
+                            {
+                                Artifact artifact = new Artifact( pomArtifact.getModel().getRepositoryId(), pomArtifact.getGroupId(), pomArtifact.getArtifactId(), pomArtifact.getVersion(),
+                                                                 pomArtifact.getType() );
+                                                                 //pomArtifact.getType(), pomArtifact.getModel().getWhenGathered() );
+                                artifacts.add( artifact );
+                                break;
+                            }
+                        }
+                        catch( ObjectNotFoundException e )
+                        {
+                            log.debug( "Unable to find pom artifact : " + e.getMessage() );
+                        }
+                        catch( ArchivaDatabaseException e )
+                        {
+                            log.debug( "Error occurred while getting pom artifact from database : " + e.getMessage() );
+                        }
+                    }                      
                 }
-                else
-                {
-                    continue;
-                }
-            }
-            catch ( ObjectNotFoundException e )
-            {
-                continue;
-            }
-            catch ( ArchivaDatabaseException e )
-            {
-                continue;
             }
         }
         
