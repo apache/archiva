@@ -72,7 +72,8 @@ Understanding Consumers in Apache Archiva
  
   * <update-db-project> - Gets the details of the artifact from the pom and saves it into the database (as a project model)     
  
-  * <index-public-methods> - Indexes the java public methods for full text search.     
+  * <index-public-methods> - Indexes the java public methods for full text search. This has been removed since 1.2. Public
+  methods are indexed by the <<<index-content>>> consumer.
  
   * <update-db-bytecode-stats> - Updates database with java bytecode stats.     
   
