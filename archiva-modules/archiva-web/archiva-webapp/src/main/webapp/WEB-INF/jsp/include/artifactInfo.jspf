@@ -169,7 +169,7 @@
         <td>
           <c:choose>
             <c:when test="${model.organization != null}">
-              <a href="${model.organization.url}">${model.organization.name}</a>
+              <a href="${model.organization.url}">${model.organization.organizationName}</a>
             </c:when>
             <c:otherwise>
               ${model.organization.name}
@@ -200,8 +200,8 @@
         <th>Issue Tracker</th>
         <td>
           <c:choose>
-            <c:when test="${!empty (model.issueManagement.url)}">
-              <a href="${model.issueManagement.url}">${model.issueManagement.system}</a>
+            <c:when test="${!empty (model.issueManagement.issueManagementUrl)}">
+              <a href="${model.issueManagement.issueManagementUrl}">${model.issueManagement.system}</a>
             </c:when>
             <c:otherwise>
               ${model.issueManagement.system}
@@ -215,8 +215,8 @@
         <th>Continuous Integration</th>
         <td>
           <c:choose>
-            <c:when test="${!empty (model.ciManagement.url)}">
-              <a href="${model.ciManagement.url}">${model.ciManagement.system}</a>
+            <c:when test="${!empty (model.ciManagement.ciUrl)}">
+              <a href="${model.ciManagement.ciUrl}">${model.ciManagement.system}</a>
             </c:when>
             <c:otherwise>
               ${model.ciManagement.system}

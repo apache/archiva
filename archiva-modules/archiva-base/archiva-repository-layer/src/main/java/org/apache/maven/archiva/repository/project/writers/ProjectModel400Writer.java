@@ -387,6 +387,7 @@ public class ProjectModel400Writer
 
         Element elem = root.addElement( "organization" );
 
+        //addChildElement( elem, "name", organization.getOrganizationName() );
         addChildElement( elem, "name", organization.getName() );
         addChildElement( elem, "url", organization.getUrl() );
     }

@@ -227,6 +227,7 @@ public class ProjectModel300Reader
             individual.setOrganizationUrl( elemPerson.elementTextTrim( "organizationUrl" ) );
             individual.setUrl( elemPerson.elementTextTrim( "url" ) );
             individual.setTimezone( elemPerson.elementTextTrim( "timezone" ) );
+            individual.setIndividualEmail( elemPerson.elementTextTrim( "email" ) );
 
             // Roles
             Element elemRoles = elemPerson.element( "roles" );
@@ -268,7 +269,8 @@ public class ProjectModel300Reader
 
         IssueManagement issueMgmt = new IssueManagement();
         issueMgmt.setUrl( issueTrackingUrl );
-
+        issueMgmt.setIssueManagementUrl( issueTrackingUrl );
+        
         return issueMgmt;
     }
 
@@ -345,6 +347,7 @@ public class ProjectModel300Reader
         {
             Organization org = new Organization();
 
+            org.setOrganizationName( elemOrg.elementTextTrim( "name" ) );
             org.setName( elemOrg.elementTextTrim( "name" ) );
             org.setUrl( elemOrg.elementTextTrim( "url" ) );
             // TODO: Handle <logo />

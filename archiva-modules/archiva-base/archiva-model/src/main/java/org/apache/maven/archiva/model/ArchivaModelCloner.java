@@ -99,6 +99,7 @@ public class ArchivaModelCloner
 
         cloned.setSystem( ciManagement.getSystem() );
         cloned.setUrl( ciManagement.getUrl() );
+        cloned.setCiUrl( ciManagement.getCiUrl() );
 
         return cloned;
     }
@@ -139,6 +140,7 @@ public class ArchivaModelCloner
 
         IssueManagement cloned = new IssueManagement();
 
+        cloned.setIssueManagementUrl( issueManagement.getIssueManagementUrl() );
         cloned.setSystem( issueManagement.getSystem() );
         cloned.setUrl( issueManagement.getUrl() );
 
@@ -176,6 +178,7 @@ public class ArchivaModelCloner
         cloned.setFavicon( organization.getFavicon() );
         cloned.setName( organization.getName() );
         cloned.setUrl( organization.getUrl() );
+        cloned.setOrganizationName( organization.getOrganizationName() );
 
         return cloned;
     }
@@ -333,6 +336,7 @@ public class ArchivaModelCloner
             cloned.setOrganizationUrl( individual.getOrganizationUrl() );
             cloned.setUrl( individual.getUrl() );
             cloned.setTimezone( individual.getTimezone() );
+            cloned.setIndividualEmail( individual.getIndividualEmail() );
 
             cloned.setRoles( cloneRoles( individual.getRoles() ) );
             cloned.setProperties( clone( individual.getProperties() ) );

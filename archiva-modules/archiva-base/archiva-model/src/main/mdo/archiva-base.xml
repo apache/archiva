@@ -5,7 +5,7 @@
        xsd.target-namespace="http://archiva.apache.org/model/1.2.0">
   <id>archiva-base-model</id>
   <name>ArchivaBaseModel</name>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <description>Archiva Model</description>
   <defaults>
     <default>
@@ -1451,8 +1451,15 @@
           <name>name</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
-          <description><![CDATA[The full name of the organization.]]></description>
+          <description><![CDATA[The generated id of the organization object. Due to problems in upgrading, 
+          we cannot unset this as the identifier and we cannot rename this as well.]]></description>
           <type>String</type>
+        </field>
+        <field stash.maxSize="250" null-value="default">
+          <name>organizationName</name>
+          <version>1.2.1+</version>
+          <description><![CDATA[The full name of the organization.]]></description>
+          <type>String</type>          
         </field>
         <field stash.maxSize="250">
           <name>url</name>
@@ -1546,6 +1553,13 @@
           <name>url</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
+          <description><![CDATA[The generated id for the issue management object. Due to problems in upgrading, 
+          we cannot unset this as the identifier and we cannot rename this as well.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250" null-value="default">
+          <name>issueManagementUrl</name>
+          <version>1.2.1+</version>
           <description><![CDATA[URL for the issue management system used by the project.]]></description>
           <type>String</type>
         </field>
@@ -1574,6 +1588,14 @@
           <name>url</name>
           <version>1.0.0+</version>
           <identifier>true</identifier>
+          <description>
+            <![CDATA[The generated id for the CI management object. Due to problems in upgrading, 
+          we cannot unset this as the identifier and we cannot rename this as well.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250" null-value="default">
+          <name>ciUrl</name>
+          <version>1.2.1+</version>
           <description>
             <![CDATA[URL for the continuous integration system used by the project if it has a web interface.]]></description>
           <type>String</type>
@@ -1609,6 +1631,13 @@
           <name>email</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
+          <description><![CDATA[The generated id for the object. Due to problems in upgrading, 
+          we cannot unset this as the identifier and we cannot rename this as well.]]></description>
+          <type>String</type>
+        </field>
+        <field stash.maxSize="250" null-value="default">
+          <name>individualEmail</name>
+          <version>1.2.1+</version>
           <description><![CDATA[The email address of the individual.]]></description>
           <type>String</type>
         </field>

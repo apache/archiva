@@ -128,10 +128,10 @@
           <td>
             <c:choose>
               <c:when test="${(sharedModel.organization.url != null) && (!empty sharedModel.organization.url)}">
-                <a href="${sharedModel.organization.url}">${sharedModel.organization.name}</a>
+                <a href="${sharedModel.organization.url}">${sharedModel.organization.organizationName}</a>
               </c:when>
               <c:otherwise>
-                ${sharedModel.organization.name}
+                ${sharedModel.organization.organizationName}
               </c:otherwise>
             </c:choose>
           </td>
@@ -142,8 +142,8 @@
           <th>Issue Tracker</th>
           <td>
             <c:choose>
-              <c:when test="${!empty (sharedModel.issueManagement.url)}">
-                <a href="${sharedModel.issueManagement.url}">${sharedModel.issueManagement.system}</a>
+              <c:when test="${!empty (sharedModel.issueManagement.issueManagementUrl)}">
+                <a href="${sharedModel.issueManagement.issueManagementUrl}">${sharedModel.issueManagement.system}</a>
               </c:when>
               <c:otherwise>
                 ${sharedModel.issueManagement.system}
@@ -157,8 +157,8 @@
           <th>Continuous Integration</th>
           <td>
             <c:choose>
-              <c:when test="${!empty (sharedModel.ciManagement.url)}">
-                <a href="${sharedModel.ciManagement.url}">${sharedModel.ciManagement.system}</a>
+              <c:when test="${!empty (sharedModel.ciManagement.ciUrl)}">
+                <a href="${sharedModel.ciManagement.ciUrl}">${sharedModel.ciManagement.system}</a>
               </c:when>
               <c:otherwise>
                 ${sharedModel.ciManagement.system}

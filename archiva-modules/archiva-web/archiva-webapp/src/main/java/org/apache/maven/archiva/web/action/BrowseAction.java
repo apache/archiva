@@ -167,19 +167,19 @@ public class BrowseAction
                     }
 
                     if ( sharedModel.getIssueManagement() != null && model.getIssueManagement() != null &&
-                        !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(), model.getIssueManagement().getUrl() ) )
+                        !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getIssueManagementUrl(), model.getIssueManagement().getIssueManagementUrl() ) )
                     {
                         sharedModel.setIssueManagement( null );
                     }
 
                     if ( sharedModel.getCiManagement() != null && model.getCiManagement() != null &&
-                        !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(), model.getCiManagement().getUrl() ) )
+                        !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getCiUrl(), model.getCiManagement().getCiUrl() ) )
                     {
                         sharedModel.setCiManagement( null );
                     }
 
                     if ( sharedModel.getOrganization() != null && model.getOrganization() != null && 
-                        !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(), model.getOrganization().getName() ) )
+                        !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getOrganizationName(), model.getOrganization().getOrganizationName() ) )
                     {
                         sharedModel.setOrganization( null );
                     }

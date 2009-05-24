@@ -230,6 +230,7 @@ public class ProjectModelMerge
 
         merged.setSystem( merge( mainCim.getSystem(), parentCim.getSystem() ) );
         merged.setUrl( merge( mainCim.getUrl(), parentCim.getUrl() ) );
+        merged.setCiUrl( merge( mainCim.getCiUrl(), parentCim.getCiUrl() ) );
 
         return merged;
     }
@@ -289,7 +290,8 @@ public class ProjectModelMerge
 
         merged.setSystem( merge( mainIssueManagement.getSystem(), parentIssueManagement.getSystem() ) );
         merged.setUrl( merge( mainIssueManagement.getUrl(), parentIssueManagement.getUrl() ) );
-
+        merged.setIssueManagementUrl( merge( mainIssueManagement.getIssueManagementUrl(), parentIssueManagement.getIssueManagementUrl() ) );
+        
         return merged;
     }
 
@@ -308,6 +310,7 @@ public class ProjectModelMerge
         Organization merged = new Organization();
 
         merged.setFavicon( merge( mainOrganization.getFavicon(), parentOrganization.getFavicon() ) );
+        merged.setOrganizationName( merge( mainOrganization.getOrganizationName(), parentOrganization.getOrganizationName() ) );
         merged.setName( merge( mainOrganization.getName(), parentOrganization.getName() ) );
         merged.setUrl( merge( mainOrganization.getUrl(), parentOrganization.getUrl() ) );
 

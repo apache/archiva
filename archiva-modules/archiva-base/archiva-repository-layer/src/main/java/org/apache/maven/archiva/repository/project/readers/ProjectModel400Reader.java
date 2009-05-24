@@ -153,6 +153,7 @@ public class ProjectModel400Reader
             CiManagement ciManagement = new CiManagement();
             ciManagement.setSystem( elemCiMgmt.elementTextTrim( "system" ) );
             ciManagement.setUrl( elemCiMgmt.elementTextTrim( "url" ) );
+            ciManagement.setCiUrl( elemCiMgmt.elementTextTrim( "url" ) );
             return ciManagement;
         }
 
@@ -282,6 +283,7 @@ public class ProjectModel400Reader
             individual.setOrganizationUrl( elemPerson.elementTextTrim( "organizationUrl" ) );
             individual.setUrl( elemPerson.elementTextTrim( "url" ) );
             individual.setTimezone( elemPerson.elementTextTrim( "timezone" ) );
+            individual.setIndividualEmail( elemPerson.elementTextTrim( "email" ) );
 
             // Roles
             Element elemRoles = elemPerson.element( "roles" );
@@ -315,7 +317,8 @@ public class ProjectModel400Reader
 
             issueMgmt.setSystem( elemIssueMgmt.elementTextTrim( "system" ) );
             issueMgmt.setUrl( elemIssueMgmt.elementTextTrim( "url" ) );
-
+            issueMgmt.setIssueManagementUrl( elemIssueMgmt.elementTextTrim( "url" ) );
+            
             return issueMgmt;
         }
 
@@ -393,6 +396,7 @@ public class ProjectModel400Reader
         {
             Organization org = new Organization();
 
+            org.setOrganizationName( elemOrg.elementTextTrim( "name" ) );
             org.setName( elemOrg.elementTextTrim( "name" ) );
             org.setUrl( elemOrg.elementTextTrim( "url" ) );
 

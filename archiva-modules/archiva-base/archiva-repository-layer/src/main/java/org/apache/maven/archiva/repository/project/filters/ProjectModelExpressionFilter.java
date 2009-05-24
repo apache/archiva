@@ -215,6 +215,7 @@ public class ProjectModelExpressionFilter
 
         ciManagement.setSystem( eval.expand( ciManagement.getSystem() ) );
         ciManagement.setUrl( eval.expand( ciManagement.getUrl() ) );
+        ciManagement.setCiUrl( eval.expand( ciManagement.getCiUrl() ) );
     }
 
     private void evaluateDependencyList( ExpressionEvaluator eval, List<Dependency> dependencies )
@@ -270,6 +271,7 @@ public class ProjectModelExpressionFilter
             individual.setOrganization( eval.expand( individual.getOrganization() ) );
             individual.setOrganizationUrl( eval.expand( individual.getOrganizationUrl() ) );
             individual.setUrl( eval.expand( individual.getUrl() ) );
+            individual.setIndividualEmail( eval.expand( individual.getIndividualEmail() ) );
 
             evaluateProperties( eval, individual.getProperties() );
             evaluateStringList( eval, individual.getRoles() );
@@ -286,6 +288,7 @@ public class ProjectModelExpressionFilter
 
         issueManagement.setSystem( eval.expand( issueManagement.getSystem() ) );
         issueManagement.setUrl( eval.expand( issueManagement.getUrl() ) );
+        issueManagement.setIssueManagementUrl( eval.expand( issueManagement.getIssueManagementUrl() ) );
     }
 
     private void evaluateLicenses( ExpressionEvaluator eval, List<License> licenses )
@@ -332,6 +335,7 @@ public class ProjectModelExpressionFilter
             return;
         }
 
+        organization.setOrganizationName( eval.expand( organization.getOrganizationName() ) );
         organization.setName( eval.expand( organization.getName() ) );
         organization.setUrl( eval.expand( organization.getUrl() ) );
         organization.setFavicon( eval.expand( organization.getFavicon() ) );

@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
+import org.apache.maven.archiva.model.IssueManagement;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
@@ -98,6 +99,14 @@ public class EffectiveProjectModelFilter
 
         // Clone submitted project (so that we don't mess with it) 
         effectiveProject = ArchivaModelCloner.clone( project );
+        
+        System.out.println( "++++[EFFECTIVE Project] effectiveProject --> " + effectiveProject  );
+        IssueManagement iM = effectiveProject.getIssueManagement();
+        if( iM != null )
+        {
+            System.out.println( "++++[EFFECTIVE Project] issue mgnt URL --> " + iM.getUrl() + " $$ " +
+                iM.getIssueManagementUrl() );
+        }
 
         DEBUG( "Starting build of effective with: " + effectiveProject );
 
