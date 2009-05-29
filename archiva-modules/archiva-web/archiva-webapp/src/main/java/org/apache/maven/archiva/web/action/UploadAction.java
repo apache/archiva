@@ -19,6 +19,9 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,13 +30,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -46,7 +51,6 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
@@ -56,6 +60,7 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelWriter;
 import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
@@ -63,17 +68,12 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-
-import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.Validateable;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
  * will also be updated if one exists, otherwise it would be created.
- * 
+ *
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="uploadAction" instantiation-strategy="per-lookup"
  */
 public class UploadAction
@@ -81,11 +81,11 @@ public class UploadAction
     implements Validateable, Preparable, Auditable
 {
     /**
-      * @plexus.requirement
-      */
-     private RepositoryContentConsumers consumers;
-     
-     /**
+     * @plexus.requirement
+     */
+    private RepositoryContentConsumers consumers;
+
+    /**
      * The groupId of the artifact to be deployed.
      */
     private String groupId;
@@ -149,16 +149,16 @@ public class UploadAction
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
-    
+
     /**
      * @plexus.requirement
      */
     private ArchivaTaskScheduler scheduler;
-    
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5};
 
     private ProjectModelWriter pomWriter = new ProjectModel400Writer();
-    
+
     public void setArtifact( File file )
     {
         this.artifactFile = file;
@@ -293,7 +293,7 @@ public class UploadAction
         repositoryId = "";
         generatePom = false;
     }
-    
+
     public String doUpload()
     {
         try
@@ -319,11 +319,11 @@ public class UploadAction
             Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
             int newBuildNumber = -1;
             String timestamp = null;
-            
+
             File metadataFile = getMetadata( targetPath.getAbsolutePath() );
             ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
 
-            if (VersionUtil.isSnapshot(version))
+            if ( VersionUtil.isSnapshot( version ) )
             {
                 TimeZone timezone = TimeZone.getTimeZone( "UTC" );
                 DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
@@ -335,8 +335,8 @@ public class UploadAction
                 }
                 else
                 {
-                	metadata.setSnapshotVersion( new SnapshotVersion() );
-                	newBuildNumber = 1;
+                    metadata.setSnapshotVersion( new SnapshotVersion() );
+                    newBuildNumber = 1;
                 }
             }
 
@@ -364,12 +364,12 @@ public class UploadAction
             }
 
             String pomFilename = filename;
-            if( classifier != null && !"".equals( classifier ) )
+            if ( classifier != null && !"".equals( classifier ) )
             {
                 pomFilename = StringUtils.remove( pomFilename, "-" + classifier );
             }
             pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
-                
+
             if ( generatePom )
             {
                 try
@@ -389,11 +389,11 @@ public class UploadAction
                     return ERROR;
                 }
             }
-            
-            if ( pomFile != null && pomFile.length() > 0 ) 
+
+            if ( pomFile != null && pomFile.length() > 0 )
             {
                 try
-                {                    
+                {
                     copyFile( pomFile, targetPath, pomFilename );
                     queueRepositoryTask( repoConfig.getId(), new File( targetPath, pomFilename ) );
                     //consumers.executeConsumers( repoConfig, new File( targetPath, pomFilename ) );
@@ -403,16 +403,16 @@ public class UploadAction
                     addActionError( "Error encountered while uploading pom file: " + ie.getMessage() );
                     return ERROR;
                 }
-                
+
             }
 
             updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, timestamp, newBuildNumber );
 
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deployed to repository \'" + repositoryId + "\'";
-                        
+
             triggerAuditEvent( repositoryId, groupId + ":" + artifactId + ":" + version, AuditEvent.UPLOAD_FILE );
-            
+
             addActionMessage( msg );
 
             reset();
@@ -434,11 +434,11 @@ public class UploadAction
         throws IOException
     {
         FileOutputStream out = new FileOutputStream( new File( targetPath, targetFilename ) );
+        FileInputStream input = new FileInputStream( sourceFile );
 
         try
         {
-            FileInputStream input = new FileInputStream( sourceFile );
-            int i = 0;
+            int i;
             while ( ( i = input.read() ) != -1 )
             {
                 out.write( i );
@@ -448,6 +448,7 @@ public class UploadAction
         finally
         {
             out.close();
+            input.close();
         }
     }
 
@@ -459,8 +460,8 @@ public class UploadAction
         projectModel.setArtifactId( artifactId );
         projectModel.setVersion( version );
         projectModel.setPackaging( packaging );
-        
-        File pomFile = new File( targetPath, filename);        
+
+        File pomFile = new File( targetPath, filename );
         pomWriter.write( projectModel, pomFile );
 
         return pomFile;
@@ -486,7 +487,7 @@ public class UploadAction
 
     /**
      * Update artifact level metadata. If it does not exist, create the metadata.
-     * 
+     *
      * @param metadata
      */
     private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp,
@@ -519,11 +520,11 @@ public class UploadAction
 
         if ( metadata.getGroupId() == null )
         {
-        	metadata.setGroupId( groupId );
+            metadata.setGroupId( groupId );
         }
         if ( metadata.getArtifactId() == null )
         {
-        	metadata.setArtifactId( artifactId );
+            metadata.setArtifactId( artifactId );
         }
 
         metadata.setLatestVersion( latestVersion );
@@ -560,11 +561,11 @@ public class UploadAction
             {
                 addActionError( "Please add a file to upload." );
             }
-            
+
             if ( version == null || !VersionUtil.isVersion( version ) )
             {
                 addActionError( "Invalid version." );
-            }            
+            }
         }
         catch ( PrincipalNotFoundException pe )
         {
@@ -575,7 +576,7 @@ public class UploadAction
             addActionError( ae.getMessage() );
         }
     }
-    
+
     private List<String> getManagableRepos()
     {
         try
@@ -597,19 +598,20 @@ public class UploadAction
         }
         return Collections.emptyList();
     }
-    
+
     private void queueRepositoryTask( String repositoryId, File localFile )
     {
         RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile.getName(), localFile );
-        
+
         try
         {
             scheduler.queueRepositoryTask( task );
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Unable to queue repository task to execute consumers on resource file ['" +
-                localFile.getName() + "']." );
+            log.error(
+                "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName() +
+                    "']." );
         }
     }
 }
