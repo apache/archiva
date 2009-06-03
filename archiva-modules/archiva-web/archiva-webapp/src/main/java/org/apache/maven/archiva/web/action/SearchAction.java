@@ -124,6 +124,8 @@ public class SearchAction
     private RepositorySearch nexusSearch;
     
     private Map<String, String> searchFields;
+
+    private String infoMessage;
         
     public boolean isFromResultsPage()
     {
@@ -658,5 +660,15 @@ public class SearchAction
     public void setSearchFields( Map<String, String> searchFields )
     {
         this.searchFields = searchFields;
+    }
+    
+    public String getInfoMessage()
+    {
+        return infoMessage;
+    }
+
+    public void setInfoMessage( String infoMessage )
+    {
+        this.infoMessage = infoMessage;
     }
 }

@@ -82,8 +82,8 @@
       <result name="security-login-success" type="redirect-action">index</result>
       <result name="security-login-cancel" type="redirect-action">index</result>
       <result name="security-login-locked" type="redirect-action">
-        <param name="infoMessage">Account Locked</param>
         <param name="actionName">index</param>
+        <param name="infoMessage">Account Locked</param>
       </result>
       <result name="security-logout" type="redirect-action">index</result>
       <result name="requires-authentication" type="redirect-action">
