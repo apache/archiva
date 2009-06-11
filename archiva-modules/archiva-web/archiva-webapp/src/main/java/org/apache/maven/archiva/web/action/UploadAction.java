@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksumAlgorithm; 
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +60,6 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelWriter;
 import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
@@ -80,11 +79,6 @@ public class UploadAction
     extends PlexusActionSupport
     implements Validateable, Preparable, Auditable
 {
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryContentConsumers consumers;
-
     /**
      * The groupId of the artifact to be deployed.
      */
@@ -352,10 +346,9 @@ public class UploadAction
             }
 
             try
-            {
+            {   
                 copyFile( artifactFile, targetPath, filename );
                 queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );
-                //consumers.executeConsumers( repoConfig, repository.toFile( artifactReference ) );
             }
             catch ( IOException ie )
             {
@@ -375,8 +368,8 @@ public class UploadAction
                 try
                 {
                     File generatedPomFile = createPom( targetPath, pomFilename );
-                    queueRepositoryTask( repoConfig.getId(), generatedPomFile );
-                    //consumers.executeConsumers( repoConfig, generatedPomFile );
+                    fixChecksums( generatedPomFile );
+                    queueRepositoryTask( repoConfig.getId(), generatedPomFile );                    
                 }
                 catch ( IOException ie )
                 {
@@ -393,10 +386,9 @@ public class UploadAction
             if ( pomFile != null && pomFile.length() > 0 )
             {
                 try
-                {
+                {   
                     copyFile( pomFile, targetPath, pomFilename );
                     queueRepositoryTask( repoConfig.getId(), new File( targetPath, pomFilename ) );
-                    //consumers.executeConsumers( repoConfig, new File( targetPath, pomFilename ) );
                 }
                 catch ( IOException ie )
                 {
@@ -429,7 +421,13 @@ public class UploadAction
             return ERROR;
         }
     }
-
+    
+    private void fixChecksums( File file )
+    {
+        ChecksummedFile checksum = new ChecksummedFile( file );
+        checksum.fixChecksums( algorithms );
+    }
+    
     private void copyFile( File sourceFile, File targetPath, String targetFilename )
         throws IOException
     {
@@ -450,6 +448,8 @@ public class UploadAction
             out.close();
             input.close();
         }
+        
+        fixChecksums( new File( targetPath, targetFilename ) );
     }
 
     private File createPom( File targetPath, String filename )
@@ -543,8 +543,7 @@ public class UploadAction
         }
 
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
-        checksum.fixChecksums( algorithms );
+        fixChecksums( metadataFile );
     }
 
     public void validate()
@@ -613,5 +612,20 @@ public class UploadAction
                 "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName() +
                     "']." );
         }
+    }
+
+    public void setScheduler( ArchivaTaskScheduler scheduler )
+    {
+        this.scheduler = scheduler;
+    }
+
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    public void setConfiguration( ArchivaConfiguration configuration )
+    {
+        this.configuration = configuration;
     }
 }
