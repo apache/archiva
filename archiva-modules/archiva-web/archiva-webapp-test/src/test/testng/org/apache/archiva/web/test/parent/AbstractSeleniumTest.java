@@ -19,7 +19,9 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -91,15 +93,43 @@ public abstract class AbstractSeleniumTest {
 	// Auxiliar methods. This method help us and simplify test.
 	// *******************************************************
 	
+	public void captureScreenshot()
+	{
+		Date t = new Date();
+		File f = new File( "" );
+		String baseDir = f.getAbsolutePath();
+		String time = t.toString();
+		getSelenium().windowMaximize();
+		getSelenium().windowFocus();
+		getSelenium().captureScreenshot( baseDir + "/target/screenshots/" + getClass() + "-" + time + ".png" );
+	}
+	    
 	public void assertFieldValue( String fieldValue, String fieldName )
 	{
-	    assertElementPresent( fieldName );
-	    Assert.assertEquals( fieldValue, getSelenium().getValue( fieldName ) );
+		try 
+		{
+			assertElementPresent( fieldName );
+			Assert.assertEquals( fieldValue, getSelenium().getValue( fieldName ) );
+		}
+		catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			assertElementPresent( fieldName );
+			Assert.assertEquals( fieldValue, getSelenium().getValue( fieldName ) );
+		}
 	}
 	
 	public void assertPage( String title )
 	{
-	    Assert.assertEquals( getSelenium().getTitle(), title );
+	    try 
+	    {
+			Assert.assertEquals( getSelenium().getTitle(), title );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertEquals( getSelenium().getTitle(), title );
+		}
 	}
 	
 	public String getTitle()
@@ -114,37 +144,93 @@ public abstract class AbstractSeleniumTest {
 	
 	public void assertTextPresent( String text )
 	{
-	    Assert.assertTrue( getSelenium().isTextPresent( text ), "'" + text + "' isn't present." );
+		try
+		{
+			Assert.assertTrue( getSelenium().isTextPresent( text ), "'" + text + "' isn't present." );
+		}
+		catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertTrue( getSelenium().isTextPresent( text ), "'" + text + "' isn't present." );
+		}
 	}
 	
 	public void assertTextNotPresent( String text )
 	{
-	    Assert.assertFalse( getSelenium().isTextPresent( text ), "'" + text + "' is present." );
+		try 
+	    {
+			Assert.assertFalse( getSelenium().isTextPresent( text ), "'" + text + "' is present." );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertFalse( getSelenium().isTextPresent( text ), "'" + text + "' is present." );
+		}
 	}
 	
 	public void assertElementPresent( String elementLocator )
 	{
-	    Assert.assertTrue( isElementPresent( elementLocator ), "'" + elementLocator + "' isn't present." );
+	    try 
+	    {
+			Assert.assertTrue( isElementPresent( elementLocator ), "'" + elementLocator + "' isn't present." );
+		} 
+	    catch ( java.lang.AssertionError e)
+	    {
+	    	captureScreenshot();
+	    	Assert.assertTrue( isElementPresent( elementLocator ), "'" + elementLocator + "' isn't present." );
+		}
 	}
 	
 	public void assertElementNotPresent( String elementLocator )
 	{
-	    Assert.assertFalse( isElementPresent( elementLocator ), "'" + elementLocator + "' is present." );
+	    try 
+	    {
+			Assert.assertFalse( isElementPresent( elementLocator ), "'" + elementLocator + "' is present." );
+		} 
+	    catch ( java.lang.AssertionError e) 
+	    {
+	    	captureScreenshot();
+	    	Assert.assertFalse( isElementPresent( elementLocator ), "'" + elementLocator + "' is present." );
+		}
 	}
 	
 	public void assertLinkPresent( String text )
 	{
-		Assert.assertTrue( isElementPresent( "link=" + text ), "The link '" + text + "' isî't present." );
+		try 
+		{
+			Assert.assertTrue( isElementPresent( "link=" + text ), "The link '" + text + "' isî't present." );
+		} 
+		catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertTrue( isElementPresent( "link=" + text ), "The link '" + text + "' isî't present." );
+		}
 	}
 	
 	public void assertLinkNotPresent( String text )
 	{
-		Assert.assertFalse( isElementPresent( "link=" + text ), "The link('" + text + "' is present." );
+		try 
+		{
+			Assert.assertFalse( isElementPresent( "link=" + text ), "The link('" + text + "' is present." );
+		} 
+		catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertFalse( isElementPresent( "link=" + text ), "The link('" + text + "' is present." );
+		}
 	}
 	
 	public void assertImgWithAlt( String alt )
 	{
-	    assertElementPresent( "/¯img[@alt='" + alt + "']" );
+	    try 
+	    {
+			assertElementPresent( "/¯img[@alt='" + alt + "']" );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			assertElementPresent( "/¯img[@alt='" + alt + "']" );
+		}
 	}
 	
 	public void assertImgWithAltAtRowCol( boolean isALink, String alt, int row, int column )
@@ -153,12 +239,28 @@ public abstract class AbstractSeleniumTest {
 	    locator += isALink ? "a/" : "";
 	    locator += "img[@alt='" + alt + "']";
 	
-	    assertElementPresent( locator );
+	    try 
+	    {
+			assertElementPresent( locator );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			assertElementPresent( locator );
+		}
 	}
 	
 	public void assertCellValueFromTable( String expected, String tableElement, int row, int column )
 	{
-	    Assert.assertEquals( expected, getCellValueFromTable( tableElement, row, column ) );
+	    try 
+	    {
+			Assert.assertEquals( expected, getCellValueFromTable( tableElement, row, column ) );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertEquals( expected, getCellValueFromTable( tableElement, row, column ) );
+		}
 	}
 	
 	public boolean isTextPresent( String text )
@@ -219,17 +321,41 @@ public abstract class AbstractSeleniumTest {
 	
 	public void assertButtonWithValuePresent( String text )
 	{
-	    Assert.assertTrue( isButtonWithValuePresent( text ), "'" + text + "' button isn't present" );
+	    try 
+	    {
+			Assert.assertTrue( isButtonWithValuePresent( text ), "'" + text + "' button isn't present" );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertTrue( isButtonWithValuePresent( text ), "'" + text + "' button isn't present" );
+		}
 	}
 	
 	public void assertButtonWithIdPresent( String id )
 	{
-	    Assert.assertTrue( isButtonWithIdPresent( id ), "'Button with id =" + id + "' isn't present" );
+	    try 
+	    {
+			Assert.assertTrue( isButtonWithIdPresent( id ), "'Button with id =" + id + "' isn't present" );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertTrue( isButtonWithIdPresent( id ), "'Button with id =" + id + "' isn't present" );
+		}
 	}
 	
 	public void assertButtonWithValueNotPresent( String text )
 	{
-	    Assert.assertFalse( isButtonWithValuePresent( text ), "'" + text + "' button is present" );
+	    try 
+	    {
+			Assert.assertFalse( isButtonWithValuePresent( text ), "'" + text + "' button is present" );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertFalse( isButtonWithValuePresent( text ), "'" + text + "' button is present" );
+		}
 	}
 	
 	public boolean isButtonWithValuePresent( String text )
@@ -346,12 +472,28 @@ public abstract class AbstractSeleniumTest {
 	
 	public void assertIsChecked( String locator )
 	{
-	    Assert.assertTrue( getSelenium().isChecked( locator ) );
+	    try 
+	    {
+			Assert.assertTrue( getSelenium().isChecked( locator ) );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertTrue( getSelenium().isChecked( locator ) );
+		}
 	}
 	
 	public void assertIsNotChecked( String locator )
 	{
-	    Assert.assertFalse( getSelenium().isChecked( locator ) );
+	    try 
+	    {
+			Assert.assertFalse( getSelenium().isChecked( locator ) );
+		} 
+	    catch ( java.lang.AssertionError e) 
+		{
+			captureScreenshot();
+			Assert.assertFalse( getSelenium().isChecked( locator ) );
+		}
 	}
 	    
 }

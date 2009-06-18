@@ -39,6 +39,8 @@ under the License.
 				<include name= "search" />
 				<include name= "browse" />
 				<include name= "reports" />
+				<include name= "virtualrepository" />
+				<include name= "proxyconnectors" />
 			</run>
 		</groups>
 		<packages>
