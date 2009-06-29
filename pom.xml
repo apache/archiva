@@ -333,11 +333,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-core</artifactId>
-        <version>1.2-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-core-consumers</artifactId>
         <version>1.2.2-SNAPSHOT</version>
       </dependency>
