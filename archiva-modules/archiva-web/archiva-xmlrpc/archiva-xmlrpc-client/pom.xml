@@ -66,12 +66,16 @@
                  URL: ex. http://127.0.0.1:8080/archiva/xmlrpc 
                  USERNAME & PASSWORD: Archiva credentials  
             --> 
-            <argument>http://127.0.0.1:8080/archiva/xmlrpc</argument>
-            <argument>admin</argument>
+            <argument>${archiva.url}/xmlrpc</argument>
+            <argument>${username}</argument>
             <argument>${password}</argument>
           </arguments>
         </configuration>
       </plugin>
     </plugins>
   </build>
+  <properties>
+    <archiva.url>http://127.0.0.1:8080/archiva/</archiva.url>
+    <username>admin</username>
+  </properties>
 </project>
