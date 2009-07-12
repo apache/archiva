@@ -173,7 +173,11 @@
                     </property>
                     <property>
                       <name>wrapper.logfile</name>
-                      <value>%ARCHIVA_BASE%/logs/wrapper.log</value>
+                      <value>%ARCHIVA_BASE%/logs/wrapper.YYYYMMDD.log</value>
+                    </property>
+                    <property>
+                      <name>wrapper.logfile.rollmode</name>
+                      <value>DATE</value>
                     </property>
                     <property>
                       <name>wrapper.app.parameter.2</name>
