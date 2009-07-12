@@ -82,3 +82,9 @@ Configuring and Running Archiva
 
   Once Archiva is running, it is configured in the same way as the standalone instance. See the {{{../quick-start.html#Setting%20up%20your%20Archiva%20instance} quick start}} guide for more information.
   
+Troubleshooting
+
+  One of the least decipherable errors you can get from Tomcat is a <<<404>>> when the deployment fails. In <<<\<tomcat home\>/logs/catalina.out>>>  you will only find that it fails, but not why. Also Archiva's logs will not tell you.
+
+  The log messages and stack traces in case of a <<<404>>> can be found in <<<\<tomcat home\>/logs/localhost.\<date\>>>>.
+
