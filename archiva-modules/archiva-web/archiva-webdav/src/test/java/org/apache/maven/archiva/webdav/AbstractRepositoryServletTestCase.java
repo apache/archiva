@@ -87,7 +87,15 @@ public abstract class AbstractRepositoryServletTestCase
     protected void assertResponseOK( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
-        Assert.assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
+        Assert.assertEquals( "Should have been an OK response code", HttpServletResponse.SC_OK,
+                             response.getResponseCode() );
+    }
+
+    protected void assertResponseOK( WebResponse response, String path )
+    {
+        assertNotNull( "Should have recieved a response", response );
+        Assert.assertEquals( "Should have been an OK response code for path: " + path, HttpServletResponse.SC_OK,
+                             response.getResponseCode() );
     }
     
     protected void assertResponseNotFound( WebResponse response )

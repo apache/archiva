@@ -78,16 +78,16 @@ public class IndexWriter
     {
         writer.println("<html>");
         writer.println("<head>");
-        writer.println("<title>Collection: " + logicalResource + "</title>");
+        writer.println("<title>Collection: /" + logicalResource + "</title>");
         writer.println("</head>");
         writer.println("<body>");
-        writer.println("<h3>Collection: " + logicalResource + "</h3>");
+        writer.println("<h3>Collection: /" + logicalResource + "</h3>");
 
         //Check if not root
-        if (!"/".equals(logicalResource))
+        if (logicalResource.length() > 0)
         {
             File file = new File(logicalResource);
-            String parentName = file.getParent().equals("") ? "/" : file.getParent();
+            String parentName = file.getParent() == null ? "/" : file.getParent();
             
             //convert to unix path in case archiva is hosted on windows
             parentName = StringUtils.replace(parentName, "\\", "/" );

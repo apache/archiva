@@ -380,6 +380,10 @@ public class ArchivaDavResourceFactory
                 }
 
                 String logicalResource = RepositoryPathUtil.getLogicalResource( archivaLocator.getResourcePath() );
+                if ( logicalResource.endsWith( "/" ) )
+                {
+                    logicalResource = logicalResource.substring( 1 );
+                }
                 resourcesInAbsolutePath.add( new File( managedRepository.getRepoRoot(), logicalResource ).getAbsolutePath() );
             }
             catch ( DavException e )
@@ -409,12 +413,16 @@ public class ArchivaDavResourceFactory
         DavResource resource = null;
         if ( isAuthorized( request, managedRepository.getId() ) )
         {
-            LogicalResource logicalResource =
-                new LogicalResource( RepositoryPathUtil.getLogicalResource( archivaLocator.getResourcePath() ) );
+            String path = RepositoryPathUtil.getLogicalResource( archivaLocator.getResourcePath() );
+            if ( path.startsWith( "/" ) )
+            {
+                path = path.substring( 1 );
+            }
+            LogicalResource logicalResource = new LogicalResource( path );
 
-            File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
+            File resourceFile = new File( managedRepository.getRepoRoot(), path );
             resource =
-                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
+                new ArchivaDavResource( resourceFile.getAbsolutePath(), path,
                                         managedRepository.getRepository(), request.getRemoteAddr(), activePrincipal,
                                         request.getDavSession(), archivaLocator, this, mimeTypes, auditListeners,
                                         scheduler );
@@ -520,6 +528,10 @@ public class ArchivaDavResourceFactory
         }
 
         String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
+        if ( logicalResource.startsWith( "/" ) )
+        {
+            logicalResource = logicalResource.substring( 1 );
+        }
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource );
         DavResource resource =
             new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource, managedRepository.getRepository(),
@@ -810,8 +822,12 @@ public class ArchivaDavResourceFactory
         throws DavException
     {
         List<File> mergedRepositoryContents = new ArrayList<File>();
-        LogicalResource logicalResource =
-            new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
+        String path = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
+        if ( path.startsWith( "/" ) )
+        {
+            path = path.substring( 1 );
+        }
+        LogicalResource logicalResource = new LogicalResource( path );
 
         // flow:
         // if the current user logged in has permission to any of the repositories, allow user to

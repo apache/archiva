@@ -143,7 +143,7 @@ public class RepositoryServletProxiedPassthroughTest
                 assertEquals( "Expected managed file contents", expectedManagedContents, response.getText() );
                 break;
             case EXPECT_REMOTE_CONTENTS:
-                assertResponseOK( response );
+                assertResponseOK( response, path );
                 assertEquals( "Expected remote file contents", expectedRemoteContents, response.getText() );
                 break;
             case EXPECT_NOT_FOUND:
