@@ -86,7 +86,6 @@
               <mainClass>org.mortbay.start.Main</mainClass>
               <commandLineArguments>
                 <commandLineArgument>conf/jetty.xml</commandLineArgument>
-                <commandLineArgument>conf/jetty-logging.xml</commandLineArgument> 
               </commandLineArguments>
               <platforms>
                 <platform>jsw</platform>
@@ -118,10 +117,6 @@
                     <property>
                       <name>wrapper.app.parameter.2</name>
                       <value>%ARCHIVA_BASE%/conf/jetty.xml</value>
-                    </property>
-                    <property>
-                      <name>wrapper.app.parameter.3</name>
-                      <value>%ARCHIVA_BASE%/conf/jetty-logging.xml</value>
                     </property>
                     <property>
                       <name>app.base.envvar</name>
