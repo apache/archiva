@@ -42,7 +42,7 @@
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>jcl104-over-slf4j</artifactId>
+      <artifactId>jcl-over-slf4j</artifactId>
       <!-- Exec plugin doesn't use runtime scope - odd -->
       <scope>compile</scope> 
     </dependency>

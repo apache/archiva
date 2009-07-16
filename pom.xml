@@ -77,6 +77,7 @@
                     <exclude>org.codehaus.plexus:plexus-container-default</exclude>
                     <exclude>org.codehaus.plexus:plexus-log4j-logging</exclude>
                     <exclude>commons-logging:commons-logging</exclude>
+                    <exclude>org.slf4j:jcl104-over-slf4j</exclude>
                     <exclude>velocity:velocity-dep</exclude>
                     <exclude>classworlds:classworlds</exclude>
                     <exclude>javax.transaction:jta</exclude>
@@ -84,6 +85,7 @@
                     <exclude>ant:ant-optional</exclude>
                     <exclude>xom:xom</exclude>
                     <exclude>org.codehaus.plexus:plexus-xwork-integration</exclude>
+                    <exclude>plexus:plexus-utils</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -815,6 +817,10 @@
             <artifactId>classworlds</artifactId>
           </exclusion>
           <exclusion>
+            <groupId>plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>velocity</groupId>
             <artifactId>velocity-dep</artifactId>
           </exclusion>
@@ -862,6 +868,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging-api</artifactId>
+        <version>1.1</version>
+      </dependency>
+      <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.4</version>
@@ -873,25 +884,31 @@
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
-        <artifactId>jcl104-over-slf4j</artifactId>
-        <version>1.5.0</version>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.5.0</version>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
-        <version>1.5.0</version>
+        <version>${slf4j.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>1.5.0</version>
+        <version>${slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -1084,6 +1101,7 @@
     <wagon.version>1.0-beta-5</wagon.version>
     <redback.version>1.2.1</redback.version>
     <jetty.version>6.1.19</jetty.version>
+    <slf4j.version>1.5.8</slf4j.version>
     <binder.version>0.9</binder.version>
     <spring.version>2.5.6</spring.version>
   </properties>
