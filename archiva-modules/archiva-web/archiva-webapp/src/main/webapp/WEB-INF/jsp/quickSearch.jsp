@@ -50,7 +50,8 @@
 
       row.appendChild( label ); 
       row.appendChild( textfield );
-      table.appendChild( row );
+      table.tBodies[0].appendChild( row );
+
     }
   </script>  
 
@@ -114,15 +115,17 @@
           <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
             <img src="${iconCreateUrl}" />
           </s:a>
-          <table id="dynamicTable">    
-            <tr>
-              <td><label>Repository: </td>
-              <td><s:select name="repositoryId" list="managedRepositoryList" theme="simple"/></td> 
-            </tr>       
-            <tr>
-              <td/>
-              <td/>  
-            </tr>
+          <table id="dynamicTable">
+            <tbody>    
+              <tr>
+                <td><label>Repository: </td>
+                <td><s:select name="repositoryId" list="managedRepositoryList" theme="simple"/></td> 
+              </tr>       
+              <tr>
+                <td/>
+                <td/>  
+              </tr>
+            </tbody>
           </table> 
           <s:submit value="Search" theme="simple"/>  
         </s:form>  
