@@ -60,7 +60,6 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataMerge;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
@@ -82,8 +81,6 @@ import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
-import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
@@ -154,11 +151,6 @@ public class ArchivaDavResourceFactory
     /**
      * @plexus.requirement
      */
-    private RepositoryContentConsumers consumers;
-
-    /**
-     * @plexus.requirement
-     */
     private ChecksumFile checksum;
 
     /**
@@ -170,22 +162,12 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement role-hint="md5";
      */
     private Digester digestMd5;
-    
-    /**
-     * @plexus.requirement role-hint="repository-scanning"
-     */
-    private TaskExecutor taskExecutor;
-    
+        
     /**
      * @plexus.requirement
      */
     private ArchivaTaskScheduler scheduler;
     
-    /**
-     * @plexus.requirement role-hint="repository-scanning"
-     */
-    private TaskQueueExecutor repoScanningTaskQueueExecutor;
-
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
@@ -1032,11 +1014,6 @@ public class ArchivaDavResourceFactory
     public void setHttpAuth( HttpAuthenticator httpAuth )
     {
         this.httpAuth = httpAuth;
-    }
-
-    public void setTaskExecutor( TaskExecutor taskExecutor )
-    {
-        this.taskExecutor = taskExecutor;
     }
 
     public void setScheduler( ArchivaTaskScheduler scheduler )

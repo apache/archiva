@@ -143,10 +143,6 @@
           <field-name>httpAuth</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
-          <role-hint>default</role-hint>
-        </requirement>
-        <requirement>
           <role>org.codehaus.plexus.digest.ChecksumFile</role>
           <field-name>checksum</field-name>
         </requirement>
@@ -159,11 +155,6 @@
           <role>org.codehaus.plexus.digest.Digester</role>
           <role-hint>md5</role-hint>
           <field-name>digestMd5</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
-          <role-hint>repository-scanning</role-hint>
-          <field-name>taskExecutor</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.scheduled.ArchivaTaskScheduler</role>
