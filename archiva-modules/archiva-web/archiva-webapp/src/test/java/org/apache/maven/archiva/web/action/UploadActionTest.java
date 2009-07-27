@@ -21,6 +21,7 @@ package org.apache.maven.archiva.web.action;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
@@ -29,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
@@ -96,6 +98,10 @@ public class UploadActionTest
         repoConfig.setLocation( testRepo.getPath() );
         repoConfig.setName( REPOSITORY_ID );
         config.addManagedRepository( repoConfig );
+        
+        RepositoryScanningConfiguration repoScanning = new RepositoryScanningConfiguration();
+        repoScanning.setKnownContentConsumers( new ArrayList<String>() );
+        config.setRepositoryScanning( repoScanning );
     }
 
     public void tearDown()
@@ -401,9 +407,11 @@ public class UploadActionTest
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
         content.setRepository( config.findManagedRepositoryById( REPOSITORY_ID ) );
 
+        
+        
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
-
+        
         archivaConfigControl.replay();
         repoFactoryControl.replay();
 
@@ -443,5 +451,5 @@ public class UploadActionTest
         assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
 
         verifyChecksums( repoLocation );
-    }
+    }    
 }

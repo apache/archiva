@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
@@ -292,8 +293,9 @@ public class UploadAction
     {
         try
         {
+            Configuration config = configuration.getConfiguration();
             ManagedRepositoryConfiguration repoConfig =
-                configuration.getConfiguration().findManagedRepositoryById( repositoryId );
+                config.findManagedRepositoryById( repositoryId );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifactId );
@@ -345,9 +347,11 @@ public class UploadAction
                 filename = filename.replaceAll( "SNAPSHOT", timestamp + "-" + newBuildNumber );
             }
 
+            boolean fixChecksums = !( config.getRepositoryScanning().getKnownContentConsumers().contains( "create-missing-checksums" ) );
+            
             try
             {   
-                copyFile( artifactFile, targetPath, filename );
+                copyFile( artifactFile, targetPath, filename, fixChecksums );
                 queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );
             }
             catch ( IOException ie )
@@ -362,13 +366,16 @@ public class UploadAction
                 pomFilename = StringUtils.remove( pomFilename, "-" + classifier );
             }
             pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
-
+            
             if ( generatePom )
             {
                 try
                 {
                     File generatedPomFile = createPom( targetPath, pomFilename );
-                    fixChecksums( generatedPomFile );
+                    if( fixChecksums )
+                    {
+                        fixChecksums( generatedPomFile );
+                    }
                     queueRepositoryTask( repoConfig.getId(), generatedPomFile );                    
                 }
                 catch ( IOException ie )
@@ -387,7 +394,7 @@ public class UploadAction
             {
                 try
                 {   
-                    copyFile( pomFile, targetPath, pomFilename );
+                    copyFile( pomFile, targetPath, pomFilename, fixChecksums );
                     queueRepositoryTask( repoConfig.getId(), new File( targetPath, pomFilename ) );
                 }
                 catch ( IOException ie )
@@ -398,7 +405,11 @@ public class UploadAction
 
             }
 
-            updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, timestamp, newBuildNumber );
+            // explicitly update only if metadata-updater consumer is not enabled!
+            if( !config.getRepositoryScanning().getKnownContentConsumers().contains( "metadata-updater" ) )
+            {
+                updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, timestamp, newBuildNumber, fixChecksums );
+            }
 
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deployed to repository \'" + repositoryId + "\'";
@@ -428,7 +439,7 @@ public class UploadAction
         checksum.fixChecksums( algorithms );
     }
     
-    private void copyFile( File sourceFile, File targetPath, String targetFilename )
+    private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
         FileOutputStream out = new FileOutputStream( new File( targetPath, targetFilename ) );
@@ -449,7 +460,10 @@ public class UploadAction
             input.close();
         }
         
-        fixChecksums( new File( targetPath, targetFilename ) );
+        if( fixChecksums )
+        {
+            fixChecksums( new File( targetPath, targetFilename ) );
+        }
     }
 
     private File createPom( File targetPath, String filename )
@@ -486,12 +500,11 @@ public class UploadAction
     }
 
     /**
-     * Update artifact level metadata. If it does not exist, create the metadata.
-     *
-     * @param metadata
+     * Update artifact level metadata. If it does not exist, create the metadata and 
+     * fix checksums if necessary.
      */
     private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp,
-                                 String timestamp, int buildNumber )
+                                 String timestamp, int buildNumber, boolean fixChecksums )
         throws RepositoryMetadataException
     {
         List<String> availableVersions = new ArrayList<String>();
@@ -543,7 +556,11 @@ public class UploadAction
         }
 
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        fixChecksums( metadataFile );
+        
+        if( fixChecksums )
+        {
+            fixChecksums( metadataFile );
+        }
     }
 
     public void validate()
