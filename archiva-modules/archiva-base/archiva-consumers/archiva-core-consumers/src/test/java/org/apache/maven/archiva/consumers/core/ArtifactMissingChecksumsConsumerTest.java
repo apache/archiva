@@ -1,5 +1,12 @@
 package org.apache.maven.archiva.consumers.core;
 
+import java.io.File;
+import java.util.Calendar;
+
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,12 +29,62 @@ package org.apache.maven.archiva.consumers.core;
 public class ArtifactMissingChecksumsConsumerTest
     extends AbstractArtifactConsumerTest
 {
+    private ManagedRepositoryConfiguration repoConfig;
+
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
+        repoConfig = new ManagedRepositoryConfiguration();
+        repoConfig.setId( "test-repo" );
+        repoConfig.setName( "Test Repository" );
+        repoConfig.setLayout( "default" );
+        repoConfig.setLocation( new File( getBasedir(), "target/test-classes/test-repo/" ).getPath() );
+
         consumer = (ArtifactMissingChecksumsConsumer) lookup( "artifactMissingChecksumsConsumer" );
+    }
+
+    public void testNoExistingChecksums()
+        throws Exception
+    {
+        String path = "/no-checksums-artifact/1.0/no-checksums-artifact-1.0.jar";
+
+        File sha1File = new File( repoConfig.getLocation(), path + ".sha1" );
+        File md5File = new File( repoConfig.getLocation(), path + ".md5" );
+
+        assertFalse( sha1File.exists() );
+        assertFalse( md5File.exists() );
+
+        consumer.beginScan( repoConfig, Calendar.getInstance().getTime() );
+
+        consumer.processFile( path );
+
+        assertTrue( sha1File.exists() );
+        assertTrue( md5File.exists() );
+    }
+
+    public void testExistingIncorrectChecksums()
+        throws Exception
+    {
+        String path = "/incorrect-checksums/1.0/incorrect-checksums-1.0.jar";
+
+        File sha1File = new File( repoConfig.getLocation(), path + ".sha1" );
+        File md5File = new File( repoConfig.getLocation(), path + ".md5" );
+
+        ChecksummedFile checksum = new ChecksummedFile( new File( repoConfig.getLocation(), path ) );
+
+        assertTrue( sha1File.exists() );
+        assertTrue( md5File.exists() );
+        assertFalse( checksum.isValidChecksums( new ChecksumAlgorithm[] { ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 } ) );
+
+        consumer.beginScan( repoConfig, Calendar.getInstance().getTime() );
+
+        consumer.processFile( path );
+
+        assertTrue( sha1File.exists() );
+        assertTrue( md5File.exists() );
+        assertTrue( checksum.isValidChecksums( new ChecksumAlgorithm[] { ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 } ) );        
     }
 }
