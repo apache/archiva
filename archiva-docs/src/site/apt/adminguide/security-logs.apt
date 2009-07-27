@@ -1,0 +1,40 @@
+ ------
+ Security Logs
+ ------
+ ------
+ 22 Jul 2009
+ ------
+ 
+Security Logs
+
+  Archiva's <<<logs>>> directory contains a security log file named <<<archiva-security-audit.log>>>,
+  which keeps track of all the security operations such as user creation/deletion, user role assignments, and user log in/out.
+  
+  A typical record looks like this:
+
+------
+2009-07-22 12:03:11 -  - Successful Login for user admin
+2009-07-22 12:05:03 - admin - User Created: archiva
+2009-07-22 12:05:25 - admin - Role Assigned to user archiva: Global Repository Manager
+2009-07-22 12:05:33 - admin - User Modified: archiva
+------
+
+  The hyphen delimited records are:
+
+    * date and time (server local time)
+    
+    * current user performing the operation
+    
+    * the operation performed
+    
+    []
+    
+  Currently, the following events are logged:
+
+    * user creation/modification/deletion
+    
+    * user log in/out
+    
+    * assigning roles to a user
+    
+    []

@@ -66,7 +66,11 @@
         <item name="Consumers"               href="/adminguide/consumers.html" />
       </item>
       <item name="Configuration Files"       href="/adminguide/configuration-files.html" />
-      <item name="Audit Logs"                href="/adminguide/audit-logs.html" />
+      <item name="Log Files"                 href="/adminguide/logging.html" >
+        <item name="Archiva Logs"            href="/adminguide/archiva-logs.html" />
+        <item name="Audit Logs"              href="/adminguide/audit-logs.html" />
+        <item name="Security Logs"           href="/adminguide/security-logs.html" />
+      </item>
       <item name="Reports"                   href="/adminguide/reports.html" />
       <item name="Web Services"              href="/adminguide/web-services.html" />
     </menu>
