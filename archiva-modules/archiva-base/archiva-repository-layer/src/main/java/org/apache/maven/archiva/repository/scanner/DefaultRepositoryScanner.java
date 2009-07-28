@@ -73,17 +73,17 @@ public class DefaultRepositoryScanner
         }
 
         File repositoryBase = new File( repository.getLocation() );
-
+        
         if ( !repositoryBase.exists() )
         {
             throw new UnsupportedOperationException( "Unable to scan a repository, directory "
-                + repositoryBase.getAbsolutePath() + " does not exist." );
+                + repositoryBase.getPath() + " does not exist." );
         }
 
         if ( !repositoryBase.isDirectory() )
         {
             throw new UnsupportedOperationException( "Unable to scan a repository, path "
-                + repositoryBase.getAbsolutePath() + " is not a directory." );
+                + repositoryBase.getPath() + " is not a directory." );
         }
 
         // Setup Includes / Excludes.
