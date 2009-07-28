@@ -254,7 +254,7 @@ public class RepositoryContentConsumersTest
         //        invalidConsumer.completeScan();
         invalidControl.replay();
 
-        consumers.executeConsumers( repo, testFile );
+        consumers.executeConsumers( repo, testFile, true );
 
         knownControl.verify();
         invalidControl.verify();
@@ -279,7 +279,7 @@ public class RepositoryContentConsumersTest
         //        invalidConsumer.completeScan();
         invalidControl.replay();
 
-        consumers.executeConsumers( repo, notIncludedTestFile );
+        consumers.executeConsumers( repo, notIncludedTestFile, true );
 
         knownControl.verify();
         invalidControl.verify();
@@ -302,12 +302,12 @@ public class RepositoryContentConsumersTest
         //        invalidConsumer.completeScan();
         invalidControl.replay();
 
-        consumers.executeConsumers( repo, excludedTestFile );
+        consumers.executeConsumers( repo, excludedTestFile, true );
 
         knownControl.verify();
         invalidControl.verify();
     }
-
+    
     /**
      * Create an OS specific version of the filepath.
      * Provide path in unix "/" format.

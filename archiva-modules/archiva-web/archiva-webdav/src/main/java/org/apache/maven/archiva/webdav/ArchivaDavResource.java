@@ -322,7 +322,7 @@ public class ArchivaDavResource
             triggerAuditEvent( resource, AuditEvent.CREATE_DIR );
         }
         else
-        {
+        {            
             throw new DavException( HttpServletResponse.SC_BAD_REQUEST, "Could not write member " +
                 resource.getResourcePath() + " at " + getResourcePath() );
         }
@@ -632,8 +632,8 @@ public class ArchivaDavResource
     }
     
     private void queueRepositoryTask(  File localFile )
-    {
-        RepositoryTask task = TaskCreator.createRepositoryTask( repository.getId(), localFile.getName(), localFile );
+    {        
+        RepositoryTask task = TaskCreator.createRepositoryTask( repository.getId(), localFile.getName(), localFile, false );
         
         try
         {

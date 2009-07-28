@@ -113,7 +113,7 @@ public class ArchivaRepositoryScanningTaskExecutor
         if( repoTask.getResourceFile() != null )
         {
             log.debug( "Executing task from queue with job name: " + repoTask.getName() );
-            consumers.executeConsumers( arepo, repoTask.getResourceFile() );
+            consumers.executeConsumers( arepo, repoTask.getResourceFile(), repoTask.isUpdateRelatedArtifacts() );
         }
         else
         {

@@ -58,7 +58,7 @@ public class RepositoryContentConsumers
     private List<KnownRepositoryContentConsumer> selectedKnownConsumers;
 
     private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
-
+    
     public RepositoryContentConsumers( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;      
@@ -229,8 +229,9 @@ public class RepositoryContentConsumers
      * 
      * @param repository the repository configuration to use.
      * @param localFile the local file to execute the consumers against.
+     * @param updateRelatedArtifacts TODO
      */
-    public void executeConsumers( ManagedRepositoryConfiguration repository, File localFile )
+    public void executeConsumers( ManagedRepositoryConfiguration repository, File localFile, boolean updateRelatedArtifacts )
     {
         // Run the repository consumers
         try
@@ -238,6 +239,24 @@ public class RepositoryContentConsumers
             Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime() );
 
             List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
+            
+            // MRM-1212/MRM-1197 
+            // - do not create missing/fix invalid checksums and update metadata when deploying from webdav since these are uploaded by maven          
+            if( updateRelatedArtifacts == false )
+            {  
+                List<KnownRepositoryContentConsumer> clone = new ArrayList<KnownRepositoryContentConsumer>();
+                clone.addAll( selectedKnownConsumers );
+                
+                for( KnownRepositoryContentConsumer consumer : clone )
+                {
+                    if( consumer.getId().equals( "create-missing-checksums" ) || 
+                                    consumer.getId().equals( "metadata-updater" ) )
+                    {
+                        selectedKnownConsumers.remove( consumer );
+                    }
+                }               
+            }
+            
             List<InvalidRepositoryContentConsumer> selectedInvalidConsumers = getSelectedInvalidConsumers();
             CollectionUtils.forAllDo( selectedKnownConsumers, triggerBeginScan );
             CollectionUtils.forAllDo( selectedInvalidConsumers, triggerBeginScan );

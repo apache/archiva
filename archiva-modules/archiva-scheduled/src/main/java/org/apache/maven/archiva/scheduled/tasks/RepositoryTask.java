@@ -40,6 +40,8 @@ public class RepositoryTask
     
     File resourceFile;
     
+    boolean updateRelatedArtifacts;
+    
     public String getRepositoryId()
     {
         return repositoryId;
@@ -88,5 +90,15 @@ public class RepositoryTask
     public void setResourceFile( File resourceFile )
     {
         this.resourceFile = resourceFile;
+    }
+
+    public boolean isUpdateRelatedArtifacts()
+    {
+        return updateRelatedArtifacts;
+    }
+
+    public void setUpdateRelatedArtifacts( boolean updateRelatedArtifacts )
+    {
+        this.updateRelatedArtifacts = updateRelatedArtifacts;
     }
 }

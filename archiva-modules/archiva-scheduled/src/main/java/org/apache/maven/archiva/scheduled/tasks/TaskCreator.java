@@ -47,11 +47,13 @@ public class TaskCreator
         return task;
     }
         
-    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, File resourceFile )
+    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, File resourceFile,
+                                                       boolean updateRelatedArtifacts )
     {
         RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix );
         task.setResourceFile( resourceFile );
-        
+        task.setUpdateRelatedArtifacts( updateRelatedArtifacts );
+
         return task;
     }
     

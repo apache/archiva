@@ -617,7 +617,7 @@ public class UploadAction
 
     private void queueRepositoryTask( String repositoryId, File localFile )
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile.getName(), localFile );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile.getName(), localFile, true );
 
         try
         {
