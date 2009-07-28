@@ -122,7 +122,7 @@
                         <![CDATA[
                           javax.xml.xpath.XPath xpath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
                           org.xml.sax.InputSource is = new org.xml.sax.InputSource( new java.io.FileInputStream( "${basedir}/src/site/site.xml" ) );
-                          xpath.evaluate( "//project/body/breadcrumbs/item[@name='${project.version}']/@href", is ).equals( "/docs/${project.version}" )
+                          xpath.evaluate( "//project/body/breadcrumbs/item[@name='${project.version}']/@href", is ).equals( "/index.html" )
                         ]]>
                       </condition>
                     </evaluateBeanshell>

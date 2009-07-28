@@ -21,13 +21,14 @@
 <project>
   <body>
     <breadcrumbs>
-      <item name="1.2.1" href="/docs/1.2.1" />
+      <item name="1.2.1" href="/index.html" />
     </breadcrumbs>
 
     <menu name="Introduction">
-      <item name="Quick Start"  href="/quick-start.html" />
-      <item name="Feature Tour" href="/tour/index.html" />
+      <item name="Quick Start"   href="/quick-start.html" />
+      <item name="Feature Tour"  href="/tour/index.html" />
       <item name="Release Notes" href="/release-notes.html" />
+      <item name="Downloads"     href="http://archiva.apache.org/download.html" />
     </menu>
 
     <menu name="Users Guide">
