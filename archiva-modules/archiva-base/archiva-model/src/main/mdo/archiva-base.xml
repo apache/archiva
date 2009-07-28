@@ -1178,7 +1178,7 @@
             The timestamp when this model was indexed.
           </description>
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>url</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -1414,7 +1414,7 @@
           <description>The email address to post to this mailing list.</description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>mainArchiveUrl</name>
           <version>1.0.0+</version>
           <description>The url to the archive for this mailing list.</description>
@@ -1461,13 +1461,13 @@
           <description><![CDATA[The full name of the organization.]]></description>
           <type>String</type>          
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>url</name>
           <version>1.0.0+</version>
           <description><![CDATA[The URL to the organization's home page.]]></description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250"
+        <field stash.maxSize="1020"
                jpox.column="FAVICON_URL">
           <name>favicon</name>
           <version>1.0.0+</version>
@@ -1516,7 +1516,7 @@
           <description><![CDATA[The full legal name of the license.]]></description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>url</name>
           <version>1.0.0+</version>
           <description><![CDATA[The official url for the license text.]]></description>
@@ -1557,7 +1557,7 @@
           we cannot unset this as the identifier and we cannot rename this as well.]]></description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250" null-value="default">
+        <field stash.maxSize="1020" null-value="default">
           <name>issueManagementUrl</name>
           <version>1.2.1+</version>
           <description><![CDATA[URL for the issue management system used by the project.]]></description>
@@ -1593,7 +1593,7 @@
           we cannot unset this as the identifier and we cannot rename this as well.]]></description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250" null-value="default">
+        <field stash.maxSize="1020" null-value="default">
           <name>ciUrl</name>
           <version>1.2.1+</version>
           <description>
@@ -1663,7 +1663,7 @@
           </description>
           <type>boolean</type>
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>url</name>
           <version>1.0.0+</version>
           <description><![CDATA[The URL for the homepage of the individual.]]></description>
@@ -1677,7 +1677,7 @@
           <description><![CDATA[The organization to which the individual belongs.]]></description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>organizationUrl</name>
           <alias>organisationUrl</alias>
           <version>1.0.0+</version>
@@ -1806,7 +1806,7 @@
           <type>boolean</type>
           <!-- <defaultValue>false</defaultValue> -->
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>url</name>
           <version>1.0.0+</version>
           <description><![CDATA[
@@ -1953,7 +1953,7 @@
       <name>Scm</name>
       <version>1.0.0+</version>
       <fields>
-        <field stash.maxSize="250" jpox.column="SCM_URL">
+        <field stash.maxSize="1020" jpox.column="SCM_URL">
           <name>connection</name>
           <version>1.0.0+</version>
           <description><![CDATA[
@@ -1966,7 +1966,7 @@
           ]]></description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>developerConnection</name>
           <version>1.0.0+</version>
           <description><![CDATA[
@@ -1975,7 +1975,7 @@
           ]]></description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>url</name>
           <version>1.0.0+</version>
           <description>
@@ -2014,7 +2014,7 @@
           ]]></description>
           <type>String</type>
         </field>
-        <field stash.maxSize="250">
+        <field stash.maxSize="1020">
           <name>url</name>
           <version>1.0.0+</version>
           <description><![CDATA[
