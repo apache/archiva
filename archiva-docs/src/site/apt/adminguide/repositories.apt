@@ -136,7 +136,7 @@ Artifacts in the repository:
 ../artifact-x/2.0-SNAPSHOT/artifact-x-20070203.028902-4.pom
 +----+
   
-  [[1]] Repository Purge By Days Older
+  [[1]] Repository Purge By Number of Days Older
   
   Using this criteria for the purge, Archiva will check how old an artifact is and if it is older than the set value in the
   repository purge by days older field, then the artifact will be deleted respecting the retention count of course.
@@ -168,6 +168,18 @@ Artifacts in the repository:
   artifact-x-20070113.034619-3.pom, artifact-x-20070203.028902-4.jar and artifact-x-20070203.028902-4.pom will be retained 
   in the repository. The oldest snapshots will be deleted maintaining only a number of snapshots equivalent to the set 
   retention count (regardless of how old or new the artifact is).
+
+** Deleting Released Snapshots
+
+  You can also configure Archiva to clean up snapshot artifacts that have already been released. This can be done by ticking
+  the Delete Released Snapshots checkbox in the Repository Configuration form.
+
+  Once this feature is enabled, if Archiva encounters a snapshot artifact during repository scanning, it would check <<all>> the
+  repositories configured for a released version of that snapshot. If it finds one, then it would delete the entire
+  snapshot version directory.
+   
+  It should be noted that this feature is entirely separate from the repository purge by number of days older and by
+  retention count.
 
 * Scanning a Database
 
