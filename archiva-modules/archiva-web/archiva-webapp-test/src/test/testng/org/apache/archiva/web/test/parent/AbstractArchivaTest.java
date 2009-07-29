@@ -202,7 +202,7 @@ public abstract class AbstractArchivaTest
 		assertTextPresent( "[Admin] User Roles" );
 		assertTextPresent( "Username" );
 		assertTextPresent( "Full Name" );
-		String userRoles = "Guest,Registered User,System Administrator,User Administrator,Global Repository Observer,Global Repository Manager,Repository Observer,Repository Manager,internal,snapshots";
+		String userRoles = "Guest,Registered User,System Administrator,User Administrator,Global Repository Observer,Global Repository Manager,Repository Observer,Repository Manager,internal";
 		String[] arrayRole = userRoles.split( "," );
 		for ( String userroles : arrayRole )
 			assertTextPresent( userroles );
@@ -224,7 +224,7 @@ public abstract class AbstractArchivaTest
 	
 	private void createUser( String userName, String fullName, String emailAd, String password, String confirmPassword, boolean valid ) 
 	{
-		login( getAdminUsername() , getAdminPassword() );
+		//login( getAdminUsername() , getAdminPassword() );
 		clickLinkWithText( "User Management" );
 		clickButtonWithValue( "Create New User" );
 		assertCreateUserPage();

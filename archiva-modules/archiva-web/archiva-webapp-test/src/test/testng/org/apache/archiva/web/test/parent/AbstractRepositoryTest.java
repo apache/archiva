@@ -1,5 +1,7 @@
 package org.apache.archiva.web.test.parent;
 
+import java.io.File;
+
 public abstract class AbstractRepositoryTest 
 	extends AbstractArchivaTest
 {
@@ -179,9 +181,9 @@ public abstract class AbstractRepositoryTest
 		assertButtonWithValuePresent( "Save Network Proxy" );
 	}
 	
-	public void addNetworkProxyWithAccount( String identifier, String protocol, String hostname, String port, String username, String password )
+	public void addNetworkProxy( String identifier, String protocol, String hostname, String port, String username, String password )
 	{
-		goToNetworkProxiesPage();
+		//goToNetworkProxiesPage();
 		clickLinkWithText( "Add Network Proxy" );
 		assertAddNetworkProxy();
 		setFieldValue( "proxy.id" , identifier );
@@ -195,7 +197,7 @@ public abstract class AbstractRepositoryTest
 	
 	public void editNetworkProxies( String fieldName, String value)
 	{
-		goToNetworkProxiesPage();
+		//goToNetworkProxiesPage();
 		clickLinkWithText( "Edit Network Proxy" );
 		setFieldValue( fieldName, value);
 		clickButtonWithValue( "Save Network Proxy" );
@@ -203,9 +205,10 @@ public abstract class AbstractRepositoryTest
 	
 	public void deleteNetworkProxy()
 	{
-		goToNetworkProxiesPage();
+		//goToNetworkProxiesPage();
 		clickLinkWithText( "Delete Network Proxy" );
 		assertPage( "Apache Archiva \\ Admin: Delete Network Proxy" );
+		assertTextPresent( "WARNING: This operation can not be undone." );
 		clickButtonWithValue( "Delete" );
 	}
 	
@@ -252,8 +255,7 @@ public abstract class AbstractRepositoryTest
 	
 	public void addRemoteRepository( String identifier, String name, String url, String username, String password, String timeout, String type )
 	{
-			goToRepositoriesPage();
-			clickLinkWithXPath( "//div[@id='contentArea']/div/div[4]/a" );
+			//goToRepositoriesPage();
 			assertAddRemoteRepository();
 			setFieldValue( "addRemoteRepository_repository_id" ,  identifier );
 			setFieldValue( "addRemoteRepository_repository_name" , name );
@@ -284,8 +286,8 @@ public abstract class AbstractRepositoryTest
 	// managed repositories
 	public void addManagedRepository( String identifier, String name, String directory, String indexDirectory, String type, String cron, String daysOlder, String retentionCount )
 	{
-		goToRepositoriesPage();
-		clickLinkWithText( "Add" );
+		//goToRepositoriesPage();
+		//clickLinkWithText( "Add" );
 		setFieldValue( "repository.id" , identifier );
 		setFieldValue( "repository.name" , name );
 		setFieldValue( "repository.location" , directory );
@@ -300,8 +302,8 @@ public abstract class AbstractRepositoryTest
 	
 	public void editManagedRepository( String fieldName, String value )
 	{
-		goToRepositoriesPage();
-		clickLinkWithXPath( "//div[@id='contentArea']/div/div[4]/div[1]/a[1]/img" );
+		//goToRepositoriesPage();
+		clickLinkWithXPath( "//div[@id='contentArea']/div/div[5]/div[1]/a[1]/img" );
 		assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
 		setFieldValue(fieldName, value);
 		//TODO
@@ -310,9 +312,15 @@ public abstract class AbstractRepositoryTest
 	
 	public void deleteManagedRepository()
 	{
-		goToRepositoriesPage();
-		clickLinkWithXPath( "//div[@id='contentArea']/div/div[4]/div[1]/a[2]" );
+		clickLinkWithXPath( "//div[@id='contentArea']/div/div[5]/div[1]/a[2]" );
 		assertPage( "Apache Archiva \\ Admin: Delete Managed Repository" );
 		clickButtonWithValue( "Delete Configuration Only" );
-	}	
+	}
+	
+	public String getRepositoryDir()
+	{
+		File f = new File( "" );
+		String artifactFilePath = f.getAbsolutePath();
+		return artifactFilePath + "/target/";
+	}
 }

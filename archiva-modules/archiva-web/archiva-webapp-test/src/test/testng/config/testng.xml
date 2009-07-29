@@ -20,6 +20,9 @@ under the License.
 -->
 
 <suite name="ArchivaTest" verbose="1">
+	<listeners>
+	        <listener class-name="org.apache.archiva.web.test.listener.CaptureScreenShotsListener"/>
+	</listeners>
 	<test name="BasicTest" enabled="true">
 		<groups>
 			<run>
@@ -34,13 +37,14 @@ under the License.
 		<groups>
 			<run>
 				<include name= "login" />
-				<include name= "userroles" />
+				<include name= "userroles" />	
 				<include name= "artifactmanagement" />
 				<include name= "search" />
 				<include name= "browse" />
 				<include name= "reports" />
 				<include name= "virtualrepository" />
-				<include name= "proxyconnectors" />
+				<include name= "networkproxies" />
+				<include name= "repository" />
 			</run>
 		</groups>
 		<packages>

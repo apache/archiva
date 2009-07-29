@@ -56,7 +56,7 @@ public class ArchivaAdminTest
     public static final String NEW_LOCAL_REPO_VALUE = "/target/local-repo";
 	
     @BeforeSuite
-    public void initializeContinuum()
+    public void initializeArchiva()
         throws Exception
     {
         super.open();
