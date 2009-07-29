@@ -365,6 +365,15 @@
         <role>Committer</role>
       </roles>
     </developer>
+    <developer>
+      <id>mbaclay</id>
+      <name>Marecor M. Baclay</name>
+      <email>mbaclay@apache.org</email>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+8</timezone>
+    </developer>
     <!-- Emeritus Committers -->
     <developer>
       <id>jvanzyl</id>
