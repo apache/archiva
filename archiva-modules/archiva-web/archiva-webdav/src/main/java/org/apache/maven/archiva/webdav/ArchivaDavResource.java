@@ -313,11 +313,15 @@ public class ArchivaDavResource
             
             queueRepositoryTask( localFile );           
             
+            log.debug( "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created ") + "(current user '" + this.principal + "')" );
+            
             triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
         else if ( !inputContext.hasStream() && isCollection() ) // New directory
         {
             localFile.mkdir();
+            
+            log.debug( "Directory '" + resource.getDisplayName() + "' (current user '" + this.principal + "')" );
             
             triggerAuditEvent( resource, AuditEvent.CREATE_DIR );
         }
@@ -343,10 +347,12 @@ public class ArchivaDavResource
                         DavResourceLocator resourceLocator =
                             locator.getFactory().createResourceLocator( locator.getPrefix(), path );
                         DavResource resource = factory.createResource( resourceLocator, session );
+                        
                         if ( resource != null )
                         {
                             list.add( resource );
                         }
+                        log.debug( "Resource '" + item + "' retrieved by '" + this.principal + "'" );
                     }
                 }
                 catch ( DavException e )
@@ -382,6 +388,7 @@ public class ArchivaDavResource
 
                     triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
+                log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName() + "' removed (current user '" + this.principal + "')" );
             }
             catch ( IOException e )
             {
@@ -425,6 +432,9 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
+            
+            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '" +
+            		   destination + "' (current user '" + this.principal + "')" );
         }
         catch ( IOException e )
         {
@@ -460,6 +470,8 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
+            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '" +
+            		   destination + "' (current user '" + this.principal + "')" );
         }
         catch ( IOException e )
         {

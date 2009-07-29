@@ -190,6 +190,8 @@ public class ArchivaDavResourceFactory
                 throw new DavException( HttpServletResponse.SC_METHOD_NOT_ALLOWED,
                                         "Write method not allowed for repository groups." );
             }
+            
+            log.debug( "Repository group '" + repoGroupConfig.getId() + "' accessed by '" + activePrincipal + "'" );
 
             // handle browse requests for virtual repos
             if ( RepositoryPathUtil.getLogicalResource( archivaLocator.getOrigResourcePath() ).endsWith( "/" ) )
@@ -220,6 +222,8 @@ public class ArchivaDavResourceFactory
             {
                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
             }
+
+            log.debug( "Managed repository '" + managedRepository.getId() + "' accessed by '" + activePrincipal + "'" );
 
             resource = processRepository( request, archivaLocator, activePrincipal, managedRepository );
 
@@ -421,7 +425,7 @@ public class ArchivaDavResourceFactory
                     if ( !resource.isCollection() )
                     {
                         boolean previouslyExisted = resourceFile.exists();
-
+                        
                         // Attempt to fetch the resource from any defined proxy.
                         boolean fromProxy = fetchContentFromProxies( managedRepository, request, logicalResource );
 
@@ -453,6 +457,10 @@ public class ArchivaDavResourceFactory
                             String event =
                                 ( previouslyExisted ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE )
                                     + PROXIED_SUFFIX;
+                            
+                            log.debug( "Proxied artifact '" + resourceFile.getName() + "' in repository '" +
+                                       managedRepository.getId() + "' (current user '" + activePrincipal + "')" );
+
                             triggerAuditEvent( request.getRemoteAddr(), archivaLocator.getRepositoryId(),
                                                logicalResource.getPath(), event, activePrincipal );
                         }
@@ -481,6 +489,9 @@ public class ArchivaDavResourceFactory
                 {
                     destDir.mkdirs();
                     String relPath = PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
+                    
+                    log.debug( "Creating destination directory '" + destDir.getName() + "' (current user '" + activePrincipal + "')" );
+                    
                     triggerAuditEvent( request.getRemoteAddr(), logicalResource.getPath(), relPath,
                                        AuditEvent.CREATE_DIR, activePrincipal );
                 }
@@ -554,6 +565,8 @@ public class ArchivaDavResourceFactory
                 File proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
 
                 resource.setPath( managedRepository.toPath( artifact ) );
+                
+                log.debug( "Proxied artifact '" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() + "'" );
 
                 return ( proxiedFile != null );
             }
@@ -852,6 +865,7 @@ public class ArchivaDavResourceFactory
                             if ( isAuthorized( request, repository ) )
                             {
                                 mergedRepositoryContents.add( resourceFile );
+                                log.debug( "Repository '" + repository + "' accessed by '" + activePrincipal + "'" );
                             }
                         }
                         catch ( DavException e )
@@ -870,6 +884,7 @@ public class ArchivaDavResourceFactory
                                                            WebdavMethodUtil.getMethodPermission( request.getMethod() ) ) )
                             {
                                 mergedRepositoryContents.add( resourceFile );
+                                log.debug( "Repository '" + repository + "' accessed by '" + activePrincipal + "'" );
                             }
                         }
                         catch ( UnauthorizedException e )
