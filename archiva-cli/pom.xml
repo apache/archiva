@@ -87,6 +87,9 @@
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                   <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                  <resource>META-INF/spring-context.xml</resource>
                 </transformer>                
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer" />
               </transformers>
@@ -96,7 +99,6 @@
                   <exclude>xml-apis:xml-apis</exclude>
                   <exclude>xalan:xalan</exclude>
                   <exclude>commons-beanutils:commons-beanutils</exclude>
-                  <exclude>commons-io:commons-io</exclude>
                 </excludes>
               </artifactSet>
             </configuration>

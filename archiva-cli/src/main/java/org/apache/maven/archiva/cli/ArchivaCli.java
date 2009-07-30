@@ -286,7 +286,7 @@ public class ArchivaCli
             value = "convert", alias = "c")
         private boolean convert;
 
-        @Argument(description = "The properties file for the converstion", value = "properties")
+        @Argument(description = "The properties file for the conversion", value = "properties")
         private String properties = "conversion.properties";
 
         @Argument(description = "The repository to scan", value = "repository")
