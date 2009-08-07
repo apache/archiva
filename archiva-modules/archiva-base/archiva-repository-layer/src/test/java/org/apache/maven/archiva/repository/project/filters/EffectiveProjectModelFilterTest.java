@@ -21,6 +21,7 @@ package org.apache.maven.archiva.repository.project.filters;
 
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
@@ -84,6 +85,7 @@ public class EffectiveProjectModelFilterTest
         assertEffectiveProject(
                 "/org/apache/maven/archiva/archiva-model/1.0-SNAPSHOT/archiva-model-1.0-SNAPSHOT.pom",
         "/archiva-model-effective.pom");
+        
         assertEffectiveProject(
                 "/test-project/test-project-endpoint-ejb/2.4.4/test-project-endpoint-ejb-2.4.4.pom",
         "/test-project-model-effective.pom");
@@ -220,6 +222,49 @@ public class EffectiveProjectModelFilterTest
         assertTrue( passedWagonVersionChecking );
     }
 
+    // MRM-1194
+    public void testEffectiveProjectPropertyExistingParentHasUniqueSnapshotVersion()
+        throws Exception
+    {
+        initTestResolverFactory();
+        EffectiveProjectModelFilter filter = lookupEffective();
+
+        String pomFile = "/org/apache/archiva/sample-project/2.1-SNAPSHOT/sample-project-2.1-SNAPSHOT.pom";
+        ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY + pomFile );
+
+        String buildHelperPluginVersion = "1.0";
+
+        boolean passedBuildHelperVersionChecking = false;
+ 
+        List<ArtifactReference> startPlugins = startModel.getPlugins();
+        for( ArtifactReference plugin : startPlugins )
+        {
+            if( "build-helper-maven-plugin".equals( plugin.getArtifactId() ) )
+            {
+                assertEquals( "${build-helper-maven-plugin.version}", plugin.getVersion() );
+            }
+        }
+        
+        ArchivaProjectModel effectiveModel = filter.filter( startModel );
+        
+        List<ArtifactReference> effectivePlugins = effectiveModel.getPlugins();
+        for( ArtifactReference plugin : effectivePlugins )
+        {
+            if( "build-helper-maven-plugin".equals( plugin.getArtifactId() ) )
+            {
+                assertEquals( buildHelperPluginVersion, plugin.getVersion() );
+                
+                if ( !passedBuildHelperVersionChecking )
+                {
+                    passedBuildHelperVersionChecking = true;
+                }
+            }
+        }
+        
+        assertTrue( passedBuildHelperVersionChecking );
+    }
+    
+    
     private ProjectModelResolverFactory initTestResolverFactory()
         throws Exception
     {
@@ -241,7 +286,7 @@ public class EffectiveProjectModelFilterTest
         assertContainsSameDependencies( "Dependencies", expectedModel.getDependencies(), effectiveModel
             .getDependencies() );
         assertContainsSameDependencies( "DependencyManagement", expectedModel.getDependencyManagement(), effectiveModel
-            .getDependencyManagement() );
+            .getDependencyManagement() );         
     }
 
     private void dumpDependencyList( String type, List<Dependency> deps )

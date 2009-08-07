@@ -420,4 +420,9 @@ public class ManagedDefaultRepositoryContent
             return false;
         }
     }
+
+    public void setFiletypes( FileTypes filetypes )
+    {
+        this.filetypes = filetypes;
+    }
 }
