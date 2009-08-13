@@ -336,13 +336,12 @@ public class ArchivaDavResourceFactory
                                                 String activePrincipal, List<String> resourcesInAbsolutePath )
         throws DavException
     {
-        DavResource resource = null;
-        DavException storedException = null;
+        DavResource resource = null;        
+        List<DavException> storedExceptions = new ArrayList<DavException>();
 
         for ( String repositoryId : repositories )
         {
             ManagedRepositoryContent managedRepository = null;
-
             try
             {
                 managedRepository = repositoryFactory.getManagedRepositoryContent( repositoryId );
@@ -373,16 +372,25 @@ public class ArchivaDavResourceFactory
                 resourcesInAbsolutePath.add( new File( managedRepository.getRepoRoot(), logicalResource ).getAbsolutePath() );
             }
             catch ( DavException e )
-            {
-                storedException = e;
+            {   
+                storedExceptions.add( e );
             }
         }
 
         if ( resource == null )
-        {
-            if ( storedException != null )
-            {
-                throw storedException;
+        {            
+            if ( !storedExceptions.isEmpty() )
+            {    
+                // MRM-1232
+                for( DavException e : storedExceptions )
+                {
+                    if( 401 == e.getErrorCode() )
+                    {
+                        throw e;
+                    }
+                }
+                
+                throw new DavException( HttpServletResponse.SC_NOT_FOUND );
             }
             else
             {
@@ -404,8 +412,7 @@ public class ArchivaDavResourceFactory
             {
                 path = path.substring( 1 );
             }
-            LogicalResource logicalResource = new LogicalResource( path );
-
+            LogicalResource logicalResource = new LogicalResource( path );            
             File resourceFile = new File( managedRepository.getRepoRoot(), path );
             resource =
                 new ArchivaDavResource( resourceFile.getAbsolutePath(), path,
@@ -915,7 +922,7 @@ public class ArchivaDavResourceFactory
         return resource;
     }
 
-    private String getActivePrincipal( DavServletRequest request )
+    protected String getActivePrincipal( DavServletRequest request )
     {
         User sessionUser = httpAuth.getSessionUser( request.getSession() );
         return sessionUser != null ? sessionUser.getUsername() : UserManager.GUEST_USERNAME;
@@ -1034,5 +1041,20 @@ public class ArchivaDavResourceFactory
     public void setScheduler( ArchivaTaskScheduler scheduler )
     {
         this.scheduler = scheduler;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    public void setRepositoryRequest( RepositoryRequest repositoryRequest )
+    {
+        this.repositoryRequest = repositoryRequest;
     }
 }
