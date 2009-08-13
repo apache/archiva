@@ -36,7 +36,7 @@
 
 <p>
   The logo in the top right of the screen is controlled by the following settings.
-  <a href="<s:url action='editAppearance' />">Change your appearence</a>
+  <a href="<s:url action='editAppearance' />">Change your appearance</a>
 </p>
 
 <h3>Organization Information</h3>
