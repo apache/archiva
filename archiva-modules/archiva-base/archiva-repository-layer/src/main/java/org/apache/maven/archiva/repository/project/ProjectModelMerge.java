@@ -337,7 +337,12 @@ public class ProjectModelMerge
         while ( keys.hasMoreElements() )
         {
             String key = (String) keys.nextElement();
-            merged.put( key, merge( mainProperties.getProperty( key ), parentProperties.getProperty( key ) ) );
+            String value = merge( mainProperties.getProperty( key ), parentProperties.getProperty( key ) );
+            
+            if ( value != null )
+            {
+                merged.put( key, value );
+            }
         }
 
         return merged;
