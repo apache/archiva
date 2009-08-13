@@ -356,7 +356,7 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
-	<developer>
+    <developer>
       <id>martinc</id>
       <name>Martin Cooper</name>
       <email>martinc@apache.org</email>
@@ -369,6 +369,15 @@
       <id>mbaclay</id>
       <name>Marecor M. Baclay</name>
       <email>mbaclay@apache.org</email>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+8</timezone>
+    </developer>
+    <developer>
+      <id>jzurbano</id>
+      <name>Jevica Arianne B. Zurbano</name>
+      <email>jzurbano@apache.org</email>
       <roles>
         <role>Committer</role>
       </roles>
@@ -491,9 +500,6 @@
     </contributor>
     <contributor>
       <name>Michal Stochmialek</name>
-    </contributor>
-    <contributor>
-      <name>Jevica Arianne B. Zurbano</name>
     </contributor>
     <contributor>
       <name>Jan Ancajas</name>
