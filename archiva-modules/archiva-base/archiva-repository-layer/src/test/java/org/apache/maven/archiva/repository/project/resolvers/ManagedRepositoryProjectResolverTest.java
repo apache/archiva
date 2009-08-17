@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
+import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
@@ -68,11 +69,18 @@ public class ManagedRepositoryProjectResolverTest
             assertEquals( "org.apache.archiva", model.getGroupId() );
             assertEquals( "unique-version", model.getArtifactId() );
             assertEquals( "1.0-SNAPSHOT", model.getVersion() );
-            assertEquals( "Unique Version Snapshot - Build 3", model.getName() );
+            assertEquals( "Unique Version Snapshot - Build 3", model.getName() );            
         } 
         catch ( Exception e )
         {
-            fail( "The latest timestamp should have been found!" );
+            if( e instanceof ProjectModelException )
+            {
+                fail( "A ProjectModelException should not have occurred. Instead, the latest timestamp should have been found!" );
+            }
+            else
+            {
+                throw e;
+            }
         }
     }
     
@@ -119,11 +127,11 @@ public class ManagedRepositoryProjectResolverTest
         try
         {
             resolver.resolveProjectModel( ref );
-            fail( "An exception should have been thrown." );
+            fail( "A ProjectModelException should have been thrown." );
         }
         catch( Exception e )
         {
-            assertTrue( true );
+            assertTrue( e instanceof ProjectModelException );
         }
     }    
     
