@@ -47,13 +47,12 @@ import org.sonatype.nexus.index.packer.IndexPacker;
 import org.sonatype.nexus.index.packer.IndexPackingRequest;
 
 /**
- * ArchivaIndexingTaskExecutor
- * 
- * Executes all indexing tasks. Adding, updating and removing artifacts from the index are all performed by
- * this executor. Add and update artifact in index tasks are added in the indexing task queue by the NexusIndexerConsumer while
- * remove artifact from index tasks are added by the LuceneCleanupRemoveIndexedConsumer.
+ * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
+ * all performed by this executor. Add and update artifact in index tasks are added in the indexing task queue by the
+ * NexusIndexerConsumer while remove artifact from index tasks are added by the LuceneCleanupRemoveIndexedConsumer.
  * 
  * @plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexing"
+ *                   instantiation-strategy="singleton"
  */
 public class ArchivaIndexingTaskExecutor
     implements TaskExecutor, Initializable
@@ -135,31 +134,38 @@ public class ArchivaIndexingTaskExecutor
                         {   
                             log.debug( "Adding artifact '" + ac.getArtifactInfo() + "' to index.." );
                             indexerEngine.index( context, ac );
+                            context.optimize();
                         }
                         else
                         {
                             log.debug( "Updating artifact '" + ac.getArtifactInfo() + "' in index.." );
                             indexerEngine.update( context, ac );
+                            context.optimize();
                         }
                     }
                     else
                     {                           
-                        log.debug( "removing artifact '" + ac.getArtifactInfo() + "' from index.." );
+                        log.debug( "Removing artifact '" + ac.getArtifactInfo() + "' from index.." );
                         indexerEngine.remove( context, ac );
+                        context.optimize();
                     }
                     
                     final File indexLocation = new File( managedRepository, ".index" );
                     IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
                     indexPacker.packIndex( request );
+                    
+                    log.debug( "Index file packaged at '" + indexLocation.getPath() + "'." );
                 }                
             }
             catch ( IOException e )
             {
+                log.error( "Error occurred while executing indexing task '" + indexingTask.getName() + "'" );                
                 throw new TaskExecutionException( "Error occurred while executing indexing task '" +
                     indexingTask.getName() + "'" );
             }
             catch ( UnsupportedExistingLuceneIndexException e )
             {
+                log.error( "Unsupported Lucene index format: " + e.getMessage() );
                 throw new TaskExecutionException( "Unsupported Lucene index format: " + e.getMessage() );
             }
             finally
@@ -167,11 +173,12 @@ public class ArchivaIndexingTaskExecutor
                 if( context != null )
                 {
                     try
-                    {
+                    {   
                         context.close( false );
                     }
                     catch ( IOException e )
                     {
+                        log.error( "Error occurred while closing context: " + e.getMessage() );
                         throw new TaskExecutionException( "Error occurred while closing context: " + e.getMessage() );
                     }
                 }

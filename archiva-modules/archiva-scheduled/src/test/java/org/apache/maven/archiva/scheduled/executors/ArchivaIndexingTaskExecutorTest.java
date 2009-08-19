@@ -19,8 +19,16 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.search.BooleanQuery;
@@ -234,4 +242,81 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( 0, topDocs.totalHits );
     }
     
+    public void testPackagedIndex()
+        throws Exception
+    {
+        File artifactFile =
+            new File( repositoryConfig.getLocation(),
+                      "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
+
+        ArtifactIndexingTask task =
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
+
+        archivaConfigControl.expectAndReturn( archivaConfiguration.getConfiguration(), configuration );
+
+        archivaConfigControl.replay();
+
+        indexingExecutor.executeTask( task );
+
+        archivaConfigControl.verify();
+
+        assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
+        assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
+
+        // unpack .zip index
+        File destDir = new File( repositoryConfig.getLocation(), ".index/tmp" );
+        unzipIndex( new File( repositoryConfig.getLocation(), ".index" ).getPath(), destDir.getPath() );
+
+        BooleanQuery q = new BooleanQuery();
+        q.add( indexer.constructQuery( ArtifactInfo.GROUP_ID, "org.apache.archiva" ), Occur.SHOULD );
+        q.add( indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "archiva-index-methods-jar-test" ), Occur.SHOULD );
+
+        IndexingContext context =
+            indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
+                                        new File( repositoryConfig.getLocation() ), destDir, null, null,
+                                        NexusIndexer.FULL_INDEX );
+        context.setSearchable( true );
+
+        FlatSearchRequest request = new FlatSearchRequest( q );
+        FlatSearchResponse response = indexer.searchFlat( request );
+
+        assertEquals( 1, response.getTotalHits() );
+
+        Set<ArtifactInfo> results = response.getResults();
+
+        ArtifactInfo artifactInfo = (ArtifactInfo) results.iterator().next();
+        assertEquals( "org.apache.archiva", artifactInfo.groupId );
+        assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
+        assertEquals( "test-repo", artifactInfo.repository );
+    }
+
+    private void unzipIndex( String indexDir, String destDir )
+        throws FileNotFoundException, IOException
+    {
+        final int buff = 2048;
+
+        new File( destDir ).mkdirs();
+
+        BufferedOutputStream out = null;
+        FileInputStream fin = new FileInputStream( new File( indexDir, "nexus-maven-repository-index.zip" ) );
+        ZipInputStream in = new ZipInputStream( new BufferedInputStream( fin ) );
+        ZipEntry entry;
+
+        while ( ( entry = in.getNextEntry() ) != null )
+        {
+            int count;
+            byte data[] = new byte[buff];
+            FileOutputStream fout = new FileOutputStream( new File( destDir, entry.getName() ) );
+            out = new BufferedOutputStream( fout, buff );
+
+            while ( ( count = in.read( data, 0, buff ) ) != -1 )
+            {
+                out.write( data, 0, count );
+            }
+            out.flush();
+            out.close();
+        }
+
+        in.close();
+    }
 }
