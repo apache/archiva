@@ -71,16 +71,9 @@ public class ManagedRepositoryProjectResolverTest
             assertEquals( "1.0-SNAPSHOT", model.getVersion() );
             assertEquals( "Unique Version Snapshot - Build 3", model.getName() );            
         } 
-        catch ( Exception e )
+        catch ( ProjectModelException e )
         {
-            if( e instanceof ProjectModelException )
-            {
-                fail( "A ProjectModelException should not have occurred. Instead, the latest timestamp should have been found!" );
-            }
-            else
-            {
-                throw e;
-            }
+            fail( "A ProjectModelException should not have occurred. Instead, the latest timestamp should have been found!" );
         }
     }
     
@@ -129,9 +122,9 @@ public class ManagedRepositoryProjectResolverTest
             resolver.resolveProjectModel( ref );
             fail( "A ProjectModelException should have been thrown." );
         }
-        catch( Exception e )
+        catch( ProjectModelException e )
         {
-            assertTrue( e instanceof ProjectModelException );
+            assertTrue( true );
         }
     }    
     
