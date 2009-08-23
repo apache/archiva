@@ -1208,16 +1208,5 @@
       <name>Codehaus Snapshots Repository</name>
       <url>http://snapshots.repository.codehaus.org</url>
     </repository> 
-    <repository>
-      <releases>
-       <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>codehaus.org</id>
-      <url>http://repository.codehaus.org/</url>
-      <name>Codehaus Repository</name>
-    </repository>
   </repositories>
 </project>
