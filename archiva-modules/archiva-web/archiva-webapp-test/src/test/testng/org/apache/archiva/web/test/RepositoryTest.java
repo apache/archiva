@@ -22,7 +22,7 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "repository" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "repository" }, dependsOnMethods = { "testWithCorrectUsernamePassword" }, sequential = true )
 public class RepositoryTest
 	extends AbstractRepositoryTest
 {
@@ -39,7 +39,7 @@ public class RepositoryTest
 	@Test(dependsOnMethods = { "testAddManagedRepoValidValues" } )
 	public void testAddManagedRepoInvalidValues()
 	{
-		goToRepositoriesPage();
+		//goToRepositoriesPage();
 		clickLinkWithText( "Add" );
 		addManagedRepository( "", "" , "" , "", "Maven 2.x Repository", "", "", "" );
 		assertTextPresent( "You must enter a repository identifier." );
