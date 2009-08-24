@@ -1,10 +1,10 @@
  -----
- Release Notes for Archiva 1.2.1
+ Release Notes for Archiva 1.2.2
  -----
 
-Release Notes for Archiva 1.2.1
+Release Notes for Archiva 1.2.2
 
-  The Apache Archiva team would like to announce the release of Archiva 1.2.1.  Archiva is {{{http://archiva.apache.org/download.html}
+  The Apache Archiva team would like to announce the release of Archiva 1.2.2.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -46,7 +46,74 @@ Release Notes for Archiva 1.2.1
 
 * Release Notes
 
-  The Archiva 1.2.1 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.2.2 feature set can be seen in the {{{tour/index.html} feature tour}}.
+
+* Changes in Archiva 1.2.2
+
+  Released: *24 Aug 2009*
+
+** Bug
+    * [MRM-1002] - Website navigation links don't work as expected
+
+    * [MRM-1085] - CLONE -Failing to startup due to invalid bean definition
+
+    * [MRM-1141] - archiva-cli no longer works
+
+    * [MRM-1151] - Error when processing file nexus-maven-repository-index.zip
+
+    * [MRM-1155] - m2eclipse - getting index from archiva 1.2 failed
+
+    * [MRM-1168] - A locked user gets HTTP ERROR 500 page when logging in Artifact Repository page
+
+    * [MRM-1171] - Archiva 1.2 - Internet Explorer - Search - Anvanced Search - Advanced Search Fields - Add Search Field (green +)
+
+    * [MRM-1194] - Archiva doesn't cope with versions in a pom.xml that are properties
+
+    * [MRM-1196] - checksums are not updated when artifact is re-uploaded
+
+    * [MRM-1197] - Random 400 Error when uploading maven-metadata.xml to Archiva 1.2/1.2.1
+
+    * [MRM-1198] - field length for ARCHIVA_SCM.URL is too short
+
+    * [MRM-1202] - 404 error when changing password
+
+    * [MRM-1204] - org.apache.maven.archiva.repository.project.ProjectModelMerge.merge throws NPE
+
+    * [MRM-1212] - create-missing-checksums and metadata-updater sometimes causes deployments to fail for large projects when enabled
+
+    * [MRM-1217] - upgrade standalone bundle to Jetty 6.1.19
+
+    * [MRM-1220] - disable Struts devMode
+
+    * [MRM-1232] - Unable to get artifacts from repositories which requires Repository Manager role using repository group
+
+    * [MRM-1234] - Typo in Appearance Page
+
+    * [MRM-1236] - Locale selection is broken
+
+** Improvement
+
+    * [MRM-1163] - Add some decent logs in webdav for debugging purposes
+
+    * [MRM-1191] - Add Archiva log files in documentation
+
+    * [MRM-1214] - Web Application Deployment, Troubleshooting
+
+** Task
+
+    * [MRM-1182] - Clarify 'delete released snapshots' functionality
+
+    * [MRM-1207] - Make wrapper.log roll each day so it won't get too large
+
+    * [MRM-1216] - Logging conflict on startup in Jetty bundle
+
+    * [MRM-1218] - upgrade to JSP 2.1
+
+    * [MRM-1219] - Missing appenders in log4j configuration
+
+** Test
+
+    * [MRM-1226] - Selenium tests for Repositories and Network Proxies
 
 * Changes in Archiva 1.2.1
 
