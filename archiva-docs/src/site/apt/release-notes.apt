@@ -53,6 +53,7 @@ Release Notes for Archiva 1.2.2
   Released: *24 Aug 2009*
 
 ** Bug
+
     * [MRM-1002] - Website navigation links don't work as expected
 
     * [MRM-1085] - CLONE -Failing to startup due to invalid bean definition
