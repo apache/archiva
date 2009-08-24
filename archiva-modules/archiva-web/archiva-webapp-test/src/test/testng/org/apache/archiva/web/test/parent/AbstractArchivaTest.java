@@ -31,19 +31,19 @@ public abstract class AbstractArchivaTest
 	
 	public String getUserEmail()
 	{
-		String email = p.getProperty("USERROLE_EMAIL");
+		String email = getProperty("USERROLE_EMAIL");
 		return email;
 	}
 	
 	public String getUserRolePassword() 
 	{
-		String password = p.getProperty("USERROLE_PASSWORD");
+		String password = getProperty("USERROLE_PASSWORD");
 		return password;
 	}
 
 	public String getUserRoleNewPassword() 
 	{
-		String password_new = p.getProperty( "NEW_USERROLE_PASSWORD" );
+		String password_new = getProperty( "NEW_USERROLE_PASSWORD" );
 		return password_new;
 	}
 
@@ -61,13 +61,13 @@ public abstract class AbstractArchivaTest
 	
 	public String getAdminUsername()
 	{
-		String adminUsername = p.getProperty( "ADMIN_USERNAME" );
+		String adminUsername = getProperty( "ADMIN_USERNAME" );
 		return adminUsername;
 	}
 	
 	public String getAdminPassword()
 	{
-		String adminPassword = p.getProperty( "ADMIN_PASSWORD" );
+		String adminPassword = getProperty( "ADMIN_PASSWORD" );
 		return adminPassword;
 	}
 	
@@ -405,7 +405,7 @@ public abstract class AbstractArchivaTest
 				assertLinkPresent( navmenu );
 		}
 	}
-/*	//Find Artifact
+	//Find Artifact
 	public void goToFindArtifactPage()
 	{
 		clickLinkWithText( "Find Artifact" );
@@ -414,15 +414,14 @@ public abstract class AbstractArchivaTest
 	
 	public void assertFindArtifactPage()
 	{
-		//assertPage( "Apache Archiva \\ Find Artifact" );
+		assertPage( "Apache Archiva \\ Find Artifact" );
 		assertTextPresent( "Find Artifact" );
-		assertTextPresent( "Search For" );
+		assertTextPresent( "Search for:" );
 		assertElementPresent( "f" );
-		assertTextPresent( "Checksum" );
+		assertTextPresent( "Checksum:" );
 		assertElementPresent( "q" );
 		assertButtonWithValuePresent( "Search" );
-		assertTextPresent( "This allows you to search the repository using the checksum of an artifact that you are trying to identify. You can either specify the checksum to look for directly, or scan a local artifact file. " );
-		assertTextPresent( "Tï scan a local file, select the file you would like to locate in the remote repository. Ôhe entire file will not  be uploaded$to the server. See the progress bar below for progress of locally creating a checksum that is uploaded to the server ifter you hit ");
+		assertTextPresent( "This allows you to search the repository using the checksum of an artifact that you are trying to identify. You can either specify the checksum to look for directly, or scan a local artifact file." );
 	}
 	
 	//Appearance
@@ -434,13 +433,21 @@ public abstract class AbstractArchivaTest
 	
 	public void assertAppearancePage()
 	{
-		//assertPage( "Apache Archiva \\ Configure Appearance" );
-		String appearance = "Appearance,Organization Details,The logo in the top right of the screen is controlled by the following settings.,Organizations Information,Name,URL,Logo URL";
+		assertPage( "Apache Archiva \\ Configure Appearance" );
+		String appearance = "Appearance,Organization Details,The logo in the top right of the screen is controlled by the following settings.,Organization Information,Name,URL,Logo URL";
 		String[] arrayAppearance = appearance.split( "," );
 		for ( String appear : arrayAppearance )
 			assertTextPresent( appear );
 		assertLinkPresent( "Edit" );
 		assertLinkPresent( "Change your appearance" );
+	}
+	
+	public void addEditAppearance( String name, String url, String logoUrl )
+	{
+		setFieldValue( "organisationName" , name );
+		setFieldValue( "organisationUrl" , url );
+		setFieldValue( "organisationLogo" , logoUrl );
+		clickButtonWithValue( "Save" );
 	}
 	
 	//Upload Artifact
@@ -462,5 +469,5 @@ public abstract class AbstractArchivaTest
 		for ( String uploadelements : arrayUploadElements )
 			assertElementPresent( uploadelements );
 		assertButtonWithValuePresent( "Submit" );
-	} */
+	} 
 }

@@ -30,14 +30,14 @@ public class SearchTest
 	public void testSearchNonExistingArtifact()
 		throws Exception
 	{
-		searchForArtifact( p.getProperty( "SEARCH_BAD_ARTIFACT" ) );
+		searchForArtifact( getProperty( "SEARCH_BAD_ARTIFACT" ) );
 		assertTextPresent( "No results found" );
 	}
     
 	@Test (dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testSearchExistingArtifact()
 	{
-		searchForArtifact( p.getProperty( "ARTIFACT_ARTIFACTID" ) );
+		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
 		assertTextPresent( "Results" );
 		assertTextPresent( "Hits: 1 to 1 of 1" );
 		assertLinkPresent( "test" );
@@ -46,11 +46,11 @@ public class SearchTest
 	@Test (dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testViewSearchedArtifact()
     {
-		searchForArtifact( p.getProperty( "ARTIFACT_ARTIFACTID" ) );
-		clickLinkWithText( p.getProperty( "ARTIFACT_ARTIFACTID" ) );
+		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
+		clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) );
 		assertPage( "Apache Archiva \\ Browse Repository" );
-		assertTextPresent( p.getProperty( "ARTIFACT_ARTIFACTID" ) );
-		clickLinkWithText( p.getProperty( "ARTIFACT_VERSION" ) + "/"  );
+		assertTextPresent( getProperty( "ARTIFACT_ARTIFACTID" ) );
+		clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/"  );
 		assertPage( "Apache Archiva \\ Browse Repository" );
     }
 	

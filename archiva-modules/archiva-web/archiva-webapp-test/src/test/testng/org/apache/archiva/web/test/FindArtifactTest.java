@@ -19,27 +19,25 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
-import org.apache.archiva.web.test.parent.AbstractBrowseTest;
+import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "browse" }, dependsOnMethods = { "testAddArtifactNullValues" } )
-public class BrowseTest 
-	extends AbstractBrowseTest
+@Test( groups = { "findartifact" }, dependsOnMethods = { "testAddArtifactValidValues1" }, sequential = true )
+public class FindArtifactTest
+	extends AbstractArchivaTest
 {
-	
-	public void testBrowseArtifact()
+	public void testFindArtifactNullValues()
 	{
-		goToBrowsePage();
-		assertBrowsePage();
+		goToFindArtifactPage();
+		clickButtonWithValue( "Search" );
+		assertTextPresent( "You must select a file, or enter the checksum. If the file was given and you receive this message, there may have been an error generating the checksum." );
 	}
 	
-	public void testClickArtifactFromBrowse()
+	@Test( dependsOnMethods = { "testFindArtifactNullValues" })
+	public void testFindArtifactUsingChecksum()
 	{
-		goToBrowsePage();
-		assertBrowsePage();
-		clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
-		assertPage( "Apache Archiva \\ Browse Repository" );
-		assertTextPresent( "Artifacts" );
+		setFieldValue( "checksumSearch_q" , "8e896baea663a45d7bd2737f8e464481" );
+		clickButtonWithValue( "Search" );
+		assertTextPresent( "No results found" );
 	}
-
 }

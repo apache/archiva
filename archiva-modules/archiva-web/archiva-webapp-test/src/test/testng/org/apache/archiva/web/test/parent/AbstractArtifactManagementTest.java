@@ -8,25 +8,25 @@ public abstract class AbstractArtifactManagementTest
 	
 	public String getGroupId()
 	{
-		String groupId = p.getProperty( "GROUPID" ) ;
+		String groupId = getProperty( "GROUPID" ) ;
 		return groupId;
 	}
 	
 	public String getArtifactId()
 	{
-		String artifactId = p.getProperty( "GROUPID" ) ;
+		String artifactId = getProperty( "GROUPID" ) ;
 		return artifactId;
 	}
 	
 	public String getVersion()
 	{
-		String version = p.getProperty( "VERSION" ) ;
+		String version = getProperty( "VERSION" ) ;
 		return version;
 	}
 	
 	public String getPackaging()
 	{
-		String packaging = p.getProperty( "PACKAGING" ) ;
+		String packaging = getProperty( "PACKAGING" ) ;
 		return packaging;
 	}
 	
@@ -39,7 +39,7 @@ public abstract class AbstractArtifactManagementTest
 	
 	public String getRepositoryId()
 	{
-		String repositoryId = p.getProperty( "REPOSITORYID" ) ;
+		String repositoryId = getProperty( "REPOSITORYID" ) ;
 		return repositoryId;
 	}
 	
@@ -118,5 +118,44 @@ public abstract class AbstractArtifactManagementTest
 		assertElementPresent( "version" );
 		assertElementPresent( "repositoryId" );
 		assertButtonWithValuePresent( "Submit" );
+	}
+	
+	// Legacy Support
+	public void goToLegacySupportPage()
+	{
+		clickLinkWithText( "Legacy Support" );
+		assertLegacySupportPage();
+	}
+	
+	public void assertLegacySupportPage()
+	{
+		assertPage( "Apache Archiva \\ Administration - Legacy Support" );
+		assertTextPresent( "Administration - Legacy Artifact Path Resolution" );
+		assertTextPresent( "Path Mappings" );
+		assertLinkPresent( "Add" );
+	}
+	
+	public void addLegacyArtifactPath( String path, String groupId, String artifactId, String version, String classifier, String type)
+	{
+		assertAddLegacyArtifactPathPage();
+		setFieldValue( "legacyArtifactPath.path" , path );
+		setFieldValue( "groupId" , groupId );
+		setFieldValue( "artifactId" , artifactId );
+		setFieldValue( "version" , version );
+		setFieldValue( "classifier" , classifier );
+		setFieldValue( "type" , type );
+		clickButtonWithValue( "Add Legacy Artifact Path" );
+	}
+	
+	public void assertAddLegacyArtifactPathPage()
+	{
+		assertPage( "Apache Archiva \\ Admin: Add Legacy Artifact Path" );
+		assertTextPresent( "Admin: Add Legacy Artifact Path" );
+		assertTextPresent( "Enter the legacy path to map to a particular artifact reference, then adjust the fields as necessary." );
+		String element = "addLegacyArtifactPath_legacyArtifactPath_path,addLegacyArtifactPath_groupId,addLegacyArtifactPath_artifactId,addLegacyArtifactPath_version,addLegacyArtifactPath_classifier,addLegacyArtifactPath_type";
+		String[] arrayElement = element.split( "," );
+		for ( String arrayelement : arrayElement )
+			assertElementPresent( arrayelement );
+		assertButtonWithValuePresent( "Add Legacy Artifact Path" );
 	}
 }

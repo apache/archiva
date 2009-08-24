@@ -23,19 +23,11 @@ under the License.
 	<listeners>
 	        <listener class-name="org.apache.archiva.web.test.listener.CaptureScreenShotsListener"/>
 	</listeners>
-	<test name="BasicTest" enabled="true">
-		<groups>
-			<run>
-				<include name="about" />
-			</run>
-		</groups>
-		<packages>
-			<package name="org.apache.archiva.web.test" />
-		</packages>
-	</test>
+	
 	<test name="AdminTest" enabled="true">
 		<groups>
 			<run>
+				<include name="about" />
 				<include name= "login" />
 				<include name= "userroles" />	
 				<include name= "artifactmanagement" />
@@ -45,6 +37,9 @@ under the License.
 				<include name= "virtualrepository" />
 				<include name= "networkproxies" />
 				<include name= "repository" />
+				<include name= "appearance" />
+				<include name= "findartifact" />
+				<include name= "legacysupport" />
 			</run>
 		</groups>
 		<packages>

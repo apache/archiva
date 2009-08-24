@@ -22,7 +22,7 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArtifactManagementTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "userroles" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "artifactmanagement" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
 public class ArtifactManagementTest
 	extends AbstractArtifactManagementTest
 {
@@ -91,11 +91,11 @@ public class ArtifactManagementTest
 	
 	public void testAddArtifactValidValues1()
 	{
-		String groupId = p.getProperty( "GROUPID1" );
-		String artifactId = p.getProperty( "ARTIFACTID1" );
-		String version = p.getProperty( "VERSION1" );
-		String packaging = p.getProperty( "PACKAGING1" );
-		String repositoryId = p.getProperty( "REPOSITORYID1" );
+		String groupId = getProperty( "GROUPID1" );
+		String artifactId = getProperty( "ARTIFACTID1" );
+		String version = getProperty( "VERSION1" );
+		String packaging = getProperty( "PACKAGING1" );
+		String repositoryId = getProperty( "REPOSITORYID1" );
 		addArtifact( groupId , artifactId, version, packaging , getArtifactFilePath(), repositoryId );
 		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deployed to repository 'internal'" );
 	}

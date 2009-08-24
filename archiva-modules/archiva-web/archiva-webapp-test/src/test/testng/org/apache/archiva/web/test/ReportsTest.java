@@ -39,7 +39,7 @@ public class ReportsTest
 	@Test(dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
 	public void testRepositoryStatisticsWithoutDate()
 	{
-		String repositoryName = p.getProperty( "REPOSITORY_NAME" ) ;
+		String repositoryName = getProperty( "REPOSITORY_NAME" ) ;
 		compareRepositories( "label=" + repositoryName, "", "" );
 		//TODO
 		//assertTextPresent( "Statistics Report" );
@@ -48,9 +48,9 @@ public class ReportsTest
 	@Test(dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
 	public void testRepositoryStatisticsEndEarlierThanStart()
 	{
-		String repositoryName = p.getProperty( "REPOSITORY_NAME" ) ;
-		String startDate = p.getProperty( "END_DATE" );
-		String endDate = p.getProperty( "START_DATE" );
+		String repositoryName = getProperty( "REPOSITORY_NAME" ) ;
+		String startDate = getProperty( "END_DATE" );
+		String endDate = getProperty( "START_DATE" );
 		compareRepositories( "label=" + repositoryName, startDate, endDate );
 		//assertTextPresent( "Statistics for Repository '" + repositoryName + "'" );
 		assertPage( "Apache Archiva \\ Reports" );
@@ -60,9 +60,9 @@ public class ReportsTest
 	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )	
 	public void testRepositoryStatistics()
 	{
-		String repositoryName = p.getProperty( "REPOSITORY_NAME" ) ;
-		String startDate = p.getProperty( "START_DATE" );
-		String endDate = p.getProperty( "END_DATE" );
+		String repositoryName = getProperty( "REPOSITORY_NAME" ) ;
+		String startDate = getProperty( "START_DATE" );
+		String endDate = getProperty( "END_DATE" );
 		compareRepositories( "label=" + repositoryName, startDate, endDate );
 		//assertTextPresent( "Statistics for Repository '" + repositoryName + "'" );
 		//assertPage( "Apache Archiva \\ Reports" );
@@ -82,7 +82,7 @@ public class ReportsTest
 	public void testRepositoryHealthWithoutDefect()
 	{
 		goToReportsPage();
-		String groupId = p.getProperty( "ARTIFACT_GROUPID" );
+		String groupId = getProperty( "ARTIFACT_GROUPID" );
 		getSelenium().type( "generateReport_groupId" , groupId );
 		clickButtonWithValue( "Show Report" );
 		assertPage( "Apache Archiva \\ Reports" );

@@ -19,18 +19,19 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-import org.codehaus.plexus.util.StringUtils;
-
+import org.apache.commons.io.IOUtils;
 import org.testng.Assert;
+
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 
@@ -41,53 +42,92 @@ import com.thoughtworks.selenium.Selenium;
 
 public abstract class AbstractSeleniumTest {
 
-	public static String baseUrl;
+    public static String baseUrl;
 
     public static String maxWaitTimeInMs;
 
-    private static ThreadLocal<Selenium> selenium;
+    private static ThreadLocal<Selenium> selenium = new ThreadLocal<Selenium>();
 
     public static Properties p;
-    
+
+    private final static String PROPERTIES_SEPARATOR = "=";    
+
     public void open()
 	    throws Exception
 	{
 	    p = new Properties();
 	    p.load( this.getClass().getClassLoader().getResourceAsStream( "testng.properties" ) );
 	
-	    baseUrl = p.getProperty( "BASE_URL" );
-	    maxWaitTimeInMs = p.getProperty( "MAX_WAIT_TIME_IN_MS" );
+	    //baseUrl = getProperty( "BASE_URL" );
+	    maxWaitTimeInMs = getProperty( "MAX_WAIT_TIME_IN_MS" );
 	
-	    String seleniumHost	= p.getProperty( "SELENIUM_HOST" );
-	    int seleniumPort = Integer.parseInt( ( p.getProperty( "SELENIUM_PORT" ) ) );
+	    
+	}
+	
+	/**
+     * Initialize selenium
+     */
+    public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort )
+        throws Exception
+    {
+        this.baseUrl = baseUrl;
 
-        String seleniumBrowser = System.getProperty( "browser" );
-        if ( StringUtils.isEmpty( seleniumBrowser ) )
+        if ( getSelenium() == null )
         {
-            seleniumBrowser = p.getProperty( "SELENIUM_BROWSER" );
+            DefaultSelenium s = new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
+            s.start();
+            selenium.set( s );
         }
+    }
 
-	    final Selenium s = new DefaultSelenium( seleniumHost, seleniumPort, seleniumBrowser, baseUrl );
-	    selenium = new ThreadLocal<Selenium>()
-	    {
-	        protected Selenium initialValue()
-	        {
-	            return s;
-	        }
-	    };
-	    getSelenium().start();
-	}
-	
-	public static Selenium getSelenium()
-	{
-	    return selenium.get();
-	}
+    public static Selenium getSelenium()
+    {
+        return selenium == null ? null : selenium.get();
+    }
+
+    protected String getProperty( String key )
+    {
+        return p.getProperty( key );
+    }
+
+    protected String getEscapeProperty( String key )
+    {
+        InputStream input = this.getClass().getClassLoader().getResourceAsStream( "testng.properties" );
+        String value = null;
+        List<String> lines;
+        try
+        {
+            lines = IOUtils.readLines( input );
+        }
+        catch ( IOException e )
+        {
+            lines = new ArrayList<String>();
+        }
+        for ( String l : lines )
+        {
+            if ( l != null && l.startsWith( key ) )
+            {
+                int indexSeparator = l.indexOf( PROPERTIES_SEPARATOR );
+                value = l.substring( indexSeparator + 1 ).trim();
+                break;
+            }
+        }
+        return value;
+    }
+
     
-	    public void close()
-	    throws Exception
-	{
-	    getSelenium().stop();
-	}
+	    /**
+     * Close selenium session. Called from AfterSuite method of sub-class
+     */
+    public void close()
+        throws Exception
+    {
+        if ( getSelenium() != null )
+        {
+            getSelenium().stop();
+            selenium.set( null );
+        }
+    }
 	
 	// *******************************************************
 	// Auxiliar methods. This method help us and simplify test.
