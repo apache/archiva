@@ -323,4 +323,61 @@ public abstract class AbstractRepositoryTest
 		String artifactFilePath = f.getAbsolutePath();
 		return artifactFilePath + "/target/";
 	}
+	
+	/////////////////////////////////////////////
+	// Repository Scanning
+	/////////////////////////////////////////////
+	public void goToRepositoryScanningPage()
+	{
+		clickLinkWithText( "Repository Scanning" );
+		assertRepositoryScanningPage();
+	}
+	
+	public void assertRepositoryScanningPage()
+	{
+		assertPage( "Apache Archiva \\ Administration - Repository Scanning" );
+		assertTextPresent( "Administration - Repository Scanning" );
+		assertTextPresent( "Repository Scanning - File Types" );
+		String artifactsTypes = "**/*.pom,**/*.jar,**/*.ear,**/*.war,**/*.car,**/*.sar,**/*.mar,**/*.rar,**/*.dtd,**/*.tld,**/*.tar.gz,**/*.tar.bz2,**/*.zip";
+		String [] arrayArtifactTypes = artifactsTypes.split( "," );
+		for (String artifacttypes : arrayArtifactTypes )
+			assertTextPresent( artifacttypes );
+		
+		String autoremove = "**/*.bak,**/*~,**/*-";
+		String [] arrayAutoremove = autoremove.split( "," );
+		for ( String arrayautoremove : arrayAutoremove )
+			assertTextPresent( arrayautoremove );
+		
+		String ignored = "**/.htaccess,**/KEYS,**/*.rb,**/*.sh,**/.svn/**,**/.DAV/**";
+		String [] arrayIgnored = ignored.split( "," );
+		for ( String arrayignored : arrayIgnored )
+			assertTextPresent( arrayignored );
+		
+		String indexableContent = "**/*.txt,**/*.TXT,**/*.block,**/*.config,**/*.pom,**/*.xml,**/*.xsd,**/*.dtd,**/*.tld";
+		String [] arrayIndexableContent = indexableContent.split( "," );
+		for ( String indexablecontent : arrayIndexableContent )
+			assertTextPresent( indexablecontent );
+	}
+	
+	/////////////////////////////////////////////
+	// Database
+	/////////////////////////////////////////////
+	public void goToDatabasePage()
+	{
+		clickLinkWithText( "Database" );
+		assertDatabasePage();
+	}
+	
+	public void assertDatabasePage()
+	{
+		assertPage( "Apache Archiva \\ Administration - Database" );
+		assertTextPresent( "Administration - Database" );
+		assertTextPresent( "Database - Unprocessed Artifacts Scanning" );
+		assertTextPresent( "Cron:" );
+		assertElementPresent( "cron" );
+		assertButtonWithValuePresent( "Update Cron" );
+		assertButtonWithValuePresent( "Update Database Now" );
+		assertTextPresent( "Database - Unprocessed Artifacts Scanning" );
+		assertTextPresent( "Database - Artifact Cleanup Scanning" );
+	}
 }

@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 public class RepositoryTest
 	extends AbstractRepositoryTest
 {
+	@Test(dependsOnMethods = { "testWithCorrectUsernamePassword" } )
 	public void testAddManagedRepoValidValues()
 	{
 		goToRepositoriesPage();
