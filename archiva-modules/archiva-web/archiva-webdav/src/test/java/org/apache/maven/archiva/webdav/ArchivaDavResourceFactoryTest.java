@@ -367,9 +367,6 @@ public class ArchivaDavResourceFactoryTest
             new ArchivaDavResourceLocator( "", "/repository/" + INTERNAL_REPO + "/eclipse/jdtcore/maven-metadata.xml", INTERNAL_REPO,
                                            new ArchivaDavLocatorFactory() );
 
-        //DavResourceLocator locator =
-        //    new ArchivaDavResourceLocator( "", "/repository/" + INTERNAL_REPO + "/eclipse/jdtcore/extra/maven-metadata.xml",
-        //                                   INTERNAL_REPO, new ArchivaDavLocatorFactory() );
         ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
