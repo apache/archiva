@@ -29,7 +29,8 @@ under the License.
 			<run>
 				<include name="about" />
 				<include name= "login" />
-				<include name= "userroles" />	
+				<include name= "userroles" />
+				<include name= "reposcan" />
 				<include name= "artifactmanagement" />
 				<include name= "search" />
 				<include name= "browse" />

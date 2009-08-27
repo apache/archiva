@@ -50,7 +50,7 @@ Release Notes for Archiva 1.2.2
 
 * Changes in Archiva 1.2.2
 
-  Released: *24 Aug 2009*
+  Released: *27 Aug 2009*
 
 ** Bug
 
@@ -91,6 +91,8 @@ Release Notes for Archiva 1.2.2
     * [MRM-1234] - Typo in Appearance Page
 
     * [MRM-1236] - Locale selection is broken
+
+    * [MRM-1239] - Unable to get artifact-level maven-metadata.xml of artifacts that are only three directory levels deep
 
 ** Improvement
 
