@@ -249,6 +249,9 @@ public class RepositoryRequestTest
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
+        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml" ) );
+        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml.sha1" ) );
+        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml.md5" ) );
 
         assertFalse( repoRequest.isDefault( null ) );
         assertFalse( repoRequest.isDefault( "" ) );

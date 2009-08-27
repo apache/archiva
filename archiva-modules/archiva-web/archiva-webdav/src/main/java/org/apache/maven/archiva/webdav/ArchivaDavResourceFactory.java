@@ -1057,4 +1057,9 @@ public class ArchivaDavResourceFactory
     {
         this.repositoryRequest = repositoryRequest;
     }
+    
+    public void setConnectors( RepositoryProxyConnectors connectors )
+    {
+        this.connectors = connectors;
+    }
 }
