@@ -178,6 +178,9 @@
               <permanent>true</permanent>
             </permission>
           </permissions>
+          <childRoles>
+            <childRole>archiva-global-repository-observer</childRole>
+          </childRoles>
         </role>
         <role>
           <id>archiva-global-repository-observer</id>
