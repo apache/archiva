@@ -251,8 +251,15 @@ public class RepositoryScanningAction
         archivaConfiguration.getConfiguration().getRepositoryScanning().setInvalidContentConsumers(
             enabledInvalidContentConsumers );
         
-        filterAddedConsumers( oldConsumers, enabledInvalidContentConsumers );
-        filterRemovedConsumers( oldConsumers, enabledInvalidContentConsumers );
+        if ( enabledInvalidContentConsumers != null )
+        {
+            filterAddedConsumers( oldConsumers, enabledInvalidContentConsumers );
+            filterRemovedConsumers( oldConsumers, enabledInvalidContentConsumers );    
+        }
+        else
+        {
+            disableAllEnabledConsumers( oldConsumers );
+        }
 
         return saveConfiguration();
     }
@@ -266,8 +273,15 @@ public class RepositoryScanningAction
         archivaConfiguration.getConfiguration().getRepositoryScanning().setKnownContentConsumers(
             enabledKnownContentConsumers );
         
-        filterAddedConsumers( oldConsumers, enabledKnownContentConsumers );
-        filterRemovedConsumers( oldConsumers, enabledKnownContentConsumers );
+        if ( enabledKnownContentConsumers != null )
+        {
+            filterAddedConsumers( oldConsumers, enabledKnownContentConsumers );
+            filterRemovedConsumers( oldConsumers, enabledKnownContentConsumers );            
+        }
+        else
+        {
+            disableAllEnabledConsumers( oldConsumers );
+        }
 
         return saveConfiguration();
     }
@@ -335,6 +349,14 @@ public class RepositoryScanningAction
             }
         }
     }
+    
+    private void disableAllEnabledConsumers( List<String> consumers )
+    {
+        for ( String consumer : consumers )
+        {
+            triggerAuditEvent( AuditEvent.DISABLE_REPO_CONSUMER + " " + consumer );
+        }
+    }
 
     public List<String> getEnabledInvalidContentConsumers()
     {
@@ -354,5 +376,15 @@ public class RepositoryScanningAction
     public void setEnabledKnownContentConsumers( List<String> enabledKnownContentConsumers )
     {
         this.enabledKnownContentConsumers = enabledKnownContentConsumers;
+    }
+    
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+    
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }
