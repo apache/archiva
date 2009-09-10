@@ -110,8 +110,15 @@ public class DatabaseAction
         archivaConfiguration.getConfiguration().getDatabaseScanning().setUnprocessedConsumers(
             enabledUnprocessedConsumers );
         
-        filterAddedConsumers( oldConsumers, enabledUnprocessedConsumers );
-        filterRemovedConsumers( oldConsumers, enabledUnprocessedConsumers );
+        if ( enabledUnprocessedConsumers != null )
+        {
+            filterAddedConsumers( oldConsumers, enabledUnprocessedConsumers );
+            filterRemovedConsumers( oldConsumers, enabledUnprocessedConsumers );    
+        }
+        else
+        {
+            disableAllEnabledConsumers( oldConsumers );
+        }
 
         return saveConfiguration();
     }
@@ -122,8 +129,15 @@ public class DatabaseAction
         
         archivaConfiguration.getConfiguration().getDatabaseScanning().setCleanupConsumers( enabledCleanupConsumers );
         
-        filterAddedConsumers( oldConsumers, enabledCleanupConsumers );
-        filterRemovedConsumers( oldConsumers, enabledCleanupConsumers );
+        if ( enabledCleanupConsumers != null )
+        {
+            filterAddedConsumers( oldConsumers, enabledCleanupConsumers );
+            filterRemovedConsumers( oldConsumers, enabledCleanupConsumers );    
+        }
+        else 
+        {
+            disableAllEnabledConsumers( oldConsumers );
+        }
 
         return saveConfiguration();
     }
@@ -215,6 +229,16 @@ public class DatabaseAction
         this.enabledCleanupConsumers = enabledCleanupConsumers;
     }
     
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+    
     private void filterAddedConsumers( List<String> oldList, List<String> newList )
     {
         for ( String consumer : newList )
@@ -234,6 +258,14 @@ public class DatabaseAction
             {
                 triggerAuditEvent( consumer, AuditEvent.DISABLE_DB_CONSUMER );
             }
+        }
+    }
+    
+    private void disableAllEnabledConsumers( List<String> enabledConsumers )
+    {
+        for( String consumer : enabledConsumers )
+        {
+            triggerAuditEvent( consumer, AuditEvent.DISABLE_DB_CONSUMER );
         }
     }
 }
