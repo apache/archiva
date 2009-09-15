@@ -21,3 +21,29 @@ Upgrading Archiva
    be removed. And in order for the artifacts in the repository to be indexed again, the last modified date of the artifacts need to be updated.
    To do this, just execute <<find [REPOSITORY_DIRECTORY_NAME] | xargs touch>> at the base directory where the repository resides. Execute the repository
    scanning so that the new index will be generated.
+
+   In 1.2.2, the length of the specified fields in the database tables below were changed to 1020:
+   
+   * ARCHIVA_PROJECT - URL
+
+   * ARCHIVA_MAILING_LISTS - MAIN_ARCHIVE_URL
+
+   * ARCHIVA_ORGANIZATION - URL, FAV_ICON_URL
+
+   * ARCHIVA_LICENSES - URL
+
+   * ARCHIVA_ISSUE_MANAGEMENT - ISSUE_MANAGEMENT_URL
+
+   * ARCHIVA_CIMANAGEMENT - CI_URL
+
+   * ARCHIVA_INDIVIDUAL - URL, ORGANIZATION_URL
+
+   * ARCHIVA_DEPENDENCY - URL
+
+   * ARCHIVA_SCM - SCM_URL, DEVELOPER_CONNECTION, URL
+
+   * ARCHIVA_PROJECT_REPOSITORIES - URL
+ 
+   []
+
+   If upgrading from a version lower than 1.2.2, you might also need to alter the lengths of the above fields as there is no upgrade task currently available for this.
