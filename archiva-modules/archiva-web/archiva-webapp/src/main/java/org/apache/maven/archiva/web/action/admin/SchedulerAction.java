@@ -91,8 +91,8 @@ public class SchedulerAction
         {
             try
             {
-                taskScheduler.queueRepositoryTask( task );
                 addActionMessage( "Your request to have repository [" + repoid + "] be indexed has been queued." );
+                taskScheduler.queueRepositoryTask( task );                
             }
             catch ( TaskQueueException e )
             {
