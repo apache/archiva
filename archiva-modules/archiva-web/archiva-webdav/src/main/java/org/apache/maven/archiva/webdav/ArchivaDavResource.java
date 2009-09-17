@@ -645,7 +645,7 @@ public class ArchivaDavResource
     
     private void queueRepositoryTask(  File localFile )
     {        
-        RepositoryTask task = TaskCreator.createRepositoryTask( repository.getId(), localFile.getName(), localFile, false );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repository.getId(), localFile.getName(), localFile, false, true );
         
         try
         {

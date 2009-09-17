@@ -59,7 +59,7 @@ public class RepositoryTaskJob
         TaskQueue taskQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
         String queuePolicy = dataMap.get( TASK_QUEUE_POLICY ).toString();
 
-        RepositoryTask task = TaskCreator.createRepositoryTask( (String) dataMap.get( TASK_REPOSITORY ), "" );
+        RepositoryTask task = TaskCreator.createRepositoryTask( (String) dataMap.get( TASK_REPOSITORY ), "", true );
         task.setName( context.getJobDetail().getName() );
 
         try

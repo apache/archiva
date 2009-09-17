@@ -31,7 +31,7 @@ import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
  */
 public class TaskCreator
 {
-    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix )
+    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, boolean scanAll )
     {
         String suffix = "";
         if( !StringUtils.isEmpty( taskNameSuffix ) )
@@ -43,14 +43,15 @@ public class TaskCreator
         task.setRepositoryId( repositoryId );
         task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repositoryId + suffix );
         task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+        task.setScanAll( scanAll );
         
         return task;
     }
         
     public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, File resourceFile,
-                                                       boolean updateRelatedArtifacts )
+                                                       boolean updateRelatedArtifacts, boolean scanAll )
     {
-        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix );
+        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix, scanAll );
         task.setResourceFile( resourceFile );
         task.setUpdateRelatedArtifacts( updateRelatedArtifacts );
 

@@ -585,7 +585,7 @@ public class DefaultRepositoryProxyConnectors
     
     private void queueRepositoryTask( String repositoryId, File localFile )
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile.getName(), localFile, true );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile.getName(), localFile, true, true );
         
         try
         {

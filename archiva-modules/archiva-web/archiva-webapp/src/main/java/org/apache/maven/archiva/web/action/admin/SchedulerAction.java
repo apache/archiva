@@ -50,7 +50,9 @@ public class SchedulerAction
     private ArchivaTaskScheduler taskScheduler;
 
     private String repoid;
-
+    
+    private boolean scanAll;
+    
     public String scanRepository()
     {
         if ( StringUtils.isBlank( repoid ) )
@@ -59,7 +61,7 @@ public class SchedulerAction
             return SUCCESS;
         }
 
-        RepositoryTask task = TaskCreator.createRepositoryTask( repoid, "" ); 
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoid, "", scanAll ); 
         
         boolean scheduleTask = false;
 
@@ -180,5 +182,15 @@ public class SchedulerAction
     public void setRepoid( String repoid )
     {
         this.repoid = repoid;
+    }
+    
+    public boolean getScanAll()
+    {
+        return scanAll;
+    }
+
+    public void setScanAll( boolean scanAll )
+    {
+        this.scanAll = scanAll;
     }
 }

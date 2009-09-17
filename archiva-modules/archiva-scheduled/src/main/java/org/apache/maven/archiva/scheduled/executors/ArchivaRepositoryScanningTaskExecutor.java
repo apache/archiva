@@ -130,11 +130,14 @@ public class ArchivaRepositoryScanningTaskExecutor
                 long sinceWhen = RepositoryScanner.FRESH_SCAN;
     
                 List<RepositoryContentStatistics> results = (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( arepo.getId() ) );
-    
+               
                 if ( CollectionUtils.isNotEmpty( results ) )
                 {
                     RepositoryContentStatistics lastStats = results.get( 0 );
-                    sinceWhen = lastStats.getWhenGathered().getTime() + lastStats.getDuration();
+                    if( !repoTask.isScanAll() )
+                    {
+                        sinceWhen = lastStats.getWhenGathered().getTime() + lastStats.getDuration();
+                    }
                 }
     
                 RepositoryScanStatistics stats = repoScanner.scan( arepo, sinceWhen );

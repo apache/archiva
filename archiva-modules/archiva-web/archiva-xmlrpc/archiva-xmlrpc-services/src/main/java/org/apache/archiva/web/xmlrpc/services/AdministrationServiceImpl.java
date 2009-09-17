@@ -313,7 +313,7 @@ public class AdministrationServiceImpl
             }
         }
 
-        RepositoryTask task = TaskCreator.createRepositoryTask( repoId, "" );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoId, "", false );
 
         taskScheduler.queueRepositoryTask( task );          
         

@@ -42,6 +42,18 @@ public class RepositoryTask
     
     boolean updateRelatedArtifacts;
     
+    boolean scanAll;
+    
+    public boolean isScanAll()
+    {
+        return scanAll;
+    }
+
+    public void setScanAll( boolean scanAll )
+    {
+        this.scanAll = scanAll;
+    }
+
     public String getRepositoryId()
     {
         return repositoryId;

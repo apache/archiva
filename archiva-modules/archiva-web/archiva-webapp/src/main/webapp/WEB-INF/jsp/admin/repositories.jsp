@@ -198,20 +198,21 @@
       Actions
     </th>
     <td>
-      <table>
-        <tr>
-          <td>
-            <redback:ifAuthorized permission="archiva-run-indexer">
-              <s:form action="indexRepository" theme="simple">
-                <s:hidden name="repoid" value="%{#attr.repository.id}"/>
-                <s:submit value="Scan Repository Now"/>
-              </s:form>
-            </redback:ifAuthorized>
-          </td>
-        </tr>
-      </table>
+      <redback:ifAuthorized permission="archiva-run-indexer">
+        <s:form action="indexRepository" theme="simple">
+        <s:hidden name="repoid" value="%{#attr.repository.id}"/>
+        <table>
+          <tr>
+            <td><s:checkbox name="scanAll" value="scanAll"/>Process All Artifacts</td>
+          </tr>
+          <tr>
+            <td><s:submit value="Scan Repository Now"/></td>
+          </tr>
+        </table>
+        </s:form>
+      </redback:ifAuthorized>
     </td>
-  </tr>
+  </tr>  
   <tr>
     <th>Stats</th>
     <td>
