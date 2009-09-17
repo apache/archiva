@@ -19,8 +19,10 @@ Upgrading Archiva
    Because of the changes in the search implementation starting in 1.2, a few additional steps need to be performed when upgrading Archiva from 1.1.x to
    1.2.x. Since the format of the index has changed in 1.2.x, the old index directory (which is located at <<</path/to/repo/.index>>> by default) needs to
    be removed. And in order for the artifacts in the repository to be indexed again, the last modified date of the artifacts need to be updated.
-   To do this, just execute <<find [REPOSITORY_DIRECTORY_NAME] | xargs touch>> at the base directory where the repository resides. Execute the repository
-   scanning so that the new index will be generated.
+   To do this, you can force Archiva to scan all the artifacts by ticking the 'Process All Artifacts' checkbox then clicking the 'Scan Repository Now' 
+   button in the Repositories page. Take note though that this feature is only available starting with version 1.2.3. Otherwise, you must execute
+   <<find [REPOSITORY_DIRECTORY_NAME] | xargs touch>> at the base directory where the repository resides and then force execute the repository scanning so
+   that the new index will be generated.
 
    In 1.2.2, the length of the specified fields in the database tables below were changed to 1020:
    

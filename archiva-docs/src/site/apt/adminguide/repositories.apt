@@ -106,7 +106,14 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
 * Scanning a Repository
  
   Repository scan can be executed on schedule or it can be explicitly executed by clicking the 'Scan Repository Now' button in 
-  the repositories page. For every artifact found by the repository scanner, processing is done on this artifact by different
+  the repositories page. By default, Archiva only processes new artifacts in the repository with respect to the last run of the
+  repository scanner. Meaning that if the artifact's last modified date is newer than the last repository scan, then the artifact
+  will be processed. Otherwise, it will be skipped. You can override this behavior and force Archiva to process all artifacts regardless
+  of its age by ticking the 'Process All Artifacts' checkbox in the repositories page and clicking the 'Scan Repository Now' button.
+
+[../images/repositories.png] Repositories
+
+  For every artifact found by the repository scanner, processing is done on this artifact by different
   consumers. Examples of the processing done are: indexing, repository purge and database update. Details about consumers are 
   available in the {{{consumers.html} Consumers}} page.
 
