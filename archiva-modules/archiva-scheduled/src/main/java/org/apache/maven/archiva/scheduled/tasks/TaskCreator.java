@@ -31,7 +31,7 @@ import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
  */
 public class TaskCreator
 {
-    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, boolean scanAll )
+    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix )
     {
         String suffix = "";
         if( !StringUtils.isEmpty( taskNameSuffix ) )
@@ -43,18 +43,34 @@ public class TaskCreator
         task.setRepositoryId( repositoryId );
         task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repositoryId + suffix );
         task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+                
+        return task;
+    }
+    
+    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, boolean scanAll )
+    {
+        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix );
         task.setScanAll( scanAll );
         
         return task;
     }
         
     public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, File resourceFile,
-                                                       boolean updateRelatedArtifacts, boolean scanAll )
+                                                       boolean updateRelatedArtifacts )
     {
-        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix, scanAll );
+        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix );
         task.setResourceFile( resourceFile );
         task.setUpdateRelatedArtifacts( updateRelatedArtifacts );
-
+        
+        return task;
+    }
+    
+    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, File resourceFile,
+                                                       boolean updateRelatedArtifacts, boolean scanAll )
+    {
+        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix, resourceFile, updateRelatedArtifacts );
+        task.setScanAll( scanAll );
+        
         return task;
     }
     

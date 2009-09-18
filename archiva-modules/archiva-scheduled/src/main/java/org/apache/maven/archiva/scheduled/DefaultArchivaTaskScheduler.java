@@ -428,7 +428,7 @@ public class DefaultArchivaTaskScheduler
     private synchronized void queueInitialRepoScan( ManagedRepositoryConfiguration repoConfig )
     {
         String repoId = repoConfig.getId();        
-        RepositoryTask task = TaskCreator.createRepositoryTask( repoId, "initial-scan", true );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoId, "initial-scan" );
 
         if ( queuedRepos.contains( repoId ) )
         {
