@@ -144,4 +144,28 @@ public class RepositoryTest
 		addRemoteRepository( "remoterepo" , "Remote Repository Sample" , "http://repository.codehaus.org/org/codehaus/mojo/" , "" , "" , "" , "Maven 2.x Repository" );
 		assertTextPresent( "Remote Repository Sample" );
 	}
+    
+    // *** BUNDLED REPOSITORY TEST ***
+    
+    @Test ( dependsOnMethods = { "testWithCorrectUsernamePassword" }, alwaysRun = true )
+    public void testBundledRepository()
+    {
+        String repo1 = baseUrl + "repository/internal/";
+        String repo2 = baseUrl + "repository/snapshots/";
+        
+        assertRepositoryAccess( repo1 );
+        assertRepositoryAccess( repo2 );
+        
+        getSelenium().open( "/archiva" );
+    }
+    
+    private void assertRepositoryAccess( String repo )
+    {
+        getSelenium().open( "/archiva" );
+        goToRepositoriesPage();
+        assertLinkPresent( repo );
+        clickLinkWithText( repo );
+        assertPage( "Collection: /" );
+        assertTextPresent( "Collection: /" );
+    }
 }
