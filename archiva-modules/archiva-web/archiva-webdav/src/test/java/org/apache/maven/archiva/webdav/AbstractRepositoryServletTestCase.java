@@ -212,6 +212,8 @@ public abstract class AbstractRepositoryServletTestCase
             FileUtils.deleteDirectory(repoRootInternal);
         }
         
+        release( archivaConfiguration );
+        
         super.tearDown();
     }
 
