@@ -5,7 +5,6 @@
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-xmlrpc</artifactId>
     <version>1.2.3-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>archiva-xmlrpc-api</artifactId>
   <name>Archiva Web :: XML-RPC API</name>

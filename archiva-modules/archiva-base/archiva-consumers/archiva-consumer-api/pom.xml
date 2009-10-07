@@ -24,12 +24,10 @@
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-consumers</artifactId>
     <version>1.2.3-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>archiva-consumer-api</artifactId>
   <name>Archiva Consumer API</name>
-  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
