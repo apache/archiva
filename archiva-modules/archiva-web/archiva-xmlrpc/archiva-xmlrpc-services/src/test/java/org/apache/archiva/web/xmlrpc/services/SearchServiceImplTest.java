@@ -25,6 +25,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResultLimits;
+import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
@@ -35,6 +39,7 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -79,18 +84,134 @@ public class SearchServiceImplTest
         userRepos = ( XmlRpcUserRepositories ) userReposControl.getMock();
                 
         archivaDAOControl = MockControl.createControl( ArchivaDAO.class );
+        archivaDAOControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         archivaDAO = ( ArchivaDAO ) archivaDAOControl.getMock();
         
         repoBrowsingControl = MockControl.createControl( RepositoryBrowsing.class );
         repoBrowsing = ( RepositoryBrowsing ) repoBrowsingControl.getMock();
         
         searchControl = MockControl.createControl( RepositorySearch.class );
+        searchControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         search = ( RepositorySearch ) searchControl.getMock();
         
         searchService = new SearchServiceImpl( userRepos, archivaDAO, repoBrowsing, search );
         
-        artifactDAOControl = MockControl.createControl( ArtifactDAO.class );
+        artifactDAOControl = MockControl.createControl( ArtifactDAO.class );        
         artifactDAO = ( ArtifactDAO ) artifactDAOControl.getMock();
+    }
+    
+    // MRM-1230
+    public void testQuickSearchModelPackagingIsUsed()
+        throws Exception
+    {  
+        List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+        observableRepoIds.add( "public.releases" );
+        
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+        
+        SearchResults results = new SearchResults();         
+        List<String> versions = new ArrayList<String>();
+        versions.add( "1.0" );
+        
+        SearchResultHit resultHit = new SearchResultHit();
+        resultHit.setGroupId( "org.apache.archiva" );
+        resultHit.setArtifactId( "archiva-webapp" );        
+        resultHit.setRepositoryId("repo1.mirror");
+        resultHit.setVersions( versions );
+        
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-webapp" ), resultHit );
+        
+        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
+        
+        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ), results );
+        
+        archivaDAOControl.expectAndReturn( archivaDAO.query( new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(),
+                                                                                          resultHit.getArtifactId() ) ), null );
+        
+        ArchivaProjectModel model = new ArchivaProjectModel();
+        model.setGroupId( "org.apache.archiva" );
+        model.setArtifactId( "archiva-webapp" );
+        model.setVersion( "1.0" );
+        model.setPackaging( "war" );
+          
+        repoBrowsingControl.expectAndReturn( repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-webapp", "1.0" ), model );
+        
+        userReposControl.replay();
+        searchControl.replay();
+        repoBrowsingControl.replay();
+        archivaDAOControl.replay();
+          
+        List<Artifact> artifacts = searchService.quickSearch( "archiva" );
+        
+        userReposControl.verify();
+        searchControl.verify();
+        repoBrowsingControl.verify();
+        archivaDAOControl.verify();
+        
+        assertNotNull( artifacts );
+        assertEquals( 1, artifacts.size() );
+          
+        Artifact hit = artifacts.get( 0 );
+        assertEquals( "org.apache.archiva", hit.getGroupId() );
+        assertEquals( "archiva-webapp", hit.getArtifactId() );
+        assertEquals( "1.0", hit.getVersion() );
+        assertEquals( "war", hit.getType() );
+        assertEquals( "repo1.mirror", hit.getRepositoryId() );
+    }
+    
+    // returned model is null!
+    public void testQuickSearchDefaultPackagingIsUsed()
+        throws Exception
+    {
+        List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+        observableRepoIds.add( "public.releases" );
+        
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+        
+        SearchResults results = new SearchResults();        
+        List<String> versions = new ArrayList<String>();
+        versions.add( "1.0" );
+        
+        SearchResultHit resultHit = new SearchResultHit();
+        resultHit.setRepositoryId( "repo1.mirror" );
+        resultHit.setGroupId( "org.apache.archiva" );
+        resultHit.setArtifactId( "archiva-test" );
+        resultHit.setVersions( versions );
+        
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-test" ), resultHit );
+        
+        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
+        
+        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ), results );
+        
+        archivaDAOControl.expectAndReturn( archivaDAO.query( new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(),
+                                                                                          resultHit.getArtifactId() ) ), null );
+          
+        repoBrowsingControl.expectAndReturn( repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), null );
+        
+        userReposControl.replay();
+        searchControl.replay();
+        repoBrowsingControl.replay();
+        archivaDAOControl.replay();  
+        
+        List<Artifact> artifacts = searchService.quickSearch( "archiva" );
+        
+        userReposControl.verify();
+        searchControl.verify();
+        repoBrowsingControl.verify();
+        archivaDAOControl.verify();
+        
+        assertNotNull( artifacts );
+        assertEquals( 1, artifacts.size() );
+          
+        Artifact hit = artifacts.get( 0 );
+        assertEquals( "org.apache.archiva", hit.getGroupId() );
+        assertEquals( "archiva-test", hit.getArtifactId() );
+        assertEquals( "1.0", hit.getVersion() );
+        assertEquals( "jar", hit.getType() );
+        assertEquals( "repo1.mirror", hit.getRepositoryId() );
     }
     
     /*
