@@ -9,6 +9,12 @@ Deploying to Repository
    * {{{#Maven} Configuring Maven to deploy to an Archiva repository}}
 
    * {{{#Web UI} Deploying via the Web UI Form}}
+   
+   []
+   
+ <<WARNING>> The deployed artifact may not appear immediately in the search results.
+ The execution of the <<<index-content>>> repository consumer and other scanning consumers are queued for execution
+ to prevent concurrent updates to the index.
 
 * Configuring {Maven} to deploy to an Archiva repository
   
@@ -112,7 +118,7 @@ Deploying to Repository
   You can also deploy to the Archiva server using traditional means such as SCP, FTP, etc. For more information on these deployment
   techniques, refer to the Maven documentation.
 
-  Once the files are deployed into the location of the Archiva managed repository, they should immediately appear in the Browse page.
+  Once the files are deployed into the location of the Archiva managed repository, they should appear in the Browse page.
   The artifacts should also be searcheable as long as the <<<index-content>>> repository consumer is enabled.
   
 ** Deploying Third-Party Artifacts to Archiva using Maven
