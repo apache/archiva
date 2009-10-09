@@ -182,7 +182,7 @@ public class NexusRepositorySearchTest
 
         //TODO: search for class & package names
     }
-
+    
     public void testQuickSearchWithPagination()
         throws Exception
     {   
@@ -424,6 +424,41 @@ public class NexusRepositorySearchTest
         
         FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
         assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
+    }
+    
+    // MRM-981 - artifactIds with numeric characters aren't found in advanced search
+    public void testAdvancedSearchArtifactIdHasNumericChar()
+        throws Exception
+    {
+        List<File> files = new ArrayList<File>();
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
+        createIndex( TEST_REPO_1, files );
+
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+
+        config.addManagedRepository( createRepositoryConfig( TEST_REPO_1 ) );
+        
+        SearchFields searchFields = new SearchFields();
+        searchFields.setArtifactId( "artifactid-numeric" );
+        searchFields.setRepositories( selectedRepos );        
+        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1 );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", searchFields, null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 2, results.getTotalHits() );
+        
+        FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ) );
+        assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ).exists() );        
     }
 
     // TODO: add test when an existing index already exists
