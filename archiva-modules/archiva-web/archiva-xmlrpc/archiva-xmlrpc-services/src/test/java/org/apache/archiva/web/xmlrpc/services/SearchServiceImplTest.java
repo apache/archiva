@@ -272,49 +272,83 @@ public class SearchServiceImplTest
 //        assertNotNull( artifacts );
 //        assertEquals( 1, artifacts.size() );
 //    }
-//
-//    public void testQuickSearchArtifactRegularSearch()
-//        throws Exception
-//    {
-//        List<String> observableRepoIds = new ArrayList<String>();
-//        observableRepoIds.add( "repo1.mirror" );
-//        observableRepoIds.add( "public.releases" );
-//
-//        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-//
-//        Date whenGathered = new Date();
-//        SearchResults results = new SearchResults();
-//        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "archiva-test", "1.0", "", "jar", "public.releases" );
-//        artifact.getModel().setWhenGathered( whenGathered );
-//
-//
-//        SearchResultHit resultHit = new SearchResultHit();
-//        resultHit.setArtifact(artifact);
-//        resultHit.setRepositoryId("repo1.mirror");
-//        results.addHit(SearchUtil.getHitId(artifact.getGroupId(), artifact.getArtifactId()), resultHit);
-//
-//        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
-//
-//        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ), results );
-//
-//        archivaDAOControl.expectAndReturn( archivaDAO.getArtifactDAO(), artifactDAO );
-//        artifactDAOControl.expectAndReturn( artifactDAO.getArtifact( "org.apache.archiva", "archiva-test", "1.0", "", "pom", "public.releases" ), artifact );
-//
-//        userReposControl.replay();
-//        searchControl.replay();
-//        archivaDAOControl.replay();
-//        artifactDAOControl.replay();
-//
-//        List<Artifact> artifacts = searchService.quickSearch( "archiva" );
-//
-//        userReposControl.verify();
-//        searchControl.verify();
-//        archivaDAOControl.verify();
-//        artifactDAOControl.verify();
-//
-//        assertNotNull( artifacts );
-//        assertEquals( 1, artifacts.size() );
-//    }
+    
+    public void testQuickSearchArtifactRegularSearch()
+        throws Exception
+    {
+        List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+        observableRepoIds.add( "public.releases" );
+    
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+       
+        SearchResults results = new SearchResults();       
+        List<String> versions = new ArrayList<String>();
+        versions.add( "1.0" );
+        
+        SearchResultHit resultHit = new SearchResultHit();
+        resultHit.setGroupId( "org.apache.archiva" );
+        resultHit.setArtifactId( "archiva-test" );
+        resultHit.setVersions( versions );
+        resultHit.setRepositoryId("repo1.mirror");
+        
+        results.addHit( SearchUtil.getHitId( resultHit.getGroupId(), resultHit.getArtifactId() ), resultHit );
+    
+        archivaDAOControl.expectAndReturn( archivaDAO.query( new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(),
+                                                                                          resultHit.getArtifactId() ) ), null );
+        
+        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
+    
+        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ), results );
+        
+        ArchivaProjectModel model = new ArchivaProjectModel();
+        model.setGroupId( "org.apache.archiva" );
+        model.setArtifactId( "archiva-test" );
+        model.setVersion( "1.0" );
+        model.setPackaging( "jar" );
+          
+        repoBrowsingControl.expectAndReturn( repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), model );
+        
+        userReposControl.replay();
+        searchControl.replay();
+        archivaDAOControl.replay();
+        repoBrowsingControl.replay();
+    
+        List<Artifact> artifacts = searchService.quickSearch( "archiva" );
+        
+        userReposControl.verify();
+        searchControl.verify();
+        archivaDAOControl.verify();
+        repoBrowsingControl.verify();
+      
+        assertNotNull( artifacts );
+        assertEquals( 1, artifacts.size() );
+    }
+    
+    public void testQuickSearchNoResults( )
+        throws Exception
+    {
+        List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+        observableRepoIds.add( "public.releases" );
+    
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+    
+        SearchResults results = new SearchResults();
+        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
+    
+        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "non-existent", limits, null ), results );
+        userReposControl.replay();
+        searchControl.replay();
+    
+        List<Artifact> artifacts = searchService.quickSearch( "test" );
+    
+        userReposControl.verify();
+        searchControl.verify();
+    
+        assertNotNull( artifacts );
+        assertEquals( 0, artifacts.size() );
+    }     
     
 /* query artifact by checksum */
     
