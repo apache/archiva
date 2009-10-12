@@ -140,7 +140,7 @@ public class RepositoryScannerTest
         assertNotNull( "Stats should not be null.", stats );
         assertEquals( "Stats.totalFileCount", 4, stats.getTotalFileCount() );
         assertEquals( "Stats.newFileCount", 3, stats.getNewFileCount() );
-        assertEquals( "Processed Count", 2, consumer.getProcessCount() );
+        assertEquals( "Processed Count", 3, consumer.getProcessCount() );
         assertEquals( "Processed Count (of invalid items)", 1, badconsumer.getProcessCount() );
     }
 

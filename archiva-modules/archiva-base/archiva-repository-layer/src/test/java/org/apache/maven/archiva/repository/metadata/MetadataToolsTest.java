@@ -130,6 +130,30 @@ public class MetadataToolsTest
 //        }
 //    }
 
+    public void testUpdateProjectNonExistingVersion()
+        throws Exception
+    {
+        ManagedRepositoryContent testRepo = createTestRepoContent();
+        ProjectReference reference = new ProjectReference();
+        reference.setGroupId( "org.apache.archiva.metadata.tests" );
+        reference.setArtifactId( "missing_artifact" );
+
+        prepTestRepo( testRepo, reference );
+        
+        // check metadata prior to update -- should contain the non-existing artifact version
+        assertProjectMetadata( testRepo, reference, "missing_artifact", new String[] {
+            "1.0-SNAPSHOT",
+            "1.1-SNAPSHOT",
+            "1.2-SNAPSHOT" }, "1.2-SNAPSHOT" , null );
+
+        tools.updateMetadata( testRepo, reference );
+        
+        // metadata should not contain the non-existing artifact version -- 1.1-SNAPSHOT
+        assertProjectMetadata( testRepo, reference, "missing_artifact", new String[] {
+            "1.0-SNAPSHOT",
+            "1.2-SNAPSHOT" }, "1.2-SNAPSHOT" , null );
+    }
+
     public void testUpdateProjectMissingMultipleVersions()
         throws Exception
     {
@@ -397,6 +421,40 @@ public class MetadataToolsTest
         buf.append( "  <artifactId>" ).append( reference.getArtifactId() ).append( "</artifactId>\n" );
         // buf.append( "  <version>1.0</version>\n" );
 
+        if ( expectedVersions != null )
+        {
+            buf.append( "  <versioning>\n" );
+            if ( latestVersion != null )
+            {
+                buf.append( "    <latest>" ).append( latestVersion ).append( "</latest>\n" );
+            }
+            if ( releaseVersion != null )
+            {
+                buf.append( "    <release>" ).append( releaseVersion ).append( "</release>\n" );
+            }
+
+            buf.append( "    <versions>\n" );
+            for ( int i = 0; i < expectedVersions.length; i++ )
+            {
+                buf.append( "      <version>" ).append( expectedVersions[i] ).append( "</version>\n" );
+            }
+            buf.append( "    </versions>\n" );
+            buf.append( "  </versioning>\n" );
+        }
+        buf.append( "</metadata>" );
+
+        assertMetadata( buf.toString(), testRepo, reference );
+    }
+
+    private void assertProjectMetadata( ManagedRepositoryContent testRepo, ProjectReference reference, String artifactId,
+                                        String[] expectedVersions, String latestVersion, String releaseVersion )
+        throws Exception
+    {
+        StringBuilder buf = new StringBuilder();
+        buf.append( "<metadata>\n" );
+        buf.append( "  <groupId>" ).append( reference.getGroupId() ).append( "</groupId>\n" );
+        buf.append( "  <artifactId>" ).append( reference.getArtifactId() ).append( "</artifactId>\n" );
+        
         if ( expectedVersions != null )
         {
             buf.append( "  <versioning>\n" );
