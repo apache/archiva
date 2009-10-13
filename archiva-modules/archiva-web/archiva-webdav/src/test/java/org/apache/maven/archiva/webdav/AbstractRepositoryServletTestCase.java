@@ -111,6 +111,13 @@ public abstract class AbstractRepositoryServletTestCase
         Assert.assertEquals( "Should have been an 500/Internal Server Error response code.", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response
             .getResponseCode() );
     }
+    
+    protected void assertResponseConflictError( WebResponse response )
+    {
+        assertNotNull( "Should have received a response", response );
+        Assert.assertEquals( "Should have been a 409/Conflict response code.", HttpServletResponse.SC_CONFLICT,
+                             response.getResponseCode() );
+    }
 
     protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
     {
