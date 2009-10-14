@@ -33,6 +33,7 @@ import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryConte
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
+import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask.Action;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,10 +91,10 @@ public class NexusIndexerConsumer
         File artifactFile = new File( managedRepository, path );
                 
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryContent.getId(), artifactFile, ArtifactIndexingTask.ADD );
+            TaskCreator.createIndexingTask( repositoryContent.getId(), artifactFile, ArtifactIndexingTask.Action.ADD );
         try
         {
-            log.debug( "Queueing indexing task + '" + task.getName() + "' to add or update the artifact in the index." );
+            log.debug( "Queueing indexing task + '" + task + "' to add or update the artifact in the index." );
             scheduler.queueIndexingTask( task );
         }
         catch ( TaskQueueException e )
@@ -105,15 +106,15 @@ public class NexusIndexerConsumer
     public void completeScan()
     {
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryContent.getId(), null, ArtifactIndexingTask.FINISH );
+            TaskCreator.createIndexingTask( repositoryContent.getId(), null, ArtifactIndexingTask.Action.FINISH );
         try
         {
-            log.debug( "Queueing indexing task + '" + task.getName() + "' to finish indexing." );
+            log.debug( "Queueing indexing task + '" + task + "' to finish indexing." );
             scheduler.queueIndexingTask( task );
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Error queueing task: " + task.getName() + ": " + e.getMessage(), e );
+            log.error( "Error queueing task: " + task + ": " + e.getMessage(), e );
         }        
     }
 

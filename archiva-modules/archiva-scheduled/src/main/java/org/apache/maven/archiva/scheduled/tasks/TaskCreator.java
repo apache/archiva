@@ -21,72 +21,51 @@ package org.apache.maven.archiva.scheduled.tasks;
 
 import java.io.File;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
-
 /**
  * TaskCreator Convenience class for creating Archiva tasks.
  */
 public class TaskCreator
 {
-    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix )
+    public static RepositoryTask createRepositoryTask( String repositoryId )
     {
-        String suffix = "";
-        if ( !StringUtils.isEmpty( taskNameSuffix ) )
-        {
-            suffix = ":" + taskNameSuffix;
-        }
-
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
-        task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repositoryId + suffix );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
-
         return task;
     }
 
-    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, boolean scanAll )
+    public static RepositoryTask createRepositoryTask( String repositoryId, boolean scanAll )
     {
-        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix );
+        RepositoryTask task = createRepositoryTask( repositoryId );
         task.setScanAll( scanAll );
 
         return task;
     }
 
-    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, File resourceFile,
+    public static RepositoryTask createRepositoryTask( String repositoryId, File resourceFile,
                                                        boolean updateRelatedArtifacts )
     {
-        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix );
+        RepositoryTask task = createRepositoryTask( repositoryId );
         task.setResourceFile( resourceFile );
         task.setUpdateRelatedArtifacts( updateRelatedArtifacts );
 
         return task;
     }
 
-    public static RepositoryTask createRepositoryTask( String repositoryId, String taskNameSuffix, File resourceFile,
+    public static RepositoryTask createRepositoryTask( String repositoryId, File resourceFile,
                                                        boolean updateRelatedArtifacts, boolean scanAll )
     {
-        RepositoryTask task = createRepositoryTask( repositoryId, taskNameSuffix, resourceFile, updateRelatedArtifacts );
+        RepositoryTask task = createRepositoryTask( repositoryId, resourceFile, updateRelatedArtifacts );
         task.setScanAll( scanAll );
 
         return task;
     }
 
-    public static ArtifactIndexingTask createIndexingTask( String repositoryId, File resource, String action )
+    public static ArtifactIndexingTask createIndexingTask( String repositoryId, File resource,
+                                                           ArtifactIndexingTask.Action action )
     {
         ArtifactIndexingTask task = new ArtifactIndexingTask();
         task.setRepositoryId( repositoryId );
-        
-        String name = DefaultArchivaTaskScheduler.INDEXING_JOB + ":" + repositoryId;
-        if ( resource != null )
-        {
-            name = name + ":" + resource.getName();
-        }
-        name = name + ":" + action;
-        
-        task.setName( name );
         task.setAction( action );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
         task.setResourceFile( resource );
 
         return task;

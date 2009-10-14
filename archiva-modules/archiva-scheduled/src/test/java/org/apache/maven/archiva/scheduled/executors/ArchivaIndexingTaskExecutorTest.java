@@ -127,7 +127,7 @@ public class ArchivaIndexingTaskExecutorTest
                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.ADD );
 
         archivaConfigControl.expectAndReturn( archivaConfiguration.getConfiguration(), configuration );
 
@@ -171,7 +171,7 @@ public class ArchivaIndexingTaskExecutorTest
                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.ADD );
 
         archivaConfigControl.expectAndReturn( archivaConfiguration.getConfiguration(), configuration, 2 );
 
@@ -204,7 +204,7 @@ public class ArchivaIndexingTaskExecutorTest
                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.ADD );
 
         archivaConfigControl.expectAndReturn( archivaConfiguration.getConfiguration(), configuration, 3 );
 
@@ -213,7 +213,7 @@ public class ArchivaIndexingTaskExecutorTest
         // add artifact to index
         indexingExecutor.executeTask( task );
 
-        task = TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.FINISH );
+        task = TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.FINISH );
 
         // add artifact to index
         indexingExecutor.executeTask( task );
@@ -232,7 +232,7 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( 1, topDocs.totalHits );
 
         // remove added artifact from index
-        task = TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.DELETE );
+        task = TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.DELETE );
         indexingExecutor.executeTask( task );
 
         archivaConfigControl.verify();
@@ -261,7 +261,7 @@ public class ArchivaIndexingTaskExecutorTest
                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.ADD );
 
         archivaConfigControl.expectAndReturn( archivaConfiguration.getConfiguration(), configuration );
 
@@ -273,7 +273,7 @@ public class ArchivaIndexingTaskExecutorTest
         
         archivaConfigControl.reset();
 
-        task = TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.FINISH );
+        task = TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.FINISH );
 
         archivaConfigControl.expectAndReturn( archivaConfiguration.getConfiguration(), configuration );
 

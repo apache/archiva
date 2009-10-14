@@ -51,12 +51,12 @@ import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.registry.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AdministrationServiceImpl
@@ -66,6 +66,8 @@ import org.codehaus.plexus.registry.RegistryException;
 public class AdministrationServiceImpl
     implements AdministrationService
 {    
+    protected Logger log = LoggerFactory.getLogger( getClass() );
+
     private ArchivaConfiguration archivaConfiguration;
         
     private RepositoryContentConsumers repoConsumersUtil;
@@ -285,9 +287,8 @@ public class AdministrationServiceImpl
             return false;
         }
 
+        log.info( "Queueing database task on request from administration service" );
         DatabaseTask task = new DatabaseTask();
-        task.setName( DefaultArchivaTaskScheduler.DATABASE_JOB + ":user-requested-via-web-service" );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
         
         taskScheduler.queueDatabaseTask( task );           
         
@@ -305,15 +306,12 @@ public class AdministrationServiceImpl
             throw new Exception( "Repository does not exist." );
         }
         
-        if ( taskScheduler.isProcessingAnyRepositoryTask() )
+        if ( taskScheduler.isProcessingRepositoryTask( repoId ) )
         {
-            if ( taskScheduler.isProcessingRepositoryTask( repoId ) )
-            {
-                return false;
-            }
+            return false;
         }
 
-        RepositoryTask task = TaskCreator.createRepositoryTask( repoId, "" );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoId );
 
         taskScheduler.queueRepositoryTask( task );          
         

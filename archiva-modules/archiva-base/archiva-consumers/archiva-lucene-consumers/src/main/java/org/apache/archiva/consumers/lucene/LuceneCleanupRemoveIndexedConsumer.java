@@ -19,6 +19,9 @@ package org.apache.archiva.consumers.lucene;
  * under the License.
  */
 
+import java.io.File;
+import java.util.List;
+
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -33,9 +36,6 @@ import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * LuceneCleanupRemoveIndexedConsumer
@@ -97,16 +97,16 @@ public class LuceneCleanupRemoveIndexedConsumer
             if ( !artifactFile.exists() )
             {
                 ArtifactIndexingTask task =                
-                        TaskCreator.createIndexingTask( repository.getId(), artifactFile, ArtifactIndexingTask.DELETE );
+                        TaskCreator.createIndexingTask( repository.getId(), artifactFile, ArtifactIndexingTask.Action.DELETE );
                 
-                log.debug( "Queueing indexing task '" + task.getName() + "' to remove the artifact from the index." );
+                log.debug( "Queueing indexing task '" + task + "' to remove the artifact from the index." );
                 scheduler.queueIndexingTask( task );
 
                 // note we finish immediately here since it isn't done repo-by-repo. It might be nice to ensure that is
                 // the case for optimisation though
                 task =
-                    TaskCreator.createIndexingTask( repository.getId(), artifactFile, ArtifactIndexingTask.FINISH );
-                log.debug( "Queueing indexing task + '" + task.getName() + "' to finish indexing." );
+                    TaskCreator.createIndexingTask( repository.getId(), artifactFile, ArtifactIndexingTask.Action.FINISH );
+                log.debug( "Queueing indexing task + '" + task + "' to finish indexing." );
                 scheduler.queueIndexingTask( task );
             }
                    

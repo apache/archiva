@@ -20,10 +20,7 @@ package org.apache.maven.archiva.web.action.admin;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
@@ -61,35 +58,13 @@ public class SchedulerAction
             return SUCCESS;
         }
 
-        RepositoryTask task = TaskCreator.createRepositoryTask( repoid, "", scanAll ); 
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoid, scanAll ); 
         
-        boolean scheduleTask = false;
-
-        try
+        if ( taskScheduler.isProcessingRepositoryTask( repoid ) )
         {
-            if ( taskScheduler.isProcessingAnyRepositoryTask() )
-            {
-                if ( taskScheduler.isProcessingRepositoryTask( repoid ) )
-                {
-                    addActionError( "Repository [" + repoid + "] task was already queued." );
-                }
-                else
-                {
-                    scheduleTask = true;
-                }
-            }
-            else
-            {
-                scheduleTask = true;
-            }
+            addActionError( "Repository [" + repoid + "] task was already queued." );
         }
-        catch ( ArchivaException e )
-        {
-            scheduleTask = false;
-            addActionError( e.getMessage() );
-        }
-
-        if ( scheduleTask )
+        else
         {
             try
             {
@@ -109,30 +84,14 @@ public class SchedulerAction
 
     public String updateDatabase()
     {
+        log.info( "Queueing database task on request from user interface" );
         DatabaseTask task = new DatabaseTask();
-        task.setName( DefaultArchivaTaskScheduler.DATABASE_JOB + ":user-requested" );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
 
-        boolean scheduleTask = false;
-
-        try
+        if ( taskScheduler.isProcessingDatabaseTask() )
         {
-            if ( taskScheduler.isProcessingDatabaseTask() )
-            {
-                addActionError( "Database task was already queued." );
-            }
-            else
-            {
-                scheduleTask = true;
-            }
+            addActionError( "Database task was already queued." );
         }
-        catch ( ArchivaException e )
-        {
-            scheduleTask = false;
-            addActionError( e.getMessage() );
-        }
-
-        if ( scheduleTask )
+        else
         {
             try
             {

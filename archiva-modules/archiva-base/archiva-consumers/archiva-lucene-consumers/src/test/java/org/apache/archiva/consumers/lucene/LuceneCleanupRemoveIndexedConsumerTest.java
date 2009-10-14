@@ -20,6 +20,7 @@ package org.apache.archiva.consumers.lucene;
  */
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -31,6 +32,7 @@ import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
@@ -48,7 +50,7 @@ public class LuceneCleanupRemoveIndexedConsumerTest
 
     private ManagedRepositoryConfiguration repositoryConfig;
     
-    private ArchivaTaskScheduler scheduler;
+    private TaskQueue indexingQueue;
 
     public void setUp()
         throws Exception
@@ -58,7 +60,9 @@ public class LuceneCleanupRemoveIndexedConsumerTest
         repoFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
         repoFactory = (RepositoryContentFactory) repoFactoryControl.getMock();
 
-        scheduler = ( ArchivaTaskScheduler ) lookup( ArchivaTaskScheduler.class );
+        ArchivaTaskScheduler scheduler = ( ArchivaTaskScheduler ) lookup( ArchivaTaskScheduler.class );
+        
+        indexingQueue = (TaskQueue) lookup( TaskQueue.ROLE, "indexing" );
         
         consumer = new LuceneCleanupRemoveIndexedConsumer( repoFactory, scheduler );
 
@@ -81,9 +85,12 @@ public class LuceneCleanupRemoveIndexedConsumerTest
         super.tearDown();
     }
 
+    @SuppressWarnings( "unchecked" )
     public void testProcessArtifactArtifactDoesNotExist()
         throws Exception
     {
+        assertTrue( indexingQueue.getQueueSnapshot().isEmpty() );
+
         ArchivaArtifact artifact =
             new ArchivaArtifact( "org.apache.archiva", "archiva-lucene-consumers", "1.2", null, "jar", "test-repo" );
         
@@ -92,9 +99,6 @@ public class LuceneCleanupRemoveIndexedConsumerTest
         
         File artifactFile = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
        
-        ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.DELETE );
-        
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( repositoryConfig.getId() ),
                                             repoContent );
        
@@ -104,22 +108,26 @@ public class LuceneCleanupRemoveIndexedConsumerTest
 
         repoFactoryControl.verify();       
         
-        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );               
+        List<ArtifactIndexingTask> queue = indexingQueue.getQueueSnapshot();
+        assertEquals( 2, queue.size() );
+        ArtifactIndexingTask task =
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.DELETE );
+        assertEquals( task, queue.get( 0 ) );
+        task =
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.FINISH );
+        assertEquals( task, queue.get( 1 ) );
     }
 
     public void testProcessArtifactArtifactExists()
         throws Exception
     {
+        assertTrue( indexingQueue.getQueueSnapshot().isEmpty() );
+
         ArchivaArtifact artifact =
             new ArchivaArtifact( "org.apache.maven.archiva", "archiva-lucene-cleanup", "1.0", null, "jar", "test-repo" );
         ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
         repoContent.setRepository( repositoryConfig );
 
-        File artifactFile = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
-        
-        ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.DELETE );
-        
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( repositoryConfig.getId() ),
                                             repoContent );
 
@@ -129,7 +137,7 @@ public class LuceneCleanupRemoveIndexedConsumerTest
 
         repoFactoryControl.verify();
         
-        assertFalse( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );
+        assertTrue( indexingQueue.getQueueSnapshot().isEmpty() );
     }
     
     @Override

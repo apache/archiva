@@ -642,7 +642,6 @@ public class AdministrationServiceImplTest
         
         RepositoryTask task = new RepositoryTask();
         
-        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingAnyRepositoryTask(), true );
         taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingRepositoryTask( "internal" ), false );
         
         taskScheduler.queueRepositoryTask( task );
@@ -675,7 +674,6 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
                                        createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
         
-        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingAnyRepositoryTask(), true );
         taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingRepositoryTask( "internal" ), true);
         
         archivaConfigControl.replay();

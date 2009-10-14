@@ -38,22 +38,12 @@ public interface ArchivaTaskScheduler
     public final static String ROLE = ArchivaTaskScheduler.class.getName();
 
     /**
-     * Checks if there is any repository scanning task queued.
-     * 
-     * @return
-     * @throws ArchivaException
-     */
-    public boolean isProcessingAnyRepositoryTask()
-        throws ArchivaException;
-
-    /**
      * Checks if there is any database scanning task queued.
      * 
      * @return
      * @throws ArchivaException
      */
-    public boolean isProcessingDatabaseTask()
-        throws ArchivaException;
+    public boolean isProcessingDatabaseTask();
 
     /**
      * Checks if a repository scanning task for the specified repository is queuedd.
@@ -62,29 +52,8 @@ public interface ArchivaTaskScheduler
      * @return
      * @throws ArchivaException
      */
-    public boolean isProcessingRepositoryTask( String repositoryId )
-        throws ArchivaException;
+    public boolean isProcessingRepositoryTask( String repositoryId );
     
-    /**
-     * Checks if a repository scanning task with the specified name is queued.
-     * 
-     * @param taskName
-     * @return
-     * @throws ArchivaException
-     */
-    public boolean isProcessingRepositoryTaskWithName( String taskName )
-        throws ArchivaException;
-    
-    /**
-     * Checks is an indexing task with the specified name is queued.
-     * 
-     * @param taskName
-     * @return
-     * @throws ArchivaException
-     */
-    public boolean isProcessingIndexingTaskWithName( String taskName )
-        throws ArchivaException;
-
     /**
      * Adds the database task to the database scanning queue.
      * 

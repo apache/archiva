@@ -171,7 +171,6 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         RepositoryTask repoTask = new RepositoryTask();
         
-        repoTask.setName( "testRepoTask" );
         repoTask.setRepositoryId( "testRepo" );
         
         taskExecutor.executeTask( repoTask );
@@ -199,7 +198,6 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         RepositoryTask repoTask = new RepositoryTask();
         
-        repoTask.setName( "testRepoTask" );
         repoTask.setRepositoryId( "testRepo" );
         repoTask.setScanAll( false );
         
@@ -257,7 +255,6 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         RepositoryTask repoTask = new RepositoryTask();
         
-        repoTask.setName( "testRepoTask" );
         repoTask.setRepositoryId( "testRepo" );
         repoTask.setScanAll( true );
         

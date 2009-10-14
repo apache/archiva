@@ -19,9 +19,9 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
-import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.codehaus.plexus.scheduler.AbstractJob;
+import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.quartz.JobDataMap;
@@ -34,12 +34,6 @@ import org.quartz.JobExecutionException;
 public class DatabaseTaskJob
     extends AbstractJob
 {
-    static final String TASK_KEY = "EXECUTION";
-
-    static final String TASK_QUEUE = "TASK_QUEUE";
-
-    static final String TASK_QUEUE_POLICY = "TASK_QUEUE_POLICY";
-
     /**
      * Execute the discoverer and the indexer.
      *
@@ -53,28 +47,16 @@ public class DatabaseTaskJob
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         setJobDataMap( dataMap );
 
-        TaskQueue taskQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
-        String queuePolicy = (String) dataMap.get( TASK_QUEUE_POLICY );
+        TaskQueue taskQueue = (TaskQueue) dataMap.get( DefaultArchivaTaskScheduler.TASK_QUEUE );
 
-        ArchivaTask task = new DatabaseTask();
-        task.setName( context.getJobDetail().getName() );
+        Task task = new DatabaseTask();
 
         try
         {
-            if ( taskQueue.getQueueSnapshot().size() == 0 )
+            // The database job only needs to run one at a time
+            if ( taskQueue.getQueueSnapshot().isEmpty() )
             {
                 taskQueue.put( task );
-            }
-            else
-            {
-                if ( ArchivaTask.QUEUE_POLICY_WAIT.equals( queuePolicy ) )
-                {
-                    taskQueue.put( task );
-                }
-                else if ( ArchivaTask.QUEUE_POLICY_SKIP.equals( queuePolicy ) )
-                {
-                    // do not queue anymore, policy is to skip
-                }
             }
         }
         catch ( TaskQueueException e )

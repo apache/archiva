@@ -19,7 +19,12 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
-import org.apache.commons.collections.CollectionUtils;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
@@ -28,12 +33,9 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
-import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.apache.maven.archiva.scheduled.tasks.ArchivaTaskNameSelectionPredicate;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskSelectionPredicate;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
@@ -50,12 +52,6 @@ import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Default implementation of a scheduling component for archiva.
@@ -97,19 +93,21 @@ public class DefaultArchivaTaskScheduler
      */
     private ArchivaDAO dao;
 
-    public static final String DATABASE_SCAN_GROUP = "dbg";
+    private static final String DATABASE_SCAN_GROUP = "dbg";
 
-    public static final String DATABASE_JOB = "dbj";
+    private static final String DATABASE_JOB = "dbj";
 
-    public static final String DATABASE_JOB_TRIGGER = "dbt";
+    private static final String DATABASE_JOB_TRIGGER = "dbt";
 
-    public static final String REPOSITORY_SCAN_GROUP = "rg";
+    private static final String REPOSITORY_SCAN_GROUP = "rg";
 
-    public static final String REPOSITORY_JOB = "rj";
+    private static final String REPOSITORY_JOB = "rj";
 
-    public static final String REPOSITORY_JOB_TRIGGER = "rjt";
-    
-    public static final String INDEXING_JOB = "ij";
+    private static final String REPOSITORY_JOB_TRIGGER = "rjt";
+
+    static final String TASK_QUEUE = "TASK_QUEUE";
+
+    static final String TASK_REPOSITORY = "TASK_REPOSITORY";
 
     public static final String CRON_HOURLY = "0 0 * * * ?";
 
@@ -199,39 +197,14 @@ public class DefaultArchivaTaskScheduler
     }
 
     /**
-     * @see ArchivaTaskScheduler#isProcessingAnyRepositoryTask()
-     */
-    @SuppressWarnings("unchecked")
-    public boolean isProcessingAnyRepositoryTask()
-        throws ArchivaException
-    {
-        synchronized( repositoryScanningQueue )
-        {
-            List<? extends Task> queue = null;
-    
-            try
-            {
-                queue = repositoryScanningQueue.getQueueSnapshot();
-            }
-            catch ( TaskQueueException e )
-            {
-                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
-            }
-    
-            return !queue.isEmpty();
-        }
-    }
-
-    /**
      * @see ArchivaTaskScheduler#isProcessingRepositoryTask(String)
      */
     @SuppressWarnings("unchecked")
     public boolean isProcessingRepositoryTask( String repositoryId )
-        throws ArchivaException
     {
         synchronized( repositoryScanningQueue )
         {
-            List<? extends Task> queue = null;
+            List<RepositoryTask> queue = null;
     
             try
             {
@@ -239,10 +212,17 @@ public class DefaultArchivaTaskScheduler
             }
             catch ( TaskQueueException e )
             {
-                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+                // not possible with plexus-taskqueue implementation, ignore
             }
     
-            return CollectionUtils.exists( queue, new RepositoryTaskSelectionPredicate( repositoryId ) );
+            for ( RepositoryTask queuedTask : queue )
+            {
+                if ( queuedTask.getRepositoryId().equals( repositoryId ) )
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
     
@@ -250,12 +230,11 @@ public class DefaultArchivaTaskScheduler
      * @see ArchivaTaskScheduler#isProcessingIndexingTaskWithName(String)
      */
     @SuppressWarnings("unchecked")
-    public boolean isProcessingRepositoryTaskWithName( String taskName )
-        throws ArchivaException
+    private boolean isProcessingRepositoryTask( RepositoryTask task )
     {
         synchronized( repositoryScanningQueue )
         {
-            List<? extends Task> queue = null;
+            List<RepositoryTask> queue = null;
     
             try
             {
@@ -263,43 +242,25 @@ public class DefaultArchivaTaskScheduler
             }
             catch ( TaskQueueException e )
             {
-                throw new ArchivaException( "Unable to get repository scanning queue:" + e.getMessage(), e );
+                // not possible with plexus-taskqueue implementation, ignore
             }
     
-            return CollectionUtils.exists( queue, new ArchivaTaskNameSelectionPredicate( taskName ) );
+            for ( RepositoryTask queuedTask : queue )
+            {
+                if ( task.equals( queuedTask ) )
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
-    /**
-     * @see ArchivaTaskScheduler#isProcessingIndexingTaskWithName(String)
-     */
-    @SuppressWarnings("unchecked")
-    public boolean isProcessingIndexingTaskWithName( String taskName )
-        throws ArchivaException
-    {
-        synchronized( indexingQueue )
-        {
-            List<? extends Task> queue = null;
-            
-            try
-            {
-                queue = indexingQueue.getQueueSnapshot();
-            }
-            catch ( TaskQueueException e )
-            {
-                throw new ArchivaException( "Unable to get indexing scanning queue:" + e.getMessage(), e );
-            }
-    
-            return CollectionUtils.exists( queue, new ArchivaTaskNameSelectionPredicate( taskName ) );
-        }
-    }
-    
     /**
      * @see ArchivaTaskScheduler#isProcessingDatabaseTask()
      */
     @SuppressWarnings("unchecked")
     public boolean isProcessingDatabaseTask()
-        throws ArchivaException
     {
         List<? extends Task> queue = null;
 
@@ -309,7 +270,7 @@ public class DefaultArchivaTaskScheduler
         }
         catch ( TaskQueueException e )
         {
-            throw new ArchivaException( "Unable to get database update queue:" + e.getMessage(), e );
+            // not possible with plexus-taskqueue implementation, ignore
         }
 
         return !queue.isEmpty();
@@ -321,27 +282,17 @@ public class DefaultArchivaTaskScheduler
     public void queueRepositoryTask( RepositoryTask task )
         throws TaskQueueException
     {
-        synchronized( repositoryScanningQueue )
+        synchronized ( repositoryScanningQueue )
         {
-            if( task.getResourceFile() != null )
+            if ( isProcessingRepositoryTask( task ) )
             {
-                try
-                {
-                    if( isProcessingRepositoryTaskWithName( task.getName() ) )
-                    {
-                        log.debug( "Repository task '" + task.getName() + "' is already queued. Skipping task.." );
-                        return;
-                    }
-                }
-                catch ( ArchivaException e )
-                {
-                    log.warn( "Error occurred while checking if repository task '" + task.getName() +
-                        "' is already queued." );
-                }
+                log.debug( "Repository task '" + task + "' is already queued. Skipping task." );
             }
-            
-            // add check if the task is already queued if it is a file scan 
-            repositoryScanningQueue.put( task );
+            else
+            {
+                // add check if the task is already queued if it is a file scan
+                repositoryScanningQueue.put( task );
+            }
         }
     }
 
@@ -428,14 +379,12 @@ public class DefaultArchivaTaskScheduler
     private synchronized void queueInitialRepoScan( ManagedRepositoryConfiguration repoConfig )
     {
         String repoId = repoConfig.getId();        
-        RepositoryTask task = TaskCreator.createRepositoryTask( repoId, "initial-scan" );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoId );
 
-        if ( queuedRepos.contains( repoId ) )
+        if ( !queuedRepos.contains( repoId ) )
         {
-            log.error( "Repository [" + repoId + "] is currently being processed or is already queued." );
-        }
-        else
-        {
+            log.info( "Repository [" + repoId + "] is queued to be scanned as it hasn't been previously." );
+
             try
             {
                 queuedRepos.add( repoConfig.getId() );
@@ -479,9 +428,8 @@ public class DefaultArchivaTaskScheduler
             new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, RepositoryTaskJob.class );
 
         JobDataMap dataMap = new JobDataMap();
-        dataMap.put( RepositoryTaskJob.TASK_QUEUE, repositoryScanningQueue );
-        dataMap.put( RepositoryTaskJob.TASK_QUEUE_POLICY, ArchivaTask.QUEUE_POLICY_WAIT );
-        dataMap.put( RepositoryTaskJob.TASK_REPOSITORY, repoConfig.getId() );
+        dataMap.put( DefaultArchivaTaskScheduler.TASK_QUEUE, repositoryScanningQueue );
+        dataMap.put( DefaultArchivaTaskScheduler.TASK_REPOSITORY, repoConfig.getId() );
         repositoryJob.setJobDataMap( dataMap );
 
         try
@@ -510,7 +458,7 @@ public class DefaultArchivaTaskScheduler
         JobDetail databaseJob = new JobDetail( DATABASE_JOB, DATABASE_SCAN_GROUP, DatabaseTaskJob.class );
 
         JobDataMap dataMap = new JobDataMap();
-        dataMap.put( DatabaseTaskJob.TASK_QUEUE, databaseUpdateQueue );
+        dataMap.put( TASK_QUEUE, databaseUpdateQueue );
         databaseJob.setJobDataMap( dataMap );
 
         CronExpressionValidator cronValidator = new CronExpressionValidator();

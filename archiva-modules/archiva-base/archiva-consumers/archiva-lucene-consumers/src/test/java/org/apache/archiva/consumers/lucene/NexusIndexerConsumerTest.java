@@ -22,6 +22,7 @@ package org.apache.archiva.consumers.lucene;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -30,6 +31,8 @@ import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.codehaus.plexus.taskqueue.TaskQueue;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 
 /**
  * NexusIndexerConsumerTest
@@ -38,21 +41,23 @@ public class NexusIndexerConsumerTest
     extends PlexusInSpringTestCase
 {
     private KnownRepositoryContentConsumer nexusIndexerConsumer;
-        
+
     private ManagedRepositoryConfiguration repositoryConfig;
-    
-    private ArchivaTaskScheduler scheduler;
-    
+
+    private TaskQueue indexingQueue;
+
     @Override
-    protected void setUp() 
+    protected void setUp()
         throws Exception
     {
         super.setUp();
-        
-        scheduler = ( ArchivaTaskScheduler ) lookup( ArchivaTaskScheduler.class );
-        
+
+        ArchivaTaskScheduler scheduler = (ArchivaTaskScheduler) lookup( ArchivaTaskScheduler.class );
+
+        indexingQueue = (TaskQueue) lookup( TaskQueue.ROLE, "indexing" );
+
         nexusIndexerConsumer = new NexusIndexerConsumer( scheduler );
-                
+
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
         repositoryConfig.setLocation( getBasedir() + "/target/test-classes/test-repo" );
@@ -62,7 +67,7 @@ public class NexusIndexerConsumerTest
         repositoryConfig.setSnapshots( false );
         repositoryConfig.setReleases( true );
     }
-    
+
     @Override
     protected void tearDown()
         throws Exception
@@ -71,33 +76,44 @@ public class NexusIndexerConsumerTest
         File indexDir = new File( repositoryConfig.getLocation(), ".indexer" );
         FileUtils.deleteDirectory( indexDir );
         assertFalse( indexDir.exists() );
-        
+
         indexDir = new File( repositoryConfig.getLocation(), ".index" );
         FileUtils.deleteDirectory( indexDir );
         assertFalse( indexDir.exists() );
-        
+
         super.tearDown();
     }
-    
+
     public void testIndexerIndexArtifact()
         throws Exception
-    {        
+    {
         File artifactFile =
             new File( repositoryConfig.getLocation(),
                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
-        ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
-        
         // begin scan
         Date now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
         nexusIndexerConsumer.completeScan();
-                
-        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );        
+
+        assertTaskQueued( artifactFile );
     }
-    
+
+    @SuppressWarnings( "unchecked" )
+    private void assertTaskQueued( File artifactFile )
+        throws TaskQueueException
+    {
+        List<ArtifactIndexingTask> queue = indexingQueue.getQueueSnapshot();
+        assertEquals( 2, queue.size() );
+        ArtifactIndexingTask task =
+            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.ADD );
+        assertEquals( task, queue.get( 0 ) );
+
+        task = TaskCreator.createIndexingTask( repositoryConfig.getId(), null, ArtifactIndexingTask.Action.FINISH );
+        assertEquals( task, queue.get( 1 ) );
+    }
+
     public void testIndexerArtifactAlreadyIndexed()
         throws Exception
     {
@@ -105,60 +121,54 @@ public class NexusIndexerConsumerTest
             new File( repositoryConfig.getLocation(),
                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
-        ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
-        
         // begin scan
         Date now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
         nexusIndexerConsumer.completeScan();
-        
-        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );
-        
+
+        assertTaskQueued( artifactFile );
+        indexingQueue.take();
+        indexingQueue.take();
+
         // scan and index again
         now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
-        nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );        
+        nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
         nexusIndexerConsumer.completeScan();
-        
-        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );        
+
+        assertTaskQueued( artifactFile );
     }
-    
+
     public void testIndexerIndexArtifactThenPom()
         throws Exception
-    {    
+    {
         File artifactFile =
             new File( repositoryConfig.getLocation(),
                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
-        ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
-        
         // begin scan
         Date now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
         nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
         nexusIndexerConsumer.completeScan();
-        
-        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );
-        
-        artifactFile =
-            new File( repositoryConfig.getLocation(),
-                      "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );
 
-        task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.ADD );
-        
+        assertTaskQueued( artifactFile );
+        indexingQueue.take();
+        indexingQueue.take();
+
+        artifactFile =
+            new File( repositoryConfig.getLocation(), "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );
+
         // scan and index again
         now = Calendar.getInstance().getTime();
         nexusIndexerConsumer.beginScan( repositoryConfig, now );
-        nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );        
+        nexusIndexerConsumer.processFile( "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );
         nexusIndexerConsumer.completeScan();
-        
-        assertTrue( scheduler.isProcessingIndexingTaskWithName( task.getName() ) );
-    }  
-    
+
+        assertTaskQueued( artifactFile );
+    }
+
     @Override
     protected String getPlexusConfigLocation()
     {

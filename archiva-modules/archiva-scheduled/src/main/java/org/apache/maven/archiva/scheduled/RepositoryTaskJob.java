@@ -19,7 +19,6 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
-import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.scheduler.AbstractJob;
@@ -35,20 +34,11 @@ import org.quartz.JobExecutionException;
 public class RepositoryTaskJob
     extends AbstractJob
 {
-    static final String TASK_KEY = "EXECUTION";
-
-    static final String TASK_QUEUE = "TASK_QUEUE";
-
-    static final String TASK_QUEUE_POLICY = "TASK_QUEUE_POLICY";
-
-    static final String TASK_REPOSITORY = "TASK_REPOSITORY";
-
     /**
      * Execute the discoverer and the indexer.
-     *
+     * 
      * @param context
      * @throws org.quartz.JobExecutionException
-     *
      */
     public void execute( JobExecutionContext context )
         throws JobExecutionException
@@ -56,29 +46,14 @@ public class RepositoryTaskJob
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         setJobDataMap( dataMap );
 
-        TaskQueue taskQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
-        String queuePolicy = dataMap.get( TASK_QUEUE_POLICY ).toString();
+        TaskQueue taskQueue = (TaskQueue) dataMap.get( DefaultArchivaTaskScheduler.TASK_QUEUE );
 
-        RepositoryTask task = TaskCreator.createRepositoryTask( (String) dataMap.get( TASK_REPOSITORY ), "" );
-        task.setName( context.getJobDetail().getName() );
+        String repositoryId = (String) dataMap.get( DefaultArchivaTaskScheduler.TASK_REPOSITORY );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId );
 
         try
         {
-            if ( taskQueue.getQueueSnapshot().size() == 0 )
-            {
-                taskQueue.put( task );
-            }
-            else
-            {
-                if ( ArchivaTask.QUEUE_POLICY_WAIT.equals( queuePolicy ) )
-                {
-                    taskQueue.put( task );
-                }
-                else if ( ArchivaTask.QUEUE_POLICY_SKIP.equals( queuePolicy ) )
-                {
-                    // do not queue anymore, policy is to skip
-                }
-            }
+            taskQueue.put( task );
         }
         catch ( TaskQueueException e )
         {

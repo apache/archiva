@@ -107,7 +107,7 @@ public class ArchivaIndexingTaskExecutor
                                                 indexDirectory, null, null, NexusIndexer.FULL_INDEX, false );
                 context.setSearchable( repository.isScanned() );
 
-                if ( ArtifactIndexingTask.FINISH.equals( indexingTask.getAction() ) )
+                if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() ) )
                 {
                     final File indexLocation = new File( managedRepository, ".index" );
                     IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
@@ -122,7 +122,7 @@ public class ArchivaIndexingTaskExecutor
 
                     if ( ac != null )
                     {
-                        if ( indexingTask.getAction().equals( ArtifactIndexingTask.ADD ) )
+                        if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
                         {
                             boolean add = true;
                             IndexReader r = context.getIndexReader();
@@ -164,9 +164,8 @@ public class ArchivaIndexingTaskExecutor
             }
             catch ( IOException e )
             {
-                log.error( "Error occurred while executing indexing task '" + indexingTask.getName() + "'" );
-                throw new TaskExecutionException( "Error occurred while executing indexing task '"
-                    + indexingTask.getName() + "'" );
+                log.error( "Error occurred while executing indexing task '" + indexingTask + "'" );
+                throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'" );
             }
             catch ( UnsupportedExistingLuceneIndexException e )
             {

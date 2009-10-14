@@ -19,9 +19,6 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.Validateable;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.archiva.checksum.ChecksumAlgorithm; 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -69,6 +66,9 @@ import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
+
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
@@ -617,7 +617,7 @@ public class UploadAction
 
     private void queueRepositoryTask( String repositoryId, File localFile )
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile.getName(), localFile, true, true );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile, true, true );
 
         try
         {

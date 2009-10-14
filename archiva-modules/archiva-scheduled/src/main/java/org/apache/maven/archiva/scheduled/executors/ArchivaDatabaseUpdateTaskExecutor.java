@@ -60,7 +60,7 @@ public class ArchivaDatabaseUpdateTaskExecutor
     {
         DatabaseTask dbtask = (DatabaseTask) task;
 
-        log.info( "Executing task from queue with job name: " + dbtask.getName() );
+        log.info( "Executing task from queue with job name: " + dbtask );
         long time = System.currentTimeMillis();
 
         try

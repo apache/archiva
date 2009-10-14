@@ -112,12 +112,12 @@ public class ArchivaRepositoryScanningTaskExecutor
         // execute consumers on resource file if set
         if( repoTask.getResourceFile() != null )
         {
-            log.debug( "Executing task from queue with job name: " + repoTask.getName() );
+            log.debug( "Executing task from queue with job name: " + repoTask );
             consumers.executeConsumers( arepo, repoTask.getResourceFile(), repoTask.isUpdateRelatedArtifacts() );
         }
         else
         {
-            log.info( "Executing task from queue with job name: " + repoTask.getName() );
+            log.info( "Executing task from queue with job name: " + repoTask );
             
             // otherwise, execute consumers on whole repository
             try

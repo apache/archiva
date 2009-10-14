@@ -21,30 +21,18 @@ package org.apache.maven.archiva.scheduled.tasks;
 
 import java.io.File;
 
-import org.sonatype.nexus.index.ArtifactContext;
+import org.codehaus.plexus.taskqueue.Task;
 
 public class ArtifactIndexingTask
-    implements ArchivaTask
+    implements Task
 {
-    public static final String ADD = "add";
-    
-    public static final String DELETE = "delete";
-    
-    public static final String FINISH = "finish";
-    
-    String repositoryId;
-    
-    String name;
-    
-    String queuePolicy;
+    public enum Action { ADD, DELETE, FINISH }
 
-    long maxExecutionTime;
+    private String repositoryId;
     
-    File resourceFile;
+    private File resourceFile;
     
-    ArtifactContext artifactContext;
-    
-    String action;
+    private Action action;
     
     public String getRepositoryId()
     {
@@ -58,32 +46,7 @@ public class ArtifactIndexingTask
 
     public long getMaxExecutionTime()
     {
-        return maxExecutionTime;
-    }
-
-    public void setMaxExecutionTime( long maxExecutionTime )
-    {
-        this.maxExecutionTime = maxExecutionTime;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName( String name )
-    {
-        this.name = name;
-    }
-
-    public String getQueuePolicy()
-    {
-        return queuePolicy;
-    }
-
-    public void setQueuePolicy( String queuePolicy )
-    {
-        this.queuePolicy = queuePolicy;
+        return 0;
     }
 
     public File getResourceFile()
@@ -96,24 +59,65 @@ public class ArtifactIndexingTask
         this.resourceFile = resourceFile;
     }
 
-    public ArtifactContext getArtifactContext()
-    {
-        return artifactContext;
-    }
-
-    public void setArtifactContext( ArtifactContext artifactContext )
-    {
-        this.artifactContext = artifactContext;
-    }
-
-    public String getAction()
+    public Action getAction()
     {
         return action;
     }
 
-    public void setAction( String action )
+    public void setAction( Action action )
     {
         this.action = action;
     }
 
+    @Override
+    public String toString()
+    {
+        return "ArtifactIndexingTask [action=" + action + ", repositoryId=" + repositoryId + ", resourceFile="
+            + resourceFile + "]";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( action == null ) ? 0 : action.hashCode() );
+        result = prime * result + ( ( repositoryId == null ) ? 0 : repositoryId.hashCode() );
+        result = prime * result + ( ( resourceFile == null ) ? 0 : resourceFile.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+        if ( getClass() != obj.getClass() )
+            return false;
+        ArtifactIndexingTask other = (ArtifactIndexingTask) obj;
+        if ( action == null )
+        {
+            if ( other.action != null )
+                return false;
+        }
+        else if ( !action.equals( other.action ) )
+            return false;
+        if ( repositoryId == null )
+        {
+            if ( other.repositoryId != null )
+                return false;
+        }
+        else if ( !repositoryId.equals( other.repositoryId ) )
+            return false;
+        if ( resourceFile == null )
+        {
+            if ( other.resourceFile != null )
+                return false;
+        }
+        else if ( !resourceFile.equals( other.resourceFile ) )
+            return false;
+        return true;
+    }
 }

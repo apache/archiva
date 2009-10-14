@@ -21,7 +21,6 @@ package org.apache.maven.archiva.scheduled.tasks;
 
 import java.io.File;
 
-import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 public class TaskCreatorTest
@@ -29,23 +28,18 @@ public class TaskCreatorTest
 {
     private static final String REPO_ID = "test-repo";
 
-    private static final String TASKNAME_SUFFIX = "test-task";
-
     public void testCreateRepositoryTask()
         throws Exception
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, "" );
+        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID );
 
         assertEquals( "Incorrect repository id set.", REPO_ID, task.getRepositoryId() );
-        assertEquals( "Incorrect queue policy set.", ArchivaTask.QUEUE_POLICY_WAIT, task.getQueuePolicy() );
-        assertEquals( "Incorrect task name set.", DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + REPO_ID,
-                      task.getName() );
     }
 
     public void testCreateRepositoryTaskWithTaskNameSuffix()
         throws Exception
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, TASKNAME_SUFFIX );
+        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID );
 
         assertBasicTaskDetails( task );
     }
@@ -53,63 +47,57 @@ public class TaskCreatorTest
     public void testCreateRepositoryTaskScanAllArtifacts()
         throws Exception
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, TASKNAME_SUFFIX, true );
+        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, true );
 
         assertBasicTaskDetails( task );
-        assertTrue( task.scanAll );
+        assertTrue( task.isScanAll() );
     }
 
     public void testCreateRepositoryTaskDoNotScanAllArtifacts()
         throws Exception
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, TASKNAME_SUFFIX, false );
+        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, false );
 
         assertBasicTaskDetails( task );
-        assertFalse( task.scanAll );
+        assertFalse( task.isScanAll() );
     }
 
     public void testCreateRepositoryTaskForArtifactUpdateAllRelated()
         throws Exception
     {
         File resource = new File( getBasedir(), "target/test-classes/test.jar" );
-        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, TASKNAME_SUFFIX, resource, true );
+        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, resource, true );
 
         assertBasicTaskDetails( task );
         assertEquals( "Incorrect resource file set.", resource, task.getResourceFile() );
-        assertTrue( task.updateRelatedArtifacts );
+        assertTrue( task.isUpdateRelatedArtifacts() );
     }
 
     public void testCreateRepositoryTaskForArtifactDoNotUpdateAllRelated()
         throws Exception
     {
         File resource = new File( getBasedir(), "target/test-classes/test.jar" );
-        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, TASKNAME_SUFFIX, resource, false );
+        RepositoryTask task = TaskCreator.createRepositoryTask( REPO_ID, resource, false );
 
         assertBasicTaskDetails( task );
         assertEquals( "Incorrect resource file set.", resource, task.getResourceFile() );
-        assertFalse( task.updateRelatedArtifacts );
+        assertFalse( task.isUpdateRelatedArtifacts() );
     }
 
     public void testCreateIndexingTask()
         throws Exception
     {
         File resource = new File( getBasedir(), "target/test-classes/test.jar" );
-        ArtifactIndexingTask task = TaskCreator.createIndexingTask( REPO_ID, resource, ArtifactIndexingTask.ADD );
+        ArtifactIndexingTask task = TaskCreator.createIndexingTask( REPO_ID, resource, ArtifactIndexingTask.Action.ADD );
 
         assertEquals( "Incorrect repository id set.", REPO_ID, task.getRepositoryId() );
-        assertEquals( "Incorrect queue policy set.", ArchivaTask.QUEUE_POLICY_WAIT, task.getQueuePolicy() );
-        assertEquals( "Incorrect task name set.", DefaultArchivaTaskScheduler.INDEXING_JOB + ":" + REPO_ID + ":" +
-            resource.getName() + ":" + ArtifactIndexingTask.ADD, task.getName() );
-        assertEquals( "Incorrect action set.", ArtifactIndexingTask.ADD, task.getAction() );
+        assertEquals( "Incorrect action set.", ArtifactIndexingTask.Action.ADD, task.getAction() );
         assertEquals( "Incorrect resource file set.", resource, task.getResourceFile() );
     }
 
     private void assertBasicTaskDetails( RepositoryTask task )
     {
         assertEquals( "Incorrect repository id set.", REPO_ID, task.getRepositoryId() );
-        assertEquals( "Incorrect task name set.", DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + REPO_ID + ":" +
-            TASKNAME_SUFFIX, task.getName() );
-        assertEquals( "Incorrect queue policy set.", ArchivaTask.QUEUE_POLICY_WAIT, task.getQueuePolicy() );
     }
 
 }

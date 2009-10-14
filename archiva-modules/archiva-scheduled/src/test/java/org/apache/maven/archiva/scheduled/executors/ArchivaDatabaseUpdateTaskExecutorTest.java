@@ -168,9 +168,6 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
 
         // Execute the database task.
         DatabaseTask dataTask = new DatabaseTask();
-
-        dataTask.setName( "testDataTask" );
-
         taskExecutor.executeTask( dataTask );
         
         // Test for artifact existance.
