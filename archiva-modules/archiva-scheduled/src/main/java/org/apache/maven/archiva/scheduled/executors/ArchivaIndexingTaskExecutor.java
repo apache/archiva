@@ -63,34 +63,34 @@ public class ArchivaIndexingTaskExecutor
      * @plexus.requirement
      */
     private IndexerEngine indexerEngine;
-    
+
     /**
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-    
+
     /**
      * @plexus.requirement
      */
     private IndexPacker indexPacker;
-    
+
     private ArtifactContextProducer artifactContextProducer;
-        
+
     public void executeTask( Task task )
         throws TaskExecutionException
     {
-        synchronized( indexerEngine )
+        synchronized ( indexerEngine )
         {
-            ArtifactIndexingTask indexingTask = ( ArtifactIndexingTask ) task;
-            
+            ArtifactIndexingTask indexingTask = (ArtifactIndexingTask) task;
+
             ManagedRepositoryConfiguration repository =
                 archivaConfiguration.getConfiguration().findManagedRepositoryById( indexingTask.getRepositoryId() );
-    
+
             String indexDir = repository.getIndexDir();
             File managedRepository = new File( repository.getLocation() );
-            
+
             File indexDirectory = null;
-            if( indexDir != null && !"".equals( indexDir ) )
+            if ( indexDir != null && !"".equals( indexDir ) )
             {
                 indexDirectory = new File( repository.getIndexDir() );
             }
@@ -98,70 +98,75 @@ public class ArchivaIndexingTaskExecutor
             {
                 indexDirectory = new File( managedRepository, ".indexer" );
             }
-            
+
             IndexingContext context = null;
             try
             {
                 context =
                     new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository,
-                                            indexDirectory, null, null, NexusIndexer.FULL_INDEX, false );
+                                                indexDirectory, null, null, NexusIndexer.FULL_INDEX, false );
                 context.setSearchable( repository.isScanned() );
-                
-                File artifactFile = indexingTask.getResourceFile();                
-                ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
-                
-                if( ac != null )
-                {   
-                    if( indexingTask.getAction().equals( ArtifactIndexingTask.ADD ) )
-                    {
-                        boolean add = true;
-                        IndexReader r = context.getIndexReader();      
-                        for ( int i = 0; i < r.numDocs(); i++ )
-                        {
-                            if ( !r.isDeleted( i ) )
-                            {
-                                Document d = r.document( i );          
-                                String uinfo = d.get( ArtifactInfo.UINFO );                                
-                                if( ac.getArtifactInfo().getUinfo().equals( uinfo ) )
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        if( add )
-                        {   
-                            log.debug( "Adding artifact '" + ac.getArtifactInfo() + "' to index.." );
-                            indexerEngine.index( context, ac );
-                            context.optimize();
-                        }
-                        else
-                        {
-                            log.debug( "Updating artifact '" + ac.getArtifactInfo() + "' in index.." );
-                            indexerEngine.update( context, ac );
-                            context.optimize();
-                        }
-                    }
-                    else
-                    {                           
-                        log.debug( "Removing artifact '" + ac.getArtifactInfo() + "' from index.." );
-                        indexerEngine.remove( context, ac );
-                        context.optimize();
-                    }
-                    
+
+                if ( ArtifactIndexingTask.FINISH.equals( indexingTask.getAction() ) )
+                {
                     final File indexLocation = new File( managedRepository, ".index" );
                     IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
                     indexPacker.packIndex( request );
                     
                     log.debug( "Index file packaged at '" + indexLocation.getPath() + "'." );
-                }                
+                }
+                else
+                {
+                    File artifactFile = indexingTask.getResourceFile();
+                    ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
+
+                    if ( ac != null )
+                    {
+                        if ( indexingTask.getAction().equals( ArtifactIndexingTask.ADD ) )
+                        {
+                            boolean add = true;
+                            IndexReader r = context.getIndexReader();
+                            for ( int i = 0; i < r.numDocs(); i++ )
+                            {
+                                if ( !r.isDeleted( i ) )
+                                {
+                                    Document d = r.document( i );
+                                    String uinfo = d.get( ArtifactInfo.UINFO );
+                                    if ( ac.getArtifactInfo().getUinfo().equals( uinfo ) )
+                                    {
+                                        add = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if ( add )
+                            {
+                                log.debug( "Adding artifact '" + ac.getArtifactInfo() + "' to index.." );
+                                indexerEngine.index( context, ac );
+                                context.optimize();
+                            }
+                            else
+                            {
+                                log.debug( "Updating artifact '" + ac.getArtifactInfo() + "' in index.." );
+                                indexerEngine.update( context, ac );
+                                context.optimize();
+                            }
+                        }
+                        else
+                        {
+                            log.debug( "Removing artifact '" + ac.getArtifactInfo() + "' from index.." );
+                            indexerEngine.remove( context, ac );
+                            context.optimize();
+                        }
+                    }
+                }
             }
             catch ( IOException e )
             {
-                log.error( "Error occurred while executing indexing task '" + indexingTask.getName() + "'" );                
-                throw new TaskExecutionException( "Error occurred while executing indexing task '" +
-                    indexingTask.getName() + "'" );
+                log.error( "Error occurred while executing indexing task '" + indexingTask.getName() + "'" );
+                throw new TaskExecutionException( "Error occurred while executing indexing task '"
+                    + indexingTask.getName() + "'" );
             }
             catch ( UnsupportedExistingLuceneIndexException e )
             {
@@ -170,10 +175,10 @@ public class ArchivaIndexingTaskExecutor
             }
             finally
             {
-                if( context != null )
+                if ( context != null )
                 {
                     try
-                    {   
+                    {
                         context.close( false );
                     }
                     catch ( IOException e )
@@ -190,7 +195,7 @@ public class ArchivaIndexingTaskExecutor
         throws InitializationException
     {
         log.info( "Initialized " + this.getClass().getName() );
-        
+
         artifactContextProducer = new DefaultArtifactContextProducer();
     }
 

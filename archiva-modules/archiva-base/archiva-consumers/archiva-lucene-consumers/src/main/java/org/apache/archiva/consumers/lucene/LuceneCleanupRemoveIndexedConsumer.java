@@ -66,7 +66,6 @@ public class LuceneCleanupRemoveIndexedConsumer
 
     public void completeScan()
     {
-        
     }
 
     public List<String> getIncludedTypes()
@@ -101,6 +100,13 @@ public class LuceneCleanupRemoveIndexedConsumer
                         TaskCreator.createIndexingTask( repository.getId(), artifactFile, ArtifactIndexingTask.DELETE );
                 
                 log.debug( "Queueing indexing task '" + task.getName() + "' to remove the artifact from the index." );
+                scheduler.queueIndexingTask( task );
+
+                // note we finish immediately here since it isn't done repo-by-repo. It might be nice to ensure that is
+                // the case for optimisation though
+                task =
+                    TaskCreator.createIndexingTask( repository.getId(), artifactFile, ArtifactIndexingTask.FINISH );
+                log.debug( "Queueing indexing task + '" + task.getName() + "' to finish indexing." );
                 scheduler.queueIndexingTask( task );
             }
                    

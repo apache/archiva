@@ -30,6 +30,8 @@ public class ArtifactIndexingTask
     
     public static final String DELETE = "delete";
     
+    public static final String FINISH = "finish";
+    
     String repositoryId;
     
     String name;

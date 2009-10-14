@@ -79,6 +79,9 @@ public class NexusIndexerConsumer
 
         repositoryContent = new ManagedDefaultRepositoryContent();
         repositoryContent.setRepository( repository );
+        
+        // TODO: investigate whether it is reasonable to create the indexing context here rather than file-by-file
+        //  we may want to be able to "flush" it after every file without closing it though, if necessary
     }
     
     public void processFile( String path )
@@ -100,8 +103,18 @@ public class NexusIndexerConsumer
     }
 
     public void completeScan()
-    {   
-        
+    {
+        ArtifactIndexingTask task =
+            TaskCreator.createIndexingTask( repositoryContent.getId(), null, ArtifactIndexingTask.FINISH );
+        try
+        {
+            log.debug( "Queueing indexing task + '" + task.getName() + "' to finish indexing." );
+            scheduler.queueIndexingTask( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( "Error queueing task: " + task.getName() + ": " + e.getMessage(), e );
+        }        
     }
 
     public List<String> getExcludes()
