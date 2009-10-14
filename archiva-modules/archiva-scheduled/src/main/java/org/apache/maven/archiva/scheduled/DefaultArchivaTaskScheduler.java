@@ -97,19 +97,19 @@ public class DefaultArchivaTaskScheduler
      */
     private ArchivaDAO dao;
 
-    public static final String DATABASE_SCAN_GROUP = "database-group";
+    public static final String DATABASE_SCAN_GROUP = "dbg";
 
-    public static final String DATABASE_JOB = "database-job";
+    public static final String DATABASE_JOB = "dbj";
 
-    public static final String DATABASE_JOB_TRIGGER = "database-job-trigger";
+    public static final String DATABASE_JOB_TRIGGER = "dbt";
 
-    public static final String REPOSITORY_SCAN_GROUP = "repository-group";
+    public static final String REPOSITORY_SCAN_GROUP = "rg";
 
-    public static final String REPOSITORY_JOB = "repository-job";
+    public static final String REPOSITORY_JOB = "rj";
 
-    public static final String REPOSITORY_JOB_TRIGGER = "repository-job-trigger";
+    public static final String REPOSITORY_JOB_TRIGGER = "rjt";
     
-    public static final String INDEXING_JOB = "indexing-job";
+    public static final String INDEXING_JOB = "ij";
 
     public static final String CRON_HOURLY = "0 0 * * * ?";
 
