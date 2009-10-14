@@ -65,12 +65,8 @@ public class DavResourceTest
 
     private LockManager lockManager;
 
-    private RepositoryContentConsumers consumers;
-
     private ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
     
-    private TaskQueueExecutor repoScanningTaskQueueExecutor;
-
     @Override
     protected void setUp()
         throws Exception
@@ -88,7 +84,6 @@ public class DavResourceTest
         resource = getDavResource( resourceLocator.getHref( false ), myResource );
         lockManager = new SimpleLockManager();
         resource.addLockManager( lockManager );
-        consumers = (RepositoryContentConsumers) getApplicationContext().getBean( "repositoryContentConsumers" );        
     }
 
     @Override
