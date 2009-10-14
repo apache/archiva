@@ -21,12 +21,7 @@ package org.apache.maven.archiva.proxy;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Map;
-import java.util.Properties;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,10 +40,7 @@ import org.apache.maven.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.jpox.SchemaTool;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
