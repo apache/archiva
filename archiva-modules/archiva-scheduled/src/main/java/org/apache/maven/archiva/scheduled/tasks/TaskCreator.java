@@ -20,9 +20,17 @@ package org.apache.maven.archiva.scheduled.tasks;
  */
 
 import java.io.File;
+import java.io.IOException;
+
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.sonatype.nexus.index.NexusIndexer;
+import org.sonatype.nexus.index.context.DefaultIndexingContext;
+import org.sonatype.nexus.index.context.IndexingContext;
+import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 
 /**
  * TaskCreator Convenience class for creating Archiva tasks.
+ * @todo Nexus specifics shouldn't be in the archiva-scheduled module
  */
 public class TaskCreator
 {
@@ -60,15 +68,33 @@ public class TaskCreator
         return task;
     }
 
-    public static ArtifactIndexingTask createIndexingTask( String repositoryId, File resource,
-                                                           ArtifactIndexingTask.Action action )
+    public static ArtifactIndexingTask createIndexingTask( ManagedRepositoryConfiguration repository, File resource,
+                                                    ArtifactIndexingTask.Action action, IndexingContext context )
     {
-        ArtifactIndexingTask task = new ArtifactIndexingTask();
-        task.setRepositoryId( repositoryId );
-        task.setAction( action );
-        task.setResourceFile( resource );
+        return new ArtifactIndexingTask( repository, resource, action, context );
+    }
 
-        return task;
+    public static IndexingContext createContext( ManagedRepositoryConfiguration repository )
+        throws IOException, UnsupportedExistingLuceneIndexException
+    {
+        String indexDir = repository.getIndexDir();
+        File managedRepository = new File( repository.getLocation() );
+
+        File indexDirectory = null;
+        if ( indexDir != null && !"".equals( indexDir ) )
+        {
+            indexDirectory = new File( repository.getIndexDir() );
+        }
+        else
+        {
+            indexDirectory = new File( managedRepository, ".indexer" );
+        }
+
+        IndexingContext context =
+            new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
+                                        null, null, NexusIndexer.FULL_INDEX, false );
+        context.setSearchable( repository.isScanned() );
+        return context;
     }
 
 }

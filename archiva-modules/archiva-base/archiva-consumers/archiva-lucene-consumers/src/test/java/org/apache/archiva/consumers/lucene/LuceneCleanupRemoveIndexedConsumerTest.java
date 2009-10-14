@@ -49,7 +49,7 @@ public class LuceneCleanupRemoveIndexedConsumerTest
     private MockControl repoFactoryControl;
 
     private ManagedRepositoryConfiguration repositoryConfig;
-    
+
     private TaskQueue indexingQueue;
 
     public void setUp()
@@ -60,10 +60,10 @@ public class LuceneCleanupRemoveIndexedConsumerTest
         repoFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
         repoFactory = (RepositoryContentFactory) repoFactoryControl.getMock();
 
-        ArchivaTaskScheduler scheduler = ( ArchivaTaskScheduler ) lookup( ArchivaTaskScheduler.class );
-        
+        ArchivaTaskScheduler scheduler = (ArchivaTaskScheduler) lookup( ArchivaTaskScheduler.class );
+
         indexingQueue = (TaskQueue) lookup( TaskQueue.ROLE, "indexing" );
-        
+
         consumer = new LuceneCleanupRemoveIndexedConsumer( repoFactory, scheduler );
 
         repositoryConfig = new ManagedRepositoryConfiguration();
@@ -93,28 +93,28 @@ public class LuceneCleanupRemoveIndexedConsumerTest
 
         ArchivaArtifact artifact =
             new ArchivaArtifact( "org.apache.archiva", "archiva-lucene-consumers", "1.2", null, "jar", "test-repo" );
-        
+
         ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
         repoContent.setRepository( repositoryConfig );
-        
+
         File artifactFile = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
-       
+
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( repositoryConfig.getId() ),
                                             repoContent );
-       
-        repoFactoryControl.replay();      
+
+        repoFactoryControl.replay();
 
         consumer.processArchivaArtifact( artifact );
 
-        repoFactoryControl.verify();       
-        
+        repoFactoryControl.verify();
+
         List<ArtifactIndexingTask> queue = indexingQueue.getQueueSnapshot();
         assertEquals( 2, queue.size() );
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.DELETE );
+            TaskCreator.createIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.DELETE, null );
         assertEquals( task, queue.get( 0 ) );
         task =
-            TaskCreator.createIndexingTask( repositoryConfig.getId(), artifactFile, ArtifactIndexingTask.Action.FINISH );
+            TaskCreator.createIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.FINISH, null );
         assertEquals( task, queue.get( 1 ) );
     }
 
@@ -136,10 +136,10 @@ public class LuceneCleanupRemoveIndexedConsumerTest
         consumer.processArchivaArtifact( artifact );
 
         repoFactoryControl.verify();
-        
+
         assertTrue( indexingQueue.getQueueSnapshot().isEmpty() );
     }
-    
+
     @Override
     protected String getPlexusConfigLocation()
     {

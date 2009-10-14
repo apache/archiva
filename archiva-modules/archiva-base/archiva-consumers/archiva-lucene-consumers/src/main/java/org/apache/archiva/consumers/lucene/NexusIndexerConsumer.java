@@ -20,6 +20,7 @@ package org.apache.archiva.consumers.lucene;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -33,10 +34,11 @@ import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryConte
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
-import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask.Action;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.nexus.index.context.IndexingContext;
+import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 
 /**
  * Consumer for indexing the repository to provide search and IDE integration features.
@@ -50,14 +52,16 @@ public class NexusIndexerConsumer
     private ManagedDefaultRepositoryContent repositoryContent;
 
     private File managedRepository;
-        
+
     private ArchivaTaskScheduler scheduler;
-       
+
+    private IndexingContext context;
+
     public NexusIndexerConsumer( ArchivaTaskScheduler scheduler )
     {
         this.scheduler = scheduler;
     }
-    
+
     public String getDescription()
     {
         return "Indexes the repository to provide search and IDE integration features";
@@ -75,23 +79,34 @@ public class NexusIndexerConsumer
 
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
-    {       
+    {
         managedRepository = new File( repository.getLocation() );
 
         repositoryContent = new ManagedDefaultRepositoryContent();
         repositoryContent.setRepository( repository );
-        
-        // TODO: investigate whether it is reasonable to create the indexing context here rather than file-by-file
-        //  we may want to be able to "flush" it after every file without closing it though, if necessary
+
+        try
+        {
+            context = TaskCreator.createContext( repository );
+        }
+        catch ( IOException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }
+        catch ( UnsupportedExistingLuceneIndexException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }
     }
-    
+
     public void processFile( String path )
         throws ConsumerException
     {
         File artifactFile = new File( managedRepository, path );
-                
+
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryContent.getId(), artifactFile, ArtifactIndexingTask.Action.ADD );
+            TaskCreator.createIndexingTask( repositoryContent.getRepository(), artifactFile,
+                                            ArtifactIndexingTask.Action.ADD, context );
         try
         {
             log.debug( "Queueing indexing task + '" + task + "' to add or update the artifact in the index." );
@@ -100,13 +115,14 @@ public class NexusIndexerConsumer
         catch ( TaskQueueException e )
         {
             throw new ConsumerException( e.getMessage(), e );
-        }        
+        }
     }
 
     public void completeScan()
     {
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryContent.getId(), null, ArtifactIndexingTask.Action.FINISH );
+            TaskCreator.createIndexingTask( repositoryContent.getRepository(), null,
+                                            ArtifactIndexingTask.Action.FINISH, context );
         try
         {
             log.debug( "Queueing indexing task + '" + task + "' to finish indexing." );
@@ -115,7 +131,7 @@ public class NexusIndexerConsumer
         catch ( TaskQueueException e )
         {
             log.error( "Error queueing task: " + task + ": " + e.getMessage(), e );
-        }        
+        }
     }
 
     public List<String> getExcludes()

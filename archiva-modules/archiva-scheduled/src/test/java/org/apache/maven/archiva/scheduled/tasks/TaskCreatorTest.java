@@ -84,17 +84,6 @@ public class TaskCreatorTest
         assertFalse( task.isUpdateRelatedArtifacts() );
     }
 
-    public void testCreateIndexingTask()
-        throws Exception
-    {
-        File resource = new File( getBasedir(), "target/test-classes/test.jar" );
-        ArtifactIndexingTask task = TaskCreator.createIndexingTask( REPO_ID, resource, ArtifactIndexingTask.Action.ADD );
-
-        assertEquals( "Incorrect repository id set.", REPO_ID, task.getRepositoryId() );
-        assertEquals( "Incorrect action set.", ArtifactIndexingTask.Action.ADD, task.getAction() );
-        assertEquals( "Incorrect resource file set.", resource, task.getResourceFile() );
-    }
-
     private void assertBasicTaskDetails( RepositoryTask task )
     {
         assertEquals( "Incorrect repository id set.", REPO_ID, task.getRepositoryId() );

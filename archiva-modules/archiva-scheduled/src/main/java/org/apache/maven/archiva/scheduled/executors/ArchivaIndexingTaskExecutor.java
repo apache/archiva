@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -39,10 +38,7 @@ import org.sonatype.nexus.index.ArtifactContextProducer;
 import org.sonatype.nexus.index.ArtifactInfo;
 import org.sonatype.nexus.index.DefaultArtifactContextProducer;
 import org.sonatype.nexus.index.IndexerEngine;
-import org.sonatype.nexus.index.NexusIndexer;
-import org.sonatype.nexus.index.context.DefaultIndexingContext;
 import org.sonatype.nexus.index.context.IndexingContext;
-import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 import org.sonatype.nexus.index.packer.IndexPacker;
 import org.sonatype.nexus.index.packer.IndexPackingRequest;
 
@@ -51,6 +47,7 @@ import org.sonatype.nexus.index.packer.IndexPackingRequest;
  * all performed by this executor. Add and update artifact in index tasks are added in the indexing task queue by the
  * NexusIndexerConsumer while remove artifact from index tasks are added by the LuceneCleanupRemoveIndexedConsumer.
  * 
+ * @todo Nexus specifics shouldn't be in the archiva-scheduled module
  * @plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexing"
  *                   instantiation-strategy="singleton"
  */
@@ -67,11 +64,6 @@ public class ArchivaIndexingTaskExecutor
     /**
      * @plexus.requirement
      */
-    private ArchivaConfiguration archivaConfiguration;
-
-    /**
-     * @plexus.requirement
-     */
     private IndexPacker indexPacker;
 
     private ArtifactContextProducer artifactContextProducer;
@@ -83,39 +75,47 @@ public class ArchivaIndexingTaskExecutor
         {
             ArtifactIndexingTask indexingTask = (ArtifactIndexingTask) task;
 
-            ManagedRepositoryConfiguration repository =
-                archivaConfiguration.getConfiguration().findManagedRepositoryById( indexingTask.getRepositoryId() );
+            ManagedRepositoryConfiguration repository = indexingTask.getRepository();
+            IndexingContext context = indexingTask.getContext();
 
-            String indexDir = repository.getIndexDir();
-            File managedRepository = new File( repository.getLocation() );
-
-            File indexDirectory = null;
-            if ( indexDir != null && !"".equals( indexDir ) )
+            if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() ) )
             {
-                indexDirectory = new File( repository.getIndexDir() );
-            }
-            else
-            {
-                indexDirectory = new File( managedRepository, ".indexer" );
-            }
-
-            IndexingContext context = null;
-            try
-            {
-                context =
-                    new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository,
-                                                indexDirectory, null, null, NexusIndexer.FULL_INDEX, false );
-                context.setSearchable( repository.isScanned() );
-
-                if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() ) )
+                try
                 {
+                    context.optimize();
+
+                    File managedRepository = new File( repository.getLocation() );
                     final File indexLocation = new File( managedRepository, ".index" );
                     IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
                     indexPacker.packIndex( request );
-                    
+
                     log.debug( "Index file packaged at '" + indexLocation.getPath() + "'." );
                 }
-                else
+                catch ( IOException e )
+                {
+                    log.error( "Error occurred while executing indexing task '" + indexingTask + "'" );
+                    throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
+                        + "'" );
+                }
+                finally
+                {
+                    if ( context != null )
+                    {
+                        try
+                        {
+                            context.close( false );
+                        }
+                        catch ( IOException e )
+                        {
+                            log.error( "Error occurred while closing context: " + e.getMessage() );
+                            throw new TaskExecutionException( "Error occurred while closing context: " + e.getMessage() );
+                        }
+                    }
+                }
+            }
+            else
+            {
+                try
                 {
                     File artifactFile = indexingTask.getResourceFile();
                     ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
@@ -144,47 +144,28 @@ public class ArchivaIndexingTaskExecutor
                             {
                                 log.debug( "Adding artifact '" + ac.getArtifactInfo() + "' to index.." );
                                 indexerEngine.index( context, ac );
-                                context.optimize();
+                                context.getIndexWriter().commit();
                             }
                             else
                             {
                                 log.debug( "Updating artifact '" + ac.getArtifactInfo() + "' in index.." );
                                 indexerEngine.update( context, ac );
-                                context.optimize();
+                                context.getIndexWriter().commit();
                             }
                         }
                         else
                         {
                             log.debug( "Removing artifact '" + ac.getArtifactInfo() + "' from index.." );
                             indexerEngine.remove( context, ac );
-                            context.optimize();
+                            context.getIndexWriter().commit();
                         }
                     }
                 }
-            }
-            catch ( IOException e )
-            {
-                log.error( "Error occurred while executing indexing task '" + indexingTask + "'" );
-                throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'" );
-            }
-            catch ( UnsupportedExistingLuceneIndexException e )
-            {
-                log.error( "Unsupported Lucene index format: " + e.getMessage() );
-                throw new TaskExecutionException( "Unsupported Lucene index format: " + e.getMessage() );
-            }
-            finally
-            {
-                if ( context != null )
+                catch ( IOException e )
                 {
-                    try
-                    {
-                        context.close( false );
-                    }
-                    catch ( IOException e )
-                    {
-                        log.error( "Error occurred while closing context: " + e.getMessage() );
-                        throw new TaskExecutionException( "Error occurred while closing context: " + e.getMessage() );
-                    }
+                    log.error( "Error occurred while executing indexing task '" + indexingTask + "'" );
+                    throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
+                        + "'" );
                 }
             }
         }
@@ -207,10 +188,4 @@ public class ArchivaIndexingTaskExecutor
     {
         this.indexPacker = indexPacker;
     }
-
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
-        this.archivaConfiguration = archivaConfiguration;
-    }
-
 }

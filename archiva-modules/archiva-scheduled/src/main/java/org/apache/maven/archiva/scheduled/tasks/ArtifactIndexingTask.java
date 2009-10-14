@@ -21,27 +21,33 @@ package org.apache.maven.archiva.scheduled.tasks;
 
 import java.io.File;
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.taskqueue.Task;
+import org.sonatype.nexus.index.context.IndexingContext;
 
 public class ArtifactIndexingTask
     implements Task
 {
-    public enum Action { ADD, DELETE, FINISH }
-
-    private String repositoryId;
-    
-    private File resourceFile;
-    
-    private Action action;
-    
-    public String getRepositoryId()
+    public enum Action
     {
-        return repositoryId;
+        ADD, DELETE, FINISH
     }
 
-    public void setRepositoryId( String repositoryId )
+    private final ManagedRepositoryConfiguration repository;
+
+    private final File resourceFile;
+
+    private final Action action;
+
+    private final IndexingContext context;
+
+    public ArtifactIndexingTask( ManagedRepositoryConfiguration repository, File resourceFile, Action action,
+                                 IndexingContext context )
     {
-        this.repositoryId = repositoryId;
+        this.repository = repository;
+        this.resourceFile = resourceFile;
+        this.action = action;
+        this.context = context;
     }
 
     public long getMaxExecutionTime()
@@ -54,26 +60,26 @@ public class ArtifactIndexingTask
         return resourceFile;
     }
 
-    public void setResourceFile( File resourceFile )
-    {
-        this.resourceFile = resourceFile;
-    }
-
     public Action getAction()
     {
         return action;
     }
 
-    public void setAction( Action action )
-    {
-        this.action = action;
-    }
-
     @Override
     public String toString()
     {
-        return "ArtifactIndexingTask [action=" + action + ", repositoryId=" + repositoryId + ", resourceFile="
+        return "ArtifactIndexingTask [action=" + action + ", repositoryId=" + repository.getId() + ", resourceFile="
             + resourceFile + "]";
+    }
+
+    public ManagedRepositoryConfiguration getRepository()
+    {
+        return repository;
+    }
+
+    public IndexingContext getContext()
+    {
+        return context;
     }
 
     @Override
@@ -81,8 +87,8 @@ public class ArtifactIndexingTask
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( action == null ) ? 0 : action.hashCode() );
-        result = prime * result + ( ( repositoryId == null ) ? 0 : repositoryId.hashCode() );
+        result = prime * result + action.hashCode();
+        result = prime * result + repository.getId().hashCode();
         result = prime * result + ( ( resourceFile == null ) ? 0 : resourceFile.hashCode() );
         return result;
     }
@@ -97,19 +103,9 @@ public class ArtifactIndexingTask
         if ( getClass() != obj.getClass() )
             return false;
         ArtifactIndexingTask other = (ArtifactIndexingTask) obj;
-        if ( action == null )
-        {
-            if ( other.action != null )
-                return false;
-        }
-        else if ( !action.equals( other.action ) )
+        if ( !action.equals( other.action ) )
             return false;
-        if ( repositoryId == null )
-        {
-            if ( other.repositoryId != null )
-                return false;
-        }
-        else if ( !repositoryId.equals( other.repositoryId ) )
+        if ( !repository.getId().equals( other.repository.getId() ) )
             return false;
         if ( resourceFile == null )
         {

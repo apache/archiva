@@ -20,6 +20,7 @@ package org.apache.archiva.consumers.lucene;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -36,11 +37,12 @@ import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.nexus.index.context.IndexingContext;
+import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 
 /**
- * LuceneCleanupRemoveIndexedConsumer
- * 
- * Clean up the index of artifacts that are no longer existing in the file system (managed repositories).  
+ * LuceneCleanupRemoveIndexedConsumer Clean up the index of artifacts that are no longer existing in the file system
+ * (managed repositories).
  * 
  * @version $Id$
  */
@@ -51,15 +53,15 @@ public class LuceneCleanupRemoveIndexedConsumer
     private static final Logger log = LoggerFactory.getLogger( LuceneCleanupRemoveIndexedConsumer.class );
 
     private RepositoryContentFactory repoFactory;
-    
+
     private ArchivaTaskScheduler scheduler;
-    
+
     public LuceneCleanupRemoveIndexedConsumer( RepositoryContentFactory repoFactory, ArchivaTaskScheduler scheduler )
     {
         this.repoFactory = repoFactory;
-        this.scheduler = scheduler;     
+        this.scheduler = scheduler;
     }
-      
+
     public void beginScan()
     {
     }
@@ -69,7 +71,7 @@ public class LuceneCleanupRemoveIndexedConsumer
     }
 
     public List<String> getIncludedTypes()
-    {        
+    {
         return null;
     }
 
@@ -77,11 +79,10 @@ public class LuceneCleanupRemoveIndexedConsumer
         throws ConsumerException
     {
         ManagedRepositoryContent repoContent = null;
-        
+
         try
         {
-           repoContent =
-                repoFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
+            repoContent = repoFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
         }
         catch ( RepositoryException e )
         {
@@ -89,31 +90,58 @@ public class LuceneCleanupRemoveIndexedConsumer
         }
 
         ManagedRepositoryConfiguration repository = repoContent.getRepository();
-       
+
+        IndexingContext context = null;
         try
         {
             File artifactFile = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
-            
+
             if ( !artifactFile.exists() )
             {
-                ArtifactIndexingTask task =                
-                        TaskCreator.createIndexingTask( repository.getId(), artifactFile, ArtifactIndexingTask.Action.DELETE );
-                
+                context = TaskCreator.createContext( repository );
+
+                ArtifactIndexingTask task =
+                    TaskCreator.createIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.DELETE,
+                                                    context );
+
                 log.debug( "Queueing indexing task '" + task + "' to remove the artifact from the index." );
                 scheduler.queueIndexingTask( task );
 
                 // note we finish immediately here since it isn't done repo-by-repo. It might be nice to ensure that is
                 // the case for optimisation though
                 task =
-                    TaskCreator.createIndexingTask( repository.getId(), artifactFile, ArtifactIndexingTask.Action.FINISH );
+                    TaskCreator.createIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.FINISH,
+                                                    context );
                 log.debug( "Queueing indexing task + '" + task + "' to finish indexing." );
                 scheduler.queueIndexingTask( task );
             }
-                   
-        } 
+
+        }
         catch ( TaskQueueException e )
         {
             throw new ConsumerException( e.getMessage() );
+        }
+        catch ( IOException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }
+        catch ( UnsupportedExistingLuceneIndexException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }
+        finally
+        {
+            if ( context != null )
+            {
+                try
+                {
+                    context.close( false );
+                }
+                catch ( IOException e )
+                {
+                    log.error( e.getMessage() );
+                }
+            }
         }
     }
 
