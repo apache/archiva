@@ -502,7 +502,7 @@ public class NexusRepositorySearchTest
 
         try
         {
-            SearchResults results = search.search( "user", searchFields, null );
+            search.search( "user", searchFields, null );
             fail( "A RepositorySearchExcecption should have been thrown." );
         }
         catch( RepositorySearchException e )
@@ -526,7 +526,7 @@ public class NexusRepositorySearchTest
 
             archivaConfigControl.replay();
 
-            SearchResults results = search.search( "user", searchFields, null );
+            search.search( "user", searchFields, null );
             
             archivaConfigControl.verify();
             
@@ -559,7 +559,7 @@ public class NexusRepositorySearchTest
     
             archivaConfigControl.replay();
     
-            SearchResults results = search.search( "user", searchFields, null );
+            search.search( "user", searchFields, null );
             
             archivaConfigControl.verify();
             
