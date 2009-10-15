@@ -22,10 +22,13 @@ package org.apache.archiva.consumers.lucene;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationNames;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -34,6 +37,10 @@ import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryConte
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +52,13 @@ import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
  */
 public class NexusIndexerConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer
+    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
     private static final Logger log = LoggerFactory.getLogger( NexusIndexerConsumer.class );
+
+    private ArchivaConfiguration configuration;
+
+    private FileTypes filetypes;
 
     private ManagedDefaultRepositoryContent repositoryContent;
 
@@ -57,8 +68,12 @@ public class NexusIndexerConsumer
 
     private IndexingContext context;
 
-    public NexusIndexerConsumer( ArchivaTaskScheduler scheduler )
+    private List<String> includes = new ArrayList<String>();
+
+    public NexusIndexerConsumer( ArchivaTaskScheduler scheduler, ArchivaConfiguration configuration, FileTypes filetypes )
     {
+        this.configuration = configuration;
+        this.filetypes = filetypes;
         this.scheduler = scheduler;
     }
 
@@ -136,11 +151,39 @@ public class NexusIndexerConsumer
 
     public List<String> getExcludes()
     {
-        return new ArrayList<String>();
+        return Collections.emptyList();
+    }
+
+    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
+        {
+            initIncludes();
+        }
+    }
+
+    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        /* do nothing */
+    }
+
+    private void initIncludes()
+    {
+        includes.clear();
+
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.INDEXABLE_CONTENT ) );
+    }
+
+    public void initialize()
+        throws InitializationException
+    {
+        configuration.addChangeListener( this );
+
+        initIncludes();
     }
 
     public List<String> getIncludes()
     {
-        return Arrays.asList( "**/*" );
+        return includes;
     }
 }

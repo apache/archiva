@@ -5,6 +5,8 @@
 
     <bean id="indexerConsumer" class="org.apache.archiva.consumers.lucene.NexusIndexerConsumer" lazy-init="true">      
         <constructor-arg ref="archivaTaskScheduler"/>
+        <constructor-arg ref="archivaConfiguration"/>
+        <constructor-arg ref="fileTypes"/>
     </bean>
     
     <bean id="indexCleanupConsumer" class="org.apache.archiva.consumers.lucene.LuceneCleanupRemoveIndexedConsumer" lazy-init="true">

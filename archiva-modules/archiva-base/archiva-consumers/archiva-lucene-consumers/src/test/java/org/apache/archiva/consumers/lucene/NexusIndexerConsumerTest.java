@@ -28,6 +28,8 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
@@ -118,7 +120,11 @@ public class NexusIndexerConsumerTest
 
         scheduler = new ArchivaTaskSchedulerStub();
 
-        nexusIndexerConsumer = new NexusIndexerConsumer( scheduler );
+        ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        
+        FileTypes filetypes = (FileTypes) lookup( FileTypes.class );
+
+        nexusIndexerConsumer = new NexusIndexerConsumer( scheduler, configuration, filetypes );
 
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
