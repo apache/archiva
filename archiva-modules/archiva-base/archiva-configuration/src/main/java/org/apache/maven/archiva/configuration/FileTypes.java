@@ -76,10 +76,9 @@ public class FileTypes
      * case of the support files (based on extension) as it is elsewhere - it may be better to match these to actual
      * artifacts and exclude later during scanning.
      */
-    public static final List<String> DEFAULT_EXCLUSIONS = Arrays.asList( "**/maven-metadata.xml",
-                                                                          "**/maven-metadata-*.xml", "**/*.sha1",
-                                                                          "**/*.asc", "**/*.md5", "**/*.pgp", 
-                                                                          "**/.index/*.*");
+    public static final List<String> DEFAULT_EXCLUSIONS =
+        Arrays.asList( "**/maven-metadata.xml", "**/maven-metadata-*.xml", "**/*.sha1", "**/*.asc", "**/*.md5",
+                       "**/*.pgp", "**/.index/**", "**/.indexer/**" );
 
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
