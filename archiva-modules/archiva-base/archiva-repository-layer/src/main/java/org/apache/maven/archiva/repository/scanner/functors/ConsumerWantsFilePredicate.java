@@ -19,7 +19,6 @@ package org.apache.maven.archiva.repository.scanner.functors;
  * under the License.
  */
 
-import java.io.File;
 import java.util.List;
 
 import org.apache.commons.collections.Predicate;
@@ -63,19 +62,8 @@ public class ConsumerWantsFilePredicate
                     // Timestamp finished points to the last successful scan, not this current one.
                     if ( basefile.lastModified() < changesSince )
                     {
-                        // MRM-1246
-                        // compares the lastModified of the version-level (basefile) and the project-level (parent) metadata
-                        File parent = basefile.getParentFile().getParentFile();
-                           
-                        if ( parent.lastModified() > basefile.lastModified() )
-                        {
-                            satisfies = true;
-                        }
-                        else 
-                        {
-                            // Skip file as no change has occurred.
-                            satisfies = false;   
-                        }
+                        // Skip file as no change has occurred.
+                        satisfies = false;
                     }
                 }
             }
