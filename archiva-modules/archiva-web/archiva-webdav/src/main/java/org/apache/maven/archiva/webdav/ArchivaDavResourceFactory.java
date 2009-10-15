@@ -200,17 +200,10 @@ public class ArchivaDavResourceFactory
                 return getResource( request, repoGroupConfig.getRepositories(), archivaLocator );
             }
             else
-            {
-                try
-                {
-                    resource =
-                        processRepositoryGroup( request, archivaLocator, repoGroupConfig.getRepositories(),
-                                                activePrincipal, resourcesInAbsolutePath );
-                }
-                catch ( ReleaseArtifactAlreadyExistsException e )
-                {
-                    throw new DavException( HttpServletResponse.SC_CONFLICT );
-                }
+            {                
+                resource =
+                    processRepositoryGroup( request, archivaLocator, repoGroupConfig.getRepositories(),
+                                            activePrincipal, resourcesInAbsolutePath );                
             }
         }
         else
@@ -232,15 +225,8 @@ public class ArchivaDavResourceFactory
             }
 
             log.debug( "Managed repository '" + managedRepository.getId() + "' accessed by '" + activePrincipal + "'" );
-
-            try
-            {
-                resource = processRepository( request, archivaLocator, activePrincipal, managedRepository );
-            }
-            catch ( ReleaseArtifactAlreadyExistsException e )
-            {
-                throw new DavException( HttpServletResponse.SC_CONFLICT, e );
-            }
+           
+            resource = processRepository( request, archivaLocator, activePrincipal, managedRepository );           
 
             String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
             resourcesInAbsolutePath.add( new File( managedRepository.getRepoRoot(), logicalResource ).getAbsolutePath() );
@@ -250,7 +236,7 @@ public class ArchivaDavResourceFactory
 
         // MRM-872 : merge all available metadata
         // merge metadata only when requested via the repo group
-        if ( ( repositoryRequest.isMetadata( requestedResource ) || ( requestedResource.endsWith( "metadata.xml.sha1" ) || requestedResource.endsWith( "metadata.xml.md5" ) ) ) &&
+        if ( ( repositoryRequest.isMetadata( requestedResource ) || repositoryRequest.isMetadataSupportFile( requestedResource ) ) &&
             repoGroupConfig != null )
         {
             // this should only be at the project level not version level!
@@ -349,7 +335,7 @@ public class ArchivaDavResourceFactory
     private DavResource processRepositoryGroup( final DavServletRequest request,
                                                 ArchivaDavResourceLocator archivaLocator, List<String> repositories,
                                                 String activePrincipal, List<String> resourcesInAbsolutePath )
-        throws DavException, ReleaseArtifactAlreadyExistsException
+        throws DavException
     {
         DavResource resource = null;
         List<DavException> storedExceptions = new ArrayList<DavException>();
@@ -417,7 +403,7 @@ public class ArchivaDavResourceFactory
 
     private DavResource processRepository( final DavServletRequest request, ArchivaDavResourceLocator archivaLocator,
                                            String activePrincipal, ManagedRepositoryContent managedRepository )
-        throws DavException, ReleaseArtifactAlreadyExistsException
+        throws DavException
     {
         DavResource resource = null;
         if ( isAuthorized( request, managedRepository.getId() ) )
@@ -507,21 +493,21 @@ public class ArchivaDavResourceFactory
                     try
                     {
                         artifact = managedRepository.toArtifactReference( resourcePath );
+                        
+                        if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
+                        {
+                            // check if artifact already exists
+                            if ( managedRepository.hasContent( artifact ) )
+                            {
+                                log.warn( "Overwriting released artifacts is not allowed." );
+                                throw new DavException( HttpServletResponse.SC_CONFLICT,
+                                                        "Overwriting released artifacts is not allowed." );
+                            }
+                        }
                     }
                     catch ( LayoutException e )
                     {
-                        throw new DavException( HttpServletResponse.SC_BAD_REQUEST, e );
-                    }
-                    
-                    if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
-                    {
-                        // check if artifact already exists
-                        if ( managedRepository.hasContent( artifact ) )
-                        {
-                            log.warn( "Overwriting released artifacts is not allowed." );
-                            throw new ReleaseArtifactAlreadyExistsException( managedRepository.getId(),
-                                                                             "Overwriting released artifacts is not allowed." );
-                        }
+                        log.warn( "Artifact path '" + resourcePath + "' is invalid." );
                     }
                 }
 

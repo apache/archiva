@@ -133,6 +133,20 @@ public class RepositoryRequest
         return ( ".sha1".equals( ext ) || ".md5".equals( ext ) || ".asc".equals( ext ) || ".pgp".equals( ext ) );
     }
 
+    public boolean isMetadataSupportFile( String requestedPath )
+    {
+        if( isSupportFile( requestedPath ) )
+        {
+            String basefilePath = StringUtils.substring( requestedPath, 0, requestedPath.lastIndexOf( '.' ) );
+            if( isMetadata( basefilePath ) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a default layout request.
