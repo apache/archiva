@@ -334,11 +334,16 @@
               <c:choose>
                 <c:when test="${not empty (artifactModel.groupId)}">
                   <h3 class="artifact-title">
-                    <archiva:showArtifactTitle groupId="${artifactModel.groupId}" artifactId="${artifactModel.artifactId}"/>
+                    <archiva:showArtifactTitle groupId="${artifactModel.groupId}"
+                                               artifactId="${artifactModel.artifactId}"
+                                               version="${artifactModel.version}"/>
+
                   </h3>
                   <p>
-                    <archiva:showArtifactLink groupId="${artifactModel.groupId}" artifactId="${artifactModel.artifactId}"
-                                         versions="${artifactModel.versions}"/>
+                    <archiva:showArtifactLink  groupId="${artifactModel.groupId}"
+                                               artifactId="${artifactModel.artifactId}"
+                                               version="${artifactModel.version}"/>
+
                   </p>
                 </c:when>
                 <c:otherwise>
