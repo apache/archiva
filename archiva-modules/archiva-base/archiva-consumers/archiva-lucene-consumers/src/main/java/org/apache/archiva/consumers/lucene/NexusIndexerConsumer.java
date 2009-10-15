@@ -147,6 +147,7 @@ public class NexusIndexerConsumer
         {
             log.error( "Error queueing task: " + task + ": " + e.getMessage(), e );
         }
+        context = null;
     }
 
     public List<String> getExcludes()

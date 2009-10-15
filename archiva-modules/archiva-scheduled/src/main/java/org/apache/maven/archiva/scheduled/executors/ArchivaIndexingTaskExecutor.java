@@ -115,6 +115,11 @@ public class ArchivaIndexingTaskExecutor
             }
             else
             {
+                if ( context.getIndexDirectory() == null )
+                {
+                    throw new TaskExecutionException( "Trying to index an artifact but the context is already closed" );
+                }
+                
                 try
                 {
                     File artifactFile = indexingTask.getResourceFile();
