@@ -129,20 +129,6 @@ public class LuceneCleanupRemoveIndexedConsumer
         {
             throw new ConsumerException( e.getMessage(), e );
         }
-        finally
-        {
-            if ( context != null )
-            {
-                try
-                {
-                    context.close( false );
-                }
-                catch ( IOException e )
-                {
-                    log.error( e.getMessage() );
-                }
-            }
-        }
     }
 
     public String getDescription()
