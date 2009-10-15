@@ -248,7 +248,7 @@ public class RepositoryRequestTest
         assertFalse( repoRequest.isMetadata( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
     }
     
-    public void testIsMetadataSupprotFile()
+    public void testIsMetadataSupportFile()
     {
         assertFalse( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml" ));
         assertFalse( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/maven-metadata.xml" ));
