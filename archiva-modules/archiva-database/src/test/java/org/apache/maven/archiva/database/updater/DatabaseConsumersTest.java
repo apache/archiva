@@ -19,10 +19,10 @@ package org.apache.maven.archiva.database.updater;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
-import java.util.List;
 
 /**
  * DatabaseConsumersTest 
@@ -40,16 +40,6 @@ public class DatabaseConsumersTest
         return dbconsumers;
     }
 
-    public void testGetAvailableCleanupConsumers()
-        throws Exception
-    {
-        DatabaseConsumers dbconsumers = lookupDbConsumers();
-        List<DatabaseCleanupConsumer> available = dbconsumers.getAvailableCleanupConsumers();
-        assertNotNull( "Available Cleanup Consumers should never be null.", available );
-
-        assertTrue( "Available Cleanup Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
-    }
-
     public void testGetAvailableUnprocessedConsumers()
         throws Exception
     {
@@ -58,16 +48,6 @@ public class DatabaseConsumersTest
         assertNotNull( "Available Unprocessed Consumers should never be null.", available );
 
         assertTrue( "Available Unprocessed Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
-    }
-
-    public void testGetSelectedCleanupConsumers()
-        throws Exception
-    {
-        DatabaseConsumers dbconsumers = lookupDbConsumers();
-        List<ArchivaArtifactConsumer> available = dbconsumers.getSelectedCleanupConsumers();
-        assertNotNull( "Selected Cleanup Consumers should never be null.", available );
-
-        assertTrue( "Selected Cleanup Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
     }
 
     public void testGetSelectedUnprocessedConsumers()

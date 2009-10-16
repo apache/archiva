@@ -73,16 +73,6 @@ public class ArchivaDatabaseUpdateTaskExecutor
             throw new TaskExecutionException( "Error running unprocessed updater", e );
         }
 
-        try
-        {
-            log.info( "Task: Updating processed artifacts" );
-            databaseUpdater.updateAllProcessed();
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            throw new TaskExecutionException( "Error running processed updater", e );
-        }
-
         time = System.currentTimeMillis() - time;
 
         log.info( "Finished database task in " + time + "ms." );

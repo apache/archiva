@@ -72,7 +72,6 @@ public class DatabaseActionTest
         config.setDatabaseScanning( databaseScanningConfig );
         
         setUpEnabledUnproccessedConsumers();
-        setUpEnabledCleanupConsumers();
         
         action.setArchivaConfiguration( archivaConfig );
     }
@@ -101,24 +100,6 @@ public class DatabaseActionTest
         assertEquals( 3, results.size() );
     }
     
-    public void testUpdateCleanUpConsumers()
-        throws Exception
-    {
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        
-        archivaConfig.save( config );
-        archivaConfigControl.replay();
-        
-        String returnString = action.updateCleanupConsumers();
-        
-        List<String> results = config.getDatabaseScanning().getCleanupConsumers();
-        
-        assertEquals( action.SUCCESS, returnString );
-        assertEquals( 3, results.size() );
-    }
-    
     public void testDisableAllUnprocessedConsumers( )
         throws Exception
     {
@@ -139,26 +120,6 @@ public class DatabaseActionTest
         assertEquals( 0, results.size() );
     }
 
-    public void testDisableAllCleanupConsumers( )
-        throws Exception
-    {
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        
-        archivaConfig.save( config );
-        archivaConfigControl.replay();
-        
-        action.setEnabledCleanupConsumers( null );
-        
-        String returnString = action.updateCleanupConsumers();
-        
-        List<String> results = config.getDatabaseScanning().getCleanupConsumers();
-        
-        assertEquals( action.SUCCESS, returnString );
-        assertEquals( 0, results.size() );
-    }
-    
     private void setUpEnabledUnproccessedConsumers( )
     {
         List<String> enabledUnprocessedConsumer = new ArrayList<String>();
@@ -168,17 +129,5 @@ public class DatabaseActionTest
         enabledUnprocessedConsumer.add( "validate-repository-metadata" );
         
         action.setEnabledUnprocessedConsumers( enabledUnprocessedConsumer );
-    }
-    
-    private void setUpEnabledCleanupConsumers( )
-    {
-        List<String> enabledCleanupConsumers = new ArrayList<String>();
-        
-        enabledCleanupConsumers.add( "not-present-remove-db-artifact" );
-        enabledCleanupConsumers.add( "not-present-remove-db-project" );
-        enabledCleanupConsumers.add( "not-present-remove-indexed" );
-        
-        action.setEnabledCleanupConsumers( enabledCleanupConsumers );
-    }
-    
+    }    
 }

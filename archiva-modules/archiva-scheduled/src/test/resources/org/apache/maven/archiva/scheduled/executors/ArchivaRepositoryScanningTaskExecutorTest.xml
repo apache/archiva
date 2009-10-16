@@ -37,7 +37,7 @@
           <field-name>archivaConfiguration</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.repository.scanner.RepositoryScanner</role>
+          <role>org.apache.archiva.repository.scanner.RepositoryScanner</role>
           <field-name>repoScanner</field-name>
         </requirement>
       </requirements>

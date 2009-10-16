@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 import org.apache.commons.io.FileUtils;
@@ -39,7 +40,6 @@ import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -51,7 +51,6 @@ import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryConten
 import org.apache.maven.archiva.repository.content.PathParser;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
@@ -122,10 +121,6 @@ public class AdministrationServiceImplTest
 
     private RepositoryListener listener;
 
-    private DatabaseCleanupConsumer cleanupIndexConsumer;
-
-    private DatabaseCleanupConsumer cleanupDbConsumer;
-
     private MockControl cleanupConsumersControl;
         
     protected void setUp()
@@ -158,10 +153,6 @@ public class AdministrationServiceImplTest
         dbConsumersUtilControl = MockClassControl.createControl( DatabaseConsumers.class );
         dbConsumersUtil = ( DatabaseConsumers ) dbConsumersUtilControl.getMock();
                 
-        cleanupConsumersControl = MockControl.createControl( DatabaseCleanupConsumer.class );
-        cleanupIndexConsumer = (DatabaseCleanupConsumer) cleanupConsumersControl.getMock();
-        cleanupDbConsumer = (DatabaseCleanupConsumer) cleanupConsumersControl.getMock();
-                
         unprocessedConsumersControl = MockControl.createControl( DatabaseUnprocessedArtifactConsumer.class );
         processArtifactConsumer = ( DatabaseUnprocessedArtifactConsumer ) unprocessedConsumersControl.getMock();
         processPomConsumer = ( DatabaseUnprocessedArtifactConsumer ) unprocessedConsumersControl.getMock();
@@ -189,19 +180,15 @@ public class AdministrationServiceImplTest
         recordDbConsumers();
         
         dbConsumersUtilControl.replay();
-        cleanupConsumersControl.replay();
         unprocessedConsumersControl.replay();
         
         List<String> dbConsumers = service.getAllDatabaseConsumers();
         
         dbConsumersUtilControl.verify();
-        cleanupConsumersControl.verify();
         unprocessedConsumersControl.verify();
         
         assertNotNull( dbConsumers );
-        assertEquals( 4, dbConsumers.size() );
-        assertTrue( dbConsumers.contains( "cleanup-index" ) );
-        assertTrue( dbConsumers.contains( "cleanup-database" ) );
+        assertEquals( 2, dbConsumers.size() );
         assertTrue( dbConsumers.contains( "process-artifact" ) );
         assertTrue( dbConsumers.contains( "process-pom" ) );
     }
@@ -228,7 +215,6 @@ public class AdministrationServiceImplTest
         archivaConfigControl.setVoidCallable();
         
         dbConsumersUtilControl.replay();
-        cleanupConsumersControl.replay();
         unprocessedConsumersControl.replay();
         archivaConfigControl.replay();
         configControl.replay();
@@ -244,14 +230,12 @@ public class AdministrationServiceImplTest
         }
         
         dbConsumersUtilControl.verify();
-        cleanupConsumersControl.verify();
         unprocessedConsumersControl.verify();
         archivaConfigControl.verify();
         configControl.verify();
                 
         // test disable "process-pom" db consumer        
         dbConsumersUtilControl.reset();
-        cleanupConsumersControl.reset();
         unprocessedConsumersControl.reset();
         archivaConfigControl.reset();
         configControl.reset();
@@ -271,7 +255,6 @@ public class AdministrationServiceImplTest
         archivaConfigControl.setVoidCallable();
         
         dbConsumersUtilControl.replay();
-        cleanupConsumersControl.replay();
         unprocessedConsumersControl.replay();
         archivaConfigControl.replay();
         configControl.replay();
@@ -287,7 +270,6 @@ public class AdministrationServiceImplTest
         }
         
         dbConsumersUtilControl.verify();
-        cleanupConsumersControl.verify();
         unprocessedConsumersControl.verify();
         archivaConfigControl.verify();
         configControl.verify();
@@ -299,7 +281,6 @@ public class AdministrationServiceImplTest
         recordDbConsumers();
         
         dbConsumersUtilControl.replay();
-        cleanupConsumersControl.replay();
         unprocessedConsumersControl.replay();
         
         try
@@ -313,7 +294,6 @@ public class AdministrationServiceImplTest
         }
         
         dbConsumersUtilControl.verify();
-        cleanupConsumersControl.verify();
         unprocessedConsumersControl.verify();
     }
         
@@ -873,18 +853,10 @@ public class AdministrationServiceImplTest
     
     private void recordDbConsumers()
     {
-        List<DatabaseCleanupConsumer> cleanupConsumers = new ArrayList<DatabaseCleanupConsumer>();
-        cleanupConsumers.add( cleanupIndexConsumer );
-        cleanupConsumers.add( cleanupDbConsumer );
-        
         List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers =
             new ArrayList<DatabaseUnprocessedArtifactConsumer>();
         unprocessedConsumers.add( processArtifactConsumer );
         unprocessedConsumers.add( processPomConsumer );
-        
-        dbConsumersUtilControl.expectAndReturn( dbConsumersUtil.getAvailableCleanupConsumers(), cleanupConsumers );
-        cleanupConsumersControl.expectAndReturn( cleanupIndexConsumer.getId(), "cleanup-index" );
-        cleanupConsumersControl.expectAndReturn( cleanupDbConsumer.getId(), "cleanup-database" );
         
         dbConsumersUtilControl.expectAndReturn( dbConsumersUtil.getAvailableUnprocessedConsumers(), unprocessedConsumers );
         unprocessedConsumersControl.expectAndReturn( processArtifactConsumer.getId(), "process-artifact" );

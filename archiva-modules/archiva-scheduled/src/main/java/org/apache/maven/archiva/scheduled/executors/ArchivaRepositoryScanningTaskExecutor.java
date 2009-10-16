@@ -19,6 +19,14 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
+import org.apache.archiva.repository.scanner.RepositoryScanner;
+import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,10 +41,6 @@ import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
-import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
-import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -45,10 +49,6 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ArchivaRepositoryScanningTaskExecutor 
@@ -65,6 +65,8 @@ public class ArchivaRepositoryScanningTaskExecutor
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
     
     /**
+     * TODO: just for stats, remove this and use the main stats module
+     * 
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
@@ -150,10 +152,10 @@ public class ArchivaRepositoryScanningTaskExecutor
                 
                 this.task = null;
             }
-            catch ( RepositoryException e )
-            {   
+            catch ( RepositoryScannerException e )
+            {
                 throw new TaskExecutionException( "Repository error when executing repository job.", e );
-            }    
+            }
         }
     }
 

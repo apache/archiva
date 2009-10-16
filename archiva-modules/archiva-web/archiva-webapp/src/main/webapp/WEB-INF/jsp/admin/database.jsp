@@ -116,62 +116,6 @@
   </c:otherwise>
 </c:choose>
 
-<h2>Database - Artifact Cleanup Scanning</h2>
-
-<c:choose>
-  <c:when test="${empty (cleanupConsumers)}">
-    <%-- No Consumers. Eeek! --%>
-    <strong>There are no consumers for artifact cleanup.</strong>
-  </c:when>
-  <c:otherwise>
-    <%-- Display the consumers. --%>
-
-    <s:form method="post" action="database!updateCleanupConsumers" 
-             namespace="/admin" validate="false" theme="simple">
-    <table class="consumers">
-      <tr>
-        <th>&nbsp;</th>
-        <th>Enabled?</th>
-        <th>ID</th>
-        <th>Description</th>
-      </tr>
-      <c:forEach items="${cleanupConsumers}" var="consumer" varStatus="i">
-        <c:choose>
-          <c:when test='${(i.index)%2 eq 0}'>
-            <c:set var="bgcolor" value="even" scope="page" />
-          </c:when>
-          <c:otherwise>
-            <c:set var="bgcolor" value="odd" scope="page" />
-          </c:otherwise>
-        </c:choose>
-
-        <tr>
-          <td class="${bgcolor}">
-            <input type="checkbox" name="enabledCleanupConsumers" theme="simple" value="${consumer.id}" <c:if test="${consumer.enabled}">checked</c:if> />
-          </td>
-          <td class="${bgcolor}">
-            <c:if test="${consumer.enabled}">
-              <strong>enabled</strong>
-            </c:if>
-          </td>
-          <td class="${bgcolor}">
-            <code>${consumer.id}</code>
-          </td>
-          <td class="${bgcolor}">${consumer.description}</td>
-        </tr>
-      </c:forEach>
-      <tr>
-        <td colspan="4">
-          <s:submit value="Update Consumers" />
-        </td>
-      </tr>
-    </table>
-    </s:form>
-
-  </c:otherwise>
-</c:choose>
-
-
 </div>
 </div>
 </body>

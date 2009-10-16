@@ -8,9 +8,4 @@
         <constructor-arg ref="archivaConfiguration"/>
         <constructor-arg ref="fileTypes"/>
     </bean>
-    
-    <bean id="indexCleanupConsumer" class="org.apache.archiva.consumers.lucene.LuceneCleanupRemoveIndexedConsumer" lazy-init="true">
-        <constructor-arg ref="repositoryContentFactory"/>
-        <constructor-arg ref="archivaTaskScheduler"/>
-    </bean>
 </beans>

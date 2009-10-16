@@ -19,9 +19,15 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
+import java.util.List;
+
+import org.apache.maven.archiva.database.constraints.RepositoryProblemByArtifactConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
+import org.codehaus.plexus.cache.Cache;
 
 /**
  * Process repository management events and respond appropriately.
@@ -36,6 +42,21 @@ public class RepositoryDatabaseEventListener
      */
     private ArtifactDAO artifactDAO;
 
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private RepositoryProblemDAO repositoryProblemDAO;
+
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ProjectModelDAO projectModelDAO;
+
+    /**
+     * @plexus.requirement role-hint="effective-project-cache"
+     */
+    private Cache effectiveProjectCache;
+
     public void deleteArtifact( ManagedRepositoryContent repository, ArchivaArtifact artifact )
     {
         try
@@ -49,5 +70,62 @@ public class RepositoryDatabaseEventListener
         {
             // ignored
         }
+
+        try
+        {
+            // Remove all repository problems related to this artifact
+            Constraint artifactConstraint = new RepositoryProblemByArtifactConstraint( artifact );
+            List<RepositoryProblem> repositoryProblems =
+                repositoryProblemDAO.queryRepositoryProblems( artifactConstraint );
+
+            if ( repositoryProblems != null )
+            {
+                for ( RepositoryProblem repositoryProblem : repositoryProblems )
+                {
+                    repositoryProblemDAO.deleteRepositoryProblem( repositoryProblem );
+                }
+            }
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            // ignored
+        }
+
+        if ( "pom".equals( artifact.getType() ) )
+        {
+            try
+            {
+                ArchivaProjectModel projectModel =
+                    projectModelDAO.getProjectModel( artifact.getGroupId(), artifact.getArtifactId(),
+                                                     artifact.getVersion() );
+
+                projectModelDAO.deleteProjectModel( projectModel );
+
+                // Force removal of project model from effective cache
+                String projectKey = toProjectKey( projectModel );
+                synchronized ( effectiveProjectCache )
+                {
+                    if ( effectiveProjectCache.hasKey( projectKey ) )
+                    {
+                        effectiveProjectCache.remove( projectKey );
+                    }
+                }
+            }
+            catch ( ArchivaDatabaseException e )
+            {
+                // ignored
+            }
+        }
+    }
+
+    private String toProjectKey( ArchivaProjectModel project )
+    {
+        StringBuilder key = new StringBuilder();
+
+        key.append( project.getGroupId() ).append( ":" );
+        key.append( project.getArtifactId() ).append( ":" );
+        key.append( project.getVersion() );
+
+        return key.toString();
     }
 }

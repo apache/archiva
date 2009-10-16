@@ -131,6 +131,10 @@
           <field-name>httpAuth</field-name>
         </requirement>
         <requirement>
+          <role>org.apache.archiva.repository.scanner.RepositoryContentConsumers</role>
+          <role-hint>default</role-hint>
+        </requirement>
+        <requirement>
           <role>org.codehaus.plexus.digest.ChecksumFile</role>
           <field-name>checksum</field-name>
         </requirement>

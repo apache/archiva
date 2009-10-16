@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.database;
 import java.util.Collections;
 import java.util.List;
 
+import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -37,8 +38,6 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-
-import com.opensymphony.xwork2.Preparable;
 
 /**
  * DatabaseAction
@@ -72,16 +71,6 @@ public class DatabaseAction
      */
     private List<String> enabledUnprocessedConsumers;
 
-    /**
-     * List of {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
-     */
-    private List<AdminDatabaseConsumer> cleanupConsumers;
-
-    /**
-     * List of enabled {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
-     */
-    private List<String> enabledCleanupConsumers;
-
     public void prepare()
         throws Exception
     {
@@ -96,11 +85,6 @@ public class DatabaseAction
         CollectionUtils.forAllDo( databaseConsumers.getAvailableUnprocessedConsumers(), addAdminDbConsumer );
         this.unprocessedConsumers = addAdminDbConsumer.getList();
         Collections.sort( this.unprocessedConsumers, AdminDatabaseConsumerComparator.getInstance() );
-
-        addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getCleanupConsumers() );
-        CollectionUtils.forAllDo( databaseConsumers.getAvailableCleanupConsumers(), addAdminDbConsumer );
-        this.cleanupConsumers = addAdminDbConsumer.getList();
-        Collections.sort( this.cleanupConsumers, AdminDatabaseConsumerComparator.getInstance() );
     }
 
     public String updateUnprocessedConsumers()
@@ -116,25 +100,6 @@ public class DatabaseAction
             filterRemovedConsumers( oldConsumers, enabledUnprocessedConsumers );    
         }
         else
-        {
-            disableAllEnabledConsumers( oldConsumers );
-        }
-
-        return saveConfiguration();
-    }
-
-    public String updateCleanupConsumers()
-    {
-        List<String> oldConsumers = archivaConfiguration.getConfiguration().getDatabaseScanning().getCleanupConsumers();
-        
-        archivaConfiguration.getConfiguration().getDatabaseScanning().setCleanupConsumers( enabledCleanupConsumers );
-        
-        if ( enabledCleanupConsumers != null )
-        {
-            filterAddedConsumers( oldConsumers, enabledCleanupConsumers );
-            filterRemovedConsumers( oldConsumers, enabledCleanupConsumers );    
-        }
-        else 
         {
             disableAllEnabledConsumers( oldConsumers );
         }
@@ -199,12 +164,7 @@ public class DatabaseAction
         this.cron = cron;
     }
 
-    public List<AdminDatabaseConsumer> getCleanupConsumers()
-    {
-        return cleanupConsumers;
-    }
-
-    public List<AdminDatabaseConsumer> getUnprocessedConsumers()
+    public List getUnprocessedConsumers()
     {
         return unprocessedConsumers;
     }
@@ -219,16 +179,6 @@ public class DatabaseAction
         this.enabledUnprocessedConsumers = enabledUnprocessedConsumers;
     }
 
-    public List<String> getEnabledCleanupConsumers()
-    {
-        return enabledCleanupConsumers;
-    }
-
-    public void setEnabledCleanupConsumers( List<String> enabledCleanupConsumers )
-    {
-        this.enabledCleanupConsumers = enabledCleanupConsumers;
-    }
-    
     public ArchivaConfiguration getArchivaConfiguration()
     {
         return archivaConfiguration;
@@ -238,7 +188,7 @@ public class DatabaseAction
     {
         this.archivaConfiguration = archivaConfiguration;
     }
-    
+
     private void filterAddedConsumers( List<String> oldList, List<String> newList )
     {
         for ( String consumer : newList )
@@ -249,7 +199,7 @@ public class DatabaseAction
             }
         }
     }
-    
+
     private void filterRemovedConsumers( List<String> oldList, List<String> newList )
     {
         for ( String consumer : oldList )
@@ -260,7 +210,7 @@ public class DatabaseAction
             }
         }
     }
-    
+
     private void disableAllEnabledConsumers( List<String> enabledConsumers )
     {
         for( String consumer : enabledConsumers )

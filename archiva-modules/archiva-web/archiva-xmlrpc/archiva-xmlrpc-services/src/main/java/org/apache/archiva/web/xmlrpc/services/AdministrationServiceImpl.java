@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
@@ -38,7 +39,6 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
-import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -49,7 +49,6 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
-import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
@@ -101,31 +100,17 @@ public class AdministrationServiceImpl
      */
     public Boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception
     {
-        List<DatabaseCleanupConsumer> cleanupConsumers = dbConsumersUtil.getAvailableCleanupConsumers();
         List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers =
             dbConsumersUtil.getAvailableUnprocessedConsumers();
         
         boolean found = false;
-        boolean isCleanupConsumer = false;        
-        for( DatabaseCleanupConsumer consumer : cleanupConsumers )
+        
+        for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
         {
             if( consumer.getId().equals( consumerId ) )
             {
                 found = true;
-                isCleanupConsumer = true;
                 break;
-            }
-        }
-        
-        if( !found )
-        {
-            for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
-            {
-                if( consumer.getId().equals( consumerId ) )
-                {
-                    found = true;
-                    break;
-                }
             }
         }
         
@@ -137,14 +122,7 @@ public class AdministrationServiceImpl
         Configuration config = archivaConfiguration.getConfiguration();
         DatabaseScanningConfiguration dbScanningConfig = config.getDatabaseScanning();
         
-        if( isCleanupConsumer )
-        {
-            dbScanningConfig.addCleanupConsumer( consumerId );            
-        }
-        else
-        {
-            dbScanningConfig.addUnprocessedConsumer( consumerId );
-        }
+        dbScanningConfig.addUnprocessedConsumer( consumerId );
         
         config.setDatabaseScanning( dbScanningConfig );        
         saveConfiguration( config );
@@ -325,13 +303,7 @@ public class AdministrationServiceImpl
     {
         List<String> consumers = new ArrayList<String>();
         
-        List<DatabaseCleanupConsumer> cleanupConsumers = dbConsumersUtil.getAvailableCleanupConsumers();
         List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers = dbConsumersUtil.getAvailableUnprocessedConsumers();
-        
-        for( DatabaseCleanupConsumer consumer : cleanupConsumers )
-        {
-            consumers.add( consumer.getId() );
-        }  
         
         for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
         {

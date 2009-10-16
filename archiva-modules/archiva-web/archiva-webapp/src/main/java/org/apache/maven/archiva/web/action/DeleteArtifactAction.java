@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.maven.archiva.common.utils.VersionComparator;
@@ -49,6 +51,7 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.Auditable;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
@@ -57,9 +60,6 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-
-import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.Validateable;
 
 /**
  * Delete an artifact. Metadata will be updated if one exists, otherwise it would be created.
@@ -119,6 +119,9 @@ public class DeleteArtifactAction
      * @plexus.requirement 
      */
     private DatabaseConsumers databaseConsumers;
+
+    /** @plexus.requirement */
+    private List<RepositoryListener> listeners;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -242,7 +245,10 @@ public class DeleteArtifactAction
                     {
                         if ( artifact.getVersion().equals( version ) )
                         {
-                            databaseConsumers.executeCleanupConsumer( artifact );
+                            for ( RepositoryListener listener : listeners )
+                            {
+                                listener.deleteArtifact( repository, artifact );
+                            }
                         }
                     }
                 }

@@ -24,14 +24,13 @@ import java.io.FilenameFilter;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all repository purge tasks.
@@ -46,9 +45,9 @@ public abstract class AbstractRepositoryPurge
     
 	protected final List<RepositoryListener> listeners;
 	  
-	  private Logger logger = LoggerFactory.getLogger( "org.apache.archiva.AuditLog" );
+    private Logger logger = LoggerFactory.getLogger( "org.apache.archiva.AuditLog" );
 	
-	  private static final char DELIM = ' ';
+    private static final char DELIM = ' ';
 
     public AbstractRepositoryPurge( ManagedRepositoryContent repository, List<RepositoryListener> listeners )
     {

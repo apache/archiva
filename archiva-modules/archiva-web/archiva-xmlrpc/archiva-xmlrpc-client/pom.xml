@@ -19,7 +19,7 @@
   <parent>
     <artifactId>archiva-xmlrpc</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-xmlrpc-client</artifactId>
@@ -63,7 +63,7 @@
           <mainClass>org.apache.archiva.web.xmlrpc.client.SampleClient</mainClass>
           <arguments>
             <!-- 
-                 URL: ex. http://127.0.0.1:8080/archiva/xmlrpc 
+                 URL: ex. http://127.0.0.1:9091/xmlrpc 
                  USERNAME & PASSWORD: Archiva credentials  
             --> 
             <argument>${archiva.url}/xmlrpc</argument>

@@ -53,10 +53,10 @@ public class RepositoryDatabaseEventListenerTest
         assertEquals( listener, listeners.get( 0 ) );
     }
 
-    public ArchivaArtifact createArtifact( String artifactId, String version, ArtifactDAO artifactDao )
+    public ArchivaArtifact createArtifact( String artifactId, String version, ArtifactDAO artifactDao, String type )
     {
         ArchivaArtifact artifact =
-            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar", "testable_repo" );
+            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", type, "testable_repo" );
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( "testable_repo" );
         return artifact;
@@ -67,21 +67,22 @@ public class RepositoryDatabaseEventListenerTest
     {
         ArtifactDAO artifactDao = (ArtifactDAO) lookup( ArtifactDAO.class.getName(), "jdo" );
 
-        // Setup artifacts in fresh DB.
-        ArchivaArtifact artifact = createArtifact( "test-artifact", "1.0", artifactDao );
-        artifactDao.saveArtifact( artifact );
+        ArchivaArtifact pomArtifact = createPom( artifactDao );
+        ArchivaArtifact jarArtifact = createJar( artifactDao );
 
-        assertEquals( artifact, artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null,
-                                                         "jar", "testable_repo" ) );
+        assertEquals( pomArtifact, artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0",
+                                                            null, "pom", "testable_repo" ) );
+        assertEquals( jarArtifact, artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0",
+                                                            null, "jar", "testable_repo" ) );
 
-        artifact = new ArchivaArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null, "jar", "testable_repo" );
+        jarArtifact = new ArchivaArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null, "jar", "testable_repo" );
         ManagedRepositoryContent repository =
             (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class.getName(), "default" );
         ManagedRepositoryConfiguration configuration = new ManagedRepositoryConfiguration();
         configuration.setId("testable_repo");
         repository.setRepository(configuration);
         
-        listener.deleteArtifact( repository, artifact );
+        listener.deleteArtifact( repository, jarArtifact );
 
         try
         {
@@ -92,5 +93,59 @@ public class RepositoryDatabaseEventListenerTest
         {
             assertTrue( true );
         }
+
+        assertEquals( pomArtifact, artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0",
+                                                            null, "pom", "testable_repo" ) );
+    }
+
+    private ArchivaArtifact createJar( ArtifactDAO artifactDao )
+        throws ArchivaDatabaseException
+    {
+        ArchivaArtifact artifact = createArtifact( "test-artifact", "1.0", artifactDao, "jar" );
+        artifactDao.saveArtifact( artifact );
+        return artifact;
+    }
+
+    public void testDeletePomArtifact()
+        throws Exception
+    {
+        ArtifactDAO artifactDao = (ArtifactDAO) lookup( ArtifactDAO.class.getName(), "jdo" );
+
+        ArchivaArtifact pomArtifact = createPom( artifactDao );
+        ArchivaArtifact jarArtifact = createJar( artifactDao );
+
+        assertEquals( pomArtifact, artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0",
+                                                            null, "pom", "testable_repo" ) );
+        assertEquals( jarArtifact, artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0",
+                                                            null, "jar", "testable_repo" ) );
+
+        pomArtifact = new ArchivaArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null, "pom", "testable_repo" );
+        ManagedRepositoryContent repository =
+            (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class.getName(), "default" );
+        ManagedRepositoryConfiguration configuration = new ManagedRepositoryConfiguration();
+        configuration.setId("testable_repo");
+        repository.setRepository(configuration);
+        listener.deleteArtifact( repository, pomArtifact );
+
+        try
+        {
+            artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0", null, "pom", "testable_repo" );
+            fail( "Should not find artifact" );
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            assertTrue( true );
+        }
+
+        assertEquals( jarArtifact, artifactDao.getArtifact( "org.apache.maven.archiva.test", "test-artifact", "1.0",
+                                                            null, "jar", "testable_repo" ) );
+    }
+
+    private ArchivaArtifact createPom( ArtifactDAO artifactDao )
+        throws ArchivaDatabaseException
+    {
+        ArchivaArtifact artifact = createArtifact( "test-artifact", "1.0", artifactDao, "pom" );
+        artifactDao.saveArtifact( artifact );
+        return artifact;
     }
 }

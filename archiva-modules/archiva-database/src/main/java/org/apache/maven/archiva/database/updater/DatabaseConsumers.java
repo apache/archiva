@@ -28,9 +28,7 @@ import org.apache.commons.collections.functors.OrPredicate;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -42,12 +40,8 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class DatabaseConsumers
     implements ApplicationContextAware
-{    
-    private Logger log = LoggerFactory.getLogger( DatabaseConsumers.class );
-    
+{
     private ArchivaConfiguration archivaConfiguration;
-
-    private Predicate selectedCleanupConsumers;
 
     private Predicate selectedUnprocessedConsumers;
     
@@ -59,7 +53,6 @@ public class DatabaseConsumers
         
         Predicate permanentConsumers = new PermanentConsumerPredicate();
 
-        selectedCleanupConsumers = new OrPredicate( permanentConsumers, new SelectedCleanupConsumersPredicate() );
         selectedUnprocessedConsumers = new OrPredicate( permanentConsumers, new SelectedUnprocessedConsumersPredicate() );
     }
     
@@ -82,25 +75,14 @@ public class DatabaseConsumers
         }
     }
 
-    class SelectedCleanupConsumersPredicate
-        implements Predicate
+    public void initialize()
+        throws InitializationException
     {
-        public boolean evaluate( Object object )
-        {
-            boolean satisfies = false;
+        Predicate permanentConsumers = new PermanentConsumerPredicate();
 
-            if ( object instanceof DatabaseCleanupConsumer )
-            {
-                DatabaseCleanupConsumer consumer = (DatabaseCleanupConsumer) object;
-                DatabaseScanningConfiguration config = archivaConfiguration.getConfiguration().getDatabaseScanning();
-
-                return config.getCleanupConsumers().contains( consumer.getId() );
-            }
-
-            return satisfies;
-        }
+        selectedUnprocessedConsumers = new OrPredicate( permanentConsumers, new SelectedUnprocessedConsumersPredicate() );
     }
-
+    
     public void setApplicationContext( ApplicationContext applicationContext )
         throws BeansException
     {
@@ -122,20 +104,6 @@ public class DatabaseConsumers
     }
 
     /**
-     * Get the {@link List} of {@link DatabaseCleanupConsumer} objects for those
-     * consumers selected due to the configuration.
-     * 
-     * @return the list of selected {@link DatabaseCleanupConsumer} objects.
-     */
-    @SuppressWarnings("unchecked")
-    public List<ArchivaArtifactConsumer> getSelectedCleanupConsumers()
-    {
-        List<ArchivaArtifactConsumer> ret = new ArrayList<ArchivaArtifactConsumer>();
-        ret.addAll( CollectionUtils.select( getAvailableCleanupConsumers(), selectedCleanupConsumers ) );
-        return ret;
-    }
-
-    /**
      * Get the complete {@link List} of {@link DatabaseUnprocessedArtifactConsumer} objects
      * that are available in the system, regardless of configuration.
      * 
@@ -145,47 +113,5 @@ public class DatabaseConsumers
     public List<DatabaseUnprocessedArtifactConsumer> getAvailableUnprocessedConsumers()
     {       
         return new ArrayList<DatabaseUnprocessedArtifactConsumer>( applicationContext.getBeansOfType( DatabaseUnprocessedArtifactConsumer.class ).values() );
-    }
-
-    /**
-     * Get the complete {@link List} of {@link DatabaseCleanupConsumer} objects
-     * that are available in the system, regardless of configuration.
-     * 
-     * @return the list of all available {@link DatabaseCleanupConsumer} objects.
-     */
-    @SuppressWarnings("unchecked")
-    public List<DatabaseCleanupConsumer> getAvailableCleanupConsumers()
-    {
-        return new ArrayList<DatabaseCleanupConsumer>( applicationContext.getBeansOfType( DatabaseCleanupConsumer.class ).values() );
-    }
-    
-    /**
-     * Execute the cleanup consumers to cleanup the specified artifact from the database and index.
-     * 
-     * @param artifact
-     */
-    public void executeCleanupConsumer( ArchivaArtifact artifact )
-    {
-        List<ArchivaArtifactConsumer> consumers = getSelectedCleanupConsumers();
-        for ( ArchivaArtifactConsumer consumer : consumers )
-        {
-            consumer.beginScan();
-        }
-        
-        if ( CollectionUtils.isEmpty( consumers ) )
-        {
-            log.warn( "There are no selected consumers for artifact cleanup." );
-            return;
-        }
-        
-        ProcessArchivaArtifactClosure processArtifactClosure = new ProcessArchivaArtifactClosure();
-        processArtifactClosure.setArtifact( artifact );
-        
-        CollectionUtils.forAllDo( consumers, processArtifactClosure );
-        
-        for ( ArchivaArtifactConsumer consumer : consumers )
-        {
-            consumer.completeScan();
-        }
     }
 }
