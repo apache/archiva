@@ -1,0 +1,37 @@
+ ------
+ Archiva Logs
+ ------
+ ------
+ 22 Jul 2009
+ ------
+ 
+Archiva Logs
+
+  Archiva's <<<logs>>> directory contains an archiva log file named <<<archiva.log>>>, which logs all the startup information and the output logs of Archiva.
+
+  A typical record looks like this:
+
+------
+2009-07-13 16:04:52,869 [WrapperSimpleAppMain] INFO  org.apache.maven.archiva.security.ArchivaStandardRolesCheck  -
+  Checking the existance of required roles.
+2009-07-13 16:04:52,869 [WrapperSimpleAppMain] INFO  org.apache.maven.archiva.security.ArchivaStandardRolesCheck  -
+  Checking the existance of required operations.
+2009-07-13 16:04:52,869 [WrapperSimpleAppMain] INFO  org.apache.maven.archiva.web.startup.SecuritySynchronization  -
+  Environment Check: required-roles -> 0 violation(s)
+2009-07-13 16:04:53,371 [WrapperSimpleAppMain] INFO  org.apache.maven.archiva.web.startup.Banner  - _________________________
+                          __________________________________
+               /\_       /                                  \
+              /`/@),    |  On behalf of all of the alpacas   |
+              |  (~'  __| toiling away on the Apache Archiva |
+      _,--.___/  |    \      project team, I would like to   |
+    ,' ,     (   |     \         welcome you to Archiva      |
+    |  (      \  /      |           1.2.1                    |
+     \  )\_/  ,_/       |                                    |
+     / /   ( |/         |     http://archiva.apache.org/     |
+    ( |    ( |          |     users@archiva.apache.org       |
+     \|     \|           \__________________________________/
+
+
+2009-07-13 16:04:55,129 [WrapperSimpleAppMain] INFO  org.codehaus.plexus.redback.struts2.interceptor.SecureActionInterceptor  -
+  org.codehaus.plexus.redback.struts2.interceptor.SecureActionInterceptor initialized!
+------

@@ -20,15 +20,45 @@
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="archiva" tagdir="/WEB-INF/tags" %>
 
 <html>
 <head>
   <title>Search Results</title>
   <s:head/>
+  <script type="text/javascript">  
+    function addSearchField(fieldText, field, divName)
+    {     
+      var element = document.getElementById( field );
+      if( element != null )
+      {
+        alert( "Cannot add field! Field has already been added." );
+        return 0;
+      }
+
+      var table = document.getElementById( "dynamicTable" );
+      var row = document.createElement( "TR" );
+      var label = document.createElement("TD");
+      label.innerHTML = fieldText + ": ";	
+     
+      var textfield = document.createElement( "TD" );
+      var inp1 =  document.createElement( "INPUT" );
+      inp1.setAttribute( "type", "text" );
+      inp1.setAttribute( "size", "30" );
+      inp1.setAttribute( "id", field );
+      inp1.setAttribute( "name", field );
+      textfield.appendChild( inp1 );
+
+      row.appendChild( label ); 
+      row.appendChild( textfield );
+      table.appendChild( row );
+    }
+  </script>  
 </head>
 
 <body>
+
+<c:url var="iconCreateUrl" value="/images/icons/create.png" />
 
 <c:if test="${fromFilterSearch == true}">
   <h1>Advanced Search</h1>
@@ -46,26 +76,36 @@
   <div id="searchBoxResults">
 
     <c:if test="${fromFilterSearch == true}">
-      <s:form method="get" action="filteredSearch" validate="true">
-        <s:textfield label="Row Count" size="50" name="rowCount"/>
-        <s:textfield label="Group Id" size="50" name="groupId"/>
-        <s:textfield label="Artifact Id" size="50" name="artifactId"/>
-        <s:textfield label="Version" size="50" name="version"/>
-        <s:textfield label="Class / Package" size="50" name="className"/>
-        <s:select name="repositoryId" label="Repository ID" list="managedRepositoryList"/>
-        <s:hidden name="completeQueryString" value="%{#attr.completeQueryString}"/>
-        <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}"/>
-        <s:submit label="Go!"/>
-      </s:form>
-  
-      <s:url id="indexUrl" action="index"/>
-      <s:a href="%{indexUrl}">
-        Quick Search Page
-      </s:a>
-      <script type="text/javascript">
-        document.getElementById("filteredSearch_groupId").focus();
-      </script>
-      </c:if>
+      <table>
+        <tr>
+          <td>
+            <b>*</b> To do a filtered or advanced search, select the criteria from the list below and click the <img src="${iconCreateUrl}"/> icon. Specify the term you want to be matched in the created text field.
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <s:form id="filteredSearch" method="get" action="filteredSearch" validate="true">
+            <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}" theme="simple"/>  
+            <label><strong>Advanced Search Fields: </strong></label><s:select name="searchField" list="searchFields" theme="simple"/> 
+            <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
+              <img src="${iconCreateUrl}" />
+            </s:a>
+            <table id="dynamicTable">
+              <tr>
+                <td><label>Repository: </td>
+                <td><s:select name="repositoryId" list="managedRepositoryList" theme="simple"/></td> 
+              </tr>          
+              <tr>
+                <td/>
+                <td/>  
+              </tr>
+            </table> 
+            <s:submit value="Search" theme="simple"/>  
+          </s:form>  
+          </td>
+        </tr>
+      </table>
+    </c:if>
     <c:if test="${fromFilterSearch == false}">
       <s:form method="get" action="quickSearch" validate="true">
         <s:textfield label="Search for" size="50" name="q"/>
@@ -81,7 +121,6 @@
   <p>
     <s:actionerror/>
   </p>
-
   </div>
 
   <h1>Results</h1>
@@ -94,7 +133,14 @@
         <c:set var="hitsNum">${fn:length(results.hits) + (currentPage  * results.limits.pageSize)}</c:set>
         <c:choose>
           <c:when test="${results.totalHits > results.limits.pageSize}">
-              <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
+            <c:choose>
+              <c:when test="${fn:length(results.hits) < rowCount}">
+                <p>Hits: ${(rowCount * currentPage) + 1} to ${hitsNum} of ${results.totalHits}</p>
+              </c:when>
+              <c:otherwise>
+                <p>Hits: ${(hitsNum - results.limits.pageSize) + 1} to ${hitsNum} of ${results.totalHits}</p>
+              </c:otherwise>
+            </c:choose>
           </c:when>
           <c:otherwise>
             <p>Hits: 1 to ${hitsNum} of ${results.totalHits}</p>
@@ -127,7 +173,6 @@
               <c:if test="${fromFilterSearch == true}">
                <c:set var="prevPageUrl">
                  <s:url action="filteredSearch" namespace="/">
- <%-- 		  <s:param name="q" value="%{#attr.q}"/>   --%>
                    <s:param name="rowCount" value="%{#attr.rowCount}"/>
                    <s:param name="groupId" value="%{#attr.groupId}"/>
                    <s:param name="artifactId" value="%{#attr.artifactId}"/>
@@ -135,15 +180,14 @@
                    <s:param name="className" value="%{#attr.className}"/>
                    <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
                    <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
-  		   <s:param name="fromResultsPage" value="true"/>
+                   <s:param name="fromResultsPage" value="true"/>
                    <s:param name="currentPage" value="%{#attr.currentPage - 1}"/>
- 		  <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
- 		  <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+                   <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+                   <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
                  </s:url>
        	      </c:set>
        	      <c:set var="nextPageUrl">
                 <s:url action="filteredSearch" namespace="/">
-<%-- 		 <s:param name="q" value="%{#attr.q}"/> --%>
                   <s:param name="rowCount" value="%{#attr.rowCount}"/>
                   <s:param name="groupId" value="%{#attr.groupId}"/>
                   <s:param name="artifactId" value="%{#attr.artifactId}"/>
@@ -151,10 +195,10 @@
                   <s:param name="className" value="%{#attr.className}"/>
                   <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
                   <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
-  		  <s:param name="fromResultsPage" value="true"/>
+  		          <s:param name="fromResultsPage" value="true"/>
                   <s:param name="currentPage" value="%{#attr.currentPage + 1}"/>
- 		  <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
-		  <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+ 		          <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+		          <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
                 </s:url>
       	      </c:set>    
              </c:if>
@@ -195,54 +239,53 @@
 			</c:choose>
 						
 			<c:forEach var="i" begin="${beginVal}" end="${endVal}">
-                          <c:if test="${fromFilterSearch == false}">
-                            <c:choose>                   			    
-		              <c:when test="${i != currentPage}">
-		                <c:set var="specificPageUrl">
-		                  <s:url action="quickSearch" namespace="/">
-		                    <s:param name="q" value="%{#attr.q}"/>
-		                    <s:param name="currentPage" value="%{#attr.i}"/>
-		                    <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
-		                    <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
-  		                  </s:url>
-		      	        </c:set>
-			          <a href="${specificPageUrl}">${i + 1}</a>
+              <c:if test="${fromFilterSearch == false}">
+                <c:choose>                   			    
+		          <c:when test="${i != currentPage}">
+		            <c:set var="specificPageUrl">
+		              <s:url action="quickSearch" namespace="/">
+		                <s:param name="q" value="%{#attr.q}"/>
+		                <s:param name="currentPage" value="%{#attr.i}"/>
+		                <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+		                <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+  		              </s:url>
+		      	    </c:set>
+			        <a href="${specificPageUrl}">${i + 1}</a>
 			      </c:when>
 			      <c:otherwise>		
-		       	        <b>${i + 1}</b>   
-		              </c:otherwise>				  			    
-                            </c:choose>
-                          </c:if>
+		       	    <b>${i + 1}</b>   
+		          </c:otherwise>				  			    
+                </c:choose>
+              </c:if>
 
-                          <c:if test="${fromFilterSearch == true}">
-                            <c:choose>                  			    
-		              <c:when test="${i != currentPage}">
-		                <c:set var="specificPageUrl">
-		                  <s:url action="filteredSearch" namespace="/">
-<%-- 		                    <s:param name="q" value="%{#attr.q}"/>   --%>
-                                    <s:param name="rowCount" value="%{#attr.rowCount}"/>
-                                    <s:param name="groupId" value="%{#attr.groupId}"/>
-                                    <s:param name="artifactId" value="%{#attr.artifactId}"/>
-                                    <s:param name="version" value="%{#attr.version}"/>
-                                    <s:param name="className" value="%{#attr.className}"/>
-                                    <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
-                                    <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
-		                    <s:param name="fromResultsPage" value="true"/>
-		                    <s:param name="currentPage" value="%{#attr.i}"/>
-		                    <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
-		                    <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
-		                  </s:url>
-		      	        </c:set>
-				<a href="${specificPageUrl}">${i + 1}</a>
+              <c:if test="${fromFilterSearch == true}">
+                <c:choose>                  			    
+		          <c:when test="${i != currentPage}">
+		            <c:set var="specificPageUrl">
+		              <s:url action="filteredSearch" namespace="/">
+                        <s:param name="rowCount" value="%{#attr.rowCount}"/>
+                        <s:param name="groupId" value="%{#attr.groupId}"/>
+                        <s:param name="artifactId" value="%{#attr.artifactId}"/>
+                        <s:param name="version" value="%{#attr.version}"/>
+                        <s:param name="className" value="%{#attr.className}"/>
+                        <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
+                        <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
+		                <s:param name="fromResultsPage" value="true"/>
+		                <s:param name="currentPage" value="%{#attr.i}"/>
+		                <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+		                <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+		              </s:url>
+		      	    </c:set>
+				    <a href="${specificPageUrl}">${i + 1}</a>
 			      </c:when>
 			      <c:otherwise>		
-		                <b>${i + 1}</b>   
+		            <b>${i + 1}</b>   
 			      </c:otherwise>
-                            </c:choose>
-                          </c:if>
+                </c:choose>
+              </c:if>
 			</c:forEach>
 			
-                        <c:choose>
+            <c:choose>
 			  <c:when test="${currentPage == (totalPages - 1)}">
 			    <img src="${imgNextPageDisabledUrl}"/>
               </c:when>
@@ -259,12 +302,11 @@
               <c:choose>
                 <c:when test="${not empty (record.groupId)}">
                   <h3 class="artifact-title">
-                    <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                          version="${record.version}"/>
+                    <archiva:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"/>
                   </h3>
                   <p>
-                    <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                         version="${record.version}" versions="${record.versions}" repositoryId="${record.repositoryId}"/>
+                    <archiva:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                         versions="${record.versions}" repositoryId="${record.repositoryId}"/>
                   </p>
                 </c:when>
                 <c:otherwise>
@@ -292,12 +334,16 @@
               <c:choose>
                 <c:when test="${not empty (artifactModel.groupId)}">
                   <h3 class="artifact-title">
-                    <my:showArtifactTitle groupId="${artifactModel.groupId}" artifactId="${artifactModel.artifactId}"
-                                          version="${artifactModel.version}"/>
+                    <archiva:showArtifactTitle groupId="${artifactModel.groupId}"
+                                               artifactId="${artifactModel.artifactId}"
+                                               version="${artifactModel.version}"/>
+
                   </h3>
                   <p>
-                    <my:showArtifactLink groupId="${artifactModel.groupId}" artifactId="${artifactModel.artifactId}"
-                                         version="${artifactModel.version}" versions="${artifactModel.versions}"/>
+                    <archiva:showArtifactLink  groupId="${artifactModel.groupId}"
+                                               artifactId="${artifactModel.artifactId}"
+                                               version="${artifactModel.version}"/>
+
                   </p>
                 </c:when>
                 <c:otherwise>

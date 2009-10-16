@@ -51,7 +51,7 @@ public class ArtifactsRelatedConstraintTest
     public ArchivaArtifact createArtifact( String artifactId, String version, String classifier, String type )
     {
         ArchivaArtifact artifact = artifactDao.createArtifact( TEST_GROUPID, artifactId, version,
-                                                               classifier, type );
+                                                               classifier, type, "testable_repo" );
         Calendar cal = Calendar.getInstance();
         artifact.getModel().setLastModified( cal.getTime() );
         artifact.getModel().setRepositoryId( "testable_repo" );
@@ -82,7 +82,7 @@ public class ArtifactsRelatedConstraintTest
     private void assertConstraint( int expectedHits, Constraint constraint )
         throws Exception
     {
-        List results = artifactDao.queryArtifacts( constraint );
+        List<ArchivaArtifact> results = artifactDao.queryArtifacts( constraint );
         assertNotNull( "Related Artifacts: Not Null", results );
         assertEquals( "Related Artifacts: Results.size", expectedHits, results.size() );
     }

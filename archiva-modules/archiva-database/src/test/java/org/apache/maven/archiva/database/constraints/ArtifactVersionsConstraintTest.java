@@ -40,6 +40,7 @@ public class ArtifactVersionsConstraintTest
     
     public static final String TEST_REPO = "test-repo";
     
+    @Override
     public void setUp()
         throws Exception
     {
@@ -51,7 +52,7 @@ public class ArtifactVersionsConstraintTest
     
     private ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
     {
-        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, null, "jar" );
+        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, null, "jar", TEST_REPO );
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( TEST_REPO );
 

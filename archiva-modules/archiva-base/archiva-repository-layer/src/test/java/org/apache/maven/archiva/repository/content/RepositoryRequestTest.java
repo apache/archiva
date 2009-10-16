@@ -35,6 +35,16 @@ import java.io.File;
 public class RepositoryRequestTest
     extends AbstractRepositoryLayerTestCase
 {
+    public void testInvalidRequestEmptyPath()
+    {
+        assertInvalidRequest( "" );
+    }
+    
+    public void testInvalidRequestSlashOnly()
+    {
+        assertInvalidRequest( "//" );
+    }
+    
     public void testInvalidRequestNoArtifactId()
     {
         assertInvalidRequest( "groupId/jars/-1.0.jar" );
@@ -237,6 +247,22 @@ public class RepositoryRequestTest
         assertFalse( repoRequest.isMetadata( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
         assertFalse( repoRequest.isMetadata( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
     }
+    
+    public void testIsMetadataSupportFile()
+    {
+        assertFalse( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml" ));
+        assertFalse( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/maven-metadata.xml" ));
+        assertTrue( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/maven-metadata.xml.sha1" ));
+        assertTrue( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/maven-metadata.xml.md5" ));
+
+        assertFalse( repoRequest.isMetadataSupportFile( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
+        assertFalse( repoRequest.isMetadataSupportFile( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
+        assertFalse( repoRequest.isMetadataSupportFile( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
+        assertFalse( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
+        assertFalse( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
+        assertTrue( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
+        assertTrue( repoRequest.isMetadataSupportFile( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.md5" ) );        
+    }
 
     public void testIsDefault()
     {
@@ -249,6 +275,9 @@ public class RepositoryRequestTest
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
+        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml" ) );
+        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml.sha1" ) );
+        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml.md5" ) );
 
         assertFalse( repoRequest.isDefault( null ) );
         assertFalse( repoRequest.isDefault( "" ) );

@@ -24,13 +24,26 @@ Identifying an Artifact
 
 [../images/find-artifact.png] Find Artifact
 
-  Once you submit the form Archiva will look to match the checksum:
+  To find an artifact, perform the following steps:
 
-    * If more than one artifact matches, a list of results are returned
+  [[1]] Click <<Find Artifact>> in the left navigation menu.
 
-    * If a unique match is found, the individual artifact information page is returned
+  [[2]] On the opened page, you will see a file-upload field. Upload any JAR file (or other artifact) from your local file system. You must enter an exact filename. In general, you would use the Browse button for entering the filename.
 
-    * If no match is found, a "no results" page is returned
+  [[3]] Click Search.
 
+  [[4]] The whole file is not uploaded, but the checksum is. It will search the remote repository for an exact match of the file you specified and display the result of the search.
+
+  []
+  
+  Once you submit the form, Archiva will look to match the checksum:
+
+  * If more than one artifact matches, a list of results is returned.
+
+  * If a unique match is found, the individual artifact information page is returned.
+
+  * If no match is found, a "no results" page is returned.
+
+ []
   
 

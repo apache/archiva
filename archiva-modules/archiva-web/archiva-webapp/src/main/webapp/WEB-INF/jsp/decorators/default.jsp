@@ -53,8 +53,14 @@
   </div>
 </div>
 
-<div id="leftColumn">
 
+<div id="topSearchBox">
+    <s:form method="get" action="quickSearch" namespace="/" validate="true">
+        <s:textfield label="Search for" size="30" name="q"/>
+    </s:form>
+</div>
+
+<div id="leftColumn">
   <div id="navcolumn">
     <s:action namespace="/components" name="companyInfo" executeResult="true"/>
     <h5>Find</h5>
@@ -63,7 +69,7 @@
         <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
 
-      <s:if test="%{applicationScope.uiOptions.showFindArtifacts}">
+      <s:if test="%{#application['uiOptions'].showFindArtifacts}">
         <li class="none">
           <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
         </li>
@@ -74,7 +80,7 @@
       </li>
     </ul>
 
-    <redback:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
+    <redback:ifAnyAuthorized permissions="archiva-upload-repository,archiva-delete-artifact,archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
       <h5>Manage</h5>
       <ul>
         <redback:ifAuthorized permission="archiva-access-reports">
@@ -82,11 +88,6 @@
             <my:currentWWUrl action="pickReport" namespace="/report">Reports</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
-          <%-- POSTPONED to 1.1 series
-                <li class="none">
-                  <a href="#">Synchronisation</a>
-                </li>
-          --%>
         <redback:ifAuthorized permission="archiva-manage-users">
           <li class="none">
             <my:currentWWUrl action="userlist" namespace="/security">User Management</my:currentWWUrl>
@@ -101,8 +102,15 @@
           <li class="none">
             <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>
           </li>
+        </redback:ifAuthorized>
+        <redback:ifAuthorized permission="archiva-upload-repository">
           <li class="none">
             <my:currentWWUrl action="upload" namespace="/">Upload Artifact</my:currentWWUrl>
+          </li>
+        </redback:ifAuthorized>
+        <redback:ifAuthorized permission="archiva-delete-artifact">
+          <li class="none">
+            <my:currentWWUrl action="deleteArtifact" namespace="/">Delete Artifact</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
           <%-- TODO: future options here.
@@ -125,7 +133,7 @@
           <my:currentWWUrl action="proxyConnectors" namespace="/admin">Proxy Connectors</my:currentWWUrl>
         </li>
         <li class="none">
-          <my:currentWWUrl action="legacyArtifactPath" namespace="/admin">Legacy support</my:currentWWUrl>
+          <my:currentWWUrl action="legacyArtifactPath" namespace="/admin">Legacy Support</my:currentWWUrl>
         </li>
         <li class="none">
           <my:currentWWUrl action="networkProxies" namespace="/admin">Network Proxies</my:currentWWUrl>

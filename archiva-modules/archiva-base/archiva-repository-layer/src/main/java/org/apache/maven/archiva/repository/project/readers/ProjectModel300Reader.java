@@ -19,6 +19,12 @@ package org.apache.maven.archiva.repository.project.readers;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -30,17 +36,10 @@ import org.apache.maven.archiva.model.MailingList;
 import org.apache.maven.archiva.model.Organization;
 import org.apache.maven.archiva.model.ProjectRepository;
 import org.apache.maven.archiva.model.Scm;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLReader;
 import org.dom4j.Element;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * ProjectModel300Reader 
@@ -52,66 +51,54 @@ public class ProjectModel300Reader
 {
 
     public ArchivaProjectModel read( File pomFile )
-        throws ProjectModelException
+        throws XMLException
     {
-        try
-        {
-            XMLReader xml = new XMLReader( "project", pomFile );
+        XMLReader xml = new XMLReader( "project", pomFile );
 
-            ArchivaProjectModel model = new ArchivaProjectModel();
+        ArchivaProjectModel model = new ArchivaProjectModel();
 
-            xml.removeNamespaces();
+        xml.removeNamespaces();
 
-            Element project = xml.getElement( "//project" );
+        Element project = xml.getElement( "//project" );
 
-            // TODO: Handle <extend /> ?? (is this even possible?)
+        // TODO: Handle <extend /> ?? (is this even possible?)
 
-            model.setGroupId( project.elementTextTrim( "groupId" ) );
-            model.setArtifactId( project.elementTextTrim( "artifactId" ) );
-            // TODO: Handle <id />
-            model.setVersion( project.elementTextTrim( "currentVersion" ) );
-            model.setName( project.elementTextTrim( "name" ) );
-            model.setDescription( project.elementTextTrim( "description" ) );
-            // TODO: what to do with <shortDescription /> ?
-            model.setUrl( project.elementTextTrim( "url" ) );
-            // TODO: Handle <logo />
-            // TODO: Handle <inceptionYear />
+        model.setGroupId( project.elementTextTrim( "groupId" ) );
+        model.setArtifactId( project.elementTextTrim( "artifactId" ) );
+        // TODO: Handle <id />
+        model.setVersion( project.elementTextTrim( "currentVersion" ) );
+        model.setName( project.elementTextTrim( "name" ) );
+        model.setDescription( project.elementTextTrim( "description" ) );
+        // TODO: what to do with <shortDescription /> ?
+        model.setUrl( project.elementTextTrim( "url" ) );
+        // TODO: Handle <logo />
+        // TODO: Handle <inceptionYear />
 
-            model.setIssueManagement( getIssueManagement( xml ) );
-            // TODO: What to do with <gumpRepositoryId /> ?
-            // TODO: Handle <siteAddress />
-            // TODO: Handle <siteDirectory /> ?
-            // TODO: Handle <distributionSite />
-            // TODO: Handle <distributionDirectory />
-            model.setMailingLists( getMailingLists( xml ) );
-            model.setIndividuals( getIndividuals( xml ) );
-            model.setLicenses( getLicenses( xml ) );
-            model.setReports( getReports( xml ) );
-            model.setRepositories( getRepositories( xml ) );
-            model.setScm( getSCM( xml ) );
-            model.setOrganization( getOrganization( xml ) );
-            model.setProperties( getProperties( xml.getElement( "//project/properties" ) ) );
-            model.setDependencies( getDependencies( xml ) );
-            
-            model.setOrigin("filesystem");
+        model.setIssueManagement( getIssueManagement( xml ) );
+        // TODO: What to do with <gumpRepositoryId /> ?
+        // TODO: Handle <siteAddress />
+        // TODO: Handle <siteDirectory /> ?
+        // TODO: Handle <distributionSite />
+        // TODO: Handle <distributionDirectory />
+        model.setMailingLists( getMailingLists( xml ) );
+        model.setIndividuals( getIndividuals( xml ) );
+        model.setLicenses( getLicenses( xml ) );
+        model.setReports( getReports( xml ) );
+        model.setRepositories( getRepositories( xml ) );
+        model.setScm( getSCM( xml ) );
+        model.setOrganization( getOrganization( xml ) );
+        model.setProperties( getProperties( xml.getElement( "//project/properties" ) ) );
+        model.setDependencies( getDependencies( xml ) );
 
-            /* Following are not valid for <pomVersion>3</pomVersion> / Maven 1 pom files.
-             * 
-             * model.setDependencyManagement()
-             * model.setPlugins()
-             * model.setParentProject()
-             * model.setPackaging()
-             * model.setCiManagement()
-             * model.setBuildExtensions()
-             * model.setRelocation()
-             */
+        model.setOrigin( "filesystem" );
 
-            return model;
-        }
-        catch ( XMLException e )
-        {
-            throw new ProjectModelException( e.getMessage(), e );
-        }
+        /*
+         * Following are not valid for <pomVersion>3</pomVersion> / Maven 1 pom files. model.setDependencyManagement()
+         * model.setPlugins() model.setParentProject() model.setPackaging() model.setCiManagement()
+         * model.setBuildExtensions() model.setRelocation()
+         */
+
+        return model;
     }
 
     private ArtifactReference getArtifactReference( Element elemPlugin, String defaultType )
@@ -152,6 +139,7 @@ public class ProjectModel300Reader
         return getDependencyList( xml, new String[] { "dependencies" } );
     }
 
+    @SuppressWarnings("unchecked")
     private List<Dependency> getDependencyList( XMLReader xml, String parts[] )
         throws XMLException
     {
@@ -213,6 +201,7 @@ public class ProjectModel300Reader
         return individuals;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Individual> getIndividuals( XMLReader xml, boolean isCommitor, String xpathExpr )
         throws XMLException
     {
@@ -238,6 +227,7 @@ public class ProjectModel300Reader
             individual.setOrganizationUrl( elemPerson.elementTextTrim( "organizationUrl" ) );
             individual.setUrl( elemPerson.elementTextTrim( "url" ) );
             individual.setTimezone( elemPerson.elementTextTrim( "timezone" ) );
+            individual.setIndividualEmail( elemPerson.elementTextTrim( "email" ) );
 
             // Roles
             Element elemRoles = elemPerson.element( "roles" );
@@ -279,10 +269,12 @@ public class ProjectModel300Reader
 
         IssueManagement issueMgmt = new IssueManagement();
         issueMgmt.setUrl( issueTrackingUrl );
-
+        issueMgmt.setIssueManagementUrl( issueTrackingUrl );
+        
         return issueMgmt;
     }
 
+    @SuppressWarnings("unchecked")
     private List<License> getLicenses( XMLReader xml )
         throws XMLException
     {
@@ -310,6 +302,7 @@ public class ProjectModel300Reader
         return licenses;
     }
 
+    @SuppressWarnings("unchecked")
     private List<MailingList> getMailingLists( XMLReader xml )
         throws XMLException
     {
@@ -354,6 +347,7 @@ public class ProjectModel300Reader
         {
             Organization org = new Organization();
 
+            org.setOrganizationName( elemOrg.elementTextTrim( "name" ) );
             org.setName( elemOrg.elementTextTrim( "name" ) );
             org.setUrl( elemOrg.elementTextTrim( "url" ) );
             // TODO: Handle <logo />
@@ -364,6 +358,7 @@ public class ProjectModel300Reader
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private Properties getProperties( Element elemProperties )
     {
         if ( elemProperties == null )

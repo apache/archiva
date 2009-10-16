@@ -24,7 +24,7 @@
 
 <html>
 <head>
-  <title>Administration - Legacy support</title>
+  <title>Administration - Legacy Support</title>
   <s:head/>
 </head>
 

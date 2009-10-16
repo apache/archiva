@@ -50,7 +50,7 @@ public class OlderSnapshotArtifactsByAgeConstraintTest
     public ArchivaArtifact createArtifact( String artifactId, String version, int daysOld )
     {
         ArchivaArtifact artifact = artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version,
-                                                               "", "jar" );
+                                                               "", "jar", "testable_repo" );
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.DAY_OF_MONTH, ( -1 ) * daysOld );
         artifact.getModel().setLastModified( cal.getTime() );
@@ -110,7 +110,7 @@ public class OlderSnapshotArtifactsByAgeConstraintTest
     private void assertConstraint( int expectedHits, Constraint constraint )
         throws Exception
     {
-        List results = artifactDao.queryArtifacts( constraint );
+        List<ArchivaArtifact> results = artifactDao.queryArtifacts( constraint );
         assertNotNull( "Older Snapshot Artifacts By Age: Not Null", results );
         assertEquals( "Older Snapshot Artifacts By Age: Results.size", expectedHits, results.size() );
     }

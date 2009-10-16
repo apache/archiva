@@ -95,6 +95,10 @@ public class VersionUtil
 
             if ( mat.matches() )
             {
+                if ( i == 0 ) // loosen rule to return true if first token matches
+                {
+                    return true;
+                }
                 countValidParts++;
             }
         }

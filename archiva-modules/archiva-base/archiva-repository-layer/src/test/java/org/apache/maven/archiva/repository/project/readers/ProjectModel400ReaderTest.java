@@ -19,13 +19,13 @@ package org.apache.maven.archiva.repository.project.readers;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
+import org.apache.maven.archiva.xml.XMLException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
-import java.io.File;
 
 /**
  * ProjectModel400ReaderTest 
@@ -36,7 +36,7 @@ public class ProjectModel400ReaderTest
     extends PlexusInSpringTestCase
 {
     public void testLoadSimple()
-        throws ProjectModelException
+        throws XMLException
     {
         File defaultRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
         File pomFile = new File( defaultRepoDir,
@@ -66,7 +66,7 @@ public class ProjectModel400ReaderTest
     }
 
     public void testLoadWithNamespace()
-        throws ProjectModelException
+        throws XMLException
     {
         File defaultRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
         File pomFile = new File( defaultRepoDir,

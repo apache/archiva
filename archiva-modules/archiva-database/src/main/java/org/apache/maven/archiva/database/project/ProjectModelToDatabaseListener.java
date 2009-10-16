@@ -116,12 +116,12 @@ public class ProjectModelToDatabaseListener
         /* do nothing */
     }
 
-    public void resolutionNotFound( VersionedReference projectRef, List resolverList )
+    public void resolutionNotFound( VersionedReference projectRef, List<ProjectModelResolver> resolverList )
     {
         /* do nothing */
     }
 
-    public void resolutionStart( VersionedReference projectRef, List resolverList )
+    public void resolutionStart( VersionedReference projectRef, List<ProjectModelResolver> resolverList )
     {
         /* do nothing */
     }

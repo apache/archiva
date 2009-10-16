@@ -1,0 +1,127 @@
+ ------
+ Using Archiva Web Services
+ ------
+ Maria Odea Ching
+ ------
+ 19 Mar 2009
+ ------
+
+~~ Licensed to the Apache Software Foundation (ASF) under one
+~~ or more contributor license agreements.  See the NOTICE file
+~~ distributed with this work for additional information
+~~ regarding copyright ownership.  The ASF licenses this file
+~~ to you under the Apache License, Version 2.0 (the
+~~ "License"); you may not use this file except in compliance
+~~ with the License.  You may obtain a copy of the License at
+~~
+~~   http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing,
+~~ software distributed under the License is distributed on an
+~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~~ KIND, either express or implied.  See the License for the
+~~ specific language governing permissions and limitations
+~~ under the License.
+
+~~ NOTE: For help with the syntax of this file, see:
+~~ http://maven.apache.org/guides/mini/guide-apt-format.html
+
+Using Archiva Web Services
+
+  Web services is a new feature for 1.2. Archiva exposes two types of services: administrative and search. A sample client
+  that shows how to access these services is provided in the source code. You can check out the module for the sample client at:
+
++----+
+http://svn.apache.org/repos/asf/archiva/tags/archiva-1.2/archiva-modules/archiva-web/archiva-xmlrpc/archiva-xmlrpc-client/
++----+  
+
+  The SampleClient class shows how to connect to and invoke the Archiva web services. To execute the sample client, edit
+  the following configuration in the archiva-xmlrpc-client module's pom.xml:
+
++-------------------------------------------------------------------------+
+<project>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <executable>java</executable>
+          <mainClass>org.apache.archiva.web.xmlrpc.client.SampleClient</mainClass>
+          <arguments>
+            <!--
+                 URL: ex. http://127.0.0.1:8080/archiva/xmlrpc
+                 USERNAME & PASSWORD: Archiva credentials
+            -->
+            <argument>http://127.0.0.1:8080/archiva/xmlrpc</argument>
+            <argument>admin</argument>
+            <argument>${password}</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
++-------------------------------------------------------------------------+
+
+  In the first \<argument\>, set the url of the Archiva instance you are running but make sure that you have </xmlrpc> appended
+  at the end. For example if your Archiva instance is running in localhost and port 8080, then set it to http://localhost:8080/archiva/xmlrpc.
+
+  The second \<argument\> corresponds to the username of the existing Archiva user that will be used to access the services while
+  the last \<argument\> is where you set the user's password.
+
+  After configuring the pom, you can now run the sample client by executing <<mvn exec:java>> in the command-line. You should be
+  able to see the list of managed and remote repositories, the list of database and repository consumers and more printed on the
+  command-line.
+
+* Administration Service
+
+  In order for a user to be able to access the Administration services, the user must have a <<System Administrator>> role in Archiva.
+
+  The Administration Service exposes the following methods:
+
+  [[1]] Boolean executeRepositoryScanner( String repoId ) - triggers the repository scanner to scan the specified repository.
+
+  [[2]] Boolean executeDatabaseScanner()  - triggers the database scanner to be executed.
+
+  [[3]] List\<String\> getAllDatabaseConsumers() - retrieves all the Archiva database consumers associated with the database scanning.
+
+  [[4]] Boolean configureDatabaseConsumer( String consumerId, boolean enable ) - enables or disables the specified database consumer.
+
+  [[5]] List\<String\> getAllRepositoryConsumers() - retrieves all the Archiva repository consumers associated with the repository scanning.
+
+  [[6]] Boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable ) - enables or disables the specified
+     repository consumer.
+
+  [[7]] List\<ManagedRepository\> getAllManagedRepositories() - retrieves all the managed repositories in Archiva.
+
+  [[8]] List\<RemoteRepository\> getAllRemoteRepositories() - retrieves all the remote repositories in Archiva.
+
+  [[9]] Boolean deleteArtifact( String repoId, String groupId, String artifactId, String version ) - deletes the specified artifact from
+     the repository.
+
+* Search Service
+
+  To access the Search Service, the user must have at least a <<Repository Observer>> role.
+
+  The Search Service exposes the following methods:
+
+  [[1]] List\<Artifact\> quickSearch( String queryString ) - search for the specified term. This behaves just like Archiva's Quick Search
+     from the web app.
+
+  [[2]] List\<Artifact\> getArtifactByChecksum( String checksum ) - search for artifact(s) matching the specified checksum. This behaves like
+     the Find Artifact from the web app.
+
+  [[3]] List\<Artifact\> getArtifactVersions( String groupId, String artifactId ) - retrieves all available versions of the artifact.
+
+  [[4]] List\<Artifact\> getArtifactVersionsByDate( String groupId, String artifactId, String version, Date since ) - <not yet implemented>
+
+  [[5]] List\<Dependency\> getDependencies( String groupId, String artifactId, String version ) - retrieves all the dependencies of the specified
+     artifact. This is the equivalent of the Dependencies tab in the Artifact Browse.
+
+  [[6]] List\<Artifact\> getDependencyTree( String groupId, String artifactId, String version ) - <not yet implemented>
+
+  [[7]] List\<Artifact\> getDependees( String groupId, String artifactId, String version ) - retrieves all the artifacts with a
+     dependency on the specified artifact. This is the equivalent of the Used By tab in the Artifact Browse.
+

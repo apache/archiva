@@ -40,7 +40,7 @@ public class FlagCyclicEdgesVisitor
 {
     private DependencyGraphWalker walker;
 
-    private Set cyclicEdges = new HashSet();
+    private Set<DependencyGraphEdge> cyclicEdges = new HashSet<DependencyGraphEdge>();
 
     public FlagCyclicEdgesVisitor( DependencyGraphWalker walker )
     {
@@ -62,7 +62,7 @@ public class FlagCyclicEdgesVisitor
         }
     }
 
-    public Set getCyclicEdges()
+    public Set<DependencyGraphEdge> getCyclicEdges()
     {
         return cyclicEdges;
     }

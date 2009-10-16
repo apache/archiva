@@ -151,7 +151,7 @@ public class JdoAccess
         return pm;
     }
 
-    public void enableCache( Class clazz )
+    public void enableCache( Class<?> clazz )
     {
         DataStoreCache cache = pmf.getDataStoreCache();
         cache.pinAll( clazz, false ); // Pin all objects of type clazz from now on
@@ -200,12 +200,12 @@ public class JdoAccess
         }
     }
 
-    public List getAllObjects( Class clazz )
+    public List<?> getAllObjects( Class<?> clazz )
     {
         return queryObjects( clazz, null );
     }
 
-    public List queryObjects( Class clazz, Constraint constraint )
+    public List<?> queryObjects( Class<?> clazz, Constraint constraint )
     {
         PersistenceManager pm = getPersistenceManager();
         Transaction tx = pm.currentTransaction();
@@ -214,7 +214,7 @@ public class JdoAccess
         {
             tx.begin();
 
-            List result = null;
+            List<?> result = null;
 
             if ( constraint != null )
             {
@@ -236,7 +236,7 @@ public class JdoAccess
                 result = processUnconstrained( pm, clazz );
             }
 
-            result = (List) pm.detachCopyAll( result );
+            result = (List<?>) pm.detachCopyAll( result );
 
             tx.commit();
 
@@ -248,7 +248,7 @@ public class JdoAccess
         }
     }
 
-    public List queryObjects( SimpleConstraint constraint )
+    public List<?> queryObjects( SimpleConstraint constraint )
     {
         PersistenceManager pm = getPersistenceManager();
         Transaction tx = pm.currentTransaction();
@@ -257,16 +257,16 @@ public class JdoAccess
         {
             tx.begin();
 
-            List result = processConstraint( pm, constraint );
+            List<?> result = processConstraint( pm, constraint );
 
             // Only detach if results are known to be persistable.
             if ( constraint.isResultsPersistable() )
             {
-                result = (List) pm.detachCopyAll( result );
+                result = (List<?>) pm.detachCopyAll( result );
             }
             else
             {
-                List copiedResults = new ArrayList();
+                List<Object> copiedResults = new ArrayList<Object>();
                 copiedResults.addAll( result );
                 result = copiedResults;
             }
@@ -281,14 +281,14 @@ public class JdoAccess
         }
     }
 
-    private List processUnconstrained( PersistenceManager pm, Class clazz )
+    private List<?> processUnconstrained( PersistenceManager pm, Class<?> clazz )
     {
         Extent extent = pm.getExtent( clazz, true );
         Query query = pm.newQuery( extent );
-        return (List) query.execute();
+        return (List<?>) query.execute();
     }
 
-    private List processConstraint( PersistenceManager pm, SimpleConstraint constraint )
+    private List<?> processConstraint( PersistenceManager pm, SimpleConstraint constraint )
     {
         Query query = pm.newQuery( constraint.getSelectSql() );
 
@@ -309,10 +309,10 @@ public class JdoAccess
             return processParameterizedQuery( query, constraint.getParameters() );
         }
 
-        return (List) query.execute();
+        return (List<?>) query.execute();
     }
 
-    private List processConstraint( PersistenceManager pm, Class clazz, DeclarativeConstraint constraint )
+    private List<?> processConstraint( PersistenceManager pm, Class<?> clazz, DeclarativeConstraint constraint )
     {
         Extent extent = pm.getExtent( clazz, true );
         Query query = pm.newQuery( extent );
@@ -380,26 +380,26 @@ public class JdoAccess
         }
         else
         {
-            return (List) query.execute();
+            return (List<?>) query.execute();
         }
     }
 
-    private List processParameterizedQuery( Query query, Object parameters[] )
+    private List<?> processParameterizedQuery( Query query, Object parameters[] )
     {
         switch ( parameters.length )
         {
             case 1:
-                return (List) query.execute( parameters[0] );
+                return (List<?>) query.execute( parameters[0] );
             case 2:
-                return (List) query.execute( parameters[0], parameters[1] );
+                return (List<?>) query.execute( parameters[0], parameters[1] );
             case 3:
-                return (List) query.execute( parameters[0], parameters[1], parameters[2] );
+                return (List<?>) query.execute( parameters[0], parameters[1], parameters[2] );
             default:
                 throw new JDOException( "Unable to use more than 3 parameters." );
         }
     }
 
-    public Object getObjectById( Class clazz, Object id, String fetchGroup )
+    public Object getObjectById( Class<?> clazz, Object id, String fetchGroup )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         if ( id == null )
@@ -456,7 +456,7 @@ public class JdoAccess
         }
     }
 
-    public Object getObjectById( Class clazz, String id, String fetchGroup )
+    public Object getObjectById( Class<?> clazz, String id, String fetchGroup )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         if ( StringUtils.isEmpty( id ) )
@@ -473,7 +473,7 @@ public class JdoAccess
         return ( JDOHelper.getObjectId( object ) != null );
     }
 
-    public boolean objectExistsById( Class clazz, String id )
+    public boolean objectExistsById( Class<?> clazz, String id )
         throws ArchivaDatabaseException
     {
         try
@@ -492,7 +492,7 @@ public class JdoAccess
     {
         if ( o == null )
         {
-            throw new ArchivaDatabaseException( "Unable to remove null object '" + o.getClass().getName() + "'" );
+            throw new ArchivaDatabaseException( "Unable to remove null object" );
         }
 
         PersistenceManager pm = getPersistenceManager();
@@ -570,7 +570,7 @@ public class JdoAccess
         // ignore
     }
 
-    public void removeAll( Class aClass )
+    public void removeAll( Class<?> aClass )
     {
         PersistenceManager pm = getPersistenceManager();
         Transaction tx = pm.currentTransaction();

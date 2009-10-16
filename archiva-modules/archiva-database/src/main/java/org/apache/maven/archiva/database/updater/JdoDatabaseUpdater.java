@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
@@ -59,10 +60,18 @@ public class JdoDatabaseUpdater
 
     private ProcessArchivaArtifactClosure processArtifactClosure = new ProcessArchivaArtifactClosure();
 
+    public void update()
+        throws ArchivaDatabaseException
+    {
+        updateAllUnprocessed();
+        updateAllProcessed();
+    }
+
+    @SuppressWarnings("unchecked")
     public void updateAllUnprocessed()
         throws ArchivaDatabaseException
     {
-        List unprocessedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> unprocessedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
 
         beginConsumerLifecycle( dbConsumers.getSelectedUnprocessedConsumers() );
 
@@ -71,10 +80,10 @@ public class JdoDatabaseUpdater
             // Process each consumer.
             Predicate predicate = UnprocessedArtifactPredicate.getInstance();
 
-            Iterator it = IteratorUtils.filteredIterator( unprocessedArtifacts.iterator(), predicate );
+            Iterator<ArchivaArtifact> it = IteratorUtils.filteredIterator( unprocessedArtifacts.iterator(), predicate );
             while ( it.hasNext() )
             {
-                ArchivaArtifact artifact = (ArchivaArtifact) it.next();
+                ArchivaArtifact artifact = it.next();
                 updateUnprocessed( artifact );
             }
         }
@@ -84,22 +93,44 @@ public class JdoDatabaseUpdater
         }
     }
 
-    private void endConsumerLifecycle( List consumers )
+    @SuppressWarnings("unchecked")
+    public void updateAllProcessed()
+        throws ArchivaDatabaseException
     {
-        Iterator it = consumers.iterator();
-        while ( it.hasNext() )
+        List<ArchivaArtifact> processedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( true ) );
+
+        beginConsumerLifecycle( dbConsumers.getSelectedCleanupConsumers() );
+
+        try
         {
-            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
+            // Process each consumer.
+            Predicate predicate = NotPredicate.getInstance( UnprocessedArtifactPredicate.getInstance() );
+
+            Iterator<ArchivaArtifact> it = IteratorUtils.filteredIterator( processedArtifacts.iterator(), predicate );
+            while ( it.hasNext() )
+            {
+                ArchivaArtifact artifact = it.next();
+                updateProcessed( artifact );
+            }
+        }
+        finally
+        {
+            endConsumerLifecycle( dbConsumers.getSelectedCleanupConsumers() );
+        }
+    }
+
+    private void endConsumerLifecycle( List<ArchivaArtifactConsumer> consumers )
+    {
+        for ( ArchivaArtifactConsumer consumer : consumers )
+        {
             consumer.completeScan();
         }
     }
 
-    private void beginConsumerLifecycle( List consumers )
+    private void beginConsumerLifecycle( List<ArchivaArtifactConsumer> consumers )
     {
-        Iterator it = consumers.iterator();
-        while ( it.hasNext() )
+        for ( ArchivaArtifactConsumer consumer : consumers )
         {
-            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
             consumer.beginScan();
         }
     }
@@ -107,7 +138,7 @@ public class JdoDatabaseUpdater
     public void updateUnprocessed( ArchivaArtifact artifact )
         throws ArchivaDatabaseException
     {
-        List consumers = dbConsumers.getSelectedUnprocessedConsumers();
+        List<ArchivaArtifactConsumer> consumers = dbConsumers.getSelectedUnprocessedConsumers();
 
         if ( CollectionUtils.isEmpty( consumers ) )
         {
@@ -120,5 +151,20 @@ public class JdoDatabaseUpdater
 
         artifact.getModel().setWhenProcessed( new Date() );
         dao.getArtifactDAO().saveArtifact( artifact );
+    }
+
+    public void updateProcessed( ArchivaArtifact artifact )
+        throws ArchivaDatabaseException
+    {
+        List<ArchivaArtifactConsumer> consumers = dbConsumers.getSelectedCleanupConsumers();
+
+        if ( CollectionUtils.isEmpty( consumers ) )
+        {
+            log.warn( "There are no selected consumers for artifact cleanup." );
+            return;
+        }
+        
+        this.processArtifactClosure.setArtifact( artifact );
+        CollectionUtils.forAllDo( consumers, this.processArtifactClosure );
     }
 }

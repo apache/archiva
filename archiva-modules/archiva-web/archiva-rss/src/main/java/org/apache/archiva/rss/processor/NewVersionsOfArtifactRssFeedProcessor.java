@@ -29,8 +29,6 @@ import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 
@@ -53,8 +51,6 @@ public class NewVersionsOfArtifactRssFeedProcessor
      * @plexus.requirement
      */
     private RssFeedGenerator generator;
-
-    private Logger log = LoggerFactory.getLogger( NewVersionsOfArtifactRssFeedProcessor.class );
 
     /**
      * @plexus.requirement role-hint="jdo"

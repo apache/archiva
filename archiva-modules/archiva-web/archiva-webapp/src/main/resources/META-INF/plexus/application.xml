@@ -220,7 +220,6 @@
        user.manager.impl=ldap
        ldap.bind.authenticator.enabled=true
        redback.default.admin=admin
-       redback.default.guest=guest
        security.policy.password.expiration.enabled=false
 
        ldap.config.hostname=ldap.hostname
@@ -321,7 +320,7 @@
           <field-name>userImpl</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+          <role>org.codehaus.plexus.cache.Cache</role>
           <role-hint>users</role-hint>
           <field-name>usersCache</field-name>
         </requirement>

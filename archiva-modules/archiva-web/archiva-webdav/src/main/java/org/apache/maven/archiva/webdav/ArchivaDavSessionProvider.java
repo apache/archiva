@@ -23,7 +23,6 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
@@ -32,28 +31,22 @@ import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  */
 public class ArchivaDavSessionProvider
     implements DavSessionProvider
 {
-    private Logger log = LoggerFactory.getLogger( ArchivaDavSessionProvider.class );
-
     private ServletAuthenticator servletAuth;
 
     private HttpAuthenticator httpAuth;
     
-    private ArchivaXworkUser archivaXworkUser;
-    
-    public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth, ArchivaXworkUser archivaXworkUser )
+    public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth )
     {
         this.servletAuth = servletAuth;
         this.httpAuth = httpAuth;
-        this.archivaXworkUser = archivaXworkUser;
     }
 
     public boolean attachSession( WebdavRequest request )
@@ -72,16 +65,15 @@ public class ArchivaDavSessionProvider
         }
         catch ( AuthenticationException e )
         {   
-            boolean isPut = WebdavMethodUtil.isWriteMethod( request.getMethod() );
-            
             // safety check for MRM-911            
-            String guest = archivaXworkUser.getGuest();
+            String guest = UserManager.GUEST_USERNAME;
             try
             {
-                if( servletAuth.isAuthorized( guest, 
-                      ( ( ArchivaDavResourceLocator ) request.getRequestLocator() ).getRepositoryId(), isPut ) )
+                if ( servletAuth.isAuthorized( guest,
+                                               ( (ArchivaDavResourceLocator) request.getRequestLocator() ).getRepositoryId(),
+                                               WebdavMethodUtil.getMethodPermission( request.getMethod() ) ) )
                 {
-                    request.setDavSession(new ArchivaDavSession());
+                    request.setDavSession( new ArchivaDavSession() );
                     return true;
                 }
             }

@@ -21,19 +21,21 @@
 <project>
   <body>
     <breadcrumbs>
-      <item name="1.2-M1" href="/docs/1.2-M1" />
+      <item name="1.2.2" href="/index.html" />
     </breadcrumbs>
 
     <menu name="Introduction">
-      <item name="Quick Start"  href="/quick-start.html" />
-      <item name="Feature Tour" href="/tour/index.html" />
+      <item name="Quick Start"   href="/quick-start.html" />
+      <item name="Feature Tour"  href="/tour/index.html" />
       <item name="Release Notes" href="/release-notes.html" />
+      <item name="Downloads"     href="http://archiva.apache.org/download.html" />
     </menu>
 
     <menu name="Users Guide">
       <item name="Browsing"                  href="/userguide/browsing.html" />
       <item name="Searching"                 href="/userguide/searching.html" />
       <item name="Identifying an Artifact"   href="/userguide/find-artifact.html" />
+      <item name="Deleting an Artifact"		 href="/userguide/delete-artifact.html" />
       <item name="Using as a repository"     href="/userguide/using-repository.html" />
       <item name="Deploying to repository"   href="/userguide/deploy.html" />
       <item name="Configuring Virtual Repositories"   href="/userguide/virtual-repositories.html" />
@@ -47,6 +49,7 @@
       <item name="Installing Archiva"        href="/adminguide/installing.html" collapse="true">
         <item name="Installing Standalone"   href="/adminguide/standalone.html" />
         <item name="Installing as a WAR"     href="/adminguide/webapp.html" />
+        <item name="Upgrading to a New Version"     href="/adminguide/upgrade.html" />
       </item>
       <item name="Databases"                 href="/adminguide/databases.html" />
       <item name="Security"                  href="/adminguide/security.html" collapse="true">
@@ -64,8 +67,13 @@
         <item name="Consumers"               href="/adminguide/consumers.html" />
       </item>
       <item name="Configuration Files"       href="/adminguide/configuration-files.html" />
-      <item name="Audit Logs"                href="/adminguide/audit-logs.html" />
+      <item name="Log Files"                 href="/adminguide/logging.html" >
+        <item name="Archiva Logs"            href="/adminguide/archiva-logs.html" />
+        <item name="Audit Logs"              href="/adminguide/audit-logs.html" />
+        <item name="Security Logs"           href="/adminguide/security-logs.html" />
+      </item>
       <item name="Reports"                   href="/adminguide/reports.html" />
+      <item name="Web Services"              href="/adminguide/web-services.html" />
     </menu>
 
     <menu name="Customising Archiva">

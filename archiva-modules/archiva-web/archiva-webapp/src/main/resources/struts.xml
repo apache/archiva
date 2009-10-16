@@ -82,8 +82,8 @@
       <result name="security-login-success" type="redirect-action">index</result>
       <result name="security-login-cancel" type="redirect-action">index</result>
       <result name="security-login-locked" type="redirect-action">
-        <param name="infoMessage">Account Locked</param>
         <param name="actionName">index</param>
+        <param name="infoMessage">Account Locked</param>
       </result>
       <result name="security-logout" type="redirect-action">index</result>
       <result name="requires-authentication" type="redirect-action">
@@ -142,12 +142,8 @@
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
 
-    <action name="advancedSearch" class="searchAction" method="input">
-      <result name="input">/WEB-INF/jsp/advancedSearch.jsp</result>
-    </action>
-
     <action name="filteredSearch" class="searchAction" method="filteredSearch">
-      <result name="input">/WEB-INF/jsp/advancedSearch.jsp</result>
+      <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
       <result>/WEB-INF/jsp/results.jsp</result>
       <result name="error">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
@@ -168,6 +164,12 @@
       <result name="success">/WEB-INF/jsp/upload.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
       <interceptor-ref name="fileUpload"/>
+    </action>
+
+	<action name="deleteArtifact" class="deleteArtifactAction" method="input">      
+      <result name="input">/WEB-INF/jsp/deleteArtifact.jsp</result>
+      <result name="error">/WEB-INF/jsp/deleteArtifact.jsp</result>
+      <result name="success">/WEB-INF/jsp/deleteArtifact.jsp</result>
     </action>
 
     <action name="checksumSearch" class="searchAction" method="findArtifact">

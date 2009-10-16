@@ -46,6 +46,7 @@ public class MostRecentRepositoryScanStatisticsTest
         return stats;
     }
 
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -57,18 +58,20 @@ public class MostRecentRepositoryScanStatisticsTest
         dao.save( createStats( "internal", "2007/02/18 10:00:00", 20000, 11700, 320 ) );
     }
 
+    @SuppressWarnings("unchecked")
     public void testNotProcessedYet()
         throws Exception
     {
-        List results = dao.query( new MostRecentRepositoryScanStatistics( "central" ) );
+        List<RepositoryContentStatistics> results = (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( "central" ) );
         assertNotNull( "Not Processed Yet", results );
         assertTrue( "Not Processed Yet", results.isEmpty() );
     }
 
+    @SuppressWarnings("unchecked")
     public void testStats()
         throws Exception
     {
-        List results = dao.query( new MostRecentRepositoryScanStatistics( "internal" ) );
+        List<RepositoryContentStatistics> results = (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( "internal" ) );
         assertNotNull( "Stats: results (not null)", results );
         assertEquals( "Stats: results.size", 1, results.size() );
 

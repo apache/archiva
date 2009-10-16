@@ -34,6 +34,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
  * 
  * @plexus.component role="com.opensymphony.xwork2.Action"
  *                   role-hint="editOrganisationInfo"
+ *                   instantiation-strategy="per-lookup"
  */
 public class EditOrganisationInfoAction
     extends AbstractAppearanceAction

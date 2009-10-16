@@ -45,7 +45,7 @@ public class UniqueFieldConstraint
         super.params = new Object[]{fieldNamePrefix};
     }
 
-    public Class getResultClass()
+    public Class<?> getResultClass()
     {
         return String.class;
     }

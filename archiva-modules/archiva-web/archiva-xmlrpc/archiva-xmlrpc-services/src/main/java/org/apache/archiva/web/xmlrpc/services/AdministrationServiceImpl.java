@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
@@ -39,6 +38,7 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
+import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -49,12 +49,14 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.registry.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AdministrationServiceImpl
@@ -64,6 +66,8 @@ import org.codehaus.plexus.registry.RegistryException;
 public class AdministrationServiceImpl
     implements AdministrationService
 {    
+    protected Logger log = LoggerFactory.getLogger( getClass() );
+
     private ArchivaConfiguration archivaConfiguration;
         
     private RepositoryContentConsumers repoConsumersUtil;
@@ -97,17 +101,31 @@ public class AdministrationServiceImpl
      */
     public Boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception
     {
+        List<DatabaseCleanupConsumer> cleanupConsumers = dbConsumersUtil.getAvailableCleanupConsumers();
         List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers =
             dbConsumersUtil.getAvailableUnprocessedConsumers();
         
         boolean found = false;
-        
-        for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
+        boolean isCleanupConsumer = false;        
+        for( DatabaseCleanupConsumer consumer : cleanupConsumers )
         {
             if( consumer.getId().equals( consumerId ) )
             {
                 found = true;
+                isCleanupConsumer = true;
                 break;
+            }
+        }
+        
+        if( !found )
+        {
+            for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
+            {
+                if( consumer.getId().equals( consumerId ) )
+                {
+                    found = true;
+                    break;
+                }
             }
         }
         
@@ -119,7 +137,14 @@ public class AdministrationServiceImpl
         Configuration config = archivaConfiguration.getConfiguration();
         DatabaseScanningConfiguration dbScanningConfig = config.getDatabaseScanning();
         
-        dbScanningConfig.addUnprocessedConsumer( consumerId );
+        if( isCleanupConsumer )
+        {
+            dbScanningConfig.addCleanupConsumer( consumerId );            
+        }
+        else
+        {
+            dbScanningConfig.addUnprocessedConsumer( consumerId );
+        }
         
         config.setDatabaseScanning( dbScanningConfig );        
         saveConfiguration( config );
@@ -262,9 +287,8 @@ public class AdministrationServiceImpl
             return false;
         }
 
+        log.info( "Queueing database task on request from administration service" );
         DatabaseTask task = new DatabaseTask();
-        task.setName( DefaultArchivaTaskScheduler.DATABASE_JOB + ":user-requested-via-web-service" );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
         
         taskScheduler.queueDatabaseTask( task );           
         
@@ -282,18 +306,12 @@ public class AdministrationServiceImpl
             throw new Exception( "Repository does not exist." );
         }
         
-        if ( taskScheduler.isProcessingAnyRepositoryTask() )
+        if ( taskScheduler.isProcessingRepositoryTask( repoId ) )
         {
-            if ( taskScheduler.isProcessingRepositoryTask( repoId ) )
-            {
-                return false;
-            }
+            return false;
         }
 
-        RepositoryTask task = new RepositoryTask();
-        task.setRepositoryId( repoId );
-        task.setName( DefaultArchivaTaskScheduler.REPOSITORY_JOB + ":" + repoId );
-        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+        RepositoryTask task = TaskCreator.createRepositoryTask( repoId );
 
         taskScheduler.queueRepositoryTask( task );          
         
@@ -307,7 +325,13 @@ public class AdministrationServiceImpl
     {
         List<String> consumers = new ArrayList<String>();
         
+        List<DatabaseCleanupConsumer> cleanupConsumers = dbConsumersUtil.getAvailableCleanupConsumers();
         List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers = dbConsumersUtil.getAvailableUnprocessedConsumers();
+        
+        for( DatabaseCleanupConsumer consumer : cleanupConsumers )
+        {
+            consumers.add( consumer.getId() );
+        }  
         
         for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
         {

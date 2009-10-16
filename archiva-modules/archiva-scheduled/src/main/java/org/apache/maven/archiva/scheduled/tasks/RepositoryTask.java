@@ -1,5 +1,9 @@
 package org.apache.maven.archiva.scheduled.tasks;
 
+import java.io.File;
+
+import org.codehaus.plexus.taskqueue.Task;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,16 +30,63 @@ package org.apache.maven.archiva.scheduled.tasks;
  * @version $Id: DataRefreshTask.java 525176 2007-04-03 15:21:33Z joakime $
  */
 public class RepositoryTask
-    implements ArchivaTask
+    implements Task
 {
-    String repositoryId;
-    
-    String name;
-    
-    String queuePolicy;
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( repositoryId == null ) ? 0 : repositoryId.hashCode() );
+        result = prime * result + ( ( resourceFile == null ) ? 0 : resourceFile.hashCode() );
+        return result;
+    }
 
-    long maxExecutionTime;
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+        if ( getClass() != obj.getClass() )
+            return false;
+        RepositoryTask other = (RepositoryTask) obj;
+        if ( repositoryId == null )
+        {
+            if ( other.repositoryId != null )
+                return false;
+        }
+        else if ( !repositoryId.equals( other.repositoryId ) )
+            return false;
+        if ( resourceFile == null )
+        {
+            if ( other.resourceFile != null )
+                return false;
+        }
+        else if ( !resourceFile.equals( other.resourceFile ) )
+            return false;
+        return true;
+    }
+
+    private String repositoryId;
     
+    private File resourceFile;
+    
+    private boolean updateRelatedArtifacts;
+    
+    private boolean scanAll;
+    
+    public boolean isScanAll()
+    {
+        return scanAll;
+    }
+
+    public void setScanAll( boolean scanAll )
+    {
+        this.scanAll = scanAll;
+    }
+
     public String getRepositoryId()
     {
         return repositoryId;
@@ -48,31 +99,33 @@ public class RepositoryTask
 
     public long getMaxExecutionTime()
     {
-        return maxExecutionTime;
+        return 0;
     }
 
-    public void setMaxExecutionTime( long maxExecutionTime )
+    public File getResourceFile()
     {
-        this.maxExecutionTime = maxExecutionTime;
+        return resourceFile;
     }
 
-    public String getName()
+    public void setResourceFile( File resourceFile )
     {
-        return name;
+        this.resourceFile = resourceFile;
     }
 
-    public void setName( String name )
+    public boolean isUpdateRelatedArtifacts()
     {
-        this.name = name;
+        return updateRelatedArtifacts;
     }
 
-    public String getQueuePolicy()
+    public void setUpdateRelatedArtifacts( boolean updateRelatedArtifacts )
     {
-        return queuePolicy;
+        this.updateRelatedArtifacts = updateRelatedArtifacts;
     }
 
-    public void setQueuePolicy( String queuePolicy )
+    @Override
+    public String toString()
     {
-        this.queuePolicy = queuePolicy;
+        return "RepositoryTask [repositoryId=" + repositoryId + ", resourceFile=" + resourceFile + ", scanAll="
+            + scanAll + ", updateRelatedArtifacts=" + updateRelatedArtifacts + "]";
     }
 }

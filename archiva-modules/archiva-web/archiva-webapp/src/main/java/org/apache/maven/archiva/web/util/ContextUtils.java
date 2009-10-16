@@ -34,11 +34,11 @@ import javax.servlet.jsp.PageContext;
  */
 public class ContextUtils
 {
-    private static final Map defaultSchemePortMap;
+    private static final Map<String, Integer> defaultSchemePortMap;
 
     static
     {
-        defaultSchemePortMap = new HashMap();
+        defaultSchemePortMap = new HashMap<String, Integer>();
         defaultSchemePortMap.put( "http", new Integer( 80 ) );
         defaultSchemePortMap.put( "https", new Integer( 443 ) );
     }

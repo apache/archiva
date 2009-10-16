@@ -117,6 +117,7 @@ public class AddProxyConnectorActionTest
         assertEquals( 1, connector.getProperties().size() );
     }
 
+    @SuppressWarnings("unchecked")
     public void testAddProxyConnectorCommit()
         throws Exception
     {
@@ -385,6 +386,7 @@ public class AddProxyConnectorActionTest
         archivaConfiguration.save( config );
     }
 
+    @SuppressWarnings("unchecked")
     private void populateProxyConnector( ProxyConnectorConfiguration connector )
     {
         connector.setProxyId( AbstractProxyConnectorFormAction.DIRECT_CONNECTION );

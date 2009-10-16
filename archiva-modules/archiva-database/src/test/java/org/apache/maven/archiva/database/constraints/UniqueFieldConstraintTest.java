@@ -61,7 +61,7 @@ public class UniqueFieldConstraintTest
 
     public ArchivaArtifact createArtifact( String groupId )
     {
-        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, "artifactId", "version", "classifier", "jar" );
+        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, "artifactId", "version", "classifier", "jar", "testrepo" );
 
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( "repoId" );
@@ -110,7 +110,7 @@ public class UniqueFieldConstraintTest
     private void assertConstraint( int expectedHits, SimpleConstraint constraint )
         throws Exception
     {
-        List results = archivaDao.query( constraint );
+        List<?> results = archivaDao.query( constraint );
         assertNotNull( "Repository Problems: Not Null", results );
         assertEquals( "Repository Problems: Results.size", expectedHits, results.size() );
     }

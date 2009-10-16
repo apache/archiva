@@ -19,6 +19,10 @@ package org.apache.maven.archiva.reporting.artifact;
  * under the License.
  */
 
+import java.io.File;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -27,11 +31,6 @@ import org.apache.maven.archiva.database.updater.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.reporting.DynamicReportSource;
-
-import java.io.File;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * DuplicateArtifactReportTest
@@ -51,6 +50,7 @@ public class DuplicateArtifactReportTest
 
     private ArtifactDAO artifactDao;
 
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -72,9 +72,8 @@ public class DuplicateArtifactReportTest
     public ArchivaArtifact createArtifact( String artifactId, String version )
     {
         ArchivaArtifact artifact =
-            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar" );
+            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar", TESTABLE_REPO );
         artifact.getModel().setLastModified( new Date() );
-        artifact.getModel().setRepositoryId( TESTABLE_REPO );
         return artifact;
     }
 
@@ -115,20 +114,18 @@ public class DuplicateArtifactReportTest
         // Setup entries for bad/duplicate in problem DB.
         pretendToRunDuplicateArtifactsConsumer();
 
-        List allArtifacts = artifactDao.queryArtifacts( null );
+        List<ArchivaArtifact> allArtifacts = artifactDao.queryArtifacts( null );
         assertEquals( "Total Artifact Count", 7, allArtifacts.size() );
 
         DuplicateArtifactReport report =
             (DuplicateArtifactReport) lookup( DynamicReportSource.class.getName(), "duplicate-artifacts" );
 
-        List results = report.getData();
+        List<RepositoryProblem> results = report.getData();
 
         System.out.println( "Results.size: " + results.size() );
         int i = 0;
-        Iterator it = results.iterator();
-        while ( it.hasNext() )
+        for ( RepositoryProblem problem : results )
         {
-            RepositoryProblem problem = (RepositoryProblem) it.next();
             System.out.println( "[" + ( i++ ) + "] " + problem.getMessage() );
         }
 
@@ -144,16 +141,14 @@ public class DuplicateArtifactReportTest
     private void pretendToRunDuplicateArtifactsConsumer()
         throws Exception
     {
-        List artifacts = dao.getArtifactDAO().queryArtifacts( null );
+        List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts( null );
         ArchivaArtifactConsumer consumer =
             (ArchivaArtifactConsumer) lookup( ArchivaArtifactConsumer.class.getName(), "duplicate-artifacts" );
         consumer.beginScan();
         try
         {
-            Iterator it = artifacts.iterator();
-            while ( it.hasNext() )
+            for ( ArchivaArtifact artifact : artifacts )
             {
-                ArchivaArtifact artifact = (ArchivaArtifact) it.next();
                 consumer.processArchivaArtifact( artifact );
             }
         }

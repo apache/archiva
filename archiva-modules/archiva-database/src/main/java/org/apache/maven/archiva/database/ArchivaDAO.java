@@ -37,7 +37,7 @@ public interface ArchivaDAO
      * @param constraint the constraint to use.
      * @return the List of results.
      */
-    List query( SimpleConstraint constraint );
+    List<?> query( SimpleConstraint constraint );
 
     /**
      * Perform a simple save of a peristable object to the database.

@@ -23,8 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.2-MRM1025-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>1.2.3-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-webapp</artifactId>
   <packaging>war</packaging>
@@ -69,12 +68,6 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-database-consumers</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-metadata-consumer</artifactId>
-      <version>1.2-MRM1025-SNAPSHOT</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -136,6 +129,12 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>httpunit</groupId>
+      <artifactId>httpunit</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -242,6 +241,8 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging-api</artifactId>
       <version>1.1</version>
+      <!-- provided by jcl-over-slf4j, don't want this in the webapp -->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.atlassian.xmlrpc</groupId>
@@ -274,47 +275,82 @@
           </excludes>
         </configuration>
       </plugin>
-       -->
+       -->     
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <version>2.1.1</version>
         <!-- This configuration is added to cleanup from war:inplace -->
-        <configuration>
+       <configuration>
           <filesets>
             <fileset>
-              <directory>${basedir}/src/main/webapp</directory>
+              <directory>${basedir}</directory>
               <includes>
                 <!-- TODO: META-INF shouldn't be required, seems to be an issue with the current war plugin -->
-                <include>META-INF</include>
-                <include>archiva-applet.jar</include>
-                <include>images/redback</include>
-                <!-- Images from other wars -->
-                <include>template/redback</include>
-                <!-- Templates from other wars -->
-                <include>WEB-INF/classes</include>
-                <!-- Classes and Resources from other wars -->
-                <include>WEB-INF/lib</include>
-                <!-- Dependencies from other wars -->
-                <include>WEB-INF/database</include>
-                <!-- Database location configured in application.xml -->
-                <include>WEB-INF/logs</include>
-                <!-- Log file location specified in application.xml -->
-                <include>redback</include>
-                <!-- plexus-security css and javascript -->
-                <include>css/redback</include>
-                <include>WEB-INF/jsp/redback</include>
-                <!-- plexus-security jsps -->
-                <include>WEB-INF/template/redback</include>
-                <!-- plexus-security xwork templates -->
-                <include>WEB-INF/logs</include>
-                <!-- Directory created by jetty:run -->
-                <include>WEB-INF/temp</include>
-                <!-- Directory created by jetty:run -->
+                <include>appserver-base</include>
               </includes>
             </fileset>
           </filesets>
         </configuration>
+      </plugin> 
+      <!-- hack for jetty:run, archiva web config files are checked in /WEB-INF/ dir -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-web-config-files</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <tasks>
+                <mkdir dir="${basedir}/target/archiva/WEB-INF/"/>
+                <copy todir="${basedir}/target/archiva/WEB-INF/">
+                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml"/>
+                </copy>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <copy todir="${basedir}/appserver-base">
+                  <fileset dir="src/appserver-base" />
+                </copy>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-redback-war</id>
+            <goals>
+             <goal>unpack</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+               <artifactItems>
+                 <artifactItem>
+                   <groupId>org.codehaus.redback</groupId>
+                   <artifactId>redback-struts2-content</artifactId>
+                   <version>${redback.version}</version>
+                   <type>war</type>
+                   <overWrite>false</overWrite>
+                   <outputDirectory>${project.build.directory}/redback</outputDirectory>
+                   <excludes>**/struts-security.xml</excludes>
+                 </artifactItem>
+               </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -324,32 +360,23 @@
           <!-- Some versions of maven-war-plugin (snapshots) have this incorrectly defaulted to true.
                Specifically setting this to false to avoid accidental jar file creation. -->
           <archiveClasses>false</archiveClasses>
-          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml</dependentWarExcludes>
+          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml,WEB-INF/lib/**</dependentWarExcludes>
           <warSourceExcludes>WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar</warSourceExcludes>
-        </configuration>
-        <!-- TODO: would be good to make the jetty plugin aware of these and remove the below -->
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <!-- Needed to get the plexus-security war overlay to do its thing before jetty:run -->
-              <goal>inplace</goal>
-            </goals>
-          </execution>  
-        </executions>
+        </configuration>        
       </plugin>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.14</version>
+        <version>${jetty.version}</version>
         <configuration>
-          <scanIntervalSeconds>10</scanIntervalSeconds>
-          <contextPath>/</contextPath>
-          <jettyEnvXml>src/jetty-env.xml</jettyEnvXml>
           <webAppConfig>
             <contextPath>/</contextPath>
-            <jettyEnvXmlFile>src/jetty-env.xml</jettyEnvXmlFile>
+            <baseResource implementation="org.mortbay.resource.ResourceCollection">
+              <resourcesAsCSV>src/main/webapp,target/archiva,target/redback</resourcesAsCSV>
+            </baseResource>
           </webAppConfig>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <jettyEnvXml>src/jetty-env.xml</jettyEnvXml>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>9091</port>
@@ -429,7 +456,7 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-maven-plugin</artifactId>
+        <artifactId>plexus-component-metadata</artifactId>
         <configuration>
           <roleDefaults>
             <roleDefault>
@@ -438,25 +465,6 @@
             </roleDefault>
           </roleDefaults>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <copy todir="${basedir}/appserver-base">
-                  <fileset dir="src/appserver-base" />
-                </copy>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

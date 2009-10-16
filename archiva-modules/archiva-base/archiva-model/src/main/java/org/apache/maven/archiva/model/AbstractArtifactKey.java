@@ -106,6 +106,11 @@ public class AbstractArtifactKey
     public String type = "";
 
     /**
+     * The Repository Id (JPOX Requires this remain public)
+     */
+    public String repositoryId = "";
+
+    /**
      * Default Constructor.  Required by JPOX.
      */
     public AbstractArtifactKey()
@@ -126,19 +131,22 @@ public class AbstractArtifactKey
         version = parts[2];
         classifier = parts[3];
         type = parts[4];
+        repositoryId = parts[5];
     }
 
     /**
      * Get the String representation of this object. - Required by JPOX.
      */
+    @Override
     public String toString()
     {
-        return StringUtils.join( new String[] { groupId, artifactId, version, classifier, type }, ':' );
+        return StringUtils.join( new String[] { groupId, artifactId, version, classifier, type, repositoryId }, ':' );
     }
 
     /**
      * Get the hashcode for this object's values - Required by JPOX.
      */
+    @Override
     public int hashCode()
     {
         final int PRIME = 31;
@@ -148,12 +156,14 @@ public class AbstractArtifactKey
         result = PRIME * result + ( ( version == null ) ? 0 : version.hashCode() );
         result = PRIME * result + ( ( classifier == null ) ? 0 : classifier.hashCode() );
         result = PRIME * result + ( ( type == null ) ? 0 : type.hashCode() );
+        result = PRIME * result + ( ( repositoryId == null ) ? 0 : repositoryId.hashCode() );
         return result;
     }
 
     /**
      * Get the equals for this object's values - Required by JPOX.
      */
+    @Override
     public boolean equals( Object obj )
     {
         if ( this == obj )
@@ -233,6 +243,18 @@ public class AbstractArtifactKey
             return false;
         }
 
+        if ( repositoryId == null )
+        {
+            if ( other.repositoryId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !repositoryId.equals( other.repositoryId ) )
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -286,4 +308,13 @@ public class AbstractArtifactKey
         }
     }
 
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = "";
+
+        if ( StringUtils.isNotBlank(repositoryId) )
+        {
+            this.repositoryId = repositoryId;
+        }
+    }
 }

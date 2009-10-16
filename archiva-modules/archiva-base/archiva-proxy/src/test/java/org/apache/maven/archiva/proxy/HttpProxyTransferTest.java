@@ -75,7 +75,7 @@ public class HttpProxyTransferTest
         throws Exception
     {
         super.setUp();
-
+     
         // Setup source repository (using default layout)
         String repoPath = "target/test-repository/managed/" + getName();
 

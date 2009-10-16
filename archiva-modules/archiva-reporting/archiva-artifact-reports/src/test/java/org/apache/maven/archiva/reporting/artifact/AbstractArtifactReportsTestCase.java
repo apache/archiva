@@ -19,20 +19,19 @@ package org.apache.maven.archiva.reporting.artifact;
  * under the License.
  */
 
+import java.io.File;
+import java.net.URL;
+import java.util.Properties;
+import java.util.Map.Entry;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.jpox.SchemaTool;
-
-import java.io.File;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 
 /**
  * AbstractArtifactReportsTestCase 
@@ -92,10 +91,8 @@ public abstract class AbstractArtifactReportsTestCase
 
         Properties properties = jdoFactory.getProperties();
 
-        for ( Iterator it = properties.entrySet().iterator(); it.hasNext(); )
+        for ( Entry<Object, Object> entry : properties.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) it.next();
-
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 

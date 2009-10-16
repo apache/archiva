@@ -27,6 +27,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelWriter;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
+import org.apache.maven.archiva.xml.XMLException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
@@ -136,7 +137,7 @@ public class ProjectModelExpressionExpanderTest
     }
 
     private ArchivaProjectModel createArchivaProjectModel( String path )
-        throws ProjectModelException
+        throws XMLException
     {
         ProjectModelReader reader = new ProjectModel400Reader();
 

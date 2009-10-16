@@ -42,10 +42,11 @@ public class JdoRepositoryProblemDAO
      */
     private JdoAccess jdo;
 
-    public List queryRepositoryProblems( Constraint constraint )
+    @SuppressWarnings("unchecked")
+    public List<RepositoryProblem> queryRepositoryProblems( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return jdo.queryObjects( RepositoryProblem.class, constraint );
+        return (List<RepositoryProblem>) jdo.queryObjects( RepositoryProblem.class, constraint );
     }
 
     public RepositoryProblem saveRepositoryProblem( RepositoryProblem problem )

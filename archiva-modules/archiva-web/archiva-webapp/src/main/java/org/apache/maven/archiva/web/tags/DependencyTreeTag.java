@@ -60,11 +60,12 @@ public class DependencyTreeTag
 
     private String artifactId;
 
+    @SuppressWarnings("unused")
     private String version;
 
     private String nodevar;
 
-    private Iterator treeIterator;
+    private Iterator<TreeEntry> treeIterator;
 
     private List<TreeEntry> tree;
 
@@ -104,6 +105,7 @@ public class DependencyTreeTag
         unExposeVariables();
     }
 
+    @SuppressWarnings("unchecked")
     public int doStartTag()
         throws JspException
     {

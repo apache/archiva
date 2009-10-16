@@ -81,7 +81,7 @@ public class RangeConstraintTest
     private void assertConstraint( int expectedHits, Constraint constraint )
         throws Exception
     {
-        List results = repoProblemDao.queryRepositoryProblems( constraint );
+        List<RepositoryProblem> results = repoProblemDao.queryRepositoryProblems( constraint );
         assertNotNull( "Range Constraint: Not Null", results );
         assertEquals( "Range Constraint: Results.size", expectedHits, results.size() );
     }

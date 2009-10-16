@@ -23,7 +23,6 @@ import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,7 +30,9 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.database.updater.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.database.updater.TestDatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -52,6 +53,7 @@ public abstract class AbstractArchivaDatabaseTestCase
 
     protected ArchivaDAO dao;
 
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -100,10 +102,8 @@ public abstract class AbstractArchivaDatabaseTestCase
 
         Properties properties = jdoFactory.getProperties();
 
-        for ( Iterator it = properties.entrySet().iterator(); it.hasNext(); )
+        for ( Map.Entry<Object,Object> entry : properties.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) it.next();
-
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 
@@ -129,6 +129,15 @@ public abstract class AbstractArchivaDatabaseTestCase
         pm.close();
 
         this.dao = (ArchivaDAO) lookup( ArchivaDAO.class.getName(), "jdo" );
+    }
+
+    protected TestDatabaseCleanupConsumer lookupTestCleanupConsumer()
+        throws Exception
+    {
+        TestDatabaseCleanupConsumer consumer = (TestDatabaseCleanupConsumer) lookup( DatabaseCleanupConsumer.class,
+                                                                                     "test-db-cleanup" );
+        assertNotNull( "Test Database Cleanup Consumer should not be null.", consumer );
+        return consumer;
     }
 
     protected TestDatabaseUnprocessedConsumer lookupTestUnprocessedConsumer()
@@ -175,7 +184,7 @@ public abstract class AbstractArchivaDatabaseTestCase
     protected ArtifactReference toArtifactReference( String id )
     {
         String parts[] = StringUtils.splitPreserveAllTokens( id, ':' );
-        assertEquals( "Should have 5 parts [" + id + "]", 5, parts.length );
+        assertEquals( "Should have 6 parts [" + id + "]", 6, parts.length );
     
         ArtifactReference ref = new ArtifactReference();
         ref.setGroupId( parts[0] );
@@ -183,7 +192,7 @@ public abstract class AbstractArchivaDatabaseTestCase
         ref.setVersion( parts[2] );
         ref.setClassifier( parts[3] );
         ref.setType( parts[4] );
-    
+        
         assertTrue( "Group ID should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getGroupId() ) );
         assertTrue( "Artifact ID should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getArtifactId() ) );
         assertTrue( "Version should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getVersion() ) );

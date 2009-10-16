@@ -20,6 +20,7 @@ package org.apache.maven.archiva.scheduled;
  */
 
 import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -36,21 +37,55 @@ public interface ArchivaTaskScheduler
      */
     public final static String ROLE = ArchivaTaskScheduler.class.getName();
 
-    public boolean isProcessingAnyRepositoryTask()
-        throws ArchivaException;
+    /**
+     * Checks if there is any database scanning task queued.
+     * 
+     * @return
+     * @throws ArchivaException
+     */
+    public boolean isProcessingDatabaseTask();
 
-    public boolean isProcessingDatabaseTask()
-        throws ArchivaException;
-
-    public boolean isProcessingRepositoryTask( String repositoryId )
-        throws ArchivaException;
-
+    /**
+     * Checks if a repository scanning task for the specified repository is queuedd.
+     * 
+     * @param repositoryId
+     * @return
+     * @throws ArchivaException
+     */
+    public boolean isProcessingRepositoryTask( String repositoryId );
+    
+    /**
+     * Adds the database task to the database scanning queue.
+     * 
+     * @param task
+     * @throws TaskQueueException
+     */
     public void queueDatabaseTask( DatabaseTask task )
         throws TaskQueueException;
 
+    /**
+     * Adds the repository task to the repo scanning queue.
+     * 
+     * @param task
+     * @throws TaskQueueException
+     */
     public void queueRepositoryTask( RepositoryTask task )
         throws TaskQueueException;
+    
+    /**
+     * Adds the indexing task to the indexing queue.
+     * 
+     * @param task
+     * @throws TaskQueueException
+     */
+    public void queueIndexingTask( ArtifactIndexingTask task )
+        throws TaskQueueException;
 
+    /**
+     * Schedules the database tasks using the set cron expression.
+     * 
+     * @throws TaskExecutionException
+     */
     public void scheduleDatabaseTasks()
         throws TaskExecutionException;
 

@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ import java.util.List;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRemoteRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRemoteRepositoryAction" instantiation-strategy="per-lookup"
  */
 public class DeleteRemoteRepositoryAction
     extends AbstractRemoteRepositoriesAction
@@ -74,6 +75,7 @@ public class DeleteRemoteRepositoryAction
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         removeRepository( repoid, configuration );
+        triggerAuditEvent( repoid, null, AuditEvent.DELETE_REMOTE_REPO );
         result = saveConfiguration( configuration );
         
         cleanupRepositoryData( existingRepository );

@@ -44,12 +44,12 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -100,13 +100,13 @@ public class RepositoryServlet
         // DeltaV requires 'Cache-Control' header for all methods except 'VERSION-CONTROL' and 'REPORT'.
         int methodCode = DavMethods.getMethodCode( request.getMethod() );
         boolean noCache =
-            DavMethods.isDeltaVMethod( webdavRequest ) &&
-                !( DavMethods.DAV_VERSION_CONTROL == methodCode || DavMethods.DAV_REPORT == methodCode );
+            DavMethods.isDeltaVMethod( webdavRequest )
+                && !( DavMethods.DAV_VERSION_CONTROL == methodCode || DavMethods.DAV_REPORT == methodCode );
         WebdavResponse webdavResponse = new WebdavResponseImpl( response, noCache );
         DavResource resource = null;
-        
+
         try
-        {   
+        {
             // make sure there is a authenticated user
             if ( !getDavSessionProvider().attachSession( webdavRequest ) )
             {
@@ -116,7 +116,7 @@ public class RepositoryServlet
             // check matching if=header for lock-token relevant operations
             resource =
                 getResourceFactory().createResource( webdavRequest.getRequestLocator(), webdavRequest, webdavResponse );
-            
+
             if ( !isPreconditionValid( webdavRequest, resource ) )
             {
                 webdavResponse.sendError( DavServletResponse.SC_PRECONDITION_FAILED );
@@ -155,7 +155,7 @@ public class RepositoryServlet
             }
         }
         finally
-        {  
+        {
             getDavSessionProvider().releaseSession( webdavRequest );
         }
     }
@@ -187,17 +187,15 @@ public class RepositoryServlet
         }
 
         resourceFactory =
-            (DavResourceFactory) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaDavResourceFactory.class ) );        
+            (DavResourceFactory) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaDavResourceFactory.class ) );
         locatorFactory = new ArchivaDavLocatorFactory();
-        
+
         ServletAuthenticator servletAuth =
             (ServletAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
         HttpAuthenticator httpAuth =
             (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
-        
-        ArchivaXworkUser archivaXworkUser =
-            (ArchivaXworkUser) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaXworkUser.class.getName() ) );
-        sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth, archivaXworkUser );
+
+        sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
     }
 
     public void configurationEvent( ConfigurationEvent event )
@@ -239,7 +237,7 @@ public class RepositoryServlet
     protected boolean isPreconditionValid( final WebdavRequest request, final DavResource davResource )
     {
         // check for read or write access to the resource when resource-based permission is implemented
-        
+
         return true;
     }
 
@@ -281,5 +279,26 @@ public class RepositoryServlet
     public String getAuthenticateHeaderValue( String repository )
     {
         return "Basic realm=\"Repository Archiva Managed " + repository + " Repository\"";
+    }
+
+    @Override
+    public void destroy()
+    {
+        configuration.removeListener( this );
+        
+        resourceFactory = null;
+        configuration = null;
+        locatorFactory = null;
+        sessionProvider = null;
+        repositoryMap.clear();
+        repositoryMap = null;
+        
+        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( getServletContext() );
+
+        if ( wac instanceof ConfigurableApplicationContext )
+        {
+            ( (ConfigurableApplicationContext) wac ).close();
+        }
+        super.destroy();
     }
 }

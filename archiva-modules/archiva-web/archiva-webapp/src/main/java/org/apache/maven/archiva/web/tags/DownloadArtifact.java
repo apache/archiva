@@ -40,7 +40,9 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,6 +58,8 @@ import javax.servlet.jsp.PageContext;
 public class DownloadArtifact
     extends Component
 {
+    private static final String DEFAULT_DOWNLOAD_IMAGE = "download-type-other.png";
+
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -81,6 +85,18 @@ public class DownloadArtifact
 
     private DecimalFormat decimalFormat;
 
+    private static final Map<String, String> DOWNLOAD_IMAGES = new HashMap<String,String>();
+
+    static
+    {
+        DOWNLOAD_IMAGES.put( "jar", "download-type-jar.png" );
+        DOWNLOAD_IMAGES.put( "java-source", "download-type-jar.png" );
+        DOWNLOAD_IMAGES.put( "pom", "download-type-pom.png" );
+        DOWNLOAD_IMAGES.put( "maven-plugin", "download-type-maven-plugin.png" );
+        DOWNLOAD_IMAGES.put( "maven-archetype", "download-type-archetype.png" );
+        DOWNLOAD_IMAGES.put( "maven-skin", "download-type-skin.png" );
+    }
+    
     public DownloadArtifact( ValueStack stack, PageContext pageContext )
     {
         super( stack );
@@ -111,18 +127,15 @@ public class DownloadArtifact
 
             if ( relatedArtifacts != null && relatedArtifacts.size() > 0 )
             {
-                String repoId = ( (ArchivaArtifact) relatedArtifacts.get( 0 ) ).getModel().getRepositoryId();
-                ManagedRepositoryContent repo = repositoryFactory.getManagedRepositoryContent( repoId );
-
-                String prefix = req.getContextPath() + "/repository/" + repoId;
+                String prefix = req.getContextPath() + "/repository/";
 
                 if ( mini )
                 {
-                    appendMini( sb, prefix, repo, relatedArtifacts );
+                    appendMini( sb, prefix, relatedArtifacts );
                 }
                 else
                 {
-                    appendNormal( sb, prefix, repo, relatedArtifacts );
+                    appendNormal( sb, prefix, relatedArtifacts );
                 }
             }
         }
@@ -162,14 +175,13 @@ public class DownloadArtifact
         /* do nothing */
     }
 
-    private void appendMini( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
-                             List<ArchivaArtifact> relatedArtifacts )
+    private void appendMini( StringBuffer sb, String prefix, List<ArchivaArtifact> relatedArtifacts )
     {
         // TODO: write 1 line download link for main artifact.
     }
 
-    private void appendNormal( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
-                               List<ArchivaArtifact> relatedArtifacts )
+    private void appendNormal( StringBuffer sb, String prefix, List<ArchivaArtifact> relatedArtifacts )
+        throws RepositoryNotFoundException, RepositoryException
     {
         /*
          * <div class="download">
@@ -209,14 +221,17 @@ public class DownloadArtifact
         sb.append( "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" );
         for ( ArchivaArtifact artifact : relatedArtifacts )
         {
+            String repoId = artifact.getModel().getRepositoryId();
+            ManagedRepositoryContent repo = repositoryFactory.getManagedRepositoryContent( repoId );
+
             sb.append( "\n<tr>" );
 
             sb.append( "<td class=\"icon\">" );
-            appendImageLink( sb, prefix, repo, artifact );
+            appendImageLink( sb, prefix + repoId, repo, artifact );
             sb.append( "</td>" );
 
             sb.append( "<td class=\"type\">" );
-            appendLink( sb, prefix, repo, artifact );
+            appendLink( sb, prefix + repoId, repo, artifact );
             sb.append( "</td>" );
 
             sb.append( "<td class=\"size\">" );
@@ -239,8 +254,14 @@ public class DownloadArtifact
                                   ArchivaArtifact artifact )
     {
         String type = artifact.getType();
-        String linkText = "<img src=\"" + req.getContextPath() + "/images/download-type-" + type + ".png\" />";
+        String linkText = "<img src=\"" + req.getContextPath() + "/images/" + getDownloadImage( type ) + "\" />";
         appendLink( sb, prefix, repo, artifact, linkText );
+    }
+
+    private String getDownloadImage( String type )
+    {
+        String name = DOWNLOAD_IMAGES.get( type );
+        return name != null ? name : DEFAULT_DOWNLOAD_IMAGE;
     }
 
     private static void appendLink( StringBuffer sb, String prefix, ManagedRepositoryContent repo,

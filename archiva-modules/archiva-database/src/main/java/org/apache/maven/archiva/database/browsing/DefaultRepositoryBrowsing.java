@@ -19,11 +19,10 @@ package org.apache.maven.archiva.database.browsing;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.PredicateUtils;
@@ -33,6 +32,7 @@ import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.database.constraints.ProjectsByArtifactUsageConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
@@ -54,7 +54,7 @@ public class DefaultRepositoryBrowsing
     implements RepositoryBrowsing
 {
     private Logger log = LoggerFactory.getLogger( DefaultRepositoryBrowsing.class );
-    
+
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -65,59 +65,85 @@ public class DefaultRepositoryBrowsing
      */
     private DatabaseUpdater dbUpdater;
 
-    public BrowsingResults getRoot( String principle, List<String> observableRepositoryIds )
+    /**
+     * @see RepositoryBrowsing#getRoot(String, List)
+     */
+    @SuppressWarnings("unchecked")
+    public BrowsingResults getRoot( final String principal, final List<String> observableRepositoryIds )
     {
-        List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds ) );
+        final BrowsingResults results = new BrowsingResults();
 
-        BrowsingResults results = new BrowsingResults();
-        results.setSelectedRepositoryIds( observableRepositoryIds );
+        if ( !observableRepositoryIds.isEmpty() )
+        {
+            final List<String> groups = (List<String>) dao.query( new UniqueGroupIdConstraint( observableRepositoryIds ) );
+            results.setSelectedRepositoryIds( observableRepositoryIds );
+            results.setGroupIds( GroupIdFilter.filterGroups( groups ) );
+        }
+        return results;
+    }
 
-        results.setGroupIds( GroupIdFilter.filterGroups( groups ) );
+    /**
+     * @see RepositoryBrowsing#selectArtifactId(String, List, String, String)
+     */
+    @SuppressWarnings("unchecked")
+    public BrowsingResults selectArtifactId( final String principal, final List<String> observableRepositoryIds,
+                                             final String groupId, final String artifactId )
+    {
+        final BrowsingResults results = new BrowsingResults( groupId, artifactId );
+
+        if ( !observableRepositoryIds.isEmpty() )
+        {
+            // NOTE: No group Id or artifact Id's should be returned here.
+            List<String> versions =
+                (List<String>) dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
+            results.setSelectedRepositoryIds( observableRepositoryIds );
+
+            results.setVersions( processSnapshots( versions ) );
+        }
+        return results;
+    }
+
+    /**
+     * @see RepositoryBrowsing#selectGroupId(String, List, String)
+     */
+    @SuppressWarnings("unchecked")
+    public BrowsingResults selectGroupId( final String principal, final List<String> observableRepositoryIds,
+                                          final String groupId )
+    {
+        final BrowsingResults results = new BrowsingResults( groupId );
+
+        if ( !observableRepositoryIds.isEmpty() )
+        {
+            final List<String> groups = (List<String>) dao.query( new UniqueGroupIdConstraint( observableRepositoryIds, groupId ) );
+            final List<String> artifacts =
+                (List<String>) dao.query( new UniqueArtifactIdConstraint( observableRepositoryIds, groupId ) );
+
+            // Remove searched for groupId from groups list.
+            // Easier to do this here, vs doing it in the SQL query.
+            CollectionUtils.filter( groups, NotPredicate.getInstance( PredicateUtils.equalPredicate( groupId ) ) );
+
+            results.setGroupIds( groups );
+            results.setArtifacts( artifacts );
+        }
 
         return results;
     }
 
-    public BrowsingResults selectArtifactId( String principle, List<String> observableRepositoryIds, String groupId,
-                                             String artifactId )
-    {
-        // NOTE: No group Id or artifact Id's should be returned here. 
-        List<String> versions = dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
-
-        BrowsingResults results = new BrowsingResults( groupId, artifactId );
-        results.setSelectedRepositoryIds( observableRepositoryIds );
-
-        processSnapshots( versions );
-
-        results.setVersions( versions );
-
-        return results;
-    }
-
-    public BrowsingResults selectGroupId( String principle, List<String> observableRepositoryIds, String groupId )
-    {
-        List<String> groups = dao.query( new UniqueGroupIdConstraint( observableRepositoryIds, groupId ) );
-        List<String> artifacts = dao.query( new UniqueArtifactIdConstraint( observableRepositoryIds, groupId ) );
-
-        BrowsingResults results = new BrowsingResults( groupId );
-
-        // Remove searched for groupId from groups list.
-        // Easier to do this here, vs doing it in the SQL query.
-        CollectionUtils.filter( groups, NotPredicate.getInstance( PredicateUtils.equalPredicate( groupId ) ) );
-
-        results.setGroupIds( groups );
-        results.setArtifacts( artifacts );
-
-        return results;
-    }
-
-    public ArchivaProjectModel selectVersion( String principle, List<String> observableRepositoryIds, String groupId,
-                                              String artifactId, String version )
+    /**
+     * @see RepositoryBrowsing#selectVersion(String, List, String, String, String)
+     */
+    public ArchivaProjectModel selectVersion( final String principal, final List<String> observableRepositoryIds,
+                                              final String groupId, final String artifactId, final String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        ArchivaArtifact pomArtifact = getArtifact( principle, observableRepositoryIds, groupId, artifactId, version );
+        if ( observableRepositoryIds.isEmpty() )
+        {
+            throw new ArchivaDatabaseException( "There are no observable repositories for the user " + principal );
+        }
+
+        ArchivaArtifact pomArtifact = getArtifact( principal, observableRepositoryIds, groupId, artifactId, version );
 
         ArchivaProjectModel model;
-        version = pomArtifact.getVersion();
 
         if ( !pomArtifact.getModel().isProcessed() )
         {
@@ -125,40 +151,93 @@ public class DefaultRepositoryBrowsing
             dbUpdater.updateUnprocessed( pomArtifact );
         }
 
-        model = getProjectModel( groupId, artifactId, version );
+        model = getProjectModel( groupId, artifactId, pomArtifact.getVersion() );
 
         return model;
     }
-    
-    public String getRepositoryId( String principle, List<String> observableRepositoryIds, String groupId,
-                                   String artifactId, String version )
+
+    public String getRepositoryId( final String principal, final List<String> observableRepositoryIds,
+                                   final String groupId, final String artifactId, final String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        ArchivaArtifact pomArchivaArtifact =
-            getArtifact( principle, observableRepositoryIds, groupId, artifactId, version );
+        if ( observableRepositoryIds.isEmpty() )
+        {
+            throw new ArchivaDatabaseException( "There are no observable repositories for the user " + principal );
+        }
 
-        return pomArchivaArtifact.getModel().getRepositoryId();
+        try
+        {
+            ArchivaArtifact pomArchivaArtifact =
+                getArtifact( principal, observableRepositoryIds, groupId, artifactId, version );
+
+            return pomArchivaArtifact.getModel().getRepositoryId();
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            return getNoPomArtifactRepoId( principal, observableRepositoryIds, groupId, artifactId, version,
+                                           observableRepositoryIds.get( 0 ) );
+        }
     }
-    
-    private ArchivaArtifact getArtifact( String principle, List<String> observableRepositoryIds, String groupId,
-                                         String artifactId, String version )
+
+    /**
+     * @see RepositoryBrowsing#getOtherSnapshotVersions(List, String, String, String)
+     */
+    @SuppressWarnings("unchecked")
+    public List<String> getOtherSnapshotVersions( List<String> observableRepositoryIds, String groupId,
+                                                 String artifactId, String version )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        List<String> timestampedVersions = new ArrayList<String>();
+
+        if ( VersionUtil.isSnapshot( version ) )
+        {
+            List<String> versions =
+                (List<String>) dao.query( new UniqueVersionConstraint( observableRepositoryIds, groupId, artifactId ) );
+
+            for ( String uniqueVersion : versions )
+            {   
+                if ( VersionUtil.getBaseVersion( uniqueVersion ).equals( version ) || 
+                        VersionUtil.getBaseVersion( uniqueVersion ).equals( VersionUtil.getBaseVersion( version ) ) )
+                {
+                    if ( !timestampedVersions.contains( uniqueVersion ) )
+                    {
+                        timestampedVersions.add( uniqueVersion );
+                    }
+                }      
+            }
+        }
+
+        return timestampedVersions;
+    }
+
+    private ArchivaArtifact getArtifact( final String principal, final List<String> observableRepositoryIds,
+                                         final String groupId, final String artifactId, final String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         ArchivaArtifact pomArtifact = null;
 
-        try
+        for ( final String repositoryId : observableRepositoryIds )
         {
-            pomArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, version, null, "pom" );
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            pomArtifact = handleGenericSnapshots( groupId, artifactId, version, pomArtifact );
+            try
+            {
+                pomArtifact =
+                    dao.getArtifactDAO().getArtifact( groupId, artifactId, version, null, "pom", repositoryId );               
+                break;
+            }
+            catch ( ArchivaDatabaseException e )
+            {
+                pomArtifact = handleGenericSnapshots( groupId, artifactId, version, repositoryId );
+            }
         }
 
         if ( pomArtifact == null )
         {
-            throw new ObjectNotFoundException( "Unable to find artifact [" + Keys.toKey( groupId, artifactId, version )
-                + "]" );
+            String type = getArtifactType( groupId, artifactId, version );
+
+            // We dont want these to persist in the database
+            pomArtifact =
+                new ArchivaArtifact( groupId, artifactId, version, null, type, observableRepositoryIds.get( 0 ) );
+            pomArtifact.getModel().setWhenProcessed( new Date() );
         }
 
         // Allowed to see this?
@@ -168,95 +247,85 @@ public class DefaultRepositoryBrowsing
         }
         else
         {
-            throw new ObjectNotFoundException( "Unable to find artifact " + Keys.toKey( groupId, artifactId, version )
-                + " in observable repository [" + StringUtils.join( observableRepositoryIds.iterator(), ", " )
-                + "] for user " + principle );
+            throw new ObjectNotFoundException( "Unable to find artifact " + Keys.toKey( groupId, artifactId, version ) +
+                " in observable repository [" + StringUtils.join( observableRepositoryIds.iterator(), ", " ) +
+                "] for user " + principal );
         }
     }
 
-    public List<ArchivaProjectModel> getUsedBy( String principle, List<String> observableRepositoryIds, String groupId,
-                                                String artifactId, String version )
+    public List<ArchivaProjectModel> getUsedBy( final String principal, final List<String> observableRepositoryIds,
+                                                final String groupId, final String artifactId, final String version )
         throws ArchivaDatabaseException
     {
-        ProjectsByArtifactUsageConstraint constraint = new ProjectsByArtifactUsageConstraint( groupId, artifactId,
-                                                                                              version );
+        ProjectsByArtifactUsageConstraint constraint =
+            new ProjectsByArtifactUsageConstraint( groupId, artifactId, version );
         List<ArchivaProjectModel> results = dao.getProjectModelDAO().queryProjectModels( constraint );
         if ( results == null )
         {
             // defensive. to honor contract as specified. never null.
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         return results;
     }
 
     /**
-     * Add generic (*-SNAPSHOT) snapshot versions in the list for artifacts with only unique version (timestamped)
-     * snapshots.
-     * <p/>
-     * Ex.
-     * artifact1 has the ff. versions retrieved from the db:
-     * - 1.0
-     * - 1.1-20061118.060401-2
-     * - 1.1-20061118.060402-3
-     * - 2.2-20071007.070101-1
-     * - 2.2-20071007.070110-2
-     * - 2.2-SNAPSHOT
-     * <p/>
-     * This method will add a '1.1-SNAPSHOT' in the list since there is no generic snapshot entry for it.
-     * When this version is browsed, the pom of the latest snapshot will be displayed.
-     *
+     * Removes SNAPSHOT versions with build numbers. Retains only the generic SNAPSHOT version. 
+     * Example, if the list of versions are: 
+     * - 2.0 
+     * - 2.0.1 
+     * - 2.1-20070522.143249-1 
+     * - 2.1-20070522.157829-2 
+     * 
+     * the returned version list would contain 2.0, 2.0.1 and 2.1-SNAPSHOT.
+     * 
      * @param versions
      */
-    private void processSnapshots( List<String> versions )
+    private List<String> processSnapshots( List<String> versions )
     {
-        Map<String, String> snapshots = new HashMap<String, String>();
-
-        log.info( "Processing snapshots." );
+        List<String> cleansedVersions = new ArrayList<String>();
 
         for ( String version : versions )
         {
             if ( VersionUtil.isSnapshot( version ) )
-            {
+            {   
                 String baseVersion = VersionUtil.getBaseVersion( version );
-                if ( !snapshots.containsKey( baseVersion ) )
+                if ( !cleansedVersions.contains( baseVersion ) )
                 {
-                    snapshots.put( baseVersion, baseVersion );
+                    cleansedVersions.add( baseVersion );
                 }
+            }
+            else
+            {
+                cleansedVersions.add( version );
             }
         }
 
-        for ( Entry<String, String> entry : snapshots.entrySet() )
-        {
-            String baseVersion = entry.getValue();
-            if ( !versions.contains( baseVersion ) )
-            {
-                versions.add( baseVersion );
-            }
-        }
+        return cleansedVersions;
     }
 
     /**
-     * Handles querying of generic (*-SNAPSHOT) snapshot version.
-     * Process:
-     * - Get all the timestamped/unique versions of the artifact from the db
-     * - Sort the queried project models
-     * - Reverse the list of queried project models to get the latest timestamp version
-     * - Loop through the list and get the first one to match the generic (*-SNAPHOT) version
-     *
+     * Handles querying of generic (*-SNAPSHOT) snapshot version. Process: - Get all the timestamped/unique versions of
+     * the artifact from the db - Sort the queried project models - Reverse the list of queried project models to get
+     * the latest timestamp version - Loop through the list and get the first one to match the generic (*-SNAPHOT)
+     * version
+     * 
      * @param groupId
      * @param artifactId
      * @param version
      * @param pomArtifact
      * @throws ArchivaDatabaseException
      */
-    private ArchivaArtifact handleGenericSnapshots( String groupId, String artifactId, String version,
-                                                    ArchivaArtifact pomArtifact )
+    @SuppressWarnings("unchecked")
+    private ArchivaArtifact handleGenericSnapshots( final String groupId, final String artifactId,
+                                                    final String version, final String repositoryId )
         throws ArchivaDatabaseException
     {
+        ArchivaArtifact result = null;
+
         if ( VersionUtil.isGenericSnapshot( version ) )
         {
-            List<String> versions = dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
+            final List<String> versions = (List<String>) dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
             Collections.sort( versions );
             Collections.reverse( versions );
 
@@ -264,20 +333,28 @@ public class DefaultRepositoryBrowsing
             {
                 if ( VersionUtil.getBaseVersion( uniqueVersion ).equals( version ) )
                 {
-                    log.info( "Retrieving artifact with version " + uniqueVersion );
-                    pomArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, uniqueVersion, null, "pom" );
-
-                    return pomArtifact;
+                    try
+                    {
+                        log.debug( "Retrieving artifact with version " + uniqueVersion );
+                        result =
+                            dao.getArtifactDAO().getArtifact( groupId, artifactId, uniqueVersion, null, "pom", repositoryId );
+                        break;
+                    }
+                    catch ( ObjectNotFoundException e )
+                    {
+                        log.debug( "Artifact '" + groupId + ":" + artifactId + ":" + uniqueVersion +
+                            "' in repository '" + repositoryId + "' not found in the database." );
+                        continue;
+                    }
                 }
             }
         }
-
-        return null;
+        return result;
     }
 
     /**
      * Get the project model from the database.
-     *
+     * 
      * @param groupId
      * @param artifactId
      * @param version
@@ -287,22 +364,76 @@ public class DefaultRepositoryBrowsing
     private ArchivaProjectModel getProjectModel( String groupId, String artifactId, String version )
         throws ArchivaDatabaseException
     {
+        ArchivaProjectModel model = null;
+
         try
         {
-            ArchivaProjectModel model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
-
-            if ( model == null )
-            {
-                throw new ObjectNotFoundException( "Unable to find project model for ["
-                    + Keys.toKey( groupId, artifactId, version ) + "]" );
-            }
-
-            return model;
+            model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
         }
         catch ( ObjectNotFoundException e )
         {
-            throw e;
+            log.debug( "Unable to find project model for [" + Keys.toKey( groupId, artifactId, version ) + "]", e );
         }
+
+        if ( model == null )
+        {
+            model = new ArchivaProjectModel();
+            model.setGroupId( groupId );
+            model.setArtifactId( artifactId );
+            model.setVersion( version );
+        }
+
+        return model;
     }
-    
+
+    private String getNoPomArtifactRepoId( String principal, List<String> observableRepos, String groupId,
+                                           String artifactId, String version, String repositoryId )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        ArchivaArtifact artifact = null;
+
+        String type = getArtifactType( groupId, artifactId, version );
+
+        artifact = dao.getArtifactDAO().createArtifact( groupId, artifactId, version, null, type, repositoryId );
+
+        if ( artifact == null )
+        {
+            // Lets not persist these
+            artifact = new ArchivaArtifact( groupId, artifactId, version, null, type, repositoryId );
+        }
+
+        // Allowed to see this?
+        if ( !observableRepos.contains( artifact.getModel().getRepositoryId() ) )
+        {
+            throw new ObjectNotFoundException( "Unable to find artifact " + Keys.toKey( groupId, artifactId, version ) +
+                " in observable repository [" + StringUtils.join( observableRepos.iterator(), ", " ) + "] for user " +
+                principal );
+        }
+
+        return artifact.getModel().getRepositoryId();
+    }
+
+    private String getArtifactType( String groupId, String artifactId, String version )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        String type = "jar";
+
+        try
+        {
+            List<ArchivaArtifact> artifacts =
+                dao.getArtifactDAO().queryArtifacts( new ArtifactsRelatedConstraint( groupId, artifactId, version ) );
+
+            if ( artifacts.size() > 0 )
+            {
+                type = artifacts.get( 0 ).getType();
+            }
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            // swallow exception?
+        }
+
+        return type;
+    }
+
 }

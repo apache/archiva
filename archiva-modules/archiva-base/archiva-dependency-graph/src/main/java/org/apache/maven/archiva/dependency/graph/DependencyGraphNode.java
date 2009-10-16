@@ -43,12 +43,12 @@ public class DependencyGraphNode
     /**
      * The project level dependency management section for this artifact.
      */
-    private List dependencyManagement = new ArrayList();
+    private List<Dependency> dependencyManagement = new ArrayList<Dependency>();
 
     /**
      * The list of excluded groupId:artifactId for this node's sub-nodes. 
      */
-    private Set excludes = new HashSet();
+    private Set<String> excludes = new HashSet<String>();
 
     /**
      * Flag indicating that this node has been resolved from disk.
@@ -115,12 +115,12 @@ public class DependencyGraphNode
         return artifact;
     }
 
-    public List getDependencyManagement()
+    public List<Dependency> getDependencyManagement()
     {
         return dependencyManagement;
     }
 
-    public Set getExcludes()
+    public Set<String> getExcludes()
     {
         return excludes;
     }
@@ -158,12 +158,12 @@ public class DependencyGraphNode
         this.conflicted = conflicted;
     }
 
-    public void setDependencyManagement( List dependencyManagement )
+    public void setDependencyManagement( List<Dependency> dependencyManagement )
     {
         this.dependencyManagement = dependencyManagement;
     }
 
-    public void setExcludes( Set excludes )
+    public void setExcludes( Set<String> excludes )
     {
         this.excludes = excludes;
     }

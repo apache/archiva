@@ -34,6 +34,7 @@ import org.apache.maven.archiva.database.constraints.RepositoryContentStatistics
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 
@@ -47,7 +48,7 @@ import java.util.Map;
  * DeleteManagedRepositoryAction
  * 
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
 public class DeleteManagedRepositoryAction
     extends AbstractManagedRepositoriesAction
@@ -107,6 +108,7 @@ public class DeleteManagedRepositoryAction
             Configuration configuration = archivaConfiguration.getConfiguration();
             cleanupRepositoryData( existingRepository );
             removeRepository( repoid, configuration );
+            triggerAuditEvent( repoid, null, AuditEvent.DELETE_MANAGED_REPO );
             result = saveConfiguration( configuration );
 
             if ( result.equals( SUCCESS ) )
@@ -175,7 +177,7 @@ public class DeleteManagedRepositoryAction
 
         for ( ArchivaArtifact artifact : artifacts )
         {
-            getLogger().info( "Removing artifact " + artifact + " from the database." );
+            log.info( "Removing artifact " + artifact + " from the database." );
             try
             {
                 archivaDAO.getArtifactDAO().deleteArtifact( artifact );
@@ -188,12 +190,12 @@ public class DeleteManagedRepositoryAction
             }
             catch ( ObjectNotFoundException oe )
             {
-                getLogger().info( "Project model of artifact " + artifact + " does not exist in the database. " +
+                log.info( "Project model of artifact " + artifact + " does not exist in the database. " +
                                       "Moving on to the next artifact." );
             }
             catch ( ArchivaDatabaseException ae )
             {
-                getLogger().info( "Unable to delete artifact " + artifact + " from the database. " +
+                log.info( "Unable to delete artifact " + artifact + " from the database. " +
                                       "Moving on to the next artifact." );
             }
         }

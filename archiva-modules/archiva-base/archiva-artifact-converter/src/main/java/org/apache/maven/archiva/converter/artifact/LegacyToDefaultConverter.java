@@ -19,6 +19,19 @@ package org.apache.maven.archiva.converter.artifact;
  * under the License.
  */
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.transaction.FileTransaction;
@@ -45,20 +58,6 @@ import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-
 /**
  * LegacyToDefaultConverter 
  *
@@ -75,7 +74,7 @@ public class LegacyToDefaultConverter
      * 
      * @plexus.requirement role="org.codehaus.plexus.digest.Digester"
      */
-    private List digesters;
+    private List<Digester> digesters;
 
     /**
      * @plexus.requirement
@@ -102,7 +101,7 @@ public class LegacyToDefaultConverter
      */
     private boolean dryrun;
 
-    private Map warnings = new HashMap();
+    private Map<Artifact,List<String>> warnings = new HashMap<Artifact,List<String>>();
 
     public void convert( Artifact artifact, ArtifactRepository targetRepository )
         throws ArtifactConversionException
@@ -168,6 +167,7 @@ public class LegacyToDefaultConverter
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
         throws ArtifactConversionException
     {
@@ -250,11 +250,10 @@ public class LegacyToDefaultConverter
 
                     transaction.createFile( writer.toString(), targetFile, digesters );
 
-                    List warnings = translator.getWarnings();
+                    List<String> warnings = translator.getWarnings();
 
-                    for ( Iterator i = warnings.iterator(); i.hasNext(); )
+                    for ( String message : warnings )
                     {
-                        String message = (String) i.next();
                         addWarning( artifact, message );
                     }
                 }
@@ -289,10 +288,8 @@ public class LegacyToDefaultConverter
         throws IOException
     {
         boolean result = true;
-        Iterator it = digesters.iterator();
-        while ( it.hasNext() )
+        for ( Digester digester : digesters )
         {
-            Digester digester = (Digester) it.next();
             result &= verifyChecksum( file, file.getName() + "." + getDigesterFileExtension( digester ), digester, //$NON-NLS-1$
                                       artifact, "failure.incorrect." + getDigesterFileExtension( digester ) ); //$NON-NLS-1$
         }
@@ -441,6 +438,7 @@ public class LegacyToDefaultConverter
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact )
     {
         String groupIdKey;
@@ -488,12 +486,12 @@ public class LegacyToDefaultConverter
                 boolean foundVersion = false;
                 if ( metadata.getVersioning() != null )
                 {
-                    for ( Iterator i = metadata.getVersioning().getVersions().iterator(); i.hasNext() && !foundVersion; )
+                    for ( String version : (List<String>) metadata.getVersioning().getVersions() )
                     {
-                        String version = (String) i.next();
                         if ( version.equals( artifact.getBaseVersion() ) )
                         {
                             foundVersion = true;
+                            break;
                         }
                     }
                 }
@@ -668,10 +666,10 @@ public class LegacyToDefaultConverter
 
     private void addWarning( Artifact artifact, String message )
     {
-        List messages = (List) warnings.get( artifact );
+        List<String> messages = warnings.get( artifact );
         if ( messages == null )
         {
-            messages = new ArrayList();
+            messages = new ArrayList<String>();
         }
         messages.add( message );
         warnings.put( artifact, messages );
@@ -682,7 +680,7 @@ public class LegacyToDefaultConverter
         warnings.clear();
     }
 
-    public Map getWarnings()
+    public Map<Artifact, List<String>> getWarnings()
     {
         return warnings;
     }

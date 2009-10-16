@@ -19,6 +19,13 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.jdo.JDOHelper;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
@@ -26,14 +33,6 @@ import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.jdo.JDOHelper;
 
 /**
  * JdoProjectModelDAOTest 
@@ -65,7 +64,7 @@ public class JdoProjectModelDAOTest
         assertEquals( "org.apache.maven.archiva:archiva-test-module:1.0", savedKeyId );
 
         // Test that something has been saved.
-        List projects = projectDao.queryProjectModels( null );
+        List<ArchivaProjectModel> projects = projectDao.queryProjectModels( null );
         assertNotNull( projects );
         assertEquals( 1, projects.size() );
 
@@ -133,7 +132,7 @@ public class JdoProjectModelDAOTest
         assertNotNull( "Project model should not be null.", savedModel );
 
         // Test proper detachment of sub-objects.
-        List exprs = new ArrayList();
+        List<String> exprs = new ArrayList<String>();
         exprs.add( "parentProject.groupId" );
         exprs.add( "organization.name" );
         exprs.add( "issueManagement.system" );
@@ -149,10 +148,8 @@ public class JdoProjectModelDAOTest
         exprs.add( "licenses[0].url" );
         exprs.add( "mailingLists[0].name" );
 
-        Iterator it = exprs.iterator();
-        while ( it.hasNext() )
+        for ( String expr : exprs )
         {
-            String expr = (String) it.next();
             try
             {
                 Object obj = PropertyUtils.getProperty( model, expr );

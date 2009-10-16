@@ -22,6 +22,7 @@ package org.apache.maven.archiva.converter.artifact;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,7 +49,7 @@ public interface ArtifactConverter
      * 
      * @return the {@link Map}&lt;{@link Artifact}, {@link String}&gt; warning messages.
      */
-    Map getWarnings();
+    Map<Artifact, List<String>> getWarnings();
 
     /**
      * Clear the list of warning messages.

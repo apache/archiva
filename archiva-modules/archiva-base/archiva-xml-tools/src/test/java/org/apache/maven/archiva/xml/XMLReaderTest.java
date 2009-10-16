@@ -19,12 +19,11 @@ package org.apache.maven.archiva.xml;
  * under the License.
  */
 
-import org.dom4j.Element;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import org.dom4j.Element;
 
 /**
  * XMLReaderTest 
@@ -34,14 +33,13 @@ import java.util.List;
 public class XMLReaderTest
     extends AbstractArchivaXmlTestCase
 {
-    private void assertElementTexts( List elementList, String[] expectedTexts )
+    private void assertElementTexts( List<Element> elementList, String[] expectedTexts )
     {
         assertEquals( "Element List Size", expectedTexts.length, elementList.size() );
 
-        List texts = new ArrayList();
-        for ( Iterator iter = elementList.iterator(); iter.hasNext(); )
+        List<String> texts = new ArrayList<String>();
+        for ( Element element : elementList )
         {
-            Element element = (Element) iter.next();
             texts.add( element.getTextTrim() );
         }
 
@@ -58,7 +56,7 @@ public class XMLReaderTest
         File xmlFile = getExampleXml( "no-prolog-basic.xml" );
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
-        List fruits = reader.getElementList( "//basic/fruits/fruit" );
+        List<Element> fruits = reader.getElementList( "//basic/fruits/fruit" );
         assertElementTexts( fruits, new String[] { "apple", "cherry", "pear", "peach" } );
     }
 
@@ -68,7 +66,7 @@ public class XMLReaderTest
         File xmlFile = getExampleXml( "no-prolog-with-entities.xml" );
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
-        List names = reader.getElementList( "//basic/names/name" );
+        List<Element> names = reader.getElementList( "//basic/names/name" );
         assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
     }
 
@@ -78,7 +76,7 @@ public class XMLReaderTest
         File xmlFile = getExampleXml( "no-prolog-with-utf8.xml" );
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
-        List names = reader.getElementList( "//basic/names/name" );
+        List<Element> names = reader.getElementList( "//basic/names/name" );
         assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
     }
 
@@ -88,8 +86,21 @@ public class XMLReaderTest
         File xmlFile = getExampleXml( "prolog-with-utf8.xml" );
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
-        List names = reader.getElementList( "//basic/names/name" );
+        List<Element> names = reader.getElementList( "//basic/names/name" );
         assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
+    }
+    
+    // MRM-1136
+    public void testProxiedMetadataRead()
+        throws XMLException
+    {
+        File xmlFile = getExampleXml( "maven-metadata-codehaus-snapshots.xml" );
+        XMLReader reader = new XMLReader( "metadata", xmlFile );        
+        reader.removeNamespaces();
+        
+        Element groupId = reader.getElement( "//metadata/groupId" );        
+        assertNotNull( groupId );
+        assertEquals( "org.codehaus.mojo", groupId.getTextTrim() );   
     }
 
 }

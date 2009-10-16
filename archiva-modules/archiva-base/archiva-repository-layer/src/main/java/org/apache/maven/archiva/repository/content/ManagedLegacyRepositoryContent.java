@@ -151,7 +151,7 @@ public class ManagedLegacyRepositoryContent
     }
 
     public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
-        throws ContentNotFoundException, LayoutException
+        throws ContentNotFoundException
     {
         File artifactFile = toFile( reference );
         File repoDir = artifactFile.getParentFile();

@@ -42,7 +42,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
  * Shows the LegacyArtifactPath Tab for the administrator.
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="legacyArtifactPathAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="legacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
 public class LegacyArtifactPathAction
     extends PlexusActionSupport

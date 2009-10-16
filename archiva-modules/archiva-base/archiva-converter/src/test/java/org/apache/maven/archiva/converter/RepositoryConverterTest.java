@@ -19,20 +19,18 @@ package org.apache.maven.archiva.converter;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * Test the repository converter.
@@ -50,12 +48,6 @@ public class RepositoryConverterTest
     private ManagedRepositoryConfiguration targetRepository;
 
     private LegacyRepositoryConverter repositoryConverter;
-
-    private ArtifactFactory artifactFactory;
-
-    private static final int SLEEP_MILLIS = 100;
-
-    private I18N i18n;
 
     protected void setUp()
         throws Exception
@@ -82,10 +74,6 @@ public class RepositoryConverterTest
         targetRepository.setLayout( "default" );
 
         repositoryConverter = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE, "default" );
-
-        artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
-
-        i18n = (I18N) lookup( I18N.ROLE );
     }
 
     protected void tearDown()
@@ -146,7 +134,7 @@ public class RepositoryConverterTest
     {
         File legacyRepoDir = new File( sourceRepository.getBasedir() );
         File destRepoDir = new File( targetRepository.getLocation() );
-        List excludes = new ArrayList();
+        List<String> excludes = new ArrayList<String>();
         repositoryConverter.convertLegacyRepository( legacyRepoDir, destRepoDir, excludes );
     }
 }

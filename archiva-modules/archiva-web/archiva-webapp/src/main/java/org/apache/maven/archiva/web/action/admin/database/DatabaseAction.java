@@ -28,9 +28,10 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
-import org.apache.maven.archiva.web.action.admin.scanning.AdminRepositoryConsumerComparator;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
@@ -43,11 +44,11 @@ import com.opensymphony.xwork2.Preparable;
  * DatabaseAction
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="databaseAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="databaseAction" instantiation-strategy="per-lookup"
  */
 public class DatabaseAction
     extends PlexusActionSupport
-    implements Preparable, SecureAction
+    implements Preparable, SecureAction, Auditable
 {
     /**
      * @plexus.requirement
@@ -64,12 +65,22 @@ public class DatabaseAction
     /**
      * List of available {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
      */
-    private List unprocessedConsumers;
+    private List<AdminDatabaseConsumer> unprocessedConsumers;
 
     /**
      * List of enabled {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
      */
-    private List enabledUnprocessedConsumers;
+    private List<String> enabledUnprocessedConsumers;
+
+    /**
+     * List of {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
+     */
+    private List<AdminDatabaseConsumer> cleanupConsumers;
+
+    /**
+     * List of enabled {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
+     */
+    private List<String> enabledCleanupConsumers;
 
     public void prepare()
         throws Exception
@@ -84,20 +95,63 @@ public class DatabaseAction
         addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getUnprocessedConsumers() );
         CollectionUtils.forAllDo( databaseConsumers.getAvailableUnprocessedConsumers(), addAdminDbConsumer );
         this.unprocessedConsumers = addAdminDbConsumer.getList();
-        Collections.sort( this.unprocessedConsumers, AdminRepositoryConsumerComparator.getInstance() );
+        Collections.sort( this.unprocessedConsumers, AdminDatabaseConsumerComparator.getInstance() );
+
+        addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getCleanupConsumers() );
+        CollectionUtils.forAllDo( databaseConsumers.getAvailableCleanupConsumers(), addAdminDbConsumer );
+        this.cleanupConsumers = addAdminDbConsumer.getList();
+        Collections.sort( this.cleanupConsumers, AdminDatabaseConsumerComparator.getInstance() );
     }
 
     public String updateUnprocessedConsumers()
     {
+        List<String> oldConsumers = archivaConfiguration.getConfiguration().getDatabaseScanning().getUnprocessedConsumers();
+        
         archivaConfiguration.getConfiguration().getDatabaseScanning().setUnprocessedConsumers(
             enabledUnprocessedConsumers );
+        
+        if ( enabledUnprocessedConsumers != null )
+        {
+            filterAddedConsumers( oldConsumers, enabledUnprocessedConsumers );
+            filterRemovedConsumers( oldConsumers, enabledUnprocessedConsumers );    
+        }
+        else
+        {
+            disableAllEnabledConsumers( oldConsumers );
+        }
+
+        return saveConfiguration();
+    }
+
+    public String updateCleanupConsumers()
+    {
+        List<String> oldConsumers = archivaConfiguration.getConfiguration().getDatabaseScanning().getCleanupConsumers();
+        
+        archivaConfiguration.getConfiguration().getDatabaseScanning().setCleanupConsumers( enabledCleanupConsumers );
+        
+        if ( enabledCleanupConsumers != null )
+        {
+            filterAddedConsumers( oldConsumers, enabledCleanupConsumers );
+            filterRemovedConsumers( oldConsumers, enabledCleanupConsumers );    
+        }
+        else 
+        {
+            disableAllEnabledConsumers( oldConsumers );
+        }
 
         return saveConfiguration();
     }
 
     public String updateSchedule()
     {
+        String oldCron = archivaConfiguration.getConfiguration().getDatabaseScanning().getCronExpression();
+        
         archivaConfiguration.getConfiguration().getDatabaseScanning().setCronExpression( cron );
+        
+        if ( !oldCron.equals( cron ) )
+        {
+            triggerAuditEvent( AuditEvent.DB_SCHEDULE + " " + cron );
+        }
 
         return saveConfiguration();
     }
@@ -111,7 +165,7 @@ public class DatabaseAction
         }
         catch ( RegistryException e )
         {
-            getLogger().error( e.getMessage(), e );
+            log.error( e.getMessage(), e );
             addActionError( "Error in saving configuration" );
             return INPUT;
         }
@@ -145,18 +199,73 @@ public class DatabaseAction
         this.cron = cron;
     }
 
-    public List getUnprocessedConsumers()
+    public List<AdminDatabaseConsumer> getCleanupConsumers()
+    {
+        return cleanupConsumers;
+    }
+
+    public List<AdminDatabaseConsumer> getUnprocessedConsumers()
     {
         return unprocessedConsumers;
     }
 
-    public List getEnabledUnprocessedConsumers()
+    public List<String> getEnabledUnprocessedConsumers()
     {
         return enabledUnprocessedConsumers;
     }
 
-    public void setEnabledUnprocessedConsumers( List enabledUnprocessedConsumers )
+    public void setEnabledUnprocessedConsumers( List<String> enabledUnprocessedConsumers )
     {
         this.enabledUnprocessedConsumers = enabledUnprocessedConsumers;
+    }
+
+    public List<String> getEnabledCleanupConsumers()
+    {
+        return enabledCleanupConsumers;
+    }
+
+    public void setEnabledCleanupConsumers( List<String> enabledCleanupConsumers )
+    {
+        this.enabledCleanupConsumers = enabledCleanupConsumers;
+    }
+    
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+    
+    private void filterAddedConsumers( List<String> oldList, List<String> newList )
+    {
+        for ( String consumer : newList )
+        {
+            if ( !oldList.contains( consumer ) )
+            {
+                triggerAuditEvent( consumer, AuditEvent.ENABLE_DB_CONSUMER );
+            }
+        }
+    }
+    
+    private void filterRemovedConsumers( List<String> oldList, List<String> newList )
+    {
+        for ( String consumer : oldList )
+        {
+            if ( !newList.contains( consumer ) )
+            {
+                triggerAuditEvent( consumer, AuditEvent.DISABLE_DB_CONSUMER );
+            }
+        }
+    }
+    
+    private void disableAllEnabledConsumers( List<String> enabledConsumers )
+    {
+        for( String consumer : enabledConsumers )
+        {
+            triggerAuditEvent( consumer, AuditEvent.DISABLE_DB_CONSUMER );
+        }
     }
 }

@@ -159,12 +159,12 @@ public class DependencyTreeGeneratorConsumer
     {
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return includes;
     }
@@ -263,9 +263,9 @@ public class DependencyTreeGeneratorConsumer
                 processedProjectCacheField.setAccessible( true );
             }
 
-            rawProjectCacheField.set( projectBuilder, new HashMap() );
+            rawProjectCacheField.set( projectBuilder, new HashMap<Object, Object>() );
 
-            processedProjectCacheField.set( projectBuilder, new HashMap() );
+            processedProjectCacheField.set( projectBuilder, new HashMap<Object, Object>() );
         }
         catch ( Exception e )
         {

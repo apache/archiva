@@ -62,7 +62,7 @@ public class ArchivaDavSessionProviderTest extends TestCase
         throws Exception
     {
         super.setUp();
-        sessionProvider = new ArchivaDavSessionProvider(new ServletAuthenticatorMock(), new HttpAuthenticatorMock(), null);
+        sessionProvider = new ArchivaDavSessionProvider( new ServletAuthenticatorMock(), new HttpAuthenticatorMock() );
         request = new WebdavRequestImpl(new HttpServletRequestMock(), null);
     }
     
@@ -85,6 +85,7 @@ public class ArchivaDavSessionProviderTest extends TestCase
         assertNull(request.getDavSession());
     }
     
+    @SuppressWarnings("unchecked")
     private class HttpServletRequestMock implements HttpServletRequest
     {
         public Object getAttribute(String arg0) {
@@ -359,13 +360,14 @@ public class ArchivaDavSessionProviderTest extends TestCase
             return true;
         }
 
-        public boolean isAuthorized(HttpServletRequest arg0, SecuritySession arg1, String arg2, boolean arg3)
+        public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
+                                     String permission )
             throws AuthorizationException, UnauthorizedException
         {
             return true;
         }
 
-        public boolean isAuthorized(String arg0, String arg1, boolean isWriteRequest)
+        public boolean isAuthorized( String principal, String repoId, String permission )
             throws UnauthorizedException
         {
             return true;

@@ -30,7 +30,7 @@ import org.apache.maven.archiva.model.RepositoryContentStatistics;
  */
 public interface RepositoryContentStatisticsDAO
 {
-    public List queryRepositoryContentStatistics( Constraint constraint )
+    public List<RepositoryContentStatistics> queryRepositoryContentStatistics( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
     public RepositoryContentStatistics saveRepositoryContentStatistics( RepositoryContentStatistics stats );

@@ -20,8 +20,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-modules</artifactId>
-    <version>1.2-MRM1025-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>1.2.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva-web</artifactId>
@@ -39,7 +38,7 @@
 
   <profiles>
     <profile>
-      <id>webapp-test</id>
+      <id>it</id>
       <modules>
         <module>archiva-webapp-test</module>        
       </modules>

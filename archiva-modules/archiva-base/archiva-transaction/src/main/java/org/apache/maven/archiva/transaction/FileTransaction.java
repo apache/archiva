@@ -22,8 +22,9 @@ package org.apache.maven.archiva.transaction;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import org.codehaus.plexus.digest.Digester;
 
 /**
  * Implement commit/rollback semantics for a set of files.
@@ -31,17 +32,15 @@ import java.util.List;
  */
 public class FileTransaction
 {
-    private List events = new ArrayList();
+    private List<AbstractTransactionEvent> events = new ArrayList<AbstractTransactionEvent>();
 
     public void commit()
         throws TransactionException
     {
-        List toRollback = new ArrayList( events.size() );
+        List<TransactionEvent> toRollback = new ArrayList<TransactionEvent>( events.size() );
 
-        for ( Iterator i = events.iterator(); i.hasNext(); )
+        for ( TransactionEvent event : events )
         {
-            TransactionEvent event = (TransactionEvent) i.next();
-
             try
             {
                 event.commit();
@@ -66,13 +65,11 @@ public class FileTransaction
         }
     }
 
-    private void rollback( List toRollback )
+    private void rollback( List<TransactionEvent> toRollback )
         throws IOException
     {
-        for ( Iterator i = toRollback.iterator(); i.hasNext(); )
+        for ( TransactionEvent event : toRollback )
         {
-            TransactionEvent event = (TransactionEvent) i.next();
-
             event.rollback();
         }
     }
@@ -82,7 +79,7 @@ public class FileTransaction
      * @param destination
      * @param digesters   {@link List}&lt;{@link org.codehaus.plexus.digest.Digester}> digesters to use for checksumming
      */
-    public void copyFile( File source, File destination, List digesters )
+    public void copyFile( File source, File destination, List<Digester> digesters )
     {
         events.add( new CopyFileEvent( source, destination, digesters ) );
     }
@@ -92,7 +89,7 @@ public class FileTransaction
      * @param destination
      * @param digesters   {@link List}&lt;{@link org.codehaus.plexus.digest.Digester}> digesters to use for checksumming
      */
-    public void createFile( String content, File destination, List digesters )
+    public void createFile( String content, File destination, List<Digester> digesters )
     {
         events.add( new CreateFileEvent( content, destination, digesters ) );
     }

@@ -33,7 +33,7 @@ import org.codehaus.plexus.registry.RegistryException;
  *
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteLegacyArtifactPathAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteLegacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
 public class DeleteLegacyArtifactPathAction
     extends PlexusActionSupport
@@ -47,9 +47,9 @@ public class DeleteLegacyArtifactPathAction
 
     public String delete()
     {
-        getLogger().info( "remove [" + path + "] from legacy artifact path resolution" );
+        log.info( "remove [" + path + "] from legacy artifact path resolution" );
         Configuration configuration = archivaConfiguration.getConfiguration();
-        for ( Iterator iterator = configuration.getLegacyArtifactPaths().iterator(); iterator.hasNext(); )
+        for ( Iterator<LegacyArtifactPath> iterator = configuration.getLegacyArtifactPaths().iterator(); iterator.hasNext(); )
         {
             LegacyArtifactPath legacyArtifactPath = (LegacyArtifactPath) iterator.next();
             if (legacyArtifactPath.match( path ))

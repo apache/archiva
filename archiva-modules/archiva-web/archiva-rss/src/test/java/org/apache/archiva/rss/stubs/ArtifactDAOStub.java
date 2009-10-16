@@ -38,7 +38,7 @@ public class ArtifactDAOStub
     private List<ArchivaArtifact> artifacts;
 
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
-                                           String type )
+                                           String type, String repositoryId )
     {
         // TODO Auto-generated method stub
         return null;
@@ -52,14 +52,14 @@ public class ArtifactDAOStub
     }
 
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
-                                        String type )
+                                        String type, String repositoryId )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List queryArtifacts( Constraint constraint )
+    public List<ArchivaArtifact> queryArtifacts( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         return artifacts;

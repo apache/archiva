@@ -40,21 +40,41 @@ public class DatabaseConsumersTest
         return dbconsumers;
     }
 
+    public void testGetAvailableCleanupConsumers()
+        throws Exception
+    {
+        DatabaseConsumers dbconsumers = lookupDbConsumers();
+        List<DatabaseCleanupConsumer> available = dbconsumers.getAvailableCleanupConsumers();
+        assertNotNull( "Available Cleanup Consumers should never be null.", available );
+
+        assertTrue( "Available Cleanup Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
+    }
+
     public void testGetAvailableUnprocessedConsumers()
         throws Exception
     {
         DatabaseConsumers dbconsumers = lookupDbConsumers();
-        List available = dbconsumers.getAvailableUnprocessedConsumers();
+        List<DatabaseUnprocessedArtifactConsumer> available = dbconsumers.getAvailableUnprocessedConsumers();
         assertNotNull( "Available Unprocessed Consumers should never be null.", available );
 
         assertTrue( "Available Unprocessed Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
+    }
+
+    public void testGetSelectedCleanupConsumers()
+        throws Exception
+    {
+        DatabaseConsumers dbconsumers = lookupDbConsumers();
+        List<ArchivaArtifactConsumer> available = dbconsumers.getSelectedCleanupConsumers();
+        assertNotNull( "Selected Cleanup Consumers should never be null.", available );
+
+        assertTrue( "Selected Cleanup Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );
     }
 
     public void testGetSelectedUnprocessedConsumers()
         throws Exception
     {
         DatabaseConsumers dbconsumers = lookupDbConsumers();
-        List available = dbconsumers.getSelectedUnprocessedConsumers();
+        List<ArchivaArtifactConsumer> available = dbconsumers.getSelectedUnprocessedConsumers();
         assertNotNull( "Selected Unprocessed Consumers should never be null.", available );
 
         assertTrue( "Selected Unprocessed Consumers should have entries.", CollectionUtils.isNotEmpty( available ) );

@@ -86,8 +86,6 @@ public interface RepositoryContentConsumer extends Consumer
      * NOTE: If the consumer opted to batch up processing requests in the {@link #processFile(String)} event
      * this would be the last opportunity to drain any processing queue's.
      * </p>
-     *
-     * @todo! this is never called by the RepositoryScannerInstance
      */
     public void completeScan();
 

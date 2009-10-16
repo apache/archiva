@@ -34,7 +34,7 @@ import java.util.Map;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="proxyConnectorsAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="proxyConnectorsAction" instantiation-strategy="per-lookup"
  */
 public class ProxyConnectorsAction
     extends AbstractProxyConnectorAction

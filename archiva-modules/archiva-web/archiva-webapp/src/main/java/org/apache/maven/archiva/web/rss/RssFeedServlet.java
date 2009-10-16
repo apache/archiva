@@ -38,8 +38,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.security.UserRepositories;
@@ -50,6 +50,7 @@ import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
@@ -90,8 +91,6 @@ public class RssFeedServlet
 
     private HttpAuthenticator httpAuth;
     
-    private ArchivaXworkUser archivaXworkUser;
-
     public void init( javax.servlet.ServletConfig servletConfig )
         throws ServletException
     {
@@ -103,7 +102,6 @@ public class RssFeedServlet
             (ServletAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
         httpAuth =
             (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
-        archivaXworkUser = (ArchivaXworkUser) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaXworkUser.class ) );
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
@@ -271,7 +269,7 @@ public class RssFeedServlet
 
                 if ( usernamePassword == null || usernamePassword.trim().equals( "" ) )
                 {
-                    repoIds = getObservableRepos( archivaXworkUser.getGuest() );
+                    repoIds = getObservableRepos( UserManager.GUEST_USERNAME );
                 }
                 else
                 {
@@ -281,7 +279,7 @@ public class RssFeedServlet
             }
             else
             {
-                repoIds = getObservableRepos( archivaXworkUser.getGuest() );
+                repoIds = getObservableRepos( UserManager.GUEST_USERNAME );
             }
         }
         else
@@ -296,8 +294,9 @@ public class RssFeedServlet
                 AuthenticationResult result = httpAuth.getAuthenticationResult( req, null );
                 SecuritySession securitySession = httpAuth.getSecuritySession( req.getSession( true ) );
 
-                if ( servletAuth.isAuthenticated( req, result ) &&
-                    servletAuth.isAuthorized( req, securitySession, repoId, false ) )
+                if ( servletAuth.isAuthenticated( req, result )
+                    && servletAuth.isAuthorized( req, securitySession, repoId,
+                                                 ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) )
                 {
                     return true;
                 }

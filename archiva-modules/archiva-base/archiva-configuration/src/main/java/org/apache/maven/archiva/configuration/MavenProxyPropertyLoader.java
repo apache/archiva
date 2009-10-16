@@ -89,7 +89,7 @@ public class MavenProxyPropertyLoader
             String url = getMandatoryProperty( props, "repo." + key + ".url" );
             String proxyKey = repoProps.getProperty( "proxy" );
 
-            int cachePeriod = Integer.parseInt( repoProps.getProperty( "cache.period", "60" ) );
+//            int cachePeriod = Integer.parseInt( repoProps.getProperty( "cache.period", "60" ) );
 
             RemoteRepositoryConfiguration repository = new RemoteRepositoryConfiguration();
             repository.setId( key );

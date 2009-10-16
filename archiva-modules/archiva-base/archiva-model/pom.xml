@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-base</artifactId>
-    <version>1.2-MRM1025-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-model</artifactId>
@@ -49,21 +49,32 @@
       <groupId>javax.jdo</groupId>
       <artifactId>jdo2-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-maven-plugin</artifactId>
+        <artifactId>plexus-component-metadata</artifactId>
       </plugin>
       <plugin>
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>
-        <version>1.0-alpha-17</version>
         <configuration>
-          <version>1.0.0</version>
+          <version>1.2.1</version>
           <packageWithVersion>false</packageWithVersion>
-          <model>src/main/mdo/archiva-base.xml</model>
+          <models>
+            <model>src/main/mdo/archiva-base.xml</model>
+          </models>
         </configuration>
         <executions>
           <execution>
@@ -71,13 +82,25 @@
             <goals>
               <goal>java</goal>
               <goal>xsd</goal>
-              <goal>jpox-jdo-mapping</goal>
-              <goal>jpox-metadata-class</goal>
-              <!--
-              <goal>xpp3-writer</goal>
-              <goal>xpp3-reader</goal>
-                -->
             </goals>
+          </execution>
+          <execution>
+            <id>archiva-jpox-jdo-mapping</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatorId>jpox-jdo-mapping</generatorId>
+            </configuration>
+          </execution>
+          <execution>
+            <id>archiva-jpox-metadata-class</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatorId>jpox-metadata-class</generatorId>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -136,6 +159,25 @@
             <goals>
               <goal>enhance</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+	  <!-- stupid hack because jpox/modello is not supported anymore and it has bugs
+    -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <copy file="${project.build.directory}/generated-sources/modello/org/apache/maven/archiva/model/package.jdo" todir="${project.build.outputDirectory}/org/apache/maven/archiva/model/" />
+              </tasks>
+            </configuration>
           </execution>
         </executions>
       </plugin>

@@ -387,6 +387,7 @@ public class ProjectModel400Writer
 
         Element elem = root.addElement( "organization" );
 
+        //addChildElement( elem, "name", organization.getOrganizationName() );
         addChildElement( elem, "name", organization.getName() );
         addChildElement( elem, "url", organization.getUrl() );
     }
@@ -505,6 +506,7 @@ public class ProjectModel400Writer
     /**
      * Fix the default namespace on all elements recursively.
      */
+    @SuppressWarnings("unchecked")
     private void fixDefaultNamespace( Element elem )
     {
         elem.remove( elem.getNamespace() );

@@ -19,15 +19,23 @@ package org.apache.maven.archiva.repository.project.resolvers;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
+import org.apache.maven.archiva.xml.XMLException;
 
-import java.io.File;
 
 /**
  * Resolve Project from managed repository. 
@@ -49,13 +57,40 @@ public class ManagedRepositoryProjectResolver
 
     public ArchivaProjectModel resolveProjectModel( VersionedReference reference )
         throws ProjectModelException
-    {
+    {        
         ArchivaArtifact artifact = new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference
-            .getVersion(), "", "pom" );
-
+            .getVersion(), "", "pom", repository.getId() );
+        
         File repoFile = repository.toFile( artifact );
-
-        return reader.read( repoFile );
+        
+        // MRM-1194
+        if( !repoFile.exists() && VersionUtil.isGenericSnapshot( reference.getVersion() ) )
+        {
+            // check if a timestamped version exists, get the latest if true
+            try
+            {
+                List<String> versions = new ArrayList<String>( repository.getVersions( reference ) );                
+                Collections.sort( versions, VersionComparator.getInstance() );                
+                String latestSnapshot = versions.get( versions.size() - 1 );
+                artifact =
+                    new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), latestSnapshot, "", "pom",
+                                         repository.getId() );
+                
+                repoFile = repository.toFile( artifact );
+            }
+            catch( ContentNotFoundException e )            
+            {
+                throw new ProjectModelException( e.getMessage(), e );
+            }
+        }
+        
+        try
+        {
+            return reader.read( repoFile );
+        }
+        catch ( XMLException e )
+        {
+            throw new ProjectModelException( e.getMessage(), e );
+        }
     }
-
 }

@@ -21,6 +21,7 @@ package org.apache.maven.archiva.repository.project.filters;
 
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
@@ -32,6 +33,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.resolvers.ManagedRepositoryProjectResolver;
+import org.apache.maven.archiva.xml.XMLException;
 
 import java.io.File;
 import java.util.HashMap;
@@ -56,7 +58,7 @@ public class EffectiveProjectModelFilterTest
     }
 
     private ArchivaProjectModel createArchivaProjectModel( String path )
-        throws ProjectModelException
+        throws XMLException
     {
         ProjectModelReader reader = new ProjectModel400Reader();
 
@@ -83,6 +85,7 @@ public class EffectiveProjectModelFilterTest
         assertEffectiveProject(
                 "/org/apache/maven/archiva/archiva-model/1.0-SNAPSHOT/archiva-model-1.0-SNAPSHOT.pom",
         "/archiva-model-effective.pom");
+        
         assertEffectiveProject(
                 "/test-project/test-project-endpoint-ejb/2.4.4/test-project-endpoint-ejb-2.4.4.pom",
         "/test-project-model-effective.pom");
@@ -157,7 +160,111 @@ public class EffectiveProjectModelFilterTest
                           effectiveModel.getVersion() );
         }
     }
+    
+    /*
+     * Test before and after the properties are evaluated. pom snippet: <maven.version>2.0.5</maven.version>
+     * <wagon.version>1.0-beta-2</wagon.version> <plexus-security.version>1.0-alpha-10-SNAPSHOT</plexus-security.version>
+     */
+    public void testEffectiveProjectProperty()
+        throws Exception
+    {
+        initTestResolverFactory();
+        EffectiveProjectModelFilter filter = lookupEffective();
 
+        String pomFile = "/org/apache/maven/archiva/archiva/1.0-SNAPSHOT/archiva-1.0-SNAPSHOT.pom";
+        ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY + pomFile );
+
+        String plexusSecurityVersion = "1.0-alpha-10-SNAPSHOT";
+        String wagonVersion = "1.0-beta-2";
+
+        boolean passedPlexusVersionChecking = false;
+        boolean passedWagonVersionChecking = false;
+
+        List<Dependency> startDeps = startModel.getDependencyManagement();
+        for ( Dependency startDep : startDeps )
+        {
+            if ( "org.codehaus.plexus.security".equals( startDep.getGroupId() ) )
+            {
+                assertEquals( startDep.getVersion(), "${plexus-security.version}" );
+            }
+            else if ( "org.apache.maven.wagon".equals( startDep.getGroupId() ) )
+            {
+                assertEquals( startDep.getVersion(), "${wagon.version}" );
+            }
+        }
+
+        ArchivaProjectModel effectiveModel = filter.filter( startModel );
+
+        List<Dependency> effectiveDeps = effectiveModel.getDependencyManagement();
+        for ( Dependency dependency : effectiveDeps )
+        {
+            if ( "org.codehaus.plexus.security".equals( dependency.getGroupId() ) )
+            {
+                assertEquals( dependency.getVersion(), plexusSecurityVersion );
+
+                if ( !passedPlexusVersionChecking )
+                {
+                    passedPlexusVersionChecking = true;
+                }
+            }
+            else if ( "org.apache.maven.wagon".equals( dependency.getGroupId() ) )
+            {
+                assertEquals( dependency.getVersion(), wagonVersion );
+
+                if ( !passedWagonVersionChecking )
+                {
+                    passedWagonVersionChecking = true;
+                }
+            }
+
+        }
+        assertTrue( passedPlexusVersionChecking );
+        assertTrue( passedWagonVersionChecking );
+    }
+
+    // MRM-1194
+    public void testEffectiveProjectPropertyExistingParentHasUniqueSnapshotVersion()
+        throws Exception
+    {
+        initTestResolverFactory();
+        EffectiveProjectModelFilter filter = lookupEffective();
+
+        String pomFile = "/org/apache/archiva/sample-project/2.1-SNAPSHOT/sample-project-2.1-SNAPSHOT.pom";
+        ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY + pomFile );
+
+        String buildHelperPluginVersion = "1.0";
+
+        boolean passedBuildHelperVersionChecking = false;
+ 
+        List<ArtifactReference> startPlugins = startModel.getPlugins();
+        for( ArtifactReference plugin : startPlugins )
+        {
+            if( "build-helper-maven-plugin".equals( plugin.getArtifactId() ) )
+            {
+                assertEquals( "${build-helper-maven-plugin.version}", plugin.getVersion() );
+            }
+        }
+        
+        ArchivaProjectModel effectiveModel = filter.filter( startModel );
+        
+        List<ArtifactReference> effectivePlugins = effectiveModel.getPlugins();
+        for( ArtifactReference plugin : effectivePlugins )
+        {
+            if( "build-helper-maven-plugin".equals( plugin.getArtifactId() ) )
+            {
+                assertEquals( buildHelperPluginVersion, plugin.getVersion() );
+                
+                if ( !passedBuildHelperVersionChecking )
+                {
+                    passedBuildHelperVersionChecking = true;
+                }
+            }
+        }
+        
+        assertTrue( passedBuildHelperVersionChecking );
+    }
+    
+    
     private ProjectModelResolverFactory initTestResolverFactory()
         throws Exception
     {
@@ -179,7 +286,7 @@ public class EffectiveProjectModelFilterTest
         assertContainsSameDependencies( "Dependencies", expectedModel.getDependencies(), effectiveModel
             .getDependencies() );
         assertContainsSameDependencies( "DependencyManagement", expectedModel.getDependencyManagement(), effectiveModel
-            .getDependencyManagement() );
+            .getDependencyManagement() );         
     }
 
     private void dumpDependencyList( String type, List<Dependency> deps )

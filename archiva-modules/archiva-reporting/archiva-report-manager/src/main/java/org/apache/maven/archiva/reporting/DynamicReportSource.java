@@ -19,17 +19,17 @@ package org.apache.maven.archiva.reporting;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
-
-import java.util.List;
 
 /**
  * DynamicReportSource 
  *
  * @version $Id$
  */
-public interface DynamicReportSource
+public interface DynamicReportSource<T>
 {
     /**
      * The human readable name of this report.
@@ -45,7 +45,7 @@ public interface DynamicReportSource
      * @throws ArchivaDatabaseException if there was a fundamental issue with accessing the database.
      * @throws ObjectNotFoundException  if no records were found.
      */
-    public List getData() throws ObjectNotFoundException, ArchivaDatabaseException;
+    public List<T> getData() throws ObjectNotFoundException, ArchivaDatabaseException;
 
     /**
      * Get the entire list of values for this report.
@@ -57,5 +57,5 @@ public interface DynamicReportSource
      * @throws ArchivaDatabaseException if there was a fundamental issue with accessing the database.
      * @throws ObjectNotFoundException  if no records were found.
      */
-    public List getData( DataLimits limits ) throws ObjectNotFoundException, ArchivaDatabaseException;
+    public List<T> getData( DataLimits limits ) throws ObjectNotFoundException, ArchivaDatabaseException;
 }

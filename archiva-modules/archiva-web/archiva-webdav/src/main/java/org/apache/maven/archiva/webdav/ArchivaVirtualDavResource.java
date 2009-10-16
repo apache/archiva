@@ -59,11 +59,7 @@ import org.joda.time.format.ISODateTimeFormat;
 public class ArchivaVirtualDavResource
     implements DavResource
 {
-    public static final String HIDDEN_PATH_PREFIX = ".";
-    
     private static final String COMPLIANCE_CLASS = "1";
-
-    private MimeTypes mimeTypes;
 
     private ArchivaDavResourceLocator locator;
 
@@ -84,7 +80,6 @@ public class ArchivaVirtualDavResource
     {
         this.localResources = localResources;
         this.logicalResource = logicalResource;
-        this.mimeTypes = mimeTypes;
         this.locator = locator;
         this.factory = factory;
         this.properties = new DavPropertySet();
@@ -122,6 +117,7 @@ public class ArchivaVirtualDavResource
         
     }
 
+    @SuppressWarnings("unchecked")
     public MultiStatusResponse alterProperties( List arg0 )
         throws DavException
     {       

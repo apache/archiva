@@ -19,14 +19,13 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * PropagateErrorsPolicy - a policy applied on error to determine how to treat the error.
@@ -35,7 +34,6 @@ import java.util.Properties;
  *                   role-hint="propagate-errors-on-update"
  */
 public class PropagateErrorsOnUpdateDownloadPolicy
-    extends AbstractLogEnabled
     implements DownloadErrorPolicy
 {
     /**

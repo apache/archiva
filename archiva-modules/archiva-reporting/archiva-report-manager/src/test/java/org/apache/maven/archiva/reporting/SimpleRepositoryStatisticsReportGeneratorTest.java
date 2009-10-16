@@ -54,7 +54,8 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
     private SimpleRepositoryStatisticsReportGenerator generator;
     
     private static final String REPO = "test-repo";
-    
+
+    @Override
     public void setUp()
         throws Exception
     {
@@ -94,10 +95,8 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
 
     private ArchivaArtifact createArtifact( String repoId, String groupId, String artifactId, String version, String type )
     {
-        ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, version, null, type );
+        ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, version, null, type, repoId );
         artifact.getModel().setLastModified( new Date() );
-        artifact.getModel().setRepositoryId( repoId );
-
         return artifact;
     }
     
@@ -343,7 +342,7 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         
         try
         {
-            List<RepositoryStatistics> data = generator.generateReport( repoContentStats, REPO, startDate, endDate, limits );
+            generator.generateReport( repoContentStats, REPO, startDate, endDate, limits );
             fail( "An ArchivaReportException should have been thrown." );
         }
         catch ( ArchivaReportException a )

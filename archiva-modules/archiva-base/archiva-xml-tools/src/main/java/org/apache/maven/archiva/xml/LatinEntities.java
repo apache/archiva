@@ -29,11 +29,11 @@ import java.util.Map;
  */
 public class LatinEntities
 {
-    private static final Map defaultEntityMap;
+    private static final Map<String, String> defaultEntityMap;
 
     static
     {
-        defaultEntityMap = new HashMap();
+        defaultEntityMap = new HashMap<String, String>();
 
         defaultEntityMap.put( "nbsp", "\u00a0" );
         defaultEntityMap.put( "iexcl", "\u00a1" );

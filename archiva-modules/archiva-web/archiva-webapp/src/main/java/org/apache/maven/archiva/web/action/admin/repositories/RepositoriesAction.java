@@ -48,7 +48,7 @@ import java.util.Map;
  * Shows the Repositories Tab for the administrator.
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoriesAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoriesAction" instantiation-strategy="per-lookup"
  */
 public class RepositoriesAction
     extends PlexusActionSupport
@@ -94,6 +94,7 @@ public class RepositoriesAction
         return bundle;
     }
 
+    @SuppressWarnings("unchecked")
     public void prepare()
     {
         Configuration config = archivaConfiguration.getConfiguration();
@@ -109,7 +110,7 @@ public class RepositoriesAction
         for ( ManagedRepositoryConfiguration repo : managedRepositories )
         {
             List<RepositoryContentStatistics> results =
-                dao.query( new MostRecentRepositoryScanStatistics( repo.getId() ) );
+                (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( repo.getId() ) );
             if ( !results.isEmpty() )
             {
                 repositoryStatistics.put( repo.getId(), results.get( 0 ) );

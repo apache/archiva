@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+  <groupId>org.apache.archiva.metadata.tests</groupId>
+  <artifactId>missing_artifact</artifactId>
+  <version>1.2-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20091011.133751</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+  </versioning>
+</metadata>

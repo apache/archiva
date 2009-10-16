@@ -24,7 +24,7 @@ import org.apache.jackrabbit.webdav.DavSession;
 
 public class ArchivaDavSession implements DavSession
 {
-    private final HashSet lockTokens = new HashSet();
+    private final HashSet<String> lockTokens = new HashSet<String>();
 
     public void addLockToken(String token) 
     {

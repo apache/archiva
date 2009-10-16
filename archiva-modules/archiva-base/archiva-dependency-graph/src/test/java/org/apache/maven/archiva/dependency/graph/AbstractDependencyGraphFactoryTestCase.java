@@ -19,6 +19,10 @@ package org.apache.maven.archiva.dependency.graph;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.AndPredicate;
@@ -34,11 +38,6 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * AbstractDependencyGraphFactoryTestCase 
@@ -91,12 +90,12 @@ public abstract class AbstractDependencyGraphFactoryTestCase
         }
     }
 
-    protected void assertDirectNodes( DependencyGraph graph, List expectedNodes, String scope )
+    @SuppressWarnings("unchecked")
+    protected void assertDirectNodes( DependencyGraph graph, List<DependencyGraphNode> expectedNodes, String scope )
     {
-        Iterator it;
         DependencyGraphNode rootNode = graph.getRootNode();
-        List rootEdges = graph.getEdgesFrom( rootNode );
-        List actualEdges = new ArrayList();
+        List<DependencyGraphEdge> rootEdges = graph.getEdgesFrom( rootNode );
+        List<DependencyGraphEdge> actualEdges = new ArrayList<DependencyGraphEdge>();
 
         Predicate directDep = NotPredicate.getInstance( new NodeFromParentPredicate() );
         Predicate scopedDirectDeps = AndPredicate.getInstance( new EdgeExactScopePredicate( scope ), directDep );
@@ -114,42 +113,36 @@ public abstract class AbstractDependencyGraphFactoryTestCase
 
             CollectionUtils.transform( actualEdges, new ToKeyTransformer() );
 
-            Collection missingActualKeys = CollectionUtils.subtract( actualEdges, expectedNodes );
-            it = missingActualKeys.iterator();
-            while ( it.hasNext() )
+            Collection<String> missingActualKeys = CollectionUtils.subtract( actualEdges, expectedNodes );
+            for ( String key : missingActualKeys )
             {
-                sb.append( "\n (Extra Actual) " ).append( (String) it.next() );
+                sb.append( "\n (Extra Actual) " ).append( key );
             }
 
-            Collection missingExpectedKeys = CollectionUtils.subtract( expectedNodes, actualEdges );
-            it = missingExpectedKeys.iterator();
-            while ( it.hasNext() )
+            Collection<String> missingExpectedKeys = CollectionUtils.subtract( expectedNodes, actualEdges );
+            for ( String key : missingExpectedKeys )
             {
-                sb.append( "\n (Extra Expected) " ).append( (String) it.next() );
+                sb.append( "\n (Extra Expected) " ).append( key );
             }
 
             fail( sb.toString() );
         }
 
-        it = actualEdges.iterator();
-        while ( it.hasNext() )
+        for ( DependencyGraphEdge edge : actualEdges )
         {
-            DependencyGraphEdge edge = (DependencyGraphEdge) it.next();
             String actualKey = DependencyGraphKeys.toKey( edge.getNodeTo() );
             assertTrue( "Direct <" + scope + "> node To [" + actualKey + "] exists in expectedNodes.", expectedNodes
                 .contains( actualKey ) );
         }
     }
 
-    protected void assertEdges( DependencyGraph graph, List expectedEdges )
+    protected void assertEdges( DependencyGraph graph, List<ExpectedEdge> expectedEdges )
     {
         assertNotNull( "Graph.edges should never be null.", graph.getEdges() );
         assertEquals( "Graph.edges.size()", expectedEdges.size(), graph.getEdges().size() );
 
-        Iterator it = expectedEdges.iterator();
-        while ( it.hasNext() )
+        for ( ExpectedEdge expectedEdge : expectedEdges )
         {
-            ExpectedEdge expectedEdge = (ExpectedEdge) it.next();
             Predicate edgePredicate = new GraphEdgePredicate( expectedEdge.from, expectedEdge.to );
 
             DependencyGraphEdge edge = (DependencyGraphEdge) CollectionUtils.find( graph.getEdges(), edgePredicate );
@@ -160,6 +153,7 @@ public abstract class AbstractDependencyGraphFactoryTestCase
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void assertGraph( DependencyGraph graph, String rootRefKey, List expectedNodeKeys )
     {
         assertNotNull( "Graph.nodes should never be null.", graph.getNodes() );
@@ -173,8 +167,7 @@ public abstract class AbstractDependencyGraphFactoryTestCase
 
         assertEquals( "Graph.root", rootRefKey, actualRootRef.toString() );
 
-        Iterator it;
-        List actualNodes = new ArrayList();
+        List<DependencyGraphNode> actualNodes = new ArrayList<DependencyGraphNode>();
 
         Predicate notRootNode = NotPredicate.getInstance( new NodePredicate( graph.getRootNode() ) );
         CollectionUtils.select( graph.getNodes(), notRootNode, actualNodes );
@@ -192,19 +185,17 @@ public abstract class AbstractDependencyGraphFactoryTestCase
 
         CollectionUtils.transform( actualNodes, new ToKeyTransformer() );
 
-        Collection missingActualKeys = CollectionUtils.subtract( actualNodes, expectedNodeKeys );
-        it = missingActualKeys.iterator();
-        while ( it.hasNext() )
+        Collection<String> missingActualKeys = CollectionUtils.subtract( actualNodes, expectedNodeKeys );
+        for ( String key : missingActualKeys )
         {
-            sb.append( "\n (Extra Actual) " ).append( (String) it.next() );
+            sb.append( "\n (Extra Actual) " ).append( key );
             fail = true;
         }
 
-        Collection missingExpectedKeys = CollectionUtils.subtract( expectedNodeKeys, actualNodes );
-        it = missingExpectedKeys.iterator();
-        while ( it.hasNext() )
+        Collection<String> missingExpectedKeys = CollectionUtils.subtract( expectedNodeKeys, actualNodes );
+        for ( String key : missingExpectedKeys )
         {
-            sb.append( "\n (Extra Expected) " ).append( (String) it.next() );
+            sb.append( "\n (Extra Expected) " ).append( key );
             fail = true;
         }
 
@@ -226,14 +217,14 @@ public abstract class AbstractDependencyGraphFactoryTestCase
         */
     }
 
-    protected void assertNodes( DependencyGraph graph, List expectedNodeKeys )
+    @SuppressWarnings("unchecked")
+    protected void assertNodes( DependencyGraph graph, List<String> expectedNodeKeys )
     {
         assertNotNull( "Graph.nodes should never be null.", graph.getNodes() );
         assertTrue( "Graph.nodes.size() should always be 1 or better.", graph.getNodes().size() >= 1 );
         // assertEquals( "Graph.nodes.size()", expectedNodeKeys.size(), graph.getNodes().size() );
 
-        Iterator it;
-        List actualNodes = new ArrayList();
+        List<DependencyGraphNode> actualNodes = new ArrayList<DependencyGraphNode>();
         actualNodes.addAll( graph.getNodes() );
 
         if ( expectedNodeKeys.size() != actualNodes.size() )
@@ -246,27 +237,23 @@ public abstract class AbstractDependencyGraphFactoryTestCase
 
             CollectionUtils.transform( actualNodes, new ToKeyTransformer() );
 
-            Collection missingActualKeys = CollectionUtils.subtract( actualNodes, expectedNodeKeys );
-            it = missingActualKeys.iterator();
-            while ( it.hasNext() )
+            Collection<String> missingActualKeys = CollectionUtils.subtract( actualNodes, expectedNodeKeys );
+            for ( String key : missingActualKeys )
             {
-                sb.append( "\n (Extra Actual) " ).append( (String) it.next() );
+                sb.append( "\n (Extra Actual) " ).append( key );
             }
 
-            Collection missingExpectedKeys = CollectionUtils.subtract( expectedNodeKeys, actualNodes );
-            it = missingExpectedKeys.iterator();
-            while ( it.hasNext() )
+            Collection<String> missingExpectedKeys = CollectionUtils.subtract( expectedNodeKeys, actualNodes );
+            for ( String key : missingExpectedKeys )
             {
-                sb.append( "\n (Extra Expected) " ).append( (String) it.next() );
+                sb.append( "\n (Extra Expected) " ).append( key );
             }
 
             fail( sb.toString() );
         }
 
-        it = graph.getNodes().iterator();
-        while ( it.hasNext() )
+        for ( DependencyGraphNode node : graph.getNodes() )
         {
-            DependencyGraphNode node = (DependencyGraphNode) it.next();
             assertNotNull( "Artifact reference in node should not be null.", node.getArtifact() );
             String key = ArtifactReference.toKey( node.getArtifact() );
             assertTrue( "Artifact reference [" + key + "] should be in expectedNodeKeys.", expectedNodeKeys
@@ -282,12 +269,11 @@ public abstract class AbstractDependencyGraphFactoryTestCase
         assertEquals( "Root Node", expectedKey, actualKey );
     }
 
-    protected void assertTransientNodes( DependencyGraph graph, List expectedNodes, String scope )
+    @SuppressWarnings("unchecked")
+    protected void assertTransientNodes( DependencyGraph graph, List<DependencyGraphNode> expectedNodes, String scope )
     {
-        Iterator it;
-
         // Gather up the transient nodes from the DependencyGraph.
-        List actualEdges = new ArrayList();
+        ArrayList<DependencyGraphEdge> actualEdges = new ArrayList<DependencyGraphEdge>();
 
         DependencyGraphNode rootNode = graph.getRootNode();
 
@@ -308,27 +294,23 @@ public abstract class AbstractDependencyGraphFactoryTestCase
 
             CollectionUtils.transform( actualEdges, new ToKeyTransformer() );
 
-            Collection missingActualKeys = CollectionUtils.subtract( actualEdges, expectedNodes );
-            it = missingActualKeys.iterator();
-            while ( it.hasNext() )
+            Collection<DependencyGraphNode> missingActualKeys = CollectionUtils.subtract( actualEdges, expectedNodes );
+            for ( DependencyGraphNode key : missingActualKeys )
             {
-                sb.append( "\n (Extra Actual) " ).append( (String) it.next() );
+                sb.append( "\n (Extra Actual) " ).append( key );
             }
 
-            Collection missingExpectedKeys = CollectionUtils.subtract( expectedNodes, actualEdges );
-            it = missingExpectedKeys.iterator();
-            while ( it.hasNext() )
+            Collection<DependencyGraphNode> missingExpectedKeys = CollectionUtils.subtract( expectedNodes, actualEdges );
+            for ( DependencyGraphNode key : missingExpectedKeys )
             {
-                sb.append( "\n (Extra Expected) " ).append( (String) it.next() );
+                sb.append( "\n (Extra Expected) " ).append( key );
             }
 
             fail( sb.toString() );
         }
 
-        it = actualEdges.iterator();
-        while ( it.hasNext() )
+        for ( DependencyGraphEdge edge : actualEdges )
         {
-            DependencyGraphEdge edge = (DependencyGraphEdge) it.next();
             String actualKey = DependencyGraphKeys.toKey( edge.getNodeTo() );
             assertTrue( "Transient Node To [" + actualKey + "] exists in expectedNodes.", expectedNodes
                 .contains( actualKey ) );

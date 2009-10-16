@@ -50,7 +50,7 @@ public class ManagedDefaultRepositoryContentTest
     public void testGetVersionsBadArtifact()
         throws Exception
     {
-        assertGetVersions( "bad_artifact", Collections.EMPTY_LIST );
+        assertGetVersions( "bad_artifact", Collections.<String>emptyList() );
     }
 
     public void testGetVersionsMissingMultipleVersions()

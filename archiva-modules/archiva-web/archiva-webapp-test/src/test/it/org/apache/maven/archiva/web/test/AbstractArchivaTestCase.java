@@ -19,7 +19,6 @@ package org.apache.maven.archiva.web.test;
  * under the License.
  */
 
-import org.apache.maven.shared.web.test.AbstractSeleniumTestCase;
 
 /**
  */

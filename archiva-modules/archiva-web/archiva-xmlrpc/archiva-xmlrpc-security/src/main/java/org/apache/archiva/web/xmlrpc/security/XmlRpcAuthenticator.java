@@ -32,7 +32,7 @@ import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
+import org.codehaus.plexus.redback.policy.PolicyViolationException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
@@ -86,7 +86,7 @@ public class XmlRpcAuthenticator
         {
             return securitySystem.authenticate( authenticationDataSource );
         }
-        catch ( AccountLockedException e )
+        catch ( PolicyViolationException e )
         {
             throw new XmlRpcException( 401, e.getMessage(), e );
         }

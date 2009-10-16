@@ -60,7 +60,7 @@ public class WagonManagerDependencyGraphTest
       assertNotNull( "Graph shouldn't be null.", graph );
 
       String expectedRootRef = "org.apache.maven.wagon:wagon-manager:2.0-SNAPSHOT";
-      List expectedNodes = new ArrayList();
+      List<String> expectedNodes = new ArrayList<String>();
 
       // Check for all nodes, regardless of scope.
       expectedNodes.clear();

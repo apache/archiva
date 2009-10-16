@@ -19,8 +19,7 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebResponse;
+import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
@@ -29,15 +28,14 @@ import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.ServletHandler;
 
-import java.io.File;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebResponse;
 
 /**
  * AbstractRepositoryServletProxiedTestCase 
@@ -121,14 +119,9 @@ public abstract class AbstractRepositoryServletProxiedTestCase
             repo.root.mkdirs();
         }
 
-        repo.server = new Server();
+        repo.server = new Server( 0 );
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         repo.server.setHandler( contexts );
-
-        SocketConnector connector = new SocketConnector();
-        connector.setPort( 0 ); // 0 means, choose and empty port. (we'll find out which, later)
-
-        repo.server.setConnectors( new Connector[] { connector } );
 
         ContextHandler context = new ContextHandler();
         context.setContextPath( repo.context );
@@ -142,7 +135,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
         repo.server.start();
 
-        int port = connector.getLocalPort();
+        int port = repo.server.getConnectors()[0].getLocalPort();
         repo.url = "http://localhost:" + port + repo.context;
         System.out.println( "Remote HTTP Server started on " + repo.url );
 

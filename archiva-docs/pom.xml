@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>1.2-MRM1025-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-docs</artifactId>
@@ -45,7 +45,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.1</version>
         <configuration>
           <descriptor>src/site/assembly/docs.xml</descriptor>
         </configuration>
@@ -123,7 +122,7 @@
                         <![CDATA[
                           javax.xml.xpath.XPath xpath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
                           org.xml.sax.InputSource is = new org.xml.sax.InputSource( new java.io.FileInputStream( "${basedir}/src/site/site.xml" ) );
-                          xpath.evaluate( "//project/body/breadcrumbs/item[@name='${project.version}']/@href", is ).equals( "/docs/${project.version}" )
+                          xpath.evaluate( "//project/body/breadcrumbs/item[@name='${project.version}']/@href", is ).equals( "/index.html" )
                         ]]>
                       </condition>
                     </evaluateBeanshell>

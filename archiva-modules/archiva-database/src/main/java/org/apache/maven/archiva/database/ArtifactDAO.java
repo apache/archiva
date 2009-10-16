@@ -52,13 +52,13 @@ public interface ArtifactDAO
      */
 
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
-                                           String type );
+                                           String type, String repositoryId );
 
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
-                                        String type )
+                                        String type, String repositoryId )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public List /*<ArchivaArtifact>*/queryArtifacts( Constraint constraint )
+    public List<ArchivaArtifact> queryArtifacts( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
     public ArchivaArtifact saveArtifact( ArchivaArtifact artifact )

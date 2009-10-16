@@ -175,13 +175,13 @@ public class DependencyGraphWalkerTest
         }
     }
 
-    private void assertPath( String[] expectedPath, List collectedPath )
+    private void assertPath( String[] expectedPath, List<String> collectedPath )
     {
         assertEquals( "Path.length", expectedPath.length, collectedPath.size() );
 
         for ( int i = 0; i < expectedPath.length; i++ )
         {
-            assertEquals( "Walk path[" + i + "]", expectedPath[i], (String) collectedPath.get( i ) );
+            assertEquals( "Walk path[" + i + "]", expectedPath[i], collectedPath.get( i ) );
         }
     }
 

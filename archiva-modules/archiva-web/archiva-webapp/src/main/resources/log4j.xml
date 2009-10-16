@@ -21,105 +21,120 @@
     </layout>
   </appender>
 
-  <!-- Help identify bugs during testing -->
-  <logger name="org.apache.maven.archiva">
-    <level value="info"/>
-    <appender-ref ref="rolling" />
-  </logger>
-  
-  <logger name="org.apache.archiva.repository.scanner">
+  <appender name="redbackAuditLog" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="${appserver.base}/logs/archiva-security-audit.log" />
+    <param name="append" value="true" />
+    <param name="datePattern" value="'.'yyyy-MM-dd" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} - %X{redback.currentUser} - %m%n"/>
+    </layout>
+  </appender>
+
+  <logger name="org.codehaus.plexus.redback.struts2.action.AuditEvent" additivity="false">
     <level value="info" />
-    <appender-ref ref="rolling" />
+    <appender-ref ref="redbackAuditLog" />
   </logger>
 
-  <logger name="org.apache.archiva.AuditLog">
+  <logger name="org.apache.archiva.AuditLog" additivity="false">
     <level value="info" />
     <appender-ref ref="auditlog" />
   </logger>
   
+<!-- INFO level loggers can use the default
+ <logger name="org.apache.archiva.consumers">
+    <level value="info"/>
+  </logger>
+  
+  <logger name="org.apache.archiva">
+    <level value="info"/>
+  </logger>
+  
+  <logger name="org.apache.maven.archiva">
+    <level value="info"/>
+  </logger>
+  
+  <logger name="org.codehaus.redback">
+    <level value="info"/>
+  </logger>
+
   <logger name="org.codehaus.plexus.redback">
     <level value="info"/>
-    <appender-ref ref="rolling" />
+  </logger>
+
+  <logger name="org.codehaus.plexus.mailsender.MailSender">
+    <level value="info"/>
+  </logger>
+
+  <logger name="org.quartz">
+    <level value="info"/>
+  </logger>
+
+  <logger name="org.apache.jasper">
+    <level value="info"/>
+  </logger>
+
+  <logger name="com.opensymphony.xwork2">
+    <level value="info"/>
+  </logger>
+
+  <logger name="org.apache.struts2">
+    <level value="info"/>
+  </logger>
+
+  <logger name="org.codehaus.plexus.PlexusContainer">
+    <level value="info"/>
+  </logger>
+-->
+
+  <!-- WebDav objects -->
+  <logger name="org.apache.maven.archiva.webdav.ArchivaDavResource">
+    <level value="info"/>
+  </logger>
+  
+  <logger name="org.apache.maven.archiva.webdav.ArchivaDavResourceFactory">
+    <level value="info"/>
   </logger>
 
   <!-- squelch noisy objects (for now) -->
   <logger name="org.apache.commons">
     <level value="warn"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <logger name="net.sf.ehcache">
     <level value="warn"/>
-    <appender-ref ref="rolling" />
-  </logger>
-
-  <logger name="org.codehaus.plexus.mailsender.MailSender">
-    <level value="info"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <logger name="org.codehaus.plexus.velocity">
     <level value="error"/>
-    <appender-ref ref="rolling" />
-  </logger>
-
-  <logger name="org.quartz">
-    <level value="info"/>
-    <appender-ref ref="rolling" />
-  </logger>
-
-  <logger name="org.apache.jasper">
-    <level value="info"/>
-    <appender-ref ref="rolling" />
-  </logger>
-
-  <logger name="com.opensymphony.xwork2">
-    <level value="info"/>
-    <appender-ref ref="rolling" />
-  </logger>
-
-  <logger name="org.apache.struts2">
-    <level value="info"/>
-    <appender-ref ref="rolling" />
-  </logger>
-
-  <logger name="org.codehaus.plexus.PlexusContainer">
-    <level value="info"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <logger name="JPOX">
     <level value="warn"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <logger name="JPOX.MetaData">
     <level value="error"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <logger name="JPOX.RDBMS.SQL">
     <level value="error"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <logger name="SQL">
     <level value="error"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <logger name="freemarker">
     <level value="warn"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <logger name="org.codehaus.plexus.component.manager.ClassicSingletonComponentManager">
     <level value="error"/>
-    <appender-ref ref="rolling" />
   </logger>
 
   <root>
     <priority value ="info" />
+    <appender-ref ref="rolling" />
   </root>
 
 </log4j:configuration>

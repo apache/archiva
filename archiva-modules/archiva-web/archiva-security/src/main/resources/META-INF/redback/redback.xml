@@ -25,6 +25,11 @@
           <name>archiva-run-indexer</name>
           <description>Run Archiva Indexer</description>
         </operation>
+         <operation>
+          <id>archiva-delete-artifact</id>
+          <name>archiva-delete-artifact</name>
+          <description>Delete Artifact</description>
+        </operation>
         <operation>
           <id>archiva-access-reports</id>
           <name>archiva-access-reports</name>
@@ -129,6 +134,13 @@
               <resource>global</resource>
               <permanent>true</permanent>
             </permission>
+            <permission>
+              <id>archiva-manage-users</id>
+              <name>archiva-manage-users</name>
+              <operation>archiva-manage-users</operation>
+              <resource>global</resource>
+              <permanent>true</permanent>
+            </permission>
           </permissions>
           <parentRoles>
             <parentRole>user-administrator</parentRole>
@@ -166,6 +178,9 @@
               <permanent>true</permanent>
             </permission>
           </permissions>
+          <childRoles>
+            <childRole>archiva-global-repository-observer</childRole>
+          </childRoles>
         </role>
         <role>
           <id>archiva-global-repository-observer</id>
@@ -180,6 +195,12 @@
           <namePrefix>Repository Manager</namePrefix>
           <assignable>true</assignable>
           <permissions>
+             <permission>
+              <id>archiva-delete-artifact</id>
+              <name>Delete Artifact</name>
+              <operation>archiva-delete-artifact</operation>
+              <resource>${resource}</resource>
+            </permission>
             <permission>
               <id>archiva-edit-repository</id>
               <name>Archiva Edit Repository</name>

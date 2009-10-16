@@ -47,7 +47,7 @@ public interface SimpleConstraint extends Constraint
      * 
      * @return the result class.
      */
-    public Class getResultClass();
+    public Class<?> getResultClass();
     
     /**
      * When working with result classes that are not persistable,

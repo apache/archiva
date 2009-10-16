@@ -35,7 +35,7 @@ public class UniqueArtifactIdConstraint
 {
     private StringBuffer sql = new StringBuffer();
     
-    private Class resultClass;
+    private Class<?> resultClass;
     
     /**
      * Obtain a set of unique ArtifactIds for the specified groupId.

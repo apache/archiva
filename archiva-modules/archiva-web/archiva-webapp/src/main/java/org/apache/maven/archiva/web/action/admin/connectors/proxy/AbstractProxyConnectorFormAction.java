@@ -19,7 +19,11 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Preparable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.policies.DownloadErrorPolicy;
@@ -27,11 +31,7 @@ import org.apache.maven.archiva.policies.Policy;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * AbstractProxyConnectorFormAction - generic fields and methods for either add or edit actions related with the 
@@ -109,6 +109,39 @@ public abstract class AbstractProxyConnectorFormAction
      */
     protected ProxyConnectorConfiguration connector;
 
+    protected List<String> escapePatterns( List<String> patterns )
+    {   
+        List<String> escapedPatterns = new ArrayList<String>();
+        if( patterns != null )
+        {
+            for( String pattern : patterns )
+            {
+                escapedPatterns.add( StringUtils.replace( pattern, "\\", "\\\\" ) );
+            }
+        }
+        
+        return escapedPatterns;
+    }
+    
+    protected List<String> unescapePatterns( List<String> patterns )
+    {
+        List<String> rawPatterns = new ArrayList<String>();
+        if( patterns != null )
+        {
+            for( String pattern : patterns )
+            {
+                rawPatterns.add( StringUtils.replace( pattern, "\\\\", "\\" ) );
+            }
+        }
+        
+        return rawPatterns;
+    }
+    
+    private String escapePattern( String pattern )
+    {
+        return StringUtils.replace( pattern, "\\", "\\\\" );
+    }
+        
     public String addBlackListPattern()
     {
         String pattern = getBlackListPattern();
@@ -117,16 +150,17 @@ public abstract class AbstractProxyConnectorFormAction
         {
             addActionError( "Cannot add a blank black list pattern." );
         }
-
+        
         if ( !hasActionErrors() )
         {
-            getConnector().getBlackListPatterns().add( pattern );
+            getConnector().getBlackListPatterns().add( escapePattern( pattern ) );
             setBlackListPattern( null );
         }
-
+        
         return INPUT;
     }
 
+    @SuppressWarnings("unchecked")
     public String addProperty()
     {
         String key = getPropertyKey();
@@ -163,10 +197,10 @@ public abstract class AbstractProxyConnectorFormAction
 
         if ( !hasActionErrors() )
         {
-            getConnector().getWhiteListPatterns().add( pattern );
+            getConnector().getWhiteListPatterns().add( escapePattern( pattern ) );
             setWhiteListPattern( null );
         }
-
+        
         return INPUT;
     }
 
@@ -231,20 +265,21 @@ public abstract class AbstractProxyConnectorFormAction
     public String removeBlackListPattern()
     {
         String pattern = getPattern();
-
+        
         if ( StringUtils.isBlank( pattern ) )
         {
             addActionError( "Cannot remove a blank black list pattern." );
         }
 
-        if ( !getConnector().getBlackListPatterns().contains( pattern ) )
+        if ( !getConnector().getBlackListPatterns().contains( pattern ) && 
+            !getConnector().getBlackListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
         {
             addActionError( "Non-existant black list pattern [" + pattern + "], no black list pattern removed." );
         }
 
         if ( !hasActionErrors() )
         {
-            getConnector().getBlackListPatterns().remove( pattern );
+            getConnector().getBlackListPatterns().remove( escapePattern( pattern ) );
         }
 
         setBlackListPattern( null );
@@ -287,14 +322,15 @@ public abstract class AbstractProxyConnectorFormAction
             addActionError( "Cannot remove a blank white list pattern." );
         }
 
-        if ( !getConnector().getWhiteListPatterns().contains( pattern ) )
+        if ( !getConnector().getWhiteListPatterns().contains( pattern ) &&
+                !getConnector().getWhiteListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
         {
             addActionError( "Non-existant white list pattern [" + pattern + "], no white list pattern removed." );
         }
 
         if ( !hasActionErrors() )
         {
-            getConnector().getWhiteListPatterns().remove( pattern );
+            getConnector().getWhiteListPatterns().remove( escapePattern( pattern ) );
         }
 
         setWhiteListPattern( null );
@@ -384,6 +420,7 @@ public abstract class AbstractProxyConnectorFormAction
         return new ArrayList<String>( getConfig().getRemoteRepositoriesAsMap().keySet() );
     }
 
+    @SuppressWarnings("unchecked")
     protected void validateConnector()
     {
         if ( connector.getPolicies() == null )
@@ -405,11 +442,9 @@ public abstract class AbstractProxyConnectorFormAction
                     continue;
                 }
 
-                Map properties = connector.getProperties();
-                for ( Iterator j = properties.keySet().iterator(); j.hasNext(); )
+                Map<String, Object> properties = connector.getProperties();
+                for ( String key : properties.keySet() )
                 {
-                    String key = (String) j.next();
-
                     Object value = properties.get( key );
                     if ( value.getClass().isArray() )
                     {

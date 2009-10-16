@@ -19,6 +19,8 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -26,9 +28,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.digest.ChecksumFile;
-import org.codehaus.plexus.digest.Digester;
-import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -41,14 +40,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * ArtifactMissingChecksumsConsumer - Create missing checksums for the artifact.
+ * ArtifactMissingChecksumsConsumer - Create missing and/or fix invalid checksums for the artifact.
  *
  * @version $Id$
  */
 public class ArtifactMissingChecksumsConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener, Initializable
-{
+{   
     private String id;
 
     private String description;
@@ -57,36 +56,26 @@ public class ArtifactMissingChecksumsConsumer
 
     private FileTypes filetypes;
 
-    private Digester digestSha1;
-
-    private Digester digestMd5;
-
-    private ChecksumFile checksum;
+    private ChecksummedFile checksum;
 
     private static final String TYPE_CHECKSUM_NOT_FILE = "checksum-bad-not-file";
-
+    
     private static final String TYPE_CHECKSUM_CANNOT_CALC = "checksum-calc-failure";
-
+    
     private static final String TYPE_CHECKSUM_CANNOT_CREATE = "checksum-create-failure";
 
     private File repositoryDir;
     
     private List<String> includes = new ArrayList<String>();
-
+    
     public ArtifactMissingChecksumsConsumer(String id,
             String description,
             ArchivaConfiguration configuration,
-            FileTypes filetypes,
-            Digester digestSha1,
-            Digester digestMd5,
-            ChecksumFile checksum) {
+            FileTypes filetypes) {
         this.id = id;
         this.description = description;
         this.configuration = configuration;
         this.filetypes = filetypes;
-        this.digestSha1 = digestSha1;
-        this.digestMd5 = digestMd5;
-        this.checksum = checksum;
     }
 
     public String getId()
@@ -128,37 +117,51 @@ public class ArtifactMissingChecksumsConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        createIfMissing( path, digestSha1 );
-        createIfMissing( path, digestMd5 );
+        createFixChecksum( path, new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1 } );
+        createFixChecksum( path, new ChecksumAlgorithm[] { ChecksumAlgorithm.MD5 } );        
     }
-
-    private void createIfMissing( String path, Digester digester )
+    
+    private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm[] )
     {
-        File checksumFile = new File( this.repositoryDir, path + digester.getFilenameExtension() );
-        if ( !checksumFile.exists() )
+        File artifactFile = new File( this.repositoryDir, path );
+        File checksumFile = new File( this.repositoryDir, path + checksumAlgorithm[0].getExt() );
+                
+        if( checksumFile.exists() )
         {
+            checksum = new ChecksummedFile( artifactFile );
             try
             {
-                checksum.createChecksum( new File( this.repositoryDir, path ), digester );
-                triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath() );
-            }
-            catch ( DigesterException e )
-            {
-                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC,
-                                      "Cannot calculate checksum for file " + checksumFile + ": " + e.getMessage() );
+                if( !checksum.isValidChecksum( checksumAlgorithm[0] ) )
+                {   
+                    checksum.fixChecksums( checksumAlgorithm );
+                    triggerConsumerInfo( "Fixed checksum file " + checksumFile.getAbsolutePath() );
+                }
             }
             catch ( IOException e )
             {
-                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE,
-                                      "Cannot create checksum for file " + checksumFile + ": " + e.getMessage() );
+                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC, "Cannot calculate checksum for file " + checksumFile +
+                    ": " + e.getMessage() );
             }
         }
-        else if ( !checksumFile.isFile() )
+        else if( !checksumFile.exists() )
+        {   
+            checksum = new ChecksummedFile( artifactFile );
+            try
+            {
+                checksum.createChecksum( checksumAlgorithm[0] );
+                triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath() );
+            }
+            catch ( IOException e )
+            {
+                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE, "Cannot create checksum for file " + checksumFile +
+                    ": " + e.getMessage() );
+            }
+        }
+        else
         {
             triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE,
                                     "Checksum file " + checksumFile.getAbsolutePath() + " is not a file." );
         }
-
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )

@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
 import com.opensymphony.xwork2.Preparable;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
@@ -36,7 +37,7 @@ import java.util.List;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="networkProxiesAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="networkProxiesAction" instantiation-strategy="per-lookup"
  */
 public class NetworkProxiesAction
     extends PlexusActionSupport
@@ -47,7 +48,7 @@ public class NetworkProxiesAction
      */
     private ArchivaConfiguration configuration;
 
-    private List networkProxies;
+    private List<NetworkProxyConfiguration> networkProxies;
 
     public void prepare()
         throws Exception
@@ -66,12 +67,12 @@ public class NetworkProxiesAction
         return bundle;
     }
 
-    public List getNetworkProxies()
+    public List<NetworkProxyConfiguration> getNetworkProxies()
     {
         return networkProxies;
     }
 
-    public void setNetworkProxies( List networkProxies )
+    public void setNetworkProxies( List<NetworkProxyConfiguration> networkProxies )
     {
         this.networkProxies = networkProxies;
     }

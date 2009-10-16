@@ -22,37 +22,43 @@ package org.apache.maven.archiva.web.action;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.indexer.search.RepositorySearchException;
+import org.apache.archiva.indexer.search.SearchFields;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResultLimits;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
-import org.apache.maven.archiva.indexer.search.SearchResultLimits;
-import org.apache.maven.archiva.indexer.search.SearchResults;
+import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 
 /**
  * Search all indexed fields by the given criteria.
  *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
  */
-public class SearchAction
+public class SearchAction 
     extends PlexusActionSupport
     implements Preparable
 {
@@ -61,8 +67,6 @@ public class SearchAction
      */
 
     private ArchivaConfiguration archivaConfiguration;
-
-    private Map<String, ManagedRepositoryConfiguration> managedRepositories;
 
     private String q;
 
@@ -75,27 +79,17 @@ public class SearchAction
      * The Search Results.
      */
     private SearchResults results;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private CrossRepositorySearch crossRepoSearch;
     
     /**
      * @plexus.requirement
      */
     private UserRepositories userRepositories;
     
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaXworkUser archivaXworkUser;
-    
     private static final String RESULTS = "results";
 
     private static final String ARTIFACT = "artifact";
 
-    private List databaseResults;
+    private List<ArchivaArtifact> databaseResults;
     
     private int currentPage = 0;
     
@@ -127,8 +121,12 @@ public class SearchAction
 
     private boolean fromResultsPage;
 
-    private int num;
+    private RepositorySearch nexusSearch;
+    
+    private Map<String, String> searchFields;
 
+    private String infoMessage;
+        
     public boolean isFromResultsPage()
     {
         return fromResultsPage;
@@ -158,42 +156,81 @@ public class SearchAction
         {
             managedRepositoryList.add( "all" );
         }
+        
+        searchFields = new LinkedHashMap<String, String>();
+        searchFields.put( "groupId", "Group ID" );
+        searchFields.put( "artifactId", "Artifact ID" );
+        searchFields.put( "version", "Version" );
+        searchFields.put( "className", "Class/Package Name" ); 
+        searchFields.put( "rowCount", "Row Count" );
+        
+        super.clearErrorsAndMessages();       
+        clearSearchFields();
+    }
+    
+    private void clearSearchFields()
+    {
+        repositoryId = "";
+        artifactId = "";
+        groupId = "";
+        version = "";
+        className = "";     
+        rowCount = 30;
+        currentPage = 0;
     }
 
     // advanced search MRM-90 -- filtered search
     public String filteredSearch()
-        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
-    {
+        throws MalformedURLException
+    {           
+        if ( ( groupId == null || "".equals( groupId ) ) &&
+            ( artifactId == null || "".equals( artifactId ) ) && ( className == null || "".equals( className ) ) &&
+            ( version == null || "".equals( version ) ) )
+        {   
+            addActionError( "Advanced Search - At least one search criteria must be provided." );
+            return INPUT;
+        }
+        
         fromFilterSearch = true;
-
+        
         if ( CollectionUtils.isEmpty( managedRepositoryList ) )
-        {
+        {            
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
         SearchResultLimits limits = new SearchResultLimits( currentPage );
-
         limits.setPageSize( rowCount );
         List<String> selectedRepos = new ArrayList<String>();
-
-        if ( repositoryId.equals( "all" ) )
+        
+        if ( repositoryId == null || StringUtils.isBlank( repositoryId ) ||
+            "all".equals( StringUtils.stripToEmpty( repositoryId ) ) )
         {
             selectedRepos = getObservableRepos();
         }
         else
         {
             selectedRepos.add( repositoryId );
-        }
+        }        
 
         if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {
+        {         
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        results =
-            crossRepoSearch.executeFilteredSearch( getPrincipal(), selectedRepos, groupId, artifactId, version,
-                                                   className, limits );
-
+        SearchFields searchFields =
+            new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
+                
+        // TODO: add packaging in the list of fields for advanced search (UI)?
+        try
+        {
+            results = getNexusSearch().search( getPrincipal(), searchFields, limits );
+        }
+        catch ( RepositorySearchException e )
+        {
+            addActionError( e.getMessage() );
+            return ERROR;
+        }
+        
         if ( results.isEmpty() )
         {
             addActionError( "No results found" );
@@ -207,11 +244,21 @@ public class SearchAction
             totalPages = totalPages + 1;
         }
 
+        for (SearchResultHit hit : results.getHits())
+        {
+            final String version = hit.getVersion();
+            if (version != null)
+            {
+                hit.setVersion(VersionUtil.getBaseVersion(version));
+            }
+        }
+
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     public String quickSearch()
-        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
+        throws MalformedURLException
     {
         /* TODO: give action message if indexing is in progress.
          * This should be based off a count of 'unprocessed' artifacts.
@@ -231,21 +278,22 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        if( SearchUtil.isBytecodeSearch( q ) )
-        {
-            results = crossRepoSearch.searchForBytecode( getPrincipal(), selectedRepos, SearchUtil.removeBytecodeKeyword( q ), limits );
-        }
-        else
+        try
         {
             if( searchResultsOnly && !completeQueryString.equals( "" ) )
-            {
-                results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
+            {                       
+                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );                   
             }
             else
             {
-                completeQueryString = "";
-                results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
+                completeQueryString = "";                    
+                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );                    
             }
+        }
+        catch ( RepositorySearchException e )
+        {
+            addActionError( e.getMessage() );
+            return ERROR;
         }
 
         if ( results.isEmpty() )
@@ -273,8 +321,42 @@ public class SearchAction
         {
             buildCompleteQueryString( q );
         }
-
+       
+        //Lets get the versions for the artifact we just found and display them
+        //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
+        
+        // TODO: do we still need to do this? all hits are already filtered in the NexusRepositorySearch
+        //      before being returned as search results
+        for ( SearchResultHit resultHit : results.getHits() )
+        {
+            final List<String> versions =
+                (List<String>) dao.query( new UniqueVersionConstraint( getObservableRepos(), resultHit.getGroupId(),
+                                                    resultHit.getArtifactId() ) );
+            if ( versions != null && !versions.isEmpty() )
+            {
+                resultHit.setVersion( null );
+                resultHit.setVersions( filterTimestampedSnapshots( versions ) );
+            }
+        }
+       
         return SUCCESS;
+    }
+
+    /**
+     * Remove timestamped snapshots from versions
+     */
+    private static List<String> filterTimestampedSnapshots(List<String> versions)
+    {
+        final List<String> filtered = new ArrayList<String>();
+        for (final String version : versions)
+        {
+            final String baseVersion = VersionUtil.getBaseVersion(version);
+            if (!filtered.contains(baseVersion))
+            {
+                filtered.add(baseVersion);
+            }
+        }
+        return filtered;
     }
 
     public String findArtifact()
@@ -289,7 +371,9 @@ public class SearchAction
         }
 
         Constraint constraint = new ArtifactsByChecksumConstraint( q );
-        databaseResults = dao.getArtifactDAO().queryArtifacts( constraint );
+        
+        ArtifactDAO artifactDao = dao.getArtifactDAO();
+        databaseResults = artifactDao.queryArtifacts( constraint );
 
         if ( databaseResults.isEmpty() )
         {
@@ -311,11 +395,6 @@ public class SearchAction
         return INPUT;
     }
 
-    private String getPrincipal()
-    {
-        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
-    }
-
     private List<String> getObservableRepos()
     {
         try
@@ -324,16 +403,15 @@ public class SearchAction
         }
         catch ( PrincipalNotFoundException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         catch ( AccessDeniedException e )
         {
-            getLogger().warn( e.getMessage(), e );
-            // TODO: pass this onto the screen.
+            log.warn( e.getMessage(), e );
         }
         catch ( ArchivaSecurityException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
     }
@@ -393,7 +471,7 @@ public class SearchAction
         return results;
     }
 
-    public List getDatabaseResults()
+    public List<ArchivaArtifact> getDatabaseResults()
     {
         return databaseResults;
     }
@@ -455,7 +533,6 @@ public class SearchAction
 
     public void setManagedRepositories( Map<String, ManagedRepositoryConfiguration> managedRepositories )
     {
-        this.managedRepositories = managedRepositories;
     }
 
     public String getGroupId()
@@ -536,5 +613,62 @@ public class SearchAction
     public void setClassName( String className )
     {
         this.className = className;
+    }
+
+    public RepositorySearch getNexusSearch()
+    {
+        // no need to do this when wiring is already in spring
+        if( nexusSearch == null )
+        {
+            WebApplicationContext wac =
+                WebApplicationContextUtils.getRequiredWebApplicationContext( ServletActionContext.getServletContext() );
+            nexusSearch = ( RepositorySearch ) wac.getBean( "nexusSearch" );
+        }
+        return nexusSearch;
+    }
+
+    public void setNexusSearch( RepositorySearch nexusSearch )
+    {
+        this.nexusSearch = nexusSearch;
+    }
+
+    public ArchivaDAO getDao()
+    {
+        return dao;
+    }
+
+    public void setDao( ArchivaDAO dao )
+    {
+        this.dao = dao;
+    }
+
+    public UserRepositories getUserRepositories()
+    {
+        return userRepositories;
+    }
+
+    public void setUserRepositories( UserRepositories userRepositories )
+    {
+        this.userRepositories = userRepositories;
+    }
+
+    public Map<String, String> getSearchFields()
+    {
+        return searchFields;
+    }
+
+    public void setSearchFields( Map<String, String> searchFields )
+    {
+        this.searchFields = searchFields;
+    }
+    
+    public String getInfoMessage()
+    {
+        return infoMessage;
+    }
+
+    public void setInfoMessage( String infoMessage )
+    {
+        this.infoMessage = infoMessage;
     }
 }

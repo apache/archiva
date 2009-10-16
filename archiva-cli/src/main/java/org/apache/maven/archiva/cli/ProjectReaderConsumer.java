@@ -28,9 +28,9 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
+import org.apache.maven.archiva.xml.XMLException;
 
 /**
  * ProjectReaderConsumer 
@@ -59,13 +59,13 @@ public class ProjectReaderConsumer
 
     private ManagedRepositoryConfiguration repo;
 
-    private List includes;
+    private List<String> includes;
 
     public ProjectReaderConsumer()
     {
         reader = new ProjectModel400Reader();
 
-        includes = new ArrayList();
+        includes = new ArrayList<String>();
         includes.add( "**/*.pom" );
     }
 
@@ -84,16 +84,17 @@ public class ProjectReaderConsumer
         return false;
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
@@ -101,6 +102,7 @@ public class ProjectReaderConsumer
         this.repo = repository;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -115,7 +117,7 @@ public class ProjectReaderConsumer
                 System.err.println( "Got null model on " + pomFile );
             }
         }
-        catch ( ProjectModelException e )
+        catch ( XMLException e )
         {
             System.err.println( "Unable to process: " + pomFile );
             e.printStackTrace( System.out );

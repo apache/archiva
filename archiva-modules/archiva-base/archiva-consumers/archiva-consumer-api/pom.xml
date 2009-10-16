@@ -23,13 +23,11 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-consumers</artifactId>
-    <version>1.2-MRM1025-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>1.2.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva-consumer-api</artifactId>
   <name>Archiva Consumer API</name>
-  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>

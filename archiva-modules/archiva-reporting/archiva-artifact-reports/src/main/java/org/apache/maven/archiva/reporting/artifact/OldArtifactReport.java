@@ -19,14 +19,15 @@ package org.apache.maven.archiva.reporting.artifact;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.OlderArtifactsByAgeConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.reporting.DataLimits;
 import org.apache.maven.archiva.reporting.DynamicReportSource;
-
-import java.util.List;
 
 /**
  * OldArtifactReport 
@@ -37,7 +38,7 @@ import java.util.List;
  *                   role-hint="old-artifacts"
  */
 public class OldArtifactReport
-    implements DynamicReportSource
+    implements DynamicReportSource<ArchivaArtifact>
 {
     /**
      * @plexus.configuration default-value="Old Artifacts Report"
@@ -56,13 +57,13 @@ public class OldArtifactReport
      */
     private int cutoffDays;
 
-    public List getData()
+    public List<ArchivaArtifact> getData()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         return dao.getArtifactDAO().queryArtifacts( new OlderArtifactsByAgeConstraint( cutoffDays ) );
     }
 
-    public List getData( DataLimits limits )
+    public List<ArchivaArtifact> getData( DataLimits limits )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         return dao.getArtifactDAO().queryArtifacts( new OlderArtifactsByAgeConstraint( cutoffDays ) );

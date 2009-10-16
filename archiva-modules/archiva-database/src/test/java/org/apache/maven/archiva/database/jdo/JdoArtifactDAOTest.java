@@ -19,17 +19,17 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
-import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
-
 import java.util.Date;
 import java.util.List;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.spi.JDOImplHelper;
+
+import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifactModel;
+import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
 
 /**
  * JdoArtifactDAOTest 
@@ -41,7 +41,7 @@ public class JdoArtifactDAOTest
 {
     public void testArtifactKey()
     {
-        Object o = JDOImplHelper.getInstance().newObjectIdInstance( ArchivaArtifactModel.class, "foo:bar:1.0::jar" );
+        Object o = JDOImplHelper.getInstance().newObjectIdInstance( ArchivaArtifactModel.class, "foo:bar:1.0::jar:testrepo" );
         assertNotNull( "Key should not be null.", o );
         assertTrue( "Key should be an instance of " + ArchivaArtifactModelKey.class.getName(),
                     ( o instanceof ArchivaArtifactModelKey ) );
@@ -52,6 +52,7 @@ public class JdoArtifactDAOTest
         assertEquals( "1.0", key.version );
         assertEquals( "", key.classifier );
         assertEquals( "jar", key.type );
+        assertEquals("testrepo", key.repositoryId);
     }
 
     public void testArtifactCRUD()
@@ -61,7 +62,7 @@ public class JdoArtifactDAOTest
 
         // Create it
         ArchivaArtifact artifact = artiDao.createArtifact( "org.apache.maven.archiva", "archiva-test-module", "1.0",
-                                                           "", "jar" );
+                                                           "", "jar", "testrepo" );
         assertNotNull( artifact );
 
         // Set some mandatory values
@@ -72,10 +73,10 @@ public class JdoArtifactDAOTest
         ArchivaArtifact savedArtifact = artiDao.saveArtifact( artifact );
         assertNotNull( savedArtifact );
         String savedKeyId = JDOHelper.getObjectId( savedArtifact.getModel() ).toString();
-        assertEquals( "org.apache.maven.archiva:archiva-test-module:1.0::jar", savedKeyId );
+        assertEquals( "org.apache.maven.archiva:archiva-test-module:1.0::jar:testrepo", savedKeyId );
 
         // Test that something has been saved.
-        List artifacts = artiDao.queryArtifacts( null );
+        List<ArchivaArtifact> artifacts = artiDao.queryArtifacts( null );
         assertNotNull( artifacts );
         assertEquals( 1, artifacts.size() );
 
@@ -97,7 +98,7 @@ public class JdoArtifactDAOTest
 
         // Get the specific artifact.
         ArchivaArtifact actualArtifact = artiDao.getArtifact( "org.apache.maven.archiva", "archiva-test-module", "1.0",
-                                                              null, "jar" );
+                                                              null, "jar", "testrepo" );
         assertNotNull( actualArtifact );
 
         // Test expected values.

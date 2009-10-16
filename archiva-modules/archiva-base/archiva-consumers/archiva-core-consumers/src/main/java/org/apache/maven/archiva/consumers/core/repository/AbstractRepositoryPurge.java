@@ -24,8 +24,12 @@ import java.io.FilenameFilter;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
 
@@ -36,9 +40,15 @@ import org.apache.maven.archiva.repository.events.RepositoryListener;
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
 {
+    protected Logger log = LoggerFactory.getLogger( AbstractRepositoryPurge.class );
+
     protected final ManagedRepositoryContent repository;
     
 	protected final List<RepositoryListener> listeners;
+	  
+	  private Logger logger = LoggerFactory.getLogger( "org.apache.archiva.AuditLog" );
+	
+	  private static final char DELIM = ' ';
 
     public AbstractRepositoryPurge( ManagedRepositoryContent repository, List<RepositoryListener> listeners )
     {
@@ -76,8 +86,7 @@ public abstract class AbstractRepositoryPurge
     /**
      * Purge the repo. Update db and index of removed artifacts.
      * 
-     * @param artifactFiles
-     * @throws RepositoryIndexException
+     * @param references
      */
     protected void purge( Set<ArtifactReference> references )
     {        
@@ -89,7 +98,7 @@ public abstract class AbstractRepositoryPurge
                 
                 ArchivaArtifact artifact =
                     new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
-                                         reference.getClassifier(), reference.getType() );
+                                         reference.getClassifier(), reference.getType(), repository.getId() );
     
                 for ( RepositoryListener listener : listeners )
                 {
@@ -98,6 +107,7 @@ public abstract class AbstractRepositoryPurge
                 
                 // TODO: this needs to be logged
                 artifactFile.delete();
+                triggerAuditEvent( repository.getRepository().getId(), ArtifactReference.toKey( reference ), AuditEvent.PURGE_ARTIFACT );
                 purgeSupportFiles( artifactFile );
             }
         }
@@ -130,9 +140,19 @@ public abstract class AbstractRepositoryPurge
         {
             if ( file.exists() && file.isFile() )
             {
+                String fileName = file.getName();
                 file.delete();
                 // TODO: log that it was deleted
+                triggerAuditEvent( repository.getRepository().getId(), fileName, AuditEvent.PURGE_FILE );
             }
         }
+    }
+    
+    private void triggerAuditEvent( String repoId, String resource, String action )
+    {
+        String msg = repoId + DELIM + "<system-purge>" + DELIM + "<system>" + DELIM + '\"' + resource + '\"' +
+            DELIM + '\"' + action + '\"';
+        
+        logger.info( msg );
     }
 }

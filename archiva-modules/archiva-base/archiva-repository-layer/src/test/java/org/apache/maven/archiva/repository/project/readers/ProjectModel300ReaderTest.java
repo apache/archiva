@@ -19,13 +19,13 @@ package org.apache.maven.archiva.repository.project.readers;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
+import org.apache.maven.archiva.xml.XMLException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
-import java.io.File;
 
 /**
  * ProjectModel300ReaderTest 
@@ -36,7 +36,7 @@ public class ProjectModel300ReaderTest
     extends PlexusInSpringTestCase
 {
     public void testLoadSimple()
-        throws ProjectModelException
+        throws XMLException
     {
         File defaultRepoDir = new File( getBasedir(), "src/test/repositories/legacy-repository" );
         File pomFile = new File( defaultRepoDir, "org.apache.maven/poms/maven-model-v3-2.0.pom" );

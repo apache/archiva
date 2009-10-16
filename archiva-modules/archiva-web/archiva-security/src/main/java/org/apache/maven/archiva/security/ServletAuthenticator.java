@@ -59,7 +59,7 @@ public interface ServletAuthenticator
      * @throws UnauthorizedException
      */
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
-        boolean isWriteRequest ) throws AuthorizationException, UnauthorizedException;
+        String permission ) throws AuthorizationException, UnauthorizedException;
     
     /**
      * Authorization check specific for user guest, which doesn't go through 
@@ -74,6 +74,6 @@ public interface ServletAuthenticator
      * @return
      * @throws UnauthorizedException
      */
-    public boolean isAuthorized( String principal, String repoId, boolean isWriteRequest )
+    public boolean isAuthorized( String principal, String repoId, String permission )
         throws UnauthorizedException;
 }

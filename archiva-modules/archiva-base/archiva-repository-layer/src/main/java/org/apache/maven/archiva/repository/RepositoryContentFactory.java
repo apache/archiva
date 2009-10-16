@@ -53,11 +53,17 @@ public class RepositoryContentFactory
      */
     private ArchivaConfiguration archivaConfiguration;
 
-    private Map<String, ManagedRepositoryContent> managedContentMap;
+    private final Map<String, ManagedRepositoryContent> managedContentMap;
 
-    private Map<String, RemoteRepositoryContent> remoteContentMap;
+    private final Map<String, RemoteRepositoryContent> remoteContentMap;
 
     private PlexusContainer container;
+
+    public RepositoryContentFactory()
+    {
+        managedContentMap = new HashMap<String, ManagedRepositoryContent>();
+        remoteContentMap = new HashMap<String, RemoteRepositoryContent>();
+    }
 
     /**
      * Get the ManagedRepositoryContent object for the repository Id specified.
@@ -154,9 +160,6 @@ public class RepositoryContentFactory
     public void initialize()
         throws InitializationException
     {
-        managedContentMap = new HashMap<String, ManagedRepositoryContent>();
-        remoteContentMap = new HashMap<String, RemoteRepositoryContent>();
-
         archivaConfiguration.addChangeListener( this );
     }
 

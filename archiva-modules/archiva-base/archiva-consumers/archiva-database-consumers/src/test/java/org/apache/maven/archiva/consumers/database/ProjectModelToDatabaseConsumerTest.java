@@ -20,7 +20,6 @@ package org.apache.maven.archiva.consumers.database;
  */
 
 import java.io.File;
-import java.util.Iterator;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -85,9 +84,8 @@ public class ProjectModelToDatabaseConsumerTest
 
     private boolean hasDependency( ArchivaProjectModel model, String key )
     {
-        for ( Iterator i = model.getDependencies().iterator(); i.hasNext(); )
+        for ( Dependency dependency : model.getDependencies() )
         {
-            Dependency dependency = (Dependency) i.next();
             if ( key.equals( Keys.toKey( dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion() ) ) )
             {
                 return true;

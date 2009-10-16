@@ -22,13 +22,14 @@ package org.apache.maven.archiva.web.action;
 import java.util.Collections;
 import java.util.List;
 
-import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.*;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 
 /**
  * Browse the repository.
@@ -36,7 +37,7 @@ import org.apache.maven.archiva.security.ArchivaXworkUser;
  * @todo cache browsing results.
  * @todo implement repository selectors (all or specific repository)
  * @todo implement security around browse (based on repository id at first)
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction" instantiation-strategy="per-lookup"
  */
 public class BrowseAction
     extends PlexusActionSupport
@@ -51,11 +52,6 @@ public class BrowseAction
      */
     private UserRepositories userRepositories;
     
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaXworkUser archivaXworkUser;
-    
     private BrowsingResults results;
 
     private String groupId;
@@ -63,7 +59,9 @@ public class BrowseAction
     private String artifactId;
     
     private String repositoryId;
-
+    
+    private ArchivaProjectModel sharedModel;
+    
     public String browse()
     {
         List<String> selectedRepos = getObservableRepos();
@@ -117,15 +115,92 @@ public class BrowseAction
         {
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
-
         
         this.results = repoBrowsing.selectArtifactId( getPrincipal(), selectedRepos, groupId, artifactId );
+
+        populateSharedModel();
+        
         return SUCCESS;
     }
-    
-    private String getPrincipal()
+
+    private void populateSharedModel()
     {
-        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+        sharedModel = new ArchivaProjectModel();
+        sharedModel.setGroupId( groupId );
+        sharedModel.setArtifactId( artifactId );
+        boolean isFirstVersion = true;
+                
+        for( String version :  this.results.getVersions() )
+        {            
+            try
+            {
+                ArchivaProjectModel model =
+                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+                
+                if( model == null )
+                {
+                    continue;
+                }
+                
+                if( isFirstVersion )
+                {
+                    sharedModel = model;
+                }
+                else
+                {
+                    if ( sharedModel.getPackaging() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getPackaging(), model.getPackaging() ) )
+                    {
+                        sharedModel.setPackaging( null );
+                    }
+                    
+                    if ( sharedModel.getName() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getName(), model.getName() ) )
+                    {
+                        sharedModel.setName( "" );
+                    }
+
+                    if ( sharedModel.getDescription() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getDescription(), model.getDescription() ) )
+                    {
+                        sharedModel.setDescription( null );
+                    }
+
+                    if ( sharedModel.getIssueManagement() != null && model.getIssueManagement() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getIssueManagementUrl(), model.getIssueManagement().getIssueManagementUrl() ) )
+                    {
+                        sharedModel.setIssueManagement( null );
+                    }
+
+                    if ( sharedModel.getCiManagement() != null && model.getCiManagement() != null &&
+                        !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getCiUrl(), model.getCiManagement().getCiUrl() ) )
+                    {
+                        sharedModel.setCiManagement( null );
+                    }
+
+                    if ( sharedModel.getOrganization() != null && model.getOrganization() != null && 
+                        !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getOrganizationName(), model.getOrganization().getOrganizationName() ) )
+                    {
+                        sharedModel.setOrganization( null );
+                    }
+
+                    if ( sharedModel.getUrl() != null && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), model.getUrl() ) )
+                    {
+                        sharedModel.setUrl( null );
+                    }
+                }
+                
+                isFirstVersion = false;
+            }
+            catch ( ObjectNotFoundException e )
+            {
+                log.debug( e.getMessage(), e );
+            }
+            catch ( ArchivaDatabaseException e )
+            {
+                log.debug( e.getMessage(), e );
+            }
+        }        
     }
     
     private List<String> getObservableRepos()
@@ -136,16 +211,16 @@ public class BrowseAction
         }
         catch ( PrincipalNotFoundException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         catch ( AccessDeniedException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
             // TODO: pass this onto the screen.
         }
         catch ( ArchivaSecurityException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
     }
@@ -183,5 +258,15 @@ public class BrowseAction
     public void setRepositoryId(String repositoryId){
     	
     	this.repositoryId = repositoryId;
+    }
+
+    public ArchivaProjectModel getSharedModel()
+    {
+        return sharedModel;
+    }
+
+    public void setSharedModel( ArchivaProjectModel sharedModel )
+    {
+        this.sharedModel = sharedModel;
     }
 }

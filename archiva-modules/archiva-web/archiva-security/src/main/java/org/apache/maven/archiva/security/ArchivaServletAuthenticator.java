@@ -21,7 +21,6 @@ package org.apache.maven.archiva.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
@@ -63,17 +62,10 @@ public class ArchivaServletAuthenticator
     }
 
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
-                                 boolean isWriteRequest )
+                                 String permission )
         throws AuthorizationException, UnauthorizedException
     {
         // TODO: also check for permission to proxy the resource when MRM-579 is implemented
-
-        String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
-
-        if ( isWriteRequest )
-        {
-            permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
-        }
 
         AuthorizationResult authzResult = securitySystem.authorize( securitySession, permission, repositoryId );
 
@@ -81,9 +73,8 @@ public class ArchivaServletAuthenticator
         {
             if ( authzResult.getException() != null )
             {
-                log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest +
-                    ",permission=" + permission + ",repo=" + repositoryId + "] : " +
-                    authzResult.getException().getMessage() );
+                log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",permission=" + permission
+                    + ",repo=" + repositoryId + "] : " + authzResult.getException().getMessage() );
 
                 throw new UnauthorizedException( "Access denied for repository " + repositoryId );
             }
@@ -93,19 +84,16 @@ public class ArchivaServletAuthenticator
         return true;
     }
 
-    public boolean isAuthorized( String principal, String repoId, boolean isWriteRequest )
+    public boolean isAuthorized( String principal, String repoId, String permission )
         throws UnauthorizedException
     {
         try
         {
-            String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
-
-            if ( isWriteRequest )
-            {
-                permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
-            }
-            
             User user = securitySystem.getUserManager().findUser( principal );
+            if ( user == null )
+            {
+                throw new UnauthorizedException( "The security system had an internal error - please check your system logs" );
+            }
             if ( user.isLocked() )
             {
                 throw new UnauthorizedException( "User account is locked." );

@@ -36,33 +36,34 @@
 
 <p>
   The logo in the top right of the screen is controlled by the following settings.
-  <a href="<s:url action='editAppearance' />">Change your appearence</a>
+  <a href="<s:url action='editAppearance' />">Change your appearance</a>
 </p>
 
 <h3>Organization Information</h3>
-      <table>
-        <tr>
-          <th>Name</th>
-          <td>${organisationName}</td>
-        </tr>
-        <tr>
-          <th>URL</th>
-          <td><a href="${organisationUrl}">
-            <code>${organisationUrl}</code>
-          </a></td>
-        </tr>
-        <tr>
-          <th>Logo URL</th>
-          <td>
-            <code>${organisationLogo}</code>
-          </td>
-        </tr>
-        <tr>
-          <th>&nbsp;</th>
-          <td>
-            <img src="${organisationLogo}" title="${organisationName}" border="0" alt=""/>
-          </td>
-        </tr>
-      </table>
+<table>
+  <tr>
+    <th>Name</th>
+    <td>${organisationName}</td>
+  </tr>
+  <tr>
+    <th>URL</th>
+    <td><a href="${organisationUrl}">
+      <code>${organisationUrl}</code>
+    </a></td>
+  </tr>
+  <tr>
+    <th>Logo URL</th>
+    <td>
+      <code>${organisationLogo}</code>
+    </td>
+  </tr>
+  <c:if test="${!empty (organisationLogo)}">
+    <tr>
+      <th>&nbsp;</th>
+      <td><img src="${organisationLogo}"
+        title="${organisationName}" border="0" alt="" /></td>
+    </tr>
+  </c:if>
+</table>
 </body>
 </html>

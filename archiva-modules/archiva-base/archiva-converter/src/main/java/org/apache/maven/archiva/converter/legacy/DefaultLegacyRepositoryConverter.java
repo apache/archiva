@@ -19,20 +19,22 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.archiva.converter.RepositoryConversionException;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.archiva.repository.scanner.RepositoryScanner;
-import org.apache.archiva.repository.scanner.RepositoryScannerException;
-import org.apache.maven.archiva.common.utils.PathUtil;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.converter.RepositoryConversionException;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 
 /**
  * DefaultLegacyRepositoryConverter 
@@ -65,7 +67,7 @@ public class DefaultLegacyRepositoryConverter
     private RepositoryScanner repoScanner;
 
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
-                                         List fileExclusionPatterns )
+                                         List<String> fileExclusionPatterns )
         throws RepositoryConversionException
     {
         try
@@ -85,17 +87,17 @@ public class DefaultLegacyRepositoryConverter
             legacyConverterConsumer.setExcludes( fileExclusionPatterns );
             legacyConverterConsumer.setDestinationRepository( repository );
 
-            List knownConsumers = new ArrayList();
+            List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
             knownConsumers.add( legacyConverterConsumer );
 
-            List invalidConsumers = Collections.EMPTY_LIST;
-            List ignoredContent = new ArrayList();
+            List<InvalidRepositoryContentConsumer> invalidConsumers = Collections.emptyList();
+            List<String> ignoredContent = new ArrayList<String>();
             ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
 
             repoScanner.scan( legacyRepository, knownConsumers, invalidConsumers, ignoredContent,
                               RepositoryScanner.FRESH_SCAN );
         }
-        catch ( RepositoryScannerException e )
+        catch ( RepositoryException e )
         {
             throw new RepositoryConversionException( "Error convering legacy repository.", e );
         }

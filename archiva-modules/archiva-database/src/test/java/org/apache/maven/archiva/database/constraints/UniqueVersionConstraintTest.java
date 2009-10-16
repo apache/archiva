@@ -108,11 +108,12 @@ public class UniqueVersionConstraintTest
         assertConstraint( new String[] { "3.0" }, new UniqueVersionConstraint( "org.codehaus.modello", "modellong" ) );
     }
 
+    @SuppressWarnings("unchecked")
     private void assertConstraint( String[] versions, SimpleConstraint constraint )
     {
         String prefix = "Unique Versions: ";
 
-        List<String> results = dao.query( constraint );
+        List<String> results = (List<String>) dao.query( constraint );
         assertNotNull( prefix + "Not Null", results );
         assertEquals( prefix + "Results.size", versions.length, results.size() );
 
@@ -128,7 +129,7 @@ public class UniqueVersionConstraintTest
 
     private ArchivaArtifact createArtifact( String repoId, String groupId, String artifactId, String version )
     {
-        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar" );
+        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar", "testrepo" );
         artifact.getModel().setLastModified( new Date() ); // mandatory field.
         artifact.getModel().setRepositoryId( repoId );
         return artifact;

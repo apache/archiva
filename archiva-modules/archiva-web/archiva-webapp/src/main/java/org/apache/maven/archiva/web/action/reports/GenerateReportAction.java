@@ -69,7 +69,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 /**
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport" instantiation-strategy="per-lookup"
  */
 public class GenerateReportAction
     extends PlexusActionSupport
@@ -152,12 +152,13 @@ public class GenerateReportAction
     
     private InputStream inputStream;
     
+    @SuppressWarnings("unchecked")
     public void prepare()
     {
         repositoryIds = new ArrayList<String>();
         repositoryIds.add( ALL_REPOSITORIES ); // comes first to be first in the list
-        repositoryIds.addAll(
-            dao.query( new UniqueFieldConstraint( RepositoryProblem.class.getName(), "repositoryId" ) ) );
+        repositoryIds.addAll( (List<String>) dao.query( new UniqueFieldConstraint( RepositoryProblem.class.getName(),
+                                                                                   "repositoryId" ) ) );
         
         availableRepositories = new ArrayList<String>();
      
@@ -227,6 +228,12 @@ public class GenerateReportAction
                 	return ERROR;
                 }
                 
+                if( startDateInDF.after( endDateInDF ) )
+                {
+                    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                    return INPUT;
+                }
+                
                 // multiple repos
                 generateReportForMultipleRepos(repoContentStatsDao, startDateInDF, endDateInDF, true);                
             }
@@ -241,6 +248,12 @@ public class GenerateReportAction
                 	startDateInDF = getStartDateInDateFormat();                	
                 	endDateInDF = getEndDateInDateFormat();
                 	 
+                	if( startDateInDF.after( endDateInDF ) )
+                    {
+                	    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                	    return INPUT;
+                    }
+                	
                     List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
                            new RepositoryContentStatisticsByRepositoryConstraint( selectedRepo, startDateInDF, endDateInDF ) );
                     
@@ -322,6 +335,12 @@ public class GenerateReportAction
                 	return ERROR;
                 }
                 
+                if( startDateInDF.after( endDateInDF ) )
+                {
+                    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                    return INPUT;
+                }
+                
              // multiple repos
                 generateReportForMultipleRepos( repoContentStatsDao, startDateInDF, endDateInDF, false );
             }
@@ -332,6 +351,12 @@ public class GenerateReportAction
                 {                 
                 	startDateInDF = getStartDateInDateFormat();
                 	endDateInDF = getEndDateInDateFormat();
+                	
+                	if( startDateInDF.after( endDateInDF ) )
+                    {
+                	    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                	    return INPUT;
+                    }
                 	
                     List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
                            new RepositoryContentStatisticsByRepositoryConstraint( selectedRepo, startDateInDF, endDateInDF ) );
@@ -425,7 +450,7 @@ public class GenerateReportAction
         {   
             try
             {                
-                List contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
+                List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
                          new RepositoryContentStatisticsByRepositoryConstraint( repo, startDateInDF, endDateInDF ) );
 
                 if ( contentStats == null || contentStats.isEmpty() )

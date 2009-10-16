@@ -23,34 +23,49 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResultLimits;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
-import org.apache.maven.archiva.indexer.search.SearchResultHit;
-import org.apache.maven.archiva.indexer.search.SearchResultLimits;
-import org.apache.maven.archiva.indexer.search.SearchResults;
+import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SearchServiceImpl
+ * 
+ * quick/general text search which returns a list of artifacts
+ * query for an artifact based on a checksum
+ * query for all available versions of an artifact, sorted in version significance order
+ * query for all available versions of an artifact since a given date
+ * query for an artifact's direct dependencies
+ * query for an artifact's dependency tree (as with mvn dependency:tree - no duplicates should be included)
+ * query for all artifacts that depend on a given artifact 
  * 
  * @version $Id: SearchServiceImpl.java
  */
 public class SearchServiceImpl
     implements SearchService
 { 
-    
-    private CrossRepositorySearch crossRepoSearch;
+    private Logger log = LoggerFactory.getLogger( SearchServiceImpl.class );
+                                                 
+    private RepositorySearch search;
     
     private XmlRpcUserRepositories xmlRpcUserRepositories;
     
@@ -58,66 +73,88 @@ public class SearchServiceImpl
     
     private RepositoryBrowsing repoBrowsing;
     
-    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, CrossRepositorySearch crossRepoSearch,
-                              ArchivaDAO archivaDAO, RepositoryBrowsing repoBrowsing )
+    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, ArchivaDAO archivaDAO,
+                              RepositoryBrowsing repoBrowsing, RepositorySearch search )
     {
         this.xmlRpcUserRepositories = xmlRpcUserRepositories;
-        this.crossRepoSearch = crossRepoSearch;
         this.archivaDAO = archivaDAO;        
         this.repoBrowsing = repoBrowsing;
+        this.search = search;
     }
-    
-    /*
-     * quick/general text search which returns a list of artifacts
-     * query for an artifact based on a checksum
-     * query for all available versions of an artifact, sorted in version significance order
-     * query for all available versions of an artifact since a given date
-     * query for an artifact's direct dependencies
-     * query for an artifact's dependency tree (as with mvn dependency:tree - no duplicates should be included)
-     * query for all artifacts that depend on a given artifact
-     */
-    
+      
+    @SuppressWarnings( "unchecked" )
     public List<Artifact> quickSearch( String queryString )
         throws Exception
     {   
-        // 1. check whether bytecode search or ordinary search
-        // 2. get observable repos
-        // 3. convert results to a list of Artifact objects
-        
         List<Artifact> artifacts = new ArrayList<Artifact>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         SearchResults results = null;
         
-        if( SearchUtil.isBytecodeSearch( queryString ) )
-        {
-            results = crossRepoSearch.searchForBytecode( "", observableRepos, SearchUtil.removeBytecodeKeyword( queryString ), limits );
-        }
-        else
-        {
-            results = crossRepoSearch.searchForTerm( "", observableRepos, queryString, limits );
-        }        
+        results = search.search( "", observableRepos, queryString, limits, null );
         
-        List<SearchResultHit> hits = results.getHits();
-        for( SearchResultHit hit : hits )
-        {   
-            ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO(); 
-            ArchivaArtifact pomArtifact = artifactDAO.getArtifact( 
-                       hit.getGroupId(), hit.getArtifactId(), hit.getVersion(), "", "pom" );
+        for ( SearchResultHit resultHit : results.getHits() )
+        {
+            // double-check all versions as done in SearchAction
+            final List<String> versions =
+                (List<String>) archivaDAO.query( new UniqueVersionConstraint( observableRepos, resultHit.getGroupId(),
+                                                    resultHit.getArtifactId() ) );
+            if ( versions != null && !versions.isEmpty() )
+            {
+                resultHit.setVersion( null );
+                resultHit.setVersions( filterTimestampedSnapshots( versions ) );
+            }
             
-            if( pomArtifact != null )
+            List<String> resultHitVersions = resultHit.getVersions();
+            if( resultHitVersions != null )
             {
-                Artifact artifact = new Artifact( pomArtifact.getModel().getRepositoryId(), pomArtifact.getGroupId(), pomArtifact.getArtifactId(), pomArtifact.getVersion(),
-                                                  pomArtifact.getType(), pomArtifact.getModel().getWhenGathered() );
-                artifacts.add( artifact );
+                for( String version : resultHitVersions )
+                {                    
+                    try
+                    {
+                        ArchivaProjectModel model = repoBrowsing.selectVersion( "", observableRepos, resultHit.getGroupId(), resultHit.getArtifactId(), version );
+                        
+                        Artifact artifact = null;
+                        if( model == null )
+                        {
+                           artifact = new Artifact( resultHit.getRepositoryId(), resultHit.getGroupId(), resultHit.getArtifactId(), version, "jar" );                           
+                        }
+                        else
+                        {                       
+                            artifact = new Artifact( resultHit.getRepositoryId(), model.getGroupId(), model.getArtifactId(), version, model.getPackaging() );
+                        }
+                        artifacts.add( artifact );
+                    }
+                    catch( ObjectNotFoundException e )
+                    {  
+                        log.debug( "Unable to find pom artifact : " + e.getMessage() );                        
+                    }
+                    catch( ArchivaDatabaseException e )
+                    {   
+                        log.debug( "Error occurred while getting pom artifact from database : " + e.getMessage() );
+                    }
+                }
             }
-            else
-            {
-                continue;
-            }
-        }
+        }    
         
         return artifacts;
+    }
+    
+    /**
+     * Remove timestamped snapshots from versions
+     */
+    private static List<String> filterTimestampedSnapshots(List<String> versions)
+    {
+        final List<String> filtered = new ArrayList<String>();
+        for (final String version : versions)
+        {
+            final String baseVersion = VersionUtil.getBaseVersion(version);
+            if (!filtered.contains(baseVersion))
+            {
+                filtered.add(baseVersion);
+            }
+        }
+        return filtered;
     }
     
     public List<Artifact> getArtifactByChecksum( String checksum ) 
@@ -137,8 +174,8 @@ public class SearchServiceImpl
         for( ArchivaArtifact archivaArtifact : artifacts )
         {
             Artifact artifact = new Artifact( archivaArtifact.getModel().getRepositoryId(), archivaArtifact.getModel().getGroupId(),
-                          archivaArtifact.getModel().getArtifactId(), archivaArtifact.getModel().getVersion(), archivaArtifact.getType(), 
-                          archivaArtifact.getModel().getWhenGathered() );
+                          archivaArtifact.getModel().getArtifactId(), archivaArtifact.getModel().getVersion(), archivaArtifact.getType() ); 
+                          //archivaArtifact.getModel().getWhenGathered() );
             results.add( artifact );
         }
         
@@ -148,17 +185,17 @@ public class SearchServiceImpl
     public List<Artifact> getArtifactVersions( String groupId, String artifactId ) 
         throws Exception
     {
-        List<Artifact> artifacts = new ArrayList<Artifact>();        
-        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
+        final List<Artifact> artifacts = new ArrayList<Artifact>();        
+        final List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
         
-        BrowsingResults results = repoBrowsing.selectArtifactId( "", observableRepos, groupId, artifactId );
-        ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO();
+        final BrowsingResults results = repoBrowsing.selectArtifactId( "", observableRepos, groupId, artifactId );
         
-        for( String version : results.getVersions() )
+        for( final String version : results.getVersions() )
         {
-            ArchivaArtifact pomArtifact = artifactDAO.getArtifact( groupId, artifactId, version, "", "pom" );
-            Artifact artifact = new Artifact( "", groupId, artifactId, version, pomArtifact.getType(), 
-                          pomArtifact.getModel().getWhenGathered() );
+            final Artifact artifact = new Artifact( "", groupId, artifactId, version, "pom" ); 
+            //ArchivaArtifact pomArtifact = artifactDAO.getArtifact( groupId, artifactId, version, "", "pom",  );
+            //Artifact artifact = new Artifact( "", groupId, artifactId, version, pomArtifact.getType() ); 
+                          //pomArtifact.getModel().getWhenGathered() );
             
             artifacts.add( artifact );
         }
@@ -222,7 +259,9 @@ public class SearchServiceImpl
         List<ArchivaProjectModel> dependees = repoBrowsing.getUsedBy( "", observableRepos, "org.apache.archiva", "archiva-test", "1.0" );
         for( ArchivaProjectModel model : dependees )
         {
-            Artifact artifact = new Artifact( "", model.getGroupId(), model.getArtifactId(), model.getVersion(), "", model.getWhenIndexed() );
+            Artifact artifact =
+                new Artifact( "", model.getGroupId(), model.getArtifactId(), model.getVersion(), "" );
+                              //model.getWhenIndexed() );
             artifacts.add( artifact );
         }
         

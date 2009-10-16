@@ -89,4 +89,20 @@ public interface RepositoryBrowsing
     public String getRepositoryId( String principle, List<String> observableRepositoryIds, String groupId,
                                        String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException;
+    
+    /**
+     * Get the other versions of the given SNAPSHOT version.
+     * 
+     * @param observableRepositoryIds
+     * @param groupId
+     * @param artifactId
+     * @param version
+     * @return
+     * @throws ObjectNotFoundException
+     * @throws ArchivaDatabaseException
+     */
+    public List<String> getOtherSnapshotVersions( List<String> observableRepositoryIds,
+                                                              String groupId, String artifactId, String version )
+        throws ObjectNotFoundException, ArchivaDatabaseException; 
+                                                                  
 }

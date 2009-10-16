@@ -116,6 +116,7 @@ public class GroupIdLink
         return determineActionURL( "browse", NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext, encode, false, false );
     }
 
+    @SuppressWarnings("unchecked")
     private String determineBrowseGroupActionUrl( String gid )
     {
         parameters.put( "groupId", gid );

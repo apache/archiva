@@ -113,6 +113,7 @@ public class AbstractProjectKey
     /**
      * Get the String representation of this object. - Required by JPOX.
      */
+    @Override
     public String toString()
     {
         return StringUtils.join( new String[] { groupId, artifactId } );
@@ -121,6 +122,7 @@ public class AbstractProjectKey
     /**
      * Get the hashcode for this object's values - Required by JPOX.
      */
+    @Override
     public int hashCode()
     {
         final int PRIME = 31;
@@ -133,6 +135,7 @@ public class AbstractProjectKey
     /**
      * Get the equals for this object's values - Required by JPOX.
      */
+    @Override
     public boolean equals( Object obj )
     {
         if ( this == obj )

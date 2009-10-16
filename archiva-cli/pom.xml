@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>1.2-MRM1025-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-cli</artifactId>
@@ -35,13 +35,7 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-dependency-tree-consumer</artifactId>
-      <version>1.2-MRM1025-SNAPSHOT</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-metadata-consumer</artifactId>
-      <version>1.2-MRM1025-SNAPSHOT</version>
+      <version>1.2.3-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -62,17 +56,18 @@
       <version>7</version>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>jcl104-over-slf4j</artifactId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <build>
@@ -80,7 +75,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>1.0.1</version>
+        <version>1.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -90,6 +85,12 @@
             <configuration>
               <finalName>apache-archiva-cli-${project.version}</finalName>
               <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                  <resource>META-INF/spring-context.xml</resource>
+                </transformer>                
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer" />
               </transformers>
               <artifactSet>
@@ -98,7 +99,6 @@
                   <exclude>xml-apis:xml-apis</exclude>
                   <exclude>xalan:xalan</exclude>
                   <exclude>commons-beanutils:commons-beanutils</exclude>
-                  <exclude>commons-io:commons-io</exclude>
                 </excludes>
               </artifactSet>
             </configuration>
@@ -115,6 +115,16 @@
               <mainClass>org.apache.maven.archiva.cli.ArchivaCli</mainClass>
             </manifest>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <executable>java</executable>
+          <mainClass>org.apache.maven.archiva.cli.ArchivaCli</mainClass>
+          <arguments>
+          </arguments>
         </configuration>
       </plugin>
     </plugins>

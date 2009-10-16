@@ -20,22 +20,24 @@ package org.apache.maven.archiva.webdav.util;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
- * WebdavMethodUtil 
- *
+ * WebdavMethodUtil
+ * 
  * @version $Id: WebdavMethodUtil.java 5412 2007-01-13 01:18:47Z joakime $
  */
 public class WebdavMethodUtil
 {
-    private static final List READ_METHODS;
+    private static final List<String> READ_METHODS;
 
     static
     {
-        READ_METHODS = new ArrayList();
+        READ_METHODS = new ArrayList<String>();
         READ_METHODS.add( "HEAD" );
         READ_METHODS.add( "GET" );
         READ_METHODS.add( "PROPFIND" );
@@ -43,23 +45,32 @@ public class WebdavMethodUtil
         READ_METHODS.add( "REPORT" );
     }
 
+    public static String getMethodPermission( String method )
+    {
+        if ( StringUtils.isBlank( method ) )
+        {
+            throw new IllegalArgumentException( "WebDAV method is empty" );
+        }
+        if ( READ_METHODS.contains( method.toUpperCase( Locale.US ) ) )
+        {
+            return ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
+        }
+        else if ( "DELETE".equals( method.toUpperCase( Locale.US ) ) )
+        {
+            return ArchivaRoleConstants.OPERATION_REPOSITORY_DELETE;
+        }
+        else
+        {
+            return ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
+        }
+    }
+
     public static boolean isReadMethod( String method )
     {
         if ( StringUtils.isBlank( method ) )
         {
-            return false;
+            throw new IllegalArgumentException( "WebDAV method is empty" );
         }
-
-        return READ_METHODS.contains( method.toUpperCase() );
-    }
-
-    public static boolean isWriteMethod( String method )
-    {
-        if ( StringUtils.isBlank( method ) )
-        {
-            return false;
-        }
-
-        return !READ_METHODS.contains( method.toUpperCase() );
+        return READ_METHODS.contains( method.toUpperCase( Locale.US ) );
     }
 }

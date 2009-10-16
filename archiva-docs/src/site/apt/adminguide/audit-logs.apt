@@ -4,7 +4,7 @@
 
 Audit Logs
 
-  Archiva's log directory contains an audit log file named <<<archiva-audit.log>>>, which tracks events that occur in the server.
+  Archiva's <<<logs>>> directory contains an audit log file named <<<archiva-audit.log>>>, which tracks events that occur in the server.
 
   A typical record looks like this:
 

@@ -98,7 +98,8 @@ public class LocationArtifactsConsumer
      */
     private RepositoryContentFactory repositoryFactory;
 
-    private Map repositoryMap = new HashMap();
+    private Map<String, ManagedRepositoryConfiguration> repositoryMap =
+        new HashMap<String, ManagedRepositoryConfiguration>();
 
     // TODO: why is this not used? If it should be, what about excludes?
     private List<String> includes = new ArrayList<String>();
@@ -128,7 +129,7 @@ public class LocationArtifactsConsumer
         /* do nothing */
     }
 
-    public List getIncludedTypes()
+    public List<String> getIncludedTypes()
     {
         return null;
     }
@@ -203,7 +204,7 @@ public class LocationArtifactsConsumer
             * indicate that the artifact is, indeed located in the wrong place.
             */
 
-            List actualPomXmls = findJarEntryPattern( jar, "META-INF/maven/**/pom.xml" );
+            List<JarEntry> actualPomXmls = findJarEntryPattern( jar, "META-INF/maven/**/pom.xml" );
             if ( actualPomXmls.isEmpty() )
             {
                 // No check needed.
@@ -267,27 +268,27 @@ public class LocationArtifactsConsumer
 
     private ArchivaProjectModel readFilesystemModel( File artifactFile )
     {
-        File pomFile = createPomFileReference( artifactFile );
+//        File pomFile = createPomFileReference( artifactFile );
 
         // TODO: read and resolve model here.
 
         return null;
     }
 
-    private File createPomFileReference( File artifactFile )
-    {
-        String pomFilename = artifactFile.getAbsolutePath();
-
-        int pos = pomFilename.lastIndexOf( '.' );
-        if ( pos <= 0 )
-        {
-            // Invalid filename.
-            return null;
-        }
-
-        pomFilename = pomFilename.substring( 0, pos ) + ".pom";
-        return new File( pomFilename );
-    }
+//    private File createPomFileReference( File artifactFile )
+//    {
+//        String pomFilename = artifactFile.getAbsolutePath();
+//
+//        int pos = pomFilename.lastIndexOf( '.' );
+//        if ( pos <= 0 )
+//        {
+//            // Invalid filename.
+//            return null;
+//        }
+//
+//        pomFilename = pomFilename.substring( 0, pos ) + ".pom";
+//        return new File( pomFilename );
+//    }
 
     private ManagedRepositoryConfiguration findRepository( ArchivaArtifact artifact )
     {

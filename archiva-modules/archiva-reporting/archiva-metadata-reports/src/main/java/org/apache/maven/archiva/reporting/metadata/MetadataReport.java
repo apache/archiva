@@ -24,6 +24,7 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.RepositoryProblemByTypeConstraint;
+import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.reporting.DataLimits;
 import org.apache.maven.archiva.reporting.DynamicReportSource;
 
@@ -38,7 +39,7 @@ import java.util.List;
  *                   role-hint="metadata"
  */
 public class MetadataReport
-    implements DynamicReportSource
+    implements DynamicReportSource<RepositoryProblem>
 {
     public static final String PROBLEM_TYPE_METADATA = "metadata";
     
@@ -59,13 +60,13 @@ public class MetadataReport
         constraint = new RepositoryProblemByTypeConstraint( PROBLEM_TYPE_METADATA );
     }
 
-    public List getData()
+    public List<RepositoryProblem> getData()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         return dao.getRepositoryProblemDAO().queryRepositoryProblems( constraint );
     }
 
-    public List getData( DataLimits limits )
+    public List<RepositoryProblem> getData( DataLimits limits )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         // TODO: implement limits.        

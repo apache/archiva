@@ -19,6 +19,9 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
@@ -26,10 +29,6 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * JdoArtifactDAO 
@@ -49,24 +48,24 @@ public class JdoArtifactDAO
     /* .\ Archiva Artifact \. _____________________________________________________________ */
 
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
-                                           String type )
+                                           String type, String repositoryId )
     {
         ArchivaArtifact artifact;
 
         try
         {
-            artifact = getArtifact( groupId, artifactId, version, classifier, type );
+            artifact = getArtifact( groupId, artifactId, version, classifier, type, repositoryId );
         }
         catch ( ArchivaDatabaseException e )
         {
-            artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
+            artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type, repositoryId );
         }
 
         return artifact;
     }
 
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
-                                        String type )
+                                        String type, String repositoryId )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         ArchivaArtifactModelKey key = new ArchivaArtifactModelKey();
@@ -75,26 +74,26 @@ public class JdoArtifactDAO
         key.setVersion( version );
         key.setClassifier( classifier );
         key.setType( type );
+        key.setRepositoryId( repositoryId );
 
         ArchivaArtifactModel model = (ArchivaArtifactModel) jdo.getObjectById( ArchivaArtifactModel.class, key, null );
 
         return new ArchivaArtifact( model );
     }
 
-    public List queryArtifacts( Constraint constraint )
+    @SuppressWarnings("unchecked")
+    public List<ArchivaArtifact> queryArtifacts( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        List results = jdo.queryObjects( ArchivaArtifactModel.class, constraint );
-        if ( ( results == null ) || results.isEmpty() )
+        List<ArchivaArtifactModel> results = (List<ArchivaArtifactModel>) jdo.queryObjects( ArchivaArtifactModel.class, constraint );
+        if ( results == null )
         {
-            return results;
+            return null;
         }
 
-        List ret = new ArrayList();
-        Iterator it = results.iterator();
-        while ( it.hasNext() )
+        List<ArchivaArtifact> ret = new ArrayList<ArchivaArtifact>();
+        for ( ArchivaArtifactModel model : results )
         {
-            ArchivaArtifactModel model = (ArchivaArtifactModel) it.next();
             ret.add( new ArchivaArtifact( model ) );
         }
 

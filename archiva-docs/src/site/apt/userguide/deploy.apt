@@ -9,6 +9,12 @@ Deploying to Repository
    * {{{#Maven} Configuring Maven to deploy to an Archiva repository}}
 
    * {{{#Web UI} Deploying via the Web UI Form}}
+   
+   []
+   
+ <<WARNING>> The deployed artifact may not appear immediately in the search results.
+ The execution of the <<<index-content>>> repository consumer and other scanning consumers are queued for execution
+ to prevent concurrent updates to the index.
 
 * Configuring {Maven} to deploy to an Archiva repository
   
@@ -112,8 +118,8 @@ Deploying to Repository
   You can also deploy to the Archiva server using traditional means such as SCP, FTP, etc. For more information on these deployment
   techniques, refer to the Maven documentation.
 
-  Note that once the files are deployed into the location of the Archiva managed repository, they will not be detected by Archiva until the
-  next scan takes place, so the interval should be configured to a reasonably frequent setting.
+  Once the files are deployed into the location of the Archiva managed repository, they should appear in the Browse page.
+  The artifacts should also be searcheable as long as the <<<index-content>>> repository consumer is enabled.
   
 ** Deploying Third-Party Artifacts to Archiva using Maven
 
@@ -164,10 +170,13 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
   
 * Deploying via the {Web UI} Form
 
-  The easiest way to deploy in the repository is via the Web UI form, which can be accessed in the 'Upload Artifact' section.
+  The easiest way to deploy in the repository is via the Web UI form, which can be accessed in the <<Upload Artifact>> section.
   Just follow these steps:
 
-  [[1]] Fill up the following required fields:
+  [[1]] In Archiva, click the <<Upload Artifact>> option in the left menu. You should see a form similar to
+  the one at the end of this section.
+
+  [[2]] Fill in the following required fields:
 
   * Group Id - the groupId of the artifact to be deployed.
 
@@ -181,16 +190,16 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
 
   []
 
-  [[2]] Select the repository you want to deploy to. Please note that if you do not have write permission to the repository,
-   you will not be allowed to deploy in it.
+  [[3]] Select the repository you want to deploy to. Please note that if you do not have write permission to the repository,
+   you will not be allowed to deploy on it.
 
-  [[3]] Now, if you want Archiva to generate a pom for the artifact, check the Generate Maven 2 POM field.
+  [[4]] Now, if you want Archiva to generate a pom for the artifact, check the Generate Maven 2 POM field.
    (Right now, only Maven 2 poms can be generated.)  Alternately, supply a POM file to be deployed alongside the artifact.
 
-  [[4]] Click Submit and a message will be displayed notifying you if the upload/deployment was successful or not.
+  [[5]] Click Submit and a message will be displayed notifying you if the upload/deployment was successful or not.
 
   []
-  
+
   These are the files that will be in your repository after deployment:
 
   * artifact 
@@ -201,6 +210,16 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
 
   * maven-metadata.xml.sha1 and maven-metadata.xml.md5 (these will be generated for newly created maven-metadata.xml files, otherwise
   they will just be updated)
+
+  []
+
+[../images/upload-artifact.jpg] Upload Artifact
+
+  <Note:> The maximum size of the file that can be uploaded is 10M by default. To alter the setting, change <<<struts.multipart.maxSize>>> in the file
+   <<<WEB-INF/classes/struts.properties>>> in the Archiva web application (located under <<<apps/archiva>>> in the standalone distribution).
+
+  The upload form also provides validation checks against the required fields and the version. In Archiva 1.2.1, the version checking has been
+  loosened. See {{{http://jira.codehaus.org/browse/MRM-1172}MRM-1172}} for more details.
 
 ~~TODO: information for Maven 1, ant tasks, ivy, etc.
 

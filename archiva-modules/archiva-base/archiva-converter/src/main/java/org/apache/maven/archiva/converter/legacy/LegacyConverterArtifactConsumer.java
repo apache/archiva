@@ -69,13 +69,13 @@ public class LegacyConverterArtifactConsumer
     
     private ArtifactRepository destinationRepository;
 
-    private List includes;
+    private List<String> includes;
 
-    private List excludes;
+    private List<String> excludes;
 
     public LegacyConverterArtifactConsumer()
     {
-        includes = new ArrayList();
+        includes = new ArrayList<String>();
         includes.add( "**/*.jar" );
         includes.add( "**/*.ear" );
         includes.add( "**/*.war" );
@@ -93,12 +93,12 @@ public class LegacyConverterArtifactConsumer
 
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return excludes;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return includes;
     }
@@ -139,12 +139,12 @@ public class LegacyConverterArtifactConsumer
         return false;
     }
 
-    public void setExcludes( List excludes )
+    public void setExcludes( List<String> excludes )
     {
         this.excludes = excludes;
     }
 
-    public void setIncludes( List includes )
+    public void setIncludes( List<String> includes )
     {
         this.includes = includes;
     }

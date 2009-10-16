@@ -63,9 +63,9 @@ public class TestDatabaseUnprocessedConsumer
         countComplete++;
     }
 
-    public List getIncludedTypes()
+    public List<String> getIncludedTypes()
     {
-        List types = new ArrayList();
+        List<String> types = new ArrayList<String>();
         types.add( "pom" );
         types.add( "jar" );
         return types;

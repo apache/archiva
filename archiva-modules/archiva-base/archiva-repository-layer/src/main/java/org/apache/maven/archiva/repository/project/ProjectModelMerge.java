@@ -19,6 +19,16 @@ package org.apache.maven.archiva.repository.project;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
@@ -32,17 +42,6 @@ import org.apache.maven.archiva.model.License;
 import org.apache.maven.archiva.model.Organization;
 import org.apache.maven.archiva.model.ProjectRepository;
 import org.apache.maven.archiva.model.Scm;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Map.Entry;
 
 /**
  * ProjectModelMerge
@@ -107,14 +106,12 @@ public class ProjectModelMerge
         return merged;
     }
 
-    private static Map createArtifactReferenceMap( List artifactReferences )
+    private static Map<String, ArtifactReference> createArtifactReferenceMap( List<ArtifactReference> artifactReferences )
     {
-        Map ret = new HashMap();
+        Map<String, ArtifactReference> ret = new HashMap<String, ArtifactReference>();
 
-        Iterator it = artifactReferences.iterator();
-        while ( it.hasNext() )
+        for ( ArtifactReference artifactReference : artifactReferences )
         {
-            ArtifactReference artifactReference = (ArtifactReference) it.next();
             String key = toVersionlessArtifactKey( artifactReference );
             ret.put( key, artifactReference );
         }
@@ -122,14 +119,14 @@ public class ProjectModelMerge
         return ret;
     }
 
-    private static Map createDependencyMap( List dependencies )
+    private static Map<String, Dependency> createDependencyMap( List<Dependency> dependencies )
     {
-        Map ret = new HashMap();
+        Map<String, Dependency> ret = new HashMap<String, Dependency>();
 
-        Iterator it = dependencies.iterator();
+        Iterator<Dependency> it = dependencies.iterator();
         while ( it.hasNext() )
         {
-            Dependency dep = (Dependency) it.next();
+            Dependency dep = it.next();
             String key = toVersionlessDependencyKey( dep );
             ret.put( key, dep );
         }
@@ -137,14 +134,14 @@ public class ProjectModelMerge
         return ret;
     }
 
-    private static Map createExclusionMap( List exclusions )
+    private static Map<String, Exclusion> createExclusionMap( List<Exclusion> exclusions )
     {
-        Map ret = new HashMap();
+        Map<String, Exclusion> ret = new HashMap<String, Exclusion>();
 
-        Iterator it = exclusions.iterator();
+        Iterator<Exclusion> it = exclusions.iterator();
         while ( it.hasNext() )
         {
-            Exclusion exclusion = (Exclusion) it.next();
+            Exclusion exclusion = it.next();
             String key = exclusion.getGroupId() + ":" + exclusion.getArtifactId();
             ret.put( key, exclusion );
         }
@@ -152,14 +149,12 @@ public class ProjectModelMerge
         return ret;
     }
 
-    private static Map createLicensesMap( List licenses )
+    private static Map<String, License> createLicensesMap( List<License> licenses )
     {
-        Map ret = new HashMap();
+        Map<String, License> ret = new HashMap<String, License>();
 
-        Iterator it = licenses.iterator();
-        while ( it.hasNext() )
+        for ( License license : licenses )
         {
-            License license = (License) it.next();
             // TODO: Change to 'id' when LicenseTypeMapper is created.
             String key = license.getName();
             ret.put( key, license );
@@ -168,14 +163,12 @@ public class ProjectModelMerge
         return ret;
     }
 
-    private static Map createRepositoriesMap( List repositories )
+    private static Map<String, ProjectRepository> createRepositoriesMap( List<ProjectRepository> repositories )
     {
-        Map ret = new HashMap();
+        Map<String, ProjectRepository> ret = new HashMap<String, ProjectRepository>();
 
-        Iterator it = repositories.iterator();
-        while ( it.hasNext() )
+        for ( ProjectRepository repo : repositories )
         {
-            ProjectRepository repo = (ProjectRepository) it.next();
             // Should this really be using repo.id ?
             String key = repo.getUrl();
             ret.put( key, repo );
@@ -237,6 +230,7 @@ public class ProjectModelMerge
 
         merged.setSystem( merge( mainCim.getSystem(), parentCim.getSystem() ) );
         merged.setUrl( merge( mainCim.getUrl(), parentCim.getUrl() ) );
+        merged.setCiUrl( merge( mainCim.getCiUrl(), parentCim.getCiUrl() ) );
 
         return merged;
     }
@@ -296,7 +290,8 @@ public class ProjectModelMerge
 
         merged.setSystem( merge( mainIssueManagement.getSystem(), parentIssueManagement.getSystem() ) );
         merged.setUrl( merge( mainIssueManagement.getUrl(), parentIssueManagement.getUrl() ) );
-
+        merged.setIssueManagementUrl( merge( mainIssueManagement.getIssueManagementUrl(), parentIssueManagement.getIssueManagementUrl() ) );
+        
         return merged;
     }
 
@@ -315,12 +310,14 @@ public class ProjectModelMerge
         Organization merged = new Organization();
 
         merged.setFavicon( merge( mainOrganization.getFavicon(), parentOrganization.getFavicon() ) );
+        merged.setOrganizationName( merge( mainOrganization.getOrganizationName(), parentOrganization.getOrganizationName() ) );
         merged.setName( merge( mainOrganization.getName(), parentOrganization.getName() ) );
         merged.setUrl( merge( mainOrganization.getUrl(), parentOrganization.getUrl() ) );
 
         return merged;
     }
 
+    @SuppressWarnings("unchecked")
     private static Properties merge( Properties mainProperties, Properties parentProperties )
     {
         if ( parentProperties == null )
@@ -336,11 +333,16 @@ public class ProjectModelMerge
         Properties merged = new Properties();
         merged.putAll(mainProperties);
 
-        Enumeration keys = parentProperties.propertyNames();
+        Enumeration<String> keys = (Enumeration<String>) parentProperties.propertyNames();
         while ( keys.hasMoreElements() )
         {
             String key = (String) keys.nextElement();
-            merged.put( key, merge( mainProperties.getProperty( key ), parentProperties.getProperty( key ) ) );
+            String value = merge( mainProperties.getProperty( key ), parentProperties.getProperty( key ) );
+            
+            if ( value != null )
+            {
+                merged.put( key, value );
+            }
         }
 
         return merged;
@@ -377,7 +379,7 @@ public class ProjectModelMerge
         return main;
     }
 
-    private static List mergeArtifactReferences( List mainArtifactReferences, List parentArtifactReferences )
+    private static List<ArtifactReference> mergeArtifactReferences( List<ArtifactReference> mainArtifactReferences, List<ArtifactReference> parentArtifactReferences )
     {
         if ( parentArtifactReferences == null )
         {
@@ -386,21 +388,19 @@ public class ProjectModelMerge
 
         if ( mainArtifactReferences == null )
         {
-            return ArchivaModelCloner.cloneLicenses( parentArtifactReferences );
+            return ArchivaModelCloner.cloneArtifactReferences( parentArtifactReferences );
         }
 
-        List merged = new ArrayList();
+        List<ArtifactReference> merged = new ArrayList<ArtifactReference>();
 
-        Map mainArtifactReferenceMap = createArtifactReferenceMap( mainArtifactReferences );
-        Map parentArtifactReferenceMap = createArtifactReferenceMap( parentArtifactReferences );
+        Map<String, ArtifactReference> mainArtifactReferenceMap = createArtifactReferenceMap( mainArtifactReferences );
+        Map<String, ArtifactReference> parentArtifactReferenceMap = createArtifactReferenceMap( parentArtifactReferences );
 
-        Iterator it = mainArtifactReferenceMap.entrySet().iterator();
-        while ( it.hasNext() )
+        for ( Map.Entry<String,ArtifactReference> entry : mainArtifactReferenceMap.entrySet() )
         {
-            Map.Entry entry = (Entry) it.next();
-            String key = (String) entry.getKey();
+            String key = entry.getKey();
             ArtifactReference mainArtifactReference = (ArtifactReference) entry.getValue();
-            ArtifactReference parentArtifactReference = (ArtifactReference) parentArtifactReferenceMap.get( key );
+            ArtifactReference parentArtifactReference = parentArtifactReferenceMap.get( key );
 
             if ( parentArtifactReference == null )
             {
@@ -416,7 +416,7 @@ public class ProjectModelMerge
         return merged;
     }
 
-    private static List mergeDependencies( List mainDependencies, List parentDependencies )
+    private static List<Dependency> mergeDependencies( List<Dependency> mainDependencies, List<Dependency> parentDependencies )
     {
         if ( parentDependencies == null )
         {
@@ -425,30 +425,30 @@ public class ProjectModelMerge
 
         if ( mainDependencies == null )
         {
-            List merged = ArchivaModelCloner.cloneDependencies( parentDependencies );
-            Iterator it = merged.iterator();
+            List<Dependency> merged = ArchivaModelCloner.cloneDependencies( parentDependencies );
+            Iterator<Dependency> it = merged.iterator();
             while ( it.hasNext() )
             {
-                Dependency dep = (Dependency) it.next();
+                Dependency dep = it.next();
                 dep.setFromParent( true );
             }
             return merged;
         }
 
-        List merged = new ArrayList();
+        List<Dependency> merged = new ArrayList<Dependency>();
 
-        Map mainDepMap = createDependencyMap( mainDependencies );
-        Map parentDepMap = createDependencyMap( parentDependencies );
-        Set uniqueKeys = new HashSet();
+        Map<String, Dependency> mainDepMap = createDependencyMap( mainDependencies );
+        Map<String, Dependency> parentDepMap = createDependencyMap( parentDependencies );
+        Set<String> uniqueKeys = new HashSet<String>();
         uniqueKeys.addAll( mainDepMap.keySet() );
         uniqueKeys.addAll( parentDepMap.keySet() );
 
-        Iterator it = uniqueKeys.iterator();
+        Iterator<String> it = uniqueKeys.iterator();
         while ( it.hasNext() )
         {
-            String key = (String) it.next();
-            Dependency parentDep = (Dependency) parentDepMap.get( key );
-            Dependency mainDep = (Dependency) mainDepMap.get( key );
+            String key = it.next();
+            Dependency parentDep = parentDepMap.get( key );
+            Dependency mainDep = mainDepMap.get( key );
 
             if ( parentDep == null )
             {
@@ -466,7 +466,7 @@ public class ProjectModelMerge
         return merged;
     }
 
-    private static List mergeDependencyManagement( List mainDepMgmt, List parentDepMgmt )
+    private static List<Dependency> mergeDependencyManagement( List<Dependency> mainDepMgmt, List<Dependency> parentDepMgmt )
     {
         if ( parentDepMgmt == null )
         {
@@ -475,30 +475,30 @@ public class ProjectModelMerge
 
         if ( mainDepMgmt == null )
         {
-            List merged = ArchivaModelCloner.cloneDependencies( parentDepMgmt );
-            Iterator it = merged.iterator();
+            List<Dependency> merged = ArchivaModelCloner.cloneDependencies( parentDepMgmt );
+            Iterator<Dependency> it = merged.iterator();
             while ( it.hasNext() )
             {
-                Dependency dep = (Dependency) it.next();
+                Dependency dep = it.next();
                 dep.setFromParent( true );
             }
             return merged;
         }
 
-        List merged = new ArrayList();
+        List<Dependency> merged = new ArrayList<Dependency>();
 
-        Map mainDepMap = createDependencyMap( mainDepMgmt );
-        Map parentDepMap = createDependencyMap( parentDepMgmt );
-        Set uniqueKeys = new HashSet();
+        Map<String, Dependency> mainDepMap = createDependencyMap( mainDepMgmt );
+        Map<String, Dependency> parentDepMap = createDependencyMap( parentDepMgmt );
+        Set<String> uniqueKeys = new HashSet<String>();
         uniqueKeys.addAll( mainDepMap.keySet() );
         uniqueKeys.addAll( parentDepMap.keySet() );
 
-        Iterator it = uniqueKeys.iterator();
+        Iterator<String> it = uniqueKeys.iterator();
         while ( it.hasNext() )
         {
-            String key = (String) it.next();
-            Dependency parentDep = (Dependency) parentDepMap.get( key );
-            Dependency mainDep = (Dependency) mainDepMap.get( key );
+            String key = it.next();
+            Dependency parentDep = parentDepMap.get( key );
+            Dependency mainDep = mainDepMap.get( key );
 
             if ( parentDep == null )
             {
@@ -516,7 +516,7 @@ public class ProjectModelMerge
         return merged;
     }
 
-    public static List mergeExclusions( List mainExclusions, List parentExclusions )
+    public static List<Exclusion> mergeExclusions( List<Exclusion> mainExclusions, List<Exclusion> parentExclusions )
     {
         if ( parentExclusions == null )
         {
@@ -528,18 +528,16 @@ public class ProjectModelMerge
             return ArchivaModelCloner.cloneExclusions( parentExclusions );
         }
 
-        List merged = new ArrayList();
+        List<Exclusion> merged = new ArrayList<Exclusion>();
 
-        Map mainExclusionMap = createExclusionMap( mainExclusions );
-        Map parentExclusionMap = createExclusionMap( parentExclusions );
+        Map<String, Exclusion> mainExclusionMap = createExclusionMap( mainExclusions );
+        Map<String, Exclusion> parentExclusionMap = createExclusionMap( parentExclusions );
 
-        Iterator it = mainExclusionMap.entrySet().iterator();
-        while ( it.hasNext() )
+        for ( Map.Entry<String, Exclusion> entry : mainExclusionMap.entrySet() )
         {
-            Map.Entry entry = (Entry) it.next();
-            String key = (String) entry.getKey();
-            Exclusion mainExclusion = (Exclusion) entry.getValue();
-            Exclusion parentExclusion = (Exclusion) parentExclusionMap.get( key );
+            String key = entry.getKey();
+            Exclusion mainExclusion = entry.getValue();
+            Exclusion parentExclusion = parentExclusionMap.get( key );
 
             if ( parentExclusion == null )
             {
@@ -554,7 +552,7 @@ public class ProjectModelMerge
         return merged;
     }
 
-    private static List mergeIndividuals( List mainIndividuals, List parentIndividuals )
+    private static List<Individual> mergeIndividuals( List<Individual> mainIndividuals, List<Individual> parentIndividuals )
     {
         if ( parentIndividuals == null )
         {
@@ -566,12 +564,12 @@ public class ProjectModelMerge
             return ArchivaModelCloner.cloneIndividuals( parentIndividuals );
         }
 
-        List merged = ArchivaModelCloner.cloneIndividuals( mainIndividuals );
+        List<Individual> merged = ArchivaModelCloner.cloneIndividuals( mainIndividuals );
 
-        Iterator it = parentIndividuals.iterator();
+        Iterator<Individual> it = parentIndividuals.iterator();
         while ( it.hasNext() )
         {
-            Individual parentIndividual = (Individual) it.next();
+            Individual parentIndividual = it.next();
 
             if ( !mainIndividuals.contains( parentIndividual ) )
             {
@@ -582,7 +580,7 @@ public class ProjectModelMerge
         return merged;
     }
 
-    private static List mergeLicenses( List mainLicenses, List parentLicenses )
+    private static List<License> mergeLicenses( List<License> mainLicenses, List<License> parentLicenses )
     {
         if ( parentLicenses == null )
         {
@@ -594,18 +592,16 @@ public class ProjectModelMerge
             return ArchivaModelCloner.cloneLicenses( parentLicenses );
         }
 
-        List merged = new ArrayList();
+        List<License> merged = new ArrayList<License>();
 
-        Map mainLicensesMap = createLicensesMap( mainLicenses );
-        Map parentLicensesMap = createLicensesMap( parentLicenses );
+        Map<String, License> mainLicensesMap = createLicensesMap( mainLicenses );
+        Map<String, License> parentLicensesMap = createLicensesMap( parentLicenses );
 
-        Iterator it = mainLicensesMap.entrySet().iterator();
-        while ( it.hasNext() )
+        for ( Map.Entry<String, License> entry : mainLicensesMap.entrySet() )
         {
-            Map.Entry entry = (Entry) it.next();
-            String key = (String) entry.getKey();
-            License mainLicense = (License) entry.getValue();
-            License parentLicense = (License) parentLicensesMap.get( key );
+            String key = entry.getKey();
+            License mainLicense = entry.getValue();
+            License parentLicense = parentLicensesMap.get( key );
 
             if ( parentLicense == null )
             {
@@ -621,17 +617,17 @@ public class ProjectModelMerge
         return merged;
     }
 
-    private static List mergePlugins( List mainPlugins, List parentPlugins )
+    private static List<ArtifactReference> mergePlugins( List<ArtifactReference> mainPlugins, List<ArtifactReference> parentPlugins )
     {
         return mergeArtifactReferences( mainPlugins, parentPlugins );
     }
 
-    private static List mergeReports( List mainReports, List parentReports )
+    private static List<ArtifactReference> mergeReports( List<ArtifactReference> mainReports, List<ArtifactReference> parentReports )
     {
         return mergeArtifactReferences( mainReports, parentReports );
     }
 
-    private static List mergeRepositories( List mainRepositories, List parentRepositories )
+    private static List<ProjectRepository> mergeRepositories( List<ProjectRepository> mainRepositories, List<ProjectRepository> parentRepositories )
     {
         if ( parentRepositories == null )
         {
@@ -640,21 +636,19 @@ public class ProjectModelMerge
 
         if ( mainRepositories == null )
         {
-            return ArchivaModelCloner.cloneLicenses( parentRepositories );
+            return ArchivaModelCloner.cloneRepositories( parentRepositories );
         }
 
-        List merged = new ArrayList();
+        List<ProjectRepository> merged = new ArrayList<ProjectRepository>();
 
-        Map mainRepositoriesMap = createRepositoriesMap( mainRepositories );
-        Map parentRepositoriesMap = createRepositoriesMap( parentRepositories );
+        Map<String, ProjectRepository> mainRepositoriesMap = createRepositoriesMap( mainRepositories );
+        Map<String, ProjectRepository> parentRepositoriesMap = createRepositoriesMap( parentRepositories );
 
-        Iterator it = mainRepositoriesMap.entrySet().iterator();
-        while ( it.hasNext() )
+        for ( Map.Entry<String, ProjectRepository> entry : mainRepositoriesMap.entrySet() )
         {
-            Map.Entry entry = (Entry) it.next();
-            String key = (String) entry.getKey();
-            ProjectRepository mainProjectRepository = (ProjectRepository) entry.getValue();
-            ProjectRepository parentProjectRepository = (ProjectRepository) parentRepositoriesMap.get( key );
+            String key = entry.getKey();
+            ProjectRepository mainProjectRepository = entry.getValue();
+            ProjectRepository parentProjectRepository = parentRepositoriesMap.get( key );
 
             if ( parentProjectRepository == null )
             {

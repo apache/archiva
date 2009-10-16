@@ -87,7 +87,15 @@ public abstract class AbstractRepositoryServletTestCase
     protected void assertResponseOK( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
-        Assert.assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
+        Assert.assertEquals( "Should have been an OK response code", HttpServletResponse.SC_OK,
+                             response.getResponseCode() );
+    }
+
+    protected void assertResponseOK( WebResponse response, String path )
+    {
+        assertNotNull( "Should have recieved a response", response );
+        Assert.assertEquals( "Should have been an OK response code for path: " + path, HttpServletResponse.SC_OK,
+                             response.getResponseCode() );
     }
     
     protected void assertResponseNotFound( WebResponse response )
@@ -95,6 +103,20 @@ public abstract class AbstractRepositoryServletTestCase
         assertNotNull( "Should have recieved a response", response );
         Assert.assertEquals( "Should have been an 404/Not Found response code.", HttpServletResponse.SC_NOT_FOUND, response
             .getResponseCode() );
+    }
+
+    protected void assertResponseInternalServerError( WebResponse response )
+    {
+        assertNotNull( "Should have recieved a response", response );
+        Assert.assertEquals( "Should have been an 500/Internal Server Error response code.", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response
+            .getResponseCode() );
+    }
+    
+    protected void assertResponseConflictError( WebResponse response )
+    {
+        assertNotNull( "Should have received a response", response );
+        Assert.assertEquals( "Should have been a 409/Conflict response code.", HttpServletResponse.SC_CONFLICT,
+                             response.getResponseCode() );
     }
 
     protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
@@ -196,6 +218,8 @@ public abstract class AbstractRepositoryServletTestCase
         {
             FileUtils.deleteDirectory(repoRootInternal);
         }
+        
+        release( archivaConfiguration );
         
         super.tearDown();
     }

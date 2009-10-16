@@ -24,12 +24,13 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 
 /**
  * DeleteRepositoryGroupAction
  * 
  * @version
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRepositoryGroupAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRepositoryGroupAction" instantiation-strategy="per-lookup"
  */
 public class DeleteRepositoryGroupAction 
     extends AbstractRepositoriesAdminAction
@@ -70,6 +71,7 @@ public class DeleteRepositoryGroupAction
         }
 		
         config.removeRepositoryGroup( group );
+        triggerAuditEvent( AuditEvent.DELETE_REPO_GROUP + " " + repoGroupId );
         return saveConfiguration( config );
     }
 	

@@ -37,8 +37,6 @@ import java.io.File;
  */
 public class IndexWriter
 {
-    private final DavResource resource;
-
     private final String logicalResource;
     
     private final List<File> localResources;
@@ -47,7 +45,6 @@ public class IndexWriter
     
     public IndexWriter(DavResource resource, File localResource, String logicalResource)
     {
-        this.resource = resource;
         this.localResources = new ArrayList<File>();
         this.localResources.add( localResource );
         this.logicalResource = logicalResource;
@@ -56,7 +53,6 @@ public class IndexWriter
     
     public IndexWriter( DavResource resource, List<File> localResources, String logicalResource )
     {
-        this.resource = resource;
         this.logicalResource = logicalResource;
         this.localResources = localResources;
         this.isVirtual = true;
@@ -82,16 +78,16 @@ public class IndexWriter
     {
         writer.println("<html>");
         writer.println("<head>");
-        writer.println("<title>Collection: " + logicalResource + "</title>");
+        writer.println("<title>Collection: /" + logicalResource + "</title>");
         writer.println("</head>");
         writer.println("<body>");
-        writer.println("<h3>Collection: " + logicalResource + "</h3>");
+        writer.println("<h3>Collection: /" + logicalResource + "</h3>");
 
         //Check if not root
-        if (!"/".equals(logicalResource))
+        if (logicalResource.length() > 0)
         {
             File file = new File(logicalResource);
-            String parentName = file.getParent().equals("") ? "/" : file.getParent();
+            String parentName = file.getParent() == null ? "/" : file.getParent();
             
             //convert to unix path in case archiva is hosted on windows
             parentName = StringUtils.replace(parentName, "\\", "/" );
@@ -129,26 +125,45 @@ public class IndexWriter
         else 
         {            
             // virtual repository - filter unique directories
-            Map<String, File> uniqueChildFiles = new HashMap<String, File>();
+            Map<String, List<String>> uniqueChildFiles = new HashMap<String, List<String>>();
             List<String> sortedList = new ArrayList<String>();
             for( File resource : localResources )
-            {
+            {   
                 List<File> files = new ArrayList<File>( Arrays.asList( resource.listFiles() ) ); 
-                                                
                 for ( File file : files )
                 {   
+                    List<String> mergedChildFiles = new ArrayList<String>();
                     if( uniqueChildFiles.get( file.getName() ) == null )
                     {
-                        uniqueChildFiles.put( file.getName(), file );
-                        sortedList.add( file.getName() );
-                    }                    
+                        mergedChildFiles.add( file.getAbsolutePath() );                        
+                    }
+                    else
+                    {
+                        mergedChildFiles = uniqueChildFiles.get( file.getName() );
+                        if( !mergedChildFiles.contains( file.getAbsolutePath() ) )
+                        {
+                            mergedChildFiles.add( file.getAbsolutePath() );
+                        }
+                    }
+                    uniqueChildFiles.put( file.getName(), mergedChildFiles );
+                    sortedList.add( file.getName() );
                 }
             }
              
             Collections.sort( sortedList );
+            List<String> written = new ArrayList<String>();
             for ( String fileName : sortedList )
-            {
-                writeHyperlink( writer, fileName, ( (File) uniqueChildFiles.get( fileName ) ).isDirectory());
+            {   
+                List<String> childFilesFromMap = uniqueChildFiles.get( fileName );
+                for( String childFilePath : childFilesFromMap )
+                {   
+                    File childFile = new File( childFilePath );
+                    if( !written.contains( childFile.getName() ) )
+                    {   
+                        written.add( childFile.getName() );
+                        writeHyperlink( writer, fileName, childFile.isDirectory() );                        
+                    }
+                }
             }
         }
     }

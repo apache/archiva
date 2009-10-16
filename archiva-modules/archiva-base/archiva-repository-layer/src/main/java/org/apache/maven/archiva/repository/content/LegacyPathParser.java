@@ -19,14 +19,13 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import java.util.Collection;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * LegacyPathParser is a parser for maven 1 (legacy layout) paths to
@@ -58,10 +57,9 @@ public class LegacyPathParser
         ArtifactReference artifact = new ArtifactReference();
 
         // First, look if a custom resolution rule has been set for this artifact
-        Collection legacy = configuration.getConfiguration().getLegacyArtifactPaths();
-        for ( Iterator iterator = legacy.iterator(); iterator.hasNext(); )
+        Collection<LegacyArtifactPath> legacy = configuration.getConfiguration().getLegacyArtifactPaths();
+        for ( LegacyArtifactPath legacyPath : legacy )
         {
-            LegacyArtifactPath legacyPath = (LegacyArtifactPath) iterator.next();
             if ( legacyPath.match( path ) )
             {			
 			    artifact.setGroupId( legacyPath.getGroupId() );

@@ -8,22 +8,13 @@
            <value>create-missing-checksums</value>
          </constructor-arg>
          <constructor-arg>
-           <value>Create Missing Checksums (.sha1, .md5)</value>
+           <value>Create Missing and/or Fix Invalid Checksums (.sha1, .md5)</value>
          </constructor-arg>
          <constructor-arg>
            <ref bean="archivaConfiguration"/>
          </constructor-arg>
          <constructor-arg>
            <ref bean="fileTypes"/>
-         </constructor-arg>
-         <constructor-arg>
-           <ref bean="digester#sha1"/>
-         </constructor-arg>
-         <constructor-arg>
-           <ref bean="digester#md5"/>
-         </constructor-arg>
-         <constructor-arg>
-           <ref bean="checksumFile"/>
          </constructor-arg>
        </bean>
 </beans>

@@ -1,0 +1,24 @@
+ ------
+ Log Files
+ ------
+ ------
+ 22 Jul 2009
+ ------
+ 
+Log Files
+
+  To keep track of the Archiva performance and problems, log files are created during runtime.
+  These files can be found in the <<<logs/>>> directory.
+  
+  * {{{archiva-logs.html} <<archiva.log>>}} - contains all the start-up information and output logs for Archiva
+  
+  * {{{audit-logs.html} <<archiva-audit.log>>}} - contains information regarding the operations performed against
+                           the repositories and configurations being modified. A good example is when an artifact
+                           is deployed to an Archiva repository. The operation will be logged in this file,
+                           with the date and timestamp of when the operation occurred, the userId of who performed
+                           the deployment, and the artifact that was deployed.
+  
+  * {{{security-logs.html} <<archiva-security-audit.log>>}} - contains information regarding Archiva's security.
+                            For example, a successful login of a user or a user account is created.
+  
+  []

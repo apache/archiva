@@ -38,7 +38,7 @@ public class DatabaseUpdaterTest
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String whenProcessed )
         throws Exception
     {
-        ArchivaArtifact artifact = dao.getArtifactDAO().createArtifact( groupId, artifactId, version, "", "jar" );
+        ArchivaArtifact artifact = dao.getArtifactDAO().createArtifact( groupId, artifactId, version, "", "jar", "testrepo" );
         assertNotNull( "Artifact should not be null.", artifact );
         Date dateWhenProcessed = null;
 
@@ -55,6 +55,7 @@ public class DatabaseUpdaterTest
         return artifact;
     }
 
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -86,14 +87,14 @@ public class DatabaseUpdaterTest
 
         // Check the state of the artifact in the DB.
         ArchivaArtifact savedArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, version, classifier,
-                                                                          type );
+                                                                          type, "testrepo" );
         assertFalse( "Artifact should not be considered processed (yet).", savedArtifact.getModel().isProcessed() );
 
         // Update the artifact
         dbupdater.updateUnprocessed( savedArtifact );
 
         // Check the update.
-        ArchivaArtifact processed = dao.getArtifactDAO().getArtifact( groupId, artifactId, version, classifier, type );
+        ArchivaArtifact processed = dao.getArtifactDAO().getArtifact( groupId, artifactId, version, classifier, type, "testrepo" );
         assertTrue( "Artifact should be flagged as processed.", processed.getModel().isProcessed() );
 
         // Did the unprocessed consumer do it's thing?

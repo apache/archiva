@@ -60,7 +60,7 @@ public class ArchivaDatabaseUpdateTaskExecutor
     {
         DatabaseTask dbtask = (DatabaseTask) task;
 
-        log.info( "Executing task from queue with job name: " + dbtask.getName() );
+        log.info( "Executing task from queue with job name: " + dbtask );
         long time = System.currentTimeMillis();
 
         try
@@ -71,6 +71,16 @@ public class ArchivaDatabaseUpdateTaskExecutor
         catch ( ArchivaDatabaseException e )
         {
             throw new TaskExecutionException( "Error running unprocessed updater", e );
+        }
+
+        try
+        {
+            log.info( "Task: Updating processed artifacts" );
+            databaseUpdater.updateAllProcessed();
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            throw new TaskExecutionException( "Error running processed updater", e );
         }
 
         time = System.currentTimeMillis() - time;

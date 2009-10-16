@@ -19,6 +19,9 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
+import com.sampullara.cli.Args;
+import com.sampullara.cli.Argument;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,9 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
-import org.apache.archiva.repository.scanner.RepositoryScanner;
-import org.apache.archiva.repository.scanner.RepositoryScannerException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -42,18 +43,18 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 
-import com.sampullara.cli.Args;
-import com.sampullara.cli.Argument;
-
 /**
  * ArchivaCli
- * 
- * @todo add back reading of archiva.xml from a given location
+ *
  * @version $Id$
+ * @todo add back reading of archiva.xml from a given location
  */
 public class ArchivaCli
 {
@@ -71,7 +72,8 @@ public class ArchivaCli
         throws IOException
     {
         Properties properties = new Properties();
-        properties.load( ArchivaCli.class.getResourceAsStream( "/META-INF/maven/org.apache.archiva/archiva-cli/pom.properties" ) );
+        properties.load(
+            ArchivaCli.class.getResourceAsStream( "/META-INF/maven/org.apache.archiva/archiva-cli/pom.properties" ) );
         return properties.getProperty( "version" );
     }
 
@@ -79,9 +81,8 @@ public class ArchivaCli
 
     public ArchivaCli()
     {
-        applicationContext =
-            new PlexusClassPathXmlApplicationContext( new String[] { "classpath*:/META-INF/spring-context.xml",
-                "classpath*:/META-INF/plexus/components.xml" } );
+        applicationContext = new PlexusClassPathXmlApplicationContext(
+            new String[]{"classpath*:/META-INF/spring-context.xml", "classpath*:/META-INF/plexus/components.xml"} );
     }
 
     public static void main( String[] args )
@@ -144,8 +145,8 @@ public class ArchivaCli
     {
         // hack around poorly configurable project builder by pointing all repositories back at this location to be self
         // contained
-        WagonManager wagonManager =
-            (WagonManager) applicationContext.getBean( PlexusToSpringUtils.buildSpringId( WagonManager.class.getName() ) );
+        WagonManager wagonManager = (WagonManager) applicationContext.getBean(
+            PlexusToSpringUtils.buildSpringId( WagonManager.class.getName() ) );
         wagonManager.addMirror( "internal", "*", new File( path ).toURL().toExternalForm() );
 
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
@@ -166,13 +167,12 @@ public class ArchivaCli
 
         try
         {
-            RepositoryScanStatistics stats =
-                scanner.scan( repo, knownConsumerList, invalidConsumerList, ignoredContent,
-                              RepositoryScanner.FRESH_SCAN );
+            RepositoryScanStatistics stats = scanner.scan( repo, knownConsumerList, invalidConsumerList, ignoredContent,
+                                                           RepositoryScanner.FRESH_SCAN );
 
             System.out.println( "\n" + stats.toDump( repo ) );
         }
-        catch ( RepositoryScannerException e )
+        catch ( RepositoryException e )
         {
             e.printStackTrace( System.err );
         }
@@ -215,12 +215,12 @@ public class ArchivaCli
         {
             String consumerHint = (String) entry.getKey();
             RepositoryContentConsumer consumer = (RepositoryContentConsumer) entry.getValue();
-            System.out.println( "  " + consumerHint + ": " + consumer.getDescription() + " ("
-                + consumer.getClass().getName() + ")" );
+            System.out.println(
+                "  " + consumerHint + ": " + consumer.getDescription() + " (" + consumer.getClass().getName() + ")" );
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private Map<String, KnownRepositoryContentConsumer> getConsumers()
     {
         return PlexusToSpringUtils.lookupMap( "knownRepositoryContentConsumer", applicationContext );
@@ -234,7 +234,16 @@ public class ArchivaCli
 
         Properties p = new Properties();
 
-        p.load( new FileInputStream( properties ) );
+        FileInputStream fis = new FileInputStream( properties );
+
+        try
+        {
+            p.load( fis );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( fis );
+        }
 
         File oldRepositoryPath = new File( p.getProperty( SOURCE_REPO_PATH ) );
 
@@ -251,33 +260,36 @@ public class ArchivaCli
             fileExclusionPatterns = Arrays.asList( StringUtils.split( s, "," ) );
         }
 
-        legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath, fileExclusionPatterns );
+        legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
+                                                           fileExclusionPatterns );
     }
 
     private static class Commands
     {
-        @Argument( description = "Display help information", value = "help", alias = "h" )
+        @Argument(description = "Display help information", value = "help", alias = "h")
         private boolean help;
 
-        @Argument( description = "Display version information", value = "version", alias = "v" )
+        @Argument(description = "Display version information", value = "version", alias = "v")
         private boolean version;
 
-        @Argument( description = "List available consumers", value = "listconsumers", alias = "l" )
+        @Argument(description = "List available consumers", value = "listconsumers", alias = "l")
         private boolean listConsumers;
 
-        @Argument( description = "The consumers to use (comma delimited)", value = "consumers", alias = "u" )
+        @Argument(description = "The consumers to use (comma delimited)", value = "consumers", alias = "u")
         private String consumers = "count-artifacts";
 
-        @Argument( description = "Scan the specified repository", value = "scan", alias = "s" )
+        @Argument(description = "Scan the specified repository", value = "scan", alias = "s")
         private boolean scan;
 
-        @Argument( description = "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion", value = "convert", alias = "c" )
+        @Argument(
+            description = "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion",
+            value = "convert", alias = "c")
         private boolean convert;
 
-        @Argument( description = "The properties file for the converstion", value = "properties" )
+        @Argument(description = "The properties file for the conversion", value = "properties")
         private String properties = "conversion.properties";
 
-        @Argument( description = "The repository to scan", value = "repository" )
+        @Argument(description = "The repository to scan", value = "repository")
         private String repository;
     }
 }

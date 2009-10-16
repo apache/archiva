@@ -133,6 +133,20 @@ public class RepositoryRequest
         return ( ".sha1".equals( ext ) || ".md5".equals( ext ) || ".asc".equals( ext ) || ".pgp".equals( ext ) );
     }
 
+    public boolean isMetadataSupportFile( String requestedPath )
+    {
+        if( isSupportFile( requestedPath ) )
+        {
+            String basefilePath = StringUtils.substring( requestedPath, 0, requestedPath.lastIndexOf( '.' ) );
+            if( isMetadata( basefilePath ) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a default layout request.
@@ -154,8 +168,38 @@ public class RepositoryRequest
             return false;
         }
 
-        String pathParts[] = StringUtils.splitPreserveAllTokens( requestedPath, '/' );
-        return pathParts.length > 3;
+        String pathParts[] = StringUtils.splitPreserveAllTokens( requestedPath, '/' );        
+        if( pathParts.length > 3 )
+        {
+            return true;
+        }
+        else if ( pathParts.length == 3 )
+        {            
+            // check if artifact-level metadata (ex. eclipse/jdtcore/maven-metadata.xml)
+            if( isMetadata( requestedPath ) )
+            {
+                return true;
+            }
+            else 
+            {
+                // check if checksum of artifact-level metadata (ex. eclipse/jdtcore/maven-metadata.xml.sha1)
+                int idx = requestedPath.lastIndexOf( '.' );               
+                if ( idx > 0 )
+                {
+                    String base = requestedPath.substring( 0, idx );
+                    if( isMetadata( base ) && isSupportFile( requestedPath ) )
+                    {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**

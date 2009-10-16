@@ -49,8 +49,7 @@ public class ArchivaStandardRolesCheck
      */
     private boolean checked = false;
 
-    @SuppressWarnings("unchecked")
-    public void validateEnvironment( List violations )
+    public void validateEnvironment( List<String> violations )
     {
         if ( !checked )
         {

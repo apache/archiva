@@ -26,6 +26,8 @@ import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -43,8 +45,9 @@ public class ArchivaStartup
         SecuritySynchronization securitySync = (SecuritySynchronization) wac.getBean(PlexusToSpringUtils.buildSpringId(SecuritySynchronization.class));
         ResolverFactoryInit resolverFactory = (ResolverFactoryInit) wac.getBean(PlexusToSpringUtils.buildSpringId(ResolverFactoryInit.class));
         ArchivaTaskScheduler taskScheduler = (ArchivaTaskScheduler) wac.getBean(PlexusToSpringUtils.buildSpringId(ArchivaTaskScheduler.class));
-        TaskQueueExecutor databaseUpdateQueue = (TaskQueueExecutor) wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "database-update"));
-        TaskQueueExecutor repositoryScanningQueue = (TaskQueueExecutor) wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "repository-scanning"));
+        wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "database-update"));
+        wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "repository-scanning"));
+        wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "indexing"));
 
         try
         {
@@ -59,6 +62,12 @@ public class ArchivaStartup
         }
     }
 
-    public void contextDestroyed(ServletContextEvent contextEvent) {
+    public void contextDestroyed(ServletContextEvent contextEvent)
+    {
+        ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(contextEvent.getServletContext());
+        if (applicationContext != null && applicationContext instanceof ClassPathXmlApplicationContext)
+        {
+            ((ClassPathXmlApplicationContext)applicationContext).close();
+        }
     }
 }

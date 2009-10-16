@@ -19,20 +19,19 @@ package org.apache.maven.archiva.dependency.graph;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.Exclusion;
 import org.apache.maven.archiva.model.Keys;
 import org.apache.maven.archiva.model.VersionedReference;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * AbstractMemoryRepository 
@@ -42,7 +41,7 @@ import java.util.Map;
 public abstract class AbstractMemoryRepository
     implements MemoryRepository
 {
-    private Map modelMap = new HashMap();
+    private Map<String,ArchivaProjectModel> modelMap = new HashMap<String, ArchivaProjectModel>();
 
     public AbstractMemoryRepository()
     {
@@ -112,12 +111,12 @@ public abstract class AbstractMemoryRepository
 
     protected ArchivaProjectModel toModel( String key )
     {
-        return toModel( key, Collections.EMPTY_LIST );
+        return toModel( key, Collections.<Dependency>emptyList() );
     }
 
-    protected ArchivaProjectModel toModel( String key, Dependency deps[] )
+    protected ArchivaProjectModel toModel( String key, Dependency[] deps )
     {
-        List depList = new ArrayList();
+        List<Dependency> depList = new ArrayList<Dependency>();
 
         if ( deps != null )
         {
@@ -127,7 +126,7 @@ public abstract class AbstractMemoryRepository
         return toModel( key, depList );
     }
 
-    protected ArchivaProjectModel toModel( String key, List deps )
+    protected ArchivaProjectModel toModel( String key, List<Dependency> deps )
     {
         String parts[] = StringUtils.splitPreserveAllTokens( key, ':' );
 
@@ -144,10 +143,8 @@ public abstract class AbstractMemoryRepository
         model.setOrigin( "testcase" );
         model.setPackaging( "jar" );
 
-        Iterator it = deps.iterator();
-        while ( it.hasNext() )
+        for ( Dependency dep : deps )
         {
-            Dependency dep = (Dependency) it.next();
             model.addDependency( dep );
         }
 

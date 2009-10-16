@@ -39,15 +39,11 @@
   </bean> 
   
   <!-- Web Services : Search Service -->
-  <bean name="searchService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">
-    <!--  
-    <constructor-arg ref="archivaConfiguration"/>
-    <constructor-arg ref="repositoryContentFactory"/>
-     -->
-    <constructor-arg ref="xmlRpcUserRepositories"/>    
-    <constructor-arg ref="crossRepositorySearch"/>
+  <bean name="searchService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">    
+    <constructor-arg ref="xmlRpcUserRepositories"/>   
     <constructor-arg ref="archivaDAO#jdo"/>
     <constructor-arg ref="repositoryBrowsing"/>
+    <constructor-arg ref="nexusSearch"/>
   </bean>
   
   <!-- Web Services : Administration Service -->

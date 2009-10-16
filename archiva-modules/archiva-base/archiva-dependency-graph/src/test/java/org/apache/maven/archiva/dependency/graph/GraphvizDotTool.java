@@ -19,20 +19,19 @@ package org.apache.maven.archiva.dependency.graph;
  * under the License.
  */
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import junit.framework.Assert;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.dependency.DependencyGraphFactory;
 import org.apache.maven.archiva.model.DependencyScope;
 import org.apache.maven.archiva.model.VersionedReference;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * GraphvizDotTool - testing utility to help understand the graph. 
@@ -178,21 +177,13 @@ public class GraphvizDotTool
             dot.println( "    fontsize=\"11\"," );
             dot.println( "  ];" );
 
-            Iterator it;
-
-            it = graph.getNodes().iterator();
-            while ( it.hasNext() )
+            for ( DependencyGraphNode node : graph.getNodes() )
             {
-                DependencyGraphNode node = (DependencyGraphNode) it.next();
-
                 writeNode( dot, graph, node );
             }
 
-            it = graph.getEdges().iterator();
-            while ( it.hasNext() )
+            for ( DependencyGraphEdge edge : graph.getEdges() )
             {
-                DependencyGraphEdge edge = (DependencyGraphEdge) it.next();
-
                 DependencyGraphNode from = graph.getNode( edge.getNodeFrom() );
                 DependencyGraphNode to = graph.getNode( edge.getNodeTo() );
 
@@ -250,8 +241,7 @@ public class GraphvizDotTool
         dot.println( "  \"" + toId( node ) + "\" [" );
         dot.println( "    label=\"" + toLabel( node ) + "\"," );
 
-        List edgesTo = graph.getEdgesTo( node );
-        boolean orphan = CollectionUtils.isEmpty( edgesTo );
+        boolean orphan = CollectionUtils.isEmpty( graph.getEdgesTo( node ) );
 
         if ( node.isFromParent() )
         {

@@ -49,7 +49,7 @@ public class ArtifactsByRepositoryConstraintTest
 
     private ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String type )
     {
-        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, null, type );
+        ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, null, type, "test-repo" );
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setRepositoryId( "test-repo" );
 
@@ -167,7 +167,7 @@ public class ArtifactsByRepositoryConstraintTest
     private void assertConstraint( String msg, int count, ArtifactsByRepositoryConstraint constraint )
         throws Exception
     {
-        List results = artifactDao.queryArtifacts( constraint );
+        List<ArchivaArtifact> results = artifactDao.queryArtifacts( constraint );
         assertNotNull( msg + ": Not Null", results );
         assertEquals( msg + ": Results.size", count, results.size() );
     }

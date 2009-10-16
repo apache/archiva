@@ -19,11 +19,9 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.jackrabbit.util.Text;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
-import org.apache.jackrabbit.util.Text;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 
 /**

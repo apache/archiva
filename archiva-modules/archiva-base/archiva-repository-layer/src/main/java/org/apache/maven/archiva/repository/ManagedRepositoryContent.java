@@ -77,7 +77,7 @@ public interface ManagedRepositoryContent
      * @throws LayoutException 
      */
     public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
-        throws ContentNotFoundException, LayoutException;
+        throws ContentNotFoundException;
 
     /**
      * <p>
@@ -128,7 +128,7 @@ public interface ManagedRepositoryContent
      * @throws LayoutException 
      */
     public Set<String> getVersions( VersionedReference reference )
-        throws ContentNotFoundException, LayoutException;
+        throws ContentNotFoundException;
 
     /**
      * Determines if the artifact referenced exists in the repository.

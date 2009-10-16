@@ -65,6 +65,7 @@ public class ArchivaModelCloner
         cloned.setPlugins( clonePlugins( model.getPlugins() ) );
         cloned.setReports( cloneReports( model.getReports() ) );
         cloned.setDependencyManagement( cloneDependencies( model.getDependencyManagement() ) );
+        cloned.setProperties( clone(model.getProperties() ) );
 
         return cloned;
     }
@@ -98,6 +99,7 @@ public class ArchivaModelCloner
 
         cloned.setSystem( ciManagement.getSystem() );
         cloned.setUrl( ciManagement.getUrl() );
+        cloned.setCiUrl( ciManagement.getCiUrl() );
 
         return cloned;
     }
@@ -138,6 +140,7 @@ public class ArchivaModelCloner
 
         IssueManagement cloned = new IssueManagement();
 
+        cloned.setIssueManagementUrl( issueManagement.getIssueManagementUrl() );
         cloned.setSystem( issueManagement.getSystem() );
         cloned.setUrl( issueManagement.getUrl() );
 
@@ -175,10 +178,12 @@ public class ArchivaModelCloner
         cloned.setFavicon( organization.getFavicon() );
         cloned.setName( organization.getName() );
         cloned.setUrl( organization.getUrl() );
+        cloned.setOrganizationName( organization.getOrganizationName() );
 
         return cloned;
     }
 
+    @SuppressWarnings("unchecked")
     public static Properties clone( Properties properties )
     {
         if ( properties == null )
@@ -188,7 +193,7 @@ public class ArchivaModelCloner
 
         Properties cloned = new Properties();
 
-        Enumeration keys = properties.propertyNames();
+        Enumeration<String> keys = (Enumeration<String>) properties.propertyNames();
         while ( keys.hasMoreElements() )
         {
             String key = (String) keys.nextElement();
@@ -246,39 +251,34 @@ public class ArchivaModelCloner
         return cloned;
     }
 
-    public static List cloneArtifactReferences( List artifactReferenceList )
+    public static List<ArtifactReference> cloneArtifactReferences( List<ArtifactReference> artifactReferenceList )
     {
         if ( artifactReferenceList == null )
         {
             return null;
         }
 
-        List ret = new ArrayList();
+        List<ArtifactReference> ret = new ArrayList<ArtifactReference>();
 
-        Iterator it = artifactReferenceList.iterator();
-        while ( it.hasNext() )
+        for ( ArtifactReference ref : artifactReferenceList )
         {
-            ArtifactReference artifactReference = (ArtifactReference) it.next();
-            ret.add( clone( artifactReference ) );
+            ret.add( clone( ref ) );
         }
 
         return ret;
     }
 
-    public static List cloneDependencies( List dependencies )
+    public static List<Dependency> cloneDependencies( List<Dependency> dependencies )
     {
         if ( dependencies == null )
         {
             return null;
         }
 
-        List ret = new ArrayList();
+        List<Dependency> ret = new ArrayList<Dependency>();
 
-        Iterator it = dependencies.iterator();
-        while ( it.hasNext() )
+        for ( Dependency dep : dependencies )
         {
-            Dependency dep = (Dependency) it.next();
-
             if ( dep == null )
             {
                 // Skip null dependency.
@@ -291,19 +291,17 @@ public class ArchivaModelCloner
         return ret;
     }
 
-    public static List cloneExclusions( List exclusions )
+    public static List<Exclusion> cloneExclusions( List<Exclusion> exclusions )
     {
         if ( exclusions == null )
         {
             return null;
         }
 
-        List ret = new ArrayList();
+        List<Exclusion> ret = new ArrayList<Exclusion>();
 
-        Iterator it = exclusions.iterator();
-        while ( it.hasNext() )
+        for ( Exclusion exclusion : exclusions )
         {
-            Exclusion exclusion = (Exclusion) it.next();
             Exclusion cloned = new Exclusion();
 
             cloned.setGroupId( exclusion.getGroupId() );
@@ -315,19 +313,19 @@ public class ArchivaModelCloner
         return ret;
     }
 
-    public static List cloneIndividuals( List individuals )
+    public static List<Individual> cloneIndividuals( List<Individual> individuals )
     {
         if ( individuals == null )
         {
             return individuals;
         }
 
-        List ret = new ArrayList();
+        List<Individual> ret = new ArrayList<Individual>();
 
-        Iterator it = individuals.iterator();
+        Iterator<Individual> it = individuals.iterator();
         while ( it.hasNext() )
         {
-            Individual individual = (Individual) it.next();
+            Individual individual = it.next();
             Individual cloned = new Individual();
 
             cloned.setPrincipal( individual.getPrincipal() );
@@ -338,6 +336,7 @@ public class ArchivaModelCloner
             cloned.setOrganizationUrl( individual.getOrganizationUrl() );
             cloned.setUrl( individual.getUrl() );
             cloned.setTimezone( individual.getTimezone() );
+            cloned.setIndividualEmail( individual.getIndividualEmail() );
 
             cloned.setRoles( cloneRoles( individual.getRoles() ) );
             cloned.setProperties( clone( individual.getProperties() ) );
@@ -348,19 +347,17 @@ public class ArchivaModelCloner
         return ret;
     }
 
-    public static List cloneLicenses( List licenses )
+    public static List<License> cloneLicenses( List<License> licenses )
     {
         if ( licenses == null )
         {
             return null;
         }
 
-        List ret = new ArrayList();
+        List<License> ret = new ArrayList<License>();
 
-        Iterator it = licenses.iterator();
-        while ( it.hasNext() )
+        for ( License license : licenses )
         {
-            License license = (License) it.next();
             License cloned = new License();
 
             cloned.setId( license.getId() );
@@ -374,20 +371,17 @@ public class ArchivaModelCloner
         return ret;
     }
 
-    public static List cloneMailingLists( List mailingLists )
+    public static List<MailingList> cloneMailingLists( List<MailingList> mailingLists )
     {
         if ( mailingLists == null )
         {
             return null;
         }
 
-        List ret = new ArrayList();
+        List<MailingList> ret = new ArrayList<MailingList>();
 
-        Iterator it = mailingLists.iterator();
-        while ( it.hasNext() )
+        for ( MailingList mailingList : mailingLists )
         {
-            MailingList mailingList = (MailingList) it.next();
-
             if ( mailingList == null )
             {
                 // Skip null mailing list.
@@ -400,29 +394,27 @@ public class ArchivaModelCloner
         return ret;
     }
 
-    public static List clonePlugins( List plugins )
+    public static List<ArtifactReference> clonePlugins( List<ArtifactReference> plugins )
     {
         return cloneArtifactReferences( plugins );
     }
 
-    public static List cloneReports( List reports )
+    public static List<ArtifactReference> cloneReports( List<ArtifactReference> reports )
     {
         return cloneArtifactReferences( reports );
     }
 
-    public static List cloneRepositories( List repositories )
+    public static List<ProjectRepository> cloneRepositories( List<ProjectRepository> repositories )
     {
         if ( repositories == null )
         {
             return null;
         }
 
-        List ret = new ArrayList();
+        List<ProjectRepository> ret = new ArrayList<ProjectRepository>();
 
-        Iterator it = repositories.iterator();
-        while ( it.hasNext() )
+        for ( ProjectRepository repository : repositories )
         {
-            ProjectRepository repository = (ProjectRepository) it.next();
             ProjectRepository cloned = new ProjectRepository();
 
             cloned.setId( repository.getId() );
@@ -439,32 +431,29 @@ public class ArchivaModelCloner
         return ret;
     }
 
-    public static List cloneRoles( List roles )
+    public static List<String> cloneRoles( List<String> roles )
     {
         return cloneSimpleStringList( roles );
     }
 
-    private static List cloneSimpleStringList( List simple )
+    private static List<String> cloneSimpleStringList( List<String> simple )
     {
         if ( simple == null )
         {
             return null;
         }
 
-        List ret = new ArrayList();
+        List<String> ret = new ArrayList<String>();
 
-        Iterator it = simple.iterator();
-
-        while ( it.hasNext() )
+        for ( String txt : simple )
         {
-            String txt = (String) it.next();
             ret.add( txt );
         }
 
         return ret;
     }
 
-    public static List cloneAvailableVersions( List availableVersions )
+    public static List<String> cloneAvailableVersions( List<String> availableVersions )
     {
         return cloneSimpleStringList( availableVersions );
     }

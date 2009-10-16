@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-base</artifactId>
-    <version>1.2-MRM1025-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-configuration</artifactId>
@@ -58,25 +58,47 @@
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>
-        <version>1.0-alpha-15</version>
         <executions>
           <execution>
             <goals>
               <goal>java</goal>
-              <goal>registry-reader</goal>
-              <goal>registry-writer</goal>
             </goals>
+          </execution>
+          <execution>
+            <id>archiva-jpox-registry-reader</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatorId>registry-reader</generatorId>
+            </configuration>
+          </execution>
+          <execution>
+            <id>archiva-jpox-registry-writer</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatorId>registry-writer</generatorId>
+            </configuration>
           </execution>
         </executions>
         <configuration>
           <version>1.2.0</version>
-          <model>src/main/mdo/configuration.mdo</model>
+          <models>
+            <model>src/main/mdo/configuration.mdo</model>
+          </models>
         </configuration>
       </plugin>
       <plugin>

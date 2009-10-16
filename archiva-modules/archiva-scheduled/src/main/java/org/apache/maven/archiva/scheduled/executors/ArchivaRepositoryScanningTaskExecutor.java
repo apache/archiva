@@ -19,13 +19,6 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
-import org.apache.archiva.repository.scanner.RepositoryScanner;
-import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +31,12 @@ import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstr
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -47,6 +45,10 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ArchivaRepositoryScanningTaskExecutor 
@@ -63,8 +65,6 @@ public class ArchivaRepositoryScanningTaskExecutor
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
     
     /**
-     * TODO: just for stats, remove this and use the main stats module
-     * 
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
@@ -80,6 +80,13 @@ public class ArchivaRepositoryScanningTaskExecutor
      * @plexus.requirement
      */
     private RepositoryScanner repoScanner;
+    
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentConsumers consumers;
+    
+    private Task task;
 
     public void initialize()
         throws InitializationException
@@ -87,9 +94,12 @@ public class ArchivaRepositoryScanningTaskExecutor
         log.info( "Initialized " + this.getClass().getName() );
     }
 
+    @SuppressWarnings("unchecked")
     public void executeTask( Task task )
         throws TaskExecutionException
     {
+        this.task = task;
+        
         RepositoryTask repoTask = (RepositoryTask) task;
         
         if ( StringUtils.isBlank( repoTask.getRepositoryId() ) )
@@ -97,40 +107,57 @@ public class ArchivaRepositoryScanningTaskExecutor
             throw new TaskExecutionException("Unable to execute RepositoryTask with blank repository Id.");
         }
 
-        log.info( "Executing task from queue with job name: " + repoTask.getName() );
+        ManagedRepositoryConfiguration arepo = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoTask.getRepositoryId() );
         
-        try
+        // execute consumers on resource file if set
+        if( repoTask.getResourceFile() != null )
         {
-            ManagedRepositoryConfiguration arepo = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoTask.getRepositoryId() );
-            if ( arepo == null )
-            {
-                throw new TaskExecutionException( "Unable to execute RepositoryTask with invalid repository id: " + repoTask.getRepositoryId() );
-            }
-
-            long sinceWhen = RepositoryScanner.FRESH_SCAN;
-
-            List<RepositoryContentStatistics> results = dao.query( new MostRecentRepositoryScanStatistics( arepo.getId() ) );
-
-            if ( CollectionUtils.isNotEmpty( results ) )
-            {
-                RepositoryContentStatistics lastStats = results.get( 0 );
-                sinceWhen = lastStats.getWhenGathered().getTime() + lastStats.getDuration();
-            }
-
-            RepositoryScanStatistics stats = repoScanner.scan( arepo, sinceWhen );
-
-            log.info( "Finished repository task: " + stats.toDump( arepo ) );
-            
-            RepositoryContentStatistics dbstats = constructRepositoryStatistics( arepo, sinceWhen, results, stats );
-            
-            dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( dbstats );            
+            log.debug( "Executing task from queue with job name: " + repoTask );
+            consumers.executeConsumers( arepo, repoTask.getResourceFile(), repoTask.isUpdateRelatedArtifacts() );
         }
-        catch ( RepositoryScannerException e )
-        {   
-            throw new TaskExecutionException( "Repository error when executing repository job.", e );
-        }    
+        else
+        {
+            log.info( "Executing task from queue with job name: " + repoTask );
+            
+            // otherwise, execute consumers on whole repository
+            try
+            {   
+                if ( arepo == null )
+                {
+                    throw new TaskExecutionException( "Unable to execute RepositoryTask with invalid repository id: " + repoTask.getRepositoryId() );
+                }
+    
+                long sinceWhen = RepositoryScanner.FRESH_SCAN;
+    
+                List<RepositoryContentStatistics> results = (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( arepo.getId() ) );
+               
+                if ( CollectionUtils.isNotEmpty( results ) )
+                {
+                    RepositoryContentStatistics lastStats = results.get( 0 );
+                    if( !repoTask.isScanAll() )
+                    {
+                        sinceWhen = lastStats.getWhenGathered().getTime() + lastStats.getDuration();
+                    }
+                }
+    
+                RepositoryScanStatistics stats = repoScanner.scan( arepo, sinceWhen );
+    
+                log.info( "Finished repository task: " + stats.toDump( arepo ) );
+                
+                RepositoryContentStatistics dbstats = constructRepositoryStatistics( arepo, sinceWhen, results, stats );
+                
+                dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( dbstats );   
+                
+                this.task = null;
+            }
+            catch ( RepositoryException e )
+            {   
+                throw new TaskExecutionException( "Repository error when executing repository job.", e );
+            }    
+        }
     }
 
+    @SuppressWarnings("unchecked")
     private RepositoryContentStatistics constructRepositoryStatistics( ManagedRepositoryConfiguration arepo,
                                                                        long sinceWhen,
                                                                        List<RepositoryContentStatistics> results,
@@ -147,7 +174,7 @@ public class ArchivaRepositoryScanningTaskExecutor
         // total artifact count
         try
         {
-            List artifacts = dao.getArtifactDAO().queryArtifacts( 
+            List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts( 
                       new ArtifactsByRepositoryConstraint( arepo.getId(), stats.getWhenGathered(), "groupId", true ) );            
             dbstats.setTotalArtifactCount( artifacts.size() );
         }
@@ -168,12 +195,17 @@ public class ArchivaRepositoryScanningTaskExecutor
         List<String> repos = new ArrayList<String>();
         repos.add( arepo.getId() ); 
         
-        List<String> groupIds = dao.query( new UniqueGroupIdConstraint( repos ) );
+        List<String> groupIds = (List<String>) dao.query( new UniqueGroupIdConstraint( repos ) );
         dbstats.setTotalGroupCount( groupIds.size() );
                 
-        List<Object[]> artifactIds = dao.query( new UniqueArtifactIdConstraint( arepo.getId(), true ) );
+        List<Object[]> artifactIds = (List<Object[]>) dao.query( new UniqueArtifactIdConstraint( arepo.getId(), true ) );
         dbstats.setTotalProjectCount( artifactIds.size() );
                         
         return dbstats;
-    }    
+    }   
+    
+    public Task getCurrentTaskInExecution()
+    {
+        return task;
+    }
 }

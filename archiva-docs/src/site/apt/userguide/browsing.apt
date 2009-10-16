@@ -3,7 +3,7 @@
  ------  
  Maria Odea Ching
  ------
- 9 November 2007
+ 23 February 2009
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -43,28 +43,32 @@ Browsing
 
 * Artifact Info
 
-  The Artifact Info page is divided into 5 views:
+  Items in the repositories are hyperlinked allowing you easy access to view more information. By clicking on the Group ID or Artifact ID you will be taken to the repository browser. The Artifact Info page is divided into six views:
   
-  1. Info. Basic information about the artifact is displayed here. These are the groupId, artifactId, version and 
+  1. Info. Basic information about the artifact is displayed here. These are the groupId, artifactId, version and
      packaging. A dependency pom snippet is also available, which a user can just copy and paste in a pom file 
      to declare the artifact as a dependency of the project.
   
   2. Dependencies. The dependencies of the artifact will be listed here. The user can easily navigate to a specific
-     dependency by clicking on the groupId, artifactId or version link. The scope of the dependency is also shown.
+     dependency by clicking on the groupId, artifactId, or version link. The scope of the dependency is also shown.
   
-  3. Dependency Tree. The dependencies of the artifact are displayed in a tree-like view, which can also be 
+  3. Dependency Tree. The dependencies of the artifact are displayed in a tree-like view, which can also be
      navigated.
   
   4. Used By. Lists all the artifacts in the repository which use this artifact.
   
   5. Mailing Lists. The project mailing lists available in the artifact's pom are displayed here.
+
+  6. Download. Clicking on this link will download the artifact to your local machine.
   
 * Downloading Artifacts
 
   Artifacts can be downloaded from the artifact info page. All files, except for the metadata.xml files, that are 
   associated with the artifact are available in the download box. The size of the files in bytes are displayed 
   at the right section of the download box. 
-  
+
+  Note: Upon downloading the artifact, you will be asked to enter your username and password for the repository where the artifact    	will be downloaded from. Only users with Global Repository Manager, Repository Manager, or Repository Observer roles for that repository can download the artifact.
+
   
   
    

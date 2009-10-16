@@ -23,17 +23,18 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.Dependency;
+import org.apache.maven.archiva.model.MailingList;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Validateable;
 
 /**
@@ -41,7 +42,7 @@ import com.opensymphony.xwork2.Validateable;
  * 
  * TODO change name to ShowVersionedAction to conform to terminology.
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction" instantiation-strategy="per-lookup"
  */
 public class ShowArtifactAction
     extends PlexusActionSupport
@@ -59,13 +60,6 @@ public class ShowArtifactAction
      */
     private UserRepositories userRepositories;
     
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaXworkUser archivaXworkUser;
-
-    /* .\ Input Parameters \.________________________________________ */
-
     private String groupId;
 
     private String artifactId;
@@ -84,16 +78,13 @@ public class ShowArtifactAction
     /**
      * The list of artifacts that depend on this versioned project.
      */
-    private List dependees;
+    private List<ArchivaProjectModel> dependees;
 
-    /**
-     * The reports associated with this versioned project.
-     */
-    private List reports;
+    private List<MailingList> mailingLists;
 
-    private List mailingLists;
-
-    private List dependencies;
+    private List<Dependency> dependencies;
+    
+    private List<String> snapshotVersions;
 
     /**
      * Show the versioned project information tab. TODO: Change name to 'project'
@@ -103,15 +94,31 @@ public class ShowArtifactAction
     {
         try
         {
-            this.model =
-                repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+            if( VersionUtil.isSnapshot( version ) )
+            {                
+                this.model =
+                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+                                
+                this.snapshotVersions =
+                    repoBrowsing.getOtherSnapshotVersions( getObservableRepos(), groupId, artifactId, version );
+                if( this.snapshotVersions.contains( version ) )
+                {
+                    this.snapshotVersions.remove( version );
+                }
+            }
+            else
+            {
+                this.model =
+                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+            }
+            
             this.repositoryId =
                 repoBrowsing.getRepositoryId( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
         }
-        catch ( ObjectNotFoundException oe )
+        catch ( ObjectNotFoundException e )
         {
-            addActionError( "Unable to find project model for [" + groupId + ":" + artifactId + ":" + version + "]." );
-
+            log.debug( e.getMessage(), e );
+            addActionError( e.getMessage() );
             return ERROR;
         }
 
@@ -149,10 +156,8 @@ public class ShowArtifactAction
     public String reports()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        System.out.println( "#### In reports." );
         // TODO: hook up reports on project - this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId,
         // version );
-        System.out.println( "#### Found " + reports.size() + " reports." );
 
         return SUCCESS;
     }
@@ -181,11 +186,6 @@ public class ShowArtifactAction
         return SUCCESS;
     }
 
-    private String getPrincipal()
-    {
-        return archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
-    }
-
     private List<String> getObservableRepos()
     {
         try
@@ -194,20 +194,21 @@ public class ShowArtifactAction
         }
         catch ( PrincipalNotFoundException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         catch ( AccessDeniedException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
             // TODO: pass this onto the screen.
         }
         catch ( ArchivaSecurityException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
     }
 
+    @Override
     public void validate()
     {
         if ( StringUtils.isBlank( groupId ) )
@@ -261,22 +262,17 @@ public class ShowArtifactAction
         this.version = version;
     }
 
-    public List getReports()
-    {
-        return reports;
-    }
-
-    public List getMailingLists()
+    public List<MailingList> getMailingLists()
     {
         return mailingLists;
     }
 
-    public List getDependencies()
+    public List<Dependency> getDependencies()
     {
         return dependencies;
     }
 
-    public List getDependees()
+    public List<ArchivaProjectModel> getDependees()
     {
         return dependees;
     }
@@ -289,6 +285,16 @@ public class ShowArtifactAction
     public void setRepositoryId( String repositoryId )
     {
         this.repositoryId = repositoryId;
+    }
+
+    public List<String> getSnapshotVersions()
+    {
+        return snapshotVersions;
+    }
+
+    public void setSnapshotVersions( List<String> snapshotVersions )
+    {
+        this.snapshotVersions = snapshotVersions;
     }
 
 }

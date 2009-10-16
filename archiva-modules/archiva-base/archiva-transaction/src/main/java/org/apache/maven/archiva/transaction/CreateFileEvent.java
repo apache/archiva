@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.codehaus.plexus.digest.Digester;
+
 /**
  * Event for creating a file from a string content.
  *
@@ -41,7 +43,7 @@ public class CreateFileEvent
      * @param destination
      * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
      */
-    public CreateFileEvent( String content, File destination, List digesters )
+    public CreateFileEvent( String content, File destination, List<Digester> digesters )
     {
         super( digesters );
         this.content = content;

@@ -19,6 +19,12 @@ package org.apache.maven.archiva.repository.project.readers;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -34,84 +40,70 @@ import org.apache.maven.archiva.model.Organization;
 import org.apache.maven.archiva.model.ProjectRepository;
 import org.apache.maven.archiva.model.Scm;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLReader;
 import org.dom4j.Element;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * ProjectModel400Reader - read in modelVersion 4.0.0 pom files into archiva-model structures.
  *
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 public class ProjectModel400Reader
     implements ProjectModelReader
 {
-
     public ArchivaProjectModel read( File pomFile )
-        throws ProjectModelException
+        throws XMLException
     {
-        try
+        XMLReader xml = new XMLReader( "project", pomFile );
+
+        ArchivaProjectModel model = new ArchivaProjectModel();
+
+        if ( !"http://maven.apache.org/POM/4.0.0".equals( xml.getDefaultNamespaceURI() ) )
         {
-            XMLReader xml = new XMLReader( "project", pomFile );
-
-            ArchivaProjectModel model = new ArchivaProjectModel();
-
-            if ( !"http://maven.apache.org/POM/4.0.0".equals( xml.getDefaultNamespaceURI() ) )
-            {
-                // No namespace defined
-                // TODO: Output to monitor the problem with the Namespace.
-            }
-
-            xml.removeNamespaces();
-
-            Element project = xml.getElement( "//project" );
-
-            model.setGroupId( project.elementTextTrim( "groupId" ) );
-            model.setArtifactId( project.elementTextTrim( "artifactId" ) );
-            model.setVersion( project.elementTextTrim( "version" ) );
-            model.setName( project.elementTextTrim( "name" ) );
-            model.setDescription( project.elementTextTrim( "description" ) );
-            model.setUrl( project.elementTextTrim( "url" ) );
-
-            model.setPackaging( StringUtils.defaultIfEmpty( project.elementTextTrim( "packaging" ), "jar" ) );
-
-            model.setParentProject( getParentProject( xml ) );
-
-            model.setMailingLists( getMailingLists( xml ) );
-            model.setCiManagement( getCiManagement( xml ) );
-            model.setIndividuals( getIndividuals( xml ) );
-            model.setIssueManagement( getIssueManagement( xml ) );
-            model.setLicenses( getLicenses( xml ) );
-            model.setOrganization( getOrganization( xml ) );
-            model.setScm( getSCM( xml ) );
-            model.setRepositories( getRepositories( xml ) );
-
-            model.setDependencies( getDependencies( xml ) );
-            model.setDependencyManagement( getDependencyManagement( xml ) );
-            model.setPlugins( getPlugins( xml ) );
-            model.setReports( getReports( xml ) );
-            model.setProperties( getProperties( xml.getElement( "//project/properties" ) ) );
-
-            model.setBuildExtensions( getBuildExtensions( xml ) );
-
-            model.setRelocation( getRelocation( xml ) );
-            
-            model.setOrigin("filesystem");
-
-            return model;
+            // No namespace defined
+            // TODO: Output to monitor the problem with the Namespace.
         }
-        catch ( XMLException e )
-        {
-            throw new ProjectModelException( e.getMessage(), e );
-        }
+
+        xml.removeNamespaces();
+
+        Element project = xml.getElement( "//project" );
+
+        model.setGroupId( project.elementTextTrim( "groupId" ) );
+        model.setArtifactId( project.elementTextTrim( "artifactId" ) );
+        model.setVersion( project.elementTextTrim( "version" ) );
+        model.setName( project.elementTextTrim( "name" ) );
+        model.setDescription( project.elementTextTrim( "description" ) );
+        model.setUrl( project.elementTextTrim( "url" ) );
+
+        model.setPackaging( StringUtils.defaultIfEmpty( project.elementTextTrim( "packaging" ), "jar" ) );
+
+        model.setParentProject( getParentProject( xml ) );
+
+        model.setMailingLists( getMailingLists( xml ) );
+        model.setCiManagement( getCiManagement( xml ) );
+        model.setIndividuals( getIndividuals( xml ) );
+        model.setIssueManagement( getIssueManagement( xml ) );
+        model.setLicenses( getLicenses( xml ) );
+        model.setOrganization( getOrganization( xml ) );
+        model.setScm( getSCM( xml ) );
+        model.setRepositories( getRepositories( xml ) );
+
+        model.setDependencies( getDependencies( xml ) );
+        model.setDependencyManagement( getDependencyManagement( xml ) );
+        model.setPlugins( getPlugins( xml ) );
+        model.setReports( getReports( xml ) );
+        model.setProperties( getProperties( xml.getElement( "//project/properties" ) ) );
+
+        model.setBuildExtensions( getBuildExtensions( xml ) );
+
+        model.setRelocation( getRelocation( xml ) );
+
+        model.setOrigin( "filesystem" );
+
+        return model;
     }
 
     private ArtifactReference getArtifactReference( Element elemPlugin, String defaultType )
@@ -161,6 +153,7 @@ public class ProjectModel400Reader
             CiManagement ciManagement = new CiManagement();
             ciManagement.setSystem( elemCiMgmt.elementTextTrim( "system" ) );
             ciManagement.setUrl( elemCiMgmt.elementTextTrim( "url" ) );
+            ciManagement.setCiUrl( elemCiMgmt.elementTextTrim( "url" ) );
             return ciManagement;
         }
 
@@ -290,6 +283,7 @@ public class ProjectModel400Reader
             individual.setOrganizationUrl( elemPerson.elementTextTrim( "organizationUrl" ) );
             individual.setUrl( elemPerson.elementTextTrim( "url" ) );
             individual.setTimezone( elemPerson.elementTextTrim( "timezone" ) );
+            individual.setIndividualEmail( elemPerson.elementTextTrim( "email" ) );
 
             // Roles
             Element elemRoles = elemPerson.element( "roles" );
@@ -323,7 +317,8 @@ public class ProjectModel400Reader
 
             issueMgmt.setSystem( elemIssueMgmt.elementTextTrim( "system" ) );
             issueMgmt.setUrl( elemIssueMgmt.elementTextTrim( "url" ) );
-
+            issueMgmt.setIssueManagementUrl( elemIssueMgmt.elementTextTrim( "url" ) );
+            
             return issueMgmt;
         }
 
@@ -401,6 +396,7 @@ public class ProjectModel400Reader
         {
             Organization org = new Organization();
 
+            org.setOrganizationName( elemOrg.elementTextTrim( "name" ) );
             org.setName( elemOrg.elementTextTrim( "name" ) );
             org.setUrl( elemOrg.elementTextTrim( "url" ) );
 

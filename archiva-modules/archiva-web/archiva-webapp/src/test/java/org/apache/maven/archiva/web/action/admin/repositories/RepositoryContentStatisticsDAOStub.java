@@ -46,7 +46,7 @@ public class RepositoryContentStatisticsDAOStub
         Assert.assertEquals( "repo-ident", stats.getRepositoryId() );
     }
 
-    public List queryRepositoryContentStatistics( Constraint constraint )
+    public List<RepositoryContentStatistics> queryRepositoryContentStatistics( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         Assert.assertTrue( constraint instanceof RepositoryContentStatisticsByRepositoryConstraint );

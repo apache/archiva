@@ -186,10 +186,11 @@ public class ArchivaConfigurationTest
     public void testGetConfigurationSystemOverride()
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
 
         System.setProperty( "org.apache.maven.archiva.webapp.ui.appletFindEnabled", "false" );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
 
         try
         {
@@ -672,9 +673,6 @@ public class ArchivaConfigurationTest
                 assertEquals( ConfigurationEvent.SAVED, event.getType() );
 
                 Configuration configuration = archivaConfiguration.getConfiguration();
-
-                ManagedRepositoryConfiguration repository =
-                    (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
 
                 assertEquals( "check cron expression", "0 0,15 0 * * ?",
                               configuration.getDatabaseScanning().getCronExpression() );

@@ -19,27 +19,30 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
-import org.jpox.SchemaTool;
-
 import java.io.File;
 import java.net.URL;
-import java.util.Iterator;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
+import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
+import org.codehaus.plexus.util.FileUtils;
+import org.jpox.SchemaTool;
 
 /**
  * ArchivaRepositoryScanningTaskExecutorTest 
@@ -52,6 +55,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
     private TaskExecutor taskExecutor;
 
     protected ArchivaDAO dao;
+    
+    private File repoDir;
     
     protected void setUp()
         throws Exception
@@ -101,10 +106,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         Properties properties = jdoFactory.getProperties();
 
-        for ( Iterator it = properties.entrySet().iterator(); it.hasNext(); )
+        for ( Map.Entry<Object, Object> entry : properties.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) it.next();
-
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 
@@ -133,12 +136,28 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         this.dao = (ArchivaDAO) lookup( ArchivaDAO.class.getName(), "jdo" );
 
         taskExecutor = (TaskExecutor) lookup( TaskExecutor.class, "test-repository-scanning" );
+        
+        File sourceRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
+        repoDir = new File( getBasedir(), "target/default-repository" );  
+        
+        repoDir.mkdir();
+        
+        FileUtils.copyDirectoryStructure( sourceRepoDir, repoDir );
+        
+        assertTrue( repoDir.exists() );
     }
-
+    
+    protected void tearDown() throws Exception
+    {   
+        FileUtils.deleteDirectory( repoDir );
+        
+        assertFalse( repoDir.exists() );
+        
+        super.tearDown();
+    }
+    
     public void testExecutor() throws Exception
     {
-        File repoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
-
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
         ArchivaConfiguration archivaConfig = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
@@ -152,13 +171,110 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         RepositoryTask repoTask = new RepositoryTask();
         
-        repoTask.setName( "testRepoTask" );
         repoTask.setRepositoryId( "testRepo" );
         
         taskExecutor.executeTask( repoTask );
 
         ArtifactDAO adao = dao.getArtifactDAO();
-        List unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        
+        assertNotNull( unprocessedResultList );
+        assertEquals("Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );
+    }
+    
+    public void testExecutorScanOnlyNewArtifacts()
+        throws Exception
+    {  
+        assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
+
+        ArchivaConfiguration archivaConfig = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        assertNotNull( archivaConfig );
+        
+        // Create it
+        ManagedRepositoryConfiguration repo = createRepository( "testRepo", "Test Repository", repoDir );
+        assertNotNull( repo );
+        archivaConfig.getConfiguration().getManagedRepositories().clear();
+        archivaConfig.getConfiguration().addManagedRepository( repo );
+
+        RepositoryTask repoTask = new RepositoryTask();
+        
+        repoTask.setRepositoryId( "testRepo" );
+        repoTask.setScanAll( false );
+        
+        RepositoryContentStatistics stats = new RepositoryContentStatistics();
+        stats.setDuration( 1234567 );
+        stats.setNewFileCount( 8 );
+        stats.setRepositoryId( "testRepo" );
+        stats.setTotalArtifactCount( 8 );
+        stats.setTotalFileCount( 8 );
+        stats.setTotalGroupCount( 3 );
+        stats.setTotalProjectCount( 5 );
+        stats.setTotalSize( 999999 );
+        stats.setWhenGathered( Calendar.getInstance().getTime() );
+        
+        dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( stats );
+        
+        taskExecutor.executeTask( repoTask );
+
+        ArtifactDAO adao = dao.getArtifactDAO();
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        
+        assertNotNull( unprocessedResultList );
+        assertEquals("Incorrect number of unprocessed artifacts detected. No new artifacts should have been found.", 0, unprocessedResultList.size() );
+        
+        File newArtifactGroup = new File( repoDir, "org/apache/archiva");
+        
+        FileUtils.copyDirectoryStructure( new File( getBasedir(), "target/test-classes/test-repo/org/apache/archiva"), newArtifactGroup );      
+        
+        // update last modified date
+        new File( newArtifactGroup, "archiva-index-methods-jar-test/1.0/pom.xml" ).setLastModified( Calendar.getInstance().getTimeInMillis() + 1000 );
+        new File( newArtifactGroup, "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ).setLastModified( Calendar.getInstance().getTimeInMillis() + 1000 );
+
+        assertTrue( newArtifactGroup.exists() );
+        
+        taskExecutor.executeTask( repoTask );
+        
+        unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        assertNotNull( unprocessedResultList );
+        assertEquals( "Incorrect number of unprocessed artifacts detected. One new artifact should have been found.", 1, unprocessedResultList.size() );        
+    }
+    
+    public void testExecutorForceScanAll()
+        throws Exception
+    {
+        assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
+
+        ArchivaConfiguration archivaConfig = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        assertNotNull( archivaConfig );
+        
+        // Create it
+        ManagedRepositoryConfiguration repo = createRepository( "testRepo", "Test Repository", repoDir );
+        assertNotNull( repo );
+        archivaConfig.getConfiguration().getManagedRepositories().clear();
+        archivaConfig.getConfiguration().addManagedRepository( repo );
+
+        RepositoryTask repoTask = new RepositoryTask();
+        
+        repoTask.setRepositoryId( "testRepo" );
+        repoTask.setScanAll( true );
+        
+        RepositoryContentStatistics stats = new RepositoryContentStatistics();
+        stats.setDuration( 1234567 );
+        stats.setNewFileCount( 8 );
+        stats.setRepositoryId( "testRepo" );
+        stats.setTotalArtifactCount( 8 );
+        stats.setTotalFileCount( 8 );
+        stats.setTotalGroupCount( 3 );
+        stats.setTotalProjectCount( 5 );
+        stats.setTotalSize( 999999 );
+        stats.setWhenGathered( Calendar.getInstance().getTime() );
+        
+        dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( stats );
+        
+        taskExecutor.executeTask( repoTask );
+
+        ArtifactDAO adao = dao.getArtifactDAO();
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
         
         assertNotNull( unprocessedResultList );
         assertEquals("Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );

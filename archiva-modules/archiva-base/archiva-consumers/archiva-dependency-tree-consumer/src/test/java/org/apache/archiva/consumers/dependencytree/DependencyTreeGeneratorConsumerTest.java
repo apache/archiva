@@ -29,7 +29,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.profiles.DefaultProfileManager;
 import org.codehaus.plexus.spring.PlexusContainerAdapter;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -109,8 +108,6 @@ public class DependencyTreeGeneratorConsumerTest
     {
         PlexusContainerAdapter container = new PlexusContainerAdapter();
         container.setApplicationContext( getApplicationContext() );
-        
-        DefaultProfileManager m = new DefaultProfileManager( container );
         
         consumer.beginScan( repository, null );
 

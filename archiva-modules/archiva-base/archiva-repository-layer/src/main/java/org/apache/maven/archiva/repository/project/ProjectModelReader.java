@@ -20,6 +20,7 @@ package org.apache.maven.archiva.repository.project;
  */
 
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.xml.XMLException;
 
 import java.io.File;
 
@@ -30,5 +31,6 @@ import java.io.File;
  */
 public interface ProjectModelReader
 {
-    public ArchivaProjectModel read( File pomFile ) throws ProjectModelException;
+    public ArchivaProjectModel read( File pomFile )
+        throws XMLException;
 }

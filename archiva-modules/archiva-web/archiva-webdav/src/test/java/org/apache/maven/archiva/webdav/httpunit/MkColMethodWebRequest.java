@@ -20,7 +20,6 @@ package org.apache.maven.archiva.webdav.httpunit;
  */
 
 import com.meterware.httpunit.HeaderOnlyWebRequest;
-import java.net.URL;
 
 /**
  * MkColMethodWebRequest

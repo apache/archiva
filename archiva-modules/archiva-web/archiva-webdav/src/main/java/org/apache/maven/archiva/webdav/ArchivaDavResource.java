@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.util.Text;
@@ -57,14 +56,17 @@ import org.apache.jackrabbit.webdav.property.ResourceType;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
+import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.apache.maven.archiva.webdav.util.IndexWriter;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-
-import com.opensymphony.xwork2.ActionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
@@ -91,44 +93,48 @@ public class ArchivaDavResource
 
     private final ManagedRepositoryConfiguration repository;
 
-    private final RepositoryContentConsumers consumers;
-
     private final MimeTypes mimeTypes;
 
     private List<AuditListener> auditListeners;
+
+    private String principal;
     
-    private ArchivaXworkUser archivaXworkUser;
+    public static final String COMPLIANCE_CLASS = "1, 2";
+    
+    private ArchivaTaskScheduler scheduler;
+    
+    private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryContentConsumers consumers, ArchivaXworkUser archivaXworkUser )
+                               ArchivaTaskScheduler scheduler )
     {
         this.localResource = new File( localResource ); 
         this.logicalResource = logicalResource;
         this.locator = locator;
         this.factory = factory;
         this.session = session;
-        this.archivaXworkUser = archivaXworkUser;
         
         // TODO: push into locator as well as moving any references out of the resource factory
         this.repository = repository;
         
         // TODO: these should be pushed into the repository layer, along with the physical file operations in this class
-        this.mimeTypes = mimeTypes;
-        this.consumers = consumers;
+        this.mimeTypes = mimeTypes;        
         this.auditListeners = auditListeners;
+        this.scheduler = scheduler;
     }
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
-                               String remoteAddr, DavSession session, ArchivaDavResourceLocator locator,
+                               String remoteAddr, String principal, DavSession session, ArchivaDavResourceLocator locator,
                                DavResourceFactory factory, MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryContentConsumers consumers, ArchivaXworkUser archivaXworkUser )
+                               ArchivaTaskScheduler scheduler )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
-              consumers, archivaXworkUser );
+              scheduler );
 
         this.remoteAddr = remoteAddr;
+        this.principal = principal;
     }
 
     public String getComplianceClass()
@@ -296,6 +302,7 @@ public class ArchivaDavResource
                 IOUtils.closeQuietly( stream );
             }
             
+            // TODO: a bad deployment shouldn't delete an existing file - do we need to write to a temporary location first?
             if ( inputContext.getContentLength() != localFile.length() )
             {
                 FileUtils.deleteQuietly( localFile );
@@ -304,8 +311,9 @@ public class ArchivaDavResource
                     inputContext.getContentLength() + " but was " + localFile.length() );
             }
             
-            // Just-in-time update of the index and database by executing the consumers for this artifact
-            consumers.executeConsumers( repository, localFile );
+            queueRepositoryTask( localFile );           
+            
+            log.debug( "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created ") + "(current user '" + this.principal + "')" );
             
             triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
@@ -313,10 +321,12 @@ public class ArchivaDavResource
         {
             localFile.mkdir();
             
+            log.debug( "Directory '" + resource.getDisplayName() + "' (current user '" + this.principal + "')" );
+            
             triggerAuditEvent( resource, AuditEvent.CREATE_DIR );
         }
         else
-        {
+        {            
             throw new DavException( HttpServletResponse.SC_BAD_REQUEST, "Could not write member " +
                 resource.getResourcePath() + " at " + getResourcePath() );
         }
@@ -337,10 +347,12 @@ public class ArchivaDavResource
                         DavResourceLocator resourceLocator =
                             locator.getFactory().createResourceLocator( locator.getPrefix(), path );
                         DavResource resource = factory.createResource( resourceLocator, session );
+                        
                         if ( resource != null )
                         {
                             list.add( resource );
                         }
+                        log.debug( "Resource '" + item + "' retrieved by '" + this.principal + "'" );
                     }
                 }
                 catch ( DavException e )
@@ -376,6 +388,7 @@ public class ArchivaDavResource
 
                     triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
+                log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName() + "' removed (current user '" + this.principal + "')" );
             }
             catch ( IOException e )
             {
@@ -419,6 +432,9 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
+            
+            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '" +
+            		   destination + "' (current user '" + this.principal + "')" );
         }
         catch ( IOException e )
         {
@@ -454,6 +470,8 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
+            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '" +
+            		   destination + "' (current user '" + this.principal + "')" );
         }
         catch ( IOException e )
         {
@@ -616,13 +634,27 @@ public class ArchivaDavResource
 
     private void triggerAuditEvent( String remoteIP, String repositoryId, String resource, String action )
     {
-        String activePrincipal = archivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
-        AuditEvent event = new AuditEvent( repositoryId, activePrincipal, resource, action );
+        AuditEvent event = new AuditEvent( repositoryId, principal, resource, action );
         event.setRemoteIP( remoteIP );
 
         for ( AuditListener listener : auditListeners )
         {
             listener.auditEvent( event );
+        }
+    }
+    
+    private void queueRepositoryTask( File localFile )
+    {        
+        RepositoryTask task = TaskCreator.createRepositoryTask( repository.getId(), localFile, false, true );
+        
+        try
+        {
+            scheduler.queueRepositoryTask( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( "Unable to queue repository task to execute consumers on resource file ['" +
+                localFile.getName() + "']." );
         }
     }
 }

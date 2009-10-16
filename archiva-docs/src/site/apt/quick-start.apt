@@ -28,7 +28,8 @@
 
 Installing Archiva
 
-  The quickest way to install Archiva is to use the standalone distribution. This includes a bundled Jetty server which can be easily started.
+  The quickest way to install Archiva is to {{{http://archiva.apache.org/download.html}download}} and use the standalone distribution.
+  This includes a bundled Jetty server which can be easily started.
   For more information on advanced configuration of this instance, refer to the {{{adminguide/standalone.html} Administration Guide}}.
 
   To get started right away, you can run the following after unpacking:
@@ -67,7 +68,7 @@ Installing Archiva
   downloaded from the central repository, and then handed back to the browser and downloaded from Archiva. Future requests for the artifact will be much faster as they need not be
   downloaded from the central repository.
 
-  Once this artifact is downloaded, Archiva automatically indexes it, so you can access it's information at the following URL: {{http://localhost:8080/archiva/browse/junit/junit/3.8.1/}}.
+  Once this artifact is downloaded, Archiva automatically indexes it, so you can access its information at the following URL: {{http://localhost:8080/archiva/browse/junit/junit/3.8.1/}}.
   It will also be available from the search interface.
 
 

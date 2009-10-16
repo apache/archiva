@@ -34,18 +34,21 @@ import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactCons
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.CiManagement;
+import org.apache.maven.archiva.model.IssueManagement;
 import org.apache.maven.archiva.model.Keys;
+import org.apache.maven.archiva.model.Organization;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.reporting.artifact.CorruptArtifactReport;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel300Reader;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
+import org.apache.maven.archiva.xml.XMLException;
 import org.codehaus.plexus.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +156,7 @@ public class ProjectModelToDatabaseConsumer
         try
         {
             model = reader.read( artifactFile );
-
+            
             // The version should be updated to the artifact/filename version if it is a unique snapshot
             if ( VersionUtil.isUniqueSnapshot( artifact.getVersion() ) )
             {
@@ -162,7 +165,7 @@ public class ProjectModelToDatabaseConsumer
 
             // Resolve the project model (build effective model, resolve expressions)
             model = effectiveModelFilter.filter( model );
-
+            
             if ( isValidModel( model, repo, artifact ) )
             {
                 log.debug( "Adding project model to database - " + Keys.toKey( model ) );
@@ -170,6 +173,7 @@ public class ProjectModelToDatabaseConsumer
                 // Clone model, since DAO while detachingCopy resets its contents
                 // This changes contents of the cache in EffectiveProjectModelFilter
                 model = ArchivaModelCloner.clone( model );
+                                
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else
@@ -178,9 +182,9 @@ public class ProjectModelToDatabaseConsumer
             }
 
         }
-        catch ( ProjectModelException e )
+        catch ( XMLException e )
         {
-            log.warn( "Unable to read project model " + artifactFile + " : " + e.getMessage(), e );
+            log.warn( "Unable to read project model " + artifactFile + " : " + e.getMessage() );
 
             addProblem( artifact, "Unable to read project model " + artifactFile + " : " + e.getMessage() );
         }

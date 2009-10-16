@@ -29,7 +29,7 @@ import org.apache.maven.archiva.configuration.FileType;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.functors.ConsumerWantsFilePredicate;
+import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.custommonkey.xmlunit.XMLAssert;
 
 /**

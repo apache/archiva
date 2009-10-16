@@ -73,6 +73,7 @@ public abstract class AbstractWebworkTestCase
      * 
      * NOTE: Don't forget to run {@link #preRequest(ActionSupport)} before each request to your action!
      */
+    @SuppressWarnings("unchecked")
     protected void assertNoErrors( ActionSupport action )
     {
         List<String> errors = (List<String>) action.getActionErrors();
@@ -91,6 +92,7 @@ public abstract class AbstractWebworkTestCase
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void assertRequestStatus( ActionSupport action, String expectedStatus, String methodName )
         throws Exception
     {

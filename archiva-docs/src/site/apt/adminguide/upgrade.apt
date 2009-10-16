@@ -1,0 +1,51 @@
+ ------
+ Upgrading Archiva
+ ------
+
+Upgrading Archiva
+
+   Upgrading Archiva is straightforward if the directions for separating the base from the installation above are followed. Simply retain the <<<data/repositories>>> and <<<data/databases/users>>> directories,
+   and the configuration files (in the conf directory, or the other locations specified above) and use a new extracted installation of Archiva.
+
+   Note that the <<<users>>> database must always be retained as it contains the permissions and user information across versions. However,
+   in order to take advantage of the improvements in search in Archiva 1.1 (and higher versions), s.a. search by java class/package/method, the archiva database must
+   be re-created. So you need to delete the <<<data/databases/archiva>>> directory, delete the <<<.index>>> directories of your respective repositories, and execute the repository and database scanners after
+   starting Archiva.
+
+   The repository data is portable across versions, and multiple versions can be configured to look at the same repositories (though not run simultaneously).
+
+* Upgrading Archiva from 1.1.x to 1.2.x
+
+   Because of the changes in the search implementation starting in 1.2, a few additional steps need to be performed when upgrading Archiva from 1.1.x to
+   1.2.x. Since the format of the index has changed in 1.2.x, the old index directory (which is located at <<</path/to/repo/.index>>> by default) needs to
+   be removed. And in order for the artifacts in the repository to be indexed again, the last modified date of the artifacts need to be updated.
+   To do this, you can force Archiva to scan all the artifacts by ticking the 'Process All Artifacts' checkbox then clicking the 'Scan Repository Now' 
+   button in the Repositories page. Take note though that this feature is only available starting with version 1.2.3. Otherwise, you must execute
+   <<find [REPOSITORY_DIRECTORY_NAME] | xargs touch>> at the base directory where the repository resides and then force execute the repository scanning so
+   that the new index will be generated.
+
+   In 1.2.2, the length of the specified fields in the database tables below were changed to 1020:
+   
+   * ARCHIVA_PROJECT - URL
+
+   * ARCHIVA_MAILING_LISTS - MAIN_ARCHIVE_URL
+
+   * ARCHIVA_ORGANIZATION - URL, FAV_ICON_URL
+
+   * ARCHIVA_LICENSES - URL
+
+   * ARCHIVA_ISSUE_MANAGEMENT - ISSUE_MANAGEMENT_URL
+
+   * ARCHIVA_CIMANAGEMENT - CI_URL
+
+   * ARCHIVA_INDIVIDUAL - URL, ORGANIZATION_URL
+
+   * ARCHIVA_DEPENDENCY - URL
+
+   * ARCHIVA_SCM - SCM_URL, DEVELOPER_CONNECTION, URL
+
+   * ARCHIVA_PROJECT_REPOSITORIES - URL
+ 
+   []
+
+   If upgrading from a version lower than 1.2.2, you might also need to alter the lengths of the above fields as there is no upgrade task currently available for this.

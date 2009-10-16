@@ -33,7 +33,7 @@ import javax.servlet.jsp.PageContext;
  */
 public class PlexusTagUtil
 {
-    public static Object lookup( PageContext pageContext, Class clazz )
+    public static Object lookup( PageContext pageContext, Class<?> clazz )
         throws ComponentLookupException
     {
         return getContainer( pageContext ).lookup( clazz );
@@ -45,7 +45,7 @@ public class PlexusTagUtil
         return getContainer( pageContext ).lookup( role );
     }
 
-    public static Object lookup( PageContext pageContext, Class clazz, String hint )
+    public static Object lookup( PageContext pageContext, Class<?> clazz, String hint )
         throws ComponentLookupException
     {
         return getContainer( pageContext ).lookup( clazz, hint );

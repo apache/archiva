@@ -138,9 +138,14 @@ public class DefaultArchivaConfiguration
      */
     private boolean isConfigurationDefaulted = false;
 
-    private static final String KEY = "org.apache.maven.archiva";   
+    private static final String KEY = "org.apache.maven.archiva";
 
-    public synchronized Configuration getConfiguration()
+    public Configuration getConfiguration()
+    {
+        return loadConfiguration();
+    }
+
+    private synchronized Configuration loadConfiguration()
     {
         if ( configuration == null )
         {
@@ -155,6 +160,7 @@ public class DefaultArchivaConfiguration
         return configuration;
     }
 
+    @SuppressWarnings("unchecked")
     private Configuration load()
     {   
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
@@ -394,6 +400,7 @@ public class DefaultArchivaConfiguration
         return registry.getSubset( KEY );
     }
 
+    @SuppressWarnings("unchecked")
     public synchronized void save( Configuration configuration )
         throws RegistryException, IndeterminateConfigurationException
     {
@@ -642,13 +649,13 @@ public class DefaultArchivaConfiguration
             expressionEvaluator.addExpressionSource( new SystemPropertyExpressionSource() );
             userConfigFilename = expressionEvaluator.expand( userConfigFilename );
             altConfigFilename = expressionEvaluator.expand( altConfigFilename );
+            loadConfiguration();
         }
         catch ( EvaluatorException e )
         {
             throw new InitializationException( "Unable to evaluate expressions found in "
                 + "userConfigFilename or altConfigFilename." );
         }
-
         registry.addChangeListener( this );
     }
 

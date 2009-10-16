@@ -20,8 +20,8 @@ package org.apache.maven.archiva.webdav;
  */
 
 import java.io.File;
+import java.util.Collections;
 
-import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
@@ -37,57 +37,53 @@ import org.apache.jackrabbit.webdav.lock.Scope;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
+import org.apache.maven.archiva.repository.audit.AuditListener;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-
-public class DavResourceTest extends PlexusInSpringTestCase
+public class DavResourceTest
+    extends PlexusInSpringTestCase
 {
     private DavSession session;
-    
-    private MimeTypes mimeTypes;
-    
-    private ArchivaDavResourceLocator resourceLocator;
-    
-    private DavResourceFactory resourceFactory;
-    
-    private File baseDir;
-    
-    private final String REPOPATH = "myresource.jar";
-    
-    private File myResource;
-    
-    private DavResource resource;
-    
-    private LockManager lockManager;
 
-    private RepositoryContentConsumers consumers;
+    private MimeTypes mimeTypes;
+
+    private ArchivaDavResourceLocator resourceLocator;
+
+    private DavResourceFactory resourceFactory;
+
+    private File baseDir;
+
+    private final String REPOPATH = "myresource.jar";
+
+    private File myResource;
+
+    private DavResource resource;
+
+    private LockManager lockManager;
 
     private ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
     
-    private ArchivaXworkUser archivaXworkUser;
-
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
         session = new ArchivaDavSession();
-        mimeTypes = (MimeTypes)getApplicationContext().getBean(PlexusToSpringUtils.buildSpringId(MimeTypes.class));
-        baseDir = getTestFile("target/DavResourceTest");
+        mimeTypes = (MimeTypes) getApplicationContext().getBean( PlexusToSpringUtils.buildSpringId( MimeTypes.class ) );
+        baseDir = getTestFile( "target/DavResourceTest" );
         baseDir.mkdirs();
-        myResource = new File(baseDir, "myresource.jar");
-        assertTrue("Could not create " + myResource.getAbsolutePath(), myResource.createNewFile());
+        myResource = new File( baseDir, "myresource.jar" );
+        assertTrue( "Could not create " + myResource.getAbsolutePath(), myResource.createNewFile() );
         resourceFactory = new RootContextDavResourceFactory();
-        resourceLocator = (ArchivaDavResourceLocator)new ArchivaDavLocatorFactory().createResourceLocator("/", REPOPATH);
-        resource = getDavResource(resourceLocator.getHref(false), myResource);
+        resourceLocator =
+            (ArchivaDavResourceLocator) new ArchivaDavLocatorFactory().createResourceLocator( "/", REPOPATH );
+        resource = getDavResource( resourceLocator.getHref( false ), myResource );
         lockManager = new SimpleLockManager();
-        resource.addLockManager(lockManager);
-        consumers = (RepositoryContentConsumers)getApplicationContext().getBean("repositoryContentConsumers");
-        archivaXworkUser = (ArchivaXworkUser) getApplicationContext().getBean( PlexusToSpringUtils.buildSpringId( ArchivaXworkUser.class ) );
+        resource.addLockManager( lockManager );
     }
 
     @Override
@@ -95,215 +91,221 @@ public class DavResourceTest extends PlexusInSpringTestCase
         throws Exception
     {
         super.tearDown();
-        release(mimeTypes);
-        FileUtils.deleteDirectory(baseDir);
+        release( mimeTypes );
+        FileUtils.deleteDirectory( baseDir );
     }
-    
-    private DavResource getDavResource(String logicalPath, File file)
+
+    private DavResource getDavResource( String logicalPath, File file )
     {
         return new ArchivaDavResource( file.getAbsolutePath(), logicalPath, repository, session, resourceLocator,
-                                       resourceFactory, mimeTypes, Collections.emptyList(), consumers, archivaXworkUser );
+                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null );
     }
-    
+
     public void testDeleteNonExistantResourceShould404()
         throws Exception
     {
-        File dir = new File(baseDir, "testdir");
+        File dir = new File( baseDir, "testdir" );
         try
         {
-            DavResource directoryResource = getDavResource("/testdir", dir);
-            directoryResource.getCollection().removeMember(directoryResource);
-            fail("Did not throw DavException");
+            DavResource directoryResource = getDavResource( "/testdir", dir );
+            directoryResource.getCollection().removeMember( directoryResource );
+            fail( "Did not throw DavException" );
         }
-        catch (DavException e)
+        catch ( DavException e )
         {
-            assertEquals(DavServletResponse.SC_NOT_FOUND, e.getErrorCode());
+            assertEquals( DavServletResponse.SC_NOT_FOUND, e.getErrorCode() );
         }
     }
-    
+
     public void testDeleteCollection()
         throws Exception
     {
-        File dir = new File(baseDir, "testdir");
+        File dir = new File( baseDir, "testdir" );
         try
         {
-            assertTrue(dir.mkdir());
-            DavResource directoryResource = getDavResource("/testdir", dir);
-            directoryResource.getCollection().removeMember(directoryResource);
-            assertFalse(dir.exists());
+            assertTrue( dir.mkdir() );
+            DavResource directoryResource = getDavResource( "/testdir", dir );
+            directoryResource.getCollection().removeMember( directoryResource );
+            assertFalse( dir.exists() );
         }
         finally
         {
-            FileUtils.deleteDirectory(dir);
+            FileUtils.deleteDirectory( dir );
         }
     }
-    
+
     public void testDeleteResource()
         throws Exception
     {
-        assertTrue(myResource.exists());
-        resource.getCollection().removeMember(resource);
-        assertFalse(myResource.exists());
+        assertTrue( myResource.exists() );
+        resource.getCollection().removeMember( resource );
+        assertFalse( myResource.exists() );
     }
-    
+
     public void testIsLockable()
     {
-        assertTrue(resource.isLockable(Type.WRITE, Scope.EXCLUSIVE));
-        assertFalse(resource.isLockable(Type.WRITE, Scope.SHARED));
+        assertTrue( resource.isLockable( Type.WRITE, Scope.EXCLUSIVE ) );
+        assertFalse( resource.isLockable( Type.WRITE, Scope.SHARED ) );
     }
-    
+
     public void testLock()
         throws Exception
     {
-        assertEquals(0, resource.getLocks().length);
-       
-        LockInfo info = new LockInfo(Scope.EXCLUSIVE, Type.WRITE, "/", 0, false);
-        lockManager.createLock(info, resource);
-        
-        assertEquals(1, resource.getLocks().length);
+        assertEquals( 0, resource.getLocks().length );
+
+        LockInfo info = new LockInfo( Scope.EXCLUSIVE, Type.WRITE, "/", 0, false );
+        lockManager.createLock( info, resource );
+
+        assertEquals( 1, resource.getLocks().length );
     }
-    
+
     public void testLockIfResourceUnlockable()
         throws Exception
     {
-        assertEquals(0, resource.getLocks().length);
-       
-        LockInfo info = new LockInfo(Scope.SHARED, Type.WRITE, "/", 0, false);
+        assertEquals( 0, resource.getLocks().length );
+
+        LockInfo info = new LockInfo( Scope.SHARED, Type.WRITE, "/", 0, false );
         try
         {
-            lockManager.createLock(info, resource);
-            fail("Did not throw dav exception");
+            lockManager.createLock( info, resource );
+            fail( "Did not throw dav exception" );
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
-            //Simple lock manager will die
+            // Simple lock manager will die
         }
-        assertEquals(0, resource.getLocks().length); 
+        assertEquals( 0, resource.getLocks().length );
     }
-    
+
     public void testGetLock()
         throws Exception
     {
-        LockInfo info = new LockInfo(Scope.EXCLUSIVE, Type.WRITE, "/", 0, false);
-        lockManager.createLock(info, resource);
-        
-        assertEquals(1, resource.getLocks().length);
-        
-        //Lock should exist
-        assertNotNull(resource.getLock(Type.WRITE, Scope.EXCLUSIVE));
-        
-        //Lock should not exist
-        assertNull(resource.getLock(Type.WRITE, Scope.SHARED));
+        LockInfo info = new LockInfo( Scope.EXCLUSIVE, Type.WRITE, "/", 0, false );
+        lockManager.createLock( info, resource );
+
+        assertEquals( 1, resource.getLocks().length );
+
+        // Lock should exist
+        assertNotNull( resource.getLock( Type.WRITE, Scope.EXCLUSIVE ) );
+
+        // Lock should not exist
+        assertNull( resource.getLock( Type.WRITE, Scope.SHARED ) );
     }
-    
-    
+
     public void testRefreshLockThrowsExceptionIfNoLockIsPresent()
         throws Exception
     {
-        LockInfo info = new LockInfo(Scope.EXCLUSIVE, Type.WRITE, "/", 0, false);
-        
-        assertEquals(0, resource.getLocks().length);       
-        
+        LockInfo info = new LockInfo( Scope.EXCLUSIVE, Type.WRITE, "/", 0, false );
+
+        assertEquals( 0, resource.getLocks().length );
+
         try
         {
-            lockManager.refreshLock(info, "notoken", resource);
-            fail("Did not throw dav exception");
+            lockManager.refreshLock( info, "notoken", resource );
+            fail( "Did not throw dav exception" );
         }
-        catch (DavException e)
+        catch ( DavException e )
         {
-            assertEquals(DavServletResponse.SC_PRECONDITION_FAILED, e.getErrorCode());
+            assertEquals( DavServletResponse.SC_PRECONDITION_FAILED, e.getErrorCode() );
         }
-        
-        assertEquals(0, resource.getLocks().length);
+
+        assertEquals( 0, resource.getLocks().length );
     }
-    
+
     public void testRefreshLock()
         throws Exception
     {
-        LockInfo info = new LockInfo(Scope.EXCLUSIVE, Type.WRITE, "/", 0, false);
-        
-        assertEquals(0, resource.getLocks().length);
-        
-        lockManager.createLock(info, resource);
-        
-        assertEquals(1, resource.getLocks().length);
-        
+        LockInfo info = new LockInfo( Scope.EXCLUSIVE, Type.WRITE, "/", 0, false );
+
+        assertEquals( 0, resource.getLocks().length );
+
+        lockManager.createLock( info, resource );
+
+        assertEquals( 1, resource.getLocks().length );
+
         ActiveLock lock = resource.getLocks()[0];
 
-        lockManager.refreshLock(info, lock.getToken(), resource);
-        
-        assertEquals(1, resource.getLocks().length);
+        lockManager.refreshLock( info, lock.getToken(), resource );
+
+        assertEquals( 1, resource.getLocks().length );
     }
-    
+
     public void testUnlock()
         throws Exception
     {
-        LockInfo info = new LockInfo(Scope.EXCLUSIVE, Type.WRITE, "/", 0, false);
-        
-        assertEquals(0, resource.getLocks().length);
-        
-        lockManager.createLock(info, resource);
-        
-        assertEquals(1, resource.getLocks().length);
-        
+        LockInfo info = new LockInfo( Scope.EXCLUSIVE, Type.WRITE, "/", 0, false );
+
+        assertEquals( 0, resource.getLocks().length );
+
+        lockManager.createLock( info, resource );
+
+        assertEquals( 1, resource.getLocks().length );
+
         ActiveLock lock = resource.getLocks()[0];
 
-        lockManager.releaseLock(lock.getToken(), resource);
-        
-        assertEquals(0, resource.getLocks().length);
-    }    
-    
+        lockManager.releaseLock( lock.getToken(), resource );
+
+        assertEquals( 0, resource.getLocks().length );
+    }
+
     public void testUnlockThrowsDavExceptionIfNotLocked()
         throws Exception
     {
-        LockInfo info = new LockInfo(Scope.EXCLUSIVE, Type.WRITE, "/", 0, false);
-        
-        assertEquals(0, resource.getLocks().length);
-        
-        lockManager.createLock(info, resource);
-        
-        assertEquals(1, resource.getLocks().length);
+        LockInfo info = new LockInfo( Scope.EXCLUSIVE, Type.WRITE, "/", 0, false );
+
+        assertEquals( 0, resource.getLocks().length );
+
+        lockManager.createLock( info, resource );
+
+        assertEquals( 1, resource.getLocks().length );
 
         try
         {
-            lockManager.releaseLock("BLAH", resource);
-            fail("Did not throw DavException");
+            lockManager.releaseLock( "BLAH", resource );
+            fail( "Did not throw DavException" );
         }
-        catch (DavException e)
+        catch ( DavException e )
         {
-            assertEquals(DavServletResponse.SC_LOCKED, e.getErrorCode());
+            assertEquals( DavServletResponse.SC_LOCKED, e.getErrorCode() );
         }
-        
-        assertEquals(1, resource.getLocks().length);      
+
+        assertEquals( 1, resource.getLocks().length );
     }
-    
+
     public void testUnlockThrowsDavExceptionIfResourceNotLocked()
         throws Exception
-    {        
-        assertEquals(0, resource.getLocks().length);
+    {
+        assertEquals( 0, resource.getLocks().length );
 
         try
         {
-            lockManager.releaseLock("BLAH", resource);
-            fail("Did not throw DavException");
+            lockManager.releaseLock( "BLAH", resource );
+            fail( "Did not throw DavException" );
         }
-        catch (DavException e)
+        catch ( DavException e )
         {
-            assertEquals(DavServletResponse.SC_PRECONDITION_FAILED, e.getErrorCode());
-        }
-        
-        assertEquals(0, resource.getLocks().length);      
-    }
-    
-    private class RootContextDavResourceFactory implements DavResourceFactory
-    {
-        public DavResource createResource(DavResourceLocator locator, DavServletRequest request, DavServletResponse response) throws DavException {
-            throw new UnsupportedOperationException("Not supported yet.");
+            assertEquals( DavServletResponse.SC_PRECONDITION_FAILED, e.getErrorCode() );
         }
 
-        public DavResource createResource(DavResourceLocator locator, DavSession session) throws DavException {
+        assertEquals( 0, resource.getLocks().length );
+    }
+
+    private class RootContextDavResourceFactory
+        implements DavResourceFactory
+    {
+        public DavResource createResource( DavResourceLocator locator, DavServletRequest request,
+                                           DavServletResponse response )
+            throws DavException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public DavResource createResource( DavResourceLocator locator, DavSession session )
+            throws DavException
+        {
             return new ArchivaDavResource( baseDir.getAbsolutePath(), "/", repository, session, resourceLocator,
-                                           resourceFactory, mimeTypes, Collections.emptyList(), consumers, archivaXworkUser );
+                                           resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
+                                           null );
         }
     }
 }
