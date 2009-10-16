@@ -120,7 +120,7 @@ public class DeleteArtifactAction
      */
     private DatabaseConsumers databaseConsumers;
 
-    /** @plexus.requirement */
+    /** @plexus.requirement role="org.apache.maven.archiva.repository.events.RepositoryListener" */
     private List<RepositoryListener> listeners;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
@@ -409,5 +409,10 @@ public class DeleteArtifactAction
             log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
+    }
+
+    public List<RepositoryListener> getListeners()
+    {
+        return listeners;
     }
 }
