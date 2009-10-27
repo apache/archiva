@@ -276,23 +276,6 @@
         </configuration>
       </plugin>
        -->     
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>2.1.1</version>
-        <!-- This configuration is added to cleanup from war:inplace -->
-       <configuration>
-          <filesets>
-            <fileset>
-              <directory>${basedir}</directory>
-              <includes>
-                <!-- TODO: META-INF shouldn't be required, seems to be an issue with the current war plugin -->
-                <include>appserver-base</include>
-              </includes>
-            </fileset>
-          </filesets>
-        </configuration>
-      </plugin> 
       <!-- hack for jetty:run, archiva web config files are checked in /WEB-INF/ dir -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
