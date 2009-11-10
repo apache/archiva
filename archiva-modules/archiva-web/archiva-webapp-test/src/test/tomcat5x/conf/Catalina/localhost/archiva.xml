@@ -32,5 +32,5 @@
             username="sa"
             password=""
             driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:database/archiva;create=true" />
+            url="jdbc:derby:target/database/archiva;create=true" />
 </Context>
