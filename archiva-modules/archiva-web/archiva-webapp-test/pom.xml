@@ -265,7 +265,7 @@
                       <fileset dir="src/test/${container.name}" />
                     </copy>
                     <copy
-                      todir="${project.build.directory}/installs/${container.name}/apache-tomcat-5.5.27/apache-tomcat-5.5.27/common/lib">
+                      todir="${project.build.directory}/installs/${container.name}/apache-tomcat-${tomcat5x.version}/apache-tomcat-${tomcat5x.version}/common/lib">
                       <fileset dir="${project.build.directory}/providedDependencies">
                         <include name="**/*.jar" />
                       </fileset>
@@ -392,7 +392,7 @@
       </activation>
       <properties>
         <container.name>tomcat5x</container.name>
-        <container.url>http://archive.apache.org/dist/tomcat/tomcat-5/v5.5.27/bin/apache-tomcat-5.5.27.zip</container.url>
+        <container.url>http://archive.apache.org/dist/tomcat/tomcat-5/v${tomcat5x.version}/bin/apache-tomcat-${tomcat5x.version}.zip</container.url>
       </properties>
     </profile>
     <profile>
@@ -463,4 +463,7 @@
       </build>
     </profile>
   </profiles>
+  <properties>
+    <tomcat5x.version>5.5.27</tomcat5x.version>
+  </properties>
 </project>
