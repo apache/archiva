@@ -74,6 +74,7 @@ public abstract class AbstractSeleniumTest {
         {
             DefaultSelenium s = new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
             s.start();
+            s.setTimeout( maxWaitTimeInMs );
             selenium.set( s );
         }
     }
