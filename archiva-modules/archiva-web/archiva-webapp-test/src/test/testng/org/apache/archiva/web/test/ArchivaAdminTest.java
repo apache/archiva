@@ -55,7 +55,7 @@ public class ArchivaAdminTest
         super.open( baseUrl, browser, seleniumHost, seleniumPort );
         getSelenium().open( baseUrl );
         String title = getSelenium().getTitle();
-        if ( title.equals( "Apache Archiva \\ Create Admin User" ) )
+        if ( title.endsWith( "Create Admin User" ) )
         {
             assertCreateAdmin();
             String fullname = getProperty( "ADMIN_FULLNAME" );
