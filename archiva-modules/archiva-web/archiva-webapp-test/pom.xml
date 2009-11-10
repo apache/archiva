@@ -312,7 +312,7 @@
               </execution>
             </executions>
             <configuration>
-              <wait>false</wait>
+              <wait>${cargo.wait}</wait>
               <container>
                 <containerId>${container.name}</containerId>
                 <zipUrlInstaller>
@@ -465,5 +465,6 @@
   </profiles>
   <properties>
     <tomcat5x.version>5.5.27</tomcat5x.version>
+    <cargo.wait>false</cargo.wait>
   </properties>
 </project>
