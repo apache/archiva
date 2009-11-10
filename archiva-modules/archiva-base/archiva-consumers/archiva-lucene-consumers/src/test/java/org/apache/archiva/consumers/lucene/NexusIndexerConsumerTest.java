@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -36,6 +37,7 @@ import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
@@ -125,6 +127,9 @@ public class NexusIndexerConsumerTest
         FileTypes filetypes = (FileTypes) lookup( FileTypes.class );
 
         nexusIndexerConsumer = new NexusIndexerConsumer( scheduler, configuration, filetypes );
+        
+        // initialize to set the file types to be processed
+        ( (Initializable) nexusIndexerConsumer ).initialize();
 
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
@@ -217,6 +222,19 @@ public class NexusIndexerConsumerTest
         nexusIndexerConsumer.completeScan();
 
         assertTrue( scheduler.indexed.contains( artifactFile ) );
+    }
+    
+    // MRM-1275 - Include other file types for the index consumer instead of just the indexable-content
+    public void testIncludedFileTypes()
+        throws Exception
+    {
+        List<String> includes =  nexusIndexerConsumer.getIncludes();
+        assertTrue( ".pom artifacts should be processed.", includes.contains( "**/*.pom" ) );
+        assertTrue( ".xml artifacts should be processed.", includes.contains( "**/*.xml" ) );
+        assertTrue( ".txt artifacts should be processed.", includes.contains( "**/*.txt" ) );
+        assertTrue( ".jar artifacts should be processed.", includes.contains( "**/*.jar" ) );
+        assertTrue( ".war artifacts should be processed.", includes.contains( "**/*.war" ) );
+        assertTrue( ".zip artifacts should be processed.", includes.contains( "**/*.zip" ) );
     }
 
     @Override
