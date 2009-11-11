@@ -317,7 +317,7 @@
                 <containerId>${container.name}</containerId>
                 <zipUrlInstaller>
                   <url>${container.url}</url>
-                  <installDir>${cargo.install.dir}/${container.name}</installDir>
+                  <installDir>${basedir}/${cargo.install.dir}/${container.name}</installDir>
                 </zipUrlInstaller>
                 <log>${project.build.directory}/logs/${container.name}.log</log>
                 <output>${project.build.directory}/logs/${container.name}.out</output>
