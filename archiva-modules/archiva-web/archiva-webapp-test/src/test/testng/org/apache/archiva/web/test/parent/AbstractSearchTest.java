@@ -25,8 +25,13 @@ public abstract class AbstractSearchTest
 	//Search
 	public void goToSearchPage()
 	{
-		clickLinkWithText( "Search" );
-		assertSearchPage();
+        if ( !"Apache Archiva \\ Quick Search".equals( getSelenium().getTitle() ) )
+        {
+            clickLinkWithText( "Search" );
+            getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+
+            assertPage( "Apache Archiva \\ Quick Search" );
+        }
 	}
 	
 	public void assertSearchPage()
@@ -42,16 +47,66 @@ public abstract class AbstractSearchTest
 	
 	public void searchForArtifact( String artifactId )
     {
-        if ( !"Apache Archiva \\ Quick Search".equals( getSelenium().getTitle() ) )
-        {
-            clickLinkWithText( "Search" );
-            
-            getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-            
-            assertPage( "Apache Archiva \\ Quick Search" );
-        }
+        goToSearchPage();
 
         getSelenium().type( "dom=document.forms[1].elements[0]", artifactId );
         clickButtonWithValue( "Search" );
+    }
+
+    public void searchForArtifactAdvancedSearch( String groupId, String artifactId, String version, String repositoryId,
+                                                 String className, String rowCount )
+    {
+        goToSearchPage();
+
+        clickLinkWithXPath( "//div[@id='contentArea']/div[1]/a[1]/strong", false );
+        assertElementPresent( "filteredSearch_searchField" );
+        assertElementPresent( "filteredSearch_repositoryId" );
+
+        if ( groupId != null )
+        {
+            selectValue( "filteredSearch_searchField", "Group ID" );
+            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+
+            assertElementPresent( "groupId" );
+            setFieldValue( "groupId", groupId );
+        }
+
+        if ( artifactId != null )
+        {
+            selectValue( "filteredSearch_searchField", "Artifact ID" );
+            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+
+            assertElementPresent( "artifactId" );
+            setFieldValue( "artifactId", artifactId );
+        }
+
+        if ( version != null )
+        {
+            selectValue( "filteredSearch_searchField", "Version" );
+            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+
+            assertElementPresent( "version" );
+            setFieldValue( "version", version );
+        }
+
+        if ( className != null )
+        {
+            selectValue( "filteredSearch_searchField", "Class/Package Name" );
+            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+
+            assertElementPresent( "className" );
+            setFieldValue( "className", className );
+        }
+
+        if ( rowCount != null )
+        {
+            selectValue( "filteredSearch_searchField", "Row Count" );
+            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+
+            assertElementPresent( "rowCount" );
+            setFieldValue( "rowCount", rowCount );
+        }
+
+        clickSubmitWithLocator( "filteredSearch_0" );
     }
 }
