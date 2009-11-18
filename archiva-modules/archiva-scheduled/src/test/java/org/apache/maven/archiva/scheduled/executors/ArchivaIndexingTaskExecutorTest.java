@@ -101,7 +101,8 @@ public class ArchivaIndexingTaskExecutorTest
     protected void tearDown()
         throws Exception
     {
-        context.close( false );
+        context.close( true );
+        indexer.removeIndexingContext( context, true );
 
         // delete created index in the repository
         File indexDir = new File( repositoryConfig.getLocation(), ".indexer" );
@@ -151,6 +152,8 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( "org.apache.archiva", artifactInfo.groupId );
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
         assertEquals( "test-repo", artifactInfo.repository );
+
+        context.close( true );
     }
 
     public void testUpdateArtifactInIndex()
@@ -172,6 +175,8 @@ public class ArchivaIndexingTaskExecutorTest
 
         IndexSearcher searcher = new IndexSearcher( repositoryConfig.getLocation() + "/.indexer" );
         TopDocs topDocs = searcher.search( q, null, 10 );
+
+        searcher.close();
 
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
         assertFalse( new File( repositoryConfig.getLocation(), ".index" ).exists() );
@@ -206,6 +211,8 @@ public class ArchivaIndexingTaskExecutorTest
         // should return 1 hit
         assertEquals( 1, topDocs.totalHits );
 
+        searcher.close();
+
         context = TaskCreator.createContext( repositoryConfig );
 
         // remove added artifact from index
@@ -230,6 +237,8 @@ public class ArchivaIndexingTaskExecutorTest
         // artifact should have been removed from the index!
         assertEquals( 0, topDocs.totalHits );
 
+        context.close( true );
+        searcher.close();
         // TODO: test it was removed from the packaged index also
     }
 
@@ -278,6 +287,8 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( "org.apache.archiva", artifactInfo.groupId );
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
         assertEquals( "test-repo", artifactInfo.repository );
+
+        context.close( true );
     }
 
     private void unzipIndex( String indexDir, String destDir )
