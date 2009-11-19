@@ -115,7 +115,7 @@ public class ArchivaMetadataCreationConsumer
         throws ConsumerException
     {
         this.repository.setRepository( repo );
-        // TODO: remove hardcoding
+        // FIXME: remove hardcoding
         this.metadataRepository = new FileMetadataRepository( new File( repository.getRepoRoot(), ".metadata" ) );
         this.whenGathered = whenGathered;
     }
