@@ -43,10 +43,6 @@
       <artifactId>archiva-repository-layer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>                          
-      <artifactId>archiva-scheduled</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy</artifactId>
     </dependency>

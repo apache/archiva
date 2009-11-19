@@ -78,7 +78,8 @@
           <field-name>urlFailureCache</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.scheduled.ArchivaTaskScheduler</role>
+          <role>org.apache.archiva.scheduler.ArchivaTaskScheduler</role>
+          <role-hint>repository</role-hint>
           <field-name>scheduler</field-name>
         </requirement>
       </requirements>

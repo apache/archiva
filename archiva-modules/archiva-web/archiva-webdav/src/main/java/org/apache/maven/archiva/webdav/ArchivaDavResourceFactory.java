@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
@@ -60,7 +61,6 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataMerge;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
@@ -164,9 +164,9 @@ public class ArchivaDavResourceFactory
     private Digester digestMd5;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
-    private ArchivaTaskScheduler scheduler;
+    private RepositoryArchivaTaskScheduler scheduler;
 
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
@@ -1068,7 +1068,7 @@ public class ArchivaDavResourceFactory
         this.httpAuth = httpAuth;
     }
 
-    public void setScheduler( ArchivaTaskScheduler scheduler )
+    public void setScheduler( RepositoryArchivaTaskScheduler scheduler )
     {
         this.scheduler = scheduler;
     }

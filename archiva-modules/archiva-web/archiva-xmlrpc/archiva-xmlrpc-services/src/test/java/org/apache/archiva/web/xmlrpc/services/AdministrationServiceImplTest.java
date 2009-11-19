@@ -26,6 +26,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.archiva.scheduler.database.DatabaseArchivaTaskScheduler;
+import org.apache.archiva.scheduler.database.DatabaseTask;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 import org.apache.commons.io.FileUtils;
@@ -51,9 +55,6 @@ import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryConten
 import org.apache.maven.archiva.repository.content.PathParser;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
@@ -76,10 +77,14 @@ public class AdministrationServiceImplTest
     
     private AdministrationServiceImpl service;
     
-    private MockControl taskSchedulerControl;
+    private MockControl repositoryTaskSchedulerControl;
+
+    private MockControl databaseTaskSchedulerControl;
     
-    private ArchivaTaskScheduler taskScheduler;
+    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
     
+    private DatabaseArchivaTaskScheduler databaseTaskScheduler;
+
     // repository consumers
     private MockControl repoConsumerUtilsControl;
     
@@ -134,9 +139,12 @@ public class AdministrationServiceImplTest
         configControl = MockClassControl.createControl( Configuration.class );
         config = ( Configuration ) configControl.getMock();      
         
-        taskSchedulerControl = MockControl.createControl( ArchivaTaskScheduler.class );
-        taskScheduler = ( ArchivaTaskScheduler ) taskSchedulerControl.getMock();
+        databaseTaskSchedulerControl = MockClassControl.createControl( DatabaseArchivaTaskScheduler.class );
+        databaseTaskScheduler = (DatabaseArchivaTaskScheduler) databaseTaskSchedulerControl.getMock();
         
+        repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
+        repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
+
         // repo consumers
         repoConsumerUtilsControl = MockClassControl.createControl( RepositoryContentConsumers.class );
         repoConsumersUtil = ( RepositoryContentConsumers ) repoConsumerUtilsControl.getMock();
@@ -169,7 +177,8 @@ public class AdministrationServiceImplTest
         
         service =
             new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, dbConsumersUtil, repositoryFactory,
-                                           artifactDao, taskScheduler, Collections.singletonList( listener ) );
+                                           artifactDao, databaseTaskScheduler, repositoryTaskScheduler,
+                                           Collections.singletonList( listener ) );
     }
   
 /* Tests for database consumers  */
@@ -622,15 +631,15 @@ public class AdministrationServiceImplTest
         
         RepositoryTask task = new RepositoryTask();
         
-        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingRepositoryTask( "internal" ), false );
+        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "internal" ), false );
         
-        taskScheduler.queueRepositoryTask( task );
-        taskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        taskSchedulerControl.setVoidCallable();
+        repositoryTaskScheduler.queueTask( task );
+        repositoryTaskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        repositoryTaskSchedulerControl.setVoidCallable();
         
         archivaConfigControl.replay();
         configControl.replay();
-        taskSchedulerControl.replay();
+        repositoryTaskSchedulerControl.replay();
 
         try
         {
@@ -644,7 +653,7 @@ public class AdministrationServiceImplTest
         
         archivaConfigControl.verify();
         configControl.verify();
-        taskSchedulerControl.verify();
+        repositoryTaskSchedulerControl.verify();
     }
     
     public void testExecuteRepoScannerRepoExistsButBeingScanned()
@@ -654,11 +663,11 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
                                        createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
         
-        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingRepositoryTask( "internal" ), true);
+        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "internal" ), true);
         
         archivaConfigControl.replay();
         configControl.replay();
-        taskSchedulerControl.replay();
+        repositoryTaskSchedulerControl.replay();
     
         try
         {
@@ -672,7 +681,7 @@ public class AdministrationServiceImplTest
         
         archivaConfigControl.verify();
         configControl.verify();
-        taskSchedulerControl.verify();
+        repositoryTaskSchedulerControl.verify();
     }
     
     public void testExecuteRepoScannerRepoDoesNotExist()
@@ -705,17 +714,17 @@ public class AdministrationServiceImplTest
     {
         DatabaseTask task = new DatabaseTask();
         
-        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingDatabaseTask(), false );
+        databaseTaskSchedulerControl.expectAndReturn( databaseTaskScheduler.isProcessingDatabaseTask(), false );
                 
-        taskScheduler.queueDatabaseTask( task );
-        taskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        taskSchedulerControl.setVoidCallable();
+        databaseTaskScheduler.queueTask( task );
+        databaseTaskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        databaseTaskSchedulerControl.setVoidCallable();
         
-        taskSchedulerControl.replay();
+        databaseTaskSchedulerControl.replay();
 
         boolean success = service.executeDatabaseScanner();
         
-        taskSchedulerControl.verify();        
+        databaseTaskSchedulerControl.verify();
         
         assertTrue( success );
     }
@@ -723,13 +732,13 @@ public class AdministrationServiceImplTest
     public void testExecuteDbScannerDbIsBeingScanned()
         throws Exception
     {        
-        taskSchedulerControl.expectAndReturn( taskScheduler.isProcessingDatabaseTask(), true );
+        databaseTaskSchedulerControl.expectAndReturn( databaseTaskScheduler.isProcessingDatabaseTask(), true );
                 
-        taskSchedulerControl.replay();
+        databaseTaskSchedulerControl.replay();
 
         boolean success = service.executeDatabaseScanner();
         
-        taskSchedulerControl.verify();        
+        databaseTaskSchedulerControl.verify();        
         
         assertFalse( success );
     }

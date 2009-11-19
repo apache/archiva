@@ -24,6 +24,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.archiva.scheduler.database.DatabaseArchivaTaskScheduler;
+import org.apache.archiva.scheduler.database.DatabaseTask;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
@@ -49,41 +53,40 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.registry.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * AdministrationServiceImpl
- * 
+ *
  * @version $Id: AdministrationServiceImpl.java
  */
 public class AdministrationServiceImpl
     implements AdministrationService
-{    
+{
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     private ArchivaConfiguration archivaConfiguration;
-        
+
     private RepositoryContentConsumers repoConsumersUtil;
-        
+
     private DatabaseConsumers dbConsumersUtil;
-            
+
     private RepositoryContentFactory repoFactory;
-    
+
     private ArtifactDAO artifactDAO;
-    
-    private ArchivaTaskScheduler taskScheduler;
-    
+
+    private DatabaseArchivaTaskScheduler databaseTaskScheduler;
+
+    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
+
     private Collection<RepositoryListener> listeners;
 
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
                                       DatabaseConsumers dbConsumersUtil, RepositoryContentFactory repoFactory,
-                                      ArtifactDAO artifactDAO, ArchivaTaskScheduler taskScheduler,
+                                      ArtifactDAO artifactDAO, DatabaseArchivaTaskScheduler databaseTaskScheduler,
+                                      RepositoryArchivaTaskScheduler repositoryTaskScheduler,
                                       Collection<RepositoryListener> listeners )
     {
         this.archivaConfiguration = archivaConfig;
@@ -91,10 +94,11 @@ public class AdministrationServiceImpl
         this.dbConsumersUtil = dbConsumersUtil;
         this.repoFactory = repoFactory;
         this.artifactDAO = artifactDAO;
-        this.taskScheduler = taskScheduler;
+        this.databaseTaskScheduler = databaseTaskScheduler;
+        this.repositoryTaskScheduler = repositoryTaskScheduler;
         this.listeners = listeners;
     }
-        
+
     /**
      * @see AdministrationService#configureDatabaseConsumer(String, boolean)
      */
@@ -102,9 +106,9 @@ public class AdministrationServiceImpl
     {
         List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers =
             dbConsumersUtil.getAvailableUnprocessedConsumers();
-        
+
         boolean found = false;
-        
+
         for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
         {
             if( consumer.getId().equals( consumerId ) )
@@ -113,20 +117,20 @@ public class AdministrationServiceImpl
                 break;
             }
         }
-        
+
         if( !found )
         {
             throw new Exception( "Invalid database consumer." );
         }
-        
+
         Configuration config = archivaConfiguration.getConfiguration();
         DatabaseScanningConfiguration dbScanningConfig = config.getDatabaseScanning();
-        
+
         dbScanningConfig.addUnprocessedConsumer( consumerId );
-        
-        config.setDatabaseScanning( dbScanningConfig );        
+
+        config.setDatabaseScanning( dbScanningConfig );
         saveConfiguration( config );
-        
+
         return new Boolean( true );
     }
 
@@ -137,10 +141,10 @@ public class AdministrationServiceImpl
         throws Exception
     {
         // TODO use repoId once consumers are configured per repository! (MRM-930)
-        
+
         List<KnownRepositoryContentConsumer> knownConsumers = repoConsumersUtil.getAvailableKnownConsumers();
         List<InvalidRepositoryContentConsumer> invalidConsumers = repoConsumersUtil.getAvailableInvalidConsumers();
-        
+
         boolean found = false;
         boolean isKnownContentConsumer = false;
         for( KnownRepositoryContentConsumer consumer : knownConsumers )
@@ -152,7 +156,7 @@ public class AdministrationServiceImpl
                 break;
             }
         }
-        
+
         if( !found )
         {
             for( InvalidRepositoryContentConsumer consumer : invalidConsumers )
@@ -164,15 +168,15 @@ public class AdministrationServiceImpl
                 }
             }
         }
-        
+
         if( !found )
         {
             throw new Exception( "Invalid repository consumer." );
         }
-        
+
         Configuration config = archivaConfiguration.getConfiguration();
         RepositoryScanningConfiguration repoScanningConfig = config.getRepositoryScanning();
-        
+
         if( isKnownContentConsumer )
         {
             repoScanningConfig.addKnownContentConsumer( consumerId );
@@ -181,13 +185,13 @@ public class AdministrationServiceImpl
         {
             repoScanningConfig.addInvalidContentConsumer( consumerId );
         }
-        
-        config.setRepositoryScanning( repoScanningConfig );        
+
+        config.setRepositoryScanning( repoScanningConfig );
         saveConfiguration( config );
-        
+
         return new Boolean( true );
     }
-    
+
     /**
      * @see AdministrationService#deleteArtifact(String, String, String, String)
      */
@@ -196,26 +200,26 @@ public class AdministrationServiceImpl
     {
         Configuration config = archivaConfiguration.getConfiguration();
         ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repoId );
-        
+
         if( repoConfig == null )
         {
             throw new Exception( "Repository does not exist." );
         }
-            
+
         try
         {
-            ManagedRepositoryContent repoContent = repoFactory.getManagedRepositoryContent( repoId );            
+            ManagedRepositoryContent repoContent = repoFactory.getManagedRepositoryContent( repoId );
             VersionedReference ref = new VersionedReference();
             ref.setGroupId( groupId );
             ref.setArtifactId( artifactId );
             ref.setVersion( version );
-            
+
             // delete from file system
             repoContent.deleteVersion( ref );
-            
+
             ArtifactVersionsConstraint constraint = new ArtifactVersionsConstraint( repoId, groupId, artifactId, false );
             List<ArchivaArtifact> artifacts = null;
-            
+
             try
             {
                 artifacts = artifactDAO.queryArtifacts( constraint );
@@ -223,8 +227,8 @@ public class AdministrationServiceImpl
             catch ( ArchivaDatabaseException e )
             {
                 throw new Exception( "Error occurred while cleaning up database." );
-            }            
-               
+            }
+
             if ( artifacts != null )
             {
                 for ( ArchivaArtifact artifact : artifacts )
@@ -251,7 +255,7 @@ public class AdministrationServiceImpl
         {
             throw new Exception( "Repository exception occurred." );
         }
-        
+
         return new Boolean( true );
     }
 
@@ -260,16 +264,16 @@ public class AdministrationServiceImpl
      */
     public Boolean executeDatabaseScanner() throws Exception
     {
-        if ( taskScheduler.isProcessingDatabaseTask() )
+        if ( databaseTaskScheduler.isProcessingDatabaseTask() )
         {
             return false;
         }
 
         log.info( "Queueing database task on request from administration service" );
         DatabaseTask task = new DatabaseTask();
-        
-        taskScheduler.queueDatabaseTask( task );           
-        
+
+        databaseTaskScheduler.queueTask( task );
+
         return new Boolean( true );
     }
 
@@ -283,16 +287,17 @@ public class AdministrationServiceImpl
         {
             throw new Exception( "Repository does not exist." );
         }
-        
-        if ( taskScheduler.isProcessingRepositoryTask( repoId ) )
+
+        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repoId ) )
         {
             return false;
         }
 
-        RepositoryTask task = TaskCreator.createRepositoryTask( repoId );
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repoId );
 
-        taskScheduler.queueRepositoryTask( task );          
-        
+        repositoryTaskScheduler.queueTask( task );
+
         return new Boolean( true );
     }
 
@@ -302,14 +307,14 @@ public class AdministrationServiceImpl
     public List<String> getAllDatabaseConsumers()
     {
         List<String> consumers = new ArrayList<String>();
-        
+
         List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers = dbConsumersUtil.getAvailableUnprocessedConsumers();
-        
+
         for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
         {
             consumers.add( consumer.getId() );
-        } 
-        
+        }
+
         return consumers;
     }
 
@@ -319,15 +324,15 @@ public class AdministrationServiceImpl
     public List<String> getAllRepositoryConsumers()
     {
         List<String> consumers = new ArrayList<String>();
-                
+
         List<KnownRepositoryContentConsumer> knownConsumers = repoConsumersUtil.getAvailableKnownConsumers();
         List<InvalidRepositoryContentConsumer> invalidConsumers = repoConsumersUtil.getAvailableInvalidConsumers();
-        
+
         for( KnownRepositoryContentConsumer consumer : knownConsumers )
         {
             consumers.add( consumer.getId() );
         }
-        
+
         for( InvalidRepositoryContentConsumer consumer : invalidConsumers )
         {
             consumers.add( consumer.getId() );
@@ -342,19 +347,19 @@ public class AdministrationServiceImpl
     public List<ManagedRepository> getAllManagedRepositories()
     {
         List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>();
-        
+
         Configuration config = archivaConfiguration.getConfiguration();
         List<ManagedRepositoryConfiguration> managedRepoConfigs = config.getManagedRepositories();
-        
+
         for( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
             // TODO fix resolution of repo url!            
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), "URL", repoConfig.getLayout(),
-                                       repoConfig.isSnapshots(), repoConfig.isReleases() );  
+                                       repoConfig.isSnapshots(), repoConfig.isReleases() );
             managedRepos.add( repo );
         }
-        
+
         return managedRepos;
     }
 
@@ -364,10 +369,10 @@ public class AdministrationServiceImpl
     public List<RemoteRepository> getAllRemoteRepositories()
     {
         List<RemoteRepository> remoteRepos = new ArrayList<RemoteRepository>();
-        
+
         Configuration config = archivaConfiguration.getConfiguration();
         List<RemoteRepositoryConfiguration> remoteRepoConfigs = config.getRemoteRepositories();
-        
+
         for( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
         {
             RemoteRepository repo =
@@ -375,7 +380,7 @@ public class AdministrationServiceImpl
                                       repoConfig.getLayout() );
             remoteRepos.add( repo );
         }
-        
+
         return remoteRepos;
     }
 
@@ -392,7 +397,7 @@ public class AdministrationServiceImpl
         }
         catch ( IndeterminateConfigurationException e )
         {
-            throw new Exception( "Error occurred while saving the configuration." );    
+            throw new Exception( "Error occurred while saving the configuration." );
         }
     }
 }

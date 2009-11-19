@@ -32,8 +32,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
@@ -58,17 +62,11 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelWriter;
 import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
-
-import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.Validateable;
 
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
@@ -146,7 +144,7 @@ public class UploadAction
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
     private ArchivaTaskScheduler scheduler;
 
@@ -617,11 +615,15 @@ public class UploadAction
 
     private void queueRepositoryTask( String repositoryId, File localFile )
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile, true, true );
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repositoryId );
+        task.setResourceFile( localFile );
+        task.setUpdateRelatedArtifacts( true );
+        task.setScanAll( true );
 
         try
         {
-            scheduler.queueRepositoryTask( task );
+            scheduler.queueTask( task );
         }
         catch ( TaskQueueException e )
         {

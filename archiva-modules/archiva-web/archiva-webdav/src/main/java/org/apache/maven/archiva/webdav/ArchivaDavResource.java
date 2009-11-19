@@ -25,9 +25,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.util.Text;
@@ -56,9 +58,6 @@ import org.apache.jackrabbit.webdav.property.ResourceType;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.apache.maven.archiva.webdav.util.IndexWriter;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -108,7 +107,7 @@ public class ArchivaDavResource
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               ArchivaTaskScheduler scheduler )
+                               RepositoryArchivaTaskScheduler scheduler )
     {
         this.localResource = new File( localResource ); 
         this.logicalResource = logicalResource;
@@ -128,7 +127,7 @@ public class ArchivaDavResource
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                String remoteAddr, String principal, DavSession session, ArchivaDavResourceLocator locator,
                                DavResourceFactory factory, MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               ArchivaTaskScheduler scheduler )
+                               RepositoryArchivaTaskScheduler scheduler )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
               scheduler );
@@ -645,11 +644,15 @@ public class ArchivaDavResource
     
     private void queueRepositoryTask( File localFile )
     {        
-        RepositoryTask task = TaskCreator.createRepositoryTask( repository.getId(), localFile, false, true );
-        
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repository.getId() );
+        task.setResourceFile( localFile );
+        task.setUpdateRelatedArtifacts( false );
+        task.setScanAll( true );
+
         try
         {
-            scheduler.queueRepositoryTask( task );
+            scheduler.queueTask( task );
         }
         catch ( TaskQueueException e )
         {

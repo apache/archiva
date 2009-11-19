@@ -47,7 +47,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-scheduled</artifactId>
+      <artifactId>archiva-scheduler-repository</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
