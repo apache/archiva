@@ -581,12 +581,12 @@ public class DefaultRepositoryProxyConnectors
         }
 
         return resource;
-    }    
-    
+    }
+
     private void queueRepositoryTask( String repositoryId, File localFile )
     {
         RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile, true, true );
-        
+
         try
         {
             scheduler.queueRepositoryTask( task );
@@ -623,8 +623,9 @@ public class DefaultRepositoryProxyConnectors
      * @param remoteRepository the remote repository to transfer from.
      * @param remotePath the remote path to the resource to get.
      * @param repository the managed repository that will hold the file
-     * @param localFile the local file that should contain the downloaded contents
-     * @param type the type of checksum to transfer (example: ".md5" or ".sha1")
+     * @param resource the local file that should contain the downloaded contents
+     * @param tmpDirectory the temporary directory to download to
+     * @param ext the type of checksum to transfer (example: ".md5" or ".sha1")
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
     private File transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
