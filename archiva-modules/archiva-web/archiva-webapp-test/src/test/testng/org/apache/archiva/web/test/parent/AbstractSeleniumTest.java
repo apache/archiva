@@ -60,8 +60,6 @@ public abstract class AbstractSeleniumTest {
 	
 	    //baseUrl = getProperty( "BASE_URL" );
 	    maxWaitTimeInMs = getProperty( "MAX_WAIT_TIME_IN_MS" );
-	
-	    
 	}
 	
 	/**
@@ -76,6 +74,7 @@ public abstract class AbstractSeleniumTest {
         {
             DefaultSelenium s = new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
             s.start();
+            s.setTimeout( maxWaitTimeInMs );
             selenium.set( s );
         }
     }
@@ -139,10 +138,12 @@ public abstract class AbstractSeleniumTest {
 			Assert.assertEquals( fieldValue, getSelenium().getValue( fieldName ) );
 	}
 	
-	public void assertPage( String title )
-	{
-		Assert.assertEquals( getSelenium().getTitle(), title );
-	}
+    public void assertPage( String title )
+    {
+        // Collapse spaces
+        String actualTitle = getSelenium().getTitle().replaceAll( "[ \n\r]+", " " );
+        Assert.assertEquals( actualTitle, title );
+    }
 	
 	public String getTitle()
 	{

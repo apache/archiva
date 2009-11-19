@@ -54,6 +54,24 @@ public class SearchTest
 		assertPage( "Apache Archiva \\ Browse Repository" );
     }
 	
-	
+	public void testSearchNonExistingArtifactInAdvancedSearch()
+    {
+        searchForArtifactAdvancedSearch( null, getProperty( "SEARCH_BAD_ARTIFACT"), null, null, null, null );
+        assertTextPresent( "No results found" );
+    }
 
+    public void testSearchNoSearchCriteriaSpecifiedInAdvancedSearch()
+    {
+        searchForArtifactAdvancedSearch( null, null, null, null, null, null );
+        assertTextPresent( "Advanced Search - At least one search criteria must be provided." );
+    }
+
+   /* public void testSearchExistingArtifactUsingAdvancedSearchArtifactId()
+    {
+        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, null, null, null );
+		assertTextPresent( "Results" );
+		assertTextPresent( "Hits: 1 to 1 of 1" );
+		assertLinkPresent( "test" );   
+    }*/
 }
+

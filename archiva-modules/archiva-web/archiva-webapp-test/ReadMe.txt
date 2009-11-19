@@ -9,6 +9,10 @@ Run Selenium tests in src/test/testng against an existing Archiva instance
   - modify src/test/resources/testng.properties as needed
   - mvn clean install -Dcontainer-existing
 
+The Cargo installations are stored outside of target to avoid multiple downloads.
+To remove the Cargo installations and re-download them next run, use:
+  - mvn -Pclean-cargo clean
+
 For the default values in the scripts, to pass all the tests, you need to add an artifact in internal repository.
 
 Run Selenium tests in src/test/it with Maven and JUnit

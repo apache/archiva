@@ -173,6 +173,8 @@ public class NexusIndexerConsumer
         includes.clear();
 
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.INDEXABLE_CONTENT ) );
+        
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     public void initialize()

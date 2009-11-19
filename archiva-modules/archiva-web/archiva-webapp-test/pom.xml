@@ -29,14 +29,6 @@
   <packaging>pom</packaging>
   <name>Archiva Web :: Application Tests</name>
 
-  <repositories>
-    <repository>
-      <id>openqa-snapshots</id>
-      <url>http://nexus.openqa.org/content/repositories/snapshots</url>
-      <releases><enabled>false</enabled></releases>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>org.testng</groupId>
@@ -76,9 +68,9 @@
       <artifactId>plexus-slf4j-logging</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.openqa.selenium.client-drivers</groupId>
+      <groupId>org.seleniumhq.selenium.client-drivers</groupId>
       <artifactId>selenium-java-client-driver</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.1</version>
       <scope>test</scope>
       <exclusions>
 	<exclusion>
@@ -273,7 +265,7 @@
                       <fileset dir="src/test/${container.name}" />
                     </copy>
                     <copy
-                      todir="${project.build.directory}/installs/${container.name}/apache-tomcat-5.5.27/apache-tomcat-5.5.27/common/lib">
+                      todir="${cargo.install.dir}/${container.name}/apache-tomcat-${tomcat5x.version}/apache-tomcat-${tomcat5x.version}/common/lib">
                       <fileset dir="${project.build.directory}/providedDependencies">
                         <include name="**/*.jar" />
                       </fileset>
@@ -320,12 +312,12 @@
               </execution>
             </executions>
             <configuration>
-              <wait>false</wait>
+              <wait>${cargo.wait}</wait>
               <container>
                 <containerId>${container.name}</containerId>
                 <zipUrlInstaller>
                   <url>${container.url}</url>
-                  <installDir>${project.build.directory}/installs/${container.name}</installDir>
+                  <installDir>${project.basedir}/${cargo.install.dir}/${container.name}</installDir>
                 </zipUrlInstaller>
                 <log>${project.build.directory}/logs/${container.name}.log</log>
                 <output>${project.build.directory}/logs/${container.name}.out</output>
@@ -400,7 +392,7 @@
       </activation>
       <properties>
         <container.name>tomcat5x</container.name>
-        <container.url>http://archive.apache.org/dist/tomcat/tomcat-5/v5.5.27/bin/apache-tomcat-5.5.27.zip</container.url>
+        <container.url>http://archive.apache.org/dist/tomcat/tomcat-5/v${tomcat5x.version}/bin/apache-tomcat-${tomcat5x.version}.zip</container.url>
       </properties>
     </profile>
     <profile>
@@ -451,6 +443,24 @@
       </properties>
     </profile>
     <profile>
+      <id>clean-cargo</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>${cargo.install.dir}</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>headless</id>
       <build>
         <plugins>
@@ -471,4 +481,9 @@
       </build>
     </profile>
   </profiles>
+  <properties>
+    <tomcat5x.version>5.5.27</tomcat5x.version>
+    <cargo.wait>false</cargo.wait>
+    <cargo.install.dir>cargo-installs</cargo.install.dir>
+  </properties>
 </project>
