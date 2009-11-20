@@ -25,12 +25,19 @@ import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
+import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * AddManagedRepositoryAction 
@@ -51,6 +58,11 @@ public class EditManagedRepositoryAction
     private String repoid;
     
     private final String action = "editRepository";
+
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaDAO archivaDAO;
 
     public void prepare()
     {
@@ -78,17 +90,22 @@ public class EditManagedRepositoryAction
 
     public String confirmUpdate()
     {
-        return save();
+    	// location was changed
+        return save( true );
     }
     
     public String commit()
-    {   
+    {
         ManagedRepositoryConfiguration existingConfig =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repository.getId() );
-        
+
+        boolean resetStats = false;
+
         // check if the location was changed
         if( !StringUtils.equalsIgnoreCase( existingConfig.getLocation().trim(), repository.getLocation().trim() ) )
         {
+            resetStats = true;
+
             File dir = new File( repository.getLocation() );
             if( dir.exists() )
             {
@@ -96,10 +113,10 @@ public class EditManagedRepositoryAction
             }
         }
         
-        return save();
+        return save( resetStats );
     }
-    
-    private String save()
+
+    private String save( boolean resetStats )
     {
         // Ensure that the fields are valid.
         Configuration configuration = archivaConfiguration.getConfiguration();
@@ -115,6 +132,7 @@ public class EditManagedRepositoryAction
             triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO );
             addRepositoryRoles( repository );
             result = saveConfiguration( configuration );
+            resetStatistics( resetStats );
         }
         catch ( IOException e )
         {
@@ -124,6 +142,16 @@ public class EditManagedRepositoryAction
         catch ( RoleManagerException e )
         {
             addActionError( "Role Manager Exception: " + e.getMessage() );
+            result = ERROR;
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            addActionError( e.getMessage() );
+            result = ERROR;
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            addActionError( e.getMessage() );
             result = ERROR;
         }
 
@@ -140,6 +168,28 @@ public class EditManagedRepositoryAction
             addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
         }
     }
+
+    private void resetStatistics( boolean reset )
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        if ( !reset )
+        {
+            return;
+        }
+
+        RepositoryContentStatisticsDAO repoContentStatsDao = archivaDAO.getRepositoryContentStatisticsDAO();
+
+        List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics(
+                new RepositoryContentStatisticsByRepositoryConstraint( repository.getId() ) );
+
+        if ( contentStats != null )
+        {
+            for ( RepositoryContentStatistics stats : contentStats )
+            {
+                repoContentStatsDao.deleteRepositoryContentStatistics( stats );
+            }
+        }
+	} 
 
     public String getRepoid()
     {
@@ -164,5 +214,12 @@ public class EditManagedRepositoryAction
     public String getAction()
     {
         return action;
+    }
+
+    // for testing
+
+    public void setArchivaDAO( ArchivaDAO archivaDao )
+    {
+        this.archivaDAO = archivaDao;
     }
 }
