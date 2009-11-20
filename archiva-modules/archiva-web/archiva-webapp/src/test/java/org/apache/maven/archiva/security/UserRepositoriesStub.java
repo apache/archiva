@@ -19,7 +19,7 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,6 +30,7 @@ import java.util.List;
 public class UserRepositoriesStub
     implements UserRepositories
 {
+    private List<String> repoIds = Collections.singletonList( "test-repo" );
 
     public void createMissingRepositoryRoles( String repoId )
         throws ArchivaSecurityException
@@ -41,10 +42,12 @@ public class UserRepositoriesStub
     public List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
     {
-        List<String> repoIds = new ArrayList<String>();
-        repoIds.add( "test-repo" );
-
         return repoIds;
+    }
+
+    public void setObservableRepositoryIds( List<String> repoIds )
+    {
+        this.repoIds = repoIds; 
     }
 
     public boolean isAuthorizedToUploadArtifacts( String principal, String repoId )

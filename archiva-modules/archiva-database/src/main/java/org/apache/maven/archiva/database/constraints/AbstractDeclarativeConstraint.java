@@ -19,6 +19,8 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
+import java.util.Arrays;
+
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.DeclarativeConstraint;
 
@@ -80,5 +82,60 @@ public abstract class AbstractDeclarativeConstraint
     public int[] getRange()
     {
     	return range;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        AbstractDeclarativeConstraint that = (AbstractDeclarativeConstraint) o;
+
+        if ( !Arrays.equals( declImports, that.declImports ) )
+        {
+            return false;
+        }
+        if ( !Arrays.equals( declParams, that.declParams ) )
+        {
+            return false;
+        }
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if ( !Arrays.equals( params, that.params ) )
+        {
+            return false;
+        }
+        if ( !Arrays.equals( range, that.range ) )
+        {
+            return false;
+        }
+        if ( sortDirection != null ? !sortDirection.equals( that.sortDirection ) : that.sortDirection != null )
+        {
+            return false;
+        }
+        if ( !Arrays.equals( variables, that.variables ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = declImports != null ? Arrays.hashCode( declImports ) : 0;
+        result = 31 * result + ( declParams != null ? Arrays.hashCode( declParams ) : 0 );
+        result = 31 * result + ( variables != null ? Arrays.hashCode( variables ) : 0 );
+        result = 31 * result + ( params != null ? Arrays.hashCode( params ) : 0 );
+        result = 31 * result + ( range != null ? Arrays.hashCode( range ) : 0 );
+        result = 31 * result + ( sortDirection != null ? sortDirection.hashCode() : 0 );
+        return result;
     }
 }
