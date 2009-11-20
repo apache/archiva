@@ -49,8 +49,7 @@ public class BrowseTest
     {
         File artifact =
             new File( getBasedir(),
-                      "/src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar" );
-                      //"src/test/it-resources/foo-bar-1.0-20091110.181459-4.jar" );
+                      "/src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar" );                     
                 
         String releasesRepo = getProperty( "RELEASES_REPOSITORY" );
         
