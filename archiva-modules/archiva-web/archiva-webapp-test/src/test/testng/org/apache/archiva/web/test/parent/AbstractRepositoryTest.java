@@ -212,23 +212,6 @@ public abstract class AbstractRepositoryTest
 		clickButtonWithValue( "Delete" );
 	}
 	
-	///////////////////////////////
-	// repositories
-	///////////////////////////////
-	public void goToRepositoriesPage()
-	{
-		clickLinkWithText( "Repositories" );
-		assertRepositoriesPage();
-	}
-	
-	public void assertRepositoriesPage()
-	{
-		assertPage( "Apache Archiva \\ Administration - Repositories" );
-		assertTextPresent( "Administration - Repositories" );
-		assertTextPresent( "Managed Repositories" );
-		assertTextPresent( "Remote Repositories" );
-	}
-	
 	// remote repositories
 	public void assertAddRemoteRepository()
 	{
@@ -281,23 +264,6 @@ public abstract class AbstractRepositoryTest
 		clickLinkWithXPath( "//div[@id='contentArea']/div/div[8]/div[1]/a[1]" );
 		setFieldValue( fieldName, value );
 		clickButtonWithValue( "Update Repository" );
-	}
-	
-	// managed repositories
-	public void addManagedRepository( String identifier, String name, String directory, String indexDirectory, String type, String cron, String daysOlder, String retentionCount )
-	{
-		//goToRepositoriesPage();
-		//clickLinkWithText( "Add" );
-		setFieldValue( "repository.id" , identifier );
-		setFieldValue( "repository.name" , name );
-		setFieldValue( "repository.location" , directory );
-		setFieldValue( "repository.indexDir" , indexDirectory );
-		selectValue( "repository.layout", type );
-		setFieldValue( "repository.refreshCronExpression" , cron );
-		setFieldValue( "repository.daysOlder" , daysOlder );
-		setFieldValue( "repository.retentionCount" , retentionCount );
-		//TODO	
-		clickButtonWithValue( "Add Repository" );
 	}
 	
 	public void editManagedRepository( String fieldName, String value )

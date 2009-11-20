@@ -40,7 +40,7 @@ public class VirtualRepositoryTest
 		assertTextPresent( "testing" );
 	}
 	
-	//@Test(dependsOnMethods = { "testAddRepositoryValidValue" } )
+	@Test(dependsOnMethods = { "testAddRepositoryGroupValidValue" } )
 	public void testAddRepositoryToRepositoryGroup()
 	{
 		addRepositoryToRepositoryGroup( "testing", "internal" );
@@ -51,15 +51,17 @@ public class VirtualRepositoryTest
 	
 	@Test(dependsOnMethods = { "testAddRepositoryToRepositoryGroup" } )
 	public void testDeleteRepositoryOfRepositoryGroup()
-	{
+	{   	    
 		deleteRepositoryInRepositoryGroups();
 		assertTextPresent( "Repository Groups" );
 		assertTextNotPresent( "No Repository Groups Defined." );
+		waitPage();
 	}
 	
 	@Test(dependsOnMethods = { "testDeleteRepositoryOfRepositoryGroup" } )
 	public void testDeleteRepositoryGroup()
-	{
+	{	    
+	    assertRepositoryGroupsPage();
 		deleteRepositoryGroup( "testing" );
 		assertTextPresent( "No Repository Groups Defined." );
 	}
