@@ -1,0 +1,45 @@
+The following is the intended content model for the metadata content repository:
+
+.
+`-- repositories/
+    `-- central/
+        |-- config/
+        |   |-- name=
+        |   |-- storageUrl=
+        |   `-- uri=
+        |-- content/
+        |   `-- org/
+        |       `-- apache/
+        |           `-- archiva/
+        |               `-- platform/ -- these are known as "organizational units", of arbitrary depth. Equiv to groupId in Maven
+        |                   `-- scanner/ -- this is the project - equivalent to artifactId in Maven
+        |                       |-- 1.0-SNAPSHOT/ -- this is the version best used to describe the project ("marketed version")
+        |                       |   |-- scanner-1.0-20091120.012345-1.pom/ -- filename is a node, each is distinct except for checksums, etc.
+        |                       |   |   |-- asc=
+        |                       |   |   |-- maven:buildNumber=
+        |                       |   |   |-- maven:packaging=
+        |                       |   |   |-- maven:timestamp=
+        |                       |   |   |-- md5=
+        |                       |   |   |-- sha1=
+        |                       |   |   `-- version= -- the actual version of the file
+        |                       |   |-- created=
+        |                       |   |-- description=
+        |                       |   |-- name=
+        |                       |   |-- organizationName=
+        |                       |   |-- organizationUrl=
+        |                       |   `-- updated=
+        |                       |-- maven:artifactId=
+        |                       `-- maven:groupId=
+        `-- metadata/
+
+(To update - run "tree --dirstfirst -F" on the unpacked content-model.zip from the sandbox)
+
+Notes: 
+
+1) Projects are just a single code project. They do not have subprojects - if such modeling needs to be done, then we can create a products
+tree that will map what "Archiva 1.0" contains from the other repositories.
+
+2) There is not Maven-native information here, other than that in the maven: namespace. pom & other files are not treated as special - they are
+each stored and it is up to the reader to interpret
+
+
