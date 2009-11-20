@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action;
 import java.util.Collections;
 import java.util.List;
 
+import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -34,8 +35,6 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-
-import com.opensymphony.xwork2.Validateable;
 
 /**
  * Browse the repository. 
@@ -60,6 +59,8 @@ public class ShowArtifactAction
      */
     private UserRepositories userRepositories;
     
+    /* .\ Exposed Output Objects \.__________________________________ */
+
     private String groupId;
 
     private String artifactId;
@@ -67,8 +68,6 @@ public class ShowArtifactAction
     private String version;
 
     private String repositoryId;
-
-    /* .\ Exposed Output Objects \.__________________________________ */
 
     /**
      * The model of this versioned project.

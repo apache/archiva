@@ -1,5 +1,10 @@
 package org.apache.maven.archiva.web.action.admin.repositories;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.Assert;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
@@ -7,13 +12,8 @@ import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.Assert;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -44,19 +44,31 @@ public class ArchivaDAOStub
 {
     private ArchivaConfiguration configuration;
 
-    public List<RepositoryContentStatistics> query( SimpleConstraint constraint )
-    {
-        Assert.assertEquals( RepositoryContentStatistics.class, constraint.getResultClass() );
-        
+    private ArtifactDAO artifactDao;
 
-        List<RepositoryContentStatistics> stats = new ArrayList<RepositoryContentStatistics>();
-        for ( String repo : configuration.getConfiguration().getManagedRepositoriesAsMap().keySet() )
+    private ProjectModelDAO projectDao;
+
+    private List<String> versions;
+
+    public List<?> query( SimpleConstraint constraint )
+    {
+        if ( constraint instanceof UniqueVersionConstraint )
         {
-            RepositoryContentStatistics statistics = new RepositoryContentStatistics();
-            statistics.setRepositoryId( repo );
-            stats.add( statistics );
+            return versions;
         }
-        return stats;
+        else
+        {
+            Assert.assertEquals( RepositoryContentStatistics.class, constraint.getResultClass() );
+
+            List<RepositoryContentStatistics> stats = new ArrayList<RepositoryContentStatistics>();
+            for ( String repo : configuration.getConfiguration().getManagedRepositoriesAsMap().keySet() )
+            {
+                RepositoryContentStatistics statistics = new RepositoryContentStatistics();
+                statistics.setRepositoryId( repo );
+                stats.add( statistics );
+            }
+            return stats;
+        }
     }
 
     public Object save( Serializable obj )
@@ -66,22 +78,36 @@ public class ArchivaDAOStub
 
     public ArtifactDAO getArtifactDAO()
     {
-        throw new UnsupportedOperationException( "method not implemented for stub" );
+        return artifactDao;
     }
 
     public ProjectModelDAO getProjectModelDAO()
     {
-        throw new UnsupportedOperationException( "method not implemented for stub" );
+        return projectDao;
     }
 
     public RepositoryProblemDAO getRepositoryProblemDAO()
     {
         throw new UnsupportedOperationException( "method not implemented for stub" );
     }
-    
+
     public RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO()
     {
         throw new UnsupportedOperationException( "method not implemented for stub" );
     }
-    
+
+    public void setArtifactDao( ArtifactDAO artifactDao )
+    {
+        this.artifactDao = artifactDao;
+    }
+
+    public void setProjectDao( ProjectModelDAO projectDao )
+    {
+        this.projectDao = projectDao;
+    }
+
+    public void setVersions( List<String> versions )
+    {
+        this.versions = versions;
+    }
 }

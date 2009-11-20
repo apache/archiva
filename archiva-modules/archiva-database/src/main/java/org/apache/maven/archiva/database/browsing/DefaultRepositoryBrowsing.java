@@ -232,7 +232,7 @@ public class DefaultRepositoryBrowsing
                 {
                     if ( observableRepositoryIds.contains( artifact.getRepositoryId() ) )
                     {
-                        pomArtifact = artifacts.get( 0 );
+                        pomArtifact = artifact;
                         break;
                     }
                 }
