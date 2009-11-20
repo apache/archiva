@@ -20,8 +20,11 @@ package org.apache.maven.archiva.database.browsing;
  */
 
 import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
-import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 
@@ -43,14 +46,14 @@ public class RepositoryBrowsingTest
     
     static
     {
-        GUEST_REPO_IDS = new ArrayList<String>();
-        GUEST_REPO_IDS.add( "central" );
+        GUEST_REPO_IDS = new ArrayList<String>();        
         GUEST_REPO_IDS.add( "snapshots" );
+        GUEST_REPO_IDS.add( "central" );        
     }
     
     private ArtifactDAO artifactDao;
 
-    public ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
+    private ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
     {
         ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar", "central" );
         artifact.getModel().setLastModified( new Date() ); // mandatory field.
@@ -58,7 +61,7 @@ public class RepositoryBrowsingTest
         return artifact;
     }
 
-    public RepositoryBrowsing lookupBrowser()
+    private RepositoryBrowsing lookupBrowser()
         throws Exception
     {
         RepositoryBrowsing browser = (RepositoryBrowsing) lookup( RepositoryBrowsing.class );
@@ -66,7 +69,7 @@ public class RepositoryBrowsingTest
         return browser;
     }
 
-    public void saveTestData()
+    private void saveTestData()
         throws Exception
     {
         ArchivaArtifact artifact;
@@ -74,46 +77,74 @@ public class RepositoryBrowsingTest
         // Setup artifacts in fresh DB.
         artifact = createArtifact( "commons-lang", "commons-lang", "2.0" );
         artifactDao.saveArtifact( artifact );
-
+        assertArtifactWasSaved( "commons-lang", "commons-lang", "2.0" );
+        
         artifact = createArtifact( "commons-lang", "commons-lang", "2.1" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "commons-lang", "commons-lang", "2.1" );
 
         artifact = createArtifact( "org.apache.maven.test", "test-one", "1.2" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.test", "test-one", "1.2" );
 
         artifact = createArtifact( "org.apache.maven.test.foo", "test-two", "1.0" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.test.foo", "test-two", "1.0" );
 
         artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.0" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.shared", "test-two", "2.0" );
 
         artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1-SNAPSHOT" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.shared", "test-two", "2.1-SNAPSHOT" );
         
         artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1-20070522.143249-1" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.shared", "test-two", "2.1-20070522.143249-1" );
         
         artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1-20070522.153141-2" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.shared", "test-two", "2.1-20070522.153141-2" );
 
         artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1.1" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.shared", "test-two", "2.1.1" );
 
         artifact = createArtifact( "org.apache.maven.shared", "test-two", "2.1-alpha-1" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.shared", "test-two", "2.1-alpha-1" );
 
         artifact = createArtifact( "org.apache.maven.shared", "test-bar", "2.1" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.maven.shared", "test-bar", "2.1" );
 
         artifact = createArtifact( "org.codehaus.modello", "modellong", "3.0" );
         artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.codehaus.modello", "modellong", "3.0" );
+        
+        artifact = createArtifact( "org.apache.archiva", "archiva-indexer", "1.0-20070522.143249-1" );
+        artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.archiva", "archiva-indexer", "1.0-20070522.143249-1" );
+        
+        artifact = createArtifact( "org.apache.archiva", "archiva-indexer", "1.0-20070522.153141-2" );
+        artifactDao.saveArtifact( artifact );
+        assertArtifactWasSaved( "org.apache.archiva", "archiva-indexer", "1.0-20070522.153141-2" );
+    }
+
+    private void assertArtifactWasSaved(String groupId, String artifactId, String version)
+        throws ObjectNotFoundException, ArchivaDatabaseException
+    {
+        Constraint constraint = new ArtifactsRelatedConstraint( groupId, artifactId, version );
+        List<ArchivaArtifact> artifacts = artifactDao.queryArtifacts( constraint );
+        
+        assertFalse( "Artifact '" + groupId + ":" + artifactId + ":" + version + "' should have been found.",
+                     artifacts.isEmpty() );
     }
 
     public void testBrowseIntoGroupWithSubgroups()
         throws Exception
     {
-        saveTestData();
-
         RepositoryBrowsing browser = lookupBrowser();
         BrowsingResults results = browser.selectGroupId( USER_GUEST, GUEST_REPO_IDS, "org.apache.maven.test" );
         assertNotNull( "Browsing Results should not be null.", results );
@@ -125,8 +156,6 @@ public class RepositoryBrowsingTest
     public void testSimpleBrowse()
         throws Exception
     {
-        saveTestData();
-
         RepositoryBrowsing browser = lookupBrowser();
         BrowsingResults results = browser.getRoot( USER_GUEST, GUEST_REPO_IDS );
         assertNotNull( "Browsing Results should not be null.", results );
@@ -139,21 +168,37 @@ public class RepositoryBrowsingTest
     public void testViewArtifact()
         throws Exception
     {
-        saveTestData();
-
         RepositoryBrowsing browser = lookupBrowser();
-        ArchivaProjectModel artifact = browser.selectVersion( USER_GUEST, GUEST_REPO_IDS, "org.apache.commons", "commons-lang", "2.0" );
+        ArchivaProjectModel artifact = browser.selectVersion( USER_GUEST, GUEST_REPO_IDS, "commons-lang", "commons-lang", "2.0" );
         assertNotNull( "Artifact should not be null.", artifact );
-		assertEquals( "org.apache.commons", artifact.getGroupId() );
+		assertEquals( "commons-lang", artifact.getGroupId() );
 		assertEquals( "commons-lang", artifact.getArtifactId() );
-		assertEquals( "2.0", artifact.getVersion() );
+		assertEquals( "2.0", artifact.getVersion() );		
+		assertEquals( "jar", artifact.getPackaging() );
+	
+		// MRM-1278
+		String repoId = browser.getRepositoryId( USER_GUEST, GUEST_REPO_IDS, "commons-lang", "commons-lang", "2.0" );
+		assertEquals( "central", repoId );
+    }    
+    
+    public void testViewArtifactWithMultipleTimestampedVersions()
+        throws Exception
+    {   
+        RepositoryBrowsing browser = lookupBrowser();
+        ArchivaProjectModel artifact = browser.selectVersion( USER_GUEST, GUEST_REPO_IDS, "org.apache.archiva", "archiva-indexer", "1.0-SNAPSHOT" );
+        assertNotNull( "Artifact should not be null.", artifact );
+        assertEquals( "org.apache.archiva", artifact.getGroupId() );
+        assertEquals( "archiva-indexer", artifact.getArtifactId() );
+        assertEquals( "1.0-20070522.143249-1", artifact.getVersion() );       
+        assertEquals( "jar", artifact.getPackaging() );
+        
+        String repoId = browser.getRepositoryId( USER_GUEST, GUEST_REPO_IDS, "org.apache.archiva", "archiva-indexer", "1.0-SNAPSHOT" );
+        assertEquals( "central", repoId );
     }
     
     public void testSelectArtifactId()
         throws Exception
-    {
-        saveTestData();
-        
+    {   
         RepositoryBrowsing browser = lookupBrowser();
         BrowsingResults results =
             browser.selectArtifactId( USER_GUEST, GUEST_REPO_IDS, "org.apache.maven.shared", "test-two" );
@@ -168,8 +213,6 @@ public class RepositoryBrowsingTest
     public void testGetOtherSnapshotVersionsRequestedVersionIsGeneric()
         throws Exception
     {
-        saveTestData();
-        
         RepositoryBrowsing browser = lookupBrowser();
         List<String> results =
             browser.getOtherSnapshotVersions( GUEST_REPO_IDS, "org.apache.maven.shared", "test-two", "2.1-SNAPSHOT" );
@@ -183,8 +226,6 @@ public class RepositoryBrowsingTest
     public void testGetOtherSnapshotVersionsRequestedVersionIsUnique()
         throws Exception
     {
-        saveTestData();
-        
         RepositoryBrowsing browser = lookupBrowser();
         List<String> results =
             browser.getOtherSnapshotVersions( GUEST_REPO_IDS, "org.apache.maven.shared", "test-two", "2.1-20070522.143249-1" );
@@ -212,8 +253,8 @@ public class RepositoryBrowsingTest
         throws Exception
     {
         super.setUp();
-
-        ArchivaDAO dao = (ArchivaDAO) lookup( ArchivaDAO.ROLE, "jdo" );
-        artifactDao = dao.getArtifactDAO();
+        
+        artifactDao = dao.getArtifactDAO();        
+        saveTestData();
     }
 }

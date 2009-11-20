@@ -21,7 +21,6 @@ package org.apache.maven.archiva.database.browsing;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -31,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.database.constraints.ProjectsByArtifactUsageConstraint;
@@ -142,7 +142,6 @@ public class DefaultRepositoryBrowsing
         }
 
         ArchivaArtifact pomArtifact = getArtifact( principal, observableRepositoryIds, groupId, artifactId, version );
-
         ArchivaProjectModel model;
 
         if ( !pomArtifact.getModel().isProcessed() )
@@ -152,6 +151,11 @@ public class DefaultRepositoryBrowsing
         }
 
         model = getProjectModel( groupId, artifactId, pomArtifact.getVersion() );
+
+        if ( model.getPackaging() == null || "".equals( model.getPackaging() ) )
+        {
+            model.setPackaging( pomArtifact.getType() );
+        }
 
         return model;
     }
@@ -215,42 +219,53 @@ public class DefaultRepositoryBrowsing
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         ArchivaArtifact pomArtifact = null;
+        Constraint constraint = new ArtifactsRelatedConstraint( groupId, artifactId, version );
 
-        for ( final String repositoryId : observableRepositoryIds )
+        try
         {
-            try
+            List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts( constraint );
+
+            // it's possible that similar artifacts reside in different repos
+            if ( !artifacts.isEmpty() )
             {
-                pomArtifact =
-                    dao.getArtifactDAO().getArtifact( groupId, artifactId, version, null, "pom", repositoryId );               
-                break;
+                for ( ArchivaArtifact artifact : artifacts )
+                {
+                    if ( observableRepositoryIds.contains( artifact.getRepositoryId() ) )
+                    {
+                        pomArtifact = artifacts.get( 0 );
+                        break;
+                    }
+                }
             }
-            catch ( ArchivaDatabaseException e )
-            {
-                pomArtifact = handleGenericSnapshots( groupId, artifactId, version, repositoryId );
-            }
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            log.warn( "ArchivaDatabaseException occurred while querying for artifact '" + groupId + ":" + artifactId +
+                ":" + version + "'." );
         }
 
         if ( pomArtifact == null )
         {
-            String type = getArtifactType( groupId, artifactId, version );
+            for ( final String repositoryId : observableRepositoryIds )
+            {
+                pomArtifact = handleGenericSnapshots( groupId, artifactId, version, repositoryId );
 
-            // We dont want these to persist in the database
-            pomArtifact =
-                new ArchivaArtifact( groupId, artifactId, version, null, type, observableRepositoryIds.get( 0 ) );
-            pomArtifact.getModel().setWhenProcessed( new Date() );
+                if ( pomArtifact != null )
+                {
+                    break;
+                }
+            }
         }
 
-        // Allowed to see this?
-        if ( observableRepositoryIds.contains( pomArtifact.getModel().getRepositoryId() ) )
-        {
-            return pomArtifact;
-        }
-        else
+        // throw exception if pom artifact is still null!
+        if ( pomArtifact == null )
         {
             throw new ObjectNotFoundException( "Unable to find artifact " + Keys.toKey( groupId, artifactId, version ) +
                 " in observable repository [" + StringUtils.join( observableRepositoryIds.iterator(), ", " ) +
                 "] for user " + principal );
         }
+
+        return pomArtifact;
     }
 
     public List<ArchivaProjectModel> getUsedBy( final String principal, final List<String> observableRepositoryIds,
@@ -336,9 +351,17 @@ public class DefaultRepositoryBrowsing
                     try
                     {
                         log.debug( "Retrieving artifact with version " + uniqueVersion );
-                        result =
-                            dao.getArtifactDAO().getArtifact( groupId, artifactId, uniqueVersion, null, "pom", repositoryId );
-                        break;
+                        Constraint constraint = new ArtifactsRelatedConstraint( groupId, artifactId, uniqueVersion );
+                        List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts( constraint );
+
+                        for ( ArchivaArtifact artifact : artifacts )
+                        {
+                            if ( artifact.getRepositoryId().equals( repositoryId ) )
+                            {
+                                result = artifact;
+                                break;
+                            }
+                        }
                     }
                     catch ( ObjectNotFoundException e )
                     {
