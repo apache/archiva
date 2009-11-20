@@ -152,13 +152,13 @@ public class ArchivaMetadataCreationConsumer
         artifactMeta.setUpdated( file.lastModified() );
         artifactMeta.setSize( file.length() );
 
-        build.addArtifact( artifactMeta );
-        project.addBuild( build );
-
         // TODO: store "whenGathered"
 
+        // TODO: transaction
         // read the metadata and update it if it is newer or doesn't exist
-        metadataRepository.update( project );
+        metadataRepository.updateArtifact( metadataId, build.getId(), artifactMeta );
+        metadataRepository.updateBuild( metadataId, build );
+        metadataRepository.updateProject( project );
     }
 
     public void completeScan()

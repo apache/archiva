@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.file;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,18 +42,15 @@ public class FileMetadataRepository
         this.directory = directory;
     }
 
-    public void update( ProjectMetadata project )
+    public void updateProject( ProjectMetadata project )
     {
         // TODO: this is a more braindead implementation than we would normally expect, for prototyping purposes
         try
         {
             File projectDirectory = new File( this.directory, project.getId() );
-            store( project, projectDirectory );
-
-            for ( ProjectBuildMetadata build : project.getBuilds() )
-            {
-                store( build, projectDirectory );
-            }
+            Properties properties = new Properties();
+            properties.setProperty( "id", project.getId() );
+            writeProperties( properties, projectDirectory );
         }
         catch ( IOException e )
         {
@@ -61,32 +59,65 @@ public class FileMetadataRepository
         }
     }
 
-    private void store( ProjectBuildMetadata build, File directory )
-        throws FileNotFoundException, IOException
+    public void updateBuild( String projectId, ProjectBuildMetadata build )
     {
+        File directory = new File( this.directory, projectId );
+
         Properties properties = new Properties();
         properties.setProperty( "id", build.getId() );
-        
-        for ( ArtifactMetadata artifact : build.getArtifacts() )
+
+        try
         {
-            properties.setProperty( artifact.getId() + ".updated", Long.toString( artifact.getUpdated().getTime() ) );
-            properties.setProperty( artifact.getId() + ".size", Long.toString( artifact.getSize() ) );
+            writeProperties( properties, new File( directory, build.getId() ) );
         }
-        
-        writeProperties( properties, new File( directory, build.getId() ) );
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
-    private void store( ProjectMetadata project, File directory )
-        throws FileNotFoundException, IOException
+    public void updateArtifact( String projectId, String buildId, ArtifactMetadata artifact )
     {
+        File directory = new File( this.directory, projectId + "/" + buildId );
 
         Properties properties = new Properties();
-        properties.setProperty( "id", project.getId() );
-        writeProperties( properties, directory );
+        FileInputStream in = null;
+        try
+        {
+            in = new FileInputStream( new File( directory, "metadata.xml" ) );
+            properties.load( in );
+        }
+        catch ( FileNotFoundException e )
+        {
+            // skip - use blank properties
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        finally
+        {
+            IOUtils.closeQuietly( in );
+        }
+
+        properties.setProperty( artifact.getId() + ".updated", Long.toString( artifact.getUpdated().getTime() ) );
+        properties.setProperty( artifact.getId() + ".size", Long.toString( artifact.getSize() ) );
+
+        try
+        {
+            writeProperties( properties, directory );
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     private void writeProperties( Properties properties, File directory )
-        throws FileNotFoundException, IOException
+        throws IOException
     {
         directory.mkdirs();
         FileOutputStream os = new FileOutputStream( new File( directory, "metadata.xml" ) );

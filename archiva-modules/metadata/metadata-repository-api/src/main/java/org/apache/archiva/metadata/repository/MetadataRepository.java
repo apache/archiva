@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.ProjectBuildMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 
 public interface MetadataRepository
@@ -28,6 +30,9 @@ public interface MetadataRepository
      * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
      * @param project the project metadata to create or update
      */
-    void update( ProjectMetadata project );
+    void updateProject( ProjectMetadata project );
 
+    void updateArtifact( String projectId, String buildId, ArtifactMetadata artifactMeta );
+
+    void updateBuild( String projectId, ProjectBuildMetadata build );
 }

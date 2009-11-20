@@ -19,15 +19,9 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class ProjectMetadata
 {
     private String id;
-    
-    private Map<String, ProjectBuildMetadata> builds = new LinkedHashMap<String, ProjectBuildMetadata>();
 
     public void setId( String id )
     {
@@ -39,13 +33,4 @@ public class ProjectMetadata
         return id;
     }
 
-    public void addBuild( ProjectBuildMetadata build )
-    {
-        this.builds.put( build.getId(), build );
-    }
-
-    public Collection<ProjectBuildMetadata> getBuilds()
-    {
-        return builds.values();
-    }
 }
