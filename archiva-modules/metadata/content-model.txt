@@ -16,11 +16,14 @@ The following is the intended content model for the metadata content repository:
         |                       |-- 1.0-SNAPSHOT/ -- this is the version best used to describe the project ("marketed version")
         |                       |   |-- scanner-1.0-20091120.012345-1.pom/ -- filename is a node, each is distinct except for checksums, etc.
         |                       |   |   |-- asc=
+        |                       |   |   |-- created=
         |                       |   |   |-- maven:buildNumber=
         |                       |   |   |-- maven:packaging=
         |                       |   |   |-- maven:timestamp=
         |                       |   |   |-- md5=
         |                       |   |   |-- sha1=
+        |                       |   |   |-- size=
+        |                       |   |   |-- updated=
         |                       |   |   `-- version= -- the actual version of the file
         |                       |   |-- created=
         |                       |   |-- description=
