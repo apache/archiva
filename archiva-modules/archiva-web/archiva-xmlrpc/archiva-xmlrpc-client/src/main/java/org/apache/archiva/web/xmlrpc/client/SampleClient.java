@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
+import org.apache.archiva.web.xmlrpc.api.PingService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 
@@ -55,6 +56,10 @@ public class SampleClient
         {
             AuthenticationInfo authnInfo = new AuthenticationInfo( args[1], args[2] );
             AdministrationService adminService = binder.bind( AdministrationService.class, new URL( args[0] ), authnInfo );
+            PingService pingService = binder.bind( PingService.class, new URL( args[0] ), authnInfo );
+                       
+            System.out.println( "Ping : " + pingService.ping() );
+            
             List<ManagedRepository> managedRepos = adminService.getAllManagedRepositories();
             
             System.out.println( "\n******** Managed Repositories ********" );
