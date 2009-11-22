@@ -133,7 +133,7 @@ public class RepositoryServletDeployTest
         response = sc.getResponse( request );
         assertResponseCreated( response );
         
-        // send request #2 and verify it's blocked
+        // send request #2 and verify if it's still successful
         is = getClass().getResourceAsStream( "/artifact.jar" );
         request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
         response = sc.getResponse( request );
