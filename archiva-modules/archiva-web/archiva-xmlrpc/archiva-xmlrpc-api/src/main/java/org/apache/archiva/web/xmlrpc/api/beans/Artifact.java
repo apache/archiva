@@ -75,6 +75,11 @@ public class Artifact
     {
         return type;
     }
+    
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
 
     /*public Date getWhenGathered()
     {
@@ -104,20 +109,16 @@ public class Artifact
     {
         this.type = type;
     }
+    
+    @ServiceBeanField( "repositoryId" )
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
 
     /*@ServiceBeanField( "whenGathered" )
     public void setWhenGathered( Date whenGathered )
     {
         this.whenGathered = whenGathered;
-    }*/
-
-    public String getRepositoryId()
-    {
-        return repositoryId;
-    }
-
-    public void setRepositoryId( String repositoryId )
-    {
-        this.repositoryId = repositoryId;
-    }
+    }*/    
 }
