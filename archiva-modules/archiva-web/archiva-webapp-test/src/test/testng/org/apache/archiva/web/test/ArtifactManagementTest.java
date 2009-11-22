@@ -88,6 +88,14 @@ public class ArtifactManagementTest
 		addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
 		assertTextPresent( "Artifact 'test:test:1.0' was successfully deployed to repository 'internal'" );
 	}
+		
+	//MRM-747
+	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
+	public void testAddArtifactBlockRedeployments()
+	{
+	    addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
+        assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
+	}
 	
 	public void testAddArtifactValidValues1()
 	{
