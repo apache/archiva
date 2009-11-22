@@ -9,6 +9,7 @@
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
+      <blockRedeployments>true</blockRedeployments>
       <scanned>true</scanned>
       <refreshCronExpression>0 0 * * * ?</refreshCronExpression>
       <daysOlder>30</daysOlder>
@@ -20,6 +21,7 @@
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
+      <blockRedeployments>false</blockRedeployments>
       <scanned>true</scanned>
       <refreshCronExpression>0 0\,30 * * * ?</refreshCronExpression>
       <daysOlder>30</daysOlder>

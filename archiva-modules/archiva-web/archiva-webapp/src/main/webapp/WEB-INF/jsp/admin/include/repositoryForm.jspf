@@ -28,6 +28,7 @@
 <s:textfield name="repository.daysOlder" label="Repository Purge By Days Older Than" size="5"/>
 <s:textfield name="repository.retentionCount" label="Repository Purge By Retention Count" size="5"/>
 <s:checkbox name="repository.releases" value="repository.releases" label="Releases Included"/>
+<s:checkbox name="repository.blockRedeployments" value="repository.blockRedeployments" label="Block Re-deployments of Released Artifacts"/>
 <s:checkbox name="repository.snapshots" value="repository.snapshots" label="Snapshots Included"/>
 <s:checkbox name="repository.scanned" value="repository.scanned" label="Scannable"/>
 <s:checkbox name="repository.deleteReleasedSnapshots" value="repository.deleteReleasedSnapshots"

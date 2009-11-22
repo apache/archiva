@@ -52,13 +52,15 @@ public class AddManagedRepositoryAction
     {
         this.repository = new ManagedRepositoryConfiguration();
         this.repository.setReleases( false );
-        this.repository.setScanned( false );
+        this.repository.setScanned( false );      
+        this.repository.setBlockRedeployments( false );
     }
 
     public String input()
     {
         this.repository.setReleases( true );
         this.repository.setScanned( true );
+        this.repository.setBlockRedeployments( true );
 
         return INPUT;
     }

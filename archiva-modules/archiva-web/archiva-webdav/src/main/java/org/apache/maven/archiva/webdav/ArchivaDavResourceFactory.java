@@ -485,7 +485,7 @@ public class ArchivaDavResourceFactory
                 String resourcePath = logicalResource.getPath();
                 
                 // check if target repo is enabled for releases
-                // we suppose that release-artifacts can deployed only to repos enabled for releases
+                // we suppose that release-artifacts can be deployed only to repos enabled for releases
                 if ( managedRepository.getRepository().isReleases() && !repositoryRequest.isMetadata( resourcePath ) &&
                     !repositoryRequest.isSupportFile( resourcePath ) )
                 {
@@ -496,10 +496,10 @@ public class ArchivaDavResourceFactory
                         
                         if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
                         {
-                            // check if artifact already exists
-                            if ( managedRepository.hasContent( artifact ) )
+                            // check if artifact already exists and if artifact re-deployment to the repository is allowed
+                            if ( managedRepository.hasContent( artifact ) && managedRepository.getRepository().isBlockRedeployments() )
                             {
-                                log.warn( "Overwriting released artifacts is not allowed." );
+                                log.warn( "Overwriting released artifacts in repository '" + managedRepository.getId() + "' is not allowed." );
                                 throw new DavException( HttpServletResponse.SC_CONFLICT,
                                                         "Overwriting released artifacts is not allowed." );
                             }

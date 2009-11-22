@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.webdav.httpunit.MkColMethodWebRequest;
 
 
@@ -96,6 +98,46 @@ public class RepositoryServletDeployTest
         request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
         response = sc.getResponse( request );
         assertResponseConflictError( response );        
+    }
+    
+    public void testReleaseArtifactsRedeploymentIsAllowed()
+        throws Exception
+    {
+        setupCleanRepo( repoRootInternal );
+        
+        ManagedRepositoryConfiguration managedRepo = archivaConfiguration.getConfiguration().findManagedRepositoryById( REPOID_INTERNAL );
+        managedRepo.setBlockRedeployments( false );
+        
+        saveConfiguration( archivaConfiguration );
+    
+        String putUrl = "http://machine.com/repository/internal" + ARTIFACT_DEFAULT_LAYOUT;
+        String metadataUrl = "http://machine.com/repository/internal/path/to/artifact/maven-metadata.xml";
+        String checksumUrl = "http://machine.com/repository/internal" + ARTIFACT_DEFAULT_LAYOUT + ".sha1";
+        
+        InputStream is = getClass().getResourceAsStream( "/artifact.jar" );
+        // verify that the file exists in resources-dir
+        assertNotNull( "artifact.jar inputstream", is );
+    
+        // send request #1 and verify it's successful
+        WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
+        WebResponse response = sc.getResponse( request );
+        assertResponseCreated( response );
+        
+        is = getClass().getResourceAsStream( "/artifact.jar.sha1" );
+        request = new PutMethodWebRequest( checksumUrl, is, "application/octet-stream" );
+        response = sc.getResponse( request );
+        assertResponseCreated( response );
+        
+        is = getClass().getResourceAsStream( "/maven-metadata.xml" );
+        request = new PutMethodWebRequest( metadataUrl, is, "application/octet-stream" );
+        response = sc.getResponse( request );
+        assertResponseCreated( response );
+        
+        // send request #2 and verify it's blocked
+        is = getClass().getResourceAsStream( "/artifact.jar" );
+        request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
+        response = sc.getResponse( request );
+        assertResponseNoContent( response );        
     }
     
     public void testReleaseArtifactsRedeploymentInvalidPath()
