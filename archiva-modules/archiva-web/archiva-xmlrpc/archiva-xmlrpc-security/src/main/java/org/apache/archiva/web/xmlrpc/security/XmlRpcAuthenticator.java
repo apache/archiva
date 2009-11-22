@@ -132,7 +132,11 @@ public class XmlRpcAuthenticator
                 {
                     throw new XmlRpcException( 401, e.getMessage() );
                 }
-            }   
+            }
+            else if ( methodName.equals( ServiceMethodsPermissionsMapping.PING ) )
+            {
+                return new AuthorizationResult( true, username, null );
+            }
             else
             {
                 return securitySystem.authorize( session, ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE );

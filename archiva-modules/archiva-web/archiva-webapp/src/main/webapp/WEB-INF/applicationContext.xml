@@ -30,13 +30,14 @@
   <bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="location" value="classpath:application.properties" />
   </bean>
-  
-  <bean name="testXmlRpcService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.PingServiceImpl"/>
    
   <bean name="xmlRpcUserRepositories" class="org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories">
     <constructor-arg ref="userRepositories"/>
     <constructor-arg ref="xmlRpcAuthenticator"/>    
   </bean> 
+  
+  <!--  Web Service : Ping Service -->
+  <bean name="pingService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.PingServiceImpl"/> 
   
   <!-- Web Services : Search Service -->
   <bean name="searchService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">    
@@ -64,6 +65,7 @@
       <list>
         <ref bean="administrationService"/>
         <ref bean="searchService"/>
+        <ref bean="pingService"/>
       </list>
     </constructor-arg>
   </bean>
