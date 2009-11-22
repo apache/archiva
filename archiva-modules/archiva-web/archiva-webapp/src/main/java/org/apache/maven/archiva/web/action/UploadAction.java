@@ -351,8 +351,17 @@ public class UploadAction
             
             try
             {   
-                copyFile( artifactFile, targetPath, filename, fixChecksums );
-                queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );
+                File targetFile = new File( targetPath, filename );
+                if( targetFile.exists() && !VersionUtil.isSnapshot( version ) && repoConfig.isBlockRedeployments() )
+                {
+                    addActionError( "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed." );
+                    return ERROR;
+                }
+                else
+                {
+                    copyFile( artifactFile, targetPath, filename, fixChecksums );
+                    queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );                    
+                }
             }
             catch ( IOException ie )
             {

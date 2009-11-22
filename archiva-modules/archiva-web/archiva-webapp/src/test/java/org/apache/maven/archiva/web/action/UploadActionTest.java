@@ -97,6 +97,7 @@ public class UploadActionTest
         repoConfig.setLayout( "default" );
         repoConfig.setLocation( testRepo.getPath() );
         repoConfig.setName( REPOSITORY_ID );
+        repoConfig.setBlockRedeployments( true );
         config.addManagedRepository( repoConfig );
         
         RepositoryScanningConfiguration repoScanning = new RepositoryScanningConfiguration();
@@ -336,7 +337,7 @@ public class UploadActionTest
 
     public void testArtifactUploadFailedRepositoryNotFound()
         throws Exception
-    {
+    {        
         setUploadParameters( "1.0", null,
                              new File( getBasedir(),
                                        "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ), null,
@@ -405,9 +406,9 @@ public class UploadActionTest
                              true );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( config.findManagedRepositoryById( REPOSITORY_ID ) );
-
-        
+        ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( REPOSITORY_ID );
+        repoConfig.setBlockRedeployments( false );        
+        content.setRepository( repoConfig );      
         
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
@@ -451,5 +452,81 @@ public class UploadActionTest
         assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
 
         verifyChecksums( repoLocation );
-    }    
+    }
+    
+    public void testUploadArtifactAlreadyExistingRedeploymentsBlocked()
+        throws Exception
+    {   
+        setUploadParameters( "1.0", null,
+                             new File( getBasedir(),
+                                       "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ), null,
+                             true );
+
+        ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
+        content.setRepository( config.findManagedRepositoryById( REPOSITORY_ID ) );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
+        repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content, 2 );
+
+        archivaConfigControl.replay();
+        repoFactoryControl.replay();
+
+        String returnString = uploadAction.doUpload();
+        assertEquals( Action.SUCCESS, returnString );
+        
+        setUploadParameters( "1.0", null,
+                             new File( getBasedir(),
+                                       "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ), null,
+                             true );
+        
+        returnString = uploadAction.doUpload();
+        assertEquals( Action.ERROR, returnString );
+
+        archivaConfigControl.verify();
+        repoFactoryControl.verify();
+
+        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
+
+        verifyChecksums( repoLocation );
+    }
+    
+    public void testUploadArtifactAlreadyExistingRedeploymentsAllowed()
+        throws Exception
+    {                
+        setUploadParameters( "1.0", null,
+                             new File( getBasedir(),
+                                       "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ), null,
+                             true );
+    
+        ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
+        ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( REPOSITORY_ID );
+        repoConfig.setBlockRedeployments( false );        
+        content.setRepository( repoConfig );        
+    
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
+        repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content, 2 );
+    
+        archivaConfigControl.replay();
+        repoFactoryControl.replay();
+    
+        String returnString = uploadAction.doUpload();
+        assertEquals( Action.SUCCESS, returnString );
+    
+        setUploadParameters( "1.0", null,
+                             new File( getBasedir(),
+                                       "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ), null,
+                             true );
+        
+        returnString = uploadAction.doUpload();
+        assertEquals( Action.SUCCESS, returnString );
+        
+        archivaConfigControl.verify();
+        repoFactoryControl.verify();
+    
+        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
+    
+        verifyChecksums( repoLocation );
+    }
 }
