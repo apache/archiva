@@ -19,60 +19,41 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import java.util.Date;
-
-public class ArtifactMetadata
+public class Scm
 {
-    private String id;
-    
-    private Date updated;
-    
-    private long size;
+    private String connection;
 
-    private String version;
+    private String developerConnection;
 
-    public String getId()
+    private String url;
+
+    public String getUrl()
     {
-        return id;
+        return url;
     }
 
-    public void setId( String id )
+    public void setUrl( String url )
     {
-        this.id = id;
+        this.url = url;
     }
 
-    public Date getUpdated()
+    public String getDeveloperConnection()
     {
-        return updated;
+        return developerConnection;
     }
 
-    public void setUpdated( Date updated )
+    public void setDeveloperConnection( String developerConnection )
     {
-        this.updated = updated;
+        this.developerConnection = developerConnection;
     }
 
-    public void setUpdated( long updated )
+    public String getConnection()
     {
-        this.updated = new Date( updated );
+        return connection;
     }
 
-    public long getSize()
+    public void setConnection( String connection )
     {
-        return size;
-    }
-
-    public void setSize( long size )
-    {
-        this.size = size;
-    }
-
-    public String getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( String version )
-    {
-        this.version = version;
+        this.connection = connection;
     }
 }

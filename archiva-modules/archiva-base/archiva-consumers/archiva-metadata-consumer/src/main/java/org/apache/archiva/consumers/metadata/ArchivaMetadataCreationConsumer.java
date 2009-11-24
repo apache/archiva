@@ -28,7 +28,6 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectBuildMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.file.FileMetadataRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -84,6 +83,9 @@ public class ArchivaMetadataCreationConsumer
 
     private List<String> includes = new ArrayList<String>();
 
+    /**
+     * @plexus.requirement
+     */
     private MetadataRepository metadataRepository;
 
     public String getId()
@@ -115,8 +117,6 @@ public class ArchivaMetadataCreationConsumer
         throws ConsumerException
     {
         this.repository.setRepository( repo );
-        // FIXME: remove hardcoding
-        this.metadataRepository = new FileMetadataRepository( new File( repository.getRepoRoot(), ".metadata" ) );
         this.whenGathered = whenGathered;
     }
 
@@ -138,27 +138,28 @@ public class ArchivaMetadataCreationConsumer
 
         File file = new File( repository.getRepoRoot(), path );
 
-        // TODO: needed in a more central place, but trying to isolate impact to start with
-        String metadataId = artifact.getGroupId() + "." + artifact.getArtifactId();
-
         ProjectMetadata project = new ProjectMetadata();
-        project.setId( metadataId );
+        project.setNamespace( artifact.getGroupId() );
+        project.setId( artifact.getArtifactId() );
 
         ProjectBuildMetadata build = new ProjectBuildMetadata();
-        build.setId( artifact.getVersion() );
+        build.setId( artifact.getVersion() ); // TODO: this should be the version from the POM, not the timestamped version
 
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
         artifactMeta.setId( file.getName() );
         artifactMeta.setUpdated( file.lastModified() );
         artifactMeta.setSize( file.length() );
+        artifactMeta.setVersion( artifact.getVersion() );
+
+        // TODO: read the POM and fill in the rest of the information
 
         // TODO: store "whenGathered"
 
         // TODO: transaction
         // read the metadata and update it if it is newer or doesn't exist
-        metadataRepository.updateArtifact( metadataId, build.getId(), artifactMeta );
-        metadataRepository.updateBuild( metadataId, build );
-        metadataRepository.updateProject( project );
+        metadataRepository.updateArtifact( repository.getId(), project.getNamespace(), project.getId(), build.getId(), artifactMeta );
+        metadataRepository.updateBuild( repository.getId(), project.getNamespace(), project.getId(), build );
+        metadataRepository.updateProject( repository.getId(), project );
     }
 
     public void completeScan()

@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.model;
+package org.apache.archiva.metadata.repository.storage.maven2;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,52 +19,13 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import java.util.Date;
-
-public class ArtifactMetadata
+public class MavenProjectParent
 {
-    private String id;
-    
-    private Date updated;
-    
-    private long size;
+    private String groupId;
+
+    private String artifactId;
 
     private String version;
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId( String id )
-    {
-        this.id = id;
-    }
-
-    public Date getUpdated()
-    {
-        return updated;
-    }
-
-    public void setUpdated( Date updated )
-    {
-        this.updated = updated;
-    }
-
-    public void setUpdated( long updated )
-    {
-        this.updated = new Date( updated );
-    }
-
-    public long getSize()
-    {
-        return size;
-    }
-
-    public void setSize( long size )
-    {
-        this.size = size;
-    }
 
     public String getVersion()
     {
@@ -74,5 +35,25 @@ public class ArtifactMetadata
     public void setVersion( String version )
     {
         this.version = version;
+    }
+
+    public String getArtifactId()
+    {
+        return artifactId;
+    }
+
+    public void setArtifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+    }
+
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
     }
 }

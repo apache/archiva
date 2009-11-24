@@ -24,25 +24,19 @@ import java.util.Collections;
 import java.util.List;
 
 import com.opensymphony.xwork2.Action;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ProjectModelDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
+import org.apache.archiva.metadata.model.CiManagement;
+import org.apache.archiva.metadata.model.IssueManagement;
+import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.Organization;
+import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.repository.memory.MemoryMetadataRepository;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectParent;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.CiManagement;
-import org.apache.maven.archiva.model.IssueManagement;
-import org.apache.maven.archiva.model.License;
-import org.apache.maven.archiva.model.Organization;
-import org.apache.maven.archiva.model.Scm;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
-import org.apache.maven.archiva.web.action.admin.repositories.ArchivaDAOStub;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.easymock.MockControl;
 
 public class ShowArtifactActionTest
     extends PlexusInSpringTestCase
@@ -97,18 +91,18 @@ public class ShowArtifactActionTest
 
     private static final String TEST_SCM_URL = "scmUrl";
 
-    private ShowArtifactAction action;
-
     private static final String TEST_SNAPSHOT_VERSION = "1.0-SNAPSHOT";
 
     private static final String TEST_TS_SNAPSHOT_VERSION = "1.0-20091120.111111-1";
-
-    private ArchivaDAOStub archivaDao;
 
     private static final List<String> ALL_TEST_SNAPSHOT_VERSIONS =
         Arrays.asList( TEST_TS_SNAPSHOT_VERSION, "1.0-20091120.222222-2", "1.0-20091123.333333-3" );
 
     private static final String OTHER_TEST_REPO = "first-repo";
+
+    private ShowArtifactAction action;
+
+    private MemoryMetadataRepository metadataRepository;
 
     public void testInstantiation()
     {
@@ -116,22 +110,15 @@ public class ShowArtifactActionTest
     }
 
     public void testGetArtifactUniqueRelease()
-        throws ArchivaDatabaseException
     {
-        List<ArchivaArtifact> artifacts =
-            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 2 );
-        MockControl projectDaoMockControl =
-            createProjectDaoMock( createProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
+        metadataRepository.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
         String result = action.artifact();
 
         assertActionSuccess( action, result );
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertActionParameters( action );
         ArchivaProjectModel model = action.getModel();
@@ -142,18 +129,15 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertNull( action.getSnapshotVersions() );
+        assertTrue( action.getSnapshotVersions().isEmpty() );
     }
 
     public void testGetArtifactUniqueSnapshot()
-        throws ArchivaDatabaseException
     {
-        List<ArchivaArtifact> artifacts =
-            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, TEST_SNAPSHOT_VERSION, 2 );
-        MockControl projectDaoMockControl =
-            createProjectDaoMock( createProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION ) );
-        archivaDao.setVersions( ALL_TEST_SNAPSHOT_VERSIONS );
+        metadataRepository.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_SNAPSHOT_VERSION ) );
+        metadataRepository.setArtifactVersions( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
+                                                ALL_TEST_SNAPSHOT_VERSIONS );
 
         action.setGroupId( TEST_GROUP_ID );
         action.setArtifactId( TEST_ARTIFACT_ID );
@@ -162,9 +146,6 @@ public class ShowArtifactActionTest
         String result = action.artifact();
 
         assertActionSuccess( action, result );
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertEquals( TEST_GROUP_ID, action.getGroupId() );
         assertEquals( TEST_ARTIFACT_ID, action.getArtifactId() );
@@ -182,14 +163,11 @@ public class ShowArtifactActionTest
     }
 
     public void testGetArtifactUniqueSnapshotTimestamped()
-        throws ArchivaDatabaseException
     {
-        List<ArchivaArtifact> artifacts =
-            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_TS_SNAPSHOT_VERSION ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, TEST_TS_SNAPSHOT_VERSION, 2 );
-        MockControl projectDaoMockControl =
-            createProjectDaoMock( createProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_TS_SNAPSHOT_VERSION ) );
-        archivaDao.setVersions( ALL_TEST_SNAPSHOT_VERSIONS );
+        metadataRepository.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_TS_SNAPSHOT_VERSION ) );
+        metadataRepository.setArtifactVersions( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_TS_SNAPSHOT_VERSION,
+                                                ALL_TEST_SNAPSHOT_VERSIONS );
 
         action.setGroupId( TEST_GROUP_ID );
         action.setArtifactId( TEST_ARTIFACT_ID );
@@ -198,9 +176,6 @@ public class ShowArtifactActionTest
         String result = action.artifact();
 
         assertActionSuccess( action, result );
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertEquals( TEST_GROUP_ID, action.getGroupId() );
         assertEquals( TEST_ARTIFACT_ID, action.getArtifactId() );
@@ -219,80 +194,55 @@ public class ShowArtifactActionTest
     }
 
     public void testGetMissingProject()
-        throws ArchivaDatabaseException
     {
-        MockControl artifactDaoMockControl = createArtifactDaoMock( Collections.<ArchivaArtifact>emptyList(), 1 );
-
         setActionParameters();
 
         String result = action.artifact();
         assertError( result );
-
-        artifactDaoMockControl.verify();
 
         assertActionParameters( action );
         assertNoOutputFields();
     }
 
     public void testGetArtifactNoObservableRepos()
-        throws ArchivaDatabaseException
     {
         setObservableRepos( Collections.<String>emptyList() );
 
         setActionParameters();
 
-        try
-        {
-            action.artifact();
+        String result = action.artifact();
 
-            // Actually, it'd be better to have an error:
-//            assertError( result );
-//            assertActionParameters( action );
-//            assertNoOutputFields();
-            fail();
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            assertTrue( true );
-        }
+        // Actually, it'd be better to have an error:
+        assertError( result );
+        assertActionParameters( action );
+        assertNoOutputFields();
     }
 
     public void testGetArtifactNotInObservableRepos()
-        throws ArchivaDatabaseException
     {
-        List<ArchivaArtifact> artifacts = Collections.singletonList(
-            createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, OTHER_TEST_REPO ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 1 );
+        metadataRepository.setProjectBuild( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
         String result = action.artifact();
         assertError( result );
 
-        artifactDaoMockControl.verify();
-
         assertActionParameters( action );
         assertNoOutputFields();
     }
 
     public void testGetArtifactOnlySeenInSecondObservableRepo()
-        throws ArchivaDatabaseException
     {
         setObservableRepos( Arrays.asList( OTHER_TEST_REPO, TEST_REPO ) );
-        List<ArchivaArtifact> artifacts =
-            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 2 );
-        MockControl projectDaoMockControl =
-            createProjectDaoMock( createProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
+        metadataRepository.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
         String result = action.artifact();
 
         assertActionSuccess( action, result );
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertActionParameters( action );
         ArchivaProjectModel model = action.getModel();
@@ -303,28 +253,22 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertNull( action.getSnapshotVersions() );
+        assertTrue( action.getSnapshotVersions().isEmpty() );
     }
 
     public void testGetArtifactSeenInBothObservableRepo()
-        throws ArchivaDatabaseException
     {
-        setObservableRepos( Arrays.asList( OTHER_TEST_REPO, TEST_REPO ) );
-        List<ArchivaArtifact> artifacts =
-            Arrays.asList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ),
-                           createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, OTHER_TEST_REPO ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 2 );
-        MockControl projectDaoMockControl =
-            createProjectDaoMock( createProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
+        setObservableRepos( Arrays.asList( TEST_REPO, OTHER_TEST_REPO ) );
+        metadataRepository.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
+        metadataRepository.setProjectBuild( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
         String result = action.artifact();
 
         assertActionSuccess( action, result );
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertActionParameters( action );
         ArchivaProjectModel model = action.getModel();
@@ -335,28 +279,22 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertNull( action.getSnapshotVersions() );
+        assertTrue( action.getSnapshotVersions().isEmpty() );
     }
 
     public void testGetArtifactCanOnlyObserveInOneOfTwoRepos()
-        throws ArchivaDatabaseException
     {
         setObservableRepos( Arrays.asList( TEST_REPO ) );
-        List<ArchivaArtifact> artifacts =
-            Arrays.asList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, OTHER_TEST_REPO ),
-                           createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 2 );
-        MockControl projectDaoMockControl =
-            createProjectDaoMock( createProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
+        metadataRepository.setProjectBuild( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
+        metadataRepository.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
         String result = action.artifact();
 
         assertActionSuccess( action, result );
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertActionParameters( action );
         ArchivaProjectModel model = action.getModel();
@@ -367,7 +305,7 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertNull( action.getSnapshotVersions() );
+        assertTrue( action.getSnapshotVersions().isEmpty() );
     }
 
     private void assertNoOutputFields()
@@ -376,7 +314,7 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertNull( action.getSnapshotVersions() );
+        assertTrue( action.getSnapshotVersions().isEmpty() );
     }
 
     private void assertError( String result )
@@ -401,22 +339,18 @@ public class ShowArtifactActionTest
         assertEquals( TEST_GROUP_ID, model.getGroupId() );
         assertEquals( TEST_ARTIFACT_ID, model.getArtifactId() );
         assertEquals( version, model.getVersion() );
-        assertEquals( TEST_PACKAGING, model.getPackaging() );
         assertEquals( TEST_URL, model.getUrl() );
         assertEquals( TEST_NAME, model.getName() );
         assertEquals( TEST_DESCRIPTION, model.getDescription() );
         assertEquals( TEST_ORGANIZATION_NAME, model.getOrganization().getName() );
         assertEquals( TEST_ORGANIZATION_URL, model.getOrganization().getUrl() );
         assertEquals( 2, model.getLicenses().size() );
-        License l = model.getLicenses().get( 0 );
+        org.apache.maven.archiva.model.License l = model.getLicenses().get( 0 );
         assertEquals( TEST_LICENSE_NAME, l.getName() );
         assertEquals( TEST_LICENSE_URL, l.getUrl() );
         l = model.getLicenses().get( 1 );
         assertEquals( TEST_LICENSE_NAME_2, l.getName() );
         assertEquals( TEST_LICENSE_URL_2, l.getUrl() );
-        assertEquals( TEST_PARENT_GROUP_ID, model.getParentProject().getGroupId() );
-        assertEquals( TEST_PARENT_ARTIFACT_ID, model.getParentProject().getArtifactId() );
-        assertEquals( TEST_PARENT_VERSION, model.getParentProject().getVersion() );
         assertEquals( TEST_ISSUE_SYSTEM, model.getIssueManagement().getSystem() );
         assertEquals( TEST_ISSUE_URL, model.getIssueManagement().getUrl() );
         assertEquals( TEST_CI_SYSTEM, model.getCiManagement().getSystem() );
@@ -424,6 +358,11 @@ public class ShowArtifactActionTest
         assertEquals( TEST_SCM_CONNECTION, model.getScm().getConnection() );
         assertEquals( TEST_SCM_DEV_CONNECTION, model.getScm().getDeveloperConnection() );
         assertEquals( TEST_SCM_URL, model.getScm().getUrl() );
+
+        assertEquals( TEST_PACKAGING, model.getPackaging() );
+        assertEquals( TEST_PARENT_GROUP_ID, model.getParentProject().getGroupId() );
+        assertEquals( TEST_PARENT_ARTIFACT_ID, model.getParentProject().getArtifactId() );
+        assertEquals( TEST_PARENT_VERSION, model.getParentProject().getVersion() );
     }
 
     private void setActionParameters()
@@ -447,21 +386,13 @@ public class ShowArtifactActionTest
         assertTrue( action.getActionMessages().isEmpty() );
     }
 
-    private ArchivaProjectModel createProjectModel( String groupId, String artifactId, String version )
+    private ProjectBuildMetadata createProjectModel( String version )
     {
-        ArchivaProjectModel model = new ArchivaProjectModel();
-        model.setGroupId( groupId );
-        model.setArtifactId( artifactId );
-        model.setVersion( version );
-        model.setPackaging( TEST_PACKAGING );
+        ProjectBuildMetadata model = new ProjectBuildMetadata();
+        model.setId( version );
         model.setUrl( TEST_URL );
         model.setName( TEST_NAME );
         model.setDescription( TEST_DESCRIPTION );
-        VersionedReference parent = new VersionedReference();
-        parent.setGroupId( TEST_PARENT_GROUP_ID );
-        parent.setArtifactId( TEST_PARENT_ARTIFACT_ID );
-        parent.setVersion( TEST_PARENT_VERSION );
-        model.setParentProject( parent );
         CiManagement ci = new CiManagement();
         ci.setSystem( TEST_CI_SYSTEM );
         ci.setUrl( TEST_CI_URL );
@@ -470,10 +401,10 @@ public class ShowArtifactActionTest
         issue.setSystem( TEST_ISSUE_SYSTEM );
         issue.setUrl( TEST_ISSUE_URL );
         model.setIssueManagement( issue );
-        Organization org = new Organization();
-        org.setName( TEST_ORGANIZATION_NAME );
-        org.setUrl( TEST_ORGANIZATION_URL );
-        model.setOrganization( org );
+        Organization organization = new Organization();
+        organization.setName( TEST_ORGANIZATION_NAME );
+        organization.setUrl( TEST_ORGANIZATION_URL );
+        model.setOrganization( organization );
         License l = new License();
         l.setName( TEST_LICENSE_NAME );
         l.setUrl( TEST_LICENSE_URL );
@@ -487,59 +418,18 @@ public class ShowArtifactActionTest
         scm.setDeveloperConnection( TEST_SCM_DEV_CONNECTION );
         scm.setUrl( TEST_SCM_URL );
         model.setScm( scm );
+
+        MavenProjectFacet mavenProjectFacet = new MavenProjectFacet();
+        mavenProjectFacet.setGroupId( TEST_GROUP_ID );
+        mavenProjectFacet.setArtifactId( TEST_ARTIFACT_ID );
+        mavenProjectFacet.setPackaging( TEST_PACKAGING );
+        MavenProjectParent parent = new MavenProjectParent();
+        parent.setGroupId( TEST_PARENT_GROUP_ID );
+        parent.setArtifactId( TEST_PARENT_ARTIFACT_ID );
+        parent.setVersion( TEST_PARENT_VERSION );
+        mavenProjectFacet.setParent( parent );
+        model.addFacet( mavenProjectFacet );
         return model;
-    }
-
-    private MockControl createArtifactDaoMock( List<ArchivaArtifact> artifacts, int count )
-        throws ArchivaDatabaseException
-    {
-        return createArtifactDaoMock( artifacts, TEST_VERSION, count );
-    }
-
-    private MockControl createArtifactDaoMock( List<ArchivaArtifact> artifacts, String version, int count )
-        throws ArchivaDatabaseException
-    {
-        // testing deeper than normal with the mocks as we intend to replace RepositoryBrowsing, not just the database
-        // underneath it - those sections will be adjusted with a mock content repository later
-        MockControl control = MockControl.createNiceControl( ArtifactDAO.class );
-        ArtifactDAO dao = (ArtifactDAO) control.getMock();
-        archivaDao.setArtifactDao( dao );
-
-        ArtifactsRelatedConstraint c = new ArtifactsRelatedConstraint( TEST_GROUP_ID, TEST_ARTIFACT_ID, version );
-        dao.queryArtifacts( c );
-        control.setReturnValue( artifacts, count );
-
-        control.replay();
-        return control;
-    }
-
-    private MockControl createProjectDaoMock( ArchivaProjectModel project )
-        throws ArchivaDatabaseException
-    {
-        MockControl control = MockControl.createNiceControl( ProjectModelDAO.class );
-        ProjectModelDAO dao = (ProjectModelDAO) control.getMock();
-        archivaDao.setProjectDao( dao );
-
-        control.expectAndReturn(
-            dao.getProjectModel( project.getGroupId(), project.getArtifactId(), project.getVersion() ), project );
-
-        control.replay();
-        return control;
-    }
-
-    private ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
-    {
-        return createArtifact( groupId, artifactId, version, TEST_REPO );
-    }
-
-    private ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String repoId )
-    {
-        ArchivaArtifactModel model = new ArchivaArtifactModel();
-        model.setGroupId( groupId );
-        model.setArtifactId( artifactId );
-        model.setVersion( version );
-        model.setRepositoryId( repoId );
-        return new ArchivaArtifact( model );
     }
 
     protected void setUp()
@@ -547,6 +437,6 @@ public class ShowArtifactActionTest
     {
         super.setUp();
         action = (ShowArtifactAction) lookup( Action.class, ACTION_HINT );
-        archivaDao = (ArchivaDAOStub) lookup( ArchivaDAO.class, "jdo" );
+        metadataRepository = (MemoryMetadataRepository) action.getMetadataRepository();
     }
 }

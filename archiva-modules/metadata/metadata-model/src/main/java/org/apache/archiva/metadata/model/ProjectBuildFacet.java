@@ -19,60 +19,7 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import java.util.Date;
-
-public class ArtifactMetadata
+public interface ProjectBuildFacet
 {
-    private String id;
-    
-    private Date updated;
-    
-    private long size;
-
-    private String version;
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId( String id )
-    {
-        this.id = id;
-    }
-
-    public Date getUpdated()
-    {
-        return updated;
-    }
-
-    public void setUpdated( Date updated )
-    {
-        this.updated = updated;
-    }
-
-    public void setUpdated( long updated )
-    {
-        this.updated = new Date( updated );
-    }
-
-    public long getSize()
-    {
-        return size;
-    }
-
-    public void setSize( long size )
-    {
-        this.size = size;
-    }
-
-    public String getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( String version )
-    {
-        this.version = version;
-    }
+    String getFacetId();
 }

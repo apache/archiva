@@ -21,6 +21,8 @@ package org.apache.archiva.metadata.model;
 
 public class ProjectMetadata
 {
+    private String namespace;
+
     private String id;
 
     public void setId( String id )
@@ -33,4 +35,13 @@ public class ProjectMetadata
         return id;
     }
 
+    public String getNamespace()
+    {
+        return namespace;
+    }
+
+    public void setNamespace( String namespace )
+    {
+        this.namespace = namespace;
+    }
 }

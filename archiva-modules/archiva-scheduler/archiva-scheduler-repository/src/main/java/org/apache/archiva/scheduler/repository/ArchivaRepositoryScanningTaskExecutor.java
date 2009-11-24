@@ -166,10 +166,6 @@ public class ArchivaRepositoryScanningTaskExecutor
 
 //                log.info( "Scanning for removed repository content" );
 
-                // FIXME: remove hardcoding
-//                MetadataRepository metadataRepository =
-//                    new FileMetadataRepository( new File( arepo.getLocation(), ".metadata" ) );
-
 //                metadataRepository.findAllProjects();
                 // FIXME: do something
 

@@ -24,6 +24,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -32,23 +36,26 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.IOUtils;
 
+/**
+ * @plexus.component role="org.apache.archiva.metadata.repository.MetadataRepository"
+ */
 public class FileMetadataRepository
     implements MetadataRepository
 {
-    private File directory;
+    /**
+     * @plexus.configuration
+     */
+    private File directory = new File( System.getProperty( "user.home" ), ".archiva-metadata" );
 
-    public FileMetadataRepository( File directory )
-    {
-        this.directory = directory;
-    }
-
-    public void updateProject( ProjectMetadata project )
+    public void updateProject( String repoId, ProjectMetadata project )
     {
         // TODO: this is a more braindead implementation than we would normally expect, for prototyping purposes
         try
         {
-            File projectDirectory = new File( this.directory, project.getId() );
+            File projectDirectory =
+                new File( this.directory, repoId + "/" + project.getNamespace() + "/" + project.getId() );
             Properties properties = new Properties();
+            properties.setProperty( "namespace", project.getNamespace() );
             properties.setProperty( "id", project.getId() );
             writeProperties( properties, projectDirectory );
         }
@@ -59,9 +66,9 @@ public class FileMetadataRepository
         }
     }
 
-    public void updateBuild( String projectId, ProjectBuildMetadata build )
+    public void updateBuild( String repoId, String namespace, String projectId, ProjectBuildMetadata build )
     {
-        File directory = new File( this.directory, projectId );
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId );
 
         Properties properties = new Properties();
         properties.setProperty( "id", build.getId() );
@@ -77,10 +84,30 @@ public class FileMetadataRepository
         }
     }
 
-    public void updateArtifact( String projectId, String buildId, ArtifactMetadata artifact )
+    public void updateArtifact( String repoId, String namespace, String projectId, String buildId,
+                                ArtifactMetadata artifact )
     {
-        File directory = new File( this.directory, projectId + "/" + buildId );
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + buildId );
 
+        Properties properties = readProperties( directory );
+
+        properties.setProperty( "updated:" + artifact.getId(), Long.toString( artifact.getUpdated().getTime() ) );
+        properties.setProperty( "size:" + artifact.getId(), Long.toString( artifact.getSize() ) );
+        properties.setProperty( "version:" + artifact.getId(), artifact.getVersion() );
+
+        try
+        {
+            writeProperties( properties, directory );
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    private Properties readProperties( File directory )
+    {
         Properties properties = new Properties();
         FileInputStream in = null;
         try
@@ -101,19 +128,48 @@ public class FileMetadataRepository
         {
             IOUtils.closeQuietly( in );
         }
+        return properties;
+    }
 
-        properties.setProperty( artifact.getId() + ".updated", Long.toString( artifact.getUpdated().getTime() ) );
-        properties.setProperty( artifact.getId() + ".size", Long.toString( artifact.getSize() ) );
+    public ProjectMetadata getProject( String repoId, String groupId, String projectId )
+    {
+        File directory = new File( this.directory, repoId + "/" + projectId );
 
-        try
+        Properties properties = readProperties( directory );
+
+        ProjectMetadata project = new ProjectMetadata();
+        project.setNamespace( properties.getProperty( "namespace" ) );
+        project.setId( properties.getProperty( "id" ) );
+        return project;
+    }
+
+    public ProjectBuildMetadata getProjectBuild( String repoId, String groupId, String projectId, String buildId )
+    {
+        File directory = new File( this.directory, repoId + "/" + projectId + "/" + buildId );
+
+        Properties properties = readProperties( directory );
+
+        ProjectBuildMetadata build = new ProjectBuildMetadata();
+        build.setId( properties.getProperty( "id" ) );
+        return build;
+    }
+
+    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String buildId )
+    {
+        File directory = new File( this.directory, repoId + "/" + projectId + "/" + buildId );
+
+        Properties properties = readProperties( directory );
+
+        List<String> versions = new ArrayList<String>();
+        for ( Map.Entry entry : properties.entrySet() )
         {
-            writeProperties( properties, directory );
+            String name = (String) entry.getKey();
+            if ( name.startsWith( "version:" ) )
+            {
+                versions.add( (String) entry.getValue() );
+            }
         }
-        catch ( IOException e )
-        {
-            // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        return versions;
     }
 
     private void writeProperties( Properties properties, File directory )

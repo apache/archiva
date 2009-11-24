@@ -19,28 +19,37 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.CiManagement;
 import org.apache.maven.archiva.model.Dependency;
+import org.apache.maven.archiva.model.IssueManagement;
+import org.apache.maven.archiva.model.License;
 import org.apache.maven.archiva.model.MailingList;
+import org.apache.maven.archiva.model.Organization;
+import org.apache.maven.archiva.model.Scm;
+import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 
 /**
- * Browse the repository. 
- * 
+ * Browse the repository.
+ *
  * TODO change name to ShowVersionedAction to conform to terminology.
- * 
+ *
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction" instantiation-strategy="per-lookup"
  */
 public class ShowArtifactAction
@@ -58,7 +67,12 @@ public class ShowArtifactAction
      * @plexus.requirement
      */
     private UserRepositories userRepositories;
-    
+
+    /**
+     * @plexus.requirement
+     */
+    private MetadataRepository metadataRepository;
+
     /* .\ Exposed Output Objects \.__________________________________ */
 
     private String groupId;
@@ -82,43 +96,98 @@ public class ShowArtifactAction
     private List<MailingList> mailingLists;
 
     private List<Dependency> dependencies;
-    
+
     private List<String> snapshotVersions;
 
     /**
      * Show the versioned project information tab. TODO: Change name to 'project'
      */
     public String artifact()
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        try
+        // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
+        // simple resource requests here and letting the resolver take care of it
+        ProjectBuildMetadata build = null;
+        snapshotVersions = new ArrayList<String>();
+        for ( String repoId : getObservableRepos() )
         {
-            if( VersionUtil.isSnapshot( version ) )
-            {                
-                this.model =
-                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
-                                
-                this.snapshotVersions =
-                    repoBrowsing.getOtherSnapshotVersions( getObservableRepos(), groupId, artifactId, version );
-                if( this.snapshotVersions.contains( version ) )
+            if ( build == null )
+            {
+                // TODO: we don't really want the implementation being that intelligent - so another resolver to do
+                //  the "just-in-time" nature of picking up the metadata (if appropriate for the repository type) if not
+                //  found in the content repository is needed here
+                build = metadataRepository.getProjectBuild( repoId, groupId, artifactId, version );
+                if ( build != null )
                 {
-                    this.snapshotVersions.remove( version );
+                    repositoryId = repoId;      
                 }
             }
-            else
-            {
-                this.model =
-                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
-            }
-            
-            this.repositoryId =
-                repoBrowsing.getRepositoryId( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+            snapshotVersions.addAll( metadataRepository.getArtifactVersions( repoId, groupId, artifactId, version ) );
+            snapshotVersions.remove( version );
         }
-        catch ( ObjectNotFoundException e )
+
+        if ( build == null )
         {
-            log.debug( e.getMessage(), e );
-            addActionError( e.getMessage() );
+            addActionError( "Artifact not found" );
             return ERROR;
+        }
+
+        // TODO: eventually, move to just use the metadata directly, with minimal JSP changes, mostly for Maven specifics
+        model = new ArchivaProjectModel();
+        MavenProjectFacet projectFacet = (MavenProjectFacet) build.getFacet( MavenProjectFacet.FACET_ID );
+        model.setGroupId( projectFacet.getGroupId() );
+        model.setArtifactId( projectFacet.getArtifactId() );
+        model.setPackaging( projectFacet.getPackaging() );
+        if ( projectFacet.getParent() != null )
+        {
+            VersionedReference parent = new VersionedReference();
+            parent.setGroupId( projectFacet.getParent().getGroupId() );
+            parent.setArtifactId( projectFacet.getParent().getArtifactId() );
+            parent.setVersion( projectFacet.getParent().getVersion() );
+            model.setParentProject( parent );
+        }
+
+        model.setVersion( build.getId() );
+        model.setDescription( build.getDescription() );
+        model.setName( build.getName() );
+        model.setUrl( build.getUrl() );
+        if ( build.getOrganization() != null )
+        {
+            Organization organization = new Organization();
+            organization.setName( build.getOrganization().getName() );
+            organization.setUrl( build.getOrganization().getUrl() );
+            model.setOrganization( organization );
+        }
+        if ( build.getCiManagement() != null )
+        {
+            CiManagement ci = new CiManagement();
+            ci.setSystem( build.getCiManagement().getSystem() );
+            ci.setUrl( build.getCiManagement().getUrl() );
+            model.setCiManagement( ci );
+        }
+        if ( build.getIssueManagement() != null )
+        {
+            IssueManagement issueManagement = new IssueManagement();
+            issueManagement.setSystem( build.getIssueManagement().getSystem() );
+            issueManagement.setUrl( build.getIssueManagement().getUrl() );
+            model.setIssueManagement( issueManagement );
+        }
+        if ( build.getScm() != null )
+        {
+            Scm scm = new Scm();
+            scm.setConnection( build.getScm().getConnection() );
+            scm.setDeveloperConnection( build.getScm().getDeveloperConnection() );
+            scm.setUrl( build.getScm().getUrl() );
+            model.setScm( scm );
+        }
+        if ( build.getLicenses() != null )
+        {
+            for ( org.apache.archiva.metadata.model.License l : build.getLicenses() )
+            {
+                License license = new License();
+                license.setName( l.getName() );
+                license.setUrl( l.getUrl() );
+                model.addLicense( license );
+            }
         }
 
         return SUCCESS;
@@ -296,4 +365,8 @@ public class ShowArtifactAction
         this.snapshotVersions = snapshotVersions;
     }
 
+    public MetadataRepository getMetadataRepository()
+    {
+        return metadataRepository;
+    }
 }

@@ -28,8 +28,8 @@ The following is the intended content model for the metadata content repository:
         |                       |   |-- created=
         |                       |   |-- description=
         |                       |   |-- name=
-        |                       |   |-- organizationName=
-        |                       |   |-- organizationUrl=
+        |                       |   |-- organization.name=
+        |                       |   |-- organization.url=
         |                       |   `-- updated=
         |                       |-- maven:artifactId=
         |                       `-- maven:groupId=
@@ -50,3 +50,5 @@ file in the original storageUrl when it is requested
 
 4) The API will still use separate namespace and project identifiers (the namespace can be null if there isn't one). This is chosen to allow
 splitting the namespace on '.', and also allowing '.' in the project identifier without splitting
+
+5) properties with '.' may be nested in other representations such as Java models or XML, if appropriate

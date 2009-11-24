@@ -259,6 +259,27 @@
       <artifactId>atlassian-xmlrpc-binder-server-spring</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model</artifactId>
+      <version>1.3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-api</artifactId>
+      <version>1.3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-file</artifactId>
+      <version>1.3-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>  <!--  FIXME: temporary coupling to plugin, should be runtime -->
+      <artifactId>maven2-repository</artifactId>
+      <version>1.3-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>

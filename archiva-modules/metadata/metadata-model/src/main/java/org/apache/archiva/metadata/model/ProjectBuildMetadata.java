@@ -19,9 +19,32 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ProjectBuildMetadata
 {
     private String id;
+
+    private String url;
+
+    private String name;
+
+    private String description;
+
+    private Organization organization;
+
+    private IssueManagement issueManagement;
+
+    private Scm scm;
+
+    private CiManagement ciManagement;
+
+    private List<License> licenses;
+
+    private Map<String, ProjectBuildFacet> facets;
 
     public String getId()
     {
@@ -33,4 +56,106 @@ public class ProjectBuildMetadata
         this.id = id;
     }
 
+    public void setUrl( String url )
+    {
+        this.url = url;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public void setDescription( String description )
+    {
+        this.description = description;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public String getUrl()
+    {
+        return url;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public Organization getOrganization()
+    {
+        return organization;
+    }
+
+    public void setOrganization( Organization organization )
+    {
+        this.organization = organization;
+    }
+
+    public IssueManagement getIssueManagement()
+    {
+        return issueManagement;
+    }
+
+    public void setIssueManagement( IssueManagement issueManagement )
+    {
+        this.issueManagement = issueManagement;
+    }
+
+    public Scm getScm()
+    {
+        return scm;
+    }
+
+    public void setScm( Scm scm )
+    {
+        this.scm = scm;
+    }
+
+    public CiManagement getCiManagement()
+    {
+        return ciManagement;
+    }
+
+    public void setCiManagement( CiManagement ciManagement )
+    {
+        this.ciManagement = ciManagement;
+    }
+
+    public List<License> getLicenses()
+    {
+        return licenses;
+    }
+
+    public void setLicenses( List<License> licenses )
+    {
+        this.licenses = licenses;
+    }
+
+    public void addLicense( License license )
+    {
+        if ( this.licenses == null )
+        {
+            this.licenses = new ArrayList<License>();
+        }
+        this.licenses.add( license );
+    }
+
+    public void addFacet( ProjectBuildFacet mavenProjectFacet )
+    {
+        if ( this.facets == null )
+        {
+            this.facets = new HashMap<String, ProjectBuildFacet>();
+        }
+        this.facets.put( mavenProjectFacet.getFacetId(), mavenProjectFacet );
+    }
+
+    public ProjectBuildFacet getFacet( String facetId )
+    {
+        return this.facets.get( facetId );
+    }
 }
