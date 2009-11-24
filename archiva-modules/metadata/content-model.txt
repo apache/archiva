@@ -11,7 +11,7 @@ The following is the intended content model for the metadata content repository:
         |   `-- org/
         |       `-- apache/
         |           `-- archiva/
-        |               `-- platform/ -- these are known as "organizational units", of arbitrary depth. Equiv to groupId in Maven
+        |               `-- platform/ -- these are known as the namespace, of arbitrary depth. Equiv to groupId in Maven
         |                   `-- scanner/ -- this is the project - equivalent to artifactId in Maven
         |                       |-- 1.0-SNAPSHOT/ -- this is the version best used to describe the project ("marketed version")
         |                       |   |-- scanner-1.0-20091120.012345-1.pom/ -- filename is a node, each is distinct except for checksums, etc.
@@ -48,3 +48,5 @@ each stored and it is up to the reader to interpret
 3) artifact data is not stored in the content repository (there is no data= property on the file). The information here is enough to locate the
 file in the original storageUrl when it is requested
 
+4) The API will still use separate namespace and project identifiers (the namespace can be null if there isn't one). This is chosen to allow
+splitting the namespace on '.', and also allowing '.' in the project identifier without splitting
