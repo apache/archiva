@@ -37,7 +37,8 @@ public class DefaultMetadataResolver
 
     /**
      * FIXME: this needs to be configurable based on storage type, and availability of proxy module
-     *        ... could be a different type since we need methods to modify the storage metadata
+     * ... could be a different type since we need methods to modify the storage metadata
+     *
      * @plexus.requirement role-hint="maven2"
      */
     private MetadataResolver storageResolver;
@@ -48,21 +49,27 @@ public class DefaultMetadataResolver
         return metadataRepository.getProject( repoId, namespace, projectId );
     }
 
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
+                                                     String projectVersion )
         throws MetadataResolverException
     {
-        ProjectVersionMetadata metadata = metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
+        ProjectVersionMetadata metadata =
+            metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
         // TODO: do we want to detect changes as well by comparing timestamps? isProjectVersionNewerThan(updated)
         //       in such cases we might also remove/update stale metadata, including adjusting plugin-based facets
         if ( metadata == null )
         {
             metadata = storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
-            metadataRepository.updateProjectVersion( repoId, namespace, projectId, metadata );
+            if ( metadata != null )
+            {
+                metadataRepository.updateProjectVersion( repoId, namespace, projectId, metadata );
+            }
         }
         return metadata;
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion )
+    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
+                                                   String projectVersion )
     {
         // TODO: intercept
         return metadataRepository.getArtifactVersions( repoId, namespace, projectId, projectVersion );

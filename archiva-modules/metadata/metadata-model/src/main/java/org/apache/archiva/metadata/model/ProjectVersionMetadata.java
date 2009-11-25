@@ -156,6 +156,6 @@ public class ProjectVersionMetadata
 
     public ProjectVersionFacet getFacet( String facetId )
     {
-        return this.facets.get( facetId );
+        return this.facets != null ? this.facets.get( facetId ) : null;
     }
 }

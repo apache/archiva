@@ -134,9 +134,9 @@ public class FileMetadataRepository
         return properties;
     }
 
-    public ProjectMetadata getProject( String repoId, String groupId, String projectId )
+    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
-        File directory = new File( this.directory, repoId + "/" + projectId );
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId );
 
         Properties properties = readProperties( directory );
 
@@ -146,22 +146,26 @@ public class FileMetadataRepository
         return project;
     }
 
-    public ProjectVersionMetadata getProjectVersion( String repoId, String groupId, String projectId,
+    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
     {
-        File directory = new File( this.directory, repoId + "/" + projectId + "/" + projectVersion );
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readProperties( directory );
-
-        ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
-        versionMetadata.setId( properties.getProperty( "id" ) );
+        String id = properties.getProperty( "id" );
+        ProjectVersionMetadata versionMetadata = null;
+        if ( id != null )
+        {
+            versionMetadata = new ProjectVersionMetadata();
+            versionMetadata.setId( id );
+        }
         return versionMetadata;
     }
 
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
     {
-        File directory = new File( this.directory, repoId + "/" + projectId + "/" + projectVersion );
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readProperties( directory );
 
