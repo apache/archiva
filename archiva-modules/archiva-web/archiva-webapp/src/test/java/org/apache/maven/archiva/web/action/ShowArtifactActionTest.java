@@ -437,6 +437,6 @@ public class ShowArtifactActionTest
     {
         super.setUp();
         action = (ShowArtifactAction) lookup( Action.class, ACTION_HINT );
-        metadataResolver = (TestMetadataResolver) action.getMetadataRepository();
+        metadataResolver = (TestMetadataResolver) action.getMetadataResolver();
     }
 }

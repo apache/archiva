@@ -104,33 +104,35 @@ public class SearchServiceImpl
                 resultHit.setVersion( null );
                 resultHit.setVersions( filterTimestampedSnapshots( versions ) );
             }
-            
+                        
             List<String> resultHitVersions = resultHit.getVersions();
             if( resultHitVersions != null )
             {
                 for( String version : resultHitVersions )
-                {                    
+                {   
                     try
                     {
                         ArchivaProjectModel model = repoBrowsing.selectVersion( "", observableRepos, resultHit.getGroupId(), resultHit.getArtifactId(), version );
                         
+                        String repoId = repoBrowsing.getRepositoryId( "", observableRepos, resultHit.getGroupId(), resultHit.getArtifactId(), version );
+                        
                         Artifact artifact = null;
                         if( model == null )
                         {
-                           artifact = new Artifact( resultHit.getRepositoryId(), resultHit.getGroupId(), resultHit.getArtifactId(), version, "jar" );                           
+                           artifact = new Artifact( repoId, resultHit.getGroupId(), resultHit.getArtifactId(), version, "jar" );                           
                         }
                         else
                         {                       
-                            artifact = new Artifact( resultHit.getRepositoryId(), model.getGroupId(), model.getArtifactId(), version, model.getPackaging() );
+                            artifact = new Artifact( repoId, model.getGroupId(), model.getArtifactId(), version, model.getPackaging() );
                         }
                         artifacts.add( artifact );
                     }
                     catch( ObjectNotFoundException e )
-                    {  
+                    {                          
                         log.debug( "Unable to find pom artifact : " + e.getMessage() );                        
                     }
                     catch( ArchivaDatabaseException e )
-                    {   
+                    {                           
                         log.debug( "Error occurred while getting pom artifact from database : " + e.getMessage() );
                     }
                 }

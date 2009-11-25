@@ -449,25 +449,86 @@ public abstract class AbstractArchivaTest
 		setFieldValue( "organisationLogo" , logoUrl );
 		clickButtonWithValue( "Save" );
 	}
-	
-	//Upload Artifact
-	public void goToUploadArtifactPage()
-	{
-		clickLinkWithText( "Upload Artifact" );
-		assertUploadArtifactPage();
-	}
-	
-	public void assertUploadArtifactPage()
-	{
-		//assertPage( "Apache Archiva \\ Upload Artifact" );
-		String uploadArtifact = "Upload Artifact,Group Id*,Artifact Id*,Version*,Packaging*,Classifier,Generate Maven 2 POM,Artifact File*,POM File,Repository Id";
-		String[] arrayUploadArtifact = uploadArtifact.split( "," );
-		for ( String uploadartifact : arrayUploadArtifact )
-			assertTextPresent( uploadartifact );
-		String uploadElements = "groupId,artifactId,version,packaging,classifier,generatePom,artifact,pom,repositoryId";
-		String[] arrayUploadElements = uploadElements.split( "," );
-		for ( String uploadelements : arrayUploadElements )
-			assertElementPresent( uploadelements );
-		assertButtonWithValuePresent( "Submit" );
-	} 
+
+	// Upload Artifact
+    public void goToAddArtifactPage()
+    {
+        clickLinkWithText( "Upload Artifact" );
+        assertAddArtifactPage();
+    }
+
+    public void assertAddArtifactPage()
+    {
+        assertPage( "Apache Archiva \\ Upload Artifact" );
+        assertTextPresent( "Upload Artifact" );
+
+        String artifact =
+            "Upload Artifact,Group Id*:,Artifact Id*:,Version*:,Packaging*:,Classifier:,Generate Maven 2 POM,Artifact File*:,POM File:,Repository Id:";
+        String[] arrayArtifact = artifact.split( "," );
+        for ( String arrayartifact : arrayArtifact )
+            assertTextPresent( arrayartifact );
+
+        String artifactElements =
+            "upload_groupId,upload_artifactId,upload_version,upload_packaging,upload_classifier,upload_generatePom,upload_artifact,upload_pom,upload_repositoryId,upload_0";
+        String[] arrayArtifactElements = artifactElements.split( "," );
+        for ( String artifactelements : arrayArtifactElements )
+            assertElementPresent( artifactelements );
+    }
+
+    public void addArtifact( String groupId, String artifactId, String version, String packaging,
+                             String artifactFilePath, String repositoryId )
+    {
+        addArtifact( groupId, artifactId, version, packaging, true, artifactFilePath, repositoryId );
+    }
+
+    public void addArtifact( String groupId, String artifactId, String version, String packaging, boolean generatePom,
+                             String artifactFilePath, String repositoryId )
+    {
+        goToAddArtifactPage();
+        setFieldValue( "groupId", groupId );
+        setFieldValue( "artifactId", artifactId );
+        setFieldValue( "version", version );
+        setFieldValue( "packaging", packaging );
+
+        if ( generatePom )
+        {
+            checkField( "generatePom" );
+        }
+
+        setFieldValue( "artifact", artifactFilePath );
+        setFieldValue( "repositoryId", repositoryId );
+
+        clickButtonWithValue( "Submit" );
+    }
+
+    public void goToRepositoriesPage()
+    {
+    	clickLinkWithText( "Repositories" );
+    	assertRepositoriesPage();
+    }
+
+    public void assertRepositoriesPage()
+    {
+    	assertPage( "Apache Archiva \\ Administration - Repositories" );
+    	assertTextPresent( "Administration - Repositories" );
+    	assertTextPresent( "Managed Repositories" );
+    	assertTextPresent( "Remote Repositories" );
+    }
+
+    public void addManagedRepository( String identifier, String name, String directory, String indexDirectory, String type, String cron,
+                                         String daysOlder, String retentionCount )
+    {
+    	//goToRepositoriesPage();
+    	//clickLinkWithText( "Add" );
+    	setFieldValue( "repository.id" , identifier );
+    	setFieldValue( "repository.name" , name );
+    	setFieldValue( "repository.location" , directory );
+    	setFieldValue( "repository.indexDir" , indexDirectory );
+    	selectValue( "repository.layout", type );
+    	setFieldValue( "repository.refreshCronExpression" , cron );
+    	setFieldValue( "repository.daysOlder" , daysOlder );
+    	setFieldValue( "repository.retentionCount" , retentionCount );
+    	//TODO	
+    	clickButtonWithValue( "Add Repository" );
+    }
 }

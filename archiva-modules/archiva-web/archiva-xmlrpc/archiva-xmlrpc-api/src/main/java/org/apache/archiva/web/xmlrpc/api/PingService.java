@@ -21,8 +21,8 @@ package org.apache.archiva.web.xmlrpc.api;
 
 import com.atlassian.xmlrpc.ServiceObject;
 
-@ServiceObject("Test")
-public interface TestService
+@ServiceObject("PingService")
+public interface PingService
 {
     public String ping();
 }

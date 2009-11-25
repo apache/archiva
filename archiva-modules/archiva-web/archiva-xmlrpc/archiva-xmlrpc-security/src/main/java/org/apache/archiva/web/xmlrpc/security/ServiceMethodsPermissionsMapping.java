@@ -49,5 +49,6 @@ public class ServiceMethodsPermissionsMapping
                        "SearchService.getArtifactVersions", "SearchService.getArtifactVersionsByDate",
                        "SearchService.getDependencies", "SearchService.getDependencyTree",
                        "SearchService.getDependees" );
-
+    
+    public static final String PING = "PingService.ping";
 }

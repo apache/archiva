@@ -43,42 +43,12 @@ public abstract class AbstractArtifactManagementTest
 		return repositoryId;
 	}
 	
-	public void goToAddArtifactPage()
-	{
-		clickLinkWithText( "Upload Artifact" );
-		assertAddArtifactPage();
-	}
-	
 	public void goToDeleteArtifactPage()
 	{
 		clickLinkWithText( "Delete Artifact" );
 		assertDeleteArtifactPage();
 	}
 		
-	public void addArtifact( String groupId, String artifactId, String version, String packaging, String artifactFilePath, String repositoryId )
-	{
-		addArtifact(groupId, artifactId, version, packaging, true,  artifactFilePath, repositoryId);
-	}
-	
-	public void addArtifact( String groupId, String artifactId, String version, String packaging, boolean generatePom, String artifactFilePath, String repositoryId)
-	{
-		goToAddArtifactPage();
-		setFieldValue( "groupId" , groupId );
-		setFieldValue( "artifactId" , artifactId );
-		setFieldValue( "version" , version );
-		setFieldValue( "packaging" , packaging );
-		
-		if ( generatePom )
-		{
-			checkField( "generatePom" );
-		}
-		
-		setFieldValue( "artifact" , artifactFilePath );
-		setFieldValue( "repositoryId" , repositoryId );
-		
-		clickButtonWithValue( "Submit" );
-	}
-	
 	public void deleteArtifact( String groupId, String artifactId, String version, String repositoryId )
 	{
 		goToDeleteArtifactPage();
@@ -87,22 +57,6 @@ public abstract class AbstractArtifactManagementTest
 		setFieldValue( "version" , version );
 		selectValue( "repositoryId" ,  repositoryId );
 		clickButtonWithValue( "Submit" ) ;
-	}
-	
-	public void assertAddArtifactPage()
-	{
-		assertPage( "Apache Archiva \\ Upload Artifact" );
-		assertTextPresent( "Upload Artifact" );
-		
-		String artifact = "Upload Artifact,Group Id*:,Artifact Id*:,Version*:,Packaging*:,Classifier:,Generate Maven 2 POM,Artifact File*:,POM File:,Repository Id:";
-		String[] arrayArtifact = artifact.split( "," );
-		for ( String arrayartifact : arrayArtifact )
-			assertTextPresent( arrayartifact );
-		
-		String artifactElements = "upload_groupId,upload_artifactId,upload_version,upload_packaging,upload_classifier,upload_generatePom,upload_artifact,upload_pom,upload_repositoryId,upload_0";
-		String[] arrayArtifactElements = artifactElements.split( "," );
-		for ( String artifactelements : arrayArtifactElements )
-			assertElementPresent( artifactelements );
 	}
 	
 	public void assertDeleteArtifactPage()

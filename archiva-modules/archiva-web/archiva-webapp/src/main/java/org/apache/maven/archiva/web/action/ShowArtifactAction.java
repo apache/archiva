@@ -372,7 +372,7 @@ public class ShowArtifactAction
         this.snapshotVersions = snapshotVersions;
     }
 
-    public MetadataResolver getMetadataRepository()
+    public MetadataResolver getMetadataResolver()
     {
         return metadataResolver;
     }

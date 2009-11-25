@@ -30,18 +30,18 @@ public class RepositoryTest
 	public void testAddManagedRepoValidValues()
 	{
 		goToRepositoriesPage();
-		clickLinkWithText( "Add" );
+		clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRepository.action']" );
 		addManagedRepository( "managedrepo1", "Managed Repository Sample 1" , getRepositoryDir() + "repository/" , "", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
 		clickButtonWithValue( "Save" );
-		assertTextPresent( "Managed Repository Sample 1" );
-		
+		assertTextPresent( "Managed Repository Sample 1" );		
+		assertRepositoriesPage();
 	}
-
+	
 	@Test(dependsOnMethods = { "testAddManagedRepoValidValues" } )
 	public void testAddManagedRepoInvalidValues()
-	{
-		//goToRepositoriesPage();
-		clickLinkWithText( "Add" );
+	{		
+	    assertRepositoriesPage();
+	    clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRepository.action']" );	
 		addManagedRepository( "", "" , "" , "", "Maven 2.x Repository", "", "", "" );
 		assertTextPresent( "You must enter a repository identifier." );
 		assertTextPresent( "You must enter a repository name." );
@@ -51,8 +51,7 @@ public class RepositoryTest
 	
 	@Test(dependsOnMethods = { "testAddManagedRepoInvalidValues" } )
 	public void testAddManagedRepoNoIdentifier()
-	{
-		//goToRepositoriesPage();
+	{		
 		addManagedRepository( "", "name" , "/home" , "/.index", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
 		assertTextPresent( "You must enter a repository identifier." );
 	}
@@ -104,11 +103,10 @@ public class RepositoryTest
 		//assertTextNotPresent( "managedrepo" );
 	}
 	
-	@Test(dependsOnMethods = { "testAddManagedRepoValidValues" } )
+	@Test(dependsOnMethods = { "testAddRemoteRepoValidValues" } )
 	public void testAddRemoteRepoNullValues()
-	{
-		//goToRepositoriesPage();
-		clickLinkWithLocator( "//div[@id='contentArea']/div/div[5]/a" );
+	{		
+	    clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRemoteRepository.action']" );
 		addRemoteRepository( "" , "" , "" , "" , "" , "" , "Maven 2.x Repository" );
 		assertTextPresent( "You must enter a repository identifier." );
 		assertTextPresent( "You must enter a repository name." );
@@ -136,11 +134,10 @@ public class RepositoryTest
 		assertTextPresent( "You must enter a url." );
 	}
 
-	@Test(dependsOnMethods = { "testAddManagedRepoValidValues" } )
+	@Test(dependsOnMethods = { "testDeleteManageRepo" } )
 	public void testAddRemoteRepoValidValues()
-	{
-		goToRepositoriesPage();
-		clickLinkWithLocator( "//div[@id='contentArea']/div/div[5]/a" );
+	{		
+		clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRemoteRepository.action']" );
 		addRemoteRepository( "remoterepo" , "Remote Repository Sample" , "http://repository.codehaus.org/org/codehaus/mojo/" , "" , "" , "" , "Maven 2.x Repository" );
 		assertTextPresent( "Remote Repository Sample" );
 	}

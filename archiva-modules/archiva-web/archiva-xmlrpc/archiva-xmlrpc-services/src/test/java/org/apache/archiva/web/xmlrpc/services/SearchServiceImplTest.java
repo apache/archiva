@@ -117,8 +117,8 @@ public class SearchServiceImplTest
         SearchResultHit resultHit = new SearchResultHit();
         resultHit.setGroupId( "org.apache.archiva" );
         resultHit.setArtifactId( "archiva-webapp" );        
-        resultHit.setRepositoryId("repo1.mirror");
         resultHit.setVersions( versions );
+        resultHit.setRepositoryId( null );
         
         results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-webapp" ), resultHit );
         
@@ -136,6 +136,8 @@ public class SearchServiceImplTest
         model.setPackaging( "war" );
           
         repoBrowsingControl.expectAndReturn( repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-webapp", "1.0" ), model );
+                
+        repoBrowsingControl.expectAndReturn( repoBrowsing.getRepositoryId( "", observableRepoIds, "org.apache.archiva", "archiva-webapp", "1.0" ), "repo1.mirror" );
         
         userReposControl.replay();
         searchControl.replay();
@@ -152,12 +154,13 @@ public class SearchServiceImplTest
         assertNotNull( artifacts );
         assertEquals( 1, artifacts.size() );
           
-        Artifact hit = artifacts.get( 0 );
-        assertEquals( "org.apache.archiva", hit.getGroupId() );
-        assertEquals( "archiva-webapp", hit.getArtifactId() );
-        assertEquals( "1.0", hit.getVersion() );
-        assertEquals( "war", hit.getType() );
-        assertEquals( "repo1.mirror", hit.getRepositoryId() );
+        Artifact artifact = artifacts.get( 0 );
+        assertEquals( "org.apache.archiva", artifact.getGroupId() );
+        assertEquals( "archiva-webapp", artifact.getArtifactId() );
+        assertEquals( "1.0", artifact.getVersion() );
+        assertEquals( "war", artifact.getType() );
+        assertNotNull( "Repository should not be null!", artifact.getRepositoryId() );
+        assertEquals( "repo1.mirror", artifact.getRepositoryId() );
     }
     
     // returned model is null!
@@ -175,7 +178,7 @@ public class SearchServiceImplTest
         versions.add( "1.0" );
         
         SearchResultHit resultHit = new SearchResultHit();
-        resultHit.setRepositoryId( "repo1.mirror" );
+        resultHit.setRepositoryId( null );
         resultHit.setGroupId( "org.apache.archiva" );
         resultHit.setArtifactId( "archiva-test" );
         resultHit.setVersions( versions );
@@ -190,6 +193,8 @@ public class SearchServiceImplTest
                                                                                           resultHit.getArtifactId() ) ), null );
           
         repoBrowsingControl.expectAndReturn( repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), null );
+        
+        repoBrowsingControl.expectAndReturn( repoBrowsing.getRepositoryId( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), null );
         
         userReposControl.replay();
         searchControl.replay();
@@ -206,12 +211,12 @@ public class SearchServiceImplTest
         assertNotNull( artifacts );
         assertEquals( 1, artifacts.size() );
           
-        Artifact hit = artifacts.get( 0 );
-        assertEquals( "org.apache.archiva", hit.getGroupId() );
-        assertEquals( "archiva-test", hit.getArtifactId() );
-        assertEquals( "1.0", hit.getVersion() );
-        assertEquals( "jar", hit.getType() );
-        assertEquals( "repo1.mirror", hit.getRepositoryId() );
+        Artifact artifact = artifacts.get( 0 );
+        assertEquals( "org.apache.archiva", artifact.getGroupId() );
+        assertEquals( "archiva-test", artifact.getArtifactId() );
+        assertEquals( "1.0", artifact.getVersion() );
+        assertEquals( "jar", artifact.getType() );
+        assertNull( "Repository should be null since the model was not found in the database!", artifact.getRepositoryId() );
     }
     
     /*
@@ -290,7 +295,7 @@ public class SearchServiceImplTest
         resultHit.setGroupId( "org.apache.archiva" );
         resultHit.setArtifactId( "archiva-test" );
         resultHit.setVersions( versions );
-        resultHit.setRepositoryId("repo1.mirror");
+        resultHit.setRepositoryId( null );
         
         results.addHit( SearchUtil.getHitId( resultHit.getGroupId(), resultHit.getArtifactId() ), resultHit );
     
@@ -309,6 +314,8 @@ public class SearchServiceImplTest
           
         repoBrowsingControl.expectAndReturn( repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), model );
         
+        repoBrowsingControl.expectAndReturn( repoBrowsing.getRepositoryId( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), "repo1.mirror" );
+        
         userReposControl.replay();
         searchControl.replay();
         archivaDAOControl.replay();
@@ -323,6 +330,14 @@ public class SearchServiceImplTest
       
         assertNotNull( artifacts );
         assertEquals( 1, artifacts.size() );
+        
+        Artifact artifact = artifacts.get( 0 );
+        assertEquals( "org.apache.archiva", artifact.getGroupId() );
+        assertEquals( "archiva-test", artifact.getArtifactId() );
+        assertEquals( "1.0", artifact.getVersion() );
+        assertEquals( "jar", artifact.getType() );
+        assertNotNull( "Repository should not be null!", artifact.getRepositoryId() );
+        assertEquals( "repo1.mirror", artifact.getRepositoryId() );
     }
     
     public void testQuickSearchNoResults( )

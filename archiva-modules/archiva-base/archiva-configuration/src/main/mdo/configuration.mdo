@@ -476,6 +476,13 @@
           <defaultValue>true</defaultValue>
         </field>
         <field>
+          <name>blockRedeployments</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>True if re-deployment of artifacts already in the repository will be blocked.</description>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
           <name>snapshots</name>
           <version>1.0.0+</version>
           <type>boolean</type>

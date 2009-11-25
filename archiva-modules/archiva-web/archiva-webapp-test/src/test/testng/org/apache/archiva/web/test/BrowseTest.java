@@ -19,6 +19,8 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.archiva.web.test.parent.AbstractBrowseTest;
 import org.testng.annotations.Test;
 
@@ -42,4 +44,71 @@ public class BrowseTest
 		assertTextPresent( "Artifacts" );
 	}
 
+    // MRM-1278
+    public void testCorrectRepositoryInBrowse()
+    {
+        File artifact =
+            new File( getBasedir(),
+                      "/src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar" );                     
+                
+        String releasesRepo = getProperty( "RELEASES_REPOSITORY" );
+        
+        // create releases repository first
+        goToRepositoriesPage();
+        clickLinkWithText( "Add" );
+        addManagedRepository( getProperty( "RELEASES_REPOSITORY" ), "Releases Repository",
+                              new File( getBasedir(), "target/repository/releases" ).getPath(), "", "Maven 2.x Repository",
+                              "0 0 * * * ?", "", "" );        
+        assertTextPresent( "Releases Repository" );
+        
+        String snapshotsRepo = getProperty( "SNAPSHOTS_REPOSITORY" );
+
+        // upload a snapshot artifact to repository 'releases'        
+        addArtifact( "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar", artifact.getPath(),
+                     releasesRepo );
+        assertTextPresent( "Artifact 'archiva:archiva-webapp:1.0-SNAPSHOT' was successfully deployed to repository '" + releasesRepo + "'" );
+
+        goToBrowsePage();
+        assertBrowsePage();
+        assertGroupsPage( "archiva/" );
+        assertArtifactsPage( "archiva-webapp/" );
+        assertArtifactInfoPage( "1.0-SNAPSHOT/", releasesRepo, "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar" );
+
+        // upload a snapshot artifact to repository 'snapshots'        
+        addArtifact( "continuum", "continuum-core", "1.0-SNAPSHOT", "jar", artifact.getPath(),
+                     snapshotsRepo );
+        assertTextPresent( "Artifact 'continuum:continuum-core:1.0-SNAPSHOT' was successfully deployed to repository '" + snapshotsRepo + "'" );
+
+        goToBrowsePage();
+        assertBrowsePage();
+        assertGroupsPage( "continuum/" );
+        assertArtifactsPage( "continuum-core/" );
+        assertArtifactInfoPage( "1.0-SNAPSHOT/", snapshotsRepo, "continuum", "continuum-core", "1.0-SNAPSHOT", "jar" );
+    }
+
+    private void assertArtifactInfoPage( String version, String artifactInfoRepositoryId, String artifactInfoGroupId,
+                                         String artifactInfoArtifactId, String artifactInfoVersion, String artifactInfoPackaging )
+    {
+        clickLinkWithText( version );
+        assertPage( "Apache Archiva \\ Browse Repository" );
+        assertTextPresent( artifactInfoRepositoryId );
+        assertTextPresent( artifactInfoGroupId );
+        assertTextPresent( artifactInfoArtifactId );
+        assertTextPresent( artifactInfoVersion );
+        assertTextPresent( artifactInfoPackaging );
+    }
+
+    private void assertArtifactsPage( String artifactId )
+    {
+        clickLinkWithText( artifactId );
+        assertPage( "Apache Archiva \\ Browse Repository" );
+        assertTextPresent( "Versions" );
+    }
+
+    private void assertGroupsPage( String groupId )
+    {
+        clickLinkWithText( groupId );
+        assertPage( "Apache Archiva \\ Browse Repository" );
+        assertTextPresent( "Artifacts" );
+    }
 }

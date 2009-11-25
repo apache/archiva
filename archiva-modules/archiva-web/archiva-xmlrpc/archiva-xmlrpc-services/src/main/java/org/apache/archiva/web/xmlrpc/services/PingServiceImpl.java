@@ -19,9 +19,9 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
-import org.apache.archiva.web.xmlrpc.api.TestService;
+import org.apache.archiva.web.xmlrpc.api.PingService;
 
-public class PingServiceImpl implements TestService
+public class PingServiceImpl implements PingService
 {
     public String ping()
     {

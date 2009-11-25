@@ -23,6 +23,10 @@ import com.opensymphony.xwork2.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
+import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
@@ -32,7 +36,10 @@ import org.easymock.MockControl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * EditManagedRepositoryActionTest 
@@ -51,6 +58,14 @@ public class EditManagedRepositoryActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
+
+    private MockControl archivaDaoControl;
+
+    private ArchivaDAO archivaDao;
+
+    private MockControl repoContentStatsDaoControl;
+
+    private RepositoryContentStatisticsDAO repoContentStatsDao;
 
     private static final String REPO_ID = "repo-ident";
 
@@ -77,6 +92,13 @@ public class EditManagedRepositoryActionTest
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
         location = getTestFile( "target/test/location" );
+
+        archivaDaoControl = MockControl.createControl( ArchivaDAO.class );
+        archivaDao = (ArchivaDAO) archivaDaoControl.getMock();
+        action.setArchivaDAO( archivaDao );
+
+        repoContentStatsDaoControl = MockControl.createControl( RepositoryContentStatisticsDAO.class );
+        repoContentStatsDao = (RepositoryContentStatisticsDAO) repoContentStatsDaoControl.getMock();
     }
 
     public void testSecureActionBundle()
@@ -157,6 +179,66 @@ public class EditManagedRepositoryActionTest
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
     }
+
+    public void testEditRepositoryLocationChanged()
+        throws Exception
+    {
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
+        roleManagerControl.setReturnValue( false );
+        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
+        roleManagerControl.setVoidCallable();
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
+        roleManagerControl.setReturnValue( false );
+        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
+        roleManagerControl.setVoidCallable();
+
+        roleManagerControl.replay();
+
+        Configuration configuration = createConfigurationForEditing( createRepository() );
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration );
+
+        archivaConfiguration.save( configuration );
+
+        archivaConfigurationControl.replay();
+
+        archivaDaoControl.expectAndReturn( archivaDao.getRepositoryContentStatisticsDAO(), repoContentStatsDao );
+
+        archivaDaoControl.replay();
+
+        repoContentStatsDao.queryRepositoryContentStatistics(
+                new RepositoryContentStatisticsByRepositoryConstraint( REPO_ID ) );
+        repoContentStatsDaoControl.setMatcher( MockControl.ALWAYS_MATCHER );
+
+        List<RepositoryContentStatistics> repoStats = createRepositoryContentStatisticsList();
+        repoContentStatsDaoControl.setReturnValue( repoStats );
+
+        repoContentStatsDao.deleteRepositoryContentStatistics( repoStats.get( 0 ) );
+        repoContentStatsDaoControl.setVoidCallable();
+        repoContentStatsDao.deleteRepositoryContentStatistics( repoStats.get( 1 ) );
+        repoContentStatsDaoControl.setVoidCallable();
+
+        repoContentStatsDaoControl.replay();
+        
+        action.setRepoid( REPO_ID );
+        action.prepare();
+        assertEquals( REPO_ID, action.getRepoid() );
+        
+        ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
+        populateRepository( repository );
+        repository.setLocation( new File( "target/test/location/new" ).getCanonicalPath() );
+        action.setRepository( repository );
+        String status = action.commit();
+        assertEquals( Action.SUCCESS, status );
+        assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
+
+        roleManagerControl.verify();
+        archivaConfigurationControl.verify();
+        archivaDaoControl.verify();
+        repoContentStatsDaoControl.verify();
+    }
     
     private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
                                          ManagedRepositoryConfiguration actualRepository )
@@ -207,4 +289,29 @@ public class EditManagedRepositoryActionTest
         repository.setDeleteReleasedSnapshots( true );
     }
 
+    private List<RepositoryContentStatistics> createRepositoryContentStatisticsList()
+    {
+        List<RepositoryContentStatistics> repoStatsList = new ArrayList<RepositoryContentStatistics>();
+
+        repoStatsList.add( createRepositoryContentStatistics() );
+        repoStatsList.add( createRepositoryContentStatistics() );
+
+        return repoStatsList;
+    }
+
+    private RepositoryContentStatistics createRepositoryContentStatistics()
+    {
+        RepositoryContentStatistics repoStats = new RepositoryContentStatistics();
+        repoStats.setRepositoryId( REPO_ID );
+        repoStats.setDuration( 1000 );
+        repoStats.setTotalArtifactCount( 100 );
+        repoStats.setTotalSize( 10 );
+        repoStats.setTotalFileCount( 10 );
+        repoStats.setTotalProjectCount( 2 );
+        repoStats.setTotalGroupCount( 1 );
+        repoStats.setNewFileCount( 3 );
+        repoStats.setWhenGathered( new Date( System.currentTimeMillis() ) );
+
+        return repoStats;
+    }
 }

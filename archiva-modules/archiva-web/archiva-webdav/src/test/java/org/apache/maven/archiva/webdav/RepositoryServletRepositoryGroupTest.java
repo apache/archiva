@@ -90,8 +90,8 @@ public class RepositoryServletRepositoryGroupTest
         repoRootFirst = new File( appserverBase, "data/repositories/" + MANAGED_REPO_FIRST );
         repoRootLast = new File( appserverBase, "data/repositories/" + MANAGED_REPO_LAST );
         
-        configuration.addManagedRepository( createManagedRepository( MANAGED_REPO_FIRST, "First Test Repo", repoRootFirst ) );
-        configuration.addManagedRepository( createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast ) );
+        configuration.addManagedRepository( createManagedRepository( MANAGED_REPO_FIRST, "First Test Repo", repoRootFirst, true ) );
+        configuration.addManagedRepository( createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast, true ) );
         
         List<String> managedRepoIds = new ArrayList<String>();
         managedRepoIds.add( MANAGED_REPO_FIRST );
@@ -101,11 +101,11 @@ public class RepositoryServletRepositoryGroupTest
         
         // Create the repository group with an invalid managed repository
         repoRootInvalid = new File( appserverBase, "data/repositories/" + MANAGED_REPO_INVALID );
-        ManagedRepositoryConfiguration managedRepositoryConfiguration = createManagedRepository( MANAGED_REPO_INVALID, "Invalid Test Repo", repoRootInvalid );
+        ManagedRepositoryConfiguration managedRepositoryConfiguration = createManagedRepository( MANAGED_REPO_INVALID, "Invalid Test Repo", repoRootInvalid, true );
         
-        configuration.addManagedRepository( createManagedRepository( MANAGED_REPO_FIRST, "First Test Repo", repoRootFirst ) );
+        configuration.addManagedRepository( createManagedRepository( MANAGED_REPO_FIRST, "First Test Repo", repoRootFirst, true ) );
         configuration.addManagedRepository( managedRepositoryConfiguration );
-        configuration.addManagedRepository( createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast ) );
+        configuration.addManagedRepository( createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast, true ) );
         
         List<String> invalidManagedRepoIds = new ArrayList<String>();
         invalidManagedRepoIds.add( MANAGED_REPO_FIRST );

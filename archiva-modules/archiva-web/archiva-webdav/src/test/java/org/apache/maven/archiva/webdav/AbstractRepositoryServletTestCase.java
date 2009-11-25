@@ -119,12 +119,14 @@ public abstract class AbstractRepositoryServletTestCase
                              response.getResponseCode() );
     }
 
-    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
+    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location, boolean blockRedeployments )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( id );
         repo.setName( name );
         repo.setLocation( location.getAbsolutePath() );
+        repo.setBlockRedeployments( blockRedeployments );
+        
         return repo;
     }
 
@@ -182,7 +184,7 @@ public abstract class AbstractRepositoryServletTestCase
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
         Configuration config = archivaConfiguration.getConfiguration();
 
-        config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
+        config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
         saveConfiguration( archivaConfiguration );
 
         CacheManager.getInstance().removeCache( "url-failures-cache" );

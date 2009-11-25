@@ -67,6 +67,9 @@ Understanding Repository Configuration of Apache Archiva
   	
   * <releases included> - specifies whether there are released artifacts in the repository.
   
+  * <block re-deployment of released artifacts> - specifies whether released artifacts that are already existing in the repository can be overwritten. 
+     Note that this only take effects for non-snapshot deployments.
+  
   * <snapshots included> - specifies whether there are snapshot artifacts in the repository.
   
   * <scannable> - specifies whether the repository can be scanned, meaning it is a local repository which can be indexed, browsed,
