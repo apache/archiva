@@ -54,7 +54,8 @@
     <constructor-arg ref="databaseConsumers"/>
     <constructor-arg ref="repositoryContentFactory"/>
     <constructor-arg ref="artifactDAO#jdo"/>
-    <constructor-arg ref="archivaTaskScheduler"/>
+    <constructor-arg ref="archivaTaskScheduler#database"/>
+    <constructor-arg ref="archivaTaskScheduler#repository"/>
     <constructor-arg>
       <bean class="org.apache.maven.archiva.repository.events.RepositoryListenerFactoryBean" />
     </constructor-arg>       
