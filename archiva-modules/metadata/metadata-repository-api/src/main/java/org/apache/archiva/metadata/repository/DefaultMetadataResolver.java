@@ -21,8 +21,8 @@ package org.apache.archiva.metadata.repository;
 
 import java.util.Collection;
 
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver"
@@ -36,8 +36,8 @@ public class DefaultMetadataResolver
     private MetadataRepository metadataRepository;
 
     /**
-     * TODO: this needs to be configurable based on storage type, and availability of proxy module
-     * TODO: could be a different type since we need methods to modify the storage metadata
+     * FIXME: this needs to be configurable based on storage type, and availability of proxy module
+     *        ... could be a different type since we need methods to modify the storage metadata
      * @plexus.requirement role-hint="maven2"
      */
     private MetadataResolver storageResolver;
