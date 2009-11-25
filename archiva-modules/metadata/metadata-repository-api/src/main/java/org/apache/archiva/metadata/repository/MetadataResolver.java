@@ -19,21 +19,16 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
+import java.util.Collection;
+
 import org.apache.archiva.metadata.model.ProjectBuildMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 
-public interface MetadataRepository
-    extends MetadataResolver
+public interface MetadataResolver
 {
-    /**
-     * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
-     * @param project the project metadata to create or update
-     */
-    void updateProject( String repoId, ProjectMetadata project );
+    ProjectMetadata getProject( String repoId, String namespace, String projectId );
 
-    void updateArtifact( String repoId, String namespace, String projectId, String buildId, ArtifactMetadata artifactMeta );
+    ProjectBuildMetadata getProjectBuild( String repoId, String namespace, String projectId, String buildId );
 
-    void updateBuild( String repoId, String namespace, String projectId, ProjectBuildMetadata build );
-
+    Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String buildId );
 }

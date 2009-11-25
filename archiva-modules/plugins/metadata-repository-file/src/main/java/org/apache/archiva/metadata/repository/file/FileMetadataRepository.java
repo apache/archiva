@@ -43,6 +43,7 @@ public class FileMetadataRepository
     implements MetadataRepository
 {
     /**
+     * TODO: this isn't suitable for production use
      * @plexus.configuration
      */
     private File directory = new File( System.getProperty( "user.home" ), ".archiva-metadata" );

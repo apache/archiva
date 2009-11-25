@@ -25,7 +25,7 @@ import java.util.List;
 
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.metadata.model.ProjectBuildMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -71,7 +71,7 @@ public class ShowArtifactAction
     /**
      * @plexus.requirement
      */
-    private MetadataRepository metadataRepository;
+    private MetadataResolver metadataResolver;
 
     /* .\ Exposed Output Objects \.__________________________________ */
 
@@ -112,16 +112,16 @@ public class ShowArtifactAction
         {
             if ( build == null )
             {
-                // TODO: we don't really want the implementation being that intelligent - so another resolver to do
-                //  the "just-in-time" nature of picking up the metadata (if appropriate for the repository type) if not
-                //  found in the content repository is needed here
-                build = metadataRepository.getProjectBuild( repoId, groupId, artifactId, version );
+                // we don't really want the implementation being that intelligent - so another resolver to do the
+                // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
+                build = metadataResolver.getProjectBuild( repoId, groupId, artifactId, version );
                 if ( build != null )
                 {
                     repositoryId = repoId;      
                 }
             }
-            snapshotVersions.addAll( metadataRepository.getArtifactVersions( repoId, groupId, artifactId, version ) );
+
+            snapshotVersions.addAll( metadataResolver.getArtifactVersions( repoId, groupId, artifactId, version ) );
             snapshotVersions.remove( version );
         }
 
@@ -365,8 +365,8 @@ public class ShowArtifactAction
         this.snapshotVersions = snapshotVersions;
     }
 
-    public MetadataRepository getMetadataRepository()
+    public MetadataResolver getMetadataRepository()
     {
-        return metadataRepository;
+        return metadataResolver;
     }
 }

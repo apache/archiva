@@ -25,32 +25,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectBuildMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolver;
 
-public class MemoryMetadataRepository
-    implements MetadataRepository
+public class TestMetadataResolver
+    implements MetadataResolver
 {
     private Map<String, ProjectBuildMetadata> projectBuilds = new HashMap<String, ProjectBuildMetadata>();
 
     private Map<String, List<String>> artifactVersions = new HashMap<String, List<String>>();
-
-    public void updateProject( String repoId, ProjectMetadata project )
-    {
-        throw new UnsupportedOperationException( );
-    }
-
-    public void updateArtifact( String repoId, String namespace, String projectId, String buildId, ArtifactMetadata artifactMeta )
-    {
-        throw new UnsupportedOperationException( );
-    }
-
-    public void updateBuild( String repoId, String namespace, String projectId, ProjectBuildMetadata build )
-    {
-        throw new UnsupportedOperationException( );
-    }
 
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {

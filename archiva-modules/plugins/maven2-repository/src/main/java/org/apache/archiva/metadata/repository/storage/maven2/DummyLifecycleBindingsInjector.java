@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository;
+package org.apache.archiva.metadata.repository.storage.maven2;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,21 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
-import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.building.ModelBuildingRequest;
+import org.apache.maven.model.building.ModelProblemCollector;
+import org.apache.maven.model.plugin.LifecycleBindingsInjector;
 
-public interface MetadataRepository
-    extends MetadataResolver
+/**
+ * Required as plexus-spring doesn't understand the optional = true argument added to Plexus and used here.
+ *
+ * @plexus.component role="org.apache.maven.model.plugin.LifecycleBindingsInjector"
+ */
+public class DummyLifecycleBindingsInjector
+    implements LifecycleBindingsInjector
 {
-    /**
-     * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
-     * @param project the project metadata to create or update
-     */
-    void updateProject( String repoId, ProjectMetadata project );
-
-    void updateArtifact( String repoId, String namespace, String projectId, String buildId, ArtifactMetadata artifactMeta );
-
-    void updateBuild( String repoId, String namespace, String projectId, ProjectBuildMetadata build );
-
+    public void injectLifecycleBindings( Model model, ModelBuildingRequest modelBuildingRequest, ModelProblemCollector modelProblemCollector )
+    {
+        // left intentionally blank
+    }
 }

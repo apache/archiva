@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository;
+package org.apache.archiva.metadata.repository.storage;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,11 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
-import org.apache.archiva.metadata.model.ProjectMetadata;
+import java.io.File;
 
-public interface MetadataRepository
-    extends MetadataResolver
+public interface RepositoryPathTranslator
 {
-    /**
-     * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
-     * @param project the project metadata to create or update
-     */
-    void updateProject( String repoId, ProjectMetadata project );
+    File toFile( File basedir, String namespace, String projectId, String buildId, String filename );
 
-    void updateArtifact( String repoId, String namespace, String projectId, String buildId, ArtifactMetadata artifactMeta );
-
-    void updateBuild( String repoId, String namespace, String projectId, ProjectBuildMetadata build );
-
+    String toPath( String namespace, String projectId, String buildId, String filename );
 }
