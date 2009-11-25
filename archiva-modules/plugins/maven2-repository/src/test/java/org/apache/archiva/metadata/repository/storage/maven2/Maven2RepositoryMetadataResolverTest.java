@@ -19,6 +19,9 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import java.util.Arrays;
+
+import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -32,6 +35,12 @@ public class Maven2RepositoryMetadataResolverTest
     private Maven2RepositoryMetadataResolver resolver;
 
     private static final String TEST_REPO_ID = "test";
+
+    private static final String ASF_SCM_CONN_BASE = "scm:svn:http://svn.apache.org/repos/asf/";
+
+    private static final String ASF_SCM_DEV_CONN_BASE = "scm:svn:https://svn.apache.org/repos/asf/";
+
+    private static final String ASF_SCM_VIEWVC_BASE = "http://svn.apache.org/viewvc/";
 
     public void setUp()
         throws Exception
@@ -56,7 +65,28 @@ public class Maven2RepositoryMetadataResolverTest
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
         assertEquals( "http://archiva.apache.org/ref/1.2.1/archiva-base/archiva-common", metadata.getUrl() );
-        // TODO: more testing
+        assertEquals( "org.apache.archiva", facet.getParent().getGroupId() );
+        assertEquals( "archiva-base", facet.getParent().getArtifactId() );
+        assertEquals( "1.2.1", facet.getParent().getVersion() );
+        assertEquals( "archiva-common", facet.getArtifactId() );
+        assertEquals( "org.apache.archiva", facet.getGroupId() );
+        assertEquals( "continuum", metadata.getCiManagement().getSystem() );
+        assertEquals( "http://vmbuild.apache.org/continuum", metadata.getCiManagement().getUrl() );
+        assertNotNull( metadata.getDescription() );
+        // TODO: this would be better
+//        assertEquals(
+//            "Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.",
+//            metadata.getDescription() );
+        assertEquals( "1.2.1", metadata.getId() );
+        assertEquals( "jira", metadata.getIssueManagement().getSystem() );
+        assertEquals( "http://jira.codehaus.org/browse/MRM", metadata.getIssueManagement().getUrl() );
+        checkApacheLicense( metadata );
+        assertEquals( "Archiva Base :: Common", metadata.getName() );
+        String path = "archiva/tags/archiva-1.2.1/archiva-modules/archiva-base/archiva-common";
+        assertEquals( ASF_SCM_CONN_BASE + path, metadata.getScm().getConnection() );
+        assertEquals( ASF_SCM_DEV_CONN_BASE + path, metadata.getScm().getDeveloperConnection() );
+        assertEquals( ASF_SCM_VIEWVC_BASE + path, metadata.getScm().getUrl() );
+        checkOrganizationApache( metadata );
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
@@ -66,6 +96,39 @@ public class Maven2RepositoryMetadataResolverTest
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "pom", facet.getPackaging() );
         assertEquals( "http://www.apache.org/", metadata.getUrl() );
-        // TODO: more testing
+        assertNull( facet.getParent() );
+        assertEquals( "org.apache", facet.getGroupId() );
+        assertEquals( "apache", facet.getArtifactId() );
+        assertNull( metadata.getCiManagement() );
+        assertNotNull( metadata.getDescription() );
+        // TODO: this would be better
+//        assertEquals(
+//            "The Apache Software Foundation provides support for the Apache community of open-source software projects. " +
+//                "The Apache projects are characterized by a collaborative, consensus based development process, an open " +
+//                "and pragmatic software license, and a desire to create high quality software that leads the way in its " +
+//                "field. We consider ourselves not simply a group of projects sharing a server, but rather a community of " +
+//                "developers and users.", metadata.getDescription() );
+        assertEquals( "5-SNAPSHOT", metadata.getId() );
+        assertNull( metadata.getIssueManagement() );
+        checkApacheLicense( metadata );
+        assertEquals( "The Apache Software Foundation", metadata.getName() );
+        String path = "maven/pom/trunk/asf";
+        assertEquals( ASF_SCM_CONN_BASE + path, metadata.getScm().getConnection() );
+        assertEquals( ASF_SCM_DEV_CONN_BASE + path, metadata.getScm().getDeveloperConnection() );
+        assertEquals( ASF_SCM_VIEWVC_BASE + path, metadata.getScm().getUrl() );
+        checkOrganizationApache( metadata );
+    }
+
+    private void checkApacheLicense( ProjectVersionMetadata metadata )
+    {
+        assertEquals( Arrays.asList( new License( "The Apache Software License, Version 2.0",
+                                                  "http://www.apache.org/licenses/LICENSE-2.0.txt" ) ),
+                      metadata.getLicenses() );
+    }
+
+    private void checkOrganizationApache( ProjectVersionMetadata metadata )
+    {
+        assertEquals( "The Apache Software Foundation", metadata.getOrganization().getName() );
+        assertEquals( "http://www.apache.org/", metadata.getOrganization().getUrl() );
     }
 }
