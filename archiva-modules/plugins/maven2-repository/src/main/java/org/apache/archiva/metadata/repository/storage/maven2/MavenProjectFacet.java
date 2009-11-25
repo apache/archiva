@@ -19,6 +19,9 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.archiva.metadata.model.ProjectVersionFacet;
 
 public class MavenProjectFacet
@@ -77,5 +80,20 @@ public class MavenProjectFacet
     public String getFacetId()
     {
         return FACET_ID;
+    }
+
+    public Map<String, String> toProperties()
+    {
+        Map<String, String> properties = new HashMap<String,String>();
+        properties.put( getFacetId() + ":groupId", groupId );
+        properties.put( getFacetId() + ":artifactId", artifactId );
+        properties.put( getFacetId() + ":packaging", packaging );
+        if ( parent != null )
+        {
+            properties.put( getFacetId() + ":parent.groupId", parent.getGroupId() );
+            properties.put( getFacetId() + ":parent.artifactId", parent.getArtifactId() );
+            properties.put( getFacetId() + ":parent.version", parent.getVersion() );
+        }
+        return properties;
     }
 }

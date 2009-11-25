@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.model;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class ProjectVersionMetadata
 
     private List<License> licenses;
 
-    private Map<String, ProjectVersionFacet> facets;
+    private Map<String, ProjectVersionFacet> facets = new HashMap<String, ProjectVersionFacet>();;
 
     public String getId()
     {
@@ -147,15 +148,21 @@ public class ProjectVersionMetadata
 
     public void addFacet( ProjectVersionFacet mavenProjectFacet )
     {
-        if ( this.facets == null )
-        {
-            this.facets = new HashMap<String, ProjectVersionFacet>();
-        }
         this.facets.put( mavenProjectFacet.getFacetId(), mavenProjectFacet );
     }
 
     public ProjectVersionFacet getFacet( String facetId )
     {
-        return this.facets != null ? this.facets.get( facetId ) : null;
+        return this.facets.get( facetId );
+    }
+
+    public Collection<ProjectVersionFacet> getAllFacets()
+    {
+        return this.facets.values();
+    }
+
+    public Collection<String> getAllFacetIds()
+    {
+        return this.facets.keySet();
     }
 }
