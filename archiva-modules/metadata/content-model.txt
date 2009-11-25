@@ -24,7 +24,7 @@ The following is the intended content model for the metadata content repository:
         |                       |   |   |-- sha1=
         |                       |   |   |-- size=
         |                       |   |   |-- updated=
-        |                       |   |   `-- version= -- the actual version of the file
+        |                       |   |   `-- version= -- the actual version of the file, 1.0-20091120.012345-1
         |                       |   |-- created=
         |                       |   |-- description=
         |                       |   |-- name=
@@ -52,3 +52,7 @@ file in the original storageUrl when it is requested
 splitting the namespace on '.', and also allowing '.' in the project identifier without splitting
 
 5) properties with '.' may be nested in other representations such as Java models or XML, if appropriate
+
+6) we only keep one set of project information for a "version" - this differs from Maven's storage of one POM per snapshot. The Maven 2 module will
+   take the latest. Those that need Maven's behaviour should retrieve the POM directly. Implementations are also free to store as much information
+   as desired within the artifact node in addition to whatever is shared in the project version node.

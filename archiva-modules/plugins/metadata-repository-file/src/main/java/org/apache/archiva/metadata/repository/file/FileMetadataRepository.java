@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.IOUtils;
 
@@ -44,6 +44,7 @@ public class FileMetadataRepository
 {
     /**
      * TODO: this isn't suitable for production use
+     *
      * @plexus.configuration
      */
     private File directory = new File( System.getProperty( "user.home" ), ".archiva-metadata" );
@@ -67,16 +68,17 @@ public class FileMetadataRepository
         }
     }
 
-    public void updateBuild( String repoId, String namespace, String projectId, ProjectBuildMetadata build )
+    public void updateProjectVersion( String repoId, String namespace, String projectId,
+                                      ProjectVersionMetadata versionMetadata )
     {
         File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId );
 
         Properties properties = new Properties();
-        properties.setProperty( "id", build.getId() );
+        properties.setProperty( "id", versionMetadata.getId() );
 
         try
         {
-            writeProperties( properties, new File( directory, build.getId() ) );
+            writeProperties( properties, new File( directory, versionMetadata.getId() ) );
         }
         catch ( IOException e )
         {
@@ -85,10 +87,10 @@ public class FileMetadataRepository
         }
     }
 
-    public void updateArtifact( String repoId, String namespace, String projectId, String buildId,
+    public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifact )
     {
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + buildId );
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readProperties( directory );
 
@@ -144,20 +146,22 @@ public class FileMetadataRepository
         return project;
     }
 
-    public ProjectBuildMetadata getProjectBuild( String repoId, String groupId, String projectId, String buildId )
+    public ProjectVersionMetadata getProjectVersion( String repoId, String groupId, String projectId,
+                                                     String projectVersion )
     {
-        File directory = new File( this.directory, repoId + "/" + projectId + "/" + buildId );
+        File directory = new File( this.directory, repoId + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readProperties( directory );
 
-        ProjectBuildMetadata build = new ProjectBuildMetadata();
-        build.setId( properties.getProperty( "id" ) );
-        return build;
+        ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
+        versionMetadata.setId( properties.getProperty( "id" ) );
+        return versionMetadata;
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String buildId )
+    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
+                                                   String projectVersion )
     {
-        File directory = new File( this.directory, repoId + "/" + projectId + "/" + buildId );
+        File directory = new File( this.directory, repoId + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readProperties( directory );
 

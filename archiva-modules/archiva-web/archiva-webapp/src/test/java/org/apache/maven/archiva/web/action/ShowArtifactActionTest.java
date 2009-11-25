@@ -28,7 +28,7 @@ import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.Organization;
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
@@ -111,7 +111,7 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueRelease()
     {
-        metadataResolver.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
@@ -134,7 +134,7 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueSnapshot()
     {
-        metadataResolver.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_SNAPSHOT_VERSION ) );
         metadataResolver.setArtifactVersions( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
                                                 ALL_TEST_SNAPSHOT_VERSIONS );
@@ -164,7 +164,7 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueSnapshotTimestamped()
     {
-        metadataResolver.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_TS_SNAPSHOT_VERSION ) );
         metadataResolver.setArtifactVersions( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_TS_SNAPSHOT_VERSION,
                                                 ALL_TEST_SNAPSHOT_VERSIONS );
@@ -220,7 +220,7 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactNotInObservableRepos()
     {
-        metadataResolver.setProjectBuild( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
@@ -235,7 +235,7 @@ public class ShowArtifactActionTest
     public void testGetArtifactOnlySeenInSecondObservableRepo()
     {
         setObservableRepos( Arrays.asList( OTHER_TEST_REPO, TEST_REPO ) );
-        metadataResolver.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
@@ -259,9 +259,9 @@ public class ShowArtifactActionTest
     public void testGetArtifactSeenInBothObservableRepo()
     {
         setObservableRepos( Arrays.asList( TEST_REPO, OTHER_TEST_REPO ) );
-        metadataResolver.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_VERSION ) );
-        metadataResolver.setProjectBuild( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
@@ -285,9 +285,9 @@ public class ShowArtifactActionTest
     public void testGetArtifactCanOnlyObserveInOneOfTwoRepos()
     {
         setObservableRepos( Arrays.asList( TEST_REPO ) );
-        metadataResolver.setProjectBuild( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_VERSION ) );
-        metadataResolver.setProjectBuild( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
@@ -386,9 +386,9 @@ public class ShowArtifactActionTest
         assertTrue( action.getActionMessages().isEmpty() );
     }
 
-    private ProjectBuildMetadata createProjectModel( String version )
+    private ProjectVersionMetadata createProjectModel( String version )
     {
-        ProjectBuildMetadata model = new ProjectBuildMetadata();
+        ProjectVersionMetadata model = new ProjectVersionMetadata();
         model.setId( version );
         model.setUrl( TEST_URL );
         model.setName( TEST_NAME );

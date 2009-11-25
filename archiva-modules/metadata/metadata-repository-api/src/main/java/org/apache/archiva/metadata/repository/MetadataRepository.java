@@ -20,20 +20,23 @@ package org.apache.archiva.metadata.repository;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 
 public interface MetadataRepository
     extends MetadataResolver
 {
     /**
      * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
+     *
      * @param project the project metadata to create or update
      */
     void updateProject( String repoId, ProjectMetadata project );
 
-    void updateArtifact( String repoId, String namespace, String projectId, String buildId, ArtifactMetadata artifactMeta );
+    void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
+                         ArtifactMetadata artifactMeta );
 
-    void updateBuild( String repoId, String namespace, String projectId, ProjectBuildMetadata build );
+    void updateProjectVersion( String repoId, String namespace, String projectId,
+                               ProjectVersionMetadata versionMetadata );
 
 }

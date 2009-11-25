@@ -33,18 +33,18 @@ public class Maven2RepositoryPathTranslator
 
     private static final char GROUP_SEPARATOR = '.';
 
-    public File toFile( File basedir, String namespace, String projectId, String buildId, String filename )
+    public File toFile( File basedir, String namespace, String projectId, String projectVersion, String filename )
     {
-        return new File( basedir, toPath( namespace, projectId, buildId, filename ) );
+        return new File( basedir, toPath( namespace, projectId, projectVersion, filename ) );
     }
 
-    public String toPath( String namespace, String projectId, String buildId, String filename )
+    public String toPath( String namespace, String projectId, String projectVersion, String filename )
     {
         StringBuilder path = new StringBuilder();
 
         path.append( formatAsDirectory( namespace ) ).append( PATH_SEPARATOR );
         path.append( projectId ).append( PATH_SEPARATOR );
-        path.append( buildId ).append( PATH_SEPARATOR );
+        path.append( projectVersion ).append( PATH_SEPARATOR );
         path.append( filename );
 
         return path.toString();

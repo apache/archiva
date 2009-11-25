@@ -19,10 +19,10 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ProjectBuildFacet;
+import org.apache.archiva.metadata.model.ProjectVersionFacet;
 
 public class MavenProjectFacet
-    implements ProjectBuildFacet
+    implements ProjectVersionFacet
 {
     private String groupId;
 

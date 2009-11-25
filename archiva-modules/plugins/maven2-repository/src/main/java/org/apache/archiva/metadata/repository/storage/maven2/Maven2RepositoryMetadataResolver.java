@@ -22,7 +22,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import java.io.File;
 import java.util.Collection;
 
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -60,13 +60,16 @@ public class Maven2RepositoryMetadataResolver
         throw new UnsupportedOperationException();
     }
 
-    public ProjectBuildMetadata getProjectBuild( String repoId, String namespace, String projectId, String buildId )
+    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
     {
+        // TODO: artifactVersion translation
+
         ManagedRepositoryConfiguration repositoryConfiguration =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
 
         File basedir = new File( repositoryConfiguration.getLocation() );
-        File file = pathTranslator.toFile( basedir, namespace, projectId, buildId, projectId + "-" + buildId + ".pom" );
+        File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion, projectId + "-" +
+            projectVersion + ".pom" );
 
         ModelBuildingRequest req = new DefaultModelBuildingRequest();
         req.setProcessPlugins( false );
@@ -96,7 +99,7 @@ public class Maven2RepositoryMetadataResolver
             parent.setVersion( model.getParent().getVersion() );
             facet.setParent( parent );
         }
-        ProjectBuildMetadata metadata = new ProjectBuildMetadata();
+        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setUrl( model.getUrl() );
         metadata.addFacet( facet );
         // TODO: convert project
@@ -104,7 +107,7 @@ public class Maven2RepositoryMetadataResolver
         return metadata;
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String buildId )
+    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion )
     {
         throw new UnsupportedOperationException();
     }

@@ -21,14 +21,14 @@ package org.apache.archiva.metadata.repository;
 
 import java.util.Collection;
 
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 
 public interface MetadataResolver
 {
     ProjectMetadata getProject( String repoId, String namespace, String projectId );
 
-    ProjectBuildMetadata getProjectBuild( String repoId, String namespace, String projectId, String buildId );
+    ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion );
 
-    Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String buildId );
+    Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion );
 }

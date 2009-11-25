@@ -19,7 +19,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -49,13 +49,23 @@ public class Maven2RepositoryMetadataResolverTest
         resolver = (Maven2RepositoryMetadataResolver) lookup( MetadataResolver.class, "maven2" );
     }
 
-    public void testGetProjectBuildMetadata()
+    public void testGetProjectVersionMetadata()
     {
-        ProjectBuildMetadata metadata =
-            resolver.getProjectBuild( TEST_REPO_ID, "org.apache.archiva", "archiva-common", "1.2.1" );
+        ProjectVersionMetadata metadata =
+            resolver.getProjectVersion( TEST_REPO_ID, "org.apache.archiva", "archiva-common", "1.2.1" );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
         assertEquals( "http://archiva.apache.org/ref/1.2.1/archiva-base/archiva-common", metadata.getUrl() );
         // TODO: more testing
     }
+
+//    public void testGetProjectVersionMetadataForTimestampedSnapshot()
+//    {
+//        ProjectVersionMetadata metadata =
+//            resolver.getProjectVersion( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" );
+//        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
+//        assertEquals( "jar", facet.getPackaging() );
+//        assertEquals( "http://www.apache.org/", metadata.getUrl() );
+//        // TODO: more testing
+//    }
 }

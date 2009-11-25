@@ -23,7 +23,7 @@ import java.io.File;
 
 public interface RepositoryPathTranslator
 {
-    File toFile( File basedir, String namespace, String projectId, String buildId, String filename );
+    File toFile( File basedir, String namespace, String projectId, String projectVersion, String filename );
 
-    String toPath( String namespace, String projectId, String buildId, String filename );
+    String toPath( String namespace, String projectId, String projectVersion, String filename );
 }

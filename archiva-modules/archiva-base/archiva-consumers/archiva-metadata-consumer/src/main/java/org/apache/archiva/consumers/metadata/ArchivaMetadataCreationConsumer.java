@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -142,8 +142,8 @@ public class ArchivaMetadataCreationConsumer
         project.setNamespace( artifact.getGroupId() );
         project.setId( artifact.getArtifactId() );
 
-        ProjectBuildMetadata build = new ProjectBuildMetadata();
-        build.setId( artifact.getVersion() ); // TODO: this should be the version from the POM, not the timestamped version
+        ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
+        versionMetadata.setId( artifact.getVersion() ); // TODO: this should be the version from the POM, not the timestamped version
 
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
         artifactMeta.setId( file.getName() );
@@ -157,8 +157,8 @@ public class ArchivaMetadataCreationConsumer
 
         // TODO: transaction
         // read the metadata and update it if it is newer or doesn't exist
-        metadataRepository.updateArtifact( repository.getId(), project.getNamespace(), project.getId(), build.getId(), artifactMeta );
-        metadataRepository.updateBuild( repository.getId(), project.getNamespace(), project.getId(), build );
+        metadataRepository.updateArtifact( repository.getId(), project.getNamespace(), project.getId(), versionMetadata.getId(), artifactMeta );
+        metadataRepository.updateProjectVersion( repository.getId(), project.getNamespace(), project.getId(), versionMetadata );
         metadataRepository.updateProject( repository.getId(), project );
     }
 

@@ -21,7 +21,7 @@ package org.apache.archiva.metadata.repository;
 
 import java.util.Collection;
 
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 
 /**
@@ -48,22 +48,22 @@ public class DefaultMetadataResolver
         return metadataRepository.getProject( repoId, namespace, projectId );
     }
 
-    public ProjectBuildMetadata getProjectBuild( String repoId, String namespace, String projectId, String buildId )
+    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
     {
-        ProjectBuildMetadata metadata = metadataRepository.getProjectBuild( repoId, namespace, projectId, buildId );
-        // TODO: do we want to detect changes as well by comparing timestamps? isProjectBuildNewerThan(updated)
+        ProjectVersionMetadata metadata = metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
+        // TODO: do we want to detect changes as well by comparing timestamps? isProjectVersionNewerThan(updated)
         //       in such cases we might also remove/update stale metadata, including adjusting plugin-based facets
         if ( metadata == null )
         {
-            metadata = storageResolver.getProjectBuild( repoId, namespace, projectId, buildId );
-            metadataRepository.updateBuild( repoId, namespace, projectId, metadata );
+            metadata = storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
+            metadataRepository.updateProjectVersion( repoId, namespace, projectId, metadata );
         }
         return metadata;
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String buildId )
+    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion )
     {
         // TODO: intercept
-        return metadataRepository.getArtifactVersions( repoId, namespace, projectId, buildId );
+        return metadataRepository.getArtifactVersions( repoId, namespace, projectId, projectVersion );
     }
 }

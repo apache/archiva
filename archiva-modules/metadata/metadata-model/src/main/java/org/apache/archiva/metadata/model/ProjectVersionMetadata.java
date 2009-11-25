@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProjectBuildMetadata
+public class ProjectVersionMetadata
 {
     private String id;
 
@@ -44,7 +44,7 @@ public class ProjectBuildMetadata
 
     private List<License> licenses;
 
-    private Map<String, ProjectBuildFacet> facets;
+    private Map<String, ProjectVersionFacet> facets;
 
     public String getId()
     {
@@ -145,16 +145,16 @@ public class ProjectBuildMetadata
         this.licenses.add( license );
     }
 
-    public void addFacet( ProjectBuildFacet mavenProjectFacet )
+    public void addFacet( ProjectVersionFacet mavenProjectFacet )
     {
         if ( this.facets == null )
         {
-            this.facets = new HashMap<String, ProjectBuildFacet>();
+            this.facets = new HashMap<String, ProjectVersionFacet>();
         }
         this.facets.put( mavenProjectFacet.getFacetId(), mavenProjectFacet );
     }
 
-    public ProjectBuildFacet getFacet( String facetId )
+    public ProjectVersionFacet getFacet( String facetId )
     {
         return this.facets.get( facetId );
     }

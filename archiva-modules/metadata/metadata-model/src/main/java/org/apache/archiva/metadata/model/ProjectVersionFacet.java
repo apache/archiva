@@ -19,7 +19,7 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-public interface ProjectBuildFacet
+public interface ProjectVersionFacet
 {
     String getFacetId();
 }

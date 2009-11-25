@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.opensymphony.xwork2.Validateable;
-import org.apache.archiva.metadata.model.ProjectBuildMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.lang.StringUtils;
@@ -100,32 +100,39 @@ public class ShowArtifactAction
     private List<String> snapshotVersions;
 
     /**
-     * Show the versioned project information tab. TODO: Change name to 'project'
+     * Show the versioned project information tab.
+     * TODO: Change name to 'project' - we are showing project versions here, not specific artifact information (though
+     * that is rendered in the download box).
      */
     public String artifact()
     {
         // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
         // simple resource requests here and letting the resolver take care of it
-        ProjectBuildMetadata build = null;
+        ProjectVersionMetadata versionMetadata = null;
         snapshotVersions = new ArrayList<String>();
         for ( String repoId : getObservableRepos() )
         {
-            if ( build == null )
+            if ( versionMetadata == null )
             {
-                // we don't really want the implementation being that intelligent - so another resolver to do the
+                // TODO: though we have a simple mapping now, do we want to support paths like /1.0-20090111.123456-1/
+                //   again by mapping it to /1.0-SNAPSHOT/? Currently, the individual versions are not supported as we
+                //   are only displaying the project's single version.
+
+                // we don't want the implementation being that intelligent - so another resolver to do the
                 // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
-                build = metadataResolver.getProjectBuild( repoId, groupId, artifactId, version );
-                if ( build != null )
+                versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                if ( versionMetadata != null )
                 {
-                    repositoryId = repoId;      
+                    repositoryId = repoId;
+
+                    snapshotVersions.addAll(
+                        metadataResolver.getArtifactVersions( repoId, groupId, artifactId, versionMetadata.getId() ) );
+                    snapshotVersions.remove( version );
                 }
             }
-
-            snapshotVersions.addAll( metadataResolver.getArtifactVersions( repoId, groupId, artifactId, version ) );
-            snapshotVersions.remove( version );
         }
 
-        if ( build == null )
+        if ( versionMetadata == null )
         {
             addActionError( "Artifact not found" );
             return ERROR;
@@ -133,7 +140,7 @@ public class ShowArtifactAction
 
         // TODO: eventually, move to just use the metadata directly, with minimal JSP changes, mostly for Maven specifics
         model = new ArchivaProjectModel();
-        MavenProjectFacet projectFacet = (MavenProjectFacet) build.getFacet( MavenProjectFacet.FACET_ID );
+        MavenProjectFacet projectFacet = (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
         model.setGroupId( projectFacet.getGroupId() );
         model.setArtifactId( projectFacet.getArtifactId() );
         model.setPackaging( projectFacet.getPackaging() );
@@ -146,42 +153,42 @@ public class ShowArtifactAction
             model.setParentProject( parent );
         }
 
-        model.setVersion( build.getId() );
-        model.setDescription( build.getDescription() );
-        model.setName( build.getName() );
-        model.setUrl( build.getUrl() );
-        if ( build.getOrganization() != null )
+        model.setVersion( versionMetadata.getId() );
+        model.setDescription( versionMetadata.getDescription() );
+        model.setName( versionMetadata.getName() );
+        model.setUrl( versionMetadata.getUrl() );
+        if ( versionMetadata.getOrganization() != null )
         {
             Organization organization = new Organization();
-            organization.setName( build.getOrganization().getName() );
-            organization.setUrl( build.getOrganization().getUrl() );
+            organization.setName( versionMetadata.getOrganization().getName() );
+            organization.setUrl( versionMetadata.getOrganization().getUrl() );
             model.setOrganization( organization );
         }
-        if ( build.getCiManagement() != null )
+        if ( versionMetadata.getCiManagement() != null )
         {
             CiManagement ci = new CiManagement();
-            ci.setSystem( build.getCiManagement().getSystem() );
-            ci.setUrl( build.getCiManagement().getUrl() );
+            ci.setSystem( versionMetadata.getCiManagement().getSystem() );
+            ci.setUrl( versionMetadata.getCiManagement().getUrl() );
             model.setCiManagement( ci );
         }
-        if ( build.getIssueManagement() != null )
+        if ( versionMetadata.getIssueManagement() != null )
         {
             IssueManagement issueManagement = new IssueManagement();
-            issueManagement.setSystem( build.getIssueManagement().getSystem() );
-            issueManagement.setUrl( build.getIssueManagement().getUrl() );
+            issueManagement.setSystem( versionMetadata.getIssueManagement().getSystem() );
+            issueManagement.setUrl( versionMetadata.getIssueManagement().getUrl() );
             model.setIssueManagement( issueManagement );
         }
-        if ( build.getScm() != null )
+        if ( versionMetadata.getScm() != null )
         {
             Scm scm = new Scm();
-            scm.setConnection( build.getScm().getConnection() );
-            scm.setDeveloperConnection( build.getScm().getDeveloperConnection() );
-            scm.setUrl( build.getScm().getUrl() );
+            scm.setConnection( versionMetadata.getScm().getConnection() );
+            scm.setDeveloperConnection( versionMetadata.getScm().getDeveloperConnection() );
+            scm.setUrl( versionMetadata.getScm().getUrl() );
             model.setScm( scm );
         }
-        if ( build.getLicenses() != null )
+        if ( versionMetadata.getLicenses() != null )
         {
-            for ( org.apache.archiva.metadata.model.License l : build.getLicenses() )
+            for ( org.apache.archiva.metadata.model.License l : versionMetadata.getLicenses() )
             {
                 License license = new License();
                 license.setName( l.getName() );
