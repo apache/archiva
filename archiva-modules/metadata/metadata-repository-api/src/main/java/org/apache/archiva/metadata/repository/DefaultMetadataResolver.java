@@ -49,6 +49,7 @@ public class DefaultMetadataResolver
     }
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata = metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
         // TODO: do we want to detect changes as well by comparing timestamps? isProjectVersionNewerThan(updated)

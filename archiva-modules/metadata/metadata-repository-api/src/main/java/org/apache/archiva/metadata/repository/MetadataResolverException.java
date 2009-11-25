@@ -19,17 +19,11 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import java.util.Collection;
-
-import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-
-public interface MetadataResolver
+public class MetadataResolverException
+    extends Exception
 {
-    ProjectMetadata getProject( String repoId, String namespace, String projectId );
-
-    ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
-        throws MetadataResolverException;
-
-    Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion );
+    public MetadataResolverException( String message, Exception cause )
+    {
+        super( message, cause );
+    }
 }

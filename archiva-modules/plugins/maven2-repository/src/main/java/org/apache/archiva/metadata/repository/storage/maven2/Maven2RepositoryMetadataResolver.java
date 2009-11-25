@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -42,6 +43,8 @@ import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver" role-hint="maven2"
@@ -64,6 +67,8 @@ public class Maven2RepositoryMetadataResolver
      */
     private RepositoryPathTranslator pathTranslator;
 
+    private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryMetadataResolver.class );
+
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
         throw new UnsupportedOperationException();
@@ -71,6 +76,7 @@ public class Maven2RepositoryMetadataResolver
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
+        throws MetadataResolverException
     {
         ManagedRepositoryConfiguration repositoryConfiguration =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
@@ -81,10 +87,11 @@ public class Maven2RepositoryMetadataResolver
         if ( VersionUtil.isSnapshot( projectVersion ) )
         {
             // TODO: need much error handling here for incorrect metadata
+            File metadataFile =
+                pathTranslator.toFile( basedir, namespace, projectId, projectVersion, "maven-metadata.xml" );
             try
             {
-                MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read(
-                    pathTranslator.toFile( basedir, namespace, projectId, projectVersion, "maven-metadata.xml" ) );
+                MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
 
                 artifactVersion =
                     artifactVersion.substring( 0, artifactVersion.length() - 8 ); // remove SNAPSHOT from end
@@ -94,8 +101,8 @@ public class Maven2RepositoryMetadataResolver
             }
             catch ( XMLException e )
             {
-                // TODO: handle it
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                // unable to parse metadata - log it, and continue with the version as the original SNAPSHOT version
+                log.warn( "Invalid metadata: " + metadataFile + " - " + e.getMessage() );
             }
         }
 
@@ -114,8 +121,7 @@ public class Maven2RepositoryMetadataResolver
         }
         catch ( ModelBuildingException e )
         {
-            // TODO: handle it
-            throw new RuntimeException( e );
+            throw new MetadataResolverException( "Unable to build Maven POM to derive metadata from: " + e.getMessage(), e );
         }
 
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();

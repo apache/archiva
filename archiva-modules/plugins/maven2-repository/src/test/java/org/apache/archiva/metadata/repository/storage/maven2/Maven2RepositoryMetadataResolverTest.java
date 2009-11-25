@@ -24,6 +24,7 @@ import java.util.Arrays;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -59,6 +60,7 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadata()
+        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "org.apache.archiva", "archiva-common", "1.2.1" );
@@ -90,6 +92,7 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
+        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" );

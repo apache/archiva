@@ -26,6 +26,7 @@ import java.util.List;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -120,7 +121,15 @@ public class ShowArtifactAction
 
                 // we don't want the implementation being that intelligent - so another resolver to do the
                 // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
-                versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                try
+                {
+                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                }
+                catch ( MetadataResolverException e )
+                {
+                    addActionError( "Error occurred resolving metadata for project: " + e.getMessage() );
+                    return ERROR;
+                }
                 if ( versionMetadata != null )
                 {
                     repositoryId = repoId;
