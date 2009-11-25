@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <bean id="indexerConsumer" class="org.apache.archiva.consumers.lucene.NexusIndexerConsumer" lazy-init="true">      
-        <constructor-arg ref="archivaTaskScheduler"/>
+        <constructor-arg ref="archivaTaskScheduler#indexing"/>
         <constructor-arg ref="archivaConfiguration"/>
         <constructor-arg ref="fileTypes"/>
     </bean>
