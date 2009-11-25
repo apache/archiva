@@ -150,16 +150,19 @@ public class ShowArtifactAction
         // TODO: eventually, move to just use the metadata directly, with minimal JSP changes, mostly for Maven specifics
         model = new ArchivaProjectModel();
         MavenProjectFacet projectFacet = (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
-        model.setGroupId( projectFacet.getGroupId() );
-        model.setArtifactId( projectFacet.getArtifactId() );
-        model.setPackaging( projectFacet.getPackaging() );
-        if ( projectFacet.getParent() != null )
+        if ( projectFacet != null )
         {
-            VersionedReference parent = new VersionedReference();
-            parent.setGroupId( projectFacet.getParent().getGroupId() );
-            parent.setArtifactId( projectFacet.getParent().getArtifactId() );
-            parent.setVersion( projectFacet.getParent().getVersion() );
-            model.setParentProject( parent );
+            model.setGroupId( projectFacet.getGroupId() );
+            model.setArtifactId( projectFacet.getArtifactId() );
+            model.setPackaging( projectFacet.getPackaging() );
+            if ( projectFacet.getParent() != null )
+            {
+                VersionedReference parent = new VersionedReference();
+                parent.setGroupId( projectFacet.getParent().getGroupId() );
+                parent.setArtifactId( projectFacet.getParent().getArtifactId() );
+                parent.setVersion( projectFacet.getParent().getVersion() );
+                model.setParentProject( parent );
+            }
         }
 
         model.setVersion( versionMetadata.getId() );

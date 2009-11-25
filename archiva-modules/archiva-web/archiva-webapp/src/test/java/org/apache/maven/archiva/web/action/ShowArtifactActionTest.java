@@ -308,6 +308,37 @@ public class ShowArtifactActionTest
         assertTrue( action.getSnapshotVersions().isEmpty() );
     }
 
+    public void testGetArtifactNoMavenFacet()
+    {
+        ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
+        versionMetadata.setId( TEST_VERSION );
+        versionMetadata.setUrl( TEST_URL );
+        versionMetadata.setName( TEST_NAME );
+        versionMetadata.setDescription( TEST_DESCRIPTION );
+
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
+
+        setActionParameters();
+
+        String result = action.artifact();
+
+        assertActionSuccess( action, result );
+
+        assertActionParameters( action );
+        ArchivaProjectModel model = action.getModel();
+        assertEquals( TEST_VERSION, model.getVersion() );
+        assertEquals( TEST_URL, model.getUrl() );
+        assertEquals( TEST_NAME, model.getName() );
+        assertEquals( TEST_DESCRIPTION, model.getDescription() );
+
+        assertEquals( TEST_REPO, action.getRepositoryId() );
+
+        assertNull( action.getDependees() );
+        assertNull( action.getDependencies() );
+        assertNull( action.getMailingLists() );
+        assertTrue( action.getSnapshotVersions().isEmpty() );
+    }
+
     private void assertNoOutputFields()
     {
         assertNull( action.getModel() );
