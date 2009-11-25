@@ -196,5 +196,44 @@ public class MavenRepositoryMetadata
         {
             return name;
         }
+
+        @Override
+        public boolean equals( Object o )
+        {
+            if ( this == o )
+            {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() )
+            {
+                return false;
+            }
+
+            Plugin plugin = (Plugin) o;
+
+            if ( !artifactId.equals( plugin.artifactId ) )
+            {
+                return false;
+            }
+            if ( name != null ? !name.equals( plugin.name ) : plugin.name != null )
+            {
+                return false;
+            }
+            if ( !prefix.equals( plugin.prefix ) )
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int result = prefix.hashCode();
+            result = 31 * result + artifactId.hashCode();
+            result = 31 * result + ( name != null ? name.hashCode() : 0 );
+            return result;
+        }
     }
 }

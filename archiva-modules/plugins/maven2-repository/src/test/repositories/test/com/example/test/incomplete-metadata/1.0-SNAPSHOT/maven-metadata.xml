@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<metadata>
+  <groupId>com.example.test</groupId>
+  <artifactId>incomplete-metadata</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <versioning>
+    <!-- no snapshot element -->
+    <lastUpdated>20080801151215</lastUpdated>
+  </versioning>
+</metadata>

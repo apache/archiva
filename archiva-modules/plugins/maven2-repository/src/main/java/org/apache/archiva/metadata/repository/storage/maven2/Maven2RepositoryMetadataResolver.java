@@ -86,18 +86,21 @@ public class Maven2RepositoryMetadataResolver
         File basedir = new File( repositoryConfiguration.getLocation() );
         if ( VersionUtil.isSnapshot( projectVersion ) )
         {
-            // TODO: need much error handling here for incorrect metadata
             File metadataFile =
                 pathTranslator.toFile( basedir, namespace, projectId, projectVersion, "maven-metadata.xml" );
             try
             {
                 MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
 
-                artifactVersion =
-                    artifactVersion.substring( 0, artifactVersion.length() - 8 ); // remove SNAPSHOT from end
+                // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
                 MavenRepositoryMetadata.Snapshot snapshotVersion = metadata.getSnapshotVersion();
-                artifactVersion =
-                    artifactVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
+                if ( snapshotVersion != null )
+                {
+                    artifactVersion =
+                        artifactVersion.substring( 0, artifactVersion.length() - 8 ); // remove SNAPSHOT from end
+                    artifactVersion =
+                        artifactVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
+                }
             }
             catch ( XMLException e )
             {
@@ -108,6 +111,12 @@ public class Maven2RepositoryMetadataResolver
 
         File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion,
                                            projectId + "-" + artifactVersion + ".pom" );
+
+        if ( !file.exists() )
+        {
+            // metadata could not be resolved
+            return null;
+        }
 
         ModelBuildingRequest req = new DefaultModelBuildingRequest();
         req.setProcessPlugins( false );
@@ -121,7 +130,8 @@ public class Maven2RepositoryMetadataResolver
         }
         catch ( ModelBuildingException e )
         {
-            throw new MetadataResolverException( "Unable to build Maven POM to derive metadata from: " + e.getMessage(), e );
+            throw new MetadataResolverException( "Unable to build Maven POM to derive metadata from: " + e.getMessage(),
+                                                 e );
         }
 
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();

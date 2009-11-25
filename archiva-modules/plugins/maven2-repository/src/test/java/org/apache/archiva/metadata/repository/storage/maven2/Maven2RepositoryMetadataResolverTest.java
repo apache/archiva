@@ -122,6 +122,54 @@ public class Maven2RepositoryMetadataResolverTest
         checkOrganizationApache( metadata );
     }
 
+    public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()
+        throws MetadataResolverException
+    {
+        ProjectVersionMetadata metadata =
+            resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT" );
+        assertNull( metadata );
+    }
+
+    public void testGetProjectVersionMetadataForTimestampedSnapshotMalformedMetadata()
+        throws MetadataResolverException
+    {
+        ProjectVersionMetadata metadata =
+            resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "malformed-metadata", "1.0-SNAPSHOT" );
+        assertNull( metadata );
+    }
+
+    public void testGetProjectVersionMetadataForTimestampedSnapshotIncompleteMetadata()
+        throws MetadataResolverException
+    {
+        ProjectVersionMetadata metadata =
+            resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "incomplete-metadata", "1.0-SNAPSHOT" );
+        assertNull( metadata );
+    }
+
+    public void testGetProjectVersionMetadataForInvalidPom()
+    {
+        try
+        {
+            ProjectVersionMetadata metadata =
+                resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "invalid-pom", "1.0" );
+
+            fail( "Expected failure, but received metadata: " + metadata );
+        }
+        catch ( MetadataResolverException e )
+        {
+            assertTrue( true );
+        }
+    }
+
+    public void testGetProjectVersionMetadataForMissingPom()
+        throws MetadataResolverException
+    {
+        ProjectVersionMetadata metadata =
+            resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "missing-pom", "1.0" );
+        assertNull( metadata );
+
+    }
+
     private void checkApacheLicense( ProjectVersionMetadata metadata )
     {
         assertEquals( Arrays.asList( new License( "The Apache Software License, Version 2.0",
