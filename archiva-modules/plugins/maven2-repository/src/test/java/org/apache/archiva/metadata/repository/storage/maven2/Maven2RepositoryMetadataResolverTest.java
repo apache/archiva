@@ -59,13 +59,13 @@ public class Maven2RepositoryMetadataResolverTest
         // TODO: more testing
     }
 
-//    public void testGetProjectVersionMetadataForTimestampedSnapshot()
-//    {
-//        ProjectVersionMetadata metadata =
-//            resolver.getProjectVersion( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" );
-//        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
-//        assertEquals( "jar", facet.getPackaging() );
-//        assertEquals( "http://www.apache.org/", metadata.getUrl() );
-//        // TODO: more testing
-//    }
+    public void testGetProjectVersionMetadataForTimestampedSnapshot()
+    {
+        ProjectVersionMetadata metadata =
+            resolver.getProjectVersion( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" );
+        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
+        assertEquals( "pom", facet.getPackaging() );
+        assertEquals( "http://www.apache.org/", metadata.getUrl() );
+        // TODO: more testing
+    }
 }

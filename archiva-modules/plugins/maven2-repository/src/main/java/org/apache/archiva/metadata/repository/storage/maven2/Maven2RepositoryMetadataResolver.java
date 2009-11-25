@@ -22,12 +22,14 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import java.io.File;
 import java.util.Collection;
 
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
@@ -60,16 +62,40 @@ public class Maven2RepositoryMetadataResolver
         throw new UnsupportedOperationException();
     }
 
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
+                                                     String projectVersion )
     {
         // TODO: artifactVersion translation
 
         ManagedRepositoryConfiguration repositoryConfiguration =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
 
+        String artifactVersion = projectVersion;
+
         File basedir = new File( repositoryConfiguration.getLocation() );
-        File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion, projectId + "-" +
-            projectVersion + ".pom" );
+        if ( VersionUtil.isSnapshot( projectVersion ) )
+        {
+            // TODO: need much error handling here for incorrect metadata
+            try
+            {
+                MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read(
+                    pathTranslator.toFile( basedir, namespace, projectId, projectVersion, "maven-metadata.xml" ) );
+
+                artifactVersion =
+                    artifactVersion.substring( 0, artifactVersion.length() - 8 ); // remove SNAPSHOT from end
+                MavenRepositoryMetadata.Snapshot snapshotVersion = metadata.getSnapshotVersion();
+                artifactVersion =
+                    artifactVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
+            }
+            catch ( XMLException e )
+            {
+                // TODO: handle it
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+        File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion,
+                                           projectId + "-" + artifactVersion + ".pom" );
 
         ModelBuildingRequest req = new DefaultModelBuildingRequest();
         req.setProcessPlugins( false );
@@ -107,7 +133,8 @@ public class Maven2RepositoryMetadataResolver
         return metadata;
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion )
+    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
+                                                   String projectVersion )
     {
         throw new UnsupportedOperationException();
     }
