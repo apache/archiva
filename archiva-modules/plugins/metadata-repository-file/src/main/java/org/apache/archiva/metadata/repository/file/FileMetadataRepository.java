@@ -116,7 +116,7 @@ public class FileMetadataRepository
         try
         {
             in = new FileInputStream( new File( directory, "metadata.xml" ) );
-            properties.load( in );
+            properties.loadFromXML( in );
         }
         catch ( FileNotFoundException e )
         {
