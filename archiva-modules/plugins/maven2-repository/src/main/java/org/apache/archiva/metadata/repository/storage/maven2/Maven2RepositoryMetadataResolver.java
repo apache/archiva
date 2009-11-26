@@ -34,6 +34,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.model.CiManagement;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.License;
 import org.apache.maven.model.MailingList;
@@ -143,6 +144,7 @@ public class Maven2RepositoryMetadataResolver
         metadata.setIssueManagement( convertIssueManagement( model.getIssueManagement() ) );
         metadata.setLicenses( convertLicenses( model.getLicenses() ) );
         metadata.setMailingLists( convertMailingLists( model.getMailingLists() ) );
+        metadata.setDependencies( convertDependencies( model.getDependencies() ) );
         metadata.setName( model.getName() );
         metadata.setOrganization( convertOrganization( model.getOrganization() ) );
         metadata.setScm( convertScm( model.getScm() ) );
@@ -163,6 +165,27 @@ public class Maven2RepositoryMetadataResolver
         metadata.addFacet( facet );
 
         return metadata;
+    }
+
+    private List<org.apache.archiva.metadata.model.Dependency> convertDependencies( List<Dependency> dependencies )
+    {
+        List<org.apache.archiva.metadata.model.Dependency> l =
+            new ArrayList<org.apache.archiva.metadata.model.Dependency>();
+        for ( Dependency dependency : dependencies )
+        {
+            org.apache.archiva.metadata.model.Dependency newDependency =
+                new org.apache.archiva.metadata.model.Dependency();
+            newDependency.setArtifactId( dependency.getArtifactId() );
+            newDependency.setClassifier( dependency.getClassifier() );
+            newDependency.setGroupId( dependency.getGroupId() );
+            newDependency.setOptional( dependency.isOptional() );
+            newDependency.setScope( dependency.getScope() );
+            newDependency.setSystemPath( dependency.getSystemPath() );
+            newDependency.setType( dependency.getType() );
+            newDependency.setVersion( dependency.getVersion() );
+            l.add( newDependency );
+        }
+        return l;
     }
 
     private org.apache.archiva.metadata.model.Scm convertScm( Scm scm )

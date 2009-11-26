@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -102,6 +103,36 @@ public class Maven2RepositoryMetadataResolverTest
         assertMailingList( "commits", metadata.getMailingLists().get( 2 ), "Archiva Commits List", false, null );
         assertMailingList( "issues", metadata.getMailingLists().get( 3 ), "Archiva Issues List", false,
                            "http://www.nabble.com/Archiva---Issues-f29617.html" );
+
+        List<Dependency> dependencies = metadata.getDependencies();
+        assertEquals( 10, dependencies.size() );
+        assertDependency( dependencies.get( 0 ), "commons-lang", "commons-lang", "2.2" );
+        assertDependency( dependencies.get( 1 ), "commons-io", "commons-io", "1.4" );
+        assertDependency( dependencies.get( 2 ), "org.slf4j", "slf4j-api", "1.5.0" );
+        assertDependency( dependencies.get( 3 ), "org.codehaus.plexus", "plexus-component-api", "1.0-alpha-22" );
+        assertDependency( dependencies.get( 4 ), "org.codehaus.plexus", "plexus-spring", "1.2", "test" );
+        assertDependency( dependencies.get( 5 ), "xalan", "xalan", "2.7.0" );
+        assertDependency( dependencies.get( 6 ), "dom4j", "dom4j", "1.6.1", "test" );
+        assertDependency( dependencies.get( 7 ), "junit", "junit", "3.8.1", "test" );
+        assertDependency( dependencies.get( 8 ), "easymock", "easymock", "1.2_Java1.3", "test" );
+        assertDependency( dependencies.get( 9 ), "easymock", "easymockclassextension", "1.2", "test" );
+    }
+
+    private void assertDependency( Dependency dependency, String groupId, String artifactId, String version )
+    {
+        assertDependency( dependency, groupId, artifactId, version, "compile" );
+    }
+
+    private void assertDependency( Dependency dependency, String groupId, String artifactId, String version,
+                                   String scope )
+    {
+        assertEquals( artifactId, dependency.getArtifactId() );
+        assertEquals( "jar", dependency.getType() );
+        assertEquals( version, dependency.getVersion() );
+        assertEquals( groupId, dependency.getGroupId() );
+        assertEquals( scope, dependency.getScope() );
+        assertNull( dependency.getClassifier() );
+        assertNull( dependency.getSystemPath() );
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
@@ -138,6 +169,7 @@ public class Maven2RepositoryMetadataResolverTest
                            "http://mail-archives.apache.org/mod_mbox/www-announce/", "announce@apache.org",
                            "announce-subscribe@apache.org", "announce-unsubscribe@apache.org",
                            Collections.<String>emptyList(), true );
+        assertEquals( Collections.<Dependency>emptyList(), metadata.getDependencies() );
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()

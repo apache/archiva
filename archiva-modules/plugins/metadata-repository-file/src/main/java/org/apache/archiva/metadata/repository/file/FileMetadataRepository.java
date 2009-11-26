@@ -34,6 +34,7 @@ import java.util.Properties;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
+import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
@@ -134,6 +135,18 @@ public class FileMetadataRepository
             setProperty( properties, "mailingList." + i + ".unsubscribe", mailingList.getUnsubscribeAddress() );
             setProperty( properties, "mailingList." + i + ".subscribe", mailingList.getSubscribeAddress() );
             setProperty( properties, "mailingList." + i + ".otherArchives", join( mailingList.getOtherArchives() ) );
+            i++;
+        }
+        i = 0;
+        for ( Dependency dependency : versionMetadata.getDependencies() )
+        {
+            setProperty( properties, "dependency." + i + ".classifier", dependency.getClassifier() );
+            setProperty( properties, "dependency." + i + ".scope", dependency.getScope() );
+            setProperty( properties, "dependency." + i + ".systemPath", dependency.getSystemPath() );
+            setProperty( properties, "dependency." + i + ".artifactId", dependency.getArtifactId() );
+            setProperty( properties, "dependency." + i + ".groupId", dependency.getGroupId() );
+            setProperty( properties, "dependency." + i + ".version", dependency.getVersion() );
+            setProperty( properties, "dependency." + i + ".type", dependency.getType() );
             i++;
         }
         properties.setProperty( "facetIds", join( versionMetadata.getAllFacetIds() ) );
@@ -325,6 +338,32 @@ public class FileMetadataRepository
                     mailingList.setSubscribeAddress( properties.getProperty( "mailingList." + i + ".subscribe" ) );
                     mailingList.setUnsubscribeAddress( properties.getProperty( "mailingList." + i + ".unsubscribe" ) );
                     versionMetadata.addMailingList( mailingList );
+                }
+                else
+                {
+                    done = true;
+                }
+                i++;
+            }
+
+            done = false;
+            i = 0;
+            while ( !done )
+            {
+                String dependencyArtifactId = properties.getProperty( "dependency." + i + ".artifactId" );
+                if ( dependencyArtifactId != null )
+                {
+                    Dependency dependency = new Dependency();
+                    dependency.setArtifactId( dependencyArtifactId );
+                    dependency.setGroupId( properties.getProperty( "dependency." + i + ".groupId" ) );
+                    dependency.setClassifier( properties.getProperty( "dependency." + i + ".classifier" ) );
+                    dependency.setOptional(
+                        Boolean.valueOf( properties.getProperty( "dependency." + i + ".optional" ) ) );
+                    dependency.setScope( properties.getProperty( "dependency." + i + ".scope" ) );
+                    dependency.setSystemPath( properties.getProperty( "dependency." + i + ".systemPath" ) );
+                    dependency.setType( properties.getProperty( "dependency." + i + ".type" ) );
+                    dependency.setVersion( properties.getProperty( "dependency." + i + ".version" ) );
+                    versionMetadata.addDependency( dependency );
                 }
                 else
                 {

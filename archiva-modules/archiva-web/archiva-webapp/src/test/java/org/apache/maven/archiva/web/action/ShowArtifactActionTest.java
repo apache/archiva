@@ -25,6 +25,7 @@ import java.util.List;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.CiManagement;
+import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
@@ -43,7 +44,6 @@ import org.apache.maven.archiva.database.constraints.ProjectsByArtifactUsageCons
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
@@ -386,21 +386,15 @@ public class ShowArtifactActionTest
     public void testGetDependencies()
         throws ArchivaDatabaseException
     {
-        List<ArchivaArtifact> artifacts =
-            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 1 );
-        ArchivaProjectModel legacyModel = createLegacyProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION );
+        ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
         Dependency dependency1 = createDependencyBasic( "artifactId1" );
         Dependency dependency2 = createDependencyExtended( "artifactId2" );
-        legacyModel.setDependencies( Arrays.asList( dependency1, dependency2 ) );
-        MockControl projectDaoMockControl = createProjectDaoMock( legacyModel );
+        versionMetadata.setDependencies( Arrays.asList( dependency1, dependency2 ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
 
         setActionParameters();
 
         String result = action.dependencies();
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertActionSuccess( action, result );
 
@@ -472,14 +466,14 @@ public class ShowArtifactActionTest
         assertEquals( "version", dependee.getVersion() );
     }
 
-    private void assertDependencyBasic( Dependency dependency, String artifactId )
+    private void assertDependencyBasic( org.apache.maven.archiva.model.Dependency dependency, String artifactId )
     {
         assertEquals( artifactId, dependency.getArtifactId() );
         assertEquals( "groupId", dependency.getGroupId() );
         assertEquals( "version", dependency.getVersion() );
     }
 
-    private void assertDependencyExtended( Dependency dependency, String artifactId )
+    private void assertDependencyExtended( org.apache.maven.archiva.model.Dependency dependency, String artifactId )
     {
         assertDependencyBasic( dependency, artifactId );
         assertEquals( true, dependency.isOptional() );
@@ -724,20 +718,6 @@ public class ShowArtifactActionTest
         ArtifactsRelatedConstraint c = new ArtifactsRelatedConstraint( TEST_GROUP_ID, TEST_ARTIFACT_ID, version );
         dao.queryArtifacts( c );
         control.setReturnValue( artifacts, count );
-
-        control.replay();
-        return control;
-    }
-
-    private MockControl createProjectDaoMock( ArchivaProjectModel project )
-        throws ArchivaDatabaseException
-    {
-        MockControl control = MockControl.createNiceControl( ProjectModelDAO.class );
-        ProjectModelDAO dao = (ProjectModelDAO) control.getMock();
-        archivaDao.setProjectDao( dao );
-
-        control.expectAndReturn(
-            dao.getProjectModel( project.getGroupId(), project.getArtifactId(), project.getVersion() ), project );
 
         control.replay();
         return control;

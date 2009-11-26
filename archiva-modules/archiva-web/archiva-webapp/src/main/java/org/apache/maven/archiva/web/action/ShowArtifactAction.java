@@ -228,6 +228,22 @@ public class ShowArtifactAction
                 model.addMailingList( mailingList );
             }
         }
+        if ( versionMetadata.getDependencies() != null )
+        {
+            for ( org.apache.archiva.metadata.model.Dependency d : versionMetadata.getDependencies() )
+            {
+                Dependency dependency = new Dependency();
+                dependency.setScope( d.getScope() );
+                dependency.setSystemPath( d.getSystemPath() );
+                dependency.setType( d.getType() );
+                dependency.setVersion( d.getVersion() );
+                dependency.setArtifactId( d.getArtifactId() );
+                dependency.setClassifier( d.getClassifier() );
+                dependency.setGroupId( d.getGroupId() );
+                dependency.setOptional( d.isOptional() );
+                model.addDependency( dependency );
+            }
+        }
     }
 
     /**
@@ -236,7 +252,29 @@ public class ShowArtifactAction
     public String dependencies()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        ProjectVersionMetadata versionMetadata = null;
+        for ( String repoId : getObservableRepos() )
+        {
+            if ( versionMetadata == null )
+            {
+                try
+                {
+                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                }
+                catch ( MetadataResolverException e )
+                {
+                    addActionError( "Error occurred resolving metadata for project: " + e.getMessage() );
+                    return ERROR;
+                }
+            }
+        }
+
+        if ( versionMetadata == null )
+        {
+            addActionError( "Artifact not found" );
+            return ERROR;
+        }
+        populateLegacyModel( versionMetadata );
 
         this.dependencies = model.getDependencies();
 
@@ -249,8 +287,6 @@ public class ShowArtifactAction
     public String mailingLists()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
-        // simple resource requests here and letting the resolver take care of it
         ProjectVersionMetadata versionMetadata = null;
         for ( String repoId : getObservableRepos() )
         {

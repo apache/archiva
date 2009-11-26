@@ -49,6 +49,8 @@ public class ProjectVersionMetadata
 
     private List<MailingList> mailingLists;
 
+    private List<Dependency> dependencies;
+
     public String getId()
     {
         return id;
@@ -185,5 +187,24 @@ public class ProjectVersionMetadata
             this.mailingLists = new ArrayList<MailingList>();
         }
         this.mailingLists.add( mailingList );
+    }
+
+    public void setDependencies( List<Dependency> dependencies )
+    {
+        this.dependencies = dependencies;
+    }
+
+    public List<Dependency> getDependencies()
+    {
+        return dependencies;
+    }
+
+    public void addDependency( Dependency dependency )
+    {
+        if ( this.dependencies == null )
+        {
+            this.dependencies = new ArrayList<Dependency>();
+        }
+        this.dependencies.add( dependency );
     }
 }
