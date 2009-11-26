@@ -19,9 +19,13 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
@@ -89,6 +93,15 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( ASF_SCM_DEV_CONN_BASE + path, metadata.getScm().getDeveloperConnection() );
         assertEquals( ASF_SCM_VIEWVC_BASE + path, metadata.getScm().getUrl() );
         checkOrganizationApache( metadata );
+
+        assertEquals( 4, metadata.getMailingLists().size() );
+        assertMailingList( "users", metadata.getMailingLists().get( 0 ), "Archiva User List", true,
+                           "http://www.nabble.com/archiva-users-f16426.html" );
+        assertMailingList( "dev", metadata.getMailingLists().get( 1 ), "Archiva Developer List", true,
+                           "http://www.nabble.com/archiva-dev-f16427.html" );
+        assertMailingList( "commits", metadata.getMailingLists().get( 2 ), "Archiva Commits List", false, null );
+        assertMailingList( "issues", metadata.getMailingLists().get( 3 ), "Archiva Issues List", false,
+                           "http://www.nabble.com/Archiva---Issues-f29617.html" );
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
@@ -120,6 +133,11 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( ASF_SCM_DEV_CONN_BASE + path, metadata.getScm().getDeveloperConnection() );
         assertEquals( ASF_SCM_VIEWVC_BASE + path, metadata.getScm().getUrl() );
         checkOrganizationApache( metadata );
+        assertEquals( 1, metadata.getMailingLists().size() );
+        assertMailingList( metadata.getMailingLists().get( 0 ), "Apache Announce List",
+                           "http://mail-archives.apache.org/mod_mbox/www-announce/", "announce@apache.org",
+                           "announce-subscribe@apache.org", "announce-unsubscribe@apache.org",
+                           Collections.<String>emptyList(), true );
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()
@@ -168,6 +186,39 @@ public class Maven2RepositoryMetadataResolverTest
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "missing-pom", "1.0" );
         assertNull( metadata );
 
+    }
+
+    private void assertMailingList( MailingList mailingList, String name, String archive, String post, String subscribe,
+                                    String unsubscribe, List<String> otherArchives, boolean allowPost )
+    {
+        assertEquals( archive, mailingList.getMainArchiveUrl() );
+        if ( allowPost )
+        {
+            assertEquals( post, mailingList.getPostAddress() );
+        }
+        else
+        {
+            assertNull( mailingList.getPostAddress() );
+        }
+        assertEquals( subscribe, mailingList.getSubscribeAddress() );
+        assertEquals( unsubscribe, mailingList.getUnsubscribeAddress() );
+        assertEquals( name, mailingList.getName() );
+        assertEquals( otherArchives, mailingList.getOtherArchives() );
+    }
+
+    private void assertMailingList( String prefix, MailingList mailingList, String name, boolean allowPost,
+                                    String nabbleUrl )
+    {
+        List<String> otherArchives = new ArrayList<String>();
+        otherArchives.add( "http://www.mail-archive.com/" + prefix + "@archiva.apache.org" );
+        if ( nabbleUrl != null )
+        {
+            otherArchives.add( nabbleUrl );
+        }
+        otherArchives.add( "http://markmail.org/list/org.apache.archiva." + prefix );
+        assertMailingList( mailingList, name, "http://mail-archives.apache.org/mod_mbox/archiva-" + prefix + "/",
+                           prefix + "@archiva.apache.org", prefix + "-subscribe@archiva.apache.org",
+                           prefix + "-unsubscribe@archiva.apache.org", otherArchives, allowPost );
     }
 
     private void checkApacheLicense( ProjectVersionMetadata metadata )

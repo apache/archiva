@@ -36,6 +36,7 @@ import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.License;
+import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Organization;
 import org.apache.maven.model.Scm;
@@ -141,6 +142,7 @@ public class Maven2RepositoryMetadataResolver
         metadata.setId( projectVersion );
         metadata.setIssueManagement( convertIssueManagement( model.getIssueManagement() ) );
         metadata.setLicenses( convertLicenses( model.getLicenses() ) );
+        metadata.setMailingLists( convertMailingLists( model.getMailingLists() ) );
         metadata.setName( model.getName() );
         metadata.setOrganization( convertOrganization( model.getOrganization() ) );
         metadata.setScm( convertScm( model.getScm() ) );
@@ -197,6 +199,25 @@ public class Maven2RepositoryMetadataResolver
             newLicense.setName( license.getName() );
             newLicense.setUrl( license.getUrl() );
             l.add( newLicense );
+        }
+        return l;
+    }
+
+    private List<org.apache.archiva.metadata.model.MailingList> convertMailingLists( List<MailingList> mailingLists )
+    {
+        List<org.apache.archiva.metadata.model.MailingList> l =
+            new ArrayList<org.apache.archiva.metadata.model.MailingList>();
+        for ( MailingList mailingList : mailingLists )
+        {
+            org.apache.archiva.metadata.model.MailingList newMailingList =
+                new org.apache.archiva.metadata.model.MailingList();
+            newMailingList.setName( mailingList.getName() );
+            newMailingList.setMainArchiveUrl( mailingList.getArchive() );
+            newMailingList.setPostAddress( mailingList.getPost() );
+            newMailingList.setSubscribeAddress( mailingList.getSubscribe() );
+            newMailingList.setUnsubscribeAddress( mailingList.getUnsubscribe() );
+            newMailingList.setOtherArchives( mailingList.getOtherArchives() );
+            l.add( newMailingList );
         }
         return l;
     }

@@ -27,6 +27,7 @@ import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
@@ -43,7 +44,6 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
-import org.apache.maven.archiva.model.MailingList;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
@@ -357,21 +357,15 @@ public class ShowArtifactActionTest
     public void testGetMailingLists()
         throws ArchivaDatabaseException
     {
-        List<ArchivaArtifact> artifacts =
-            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 1 );
-        ArchivaProjectModel legacyModel = createLegacyProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION );
+        ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
         MailingList ml1 = createMailingList( "Users List", "users" );
         MailingList ml2 = createMailingList( "Developers List", "dev" );
-        legacyModel.setMailingLists( Arrays.asList( ml1, ml2 ) );
-        MockControl projectDaoMockControl = createProjectDaoMock( legacyModel );
+        versionMetadata.setMailingLists( Arrays.asList( ml1, ml2 ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
 
         setActionParameters();
 
         String result = action.mailingLists();
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertActionSuccess( action, result );
 
@@ -515,7 +509,7 @@ public class ShowArtifactActionTest
         return dependency;
     }
 
-    private void assertMailingList( MailingList mailingList, String name, String prefix )
+    private void assertMailingList( org.apache.maven.archiva.model.MailingList mailingList, String name, String prefix )
     {
         assertEquals( name, mailingList.getName() );
         assertEquals( prefix + "-post@", mailingList.getPostAddress() );

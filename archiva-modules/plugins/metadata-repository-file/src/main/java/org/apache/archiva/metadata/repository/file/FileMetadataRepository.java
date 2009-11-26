@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
@@ -121,6 +123,17 @@ public class FileMetadataRepository
         {
             setProperty( properties, "license." + i + ".name", license.getName() );
             setProperty( properties, "license." + i + ".url", license.getUrl() );
+            i++;
+        }
+        i = 0;
+        for ( MailingList mailingList : versionMetadata.getMailingLists() )
+        {
+            setProperty( properties, "mailingList." + i + ".archive", mailingList.getMainArchiveUrl() );
+            setProperty( properties, "mailingList." + i + ".name", mailingList.getName() );
+            setProperty( properties, "mailingList." + i + ".post", mailingList.getPostAddress() );
+            setProperty( properties, "mailingList." + i + ".unsubscribe", mailingList.getUnsubscribeAddress() );
+            setProperty( properties, "mailingList." + i + ".subscribe", mailingList.getSubscribeAddress() );
+            setProperty( properties, "mailingList." + i + ".otherArchives", join( mailingList.getOtherArchives() ) );
             i++;
         }
         properties.setProperty( "facetIds", join( versionMetadata.getAllFacetIds() ) );
@@ -288,6 +301,30 @@ public class FileMetadataRepository
                     license.setName( licenseName );
                     license.setUrl( licenseUrl );
                     versionMetadata.addLicense( license );
+                }
+                else
+                {
+                    done = true;
+                }
+                i++;
+            }
+
+            done = false;
+            i = 0;
+            while ( !done )
+            {
+                String mailingListName = properties.getProperty( "mailingList." + i + ".name" );
+                if ( mailingListName != null )
+                {
+                    MailingList mailingList = new MailingList();
+                    mailingList.setName( mailingListName );
+                    mailingList.setMainArchiveUrl( properties.getProperty( "mailingList." + i + ".archive" ) );
+                    mailingList.setOtherArchives(
+                        Arrays.asList( properties.getProperty( "mailingList." + i + ".otherArchives" ).split( "," ) ) );
+                    mailingList.setPostAddress( properties.getProperty( "mailingList." + i + ".post" ) );
+                    mailingList.setSubscribeAddress( properties.getProperty( "mailingList." + i + ".subscribe" ) );
+                    mailingList.setUnsubscribeAddress( properties.getProperty( "mailingList." + i + ".unsubscribe" ) );
+                    versionMetadata.addMailingList( mailingList );
                 }
                 else
                 {

@@ -45,7 +45,9 @@ public class ProjectVersionMetadata
 
     private List<License> licenses;
 
-    private Map<String, ProjectVersionFacet> facets = new HashMap<String, ProjectVersionFacet>();;
+    private Map<String, ProjectVersionFacet> facets = new HashMap<String, ProjectVersionFacet>();
+
+    private List<MailingList> mailingLists;
 
     public String getId()
     {
@@ -164,5 +166,24 @@ public class ProjectVersionMetadata
     public Collection<String> getAllFacetIds()
     {
         return this.facets.keySet();
+    }
+
+    public void setMailingLists( List<MailingList> mailingLists )
+    {
+        this.mailingLists = mailingLists;
+    }
+
+    public List<MailingList> getMailingLists()
+    {
+        return mailingLists;
+    }
+
+    public void addMailingList( MailingList mailingList )
+    {
+        if ( this.mailingLists == null )
+        {
+            this.mailingLists = new ArrayList<MailingList>();
+        }
+        this.mailingLists.add( mailingList );
     }
 }

@@ -146,7 +146,13 @@ public class ShowArtifactAction
             addActionError( "Artifact not found" );
             return ERROR;
         }
+        populateLegacyModel( versionMetadata );
 
+        return SUCCESS;
+    }
+
+    private void populateLegacyModel( ProjectVersionMetadata versionMetadata )
+    {
         // TODO: eventually, move to just use the metadata directly, with minimal JSP changes, mostly for Maven specifics
         model = new ArchivaProjectModel();
         MavenProjectFacet projectFacet = (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
@@ -208,8 +214,20 @@ public class ShowArtifactAction
                 model.addLicense( license );
             }
         }
-
-        return SUCCESS;
+        if ( versionMetadata.getMailingLists() != null )
+        {
+            for ( org.apache.archiva.metadata.model.MailingList l : versionMetadata.getMailingLists() )
+            {
+                MailingList mailingList = new MailingList();
+                mailingList.setMainArchiveUrl( l.getMainArchiveUrl() );
+                mailingList.setName( l.getName() );
+                mailingList.setPostAddress( l.getPostAddress() );
+                mailingList.setSubscribeAddress( l.getSubscribeAddress() );
+                mailingList.setUnsubscribeAddress( l.getUnsubscribeAddress() );
+                mailingList.setOtherArchives( l.getOtherArchives() );
+                model.addMailingList( mailingList );
+            }
+        }
     }
 
     /**
@@ -231,7 +249,32 @@ public class ShowArtifactAction
     public String mailingLists()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
+        // simple resource requests here and letting the resolver take care of it
+        ProjectVersionMetadata versionMetadata = null;
+        for ( String repoId : getObservableRepos() )
+        {
+            if ( versionMetadata == null )
+            {
+                try
+                {
+                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                }
+                catch ( MetadataResolverException e )
+                {
+                    addActionError( "Error occurred resolving metadata for project: " + e.getMessage() );
+                    return ERROR;
+                }
+            }
+        }
+
+        if ( versionMetadata == null )
+        {
+            addActionError( "Artifact not found" );
+            return ERROR;
+        }
+        populateLegacyModel( versionMetadata );
+
         this.mailingLists = model.getMailingLists();
 
         return SUCCESS;
