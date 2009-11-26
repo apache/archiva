@@ -19,13 +19,7 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import java.util.Map;
-
-public interface ProjectVersionFacet
+public interface MetadataFacetFactory
 {
-    String getFacetId();
-
-    Map<String, String> toProperties();
-
-    void fromProperties( Map<String, String> properties );
+    ProjectVersionFacet createProjectVersionFacet();
 }

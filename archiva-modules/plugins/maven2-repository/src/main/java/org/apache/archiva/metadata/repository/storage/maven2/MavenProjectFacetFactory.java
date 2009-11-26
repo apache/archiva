@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.model;
+package org.apache.archiva.metadata.repository.storage.maven2;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,13 +19,17 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import java.util.Map;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.ProjectVersionFacet;
 
-public interface ProjectVersionFacet
+/**
+ * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.metadata.repository.storage.maven2"
+ */
+public class MavenProjectFacetFactory
+    implements MetadataFacetFactory
 {
-    String getFacetId();
-
-    Map<String, String> toProperties();
-
-    void fromProperties( Map<String, String> properties );
+    public ProjectVersionFacet createProjectVersionFacet()
+    {
+        return new MavenProjectFacet();
+    }
 }

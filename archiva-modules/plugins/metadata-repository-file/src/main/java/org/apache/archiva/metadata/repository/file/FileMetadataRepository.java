@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -34,6 +35,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionFacet;
@@ -41,6 +43,8 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataRepository"
@@ -54,6 +58,13 @@ public class FileMetadataRepository
      * @plexus.configuration
      */
     private File directory = new File( System.getProperty( "user.home" ), ".archiva-metadata" );
+
+    /**
+     * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
+     */
+    private Map<String, MetadataFacetFactory> metadataFacetFactories;
+
+    private static final Logger log = LoggerFactory.getLogger( FileMetadataRepository.class );
 
     public void updateProject( String repoId, ProjectMetadata project )
     {
@@ -287,9 +298,25 @@ public class FileMetadataRepository
 
             for ( String facetId : properties.getProperty( "facetIds" ).split( "," ) )
             {
-                // TODO: we need a factory for the facets here
-                // call fromProperties( properties )
-//                versionMetadata.addFacet(  );
+                MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
+                if ( factory == null )
+                {
+                    log.error( "Attempted to load unknown metadata facet: " + facetId );
+                }
+                else
+                {
+                    ProjectVersionFacet facet = factory.createProjectVersionFacet();
+                    Map<String, String> map = new HashMap<String, String>();
+                    for ( String key : properties.stringPropertyNames() )
+                    {
+                        if ( key.startsWith( facet.getFacetId() ) )
+                        {
+                            map.put( key, properties.getProperty( key ) );
+                        }
+                    }
+                    facet.fromProperties( map );
+                    versionMetadata.addFacet( facet );
+                }
             }
 
             for ( ProjectVersionFacet facet : versionMetadata.getAllFacets() )

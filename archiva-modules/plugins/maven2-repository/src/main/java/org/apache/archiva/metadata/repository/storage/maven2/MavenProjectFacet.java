@@ -84,16 +84,32 @@ public class MavenProjectFacet
 
     public Map<String, String> toProperties()
     {
-        Map<String, String> properties = new HashMap<String,String>();
-        properties.put( getFacetId() + ":groupId", groupId );
-        properties.put( getFacetId() + ":artifactId", artifactId );
-        properties.put( getFacetId() + ":packaging", packaging );
+        HashMap<String, String> properties = new HashMap<String, String>();
+        properties.put( FACET_ID + ":groupId", groupId );
+        properties.put( FACET_ID + ":artifactId", artifactId );
+        properties.put( FACET_ID + ":packaging", packaging );
         if ( parent != null )
         {
-            properties.put( getFacetId() + ":parent.groupId", parent.getGroupId() );
-            properties.put( getFacetId() + ":parent.artifactId", parent.getArtifactId() );
-            properties.put( getFacetId() + ":parent.version", parent.getVersion() );
+            properties.put( FACET_ID + ":parent.groupId", parent.getGroupId() );
+            properties.put( FACET_ID + ":parent.artifactId", parent.getArtifactId() );
+            properties.put( FACET_ID + ":parent.version", parent.getVersion() );
         }
         return properties;
+    }
+
+    public void fromProperties( Map<String, String> properties )
+    {
+        groupId = properties.get( FACET_ID + ":groupId" );
+        artifactId = properties.get( FACET_ID + ":artifactId" );
+        packaging = properties.get( FACET_ID + ":packaging" );
+        String parentArtifactId = properties.get( FACET_ID + ":parent.artifactId" );
+        if ( parentArtifactId != null )
+        {
+            MavenProjectParent parent = new MavenProjectParent();
+            parent.setGroupId( properties.get( FACET_ID + ":parent.groupId" ) );
+            parent.setArtifactId( parentArtifactId );
+            parent.setVersion( properties.get( FACET_ID + ":parent.version" ) );
+            this.parent = parent;
+        }
     }
 }
