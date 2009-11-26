@@ -122,6 +122,7 @@ public class Maven2RepositoryMetadataResolver
         req.setProcessPlugins( false );
         req.setPomFile( file );
         req.setModelResolver( new RepositoryModelResolver( basedir, pathTranslator ) );
+        req.setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
         Model model;
         try
