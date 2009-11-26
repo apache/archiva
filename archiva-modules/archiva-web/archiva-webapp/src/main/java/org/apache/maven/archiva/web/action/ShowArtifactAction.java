@@ -311,9 +311,10 @@ public class ShowArtifactAction
     public String dependencyTree()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        // temporarily use this as we only need the model for the tag to perform, but we should be resolving the
+        // graph here instead
 
-        return SUCCESS;
+        return artifact();
     }
 
     private List<String> getObservableRepos()
