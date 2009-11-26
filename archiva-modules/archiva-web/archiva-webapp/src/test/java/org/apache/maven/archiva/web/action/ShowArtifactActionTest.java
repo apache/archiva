@@ -38,6 +38,7 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
+import org.apache.maven.archiva.database.constraints.ProjectsByArtifactUsageConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
@@ -423,6 +424,60 @@ public class ShowArtifactActionTest
         assertNull( action.getSnapshotVersions() );
     }
 
+    public void testGetDependees()
+        throws ArchivaDatabaseException
+    {
+        List<ArchivaArtifact> artifacts =
+            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
+        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 1 );
+        ArchivaProjectModel legacyModel = createLegacyProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION );
+
+        MockControl projectDaoMockControl = MockControl.createNiceControl( ProjectModelDAO.class );
+        ProjectModelDAO dao = (ProjectModelDAO) projectDaoMockControl.getMock();
+        archivaDao.setProjectDao( dao );
+
+        projectDaoMockControl.expectAndReturn(
+            dao.getProjectModel( legacyModel.getGroupId(), legacyModel.getArtifactId(), legacyModel.getVersion() ),
+            legacyModel );
+
+        ArchivaProjectModel dependee1 = createBasicLegacyModel( "groupId", "artifactId1", "version" );
+        ArchivaProjectModel dependee2 = createBasicLegacyModel( "groupId", "artifactId2", "version" );
+        projectDaoMockControl.expectAndReturn( dao.queryProjectModels(
+            new ProjectsByArtifactUsageConstraint( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) ),
+                                               Arrays.asList( dependee1, dependee2 ) );
+
+        projectDaoMockControl.replay();
+
+        setActionParameters();
+
+        String result = action.dependees();
+
+        artifactDaoMockControl.verify();
+        projectDaoMockControl.verify();
+
+        assertActionSuccess( action, result );
+
+        assertActionParameters( action );
+        ArchivaProjectModel model = action.getModel();
+        assertDefaultModel( model );
+
+        assertNotNull( action.getDependees() );
+        assertCoordinate( action.getDependees().get( 0 ), "artifactId1" );
+        assertCoordinate( action.getDependees().get( 1 ), "artifactId2" );
+
+        assertNull( action.getRepositoryId() );
+        assertNull( action.getDependencies() );
+        assertNull( action.getMailingLists() );
+        assertNull( action.getSnapshotVersions() );
+    }
+
+    private void assertCoordinate( ArchivaProjectModel dependee, String artifactId )
+    {
+        assertEquals( artifactId, dependee.getArtifactId() );
+        assertEquals( "groupId", dependee.getGroupId() );
+        assertEquals( "version", dependee.getVersion() );
+    }
+
     private void assertDependencyBasic( Dependency dependency, String artifactId )
     {
         assertEquals( artifactId, dependency.getArtifactId() );
@@ -610,10 +665,7 @@ public class ShowArtifactActionTest
 
     private ArchivaProjectModel createLegacyProjectModel( String groupId, String artifactId, String version )
     {
-        ArchivaProjectModel model = new ArchivaProjectModel();
-        model.setGroupId( groupId );
-        model.setArtifactId( artifactId );
-        model.setVersion( version );
+        ArchivaProjectModel model = createBasicLegacyModel( groupId, artifactId, version );
         model.setPackaging( TEST_PACKAGING );
         model.setUrl( TEST_URL );
         model.setName( TEST_NAME );
@@ -648,6 +700,15 @@ public class ShowArtifactActionTest
         scm.setDeveloperConnection( TEST_SCM_DEV_CONNECTION );
         scm.setUrl( TEST_SCM_URL );
         model.setScm( scm );
+        return model;
+    }
+
+    private ArchivaProjectModel createBasicLegacyModel( String groupId, String artifactId, String version )
+    {
+        ArchivaProjectModel model = new ArchivaProjectModel();
+        model.setGroupId( groupId );
+        model.setArtifactId( artifactId );
+        model.setVersion( version );
         return model;
     }
 
