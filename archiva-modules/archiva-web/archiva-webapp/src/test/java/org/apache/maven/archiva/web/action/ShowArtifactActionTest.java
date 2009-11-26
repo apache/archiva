@@ -41,6 +41,7 @@ import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.MailingList;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.security.UserRepositories;
@@ -385,6 +386,78 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getSnapshotVersions() );
+    }
+
+    public void testGetDependencies()
+        throws ArchivaDatabaseException
+    {
+        List<ArchivaArtifact> artifacts =
+            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
+        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 1 );
+        ArchivaProjectModel legacyModel = createLegacyProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION );
+        Dependency dependency1 = createDependencyBasic( "artifactId1" );
+        Dependency dependency2 = createDependencyExtended( "artifactId2" );
+        legacyModel.setDependencies( Arrays.asList( dependency1, dependency2 ) );
+        MockControl projectDaoMockControl = createProjectDaoMock( legacyModel );
+
+        setActionParameters();
+
+        String result = action.dependencies();
+
+        artifactDaoMockControl.verify();
+        projectDaoMockControl.verify();
+
+        assertActionSuccess( action, result );
+
+        assertActionParameters( action );
+        ArchivaProjectModel model = action.getModel();
+        assertDefaultModel( model );
+
+        assertNotNull( action.getDependencies() );
+        assertDependencyBasic( action.getDependencies().get( 0 ), "artifactId1" );
+        assertDependencyExtended( action.getDependencies().get( 1 ), "artifactId2" );
+
+        assertNull( action.getRepositoryId() );
+        assertNull( action.getDependees() );
+        assertNull( action.getMailingLists() );
+        assertNull( action.getSnapshotVersions() );
+    }
+
+    private void assertDependencyBasic( Dependency dependency, String artifactId )
+    {
+        assertEquals( artifactId, dependency.getArtifactId() );
+        assertEquals( "groupId", dependency.getGroupId() );
+        assertEquals( "version", dependency.getVersion() );
+    }
+
+    private void assertDependencyExtended( Dependency dependency, String artifactId )
+    {
+        assertDependencyBasic( dependency, artifactId );
+        assertEquals( true, dependency.isOptional() );
+        assertEquals( "classifier", dependency.getClassifier() );
+        assertEquals( "type", dependency.getType() );
+        assertEquals( "scope", dependency.getScope() );
+        assertEquals( "systemPath", dependency.getSystemPath() );
+    }
+
+    private Dependency createDependencyExtended( String artifactId )
+    {
+        Dependency dependency = createDependencyBasic( artifactId );
+        dependency.setClassifier( "classifier" );
+        dependency.setOptional( true );
+        dependency.setScope( "scope" );
+        dependency.setSystemPath( "systemPath" );
+        dependency.setType( "type" );
+        return dependency;
+    }
+
+    private Dependency createDependencyBasic( String artifactId )
+    {
+        Dependency dependency = new Dependency();
+        dependency.setArtifactId( artifactId );
+        dependency.setGroupId( "groupId" );
+        dependency.setVersion( "version" );
+        return dependency;
     }
 
     private void assertMailingList( MailingList mailingList, String name, String prefix )
