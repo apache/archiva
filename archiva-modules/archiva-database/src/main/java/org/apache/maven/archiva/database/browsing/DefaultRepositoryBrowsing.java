@@ -122,6 +122,7 @@ public class DefaultRepositoryBrowsing
             // Easier to do this here, vs doing it in the SQL query.
             CollectionUtils.filter( groups, NotPredicate.getInstance( PredicateUtils.equalPredicate( groupId ) ) );
 
+            results.setSelectedRepositoryIds( observableRepositoryIds );
             results.setGroupIds( groups );
             results.setArtifacts( artifacts );
         }

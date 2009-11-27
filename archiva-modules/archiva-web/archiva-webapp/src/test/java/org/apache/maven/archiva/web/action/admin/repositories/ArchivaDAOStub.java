@@ -12,6 +12,8 @@ import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 
@@ -50,11 +52,23 @@ public class ArchivaDAOStub
 
     private List<String> versions;
 
+    private List<String> groups;
+
+    private List<String> artifacts;
+
     public List<?> query( SimpleConstraint constraint )
     {
         if ( constraint instanceof UniqueVersionConstraint )
         {
             return versions;
+        }
+        else if ( constraint instanceof UniqueGroupIdConstraint )
+        {
+            return groups;
+        }
+        else if ( constraint instanceof UniqueArtifactIdConstraint )
+        {
+            return artifacts;
         }
         else
         {
@@ -109,5 +123,15 @@ public class ArchivaDAOStub
     public void setVersions( List<String> versions )
     {
         this.versions = versions;
+    }
+
+    public void setGroups( List<String> groups )
+    {
+        this.groups = groups;
+    }
+
+    public void setArtifacts( List<String> artifacts )
+    {
+        this.artifacts = artifacts;
     }
 }
