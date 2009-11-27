@@ -168,11 +168,11 @@
         <th>Organisation</th>
         <td>
           <c:choose>
-            <c:when test="${model.organization != null}">
+            <c:when test="${model.organization.url != null}">
               <a href="${model.organization.url}">${model.organization.organizationName}</a>
             </c:when>
             <c:otherwise>
-              ${model.organization.name}
+              ${model.organization.organizationName}
             </c:otherwise>
           </c:choose>
         </td>
