@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -271,6 +272,12 @@ public class Maven2RepositoryMetadataResolver
 
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+                                                                     String projectVersion )
     {
         throw new UnsupportedOperationException();
     }

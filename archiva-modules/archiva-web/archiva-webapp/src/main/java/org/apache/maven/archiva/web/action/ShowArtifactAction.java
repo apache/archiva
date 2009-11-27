@@ -25,13 +25,13 @@ import java.util.List;
 
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.CiManagement;
 import org.apache.maven.archiva.model.Dependency;
@@ -58,11 +58,6 @@ public class ShowArtifactAction
     implements Validateable
 {
     /* .\ Not Exposed \._____________________________________________ */
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private RepositoryBrowsing repoBrowsing;
 
     /**
      * @plexus.requirement
@@ -146,15 +141,15 @@ public class ShowArtifactAction
             addActionError( "Artifact not found" );
             return ERROR;
         }
-        populateLegacyModel( versionMetadata );
+        model = populateLegacyModel( versionMetadata );
 
         return SUCCESS;
     }
 
-    private void populateLegacyModel( ProjectVersionMetadata versionMetadata )
+    private ArchivaProjectModel populateLegacyModel( ProjectVersionMetadata versionMetadata )
     {
         // TODO: eventually, move to just use the metadata directly, with minimal JSP changes, mostly for Maven specifics
-        model = new ArchivaProjectModel();
+        ArchivaProjectModel model = new ArchivaProjectModel();
         MavenProjectFacet projectFacet = (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
         if ( projectFacet != null )
         {
@@ -244,6 +239,7 @@ public class ShowArtifactAction
                 model.addDependency( dependency );
             }
         }
+        return model;
     }
 
     /**
@@ -274,7 +270,7 @@ public class ShowArtifactAction
             addActionError( "Artifact not found" );
             return ERROR;
         }
-        populateLegacyModel( versionMetadata );
+        model = populateLegacyModel( versionMetadata );
 
         this.dependencies = model.getDependencies();
 
@@ -309,7 +305,7 @@ public class ShowArtifactAction
             addActionError( "Artifact not found" );
             return ERROR;
         }
-        populateLegacyModel( versionMetadata );
+        model = populateLegacyModel( versionMetadata );
 
         this.mailingLists = model.getMailingLists();
 
@@ -334,9 +330,52 @@ public class ShowArtifactAction
     public String dependees()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        ProjectVersionMetadata versionMetadata = null;
+        for ( String repoId : getObservableRepos() )
+        {
+            if ( versionMetadata == null )
+            {
+                try
+                {
+                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                }
+                catch ( MetadataResolverException e )
+                {
+                    addActionError( "Error occurred resolving metadata for project: " + e.getMessage() );
+                    return ERROR;
+                }
+            }
+        }
 
-        this.dependees = repoBrowsing.getUsedBy( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        if ( versionMetadata == null )
+        {
+            addActionError( "Artifact not found" );
+            return ERROR;
+        }
+        model = populateLegacyModel( versionMetadata );
+
+        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+        // TODO: what if we get duplicates across repositories?
+        for ( String repoId : getObservableRepos() )
+        {
+            // TODO: what about if we want to see this irrespective of version?
+            references.addAll( metadataResolver.getProjectReferences( repoId, groupId, artifactId, version ) );
+        }
+
+        this.dependees = new ArrayList<ArchivaProjectModel>();
+        for ( ProjectVersionReference reference : references )
+        {
+            ArchivaProjectModel ref = new ArchivaProjectModel();
+
+            ref.setGroupId( reference.getNamespace() );
+            ref.setArtifactId( reference.getProjectId() );
+            ref.setVersion( reference.getProjectVersion() );
+
+            dependees.add( ref );
+        }
+
+        // TODO: may need to note on the page that references will be incomplete if the other artifacts are not yet stored in the content repository
+        // (especially in the case of pre-population import)
 
         return SUCCESS;
     }
@@ -349,6 +388,9 @@ public class ShowArtifactAction
     {
         // temporarily use this as we only need the model for the tag to perform, but we should be resolving the
         // graph here instead
+
+        // TODO: may need to note on the page that tree will be incomplete if the other artifacts are not yet stored in the content repository
+        // (especially in the case of pre-population import)
 
         return artifact();
     }

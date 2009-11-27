@@ -21,8 +21,10 @@ package org.apache.archiva.metadata.repository;
 
 import java.util.Collection;
 
+import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver"
@@ -38,7 +40,7 @@ public class DefaultMetadataResolver
     /**
      * FIXME: this needs to be configurable based on storage type, and availability of proxy module
      * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
-     *     appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
+     * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
      *
      * @plexus.requirement role-hint="maven2"
      */
@@ -63,6 +65,22 @@ public class DefaultMetadataResolver
             metadata = storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
             if ( metadata != null )
             {
+                // FIXME: make this a more generic post-processing that plugins can take advantage of
+                //       eg. maven projects should be able to process parent here
+                if ( !metadata.getDependencies().isEmpty() )
+                {
+                    ProjectVersionReference ref = new ProjectVersionReference();
+                    ref.setNamespace( namespace );
+                    ref.setProjectId( projectId );
+                    ref.setProjectVersion( projectVersion );
+                    ref.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
+                    for ( Dependency dependency : metadata.getDependencies() )
+                    {
+                        metadataRepository.updateProjectReference( repoId, dependency.getGroupId(),
+                                                                   dependency.getArtifactId(), dependency.getVersion(),
+                                                                   ref );
+                    }
+                }
                 metadataRepository.updateProjectVersion( repoId, namespace, projectId, metadata );
             }
         }
@@ -74,5 +92,13 @@ public class DefaultMetadataResolver
     {
         // TODO: intercept
         return metadataRepository.getArtifactVersions( repoId, namespace, projectId, projectVersion );
+    }
+
+    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+                                                                     String projectVersion )
+    {
+        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
+        // not passed to the storage mechanism as resolving references would require iterating all artifacts
+        return metadataRepository.getProjectReferences( repoId, namespace, projectId, projectVersion );
     }
 }

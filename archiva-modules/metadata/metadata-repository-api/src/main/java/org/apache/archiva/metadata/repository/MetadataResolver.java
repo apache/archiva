@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 
 public interface MetadataResolver
 {
@@ -32,4 +33,18 @@ public interface MetadataResolver
         throws MetadataResolverException;
 
     Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion );
+
+    /**
+     * Retrieve project references from the metadata repository. Note that this is not built into the content model for
+     * a project version as a reference may be present (due to reverse-lookup of dependencies) before the actual
+     * project is, and we want to avoid adding a stub model to the content repository.
+     *
+     * @param repoId         the repository ID to look within
+     * @param namespace      the namespace of the project to get references to
+     * @param projectId      the identifier of the project to get references to
+     * @param projectVersion the version of the project to get references to
+     * @return a list of project references
+     */
+    Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+                                                              String projectVersion );
 }

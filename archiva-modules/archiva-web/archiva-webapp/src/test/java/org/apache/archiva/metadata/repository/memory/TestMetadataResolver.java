@@ -25,8 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 
 public class TestMetadataResolver
@@ -36,6 +37,9 @@ public class TestMetadataResolver
 
     private Map<String, List<String>> artifactVersions = new HashMap<String, List<String>>();
 
+    private Map<String, List<ProjectVersionReference>> references =
+        new HashMap<String, List<ProjectVersionReference>>();
+
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
         ProjectMetadata metadata = new ProjectMetadata();
@@ -44,30 +48,45 @@ public class TestMetadataResolver
         return metadata;
     }
 
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
+                                                     String projectVersion )
     {
         return projectVersions.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion )
+    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
+                                                   String projectVersion )
     {
         List<String> versions = artifactVersions.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
         return ( versions != null ? versions : Collections.<String>emptyList() );
     }
 
-    public void setProjectVersion( String repoId, String namespace, String projectId, ProjectVersionMetadata versionMetadata )
+    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+                                                                     String projectVersion )
+    {
+        return references.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
+    }
+
+    public void setProjectVersion( String repoId, String namespace, String projectId,
+                                   ProjectVersionMetadata versionMetadata )
     {
         projectVersions.put( createMapKey( repoId, namespace, projectId, versionMetadata.getId() ), versionMetadata );
     }
 
-    public void setArtifactVersions( String repoId, String namespace, String projectId, String version,
+    public void setArtifactVersions( String repoId, String namespace, String projectId, String projectVersion,
                                      List<String> versions )
     {
-        artifactVersions.put( createMapKey( repoId, namespace, projectId, version ), versions );
+        artifactVersions.put( createMapKey( repoId, namespace, projectId, projectVersion ), versions );
     }
 
     private String createMapKey( String repoId, String namespace, String projectId, String projectVersion )
     {
         return repoId + ":" + namespace + ":" + projectId + ":" + projectVersion;
+    }
+
+    public void setProjectReferences( String repoId, String namespace, String projectId, String projectVersion,
+                                      List<ProjectVersionReference> references )
+    {
+        this.references.put( createMapKey( repoId, namespace, projectId, projectVersion ), references );
     }
 }

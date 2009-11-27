@@ -43,6 +43,7 @@ import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionFacet;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.IOUtils;
@@ -91,9 +92,18 @@ public class FileMetadataRepository
     public void updateProjectVersion( String repoId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
     {
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId );
+        File directory =
+            new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + versionMetadata.getId() );
 
-        Properties properties = new Properties();
+        Properties properties = readProperties( directory );
+        // remove properties that are not references or artifacts
+        for ( String name : properties.stringPropertyNames() )
+        {
+            if ( !name.startsWith( "artifact:" ) && !name.startsWith( "ref:" ) )
+            {
+                properties.remove( name );
+            }
+        }
         properties.setProperty( "id", versionMetadata.getId() );
         setProperty( properties, "name", versionMetadata.getName() );
         setProperty( properties, "description", versionMetadata.getDescription() );
@@ -157,7 +167,31 @@ public class FileMetadataRepository
 
         try
         {
-            writeProperties( properties, new File( directory, versionMetadata.getId() ) );
+            writeProperties( properties, directory );
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
+                                        ProjectVersionReference reference )
+    {
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+
+        Properties properties = readProperties( directory );
+        int i = Integer.valueOf( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
+        setProperty( properties, "ref:lastReferenceNum", Integer.toString( i ) );
+        setProperty( properties, "ref:reference." + i + ".namespace", reference.getNamespace() );
+        setProperty( properties, "ref:reference." + i + ".projectId", reference.getProjectId() );
+        setProperty( properties, "ref:reference." + i + ".projectVersion", reference.getProjectVersion() );
+        setProperty( properties, "ref:reference." + i + ".referenceType", reference.getReferenceType().toString() );
+
+        try
+        {
+            writeProperties( properties, directory );
         }
         catch ( IOException e )
         {
@@ -192,9 +226,10 @@ public class FileMetadataRepository
 
         Properties properties = readProperties( directory );
 
-        properties.setProperty( "updated:" + artifact.getId(), Long.toString( artifact.getUpdated().getTime() ) );
-        properties.setProperty( "size:" + artifact.getId(), Long.toString( artifact.getSize() ) );
-        properties.setProperty( "version:" + artifact.getId(), artifact.getVersion() );
+        properties.setProperty( "artifact:updated:" + artifact.getId(),
+                                Long.toString( artifact.getUpdated().getTime() ) );
+        properties.setProperty( "artifact:size:" + artifact.getId(), Long.toString( artifact.getSize() ) );
+        properties.setProperty( "artifact:version:" + artifact.getId(), artifact.getVersion() );
 
         try
         {
@@ -420,6 +455,28 @@ public class FileMetadataRepository
             }
         }
         return versions;
+    }
+
+    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+                                                                     String projectVersion )
+    {
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+
+        Properties properties = readProperties( directory );
+        int numberOfRefs = Integer.valueOf( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
+
+        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+        for ( int i = 0; i < numberOfRefs; i++ )
+        {
+            ProjectVersionReference reference = new ProjectVersionReference();
+            reference.setProjectId( properties.getProperty( "ref:reference." + i + ".projectId" ) );
+            reference.setNamespace( properties.getProperty( "ref:reference." + i + ".namespace" ) );
+            reference.setProjectVersion( properties.getProperty( "ref:reference." + i + ".projectVersion" ) );
+            reference.setReferenceType( ProjectVersionReference.ReferenceType.valueOf(
+                properties.getProperty( "ref:reference." + i + ".referenceType" ) ) );
+            references.add( reference );
+        }
+        return references;
     }
 
     private void writeProperties( Properties properties, File directory )

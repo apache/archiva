@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 
 public interface MetadataRepository
     extends MetadataResolver
@@ -39,4 +40,6 @@ public interface MetadataRepository
     void updateProjectVersion( String repoId, String namespace, String projectId,
                                ProjectVersionMetadata versionMetadata );
 
+    void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
+                                 ProjectVersionReference reference );
 }

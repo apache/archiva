@@ -31,25 +31,16 @@ import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectParent;
-import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ProjectModelDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
-import org.apache.maven.archiva.database.constraints.ProjectsByArtifactUsageConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
-import org.apache.maven.archiva.web.action.admin.repositories.ArchivaDAOStub;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.easymock.MockControl;
 
 public class ShowArtifactActionTest
     extends PlexusInSpringTestCase
@@ -114,8 +105,6 @@ public class ShowArtifactActionTest
     private static final String OTHER_TEST_REPO = "first-repo";
 
     private ShowArtifactAction action;
-
-    private ArchivaDAOStub archivaDao;
 
     private TestMetadataResolver metadataResolver;
 
@@ -415,33 +404,16 @@ public class ShowArtifactActionTest
     public void testGetDependees()
         throws ArchivaDatabaseException
     {
-        List<ArchivaArtifact> artifacts =
-            Collections.singletonList( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( artifacts, 1 );
-        ArchivaProjectModel legacyModel = createLegacyProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION );
-
-        MockControl projectDaoMockControl = MockControl.createNiceControl( ProjectModelDAO.class );
-        ProjectModelDAO dao = (ProjectModelDAO) projectDaoMockControl.getMock();
-        archivaDao.setProjectDao( dao );
-
-        projectDaoMockControl.expectAndReturn(
-            dao.getProjectModel( legacyModel.getGroupId(), legacyModel.getArtifactId(), legacyModel.getVersion() ),
-            legacyModel );
-
-        ArchivaProjectModel dependee1 = createBasicLegacyModel( "groupId", "artifactId1", "version" );
-        ArchivaProjectModel dependee2 = createBasicLegacyModel( "groupId", "artifactId2", "version" );
-        projectDaoMockControl.expectAndReturn( dao.queryProjectModels(
-            new ProjectsByArtifactUsageConstraint( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ) ),
+        ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
+        ProjectVersionReference dependee1 = createReference( "artifactId1" );
+        ProjectVersionReference dependee2 = createReference( "artifactId2" );
+        metadataResolver.setProjectReferences( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION,
                                                Arrays.asList( dependee1, dependee2 ) );
-
-        projectDaoMockControl.replay();
 
         setActionParameters();
 
         String result = action.dependees();
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertActionSuccess( action, result );
 
@@ -457,6 +429,16 @@ public class ShowArtifactActionTest
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
         assertNull( action.getSnapshotVersions() );
+    }
+
+    private ProjectVersionReference createReference( String projectId )
+    {
+        ProjectVersionReference reference = new ProjectVersionReference();
+        reference.setNamespace( "groupId" );
+        reference.setProjectId( projectId );
+        reference.setProjectVersion( "version" );
+        reference.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
+        return reference;
     }
 
     private void assertCoordinate( ArchivaProjectModel dependee, String artifactId )
@@ -651,99 +633,11 @@ public class ShowArtifactActionTest
         return model;
     }
 
-    private ArchivaProjectModel createLegacyProjectModel( String groupId, String artifactId, String version )
-    {
-        ArchivaProjectModel model = createBasicLegacyModel( groupId, artifactId, version );
-        model.setPackaging( TEST_PACKAGING );
-        model.setUrl( TEST_URL );
-        model.setName( TEST_NAME );
-        model.setDescription( TEST_DESCRIPTION );
-        VersionedReference parent = new VersionedReference();
-        parent.setGroupId( TEST_PARENT_GROUP_ID );
-        parent.setArtifactId( TEST_PARENT_ARTIFACT_ID );
-        parent.setVersion( TEST_PARENT_VERSION );
-        model.setParentProject( parent );
-        org.apache.maven.archiva.model.CiManagement ci = new org.apache.maven.archiva.model.CiManagement();
-        ci.setSystem( TEST_CI_SYSTEM );
-        ci.setUrl( TEST_CI_URL );
-        model.setCiManagement( ci );
-        org.apache.maven.archiva.model.IssueManagement issue = new org.apache.maven.archiva.model.IssueManagement();
-        issue.setSystem( TEST_ISSUE_SYSTEM );
-        issue.setUrl( TEST_ISSUE_URL );
-        model.setIssueManagement( issue );
-        org.apache.maven.archiva.model.Organization org = new org.apache.maven.archiva.model.Organization();
-        org.setName( TEST_ORGANIZATION_NAME );
-        org.setUrl( TEST_ORGANIZATION_URL );
-        model.setOrganization( org );
-        org.apache.maven.archiva.model.License l = new org.apache.maven.archiva.model.License();
-        l.setName( TEST_LICENSE_NAME );
-        l.setUrl( TEST_LICENSE_URL );
-        model.addLicense( l );
-        l = new org.apache.maven.archiva.model.License();
-        l.setName( TEST_LICENSE_NAME_2 );
-        l.setUrl( TEST_LICENSE_URL_2 );
-        model.addLicense( l );
-        org.apache.maven.archiva.model.Scm scm = new org.apache.maven.archiva.model.Scm();
-        scm.setConnection( TEST_SCM_CONNECTION );
-        scm.setDeveloperConnection( TEST_SCM_DEV_CONNECTION );
-        scm.setUrl( TEST_SCM_URL );
-        model.setScm( scm );
-        return model;
-    }
-
-    private ArchivaProjectModel createBasicLegacyModel( String groupId, String artifactId, String version )
-    {
-        ArchivaProjectModel model = new ArchivaProjectModel();
-        model.setGroupId( groupId );
-        model.setArtifactId( artifactId );
-        model.setVersion( version );
-        return model;
-    }
-
-    private MockControl createArtifactDaoMock( List<ArchivaArtifact> artifacts, int count )
-        throws ArchivaDatabaseException
-    {
-        return createArtifactDaoMock( artifacts, TEST_VERSION, count );
-    }
-
-    private MockControl createArtifactDaoMock( List<ArchivaArtifact> artifacts, String version, int count )
-        throws ArchivaDatabaseException
-    {
-        // testing deeper than normal with the mocks as we intend to replace RepositoryBrowsing, not just the database
-        // underneath it - those sections will be adjusted with a mock content repository later
-        MockControl control = MockControl.createNiceControl( ArtifactDAO.class );
-        ArtifactDAO dao = (ArtifactDAO) control.getMock();
-        archivaDao.setArtifactDao( dao );
-
-        ArtifactsRelatedConstraint c = new ArtifactsRelatedConstraint( TEST_GROUP_ID, TEST_ARTIFACT_ID, version );
-        dao.queryArtifacts( c );
-        control.setReturnValue( artifacts, count );
-
-        control.replay();
-        return control;
-    }
-
-    private ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
-    {
-        return createArtifact( groupId, artifactId, version, TEST_REPO );
-    }
-
-    private ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String repoId )
-    {
-        ArchivaArtifactModel model = new ArchivaArtifactModel();
-        model.setGroupId( groupId );
-        model.setArtifactId( artifactId );
-        model.setVersion( version );
-        model.setRepositoryId( repoId );
-        return new ArchivaArtifact( model );
-    }
-
     protected void setUp()
         throws Exception
     {
         super.setUp();
         action = (ShowArtifactAction) lookup( Action.class, ACTION_HINT );
         metadataResolver = (TestMetadataResolver) action.getMetadataResolver();
-        archivaDao = (ArchivaDAOStub) lookup( ArchivaDAO.class, "jdo" );
     }
 }
