@@ -55,7 +55,7 @@ public class BrowseActionTest
 
     private static final List<String> GROUPS =
         Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven", "com.sun", "com.oracle",
-                       "repeat.repeat", "org.apache", "single.group" );
+                       "repeat.repeat" );
 
     public void testInstantiation()
     {
@@ -65,8 +65,6 @@ public class BrowseActionTest
     public void testBrowse()
     {
         metadataResolver.setNamespaces( GROUPS );
-        // add an artifact in the tree to make sure "single" is not collapsed
-        metadataResolver.setProjectVersion( TEST_REPO, "single", "single", new ProjectVersionMetadata() );
 
         String result = action.browse();
         assertSuccessResult( result );
@@ -74,8 +72,7 @@ public class BrowseActionTest
         BrowsingResults results = action.getResults();
         assertNotNull( results );
         assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertEquals( Arrays.asList( "com", "commons-lang", "org.apache", "repeat.repeat", "single" ),
-                      results.getGroupIds() );
+        assertEquals( Arrays.asList( "com", "commons-lang", "org.apache", "repeat.repeat" ), results.getGroupIds() );
         assertNull( results.getArtifacts() );
         assertNull( results.getSelectedArtifactId() );
         assertNull( results.getSelectedGroupId() );
@@ -141,10 +138,9 @@ public class BrowseActionTest
     public void testBrowseGroupNoArtifacts()
     {
         String selectedGroupId = "org";
-        List<String> groups = Arrays.asList( "apache.archiva", "apache.maven" );
+        List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache.maven" );
 
-        archivaDao.setGroups( groups );
-        archivaDao.setArtifacts( Collections.<String>emptyList() );
+        metadataResolver.setNamespaces( groups );
         action.setGroupId( selectedGroupId );
         String result = action.browseGroup();
         assertSuccessResult( result );
@@ -152,7 +148,7 @@ public class BrowseActionTest
         BrowsingResults results = action.getResults();
         assertNotNull( results );
         assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertEquals( groups, results.getGroupIds() );
+        assertEquals( Collections.singletonList( "org.apache" ), results.getGroupIds() );
         assertEquals( Collections.<String>emptyList(), results.getArtifacts() );
         assertNull( results.getSelectedArtifactId() );
         assertEquals( selectedGroupId, results.getSelectedGroupId() );
@@ -168,10 +164,10 @@ public class BrowseActionTest
     {
         String artifacts = "apache";
         String selectedGroupId = "org.apache";
-        List<String> groups = Arrays.asList( "archiva", "maven" );
+        List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache.maven" );
 
-        archivaDao.setGroups( groups );
-        archivaDao.setArtifacts( Collections.singletonList( artifacts ) );
+        metadataResolver.setNamespaces( groups );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, artifacts, new ProjectVersionMetadata() );
         action.setGroupId( selectedGroupId );
         String result = action.browseGroup();
         assertSuccessResult( result );
@@ -180,6 +176,61 @@ public class BrowseActionTest
         assertNotNull( results );
         assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
         assertEquals( groups, results.getGroupIds() );
+        assertEquals( Collections.singletonList( artifacts ), results.getArtifacts() );
+        assertNull( results.getSelectedArtifactId() );
+        assertEquals( selectedGroupId, results.getSelectedGroupId() );
+        assertNull( results.getVersions() );
+
+        assertEquals( selectedGroupId, action.getGroupId() );
+        assertNull( action.getArtifactId() );
+        assertNull( action.getRepositoryId() );
+        assertNull( action.getSharedModel() );
+    }
+
+    public void testBrowseWithCollapsedGroupsAndArtifacts()
+    {
+        List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache" );
+
+        metadataResolver.setNamespaces( groups );
+        // add an artifact in the tree to make sure "single" is not collapsed
+        metadataResolver.setProjectVersion( TEST_REPO, "org.apache", "apache", new ProjectVersionMetadata() );
+
+        String result = action.browse();
+        assertSuccessResult( result );
+
+        BrowsingResults results = action.getResults();
+        assertNotNull( results );
+        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
+        assertEquals( Collections.singletonList( "org.apache" ), results.getGroupIds() );
+        assertNull( results.getArtifacts() );
+        assertNull( results.getSelectedArtifactId() );
+        assertNull( results.getSelectedGroupId() );
+        assertNull( results.getVersions() );
+
+        assertNull( action.getGroupId() );
+        assertNull( action.getArtifactId() );
+        assertNull( action.getRepositoryId() );
+        assertNull( action.getSharedModel() );
+    }
+
+    public void testBrowseGroupWithCollapsedGroupsAndArtifacts()
+    {
+        String artifacts = "apache";
+        String selectedGroupId = "org.apache";
+        List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache" );
+
+        metadataResolver.setNamespaces( groups );
+        // add an artifact in the tree to make sure "single" is not collapsed
+        metadataResolver.setProjectVersion( TEST_REPO, "org.apache", "apache", new ProjectVersionMetadata() );
+
+        action.setGroupId( selectedGroupId );
+        String result = action.browseGroup();
+        assertSuccessResult( result );
+
+        BrowsingResults results = action.getResults();
+        assertNotNull( results );
+        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
+        assertEquals( Collections.singletonList( "org.apache.archiva" ), results.getGroupIds() );
         assertEquals( Collections.singletonList( artifacts ), results.getArtifacts() );
         assertNull( results.getSelectedArtifactId() );
         assertEquals( selectedGroupId, results.getSelectedGroupId() );

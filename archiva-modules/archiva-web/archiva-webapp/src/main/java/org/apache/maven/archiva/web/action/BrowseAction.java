@@ -97,11 +97,9 @@ public class BrowseAction
                 namespaces.add( collapseNamespaces( repoId, n ) );
             }
         }
-        ArrayList<String> list = new ArrayList<String>( namespaces );
-        Collections.sort( list );
 
         this.results = new BrowsingResults();
-        results.setGroupIds( list );
+        results.setGroupIds( getSortedList( namespaces ) );
         results.setSelectedRepositoryIds( selectedRepos );
         return SUCCESS;
     }
@@ -142,8 +140,35 @@ public class BrowseAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        this.results = repoBrowsing.selectGroupId( getPrincipal(), selectedRepos, groupId );
+        Set<String> namespaces = new LinkedHashSet<String>();
+        Set<String> projects = new LinkedHashSet<String>();
+        for ( String repoId : selectedRepos )
+        {
+            Collection<String> childNamespaces = metadataResolver.getNamespaces( repoId, groupId );
+            // TODO: this logic should be optional, particularly remembering we want to keep this code simple
+            //       it is located here to avoid the content repository implementation needing to do too much for what
+            //       is essentially presentation code
+            for ( String n : childNamespaces )
+            {
+                // TODO: check performance of this
+                namespaces.add( collapseNamespaces( repoId, groupId + "." + n ) );
+            }
+
+            projects.addAll( metadataResolver.getProjects( repoId, groupId ) );
+        }
+
+        this.results = new BrowsingResults( groupId );
+        results.setGroupIds( getSortedList( namespaces ) );
+        results.setArtifacts( getSortedList( projects ) );
+        results.setSelectedRepositoryIds( selectedRepos );
         return SUCCESS;
+    }
+
+    private ArrayList<String> getSortedList( Set<String> set )
+    {
+        ArrayList<String> list = new ArrayList<String>( set );
+        Collections.sort( list );
+        return list;
     }
 
     public String browseArtifact()

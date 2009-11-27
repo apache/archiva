@@ -107,7 +107,8 @@ public class TestMetadataResolver
 
     public Collection<String> getProjects( String repoId, String namespace )
     {
-        return projectsInNamespace.get( namespace );
+        Collection<String> list = projectsInNamespace.get( namespace );
+        return list != null ? list : Collections.<String>emptyList();
     }
 
     public void setProjectVersion( String repoId, String namespace, String projectId,
