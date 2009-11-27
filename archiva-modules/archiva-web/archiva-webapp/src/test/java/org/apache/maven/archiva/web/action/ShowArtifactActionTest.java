@@ -45,57 +45,11 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 public class ShowArtifactActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private static final String ACTION_HINT = "showArtifactAction";
 
-    private static final String TEST_GROUP_ID = "groupId";
-
-    private static final String TEST_ARTIFACT_ID = "artifactId";
-
     private static final String TEST_VERSION = "version";
-
-    private static final String TEST_PACKAGING = "packaging";
-
-    private static final String TEST_ISSUE_URL = "http://jira.codehaus.org/browse/MRM";
-
-    private static final String TEST_ISSUE_SYSTEM = "jira";
-
-    private static final String TEST_CI_SYSTEM = "continuum";
-
-    private static final String TEST_CI_URL = "http://vmbuild.apache.org/";
-
-    private static final String TEST_URL = "url";
-
-    private static final String TEST_NAME = "name";
-
-    private static final String TEST_DESCRIPTION = "description";
-
-    private static final String TEST_PARENT_GROUP_ID = "parentGroupId";
-
-    private static final String TEST_PARENT_ARTIFACT_ID = "parentArtifactId";
-
-    private static final String TEST_PARENT_VERSION = "parentVersion";
-
-    private static final String TEST_ORGANIZATION_NAME = "organizationName";
-
-    private static final String TEST_ORGANIZATION_URL = "organizationUrl";
-
-    private static final String TEST_LICENSE_URL = "licenseUrl";
-
-    private static final String TEST_LICENSE_NAME = "licenseName";
-
-    private static final String TEST_LICENSE_URL_2 = "licenseUrl_2";
-
-    private static final String TEST_LICENSE_NAME_2 = "licenseName_2";
-
-    private static final String TEST_REPO = "test-repo";
-
-    private static final String TEST_SCM_CONNECTION = "scmConnection";
-
-    private static final String TEST_SCM_DEV_CONNECTION = "scmDevConnection";
-
-    private static final String TEST_SCM_URL = "scmUrl";
 
     private ShowArtifactAction action;
 
@@ -385,45 +339,9 @@ public class ShowArtifactActionTest
         assertEquals( 1, action.getActionErrors().size() );
     }
 
-    private void setObservableRepos( List<String> repoIds )
-    {
-        UserRepositoriesStub repos = (UserRepositoriesStub) lookup( UserRepositories.class );
-        repos.setObservableRepositoryIds( repoIds );
-    }
-
     private void assertDefaultModel( ArchivaProjectModel model )
     {
         assertDefaultModel( model, TEST_VERSION );
-    }
-
-    private void assertDefaultModel( ArchivaProjectModel model, String version )
-    {
-        assertEquals( TEST_GROUP_ID, model.getGroupId() );
-        assertEquals( TEST_ARTIFACT_ID, model.getArtifactId() );
-        assertEquals( version, model.getVersion() );
-        assertEquals( TEST_PACKAGING, model.getPackaging() );
-        assertEquals( TEST_URL, model.getUrl() );
-        assertEquals( TEST_NAME, model.getName() );
-        assertEquals( TEST_DESCRIPTION, model.getDescription() );
-        assertEquals( TEST_ORGANIZATION_NAME, model.getOrganization().getName() );
-        assertEquals( TEST_ORGANIZATION_URL, model.getOrganization().getUrl() );
-        assertEquals( 2, model.getLicenses().size() );
-        License l = model.getLicenses().get( 0 );
-        assertEquals( TEST_LICENSE_NAME, l.getName() );
-        assertEquals( TEST_LICENSE_URL, l.getUrl() );
-        l = model.getLicenses().get( 1 );
-        assertEquals( TEST_LICENSE_NAME_2, l.getName() );
-        assertEquals( TEST_LICENSE_URL_2, l.getUrl() );
-        assertEquals( TEST_PARENT_GROUP_ID, model.getParentProject().getGroupId() );
-        assertEquals( TEST_PARENT_ARTIFACT_ID, model.getParentProject().getArtifactId() );
-        assertEquals( TEST_PARENT_VERSION, model.getParentProject().getVersion() );
-        assertEquals( TEST_ISSUE_SYSTEM, model.getIssueManagement().getSystem() );
-        assertEquals( TEST_ISSUE_URL, model.getIssueManagement().getUrl() );
-        assertEquals( TEST_CI_SYSTEM, model.getCiManagement().getSystem() );
-        assertEquals( TEST_CI_URL, model.getCiManagement().getUrl() );
-        assertEquals( TEST_SCM_CONNECTION, model.getScm().getConnection() );
-        assertEquals( TEST_SCM_DEV_CONNECTION, model.getScm().getDeveloperConnection() );
-        assertEquals( TEST_SCM_URL, model.getScm().getUrl() );
     }
 
     private void setActionParameters()

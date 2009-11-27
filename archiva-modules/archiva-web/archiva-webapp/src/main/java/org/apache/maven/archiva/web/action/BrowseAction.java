@@ -29,7 +29,10 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.security.*;
+import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
+import org.apache.maven.archiva.security.PrincipalNotFoundException;
+import org.apache.maven.archiva.security.UserRepositories;
 
 /**
  * Browse the repository.
@@ -145,6 +148,7 @@ public class BrowseAction
                 if( isFirstVersion )
                 {
                     sharedModel = model;
+                    sharedModel.setVersion( null );
                 }
                 else
                 {
