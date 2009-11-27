@@ -29,8 +29,6 @@ import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
 
 public class ShowArtifactActionTest
     extends AbstractActionTestCase
@@ -67,7 +65,7 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model );
 
         assertEquals( TEST_REPO, action.getRepositoryId() );
@@ -96,7 +94,7 @@ public class ShowArtifactActionTest
         assertEquals( TEST_GROUP_ID, action.getGroupId() );
         assertEquals( TEST_ARTIFACT_ID, action.getArtifactId() );
         assertEquals( TEST_SNAPSHOT_VERSION, action.getVersion() );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model, TEST_SNAPSHOT_VERSION );
 
         assertEquals( TEST_REPO, action.getRepositoryId() );
@@ -126,7 +124,7 @@ public class ShowArtifactActionTest
         assertEquals( TEST_GROUP_ID, action.getGroupId() );
         assertEquals( TEST_ARTIFACT_ID, action.getArtifactId() );
         assertEquals( TEST_TS_SNAPSHOT_VERSION, action.getVersion() );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model, TEST_TS_SNAPSHOT_VERSION );
 
         assertEquals( TEST_REPO, action.getRepositoryId() );
@@ -191,7 +189,7 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model );
 
         assertEquals( TEST_REPO, action.getRepositoryId() );
@@ -217,7 +215,7 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model );
 
         assertEquals( TEST_REPO, action.getRepositoryId() );
@@ -243,7 +241,7 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model );
 
         assertEquals( TEST_REPO, action.getRepositoryId() );
@@ -271,7 +269,7 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertEquals( TEST_VERSION, model.getVersion() );
         assertEquals( TEST_URL, model.getUrl() );
         assertEquals( TEST_NAME, model.getName() );
@@ -286,7 +284,6 @@ public class ShowArtifactActionTest
     }
 
     public void testGetMailingLists()
-        throws ArchivaDatabaseException
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
         MailingList ml1 = createMailingList( "Users List", "users" );
@@ -301,7 +298,7 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model );
 
         assertNotNull( action.getMailingLists() );
@@ -315,7 +312,6 @@ public class ShowArtifactActionTest
     }
 
     public void testGetDependencies()
-        throws ArchivaDatabaseException
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
         Dependency dependency1 = createDependencyBasic( "artifactId1" );
@@ -330,7 +326,7 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model );
 
         assertNotNull( action.getDependencies() );
@@ -344,7 +340,6 @@ public class ShowArtifactActionTest
     }
 
     public void testGetDependees()
-        throws ArchivaDatabaseException
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
@@ -360,7 +355,7 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ArchivaProjectModel model = action.getModel();
+        ProjectVersionMetadata model = action.getModel();
         assertDefaultModel( model );
 
         assertNotNull( action.getDependees() );
@@ -383,21 +378,21 @@ public class ShowArtifactActionTest
         return reference;
     }
 
-    private void assertCoordinate( ArchivaProjectModel dependee, String artifactId )
+    private void assertCoordinate( ProjectVersionReference dependee, String artifactId )
     {
-        assertEquals( artifactId, dependee.getArtifactId() );
-        assertEquals( "groupId", dependee.getGroupId() );
-        assertEquals( "version", dependee.getVersion() );
+        assertEquals( artifactId, dependee.getProjectId() );
+        assertEquals( "groupId", dependee.getNamespace() );
+        assertEquals( "version", dependee.getProjectVersion() );
     }
 
-    private void assertDependencyBasic( org.apache.maven.archiva.model.Dependency dependency, String artifactId )
+    private void assertDependencyBasic( Dependency dependency, String artifactId )
     {
         assertEquals( artifactId, dependency.getArtifactId() );
         assertEquals( "groupId", dependency.getGroupId() );
         assertEquals( "version", dependency.getVersion() );
     }
 
-    private void assertDependencyExtended( org.apache.maven.archiva.model.Dependency dependency, String artifactId )
+    private void assertDependencyExtended( Dependency dependency, String artifactId )
     {
         assertDependencyBasic( dependency, artifactId );
         assertEquals( true, dependency.isOptional() );
@@ -427,7 +422,7 @@ public class ShowArtifactActionTest
         return dependency;
     }
 
-    private void assertMailingList( org.apache.maven.archiva.model.MailingList mailingList, String name, String prefix )
+    private void assertMailingList( MailingList mailingList, String name, String prefix )
     {
         assertEquals( name, mailingList.getName() );
         assertEquals( prefix + "-post@", mailingList.getPostAddress() );
@@ -466,7 +461,7 @@ public class ShowArtifactActionTest
         assertEquals( 1, action.getActionErrors().size() );
     }
 
-    private void assertDefaultModel( ArchivaProjectModel model )
+    private void assertDefaultModel( ProjectVersionMetadata model )
     {
         assertDefaultModel( model, TEST_VERSION );
     }

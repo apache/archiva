@@ -30,7 +30,6 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectParent;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -92,15 +91,13 @@ public abstract class AbstractActionTestCase
         repos.setObservableRepositoryIds( repoIds );
     }
 
-    protected void assertDefaultModel( ArchivaProjectModel model, String version )
+    protected void assertDefaultModel( ProjectVersionMetadata model, String version )
     {
         assertDefaultModel( model, TEST_GROUP_ID, TEST_ARTIFACT_ID, version );
     }
 
-    protected void assertDefaultModel( ArchivaProjectModel model, String groupId, String artifactId, String version )
+    protected void assertDefaultModel( ProjectVersionMetadata model, String groupId, String artifactId, String version )
     {
-        assertEquals( groupId, model.getGroupId() );
-        assertEquals( artifactId, model.getArtifactId() );
         assertEquals( version, model.getVersion() );
         assertEquals( TEST_URL, model.getUrl() );
         assertEquals( TEST_NAME, model.getName() );
@@ -108,7 +105,7 @@ public abstract class AbstractActionTestCase
         assertEquals( TEST_ORGANIZATION_NAME, model.getOrganization().getName() );
         assertEquals( TEST_ORGANIZATION_URL, model.getOrganization().getUrl() );
         assertEquals( 2, model.getLicenses().size() );
-        org.apache.maven.archiva.model.License l = model.getLicenses().get( 0 );
+        License l = model.getLicenses().get( 0 );
         assertEquals( TEST_LICENSE_NAME, l.getName() );
         assertEquals( TEST_LICENSE_URL, l.getUrl() );
         l = model.getLicenses().get( 1 );
@@ -122,10 +119,13 @@ public abstract class AbstractActionTestCase
         assertEquals( TEST_SCM_DEV_CONNECTION, model.getScm().getDeveloperConnection() );
         assertEquals( TEST_SCM_URL, model.getScm().getUrl() );
 
-        assertEquals( TEST_PACKAGING, model.getPackaging() );
-        assertEquals( TEST_PARENT_GROUP_ID, model.getParentProject().getGroupId() );
-        assertEquals( TEST_PARENT_ARTIFACT_ID, model.getParentProject().getArtifactId() );
-        assertEquals( TEST_PARENT_VERSION, model.getParentProject().getVersion() );
+        MavenProjectFacet mavenFacet = (MavenProjectFacet) model.getFacet( MavenProjectFacet.FACET_ID );
+        assertEquals( groupId, mavenFacet.getGroupId() );
+        assertEquals( artifactId, mavenFacet.getArtifactId() );
+        assertEquals( TEST_PACKAGING, mavenFacet.getPackaging() );
+        assertEquals( TEST_PARENT_GROUP_ID, mavenFacet.getParent().getGroupId() );
+        assertEquals( TEST_PARENT_ARTIFACT_ID, mavenFacet.getParent().getArtifactId() );
+        assertEquals( TEST_PARENT_VERSION, mavenFacet.getParent().getVersion() );
     }
 
     protected ProjectVersionMetadata createProjectModel( String version )

@@ -32,16 +32,6 @@ import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.database.browsing.BrowsingResults;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.CiManagement;
-import org.apache.maven.archiva.model.Dependency;
-import org.apache.maven.archiva.model.IssueManagement;
-import org.apache.maven.archiva.model.License;
-import org.apache.maven.archiva.model.MailingList;
-import org.apache.maven.archiva.model.Organization;
-import org.apache.maven.archiva.model.Scm;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
@@ -67,17 +57,19 @@ public class BrowseAction
      */
     private UserRepositories userRepositories;
 
-    // TODO: eventually, move to just use the metadata directly, with minimal JSP changes
-    private BrowsingResults results;
-
     private String groupId;
 
     private String artifactId;
 
     private String repositoryId;
 
-    // TODO: eventually, move to just use the metadata directly, with minimal JSP changes, mostly for Maven specifics
-    private ArchivaProjectModel sharedModel;
+    private ProjectVersionMetadata sharedModel;
+
+    private Collection<String> namespaces;
+
+    private Collection<String> projectIds;
+
+    private Collection<String> projectVersions;
 
     public String browse()
     {
@@ -101,9 +93,7 @@ public class BrowseAction
             }
         }
 
-        this.results = new BrowsingResults();
-        results.setGroupIds( getSortedList( namespaces ) );
-        results.setSelectedRepositoryIds( selectedRepos );
+        this.namespaces = getSortedList( namespaces );
         return SUCCESS;
     }
 
@@ -160,10 +150,8 @@ public class BrowseAction
             projects.addAll( metadataResolver.getProjects( repoId, groupId ) );
         }
 
-        this.results = new BrowsingResults( groupId );
-        results.setGroupIds( getSortedList( namespaces ) );
-        results.setArtifacts( getSortedList( projects ) );
-        results.setSelectedRepositoryIds( selectedRepos );
+        this.namespaces = getSortedList( namespaces );
+        this.projectIds = getSortedList( projects );
         return SUCCESS;
     }
 
@@ -203,25 +191,27 @@ public class BrowseAction
             versions.addAll( metadataResolver.getProjectVersions( repoId, groupId, artifactId ) );
         }
 
-        this.results = new BrowsingResults( groupId, artifactId );
         // TODO: sort by known version ordering method
-        results.setVersions( new ArrayList<String>( versions ) );
-        results.setSelectedRepositoryIds( selectedRepos );
+        this.projectVersions = new ArrayList<String>( versions );
 
-        populateSharedModel( selectedRepos );
+        populateSharedModel( selectedRepos, versions );
 
         return SUCCESS;
     }
 
-    private void populateSharedModel( Collection<String> selectedRepos )
+    private void populateSharedModel( Collection<String> selectedRepos, Collection<String> projectVersions )
         throws MetadataResolverException
     {
-        sharedModel = new ArchivaProjectModel();
-        sharedModel.setGroupId( groupId );
-        sharedModel.setArtifactId( artifactId );
+        sharedModel = new ProjectVersionMetadata();
+
+        MavenProjectFacet mavenFacet = new MavenProjectFacet();
+        mavenFacet.setGroupId( groupId );
+        mavenFacet.setArtifactId( artifactId );
+        sharedModel.addFacet( mavenFacet );
+
         boolean isFirstVersion = true;
 
-        for ( String version : this.results.getVersions() )
+        for ( String version : projectVersions )
         {
             ProjectVersionMetadata versionMetadata = null;
             for ( String repoId : selectedRepos )
@@ -237,56 +227,59 @@ public class BrowseAction
                 continue;
             }
 
-            ArchivaProjectModel model = populateLegacyModel( versionMetadata );
-
             if ( isFirstVersion )
             {
-                sharedModel = model;
-                sharedModel.setVersion( null );
+                sharedModel = versionMetadata;
+                sharedModel.setId( null );
             }
             else
             {
-                if ( sharedModel.getPackaging() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getPackaging(), model.getPackaging() ) )
+                MavenProjectFacet versionMetadataMavenFacet =
+                    (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
+                if ( versionMetadataMavenFacet != null )
                 {
-                    sharedModel.setPackaging( null );
+                    if ( mavenFacet.getPackaging() != null && !StringUtils.equalsIgnoreCase( mavenFacet.getPackaging(),
+                                                                                             versionMetadataMavenFacet.getPackaging() ) )
+                    {
+                        mavenFacet.setPackaging( null );
+                    }
                 }
 
                 if ( sharedModel.getName() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getName(), model.getName() ) )
+                    !StringUtils.equalsIgnoreCase( sharedModel.getName(), versionMetadata.getName() ) )
                 {
                     sharedModel.setName( "" );
                 }
 
                 if ( sharedModel.getDescription() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getDescription(), model.getDescription() ) )
+                    !StringUtils.equalsIgnoreCase( sharedModel.getDescription(), versionMetadata.getDescription() ) )
                 {
                     sharedModel.setDescription( null );
                 }
 
-                if ( sharedModel.getIssueManagement() != null && model.getIssueManagement() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getIssueManagementUrl(),
-                                                   model.getIssueManagement().getIssueManagementUrl() ) )
+                if ( sharedModel.getIssueManagement() != null && versionMetadata.getIssueManagement() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(),
+                                                   versionMetadata.getIssueManagement().getUrl() ) )
                 {
                     sharedModel.setIssueManagement( null );
                 }
 
-                if ( sharedModel.getCiManagement() != null && model.getCiManagement() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getCiUrl(),
-                                                   model.getCiManagement().getCiUrl() ) )
+                if ( sharedModel.getCiManagement() != null && versionMetadata.getCiManagement() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(),
+                                                   versionMetadata.getCiManagement().getUrl() ) )
                 {
                     sharedModel.setCiManagement( null );
                 }
 
-                if ( sharedModel.getOrganization() != null && model.getOrganization() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getOrganizationName(),
-                                                   model.getOrganization().getOrganizationName() ) )
+                if ( sharedModel.getOrganization() != null && versionMetadata.getOrganization() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(),
+                                                   versionMetadata.getOrganization().getName() ) )
                 {
                     sharedModel.setOrganization( null );
                 }
 
                 if ( sharedModel.getUrl() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), model.getUrl() ) )
+                    !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), versionMetadata.getUrl() ) )
                 {
                     sharedModel.setUrl( null );
                 }
@@ -294,102 +287,6 @@ public class BrowseAction
 
             isFirstVersion = false;
         }
-    }
-
-    private ArchivaProjectModel populateLegacyModel( ProjectVersionMetadata versionMetadata )
-    {
-        // TODO: eventually, move to just use the metadata directly, with minimal JSP changes, mostly for Maven specifics
-        ArchivaProjectModel model = new ArchivaProjectModel();
-        MavenProjectFacet projectFacet = (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
-        if ( projectFacet != null )
-        {
-            model.setGroupId( projectFacet.getGroupId() );
-            model.setArtifactId( projectFacet.getArtifactId() );
-            model.setPackaging( projectFacet.getPackaging() );
-            if ( projectFacet.getParent() != null )
-            {
-                VersionedReference parent = new VersionedReference();
-                parent.setGroupId( projectFacet.getParent().getGroupId() );
-                parent.setArtifactId( projectFacet.getParent().getArtifactId() );
-                parent.setVersion( projectFacet.getParent().getVersion() );
-                model.setParentProject( parent );
-            }
-        }
-
-        model.setVersion( versionMetadata.getId() );
-        model.setDescription( versionMetadata.getDescription() );
-        model.setName( versionMetadata.getName() );
-        model.setUrl( versionMetadata.getUrl() );
-        if ( versionMetadata.getOrganization() != null )
-        {
-            Organization organization = new Organization();
-            organization.setName( versionMetadata.getOrganization().getName() );
-            organization.setUrl( versionMetadata.getOrganization().getUrl() );
-            model.setOrganization( organization );
-        }
-        if ( versionMetadata.getCiManagement() != null )
-        {
-            CiManagement ci = new CiManagement();
-            ci.setSystem( versionMetadata.getCiManagement().getSystem() );
-            ci.setUrl( versionMetadata.getCiManagement().getUrl() );
-            model.setCiManagement( ci );
-        }
-        if ( versionMetadata.getIssueManagement() != null )
-        {
-            IssueManagement issueManagement = new IssueManagement();
-            issueManagement.setSystem( versionMetadata.getIssueManagement().getSystem() );
-            issueManagement.setUrl( versionMetadata.getIssueManagement().getUrl() );
-            model.setIssueManagement( issueManagement );
-        }
-        if ( versionMetadata.getScm() != null )
-        {
-            Scm scm = new Scm();
-            scm.setConnection( versionMetadata.getScm().getConnection() );
-            scm.setDeveloperConnection( versionMetadata.getScm().getDeveloperConnection() );
-            scm.setUrl( versionMetadata.getScm().getUrl() );
-            model.setScm( scm );
-        }
-        if ( versionMetadata.getLicenses() != null )
-        {
-            for ( org.apache.archiva.metadata.model.License l : versionMetadata.getLicenses() )
-            {
-                License license = new License();
-                license.setName( l.getName() );
-                license.setUrl( l.getUrl() );
-                model.addLicense( license );
-            }
-        }
-        if ( versionMetadata.getMailingLists() != null )
-        {
-            for ( org.apache.archiva.metadata.model.MailingList l : versionMetadata.getMailingLists() )
-            {
-                MailingList mailingList = new MailingList();
-                mailingList.setMainArchiveUrl( l.getMainArchiveUrl() );
-                mailingList.setName( l.getName() );
-                mailingList.setPostAddress( l.getPostAddress() );
-                mailingList.setSubscribeAddress( l.getSubscribeAddress() );
-                mailingList.setUnsubscribeAddress( l.getUnsubscribeAddress() );
-                mailingList.setOtherArchives( l.getOtherArchives() );
-                model.addMailingList( mailingList );
-            }
-        }
-        if ( versionMetadata.getDependencies() != null )
-        {
-            for ( org.apache.archiva.metadata.model.Dependency d : versionMetadata.getDependencies() )
-            {
-                Dependency dependency = new Dependency();
-                dependency.setScope( d.getScope() );
-                dependency.setSystemPath( d.getSystemPath() );
-                dependency.setType( d.getType() );
-                dependency.setVersion( d.getVersion() );
-                dependency.setArtifactId( d.getArtifactId() );
-                dependency.setClassifier( d.getClassifier() );
-                dependency.setGroupId( d.getGroupId() );
-                dependency.setOptional( d.isOptional() );
-                model.addDependency( dependency );
-            }
-        }
-        return model;
     }
 
     private List<String> getObservableRepos()
@@ -434,9 +331,9 @@ public class BrowseAction
         this.artifactId = artifactId;
     }
 
-    public BrowsingResults getResults()
+    public Collection<String> getNamespaces()
     {
-        return results;
+        return namespaces;
     }
 
     public String getRepositoryId()
@@ -451,18 +348,23 @@ public class BrowseAction
         this.repositoryId = repositoryId;
     }
 
-    public ArchivaProjectModel getSharedModel()
+    public ProjectVersionMetadata getSharedModel()
     {
         return sharedModel;
-    }
-
-    public void setSharedModel( ArchivaProjectModel sharedModel )
-    {
-        this.sharedModel = sharedModel;
     }
 
     public MetadataResolver getMetadataResolver()
     {
         return metadataResolver;
+    }
+
+    public Collection<String> getProjectIds()
+    {
+        return projectIds;
+    }
+
+    public Collection<String> getProjectVersions()
+    {
+        return projectVersions;
     }
 }

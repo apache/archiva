@@ -56,6 +56,11 @@ public class ProjectVersionMetadata
         return id;
     }
 
+    public String getVersion()
+    {
+        return id;
+    }
+
     public void setId( String id )
     {
         this.id = id;
@@ -146,9 +151,9 @@ public class ProjectVersionMetadata
         this.licenses.add( license );
     }
 
-    public void addFacet( ProjectVersionFacet mavenProjectFacet )
+    public void addFacet( ProjectVersionFacet projectVersionFacet )
     {
-        this.facets.put( mavenProjectFacet.getFacetId(), mavenProjectFacet );
+        this.facets.put( projectVersionFacet.getFacetId(), projectVersionFacet );
     }
 
     public ProjectVersionFacet getFacet( String facetId )
@@ -156,12 +161,17 @@ public class ProjectVersionMetadata
         return this.facets.get( facetId );
     }
 
-    public Collection<ProjectVersionFacet> getAllFacets()
+    public Map<String, ProjectVersionFacet> getFacets()
+    {
+        return facets;
+    }
+
+    public Collection<ProjectVersionFacet> getFacetList()
     {
         return this.facets.values();
     }
 
-    public Collection<String> getAllFacetIds()
+    public Collection<String> getFacetIds()
     {
         return this.facets.keySet();
     }

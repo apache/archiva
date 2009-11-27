@@ -24,14 +24,14 @@
 <%-- TODO: paginate [MRM-491] --%>
 <c:forEach items="${dependees}" var="project">
   <h3 class="artifact-title">
-    <my:showArtifactTitle groupId="${project.groupId}" artifactId="${project.artifactId}"
-                          version="${project.version}"/>
+    <my:showArtifactTitle groupId="${project.namespace}" artifactId="${project.projectId}"
+                          version="${project.projectVersion}"/>
 
   </h3>
 
   <p>
-    <my:showArtifactLink groupId="${project.groupId}" artifactId="${project.artifactId}"
-                         version="${project.version}"/>
+    <my:showArtifactLink groupId="${project.namespace}" artifactId="${project.projectId}"
+                         version="${project.projectVersion}"/>
   </p>
 </c:forEach>
 <c:if test="${empty (dependees)}">

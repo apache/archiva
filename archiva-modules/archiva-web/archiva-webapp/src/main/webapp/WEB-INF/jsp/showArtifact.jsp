@@ -32,26 +32,28 @@
 <body>
 
 <s:set name="model" value="model"/>
+<c:set var="mavenFacet" value="${model.facets['org.apache.archiva.metadata.repository.storage.maven2']}" />
+
 <c:choose>
-  <c:when test="${model.packaging == 'maven-plugin'}">
+  <c:when test="${mavenFacet.packaging == 'maven-plugin'}">
     <c:url var="imageUrl" value="/images/mavenplugin.gif"/>
     <c:set var="packageName">Maven Plugin</c:set>
   </c:when>
-  <c:when test="${model.packaging == 'pom'}">
+  <c:when test="${mavenFacet.packaging == 'pom'}">
     <c:url var="imageUrl" value="/images/pom.gif"/>
     <c:set var="packageName">POM</c:set>
   </c:when>
   <%-- These types aren't usually set in the POM yet, so we fudge them for the well known ones --%>
-  <c:when test="${model.packaging == 'maven-archetype' or model.groupId == 'org.apache.maven.archetypes'}">
+  <c:when test="${mavenFacet.packaging == 'maven-archetype' or mavenFacet.groupId == 'org.apache.maven.archetypes'}">
     <c:url var="imageUrl" value="/images/archetype.gif"/>
     <c:set var="packageName">Maven Archetype</c:set>
   </c:when>
-  <c:when test="${model.packaging == 'maven-skin' or model.groupId == 'org.apache.maven.skins'}">
+  <c:when test="${mavenFacet.packaging == 'maven-skin' or mavenFacet.groupId == 'org.apache.maven.skins'}">
     <c:url var="imageUrl" value="/images/skin.gif"/>
     <c:set var="packageName">Maven Skin</c:set>
   </c:when>
   <%-- Must be last so that the above get picked up if possible --%>
-  <c:when test="${model.packaging == 'jar'}">
+  <c:when test="${mavenFacet.packaging == 'jar'}">
     <c:url var="imageUrl" value="/images/jar.gif"/>
     <c:set var="packageName">JAR</c:set>
   </c:when>
@@ -65,7 +67,7 @@
 <h1>
   <c:choose>
     <c:when test="${empty (model.name)}">
-      ${model.artifactId}
+      ${mavenFacet.artifactId}
     </c:when>
     <c:otherwise>
       ${model.name}
@@ -133,7 +135,7 @@
   </div>
 
   <div class="sidebar3">
-    <archiva:downloadArtifact groupId="${model.groupId}" artifactId="${model.artifactId}" version="${model.version}"/>
+    <archiva:downloadArtifact groupId="${mavenFacet.groupId}" artifactId="${mavenFacet.artifactId}" version="${model.version}"/>
   </div>
 
   <%-- TODO: perhaps using ajax? --%>

@@ -22,15 +22,15 @@
 <%@ taglib prefix="archiva"   uri="/WEB-INF/taglib.tld" %>
 
 <p>
-  <archiva:groupIdLink var="${model.groupId}" includeTop="true" />
+  <archiva:groupIdLink var="${groupId}" includeTop="true" />
   
   <c:set var="url">
     <s:url action="browseArtifact" namespace="/">
-      <s:param name="groupId" value="%{#attr.model.groupId}"/>
-      <s:param name="artifactId" value="%{#attr.model.artifactId}"/>
+      <s:param name="groupId" value="%{#attr.groupId}"/>
+      <s:param name="artifactId" value="%{#attr.artifactId}"/>
     </s:url>
   </c:set>
-  <a href="${url}">${model.artifactId}</a> /
+  <a href="${url}">${artifactId}</a> /
   <strong>${version}</strong>
 
   <%-- TODO: new versions?
@@ -43,6 +43,7 @@
   <blockquote>${model.description}</blockquote>
 </c:if>
 
+<c:set var="mavenFacet" value="${model.facets['org.apache.archiva.metadata.repository.storage.maven2']}" />
 <table class="infoTable">
   <tr>
     <th>Repository</th>
@@ -50,11 +51,11 @@
   </tr>
   <tr>
     <th>Group ID</th>
-    <td>${model.groupId}</td>
+    <td>${mavenFacet.groupId}</td>
   </tr>
   <tr>
     <th>Artifact ID</th>
-    <td>${model.artifactId}</td>
+    <td>${mavenFacet.artifactId}</td>
   </tr>
   <tr>
     <th>Version</th>
@@ -62,7 +63,7 @@
   </tr>
   <tr>
     <th>Packaging</th>
-    <td><code>${model.packaging}</code></td>
+    <td><code>${mavenFacet.packaging}</code></td>
   </tr>
   <%-- TODO: derivatives
     <tr>
@@ -74,16 +75,16 @@
       </td>
     </tr>
   --%>
-  <c:if test="${model.parentProject != null}">
+  <c:if test="${mavenFacet.parent != null}">
     <tr>
       <th>Parent</th>
       <td>
-          ${model.parentProject.groupId} ${model.parentProject.artifactId} ${model.parentProject.version}
+          ${mavenFacet.parent.groupId} ${mavenFacet.parent.artifactId} ${mavenFacet.parent.version}
         <c:set var="url">
           <s:url action="showArtifact" namespace="/">
-            <s:param name="groupId" value="%{#attr.model.parentProject.groupId}"/>
-            <s:param name="artifactId" value="%{#attr.model.parentProject.artifactId}"/>
-            <s:param name="version" value="%{#attr.model.parentProject.version}"/>
+            <s:param name="groupId" value="%{#attr.mavenFacet.parent.groupId}"/>
+            <s:param name="artifactId" value="%{#attr.mavenFacet.parent.artifactId}"/>
+            <s:param name="version" value="%{#attr.mavenFacet.parent.version}"/>
           </s:url>
         </c:set>
         (<a href="${url}">View</a>)
@@ -97,8 +98,8 @@
         <c:forEach items="${snapshotVersions}" var="snapshot">         
           <c:set var="url">
             <s:url action="showArtifact" namespace="/">
-              <s:param name="groupId" value="%{#attr.model.groupId}"/>
-              <s:param name="artifactId" value="%{#attr.model.artifactId}"/>
+              <s:param name="groupId" value="%{#attr.mavenFacet.groupId}"/>
+              <s:param name="artifactId" value="%{#attr.mavenFacet.artifactId}"/>
               <s:param name="version" value="%{#attr.snapshot}"/>
             </s:url>
           </c:set>
@@ -125,14 +126,14 @@
   --%>
 </table>
 
-<c:if test="${model.packaging != 'pom'}">
+<c:if test="${mavenFacet.packaging != 'pom'}">
   <h2>POM Snippet</h2>
   <c:choose>
-    <c:when test="${model.packaging == 'maven-plugin'}">
+    <c:when test="${mavenFacet.packaging == 'maven-plugin'}">
 <pre class="pom">
     &lt;plugin>
-      &lt;groupId>${model.groupId}&lt;/groupId>
-      &lt;artifactId>${model.artifactId}&lt;/artifactId>
+      &lt;groupId>${mavenFacet.groupId}&lt;/groupId>
+      &lt;artifactId>${mavenFacet.artifactId}&lt;/artifactId>
       &lt;version>${version}&lt;/version>
     &lt;/plugin>
 </pre>
@@ -140,10 +141,10 @@
     <c:otherwise>
 <pre class="pom">
     &lt;dependency>
-      &lt;groupId>${model.groupId}&lt;/groupId>
-      &lt;artifactId>${model.artifactId}&lt;/artifactId>
-      &lt;version>${version}&lt;/version><c:if test="${model.packaging != 'jar'}">
-      &lt;type>${model.packaging}&lt;/type></c:if>
+      &lt;groupId>${mavenFacet.groupId}&lt;/groupId>
+      &lt;artifactId>${mavenFacet.artifactId}&lt;/artifactId>
+      &lt;version>${version}&lt;/version><c:if test="${mavenFacet.packaging != 'jar'}">
+      &lt;type>${mavenFacet.packaging}&lt;/type></c:if>
     &lt;/dependency>
 </pre>
     </c:otherwise>
@@ -168,8 +169,8 @@
         <th>Organisation</th>
         <td>
           <c:choose>
-            <c:when test="${model.organization != null}">
-              <a href="${model.organization.url}">${model.organization.organizationName}</a>
+            <c:when test="${model.organization.url != null}">
+              <a href="${model.organization.url}">${model.organization.name}</a>
             </c:when>
             <c:otherwise>
               ${model.organization.name}
@@ -200,8 +201,8 @@
         <th>Issue Tracker</th>
         <td>
           <c:choose>
-            <c:when test="${!empty (model.issueManagement.issueManagementUrl)}">
-              <a href="${model.issueManagement.issueManagementUrl}">${model.issueManagement.system}</a>
+            <c:when test="${!empty (model.issueManagement.url)}">
+              <a href="${model.issueManagement.url}">${model.issueManagement.system}</a>
             </c:when>
             <c:otherwise>
               ${model.issueManagement.system}
@@ -215,8 +216,8 @@
         <th>Continuous Integration</th>
         <td>
           <c:choose>
-            <c:when test="${!empty (model.ciManagement.ciUrl)}">
-              <a href="${model.ciManagement.ciUrl}">${model.ciManagement.system}</a>
+            <c:when test="${!empty (model.ciManagement.url)}">
+              <a href="${model.ciManagement.url}">${model.ciManagement.system}</a>
             </c:when>
             <c:otherwise>
               ${model.ciManagement.system}

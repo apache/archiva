@@ -176,8 +176,8 @@ public class FileMetadataRepository
             setProperty( properties, "dependency." + i + ".type", dependency.getType() );
             i++;
         }
-        properties.setProperty( "facetIds", join( versionMetadata.getAllFacetIds() ) );
-        for ( ProjectVersionFacet facet : versionMetadata.getAllFacets() )
+        properties.setProperty( "facetIds", join( versionMetadata.getFacetIds() ) );
+        for ( ProjectVersionFacet facet : versionMetadata.getFacetList() )
         {
             properties.putAll( facet.toProperties() );
         }
@@ -343,8 +343,8 @@ public class FileMetadataRepository
             if ( issueSystem != null || issueUrl != null )
             {
                 IssueManagement issueManagement = new IssueManagement();
-                issueManagement.setSystem( ciSystem );
-                issueManagement.setUrl( ciUrl );
+                issueManagement.setSystem( issueSystem );
+                issueManagement.setUrl( issueUrl );
                 versionMetadata.setIssueManagement( issueManagement );
             }
 
@@ -451,7 +451,7 @@ public class FileMetadataRepository
                 }
             }
 
-            for ( ProjectVersionFacet facet : versionMetadata.getAllFacets() )
+            for ( ProjectVersionFacet facet : versionMetadata.getFacetList() )
             {
                 properties.putAll( facet.toProperties() );
             }

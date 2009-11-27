@@ -27,9 +27,6 @@ import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.browsing.BrowsingResults;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
 
 public class BrowseActionTest
     extends AbstractActionTestCase
@@ -54,14 +51,9 @@ public class BrowseActionTest
         String result = action.browse();
         assertSuccessResult( result );
 
-        BrowsingResults results = action.getResults();
-        assertNotNull( results );
-        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertEquals( Arrays.asList( "com", "commons-lang", "org.apache", "repeat.repeat" ), results.getGroupIds() );
-        assertNull( results.getArtifacts() );
-        assertNull( results.getSelectedArtifactId() );
-        assertNull( results.getSelectedGroupId() );
-        assertNull( results.getVersions() );
+        assertEquals( Arrays.asList( "com", "commons-lang", "org.apache", "repeat.repeat" ), action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
 
         assertNull( action.getGroupId() );
         assertNull( action.getArtifactId() );
@@ -89,7 +81,9 @@ public class BrowseActionTest
         assertNoAccessResult( result );
 
         assertEquals( selectedGroupId, action.getGroupId() );
-        assertNull( action.getResults() );
+        assertNull( action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
         assertNull( action.getArtifactId() );
         assertNull( action.getRepositoryId() );
         assertNull( action.getSharedModel() );
@@ -109,7 +103,9 @@ public class BrowseActionTest
 
         assertEquals( selectedGroupId, action.getGroupId() );
         assertEquals( selectedArtifactId, action.getArtifactId() );
-        assertNull( action.getResults() );
+        assertNull( action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
         assertNull( action.getRepositoryId() );
         assertNull( action.getSharedModel() );
     }
@@ -131,14 +127,9 @@ public class BrowseActionTest
         String result = action.browseGroup();
         assertSuccessResult( result );
 
-        BrowsingResults results = action.getResults();
-        assertNotNull( results );
-        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertEquals( Collections.singletonList( "org.apache" ), results.getGroupIds() );
-        assertEquals( Collections.<String>emptyList(), results.getArtifacts() );
-        assertNull( results.getSelectedArtifactId() );
-        assertEquals( selectedGroupId, results.getSelectedGroupId() );
-        assertNull( results.getVersions() );
+        assertEquals( Collections.singletonList( "org.apache" ), action.getNamespaces() );
+        assertEquals( Collections.<String>emptyList(), action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
 
         assertEquals( selectedGroupId, action.getGroupId() );
         assertNull( action.getArtifactId() );
@@ -158,14 +149,9 @@ public class BrowseActionTest
         String result = action.browseGroup();
         assertSuccessResult( result );
 
-        BrowsingResults results = action.getResults();
-        assertNotNull( results );
-        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertEquals( groups, results.getGroupIds() );
-        assertEquals( Collections.singletonList( artifacts ), results.getArtifacts() );
-        assertNull( results.getSelectedArtifactId() );
-        assertEquals( selectedGroupId, results.getSelectedGroupId() );
-        assertNull( results.getVersions() );
+        assertEquals( groups, action.getNamespaces() );
+        assertEquals( Collections.singletonList( artifacts ), action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
 
         assertEquals( selectedGroupId, action.getGroupId() );
         assertNull( action.getArtifactId() );
@@ -184,14 +170,9 @@ public class BrowseActionTest
         String result = action.browse();
         assertSuccessResult( result );
 
-        BrowsingResults results = action.getResults();
-        assertNotNull( results );
-        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertEquals( Collections.singletonList( "org.apache" ), results.getGroupIds() );
-        assertNull( results.getArtifacts() );
-        assertNull( results.getSelectedArtifactId() );
-        assertNull( results.getSelectedGroupId() );
-        assertNull( results.getVersions() );
+        assertEquals( Collections.singletonList( "org.apache" ), action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
 
         assertNull( action.getGroupId() );
         assertNull( action.getArtifactId() );
@@ -213,14 +194,9 @@ public class BrowseActionTest
         String result = action.browseGroup();
         assertSuccessResult( result );
 
-        BrowsingResults results = action.getResults();
-        assertNotNull( results );
-        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertEquals( Collections.singletonList( "org.apache.archiva" ), results.getGroupIds() );
-        assertEquals( Collections.singletonList( artifacts ), results.getArtifacts() );
-        assertNull( results.getSelectedArtifactId() );
-        assertEquals( selectedGroupId, results.getSelectedGroupId() );
-        assertNull( results.getVersions() );
+        assertEquals( Collections.singletonList( "org.apache.archiva" ), action.getNamespaces() );
+        assertEquals( Collections.singletonList( artifacts ), action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
 
         assertEquals( selectedGroupId, action.getGroupId() );
         assertNull( action.getArtifactId() );
@@ -237,7 +213,9 @@ public class BrowseActionTest
         String result = action.browseArtifact();
         assertErrorResult( result );
 
-        assertNull( action.getResults() );
+        assertNull( action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
         assertNull( action.getGroupId() );
         assertEquals( selectedArtifactId, action.getArtifactId() );
         assertNull( action.getRepositoryId() );
@@ -253,7 +231,9 @@ public class BrowseActionTest
         String result = action.browseArtifact();
         assertErrorResult( result );
 
-        assertNull( action.getResults() );
+        assertNull( action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
         assertEquals( selectedGroupId, action.getGroupId() );
         assertNull( action.getArtifactId() );
         assertNull( action.getRepositoryId() );
@@ -261,7 +241,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifact()
-        throws ArchivaDatabaseException, MetadataResolverException
+        throws MetadataResolverException
     {
         String selectedGroupId = "org.apache";
         String selectedArtifactId = "apache";
@@ -285,21 +265,16 @@ public class BrowseActionTest
         assertEquals( selectedArtifactId, action.getArtifactId() );
         assertNull( action.getRepositoryId() );
 
-        BrowsingResults results = action.getResults();
-        assertNotNull( results );
-        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertNull( results.getGroupIds() );
-        assertNull( results.getArtifacts() );
-        assertEquals( selectedGroupId, results.getSelectedGroupId() );
-        assertEquals( selectedArtifactId, results.getSelectedArtifactId() );
-        assertEquals( versions, results.getVersions() );
+        assertNull( action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertEquals( versions, action.getProjectVersions() );
 
-        ArchivaProjectModel model = action.getSharedModel();
+        ProjectVersionMetadata model = action.getSharedModel();
         assertDefaultModel( model, selectedGroupId, selectedArtifactId, null );
     }
 
     public void testBrowseArtifactWithSnapshots()
-        throws ArchivaDatabaseException, MetadataResolverException
+        throws MetadataResolverException
     {
         String selectedGroupId = "org.apache";
         String selectedArtifactId = "apache";
@@ -327,16 +302,11 @@ public class BrowseActionTest
         assertEquals( selectedArtifactId, action.getArtifactId() );
         assertNull( action.getRepositoryId() );
 
-        BrowsingResults results = action.getResults();
-        assertNotNull( results );
-        assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertNull( results.getGroupIds() );
-        assertNull( results.getArtifacts() );
-        assertEquals( selectedGroupId, results.getSelectedGroupId() );
-        assertEquals( selectedArtifactId, results.getSelectedArtifactId() );
-        assertEquals( versions, results.getVersions() );
+        assertNull( action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertEquals( versions, action.getProjectVersions() );
 
-        ArchivaProjectModel model = action.getSharedModel();
+        ProjectVersionMetadata model = action.getSharedModel();
         assertDefaultModel( model, selectedGroupId, selectedArtifactId, null );
     }
 
@@ -368,7 +338,9 @@ public class BrowseActionTest
 
     private void assertNoOutputVariables()
     {
-        assertNull( action.getResults() );
+        assertNull( action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
         assertNull( action.getGroupId() );
         assertNull( action.getArtifactId() );
         assertNull( action.getRepositoryId() );
