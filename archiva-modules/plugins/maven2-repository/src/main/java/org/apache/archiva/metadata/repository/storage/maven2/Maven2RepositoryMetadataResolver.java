@@ -270,6 +270,7 @@ public class Maven2RepositoryMetadataResolver
         return ci;
     }
 
+    // TODO: evidence that storage and resolver != repository API - split the interface up
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
     {
@@ -293,6 +294,11 @@ public class Maven2RepositoryMetadataResolver
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
         throw new UnsupportedOperationException();
     }

@@ -559,6 +559,24 @@ public class FileMetadataRepository
         return projects;
     }
 
+    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+    {
+        List<String> projectVersions = new ArrayList<String>();
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId );
+        File[] files = directory.listFiles();
+        if ( files != null )
+        {
+            for ( File projectVersion : files )
+            {
+                if ( new File( projectVersion, PROJECT_VERSION_METADATA_KEY + ".properties" ).exists() )
+                {
+                    projectVersions.add( projectVersion.getName() );
+                }
+            }
+        }
+        return projectVersions;
+    }
+
     private void writeProperties( Properties properties, File directory, String propertiesKey )
         throws IOException
     {

@@ -122,4 +122,11 @@ public class DefaultMetadataResolver
         // not passed to the storage mechanism as resolving references would require iterating all projects
         return metadataRepository.getProjects( repoId, namespace );
     }
+
+    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+    {
+        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
+        // not passed to the storage mechanism as resolving references would require iterating all versions
+        return metadataRepository.getProjectVersions( repoId, namespace, projectId );
+    }
 }

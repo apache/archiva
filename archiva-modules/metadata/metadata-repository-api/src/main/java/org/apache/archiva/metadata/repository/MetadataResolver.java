@@ -53,4 +53,6 @@ public interface MetadataResolver
     Collection<String> getNamespaces( String repoId, String namespace );
 
     Collection<String> getProjects( String repoId, String namespace );
+
+    Collection<String> getProjectVersions( String repoId, String namespace, String projectId );
 }

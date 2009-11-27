@@ -21,7 +21,15 @@ package org.apache.maven.archiva.web.action;
 
 import java.util.List;
 
+import org.apache.archiva.metadata.model.CiManagement;
+import org.apache.archiva.metadata.model.IssueManagement;
+import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.Organization;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectParent;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
@@ -118,5 +126,56 @@ public abstract class AbstractActionTestCase
         assertEquals( TEST_PARENT_GROUP_ID, model.getParentProject().getGroupId() );
         assertEquals( TEST_PARENT_ARTIFACT_ID, model.getParentProject().getArtifactId() );
         assertEquals( TEST_PARENT_VERSION, model.getParentProject().getVersion() );
+    }
+
+    protected ProjectVersionMetadata createProjectModel( String version )
+    {
+        return createProjectModel( TEST_GROUP_ID, TEST_ARTIFACT_ID, version );
+    }
+
+    protected ProjectVersionMetadata createProjectModel( String groupId, String artifactId, String version )
+    {
+        ProjectVersionMetadata model = new ProjectVersionMetadata();
+        model.setId( version );
+        model.setUrl( TEST_URL );
+        model.setName( TEST_NAME );
+        model.setDescription( TEST_DESCRIPTION );
+        CiManagement ci = new CiManagement();
+        ci.setSystem( TEST_CI_SYSTEM );
+        ci.setUrl( TEST_CI_URL );
+        model.setCiManagement( ci );
+        IssueManagement issue = new IssueManagement();
+        issue.setSystem( TEST_ISSUE_SYSTEM );
+        issue.setUrl( TEST_ISSUE_URL );
+        model.setIssueManagement( issue );
+        Organization organization = new Organization();
+        organization.setName( TEST_ORGANIZATION_NAME );
+        organization.setUrl( TEST_ORGANIZATION_URL );
+        model.setOrganization( organization );
+        License l = new License();
+        l.setName( TEST_LICENSE_NAME );
+        l.setUrl( TEST_LICENSE_URL );
+        model.addLicense( l );
+        l = new License();
+        l.setName( TEST_LICENSE_NAME_2 );
+        l.setUrl( TEST_LICENSE_URL_2 );
+        model.addLicense( l );
+        Scm scm = new Scm();
+        scm.setConnection( TEST_SCM_CONNECTION );
+        scm.setDeveloperConnection( TEST_SCM_DEV_CONNECTION );
+        scm.setUrl( TEST_SCM_URL );
+        model.setScm( scm );
+
+        MavenProjectFacet mavenProjectFacet = new MavenProjectFacet();
+        mavenProjectFacet.setGroupId( groupId );
+        mavenProjectFacet.setArtifactId( artifactId );
+        mavenProjectFacet.setPackaging( TEST_PACKAGING );
+        MavenProjectParent parent = new MavenProjectParent();
+        parent.setGroupId( TEST_PARENT_GROUP_ID );
+        parent.setArtifactId( TEST_PARENT_ARTIFACT_ID );
+        parent.setVersion( TEST_PARENT_VERSION );
+        mavenProjectFacet.setParent( parent );
+        model.addFacet( mavenProjectFacet );
+        return model;
     }
 }

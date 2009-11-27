@@ -46,6 +46,8 @@ public class TestMetadataResolver
 
     private Map<String, Collection<String>> projectsInNamespace = new HashMap<String, Collection<String>>();
 
+    private Map<String, Collection<String>> versionsInProject = new HashMap<String, Collection<String>>();
+
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
         ProjectMetadata metadata = new ProjectMetadata();
@@ -111,10 +113,17 @@ public class TestMetadataResolver
         return list != null ? list : Collections.<String>emptyList();
     }
 
+    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+    {
+        Collection<String> list = versionsInProject.get( namespace + ":" + projectId );
+        return list != null ? list : Collections.<String>emptyList();
+    }
+
     public void setProjectVersion( String repoId, String namespace, String projectId,
                                    ProjectVersionMetadata versionMetadata )
     {
         projectVersions.put( createMapKey( repoId, namespace, projectId, versionMetadata.getId() ), versionMetadata );
+
         Collection<String> projects = projectsInNamespace.get( namespace );
         if ( projects == null )
         {
@@ -122,6 +131,15 @@ public class TestMetadataResolver
             projectsInNamespace.put( namespace, projects );
         }
         projects.add( projectId );
+
+        String key = namespace + ":" + projectId;
+        Collection<String> versions = versionsInProject.get( key );
+        if ( versions == null )
+        {
+            versions = new LinkedHashSet<String>();
+            versionsInProject.put( key, versions );
+        }
+        versions.add( versionMetadata.getId() );
     }
 
     public void setArtifactVersions( String repoId, String namespace, String projectId, String projectVersion,

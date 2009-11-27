@@ -25,24 +25,11 @@ import java.util.List;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
-import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
-import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.CiManagement;
-import org.apache.maven.archiva.model.IssueManagement;
-import org.apache.maven.archiva.model.License;
-import org.apache.maven.archiva.model.Organization;
-import org.apache.maven.archiva.model.Scm;
-import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.web.action.admin.repositories.ArchivaDAOStub;
-import org.easymock.MockControl;
 
 public class BrowseActionTest
     extends AbstractActionTestCase
@@ -50,8 +37,6 @@ public class BrowseActionTest
     private static final String ACTION_HINT = "browseAction";
 
     private BrowseAction action;
-
-    private ArchivaDAOStub archivaDao;
 
     private static final List<String> GROUPS =
         Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven", "com.sun", "com.oracle",
@@ -111,6 +96,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoObservableRepos()
+        throws MetadataResolverException
     {
         setObservableRepos( Collections.<String>emptyList() );
         String selectedGroupId = "org.apache";
@@ -243,6 +229,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoGroupId()
+        throws MetadataResolverException
     {
         String selectedArtifactId = "apache";
 
@@ -258,6 +245,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoArtifactId()
+        throws MetadataResolverException
     {
         String selectedGroupId = "org.apache";
 
@@ -273,27 +261,25 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifact()
-        throws ArchivaDatabaseException
+        throws ArchivaDatabaseException, MetadataResolverException
     {
         String selectedGroupId = "org.apache";
         String selectedArtifactId = "apache";
 
         List<String> versions = Arrays.asList( "1", "2", "3", "4" );
-        archivaDao.setVersions( versions );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( selectedGroupId, selectedArtifactId, versions );
-        MockControl projectDaoMockControl = createProjectDaoMock(
-            Arrays.asList( createProjectModel( selectedGroupId, selectedArtifactId, "1" ),
-                           createProjectModel( selectedGroupId, selectedArtifactId, "2" ),
-                           createProjectModel( selectedGroupId, selectedArtifactId, "3" ),
-                           createProjectModel( selectedGroupId, selectedArtifactId, "4" ) ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "1" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "2" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "3" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "4" ) );
 
         action.setGroupId( selectedGroupId );
         action.setArtifactId( selectedArtifactId );
         String result = action.browseArtifact();
         assertSuccessResult( result );
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertEquals( selectedGroupId, action.getGroupId() );
         assertEquals( selectedArtifactId, action.getArtifactId() );
@@ -313,29 +299,29 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactWithSnapshots()
-        throws ArchivaDatabaseException
+        throws ArchivaDatabaseException, MetadataResolverException
     {
         String selectedGroupId = "org.apache";
         String selectedArtifactId = "apache";
 
         List<String> versions = Arrays.asList( "1", "2", "3", "4-SNAPSHOT", "4", "5-SNAPSHOT" );
-        archivaDao.setVersions( versions );
-        MockControl artifactDaoMockControl = createArtifactDaoMock( selectedGroupId, selectedArtifactId, versions );
-        MockControl projectDaoMockControl = createProjectDaoMock(
-            Arrays.asList( createProjectModel( selectedGroupId, selectedArtifactId, "1" ),
-                           createProjectModel( selectedGroupId, selectedArtifactId, "2" ),
-                           createProjectModel( selectedGroupId, selectedArtifactId, "3" ),
-                           createProjectModel( selectedGroupId, selectedArtifactId, "4-SNAPSHOT" ),
-                           createProjectModel( selectedGroupId, selectedArtifactId, "4" ),
-                           createProjectModel( selectedGroupId, selectedArtifactId, "5-SNAPSHOT" ) ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "1" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "2" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "3" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "4-SNAPSHOT" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "4" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "5-SNAPSHOT" ) );
 
         action.setGroupId( selectedGroupId );
         action.setArtifactId( selectedArtifactId );
         String result = action.browseArtifact();
         assertSuccessResult( result );
-
-        artifactDaoMockControl.verify();
-        projectDaoMockControl.verify();
 
         assertEquals( selectedGroupId, action.getGroupId() );
         assertEquals( selectedArtifactId, action.getArtifactId() );
@@ -389,107 +375,11 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
-    private MockControl createArtifactDaoMock( String groupId, String artifactId, List<String> versions )
-        throws ArchivaDatabaseException
-    {
-        // testing deeper than normal with the mocks as we intend to replace RepositoryBrowsing, not just the database
-        // underneath it - those sections will be adjusted with a mock content repository later
-        MockControl control = MockControl.createNiceControl( ArtifactDAO.class );
-        ArtifactDAO dao = (ArtifactDAO) control.getMock();
-        archivaDao.setArtifactDao( dao );
-
-        for ( String v : versions )
-        {
-            ArtifactsRelatedConstraint c = new ArtifactsRelatedConstraint( groupId, artifactId, v );
-            dao.queryArtifacts( c );
-            control.setReturnValue( Collections.singletonList( createArtifact( groupId, artifactId, v ) ) );
-        }
-
-        control.replay();
-        return control;
-    }
-
-    private ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
-    {
-        return createArtifact( groupId, artifactId, version, TEST_REPO );
-    }
-
-    private ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String repoId )
-    {
-        ArchivaArtifactModel model = new ArchivaArtifactModel();
-        model.setGroupId( groupId );
-        model.setArtifactId( artifactId );
-        model.setVersion( version );
-        model.setRepositoryId( repoId );
-        return new ArchivaArtifact( model );
-    }
-
-    private MockControl createProjectDaoMock( List<ArchivaProjectModel> projects )
-        throws ArchivaDatabaseException
-    {
-        MockControl control = MockControl.createNiceControl( ProjectModelDAO.class );
-        ProjectModelDAO dao = (ProjectModelDAO) control.getMock();
-        archivaDao.setProjectDao( dao );
-
-        for ( ArchivaProjectModel project : projects )
-        {
-            control.expectAndReturn(
-                dao.getProjectModel( project.getGroupId(), project.getArtifactId(), project.getVersion() ), project );
-        }
-
-        control.replay();
-        return control;
-    }
-
     protected void setUp()
         throws Exception
     {
         super.setUp();
         action = (BrowseAction) lookup( Action.class, ACTION_HINT );
-        archivaDao = (ArchivaDAOStub) lookup( ArchivaDAO.class, "jdo" );
         metadataResolver = (TestMetadataResolver) action.getMetadataResolver();
-    }
-
-    protected ArchivaProjectModel createProjectModel( String groupId, String artifactId, String version )
-    {
-        ArchivaProjectModel model = new ArchivaProjectModel();
-        model.setGroupId( groupId );
-        model.setArtifactId( artifactId );
-        model.setVersion( version );
-        model.setPackaging( TEST_PACKAGING );
-        model.setUrl( TEST_URL );
-        model.setName( TEST_NAME );
-        model.setDescription( TEST_DESCRIPTION );
-        VersionedReference parent = new VersionedReference();
-        parent.setGroupId( TEST_PARENT_GROUP_ID );
-        parent.setArtifactId( TEST_PARENT_ARTIFACT_ID );
-        parent.setVersion( TEST_PARENT_VERSION );
-        model.setParentProject( parent );
-        CiManagement ci = new CiManagement();
-        ci.setSystem( TEST_CI_SYSTEM );
-        ci.setUrl( TEST_CI_URL );
-        model.setCiManagement( ci );
-        IssueManagement issue = new IssueManagement();
-        issue.setSystem( TEST_ISSUE_SYSTEM );
-        issue.setUrl( TEST_ISSUE_URL );
-        model.setIssueManagement( issue );
-        Organization org = new Organization();
-        org.setName( TEST_ORGANIZATION_NAME );
-        org.setUrl( TEST_ORGANIZATION_URL );
-        model.setOrganization( org );
-        License l = new License();
-        l.setName( TEST_LICENSE_NAME );
-        l.setUrl( TEST_LICENSE_URL );
-        model.addLicense( l );
-        l = new License();
-        l.setName( TEST_LICENSE_NAME_2 );
-        l.setUrl( TEST_LICENSE_URL_2 );
-        model.addLicense( l );
-        Scm scm = new Scm();
-        scm.setConnection( TEST_SCM_CONNECTION );
-        scm.setDeveloperConnection( TEST_SCM_DEV_CONNECTION );
-        scm.setUrl( TEST_SCM_URL );
-        model.setScm( scm );
-        return model;
     }
 }
