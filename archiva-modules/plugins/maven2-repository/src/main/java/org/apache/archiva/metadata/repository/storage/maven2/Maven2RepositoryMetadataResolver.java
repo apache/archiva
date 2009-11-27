@@ -281,4 +281,19 @@ public class Maven2RepositoryMetadataResolver
     {
         throw new UnsupportedOperationException();
     }
+
+    public Collection<String> getRootNamespaces( String repoId )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> getNamespaces( String repoId, String namespace )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<String> getProjects( String repoId, String namespace )
+    {
+        throw new UnsupportedOperationException();
+    }
 }

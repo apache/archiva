@@ -43,13 +43,13 @@ public class ProjectVersionMetadata
 
     private CiManagement ciManagement;
 
-    private List<License> licenses;
+    private List<License> licenses = new ArrayList<License>();
 
     private Map<String, ProjectVersionFacet> facets = new HashMap<String, ProjectVersionFacet>();
 
-    private List<MailingList> mailingLists;
+    private List<MailingList> mailingLists = new ArrayList<MailingList>();
 
-    private List<Dependency> dependencies;
+    private List<Dependency> dependencies = new ArrayList<Dependency>();
 
     public String getId()
     {
@@ -143,10 +143,6 @@ public class ProjectVersionMetadata
 
     public void addLicense( License license )
     {
-        if ( this.licenses == null )
-        {
-            this.licenses = new ArrayList<License>();
-        }
         this.licenses.add( license );
     }
 
@@ -182,10 +178,6 @@ public class ProjectVersionMetadata
 
     public void addMailingList( MailingList mailingList )
     {
-        if ( this.mailingLists == null )
-        {
-            this.mailingLists = new ArrayList<MailingList>();
-        }
         this.mailingLists.add( mailingList );
     }
 
@@ -201,10 +193,6 @@ public class ProjectVersionMetadata
 
     public void addDependency( Dependency dependency )
     {
-        if ( this.dependencies == null )
-        {
-            this.dependencies = new ArrayList<Dependency>();
-        }
         this.dependencies.add( dependency );
     }
 }

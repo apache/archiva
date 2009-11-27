@@ -22,8 +22,10 @@ package org.apache.archiva.metadata.repository.memory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -39,6 +41,10 @@ public class TestMetadataResolver
 
     private Map<String, List<ProjectVersionReference>> references =
         new HashMap<String, List<ProjectVersionReference>>();
+
+    private List<String> namespaces;
+
+    private Map<String, Collection<String>> projectsInNamespace = new HashMap<String, Collection<String>>();
 
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
@@ -67,10 +73,54 @@ public class TestMetadataResolver
         return references.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
     }
 
+    public Collection<String> getRootNamespaces( String repoId )
+    {
+        return getNamespaces( null );
+    }
+
+    private Collection<String> getNamespaces( String baseNamespace )
+    {
+        Set<String> namespaces = new LinkedHashSet<String>();
+        int fromIndex = baseNamespace != null ? baseNamespace.length() + 1 : 0;
+        for ( String namespace : this.namespaces )
+        {
+            if ( baseNamespace == null || namespace.startsWith( baseNamespace + "." ) )
+            {
+                int i = namespace.indexOf( '.', fromIndex );
+                if ( i >= 0 )
+                {
+                    namespaces.add( namespace.substring( fromIndex, i ) );
+                }
+                else
+                {
+                    namespaces.add( namespace.substring( fromIndex ) );
+                }
+            }
+        }
+        return namespaces;
+    }
+
+    public Collection<String> getNamespaces( String repoId, String namespace )
+    {
+        return getNamespaces( namespace );
+    }
+
+    public Collection<String> getProjects( String repoId, String namespace )
+    {
+        return projectsInNamespace.get( namespace );
+    }
+
     public void setProjectVersion( String repoId, String namespace, String projectId,
                                    ProjectVersionMetadata versionMetadata )
     {
         projectVersions.put( createMapKey( repoId, namespace, projectId, versionMetadata.getId() ), versionMetadata );
+        Collection<String> projects = projectsInNamespace.get( namespace );
+        if ( projects == null )
+        {
+            projects = new LinkedHashSet<String>();
+            projectsInNamespace.put( namespace, projects );
+        }
+        projects.add( projectId );
     }
 
     public void setArtifactVersions( String repoId, String namespace, String projectId, String projectVersion,
@@ -88,5 +138,10 @@ public class TestMetadataResolver
                                       List<ProjectVersionReference> references )
     {
         this.references.put( createMapKey( repoId, namespace, projectId, projectVersion ), references );
+    }
+
+    public void setNamespaces( List<String> namespaces )
+    {
+        this.namespaces = namespaces;
     }
 }

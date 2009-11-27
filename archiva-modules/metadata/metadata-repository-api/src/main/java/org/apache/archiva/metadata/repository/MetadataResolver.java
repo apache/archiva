@@ -47,4 +47,10 @@ public interface MetadataResolver
      */
     Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                               String projectVersion );
+
+    Collection<String> getRootNamespaces( String repoId );
+
+    Collection<String> getNamespaces( String repoId, String namespace );
+
+    Collection<String> getProjects( String repoId, String namespace );
 }

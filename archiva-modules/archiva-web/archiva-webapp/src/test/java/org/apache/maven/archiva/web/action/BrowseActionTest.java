@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
@@ -52,7 +54,8 @@ public class BrowseActionTest
     private ArchivaDAOStub archivaDao;
 
     private static final List<String> GROUPS =
-        Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven", "com.sun", "com.oracle" );
+        Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven", "com.sun", "com.oracle",
+                       "repeat.repeat", "org.apache", "single.group" );
 
     public void testInstantiation()
     {
@@ -61,7 +64,9 @@ public class BrowseActionTest
 
     public void testBrowse()
     {
-        archivaDao.setGroups( GROUPS );
+        metadataResolver.setNamespaces( GROUPS );
+        // add an artifact in the tree to make sure "single" is not collapsed
+        metadataResolver.setProjectVersion( TEST_REPO, "single", "single", new ProjectVersionMetadata() );
 
         String result = action.browse();
         assertSuccessResult( result );
@@ -69,7 +74,8 @@ public class BrowseActionTest
         BrowsingResults results = action.getResults();
         assertNotNull( results );
         assertEquals( Arrays.asList( TEST_REPO ), results.getSelectedRepositoryIds() );
-        assertEquals( Arrays.asList( "com", "commons-lang", "org.apache" ), results.getGroupIds() );
+        assertEquals( Arrays.asList( "com", "commons-lang", "org.apache", "repeat.repeat", "single" ),
+                      results.getGroupIds() );
         assertNull( results.getArtifacts() );
         assertNull( results.getSelectedArtifactId() );
         assertNull( results.getSelectedGroupId() );
@@ -390,6 +396,7 @@ public class BrowseActionTest
         super.setUp();
         action = (BrowseAction) lookup( Action.class, ACTION_HINT );
         archivaDao = (ArchivaDAOStub) lookup( ArchivaDAO.class, "jdo" );
+        metadataResolver = (TestMetadataResolver) action.getMetadataResolver();
     }
 
     protected ArchivaProjectModel createProjectModel( String groupId, String artifactId, String version )

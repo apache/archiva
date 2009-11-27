@@ -101,4 +101,25 @@ public class DefaultMetadataResolver
         // not passed to the storage mechanism as resolving references would require iterating all artifacts
         return metadataRepository.getProjectReferences( repoId, namespace, projectId, projectVersion );
     }
+
+    public Collection<String> getRootNamespaces( String repoId )
+    {
+        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
+        // not passed to the storage mechanism as resolving references would require iterating all groups
+        return metadataRepository.getRootNamespaces( repoId );
+    }
+
+    public Collection<String> getNamespaces( String repoId, String namespace )
+    {
+        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
+        // not passed to the storage mechanism as resolving references would require iterating all groups
+        return metadataRepository.getNamespaces( repoId, namespace );
+    }
+
+    public Collection<String> getProjects( String repoId, String namespace )
+    {
+        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
+        // not passed to the storage mechanism as resolving references would require iterating all projects
+        return metadataRepository.getProjects( repoId, namespace );
+    }
 }

@@ -35,5 +35,11 @@
       <role-hint>default</role-hint>
       <implementation>org.apache.maven.archiva.security.UserRepositoriesStub</implementation>
     </component>
+    <component>
+      <role>org.apache.archiva.metadata.repository.MetadataResolver</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.archiva.metadata.repository.memory.TestMetadataResolver</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
   </components>
 </plexus>
