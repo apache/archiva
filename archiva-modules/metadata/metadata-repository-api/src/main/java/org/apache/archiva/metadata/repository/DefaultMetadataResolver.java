@@ -125,8 +125,10 @@ public class DefaultMetadataResolver
     public Collection<String> getNamespaces( String repoId, String namespace )
     {
         Collection<String> namespaces = metadataRepository.getNamespaces( repoId, namespace );
+        Collection<String> exclusions = new ArrayList<String>( namespaces );
+        exclusions.addAll( metadataRepository.getProjects( repoId, namespace ) );
         Collection<String> storageNamespaces =
-            storageResolver.getNamespaces( repoId, namespace, new ExcludesFilter<String>( namespaces ) );
+            storageResolver.getNamespaces( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
         if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
             for ( String n : storageNamespaces )
@@ -142,8 +144,10 @@ public class DefaultMetadataResolver
     public Collection<String> getProjects( String repoId, String namespace )
     {
         Collection<String> projects = metadataRepository.getProjects( repoId, namespace );
+        Collection<String> exclusions = new ArrayList<String>( projects );
+        exclusions.addAll( metadataRepository.getNamespaces( repoId, namespace ) );
         Collection<String> storageProjects =
-            storageResolver.getProjects( repoId, namespace, new ExcludesFilter<String>( projects ) );
+            storageResolver.getProjects( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
         if ( storageProjects != null && !storageProjects.isEmpty() )
         {
             for ( String projectId : storageProjects )
