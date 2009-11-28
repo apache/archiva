@@ -42,12 +42,50 @@ public class Maven2RepositoryPathTranslator
     {
         StringBuilder path = new StringBuilder();
 
-        path.append( formatAsDirectory( namespace ) ).append( PATH_SEPARATOR );
-        path.append( projectId ).append( PATH_SEPARATOR );
+        appendNamespaceAndProject( path, namespace, projectId );
         path.append( projectVersion ).append( PATH_SEPARATOR );
         path.append( filename );
 
         return path.toString();
+    }
+
+    public String toPath( String namespace )
+    {
+        StringBuilder path = new StringBuilder();
+
+        appendNamespace( path, namespace );
+
+        return path.toString();
+    }
+
+    public String toPath( String namespace, String projectId )
+    {
+        StringBuilder path = new StringBuilder();
+
+        appendNamespaceAndProject( path, namespace, projectId );
+
+        return path.toString();
+    }
+
+    private void appendNamespaceAndProject( StringBuilder path, String namespace, String projectId )
+    {
+        appendNamespace( path, namespace );
+        path.append( projectId ).append( PATH_SEPARATOR );
+    }
+
+    private void appendNamespace( StringBuilder path, String namespace )
+    {
+        path.append( formatAsDirectory( namespace ) ).append( PATH_SEPARATOR );
+    }
+
+    public File toFile( File basedir, String namespace, String projectId )
+    {
+        return new File( basedir, toPath( namespace, projectId ) );
+    }
+
+    public File toFile( File basedir, String namespace )
+    {
+        return new File( basedir, toPath( namespace ) );
     }
 
     private String formatAsDirectory( String directory )

@@ -20,8 +20,11 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.archiva.metadata.model.ProjectMetadata;
@@ -72,6 +75,24 @@ public class Maven2RepositoryMetadataResolver
 
     private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryMetadataResolver.class );
 
+    private static final String METADATA_FILENAME = "maven-metadata.xml";
+
+    private static final FilenameFilter DIRECTORY_FILTER = new FilenameFilter()
+    {
+        public boolean accept( File dir, String name )
+        {
+            if ( name.startsWith( "." ) )
+            {
+                return false;
+            }
+            else if ( !new File( dir, name ).isDirectory() )
+            {
+                return false;
+            }
+            return true;
+        }
+    };
+
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
         throw new UnsupportedOperationException();
@@ -90,7 +111,7 @@ public class Maven2RepositoryMetadataResolver
         if ( VersionUtil.isSnapshot( projectVersion ) )
         {
             File metadataFile =
-                pathTranslator.toFile( basedir, namespace, projectId, projectVersion, "maven-metadata.xml" );
+                pathTranslator.toFile( basedir, namespace, projectId, projectVersion, METADATA_FILENAME );
             try
             {
                 MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
@@ -285,21 +306,157 @@ public class Maven2RepositoryMetadataResolver
 
     public Collection<String> getRootNamespaces( String repoId )
     {
-        throw new UnsupportedOperationException();
+        File dir = getRepositoryBasedir( repoId );
+
+        String[] files = dir.list( DIRECTORY_FILTER );
+        return files != null ? Arrays.asList( files ) : Collections.<String>emptyList();
     }
 
-    public List<String> getNamespaces( String repoId, String namespace )
+    private File getRepositoryBasedir( String repoId )
     {
-        throw new UnsupportedOperationException();
+        ManagedRepositoryConfiguration repositoryConfiguration =
+            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
+
+        return new File( repositoryConfiguration.getLocation() );
+    }
+
+    public Collection<String> getNamespaces( String repoId, String namespace )
+    {
+        File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
+
+        // scan all the directories which are potential namespaces. Any directories known to be projects are excluded
+        Collection<String> namespaces = new ArrayList<String>();
+        File[] files = dir.listFiles( DIRECTORY_FILTER );
+        if ( files != null )
+        {
+            for ( File file : files )
+            {
+                if ( !isProject( file ) )
+                {
+                    namespaces.add( file.getName() );
+                }
+            }
+        }
+        return namespaces;
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
     {
-        throw new UnsupportedOperationException();
+        File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
+
+        // scan all directories in the namespace, and only include those that are known to be projects
+        Collection<String> projects = new ArrayList<String>();
+        File[] files = dir.listFiles( DIRECTORY_FILTER );
+        if ( files != null )
+        {
+            for ( File file : files )
+            {
+                if ( isProject( file ) )
+                {
+                    projects.add( file.getName() );
+                }
+            }
+        }
+        return projects;
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
-        throw new UnsupportedOperationException();
+        File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId );
+
+        // all directories in a project directory can be considered a version
+        Collection<String> projectVersions = new ArrayList<String>();
+        String[] files = dir.list( DIRECTORY_FILTER );
+        return files != null ? Arrays.asList( files ) : Collections.<String>emptyList();
+    }
+
+    private boolean isProject( File dir )
+    {
+        // if a metadata file is present, check if this is the "artifactId" directory, marking it as a project
+        MavenRepositoryMetadata metadata = readMetadata( dir );
+        if ( metadata != null && dir.getName().equals( metadata.getArtifactId() ) )
+        {
+            return true;
+        }
+
+        // if metadata is missing, scan directories for a valid project version subdirectory, meaning this must be a
+        // project directory
+        File[] files = dir.listFiles( DIRECTORY_FILTER );
+        if ( files != null )
+        {
+            for ( File file : files )
+            {
+                if ( isProjectVersion( file ) )
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isProjectVersion( File dir )
+    {
+        final String artifactId = dir.getParentFile().getName();
+        final String projectVersion = dir.getName();
+
+        // if a metadata file is present, check if this is the "version" directory, marking it as a project version
+        MavenRepositoryMetadata metadata = readMetadata( dir );
+        if ( metadata != null && projectVersion.equals( metadata.getVersion() ) )
+        {
+            return true;
+        }
+
+        // if metadata is missing, check if there is a POM artifact file to ensure it is a version directory
+        File[] files;
+        if ( VersionUtil.isSnapshot( projectVersion ) )
+        {
+            files = dir.listFiles( new FilenameFilter()
+            {
+                public boolean accept( File dir, String name )
+                {
+                    if ( name.startsWith( artifactId + "-" ) && name.endsWith( ".pom" ) )
+                    {
+                        String v = name.substring( artifactId.length() + 1, name.length() - 4 );
+                        v = VersionUtil.getBaseVersion( v );
+                        if ( v.equals( projectVersion ) )
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            } );
+        }
+        else
+        {
+            final String pomFile = artifactId + "-" + projectVersion + ".pom";
+            files = dir.listFiles( new FilenameFilter()
+            {
+                public boolean accept( File dir, String name )
+                {
+                    return pomFile.equals( name );
+                }
+            } );
+        }
+        return files != null && files.length > 0;
+    }
+
+    private MavenRepositoryMetadata readMetadata( File directory )
+    {
+        MavenRepositoryMetadata metadata = null;
+        File metadataFile = new File( directory, METADATA_FILENAME );
+        if ( metadataFile.exists() )
+        {
+            try
+            {
+                metadata = MavenRepositoryMetadataReader.read( metadataFile );
+            }
+            catch ( XMLException e )
+            {
+                // ignore missing or invalid metadata
+            }
+        }
+        return metadata;
     }
 }

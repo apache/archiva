@@ -104,29 +104,57 @@ public class DefaultMetadataResolver
 
     public Collection<String> getRootNamespaces( String repoId )
     {
-        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
-        // not passed to the storage mechanism as resolving references would require iterating all groups
-        return metadataRepository.getRootNamespaces( repoId );
+        Collection<String> rootNamespaces = metadataRepository.getRootNamespaces( repoId );
+
+        // TODO: may want caching on this
+        Collection<String> storageRootNamespaces = storageResolver.getRootNamespaces( repoId );
+        if ( storageRootNamespaces != null && !storageRootNamespaces.equals( rootNamespaces ) )
+        {
+            // TODO: update the metadata repository
+            rootNamespaces = storageRootNamespaces;
+        }
+
+        return rootNamespaces;
     }
 
     public Collection<String> getNamespaces( String repoId, String namespace )
     {
-        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
-        // not passed to the storage mechanism as resolving references would require iterating all groups
-        return metadataRepository.getNamespaces( repoId, namespace );
+        Collection<String> namespaces = metadataRepository.getNamespaces( repoId, namespace );
+        // TODO: may want caching on this
+        Collection<String> storageNamespaces = storageResolver.getNamespaces( repoId, namespace );
+        if ( storageNamespaces != null && !storageNamespaces.equals( namespaces ) )
+        {
+            // TODO: update the metadata repository
+            namespaces = storageNamespaces;
+        }
+
+        return namespaces;
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
     {
-        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
-        // not passed to the storage mechanism as resolving references would require iterating all projects
-        return metadataRepository.getProjects( repoId, namespace );
+        Collection<String> projects = metadataRepository.getProjects( repoId, namespace );
+        // TODO: may want caching on this
+        Collection<String> storageProjects = storageResolver.getProjects( repoId, namespace );
+        if ( storageProjects != null && !storageProjects.equals( projects ) )
+        {
+            // TODO: update the metadata repository
+            projects = storageProjects;
+        }
+
+        return projects;
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
-        // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
-        // not passed to the storage mechanism as resolving references would require iterating all versions
-        return metadataRepository.getProjectVersions( repoId, namespace, projectId );
+        Collection<String> projectVersions = metadataRepository.getProjectVersions( repoId, namespace, projectId );
+        // TODO: may want caching on this
+        Collection<String> storageProjectVersions = storageResolver.getProjectVersions( repoId, namespace, projectId );
+        if ( storageProjectVersions != null && !storageProjectVersions.equals( projectVersions ) )
+        {
+            // TODO: update the metadata repository
+            projectVersions = storageProjectVersions;
+        }
+        return projectVersions;
     }
 }

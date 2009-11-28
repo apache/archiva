@@ -220,6 +220,75 @@ public class Maven2RepositoryMetadataResolverTest
 
     }
 
+    public void testGetRootNamespaces()
+    {
+        assertEquals( Arrays.asList( "com", "org" ), resolver.getRootNamespaces( TEST_REPO_ID ) );
+    }
+
+    public void testGetNamespaces()
+    {
+        assertEquals( Arrays.asList( "example" ), resolver.getNamespaces( TEST_REPO_ID, "com" ) );
+        assertEquals( Arrays.asList( "test" ), resolver.getNamespaces( TEST_REPO_ID, "com.example" ) );
+        assertEquals( Collections.<String>emptyList(), resolver.getNamespaces( TEST_REPO_ID, "com.example.test" ) );
+
+        assertEquals( Arrays.asList( "apache" ), resolver.getNamespaces( TEST_REPO_ID, "org" ) );
+        assertEquals( Arrays.asList( "archiva", "maven" ), resolver.getNamespaces( TEST_REPO_ID, "org.apache" ) );
+        assertEquals( Collections.<String>emptyList(), resolver.getNamespaces( TEST_REPO_ID, "org.apache.archiva" ) );
+        assertEquals( Arrays.asList( "plugins", "shared" ),
+                      resolver.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) );
+        assertEquals( Collections.<String>emptyList(),
+                      resolver.getNamespaces( TEST_REPO_ID, "org.apache.maven.plugins" ) );
+        assertEquals( Collections.<String>emptyList(),
+                      resolver.getNamespaces( TEST_REPO_ID, "org.apache.maven.shared" ) );
+    }
+
+    public void testGetProjects()
+    {
+        assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "com" ) );
+        assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "com.example" ) );
+        assertEquals( Arrays.asList( "incomplete-metadata", "invalid-pom", "malformed-metadata", "missing-metadata" ),
+                      resolver.getProjects( TEST_REPO_ID, "com.example.test" ) );
+
+        assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "org" ) );
+        assertEquals( Arrays.asList( "apache" ), resolver.getProjects( TEST_REPO_ID, "org.apache" ) );
+        assertEquals( Arrays.asList( "archiva", "archiva-base", "archiva-common", "archiva-modules", "archiva-parent" ),
+                      resolver.getProjects( TEST_REPO_ID, "org.apache.archiva" ) );
+        assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "org.apache.maven" ) );
+        assertEquals( Collections.<String>emptyList(),
+                      resolver.getProjects( TEST_REPO_ID, "org.apache.maven.plugins" ) );
+        assertEquals( Arrays.asList( "maven-downloader" ),
+                      resolver.getProjects( TEST_REPO_ID, "org.apache.maven.shared" ) );
+    }
+
+    public void testGetProjectVersions()
+    {
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "com.example.test", "incomplete-metadata" ) );
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "com.example.test", "malformed-metadata" ) );
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "com.example.test", "missing-metadata" ) );
+        assertEquals( Arrays.asList( "1.0" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "com.example.test", "invalid-pom" ) );
+
+        assertEquals( Arrays.asList( "4", "5-SNAPSHOT" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "org.apache", "apache" ) );
+
+        assertEquals( Arrays.asList( "1.2.1" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva" ) );
+        assertEquals( Arrays.asList( "1.2.1" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva-base" ) );
+        assertEquals( Arrays.asList( "1.2.1" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva-common" ) );
+        assertEquals( Arrays.asList( "1.2.1" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva-modules" ) );
+        assertEquals( Arrays.asList( "3" ),
+                      resolver.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva-parent" ) );
+
+        assertEquals( Collections.<String>emptyList(),
+                      resolver.getProjectVersions( TEST_REPO_ID, "org.apache.maven.shared", "maven-downloader" ) );
+    }
+
     private void assertMailingList( MailingList mailingList, String name, String archive, String post, String subscribe,
                                     String unsubscribe, List<String> otherArchives, boolean allowPost )
     {
