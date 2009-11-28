@@ -19,12 +19,15 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
+import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver"
@@ -44,7 +47,7 @@ public class DefaultMetadataResolver
      *
      * @plexus.requirement role-hint="maven2"
      */
-    private MetadataResolver storageResolver;
+    private StorageMetadataResolver storageResolver;
 
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
@@ -104,56 +107,79 @@ public class DefaultMetadataResolver
 
     public Collection<String> getRootNamespaces( String repoId )
     {
-        Collection<String> rootNamespaces = metadataRepository.getRootNamespaces( repoId );
-
-        // TODO: may want caching on this
-        Collection<String> storageRootNamespaces = storageResolver.getRootNamespaces( repoId );
-        if ( storageRootNamespaces != null && !storageRootNamespaces.equals( rootNamespaces ) )
+        Collection<String> namespaces = metadataRepository.getRootNamespaces( repoId );
+        Collection<String> storageNamespaces =
+            storageResolver.getRootNamespaces( repoId, new ExcludesFilter<String>( namespaces ) );
+        if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
-            // TODO: update the metadata repository
-            rootNamespaces = storageRootNamespaces;
+            for ( String n : storageNamespaces )
+            {
+                metadataRepository.updateNamespace( repoId, n );
+            }
+            namespaces = new ArrayList<String>( namespaces );
+            namespaces.addAll( storageNamespaces );
         }
-
-        return rootNamespaces;
+        return namespaces;
     }
 
     public Collection<String> getNamespaces( String repoId, String namespace )
     {
         Collection<String> namespaces = metadataRepository.getNamespaces( repoId, namespace );
-        // TODO: may want caching on this
-        Collection<String> storageNamespaces = storageResolver.getNamespaces( repoId, namespace );
-        if ( storageNamespaces != null && !storageNamespaces.equals( namespaces ) )
+        Collection<String> storageNamespaces =
+            storageResolver.getNamespaces( repoId, namespace, new ExcludesFilter<String>( namespaces ) );
+        if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
-            // TODO: update the metadata repository
-            namespaces = storageNamespaces;
+            for ( String n : storageNamespaces )
+            {
+                metadataRepository.updateNamespace( repoId, namespace + "." + n );
+            }
+            namespaces = new ArrayList<String>( namespaces );
+            namespaces.addAll( storageNamespaces );
         }
-
         return namespaces;
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
     {
         Collection<String> projects = metadataRepository.getProjects( repoId, namespace );
-        // TODO: may want caching on this
-        Collection<String> storageProjects = storageResolver.getProjects( repoId, namespace );
-        if ( storageProjects != null && !storageProjects.equals( projects ) )
+        Collection<String> storageProjects =
+            storageResolver.getProjects( repoId, namespace, new ExcludesFilter<String>( projects ) );
+        if ( storageProjects != null && !storageProjects.isEmpty() )
         {
-            // TODO: update the metadata repository
-            projects = storageProjects;
+            for ( String projectId : storageProjects )
+            {
+                ProjectMetadata projectMetadata = storageResolver.getProject( repoId, namespace, projectId );
+                if ( projectMetadata != null )
+                {
+                    metadataRepository.updateProject( repoId, projectMetadata );
+                }
+            }
+            projects = new ArrayList<String>( projects );
+            projects.addAll( storageProjects );
         }
-
         return projects;
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+        throws MetadataResolverException
     {
         Collection<String> projectVersions = metadataRepository.getProjectVersions( repoId, namespace, projectId );
-        // TODO: may want caching on this
-        Collection<String> storageProjectVersions = storageResolver.getProjectVersions( repoId, namespace, projectId );
-        if ( storageProjectVersions != null && !storageProjectVersions.equals( projectVersions ) )
+        Collection<String> storageProjectVersions = storageResolver.getProjectVersions( repoId, namespace, projectId,
+                                                                                        new ExcludesFilter<String>(
+                                                                                            projectVersions ) );
+        if ( storageProjectVersions != null && !storageProjectVersions.isEmpty() )
         {
-            // TODO: update the metadata repository
-            projectVersions = storageProjectVersions;
+            for ( String projectVersion : storageProjectVersions )
+            {
+                ProjectVersionMetadata versionMetadata =
+                    storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
+                if ( versionMetadata != null )
+                {
+                    metadataRepository.updateProjectVersion( repoId, namespace, projectId, versionMetadata );
+                }
+            }
+            projectVersions = new ArrayList<String>( projectVersions );
+            projectVersions.addAll( storageProjectVersions );
         }
         return projectVersions;
     }

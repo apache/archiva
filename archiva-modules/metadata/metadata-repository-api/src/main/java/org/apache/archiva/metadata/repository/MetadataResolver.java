@@ -54,5 +54,6 @@ public interface MetadataResolver
 
     Collection<String> getProjects( String repoId, String namespace );
 
-    Collection<String> getProjectVersions( String repoId, String namespace, String projectId );
+    Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+        throws MetadataResolverException;
 }

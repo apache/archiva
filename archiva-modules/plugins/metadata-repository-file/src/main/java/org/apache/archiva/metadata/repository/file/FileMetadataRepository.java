@@ -86,13 +86,13 @@ public class FileMetadataRepository
     private void updateProject( String repoId, String namespace, String id )
     {
         // TODO: this is a more braindead implementation than we would normally expect, for prototyping purposes
+        updateNamespace( repoId, namespace );
+
         try
         {
             File namespaceDirectory = new File( this.directory, repoId + "/" + namespace );
             Properties properties = new Properties();
             properties.setProperty( "namespace", namespace );
-            writeProperties( properties, namespaceDirectory, NAMESPACE_METADATA_KEY );
-
             properties.setProperty( "id", id );
             writeProperties( properties, new File( namespaceDirectory, id ), PROJECT_METADATA_KEY );
 
@@ -214,6 +214,23 @@ public class FileMetadataRepository
         {
             // TODO
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void updateNamespace( String repoId, String namespace )
+    {
+        try
+        {
+            File namespaceDirectory = new File( this.directory, repoId + "/" + namespace );
+            Properties properties = new Properties();
+            properties.setProperty( "namespace", namespace );
+            writeProperties( properties, namespaceDirectory, NAMESPACE_METADATA_KEY );
+
+        }
+        catch ( IOException e )
+        {
+            // TODO!
+            e.printStackTrace();
         }
     }
 

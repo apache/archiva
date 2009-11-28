@@ -28,8 +28,8 @@ import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
+import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -61,7 +61,7 @@ public class Maven2RepositoryMetadataResolverTest
         c.addManagedRepository( testRepo );
         configuration.save( c );
 
-        resolver = (Maven2RepositoryMetadataResolver) lookup( MetadataResolver.class, "maven2" );
+        resolver = (Maven2RepositoryMetadataResolver) lookup( StorageMetadataResolver.class, "maven2" );
     }
 
     public void testGetProjectVersionMetadata()

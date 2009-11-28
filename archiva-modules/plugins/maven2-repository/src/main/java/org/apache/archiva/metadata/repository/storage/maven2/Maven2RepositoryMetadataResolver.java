@@ -30,9 +30,11 @@ import java.util.List;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
-import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
+import org.apache.archiva.metadata.repository.filter.AllFilter;
+import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -53,10 +55,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver" role-hint="maven2"
+ * @plexus.component role="org.apache.archiva.metadata.repository.storage.StorageMetadataResolver" role-hint="maven2"
  */
 public class Maven2RepositoryMetadataResolver
-    implements MetadataResolver
+    implements StorageMetadataResolver
 {
     /**
      * @plexus.requirement
@@ -77,25 +79,12 @@ public class Maven2RepositoryMetadataResolver
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
 
-    private static final FilenameFilter DIRECTORY_FILTER = new FilenameFilter()
-    {
-        public boolean accept( File dir, String name )
-        {
-            if ( name.startsWith( "." ) )
-            {
-                return false;
-            }
-            else if ( !new File( dir, name ).isDirectory() )
-            {
-                return false;
-            }
-            return true;
-        }
-    };
+    private static final Filter<String> ALL = new AllFilter<String>();
 
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
-        throw new UnsupportedOperationException();
+        // TODO: could natively implement the "shared model" concept from the browse action to avoid needing it there?
+        return null;
     }
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
@@ -291,24 +280,30 @@ public class Maven2RepositoryMetadataResolver
         return ci;
     }
 
-    // TODO: evidence that storage and resolver != repository API - split the interface up
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
     {
+        // TODO: useful, but not implemented yet, not called from DefaultMetadataResolver
         throw new UnsupportedOperationException();
     }
 
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                                      String projectVersion )
     {
+        // Can't be determined on a Maven 2 repository
         throw new UnsupportedOperationException();
     }
 
     public Collection<String> getRootNamespaces( String repoId )
     {
+        return getRootNamespaces( repoId, ALL );
+    }
+
+    public Collection<String> getRootNamespaces( String repoId, Filter<String> filter )
+    {
         File dir = getRepositoryBasedir( repoId );
 
-        String[] files = dir.list( DIRECTORY_FILTER );
+        String[] files = dir.list( new DirectoryFilter( filter ) );
         return files != null ? Arrays.asList( files ) : Collections.<String>emptyList();
     }
 
@@ -322,16 +317,21 @@ public class Maven2RepositoryMetadataResolver
 
     public Collection<String> getNamespaces( String repoId, String namespace )
     {
+        return getNamespaces( repoId, namespace, ALL );
+    }
+
+    public Collection<String> getNamespaces( String repoId, String namespace, Filter<String> filter )
+    {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
         // scan all the directories which are potential namespaces. Any directories known to be projects are excluded
         Collection<String> namespaces = new ArrayList<String>();
-        File[] files = dir.listFiles( DIRECTORY_FILTER );
+        File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
             for ( File file : files )
             {
-                if ( !isProject( file ) )
+                if ( !isProject( file, filter ) )
                 {
                     namespaces.add( file.getName() );
                 }
@@ -342,16 +342,21 @@ public class Maven2RepositoryMetadataResolver
 
     public Collection<String> getProjects( String repoId, String namespace )
     {
+        return getProjects( repoId, namespace, ALL );
+    }
+
+    public Collection<String> getProjects( String repoId, String namespace, Filter<String> filter )
+    {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
         // scan all directories in the namespace, and only include those that are known to be projects
         Collection<String> projects = new ArrayList<String>();
-        File[] files = dir.listFiles( DIRECTORY_FILTER );
+        File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
             for ( File file : files )
             {
-                if ( isProject( file ) )
+                if ( isProject( file, filter ) )
                 {
                     projects.add( file.getName() );
                 }
@@ -362,26 +367,23 @@ public class Maven2RepositoryMetadataResolver
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
+        return getProjectVersions( repoId, namespace, projectId, ALL );
+    }
+
+    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId,
+                                                  Filter<String> filter )
+    {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId );
 
         // all directories in a project directory can be considered a version
-        Collection<String> projectVersions = new ArrayList<String>();
-        String[] files = dir.list( DIRECTORY_FILTER );
+        String[] files = dir.list( new DirectoryFilter( filter ) );
         return files != null ? Arrays.asList( files ) : Collections.<String>emptyList();
     }
 
-    private boolean isProject( File dir )
+    private boolean isProject( File dir, Filter<String> filter )
     {
-        // if a metadata file is present, check if this is the "artifactId" directory, marking it as a project
-        MavenRepositoryMetadata metadata = readMetadata( dir );
-        if ( metadata != null && dir.getName().equals( metadata.getArtifactId() ) )
-        {
-            return true;
-        }
-
-        // if metadata is missing, scan directories for a valid project version subdirectory, meaning this must be a
-        // project directory
-        File[] files = dir.listFiles( DIRECTORY_FILTER );
+        // scan directories for a valid project version subdirectory, meaning this must be a project directory
+        File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
             for ( File file : files )
@@ -392,6 +394,14 @@ public class Maven2RepositoryMetadataResolver
                 }
             }
         }
+
+        // if a metadata file is present, check if this is the "artifactId" directory, marking it as a project
+        MavenRepositoryMetadata metadata = readMetadata( dir );
+        if ( metadata != null && dir.getName().equals( metadata.getArtifactId() ) )
+        {
+            return true;
+        }
+
         return false;
     }
 
@@ -400,14 +410,7 @@ public class Maven2RepositoryMetadataResolver
         final String artifactId = dir.getParentFile().getName();
         final String projectVersion = dir.getName();
 
-        // if a metadata file is present, check if this is the "version" directory, marking it as a project version
-        MavenRepositoryMetadata metadata = readMetadata( dir );
-        if ( metadata != null && projectVersion.equals( metadata.getVersion() ) )
-        {
-            return true;
-        }
-
-        // if metadata is missing, check if there is a POM artifact file to ensure it is a version directory
+        // check if there is a POM artifact file to ensure it is a version directory
         File[] files;
         if ( VersionUtil.isSnapshot( projectVersion ) )
         {
@@ -439,7 +442,19 @@ public class Maven2RepositoryMetadataResolver
                 }
             } );
         }
-        return files != null && files.length > 0;
+        if ( files != null && files.length > 0 )
+        {
+            return true;
+        }
+
+        // if a metadata file is present, check if this is the "version" directory, marking it as a project version
+        MavenRepositoryMetadata metadata = readMetadata( dir );
+        if ( metadata != null && projectVersion.equals( metadata.getVersion() ) )
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private MavenRepositoryMetadata readMetadata( File directory )
@@ -458,5 +473,33 @@ public class Maven2RepositoryMetadataResolver
             }
         }
         return metadata;
+    }
+
+    private static class DirectoryFilter
+        implements FilenameFilter
+    {
+        private final Filter<String> filter;
+
+        public DirectoryFilter( Filter<String> filter )
+        {
+            this.filter = filter;
+        }
+
+        public boolean accept( File dir, String name )
+        {
+            if ( !filter.accept( name ) )
+            {
+                return false;
+            }
+            else if ( name.startsWith( "." ) )
+            {
+                return false;
+            }
+            else if ( !new File( dir, name ).isDirectory() )
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

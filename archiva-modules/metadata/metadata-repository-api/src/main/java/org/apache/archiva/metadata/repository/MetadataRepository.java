@@ -30,6 +30,7 @@ public interface MetadataRepository
     /**
      * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
      *
+     * @param repoId the repository the project is in
      * @param project the project metadata to create or update
      */
     void updateProject( String repoId, ProjectMetadata project );
@@ -42,4 +43,6 @@ public interface MetadataRepository
 
     void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
                                  ProjectVersionReference reference );
+
+    void updateNamespace( String repoId, String namespace );
 }
