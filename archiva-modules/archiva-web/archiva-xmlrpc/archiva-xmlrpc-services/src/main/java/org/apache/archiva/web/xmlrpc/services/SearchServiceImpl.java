@@ -36,11 +36,9 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
@@ -258,7 +256,7 @@ public class SearchServiceImpl
         List<Artifact> artifacts = new ArrayList<Artifact>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
         
-        List<ArchivaProjectModel> dependees = repoBrowsing.getUsedBy( "", observableRepos, "org.apache.archiva", "archiva-test", "1.0" );
+        List<ArchivaProjectModel> dependees = repoBrowsing.getUsedBy( "", observableRepos, groupId, artifactId, version );
         for( ArchivaProjectModel model : dependees )
         {
             Artifact artifact =
