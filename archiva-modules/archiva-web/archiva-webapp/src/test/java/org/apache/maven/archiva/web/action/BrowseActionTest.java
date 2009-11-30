@@ -311,7 +311,6 @@ public class BrowseActionTest
     }
 
     // TODO: test with restricted observable repos
-    //       not currently relevant since it is controlled at the DefaultRepositoryBrowsing level
     // TODO: current behaviour is to ignore values that differ between models - instead, pick the latest and use that.
     //       Need to update the tests to verify this as models are currently the same
 

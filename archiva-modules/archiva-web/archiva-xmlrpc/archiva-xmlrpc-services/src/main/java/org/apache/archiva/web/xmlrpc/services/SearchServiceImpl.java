@@ -214,7 +214,7 @@ public class SearchServiceImpl
         List<Artifact> artifacts = new ArrayList<Artifact>();
 
         // 1. get observable repositories
-        // 2. use RepositoryBrowsing method to query uniqueVersions? (but with date)
+        // 2. use metadata repository to query uniqueVersions? (but with date)
 
         return artifacts;
     }
