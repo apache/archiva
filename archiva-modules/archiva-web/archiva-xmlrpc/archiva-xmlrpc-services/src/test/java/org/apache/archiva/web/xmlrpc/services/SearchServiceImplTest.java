@@ -29,6 +29,8 @@ import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
@@ -80,6 +82,10 @@ public class SearchServiceImplTest
 
     private static final String ARCHIVA_TEST_GROUP_ID = "org.apache.archiva";
 
+    private MockControl metadataResolverControl;
+
+    private MetadataResolver metadataResolver;
+
     @Override
     public void setUp()
         throws Exception
@@ -98,7 +104,10 @@ public class SearchServiceImplTest
         searchControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         search = (RepositorySearch) searchControl.getMock();
 
-        searchService = new SearchServiceImpl( userRepos, archivaDAO, repoBrowsing, search );
+        metadataResolverControl = MockControl.createControl( MetadataResolver.class );
+        metadataResolver = (MetadataResolver) metadataResolverControl.getMock();
+
+        searchService = new SearchServiceImpl( userRepos, archivaDAO, repoBrowsing, metadataResolver, search );
 
         artifactDAOControl = MockControl.createControl( ArtifactDAO.class );
         artifactDAO = (ArtifactDAO) artifactDAOControl.getMock();
@@ -624,41 +633,42 @@ public class SearchServiceImplTest
     public void testGetDependees()
         throws Exception
     {
-        Date date = new Date();
         List<String> observableRepoIds = new ArrayList<String>();
-        observableRepoIds.add( "repo1.mirror" );
-        observableRepoIds.add( "public.releases" );
+        String repoId = "repo1.mirror";
+        observableRepoIds.add( repoId );
 
-        List<ArchivaProjectModel> dependeeModels = new ArrayList<ArchivaProjectModel>();
-        ArchivaProjectModel dependeeModel = new ArchivaProjectModel();
-        dependeeModel.setGroupId( ARCHIVA_TEST_GROUP_ID );
-        dependeeModel.setArtifactId( "archiva-dependee-one" );
-        dependeeModel.setVersion( "1.0" );
-        dependeeModel.setWhenIndexed( date );
+        List<ProjectVersionReference> dependeeModels = new ArrayList<ProjectVersionReference>();
+        ProjectVersionReference dependeeModel = new ProjectVersionReference();
+        dependeeModel.setNamespace( ARCHIVA_TEST_GROUP_ID );
+        dependeeModel.setProjectId( "archiva-dependee-one" );
+        dependeeModel.setProjectVersion( "1.0" );
         dependeeModels.add( dependeeModel );
 
-        dependeeModel = new ArchivaProjectModel();
-        dependeeModel.setGroupId( ARCHIVA_TEST_GROUP_ID );
-        dependeeModel.setArtifactId( "archiva-dependee-two" );
-        dependeeModel.setVersion( "1.0" );
-        dependeeModel.setWhenIndexed( date );
+        dependeeModel = new ProjectVersionReference();
+        dependeeModel.setNamespace( ARCHIVA_TEST_GROUP_ID );
+        dependeeModel.setProjectId( "archiva-dependee-two" );
+        dependeeModel.setProjectVersion( "1.0" );
         dependeeModels.add( dependeeModel );
 
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.getUsedBy( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectReferences( repoId, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
             dependeeModels );
 
-        repoBrowsingControl.replay();
+        metadataResolverControl.replay();
         userReposControl.replay();
 
         List<Artifact> dependees = searchService.getDependees( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" );
 
-        repoBrowsingControl.verify();
+        metadataResolverControl.verify();
         userReposControl.verify();
 
         assertNotNull( dependees );
         assertEquals( 2, dependees.size() );
+        assertEquals( new Artifact( repoId, ARCHIVA_TEST_GROUP_ID, "archiva-dependee-one", "1.0", "" ),
+                      dependees.get( 0 ) );
+        assertEquals( new Artifact( repoId, ARCHIVA_TEST_GROUP_ID, "archiva-dependee-two", "1.0", "" ),
+                      dependees.get( 1 ) );
     }
 
     public void testGetDependeesArtifactDoesNotExist()
@@ -669,33 +679,20 @@ public class SearchServiceImplTest
         observableRepoIds.add( "repo1.mirror" );
         observableRepoIds.add( "public.releases" );
 
-        List dependeeModels = new ArrayList();
-        ArchivaProjectModel dependeeModel = new ArchivaProjectModel();
-        dependeeModel.setGroupId( ARCHIVA_TEST_GROUP_ID );
-        dependeeModel.setArtifactId( "archiva-dependee-one" );
-        dependeeModel.setVersion( "1.0" );
-        dependeeModel.setWhenIndexed( date );
-        dependeeModels.add( dependeeModel );
-
-        dependeeModel = new ArchivaProjectModel();
-        dependeeModel.setGroupId( ARCHIVA_TEST_GROUP_ID );
-        dependeeModel.setArtifactId( "archiva-dependee-two" );
-        dependeeModel.setVersion( "1.0" );
-        dependeeModel.setWhenIndexed( date );
-        dependeeModels.add( dependeeModel );
-
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.getUsedBy( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
-            null );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectReferences( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
+                                                   "1.0" ), null );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectReferences( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
+                                                   "1.0" ), null );
 
         repoBrowsingControl.replay();
         userReposControl.replay();
 
         try
         {
-            List<Artifact> dependees =
-                searchService.getDependees( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" );
+            searchService.getDependees( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" );
             fail( "An exception should have been thrown." );
         }
         catch ( Exception e )

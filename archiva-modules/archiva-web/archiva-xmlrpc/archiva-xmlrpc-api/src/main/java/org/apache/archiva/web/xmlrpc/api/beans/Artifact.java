@@ -45,6 +45,55 @@ public class Artifact
 
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        Artifact artifact = (Artifact) o;
+
+        if ( !artifactId.equals( artifact.artifactId ) )
+        {
+            return false;
+        }
+        if ( !groupId.equals( artifact.groupId ) )
+        {
+            return false;
+        }
+        if ( !repositoryId.equals( artifact.repositoryId ) )
+        {
+            return false;
+        }
+        if ( type != null ? !type.equals( artifact.type ) : artifact.type != null )
+        {
+            return false;
+        }
+        if ( !version.equals( artifact.version ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = repositoryId.hashCode();
+        result = 31 * result + groupId.hashCode();
+        result = 31 * result + artifactId.hashCode();
+        result = 31 * result + version.hashCode();
+        result = 31 * result + ( type != null ? type.hashCode() : 0 );
+        return result;
+    }
+
     public Artifact( String repositoryId, String groupId, String artifactId, String version, String type )
 //                     String type, Date whenGathered )
     {   

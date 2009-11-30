@@ -20,6 +20,7 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +28,8 @@ import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
@@ -71,13 +74,17 @@ public class SearchServiceImpl
 
     private RepositoryBrowsing repoBrowsing;
 
+    private MetadataResolver metadataResolver;
+
     public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, ArchivaDAO archivaDAO,
-                              RepositoryBrowsing repoBrowsing, RepositorySearch search )
+                              RepositoryBrowsing repoBrowsing, MetadataResolver metadataResolver,
+                              RepositorySearch search )
     {
         this.xmlRpcUserRepositories = xmlRpcUserRepositories;
         this.archivaDAO = archivaDAO;
         this.repoBrowsing = repoBrowsing;
         this.search = search;
+        this.metadataResolver = metadataResolver;
     }
 
     @SuppressWarnings("unchecked")
@@ -263,13 +270,15 @@ public class SearchServiceImpl
         List<Artifact> artifacts = new ArrayList<Artifact>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
 
-        List<ArchivaProjectModel> dependees =
-            repoBrowsing.getUsedBy( "", observableRepos, groupId, artifactId, version );
-        for ( ArchivaProjectModel model : dependees )
+        for ( String repoId : observableRepos )
         {
-            Artifact artifact = new Artifact( "", model.getGroupId(), model.getArtifactId(), model.getVersion(), "" );
-            //model.getWhenIndexed() );
-            artifacts.add( artifact );
+            Collection<ProjectVersionReference> refs =
+                metadataResolver.getProjectReferences( repoId, groupId, artifactId, version );
+            for ( ProjectVersionReference ref : refs )
+            {
+                artifacts.add(
+                    new Artifact( repoId, ref.getNamespace(), ref.getProjectId(), ref.getProjectVersion(), "" ) );
+            }
         }
 
         return artifacts;
