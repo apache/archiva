@@ -245,65 +245,6 @@ public class SearchServiceImplTest
                     artifact.getRepositoryId() );
     }
 
-    /*
-    * quick/general text search which returns a list of artifacts
-    * query for an artifact based on a checksum
-    * query for all available versions of an artifact, sorted in version significance order
-    * query for all available versions of an artifact since a given date
-    * query for an artifact's direct dependencies
-    * query for an artifact's dependency tree (as with mvn dependency:tree - no duplicates should be included)
-    * query for all artifacts that depend on a given artifact
-    */
-
-    /* quick search */
-
-//    public void testQuickSearchArtifactBytecodeSearch()
-//        throws Exception
-//    {
-//        // 1. check whether bytecode search or ordinary search
-//        // 2. get observable repos
-//        // 3. convert results to a list of Artifact objects
-//
-//        List<String> observableRepoIds = new ArrayList<String>();
-//        observableRepoIds.add( "repo1.mirror" );
-//        observableRepoIds.add( "public.releases" );
-//
-//        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-//
-//        Date whenGathered = new Date();
-//        SearchResults results = new SearchResults();
-//        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "archiva-test", "1.0", "", "jar", "public.releases" );
-//        artifact.getModel().setWhenGathered( whenGathered );
-//
-//        SearchResultHit resultHit = new SearchResultHit();
-//        resultHit.setArtifact(artifact);
-//        resultHit.setRepositoryId("repo1.mirror");
-//
-//        results.addHit(SearchUtil.getHitId(artifact.getGroupId(), artifact.getArtifactId()), resultHit);
-//
-//        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
-//
-//        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "MyClassName", limits, null ), results );
-//
-//        archivaDAOControl.expectAndReturn( archivaDAO.getArtifactDAO(), artifactDAO );
-//        artifactDAOControl.expectAndReturn( artifactDAO.getArtifact( "org.apache.archiva", "archiva-test", "1.0", "", "pom", "public.releases" ), artifact );
-//
-//        userReposControl.replay();
-//        searchControl.replay();
-//        archivaDAOControl.replay();
-//        artifactDAOControl.replay();
-//
-//        List<Artifact> artifacts = searchService.quickSearch( "bytecode:MyClassName" );
-//
-//        userReposControl.verify();
-//        searchControl.verify();
-//        archivaDAOControl.verify();
-//        artifactDAOControl.verify();
-//
-//        assertNotNull( artifacts );
-//        assertEquals( 1, artifacts.size() );
-//    }
-
     public void testQuickSearchArtifactRegularSearch()
         throws Exception
     {
@@ -429,8 +370,6 @@ public class SearchServiceImplTest
         assertEquals( 1, results.size() );
     }
 
-/* query artifact versions */
-
     public void testGetArtifactVersionsArtifactExists()
         throws Exception
     {
@@ -528,8 +467,6 @@ public class SearchServiceImplTest
         assertEquals( 6, artifacts.size() );
     }
 
-/* query artifact versions since a given date */
-
     public void testGetArtifactVersionsByDateArtifactExists()
         throws Exception
     {
@@ -541,8 +478,6 @@ public class SearchServiceImplTest
     {
 
     }
-
-/* query artifact dependencies */
 
     public void testGetDependenciesArtifactExists()
         throws Exception
