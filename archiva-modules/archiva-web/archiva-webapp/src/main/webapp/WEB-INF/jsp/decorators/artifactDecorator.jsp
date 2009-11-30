@@ -35,27 +35,28 @@
 
 <body>
 
+<c:set var="mavenFacet" value="${model.facets['org.apache.archiva.metadata.repository.storage.maven2']}" />
 <s:set name="model" value="model"/>
 <c:choose>
-  <c:when test="${model.packaging == 'maven-plugin'}">
+  <c:when test="${facet.packaging == 'maven-plugin'}">
     <c:url var="imageUrl" value="/images/mavenplugin.gif"/>
     <c:set var="packageName">Maven Plugin</c:set>
   </c:when>
-  <c:when test="${model.packaging == 'pom'}">
+  <c:when test="${facet.packaging == 'pom'}">
     <c:url var="imageUrl" value="/images/pom.gif"/>
     <c:set var="packageName">POM</c:set>
   </c:when>
   <%-- These types aren't usually set in the POM yet, so we fudge them for the well known ones --%>
-  <c:when test="${model.packaging == 'maven-archetype' or model.groupId == 'org.apache.maven.archetypes'}">
+  <c:when test="${facet.packaging == 'maven-archetype' or facet.groupId == 'org.apache.maven.archetypes'}">
     <c:url var="imageUrl" value="/images/archetype.gif"/>
     <c:set var="packageName">Maven Archetype</c:set>
   </c:when>
-  <c:when test="${model.packaging == 'maven-skin' or model.groupId == 'org.apache.maven.skins'}">
+  <c:when test="${facet.packaging == 'maven-skin' or facet.groupId == 'org.apache.maven.skins'}">
     <c:url var="imageUrl" value="/images/skin.gif"/>
     <c:set var="packageName">Maven Skin</c:set>
   </c:when>
   <%-- Must be last so that the above get picked up if possible --%>
-  <c:when test="${model.packaging == 'jar'}">
+  <c:when test="${facet.packaging == 'jar'}">
     <c:url var="imageUrl" value="/images/jar.gif"/>
     <c:set var="packageName">JAR</c:set>
   </c:when>
@@ -69,7 +70,7 @@
 <h1>
   <c:choose>
     <c:when test="${empty (model.name)}">
-      ${model.artifactId}
+      ${facet.artifactId}
     </c:when>
     <c:otherwise>
       ${model.name}
@@ -137,7 +138,7 @@
   </div>
 
 <div class="sidebar3">
-  <archiva:downloadArtifact groupId="${groupId}" artifactId="${artifactId}" version="${model.version}" />
+  <archiva:downloadArtifact groupId="${groupId}" artifactId="${artifactId}" version="${version}" />
 </div>
   
   <decorator:body />
