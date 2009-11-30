@@ -555,21 +555,17 @@ public class SearchServiceImplTest
         repoBrowsingControl.verify();
     }
     
-/* get dependency tree */
-    
     public void testGetDependencyTreeArtifactExists()
         throws Exception
     {
-        
+        // TODO
     }
     
     public void testGetDependencyTreeArtifactDoesNotExist()
         throws Exception
     {
-    
+        // TODO
     }
-    
-/* get dependees */
     
     public void testGetDependees()
         throws Exception
@@ -609,7 +605,7 @@ public class SearchServiceImplTest
         assertEquals( 2, dependees.size() );
     }
     
-    /*public void testGetDependeesArtifactDoesNotExist()
+    public void testGetDependeesArtifactDoesNotExist()
         throws Exception
     {
         Date date = new Date();
@@ -633,7 +629,7 @@ public class SearchServiceImplTest
         dependeeModels.add( dependeeModel );
         
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        repoBrowsingControl.expectAndReturn( repoBrowsing.getUsedBy( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), dependeeModels );
+        repoBrowsingControl.expectAndReturn( repoBrowsing.getUsedBy( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), null );
         
         repoBrowsingControl.replay(); 
         userReposControl.replay();
@@ -645,13 +641,8 @@ public class SearchServiceImplTest
         }
         catch ( Exception e )
         {
-            assertEquals( "Artifact does not exist." )
+            repoBrowsingControl.verify();
+            userReposControl.verify();
         }
-        
-        repoBrowsingControl.verify();
-        userReposControl.verify();
-        
-        assertNotNull( dependees );
-        assertEquals( 2, dependees.size() );
-    }*/
+    }
 }
