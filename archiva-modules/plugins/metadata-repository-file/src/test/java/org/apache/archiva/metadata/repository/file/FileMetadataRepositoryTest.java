@@ -3,8 +3,11 @@ package org.apache.archiva.metadata.repository.file;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.archiva.metadata.model.MailingList;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.ProjectVersionFacet;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FileUtils;
@@ -40,6 +43,8 @@ public class FileMetadataRepositoryTest
 
     private static final String TEST_NAMESPACE = "namespace";
 
+    private static final String TEST_PROJECT_VERSION = "1.0";
+
     public void setUp()
         throws Exception
     {
@@ -60,11 +65,72 @@ public class FileMetadataRepositoryTest
     public void testUpdateProjectVersionMetadataWithNoOtherArchives()
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
-        metadata.setId( TEST_PROJECT );
+        metadata.setId( TEST_PROJECT_VERSION );
         MailingList mailingList = new MailingList();
         mailingList.setName( "Foo List" );
         mailingList.setOtherArchives( Collections.<String>emptyList() );
         metadata.setMailingLists( Collections.singletonList( mailingList ) );
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+    }
+
+    public void testUpdateProjectVersionMetadataWithExistingFacets()
+    {
+        repository.setMetadataFacetFactories(
+            Collections.<String, MetadataFacetFactory>singletonMap( "test", new MetadataFacetFactory()
+            {
+                public ProjectVersionFacet createProjectVersionFacet()
+                {
+                    return new TestProjectVersionFacet( "bar" );
+                }
+            } ) );
+
+        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+        metadata.setId( TEST_PROJECT_VERSION );
+        ProjectVersionFacet facet = new TestProjectVersionFacet( "baz" );
+        metadata.addFacet( facet );
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+
+        metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( Collections.singleton( "test" ), metadata.getFacetIds() );
+
+        metadata = new ProjectVersionMetadata();
+        metadata.setId( TEST_PROJECT_VERSION );
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+
+        metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( Collections.singleton( "test" ), metadata.getFacetIds() );
+        TestProjectVersionFacet testFacet = (TestProjectVersionFacet) metadata.getFacet( "test" );
+        assertEquals( "baz", testFacet.getValue() );
+    }
+
+    private static class TestProjectVersionFacet
+        implements ProjectVersionFacet
+    {
+        private TestProjectVersionFacet( String value )
+        {
+            this.value = value;
+        }
+
+        private String value;
+
+        public String getFacetId()
+        {
+            return "test";
+        }
+
+        public Map<String, String> toProperties()
+        {
+            return Collections.singletonMap( "test:foo", value );
+        }
+
+        public void fromProperties( Map<String, String> properties )
+        {
+            value = properties.get( "test:foo" );
+        }
+
+        public String getValue()
+        {
+            return value;
+        }
     }
 }

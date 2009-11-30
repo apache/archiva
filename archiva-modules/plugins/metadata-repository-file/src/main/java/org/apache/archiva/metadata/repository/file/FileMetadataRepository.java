@@ -116,7 +116,7 @@ public class FileMetadataRepository
         // remove properties that are not references or artifacts
         for ( String name : properties.stringPropertyNames() )
         {
-            if ( !name.startsWith( "artifact:" ) && !name.startsWith( "ref:" ) )
+            if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
             {
                 properties.remove( name );
             }
@@ -176,7 +176,10 @@ public class FileMetadataRepository
             setProperty( properties, "dependency." + i + ".type", dependency.getType() );
             i++;
         }
-        properties.setProperty( "facetIds", join( versionMetadata.getFacetIds() ) );
+        Set<String> facetIds = new LinkedHashSet<String>( versionMetadata.getFacetIds() );
+        facetIds.addAll( Arrays.asList( properties.getProperty( "facetIds", "" ).split( "," ) ) );
+        properties.setProperty( "facetIds", join( facetIds ) );
+
         for ( ProjectVersionFacet facet : versionMetadata.getFacetList() )
         {
             properties.putAll( facet.toProperties() );
@@ -612,5 +615,10 @@ public class FileMetadataRepository
     public void setDirectory( File directory )
     {
         this.directory = directory;
+    }
+
+    public void setMetadataFacetFactories( Map<String, MetadataFacetFactory> metadataFacetFactories )
+    {
+        this.metadataFacetFactories = metadataFacetFactories;
     }
 }
