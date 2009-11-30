@@ -30,6 +30,7 @@ import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
@@ -38,7 +39,6 @@ import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
@@ -480,23 +480,19 @@ public class SearchServiceImplTest
     public void testGetDependenciesArtifactExists()
         throws Exception
     {
-        List<String> observableRepoIds = new ArrayList<String>();
-        observableRepoIds.add( "repo1.mirror" );
-        observableRepoIds.add( "public.releases" );
+        String repoId = "repo1.mirror";
 
-        ArchivaProjectModel model = new ArchivaProjectModel();
-        model.setGroupId( ARCHIVA_TEST_GROUP_ID );
-        model.setArtifactId( ARCHIVA_TEST_ARTIFACT_ID );
-        model.setVersion( "1.0" );
+        ProjectVersionMetadata model = new ProjectVersionMetadata();
+        model.setId( "1.0" );
 
-        org.apache.maven.archiva.model.Dependency dependency = new org.apache.maven.archiva.model.Dependency();
-        dependency.setGroupId( "commons-logging" );
+        org.apache.archiva.metadata.model.Dependency dependency = new org.apache.archiva.metadata.model.Dependency();
+        dependency.setGroupId( "org.apache.commons" );
         dependency.setArtifactId( "commons-logging" );
         dependency.setVersion( "2.0" );
 
         model.addDependency( dependency );
 
-        dependency = new org.apache.maven.archiva.model.Dependency();
+        dependency = new org.apache.archiva.metadata.model.Dependency();
         dependency.setGroupId( "junit" );
         dependency.setArtifactId( "junit" );
         dependency.setVersion( "2.4" );
@@ -504,38 +500,39 @@ public class SearchServiceImplTest
 
         model.addDependency( dependency );
 
-        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.selectVersion( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), Collections.singletonList( repoId ) );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectVersion( repoId, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
             model );
 
-        repoBrowsingControl.replay();
+        metadataResolverControl.replay();
         userReposControl.replay();
 
         List<Dependency> dependencies =
             searchService.getDependencies( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" );
 
-        repoBrowsingControl.verify();
+        metadataResolverControl.verify();
         userReposControl.verify();
 
         assertNotNull( dependencies );
         assertEquals( 2, dependencies.size() );
+        assertEquals( new Dependency( "org.apache.commons", "commons-logging", "2.0", null, null, null ),
+                      dependencies.get( 0 ) );
+        assertEquals( new Dependency( "junit", "junit", "2.4", null, null, "test" ), dependencies.get( 1 ) );
     }
 
     public void testGetDependenciesArtifactDoesNotExist()
         throws Exception
     {
-        List<String> observableRepoIds = new ArrayList<String>();
-        observableRepoIds.add( "repo1.mirror" );
-        observableRepoIds.add( "public.releases" );
+        String repoId = "repo1.mirror";
 
-        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        repoBrowsingControl.expectAndThrow(
-            repoBrowsing.selectVersion( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
-            new ObjectNotFoundException( "Artifact does not exist." ) );
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), Collections.singletonList( repoId ) );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectVersion( repoId, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
+            null );
 
         userReposControl.replay();
-        repoBrowsingControl.replay();
+        metadataResolverControl.replay();
 
         try
         {
@@ -548,7 +545,7 @@ public class SearchServiceImplTest
         }
 
         userReposControl.verify();
-        repoBrowsingControl.verify();
+        metadataResolverControl.verify();
     }
 
     public void testGetDependencyTreeArtifactExists()

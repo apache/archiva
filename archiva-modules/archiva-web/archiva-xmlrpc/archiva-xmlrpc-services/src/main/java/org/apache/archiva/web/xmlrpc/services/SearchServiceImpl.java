@@ -28,6 +28,7 @@ import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
@@ -232,27 +233,26 @@ public class SearchServiceImpl
     public List<Dependency> getDependencies( String groupId, String artifactId, String version )
         throws Exception
     {
-        List<Dependency> dependencies = new ArrayList<Dependency>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
 
-        try
+        for ( String repoId : observableRepos )
         {
-            ArchivaProjectModel model = repoBrowsing.selectVersion( "", observableRepos, groupId, artifactId, version );
-            List<org.apache.maven.archiva.model.Dependency> modelDeps = model.getDependencies();
-            for ( org.apache.maven.archiva.model.Dependency dep : modelDeps )
+            ProjectVersionMetadata model = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+            if ( model != null )
             {
-                Dependency dependency =
-                    new Dependency( dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), dep.getClassifier(),
-                                    dep.getType(), dep.getScope() );
-                dependencies.add( dependency );
+                List<Dependency> dependencies = new ArrayList<Dependency>();
+                List<org.apache.archiva.metadata.model.Dependency> modelDeps = model.getDependencies();
+                for ( org.apache.archiva.metadata.model.Dependency dep : modelDeps )
+                {
+                    Dependency dependency =
+                        new Dependency( dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), dep.getClassifier(),
+                                        dep.getType(), dep.getScope() );
+                    dependencies.add( dependency );
+                }
+                return dependencies;
             }
         }
-        catch ( ObjectNotFoundException oe )
-        {
-            throw new Exception( "Artifact does not exist." );
-        }
-
-        return dependencies;
+        throw new Exception( "Artifact does not exist." );
     }
 
     public List<Artifact> getDependencyTree( String groupId, String artifactId, String version )
