@@ -31,20 +31,17 @@ import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,17 +69,13 @@ public class SearchServiceImpl
 
     private ArchivaDAO archivaDAO;
 
-    private RepositoryBrowsing repoBrowsing;
-
     private MetadataResolver metadataResolver;
 
     public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, ArchivaDAO archivaDAO,
-                              RepositoryBrowsing repoBrowsing, MetadataResolver metadataResolver,
-                              RepositorySearch search )
+                              MetadataResolver metadataResolver, RepositorySearch search )
     {
         this.xmlRpcUserRepositories = xmlRpcUserRepositories;
         this.archivaDAO = archivaDAO;
-        this.repoBrowsing = repoBrowsing;
         this.search = search;
         this.metadataResolver = metadataResolver;
     }
@@ -114,35 +107,34 @@ public class SearchServiceImpl
             {
                 for ( String version : resultHitVersions )
                 {
-                    try
+                    Artifact artifact = null;
+                    for ( String repoId : observableRepos )
                     {
-                        ArchivaProjectModel model =
-                            repoBrowsing.selectVersion( "", observableRepos, resultHit.getGroupId(),
-                                                        resultHit.getArtifactId(), version );
+                        // slight behaviour change to previous implementation: instead of allocating "jar" when not
+                        // found in the database, we can rely on the metadata repository to create it on the fly. We
+                        // just allocate the default packaging if the Maven facet is not found.
+                        ProjectVersionMetadata model =
+                            metadataResolver.getProjectVersion( repoId, resultHit.getGroupId(),
+                                                                resultHit.getArtifactId(), version );
 
-                        String repoId = repoBrowsing.getRepositoryId( "", observableRepos, resultHit.getGroupId(),
-                                                                      resultHit.getArtifactId(), version );
-
-                        Artifact artifact = null;
-                        if ( model == null )
+                        if ( model != null )
                         {
+                            String packaging = "jar";
+
+                            MavenProjectFacet facet = (MavenProjectFacet) model.getFacet( MavenProjectFacet.FACET_ID );
+                            if ( facet != null && facet.getPackaging() != null )
+                            {
+                                packaging = facet.getPackaging();
+                            }
                             artifact = new Artifact( repoId, resultHit.getGroupId(), resultHit.getArtifactId(), version,
-                                                     "jar" );
+                                                     packaging );
+                            break;
                         }
-                        else
-                        {
-                            artifact = new Artifact( repoId, model.getGroupId(), model.getArtifactId(), version,
-                                                     model.getPackaging() );
-                        }
+                    }
+
+                    if ( artifact != null )
+                    {
                         artifacts.add( artifact );
-                    }
-                    catch ( ObjectNotFoundException e )
-                    {
-                        log.debug( "Unable to find pom artifact : " + e.getMessage() );
-                    }
-                    catch ( ArchivaDatabaseException e )
-                    {
-                        log.debug( "Error occurred while getting pom artifact from database : " + e.getMessage() );
                     }
                 }
             }

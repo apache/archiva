@@ -34,13 +34,13 @@ import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -75,10 +75,6 @@ public class SearchServiceImplTest
 
     private ArtifactDAO artifactDAO;
 
-    private MockControl repoBrowsingControl;
-
-    private RepositoryBrowsing repoBrowsing;
-
     private static final String ARCHIVA_TEST_ARTIFACT_ID = "archiva-xmlrpc-test";
 
     private static final String ARCHIVA_TEST_GROUP_ID = "org.apache.archiva";
@@ -98,9 +94,6 @@ public class SearchServiceImplTest
         archivaDAOControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         archivaDAO = (ArchivaDAO) archivaDAOControl.getMock();
 
-        repoBrowsingControl = MockControl.createControl( RepositoryBrowsing.class );
-        repoBrowsing = (RepositoryBrowsing) repoBrowsingControl.getMock();
-
         searchControl = MockControl.createControl( RepositorySearch.class );
         searchControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         search = (RepositorySearch) searchControl.getMock();
@@ -108,10 +101,10 @@ public class SearchServiceImplTest
         metadataResolverControl = MockControl.createControl( MetadataResolver.class );
         metadataResolver = (MetadataResolver) metadataResolverControl.getMock();
 
-        searchService = new SearchServiceImpl( userRepos, archivaDAO, repoBrowsing, metadataResolver, search );
-
         artifactDAOControl = MockControl.createControl( ArtifactDAO.class );
         artifactDAO = (ArtifactDAO) artifactDAOControl.getMock();
+
+        searchService = new SearchServiceImpl( userRepos, archivaDAO, metadataResolver, search );
     }
 
     // MRM-1230
@@ -145,30 +138,26 @@ public class SearchServiceImplTest
             new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(), resultHit.getArtifactId() ) ),
                                            null );
 
-        ArchivaProjectModel model = new ArchivaProjectModel();
-        model.setGroupId( ARCHIVA_TEST_GROUP_ID );
-        model.setArtifactId( "archiva-webapp" );
-        model.setVersion( "1.0" );
-        model.setPackaging( "war" );
+        ProjectVersionMetadata model = new ProjectVersionMetadata();
+        model.setId( "1.0" );
+        MavenProjectFacet facet = new MavenProjectFacet();
+        facet.setPackaging( "war" );
+        model.addFacet( facet );
 
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.selectVersion( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, "archiva-webapp", "1.0" ),
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectVersion( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, "archiva-webapp", "1.0" ),
             model );
-
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.getRepositoryId( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, "archiva-webapp", "1.0" ),
-            "repo1.mirror" );
 
         userReposControl.replay();
         searchControl.replay();
-        repoBrowsingControl.replay();
+        metadataResolverControl.replay();
         archivaDAOControl.replay();
 
         List<Artifact> artifacts = searchService.quickSearch( "archiva" );
 
         userReposControl.verify();
         searchControl.verify();
-        repoBrowsingControl.verify();
+        metadataResolverControl.verify();
         archivaDAOControl.verify();
 
         assertNotNull( artifacts );
@@ -213,24 +202,26 @@ public class SearchServiceImplTest
             new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(), resultHit.getArtifactId() ) ),
                                            null );
 
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.selectVersion( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
-            null );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectVersion( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
+                                                "1.0" ), null );
 
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.getRepositoryId( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                          "1.0" ), null );
+        ProjectVersionMetadata model = new ProjectVersionMetadata();
+        model.setId( "1.0" );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectVersion( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
+                                                "1.0" ), model );
 
         userReposControl.replay();
         searchControl.replay();
-        repoBrowsingControl.replay();
+        metadataResolverControl.replay();
         archivaDAOControl.replay();
 
         List<Artifact> artifacts = searchService.quickSearch( "archiva" );
 
         userReposControl.verify();
         searchControl.verify();
-        repoBrowsingControl.verify();
+        metadataResolverControl.verify();
         archivaDAOControl.verify();
 
         assertNotNull( artifacts );
@@ -241,8 +232,7 @@ public class SearchServiceImplTest
         assertEquals( ARCHIVA_TEST_ARTIFACT_ID, artifact.getArtifactId() );
         assertEquals( "1.0", artifact.getVersion() );
         assertEquals( "jar", artifact.getType() );
-        assertNull( "Repository should be null since the model was not found in the database!",
-                    artifact.getRepositoryId() );
+        assertEquals( "public.releases", artifact.getRepositoryId() );
     }
 
     public void testQuickSearchArtifactRegularSearch()
@@ -275,31 +265,27 @@ public class SearchServiceImplTest
         searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ),
                                               results );
 
-        ArchivaProjectModel model = new ArchivaProjectModel();
-        model.setGroupId( ARCHIVA_TEST_GROUP_ID );
-        model.setArtifactId( ARCHIVA_TEST_ARTIFACT_ID );
-        model.setVersion( "1.0" );
-        model.setPackaging( "jar" );
+        ProjectVersionMetadata model = new ProjectVersionMetadata();
+        model.setId( "1.0" );
+        MavenProjectFacet facet = new MavenProjectFacet();
+        facet.setPackaging( "jar" );
+        model.addFacet( facet );
 
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.selectVersion( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
-            model );
-
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.getRepositoryId( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                          "1.0" ), "repo1.mirror" );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectVersion( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
+                                                "1.0" ), model );
 
         userReposControl.replay();
         searchControl.replay();
         archivaDAOControl.replay();
-        repoBrowsingControl.replay();
+        metadataResolverControl.replay();
 
         List<Artifact> artifacts = searchService.quickSearch( "archiva" );
 
         userReposControl.verify();
         searchControl.verify();
         archivaDAOControl.verify();
-        repoBrowsingControl.verify();
+        metadataResolverControl.verify();
 
         assertNotNull( artifacts );
         assertEquals( 1, artifacts.size() );
