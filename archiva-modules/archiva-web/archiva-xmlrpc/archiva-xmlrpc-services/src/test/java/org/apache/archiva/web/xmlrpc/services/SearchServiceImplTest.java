@@ -182,7 +182,6 @@ public class SearchServiceImplTest
         assertEquals( "repo1.mirror", artifact.getRepositoryId() );
     }
 
-    // returned model is null!
     public void testQuickSearchDefaultPackagingIsUsed()
         throws Exception
     {
@@ -339,8 +338,6 @@ public class SearchServiceImplTest
         assertEquals( 0, artifacts.size() );
     }
 
-/* query artifact by checksum */
-
     public void testGetArtifactByChecksum()
         throws Exception
     {
@@ -470,13 +467,13 @@ public class SearchServiceImplTest
     public void testGetArtifactVersionsByDateArtifactExists()
         throws Exception
     {
-
+        // TODO
     }
 
     public void testGetArtifactVersionsByDateArtifactDoesNotExist()
         throws Exception
     {
-
+        // TODO
     }
 
     public void testGetDependenciesArtifactExists()
