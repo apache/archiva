@@ -40,7 +40,6 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
@@ -199,23 +198,21 @@ public class SearchServiceImpl
     public List<Artifact> getArtifactVersions( String groupId, String artifactId )
         throws Exception
     {
-        final List<Artifact> artifacts = new ArrayList<Artifact>();
-        final List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
+        List<Artifact> artifacts = new ArrayList<Artifact>();
+        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
 
-        final BrowsingResults results = repoBrowsing.selectArtifactId( "", observableRepos, groupId, artifactId );
-
-        for ( final String version : results.getVersions() )
+        for ( String repoId : observableRepos )
         {
-            final Artifact artifact = new Artifact( "", groupId, artifactId, version, "pom" );
-            //ArchivaArtifact pomArtifact = artifactDAO.getArtifact( groupId, artifactId, version, "", "pom",  );
-            //Artifact artifact = new Artifact( "", groupId, artifactId, version, pomArtifact.getType() ); 
-            //pomArtifact.getModel().getWhenGathered() );
+            Collection<String> results = metadataResolver.getProjectVersions( repoId, groupId, artifactId );
 
-            artifacts.add( artifact );
+            for ( final String version : results )
+            {
+                final Artifact artifact = new Artifact( repoId, groupId, artifactId, version, "pom" );
+
+                artifacts.add( artifact );
+            }
         }
 
-        // 1. get observable repositories
-        // 2. use RepositoryBrowsing method to query uniqueVersions?
         return artifacts;
     }
 
@@ -263,7 +260,6 @@ public class SearchServiceImpl
         return a;
     }
 
-    //get artifacts that depend on a given artifact
     public List<Artifact> getDependees( String groupId, String artifactId, String version )
         throws Exception
     {

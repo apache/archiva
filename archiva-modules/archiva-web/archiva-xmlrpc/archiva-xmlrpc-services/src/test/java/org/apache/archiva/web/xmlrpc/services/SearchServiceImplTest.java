@@ -21,6 +21,7 @@ package org.apache.archiva.web.xmlrpc.services;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +40,6 @@ import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
@@ -371,98 +371,43 @@ public class SearchServiceImplTest
     public void testGetArtifactVersionsArtifactExists()
         throws Exception
     {
-        Date whenGathered = new Date();
-
         List<String> observableRepoIds = new ArrayList<String>();
         observableRepoIds.add( "repo1.mirror" );
         observableRepoIds.add( "public.releases" );
 
-        List<String> versions = new ArrayList<String>();
-        versions.add( "1.0" );
-        versions.add( "1.1-beta-1" );
-        versions.add( "1.1-beta-2" );
-        versions.add( "1.1" );
-        versions.add( "1.2" );
-        versions.add( "1.2.1-SNAPSHOT" );
-
-        BrowsingResults results = new BrowsingResults( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID );
-        results.setSelectedRepositoryIds( observableRepoIds );
-        results.setVersions( versions );
-
-        List<ArchivaArtifact> archivaArtifacts = new ArrayList<ArchivaArtifact>();
-        ArchivaArtifact archivaArtifact =
-            new ArchivaArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 0 ), "", "pom",
-                                 "repo1.mirror" );
-        archivaArtifact.getModel().setWhenGathered( whenGathered );
-        archivaArtifacts.add( archivaArtifact );
-
-        archivaArtifact =
-            new ArchivaArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 1 ), "", "pom",
-                                 "public.releases" );
-        archivaArtifact.getModel().setWhenGathered( whenGathered );
-        archivaArtifacts.add( archivaArtifact );
-
-        archivaArtifact =
-            new ArchivaArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 2 ), "", "pom",
-                                 "repo1.mirror" );
-        archivaArtifact.getModel().setWhenGathered( whenGathered );
-        archivaArtifacts.add( archivaArtifact );
-
-        archivaArtifact =
-            new ArchivaArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 3 ), "", "pom",
-                                 "public.releases" );
-        archivaArtifact.getModel().setWhenGathered( whenGathered );
-        archivaArtifacts.add( archivaArtifact );
-
-        archivaArtifact =
-            new ArchivaArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 4 ), "", "pom",
-                                 "repo1.mirror" );
-        archivaArtifact.getModel().setWhenGathered( whenGathered );
-        archivaArtifacts.add( archivaArtifact );
-
-        archivaArtifact =
-            new ArchivaArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 5 ), "", "pom",
-                                 "public.releases" );
-        archivaArtifact.getModel().setWhenGathered( whenGathered );
-        archivaArtifacts.add( archivaArtifact );
-
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        repoBrowsingControl.expectAndReturn(
-            repoBrowsing.selectArtifactId( "", observableRepoIds, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID ),
-            results );
-        archivaDAOControl.expectAndReturn( archivaDAO.getArtifactDAO(), artifactDAO );
-
-        artifactDAOControl.expectAndDefaultReturn(
-            artifactDAO.getArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 0 ), "", "pom",
-                                     "repo1.mirror" ), archivaArtifacts.get( 0 ) );
-        artifactDAOControl.expectAndDefaultReturn(
-            artifactDAO.getArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 1 ), "", "pom",
-                                     "public.releases" ), archivaArtifacts.get( 1 ) );
-        artifactDAOControl.expectAndDefaultReturn(
-            artifactDAO.getArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 2 ), "", "pom",
-                                     "repo1.mirror" ), archivaArtifacts.get( 2 ) );
-        artifactDAOControl.expectAndDefaultReturn(
-            artifactDAO.getArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 3 ), "", "pom",
-                                     "public.releases" ), archivaArtifacts.get( 3 ) );
-        artifactDAOControl.expectAndDefaultReturn(
-            artifactDAO.getArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 4 ), "", "pom",
-                                     "repo1.mirror" ), archivaArtifacts.get( 4 ) );
-        artifactDAOControl.expectAndDefaultReturn(
-            artifactDAO.getArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, versions.get( 5 ), "", "pom",
-                                     "public.releases" ), archivaArtifacts.get( 5 ) );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectVersions( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID ),
+            Arrays.asList( "1.0", "1.1-beta-2", "1.2" ) );
+        metadataResolverControl.expectAndReturn(
+            metadataResolver.getProjectVersions( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID ),
+            Arrays.asList( "1.1-beta-1", "1.1", "1.2.1-SNAPSHOT" ) );
 
         userReposControl.replay();
-        repoBrowsingControl.replay();
-        artifactDAOControl.replay();
+        metadataResolverControl.replay();
 
         List<Artifact> artifacts = searchService.getArtifactVersions( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID );
 
         userReposControl.verify();
-        repoBrowsingControl.verify();
-        artifactDAOControl.verify();
+        metadataResolverControl.verify();
 
         assertNotNull( artifacts );
         assertEquals( 6, artifacts.size() );
+        assertEquals( new Artifact( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0", "pom" ),
+                      artifacts.get( 0 ) );
+        assertEquals(
+            new Artifact( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.1-beta-1", "pom" ),
+            artifacts.get( 3 ) );
+        assertEquals(
+            new Artifact( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.1-beta-2", "pom" ),
+            artifacts.get( 1 ) );
+        assertEquals( new Artifact( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.1", "pom" ),
+                      artifacts.get( 4 ) );
+        assertEquals( new Artifact( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.2", "pom" ),
+                      artifacts.get( 2 ) );
+        assertEquals(
+            new Artifact( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.2.1-SNAPSHOT", "pom" ),
+            artifacts.get( 5 ) );
     }
 
     public void testGetArtifactVersionsByDateArtifactExists()

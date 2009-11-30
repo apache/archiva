@@ -94,6 +94,13 @@ public class Artifact
         return result;
     }
 
+    @Override
+    public String toString()
+    {
+        return "Artifact{" + "repositoryId='" + repositoryId + '\'' + ", groupId='" + groupId + '\'' +
+            ", artifactId='" + artifactId + '\'' + ", version='" + version + '\'' + ", type='" + type + '\'' + '}';
+    }
+
     public Artifact( String repositoryId, String groupId, String artifactId, String version, String type )
 //                     String type, Date whenGathered )
     {   
