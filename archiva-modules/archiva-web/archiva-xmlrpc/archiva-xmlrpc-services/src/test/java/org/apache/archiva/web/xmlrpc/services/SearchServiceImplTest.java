@@ -21,6 +21,7 @@ package org.apache.archiva.web.xmlrpc.services;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -606,31 +607,23 @@ public class SearchServiceImplTest
     public void testGetDependeesArtifactDoesNotExist()
         throws Exception
     {
-        Date date = new Date();
         List<String> observableRepoIds = new ArrayList<String>();
         observableRepoIds.add( "repo1.mirror" );
         observableRepoIds.add( "public.releases" );
 
+        // no longer differentiating between a project not being present and a project that is present but with
+        // no references. If it is later determined to be needed, we will need to modify the metadata content repository
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
         metadataResolverControl.expectAndReturn(
             metadataResolver.getProjectReferences( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                                   "1.0" ), null );
+                                                   "1.0" ), Collections.<ProjectVersionReference>emptyList() );
         metadataResolverControl.expectAndReturn(
             metadataResolver.getProjectReferences( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                                   "1.0" ), null );
+                                                   "1.0" ), Collections.<ProjectVersionReference>emptyList() );
 
-        repoBrowsingControl.replay();
         userReposControl.replay();
+        metadataResolverControl.replay();
 
-        try
-        {
-            searchService.getDependees( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" );
-            fail( "An exception should have been thrown." );
-        }
-        catch ( Exception e )
-        {
-            repoBrowsingControl.verify();
-            userReposControl.verify();
-        }
+        assertTrue( searchService.getDependees( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ).isEmpty() );
     }
 }
