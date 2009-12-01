@@ -292,8 +292,7 @@ public class UploadAction
         try
         {
             Configuration config = configuration.getConfiguration();
-            ManagedRepositoryConfiguration repoConfig =
-                config.findManagedRepositoryById( repositoryId );
+            ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repositoryId );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifactId );
@@ -345,20 +344,22 @@ public class UploadAction
                 filename = filename.replaceAll( "SNAPSHOT", timestamp + "-" + newBuildNumber );
             }
 
-            boolean fixChecksums = !( config.getRepositoryScanning().getKnownContentConsumers().contains( "create-missing-checksums" ) );
-            
+            boolean fixChecksums =
+                !( config.getRepositoryScanning().getKnownContentConsumers().contains( "create-missing-checksums" ) );
+
             try
-            {   
+            {
                 File targetFile = new File( targetPath, filename );
-                if( targetFile.exists() && !VersionUtil.isSnapshot( version ) && repoConfig.isBlockRedeployments() )
+                if ( targetFile.exists() && !VersionUtil.isSnapshot( version ) && repoConfig.isBlockRedeployments() )
                 {
-                    addActionError( "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed." );
+                    addActionError(
+                        "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed." );
                     return ERROR;
                 }
                 else
                 {
                     copyFile( artifactFile, targetPath, filename, fixChecksums );
-                    queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );                    
+                    queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );
                 }
             }
             catch ( IOException ie )
@@ -373,17 +374,17 @@ public class UploadAction
                 pomFilename = StringUtils.remove( pomFilename, "-" + classifier );
             }
             pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
-            
+
             if ( generatePom )
             {
                 try
                 {
                     File generatedPomFile = createPom( targetPath, pomFilename );
-                    if( fixChecksums )
+                    if ( fixChecksums )
                     {
                         fixChecksums( generatedPomFile );
                     }
-                    queueRepositoryTask( repoConfig.getId(), generatedPomFile );                    
+                    queueRepositoryTask( repoConfig.getId(), generatedPomFile );
                 }
                 catch ( IOException ie )
                 {
@@ -400,7 +401,7 @@ public class UploadAction
             if ( pomFile != null && pomFile.length() > 0 )
             {
                 try
-                {   
+                {
                     copyFile( pomFile, targetPath, pomFilename, fixChecksums );
                     queueRepositoryTask( repoConfig.getId(), new File( targetPath, pomFilename ) );
                 }
@@ -413,7 +414,7 @@ public class UploadAction
             }
 
             // explicitly update only if metadata-updater consumer is not enabled!
-            if( !config.getRepositoryScanning().getKnownContentConsumers().contains( "metadata-updater" ) )
+            if ( !config.getRepositoryScanning().getKnownContentConsumers().contains( "metadata-updater" ) )
             {
                 updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, timestamp, newBuildNumber, fixChecksums );
             }
@@ -439,13 +440,13 @@ public class UploadAction
             return ERROR;
         }
     }
-    
+
     private void fixChecksums( File file )
     {
         ChecksummedFile checksum = new ChecksummedFile( file );
         checksum.fixChecksums( algorithms );
     }
-    
+
     private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
@@ -466,8 +467,8 @@ public class UploadAction
             out.close();
             input.close();
         }
-        
-        if( fixChecksums )
+
+        if ( fixChecksums )
         {
             fixChecksums( new File( targetPath, targetFilename ) );
         }
@@ -507,7 +508,7 @@ public class UploadAction
     }
 
     /**
-     * Update artifact level metadata. If it does not exist, create the metadata and 
+     * Update artifact level metadata. If it does not exist, create the metadata and
      * fix checksums if necessary.
      */
     private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp,
@@ -563,8 +564,8 @@ public class UploadAction
         }
 
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        
-        if( fixChecksums )
+
+        if ( fixChecksums )
         {
             fixChecksums( metadataFile );
         }
