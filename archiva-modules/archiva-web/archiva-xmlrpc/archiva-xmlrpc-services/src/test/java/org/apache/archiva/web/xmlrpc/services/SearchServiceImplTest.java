@@ -44,7 +44,6 @@ import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
