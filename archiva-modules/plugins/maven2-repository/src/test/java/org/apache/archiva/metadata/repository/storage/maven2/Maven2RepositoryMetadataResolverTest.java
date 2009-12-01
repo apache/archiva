@@ -231,7 +231,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( Arrays.asList( "test" ), resolver.getNamespaces( TEST_REPO_ID, "com.example" ) );
         assertEquals( Collections.<String>emptyList(), resolver.getNamespaces( TEST_REPO_ID, "com.example.test" ) );
 
-        assertEquals( Arrays.asList( "apache" ), resolver.getNamespaces( TEST_REPO_ID, "org" ) );
+        assertEquals( Arrays.asList( "apache", "codehaus" ), resolver.getNamespaces( TEST_REPO_ID, "org" ) );
         assertEquals( Arrays.asList( "archiva", "maven" ), resolver.getNamespaces( TEST_REPO_ID, "org.apache" ) );
         assertEquals( Collections.<String>emptyList(), resolver.getNamespaces( TEST_REPO_ID, "org.apache.archiva" ) );
         assertEquals( Arrays.asList( "plugins", "shared" ),
@@ -240,6 +240,9 @@ public class Maven2RepositoryMetadataResolverTest
                       resolver.getNamespaces( TEST_REPO_ID, "org.apache.maven.plugins" ) );
         assertEquals( Collections.<String>emptyList(),
                       resolver.getNamespaces( TEST_REPO_ID, "org.apache.maven.shared" ) );
+
+        assertEquals( Arrays.asList( "plexus" ), resolver.getNamespaces( TEST_REPO_ID, "org.codehaus" ) );
+        assertEquals( Collections.<String>emptyList(), resolver.getNamespaces( TEST_REPO_ID, "org.codehaus.plexus" ) );
     }
 
     public void testGetProjects()

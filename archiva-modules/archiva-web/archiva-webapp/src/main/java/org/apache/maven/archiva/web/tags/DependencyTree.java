@@ -23,63 +23,54 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import javax.servlet.jsp.PageContext;
-
+import com.opensymphony.xwork2.ActionContext;
+import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.ArchivaException;
-import org.apache.maven.archiva.dependency.DependencyGraphFactory;
-import org.apache.maven.archiva.dependency.graph.DependencyGraph;
-import org.apache.maven.archiva.dependency.graph.DependencyGraphBuilder;
-import org.apache.maven.archiva.dependency.graph.DependencyGraphEdge;
-import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
-import org.apache.maven.archiva.dependency.graph.GraphTaskException;
-import org.apache.maven.archiva.dependency.graph.walk.BaseVisitor;
-import org.apache.maven.archiva.dependency.graph.walk.DependencyGraphWalker;
-import org.apache.maven.archiva.dependency.graph.walk.WalkDepthFirstSearch;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.DependencyScope;
 import org.apache.maven.archiva.model.Keys;
-import org.apache.maven.archiva.model.VersionedReference;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.apache.maven.archiva.security.ArchivaXworkUser;
+import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.shared.dependency.tree.DependencyNode;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
+import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * DependencyTree 
+ * DependencyTree
  *
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.web.tags.DependencyTree" 
+ * @plexus.component role="org.apache.maven.archiva.web.tags.DependencyTree"
  */
 public class DependencyTree
-    implements Initializable
 {
     private Logger log = LoggerFactory.getLogger( DependencyTree.class );
-    
+
+    /**
+     * @plexus.requirement role-hint="maven2"
+     */
+    private DependencyTreeBuilder dependencyTreeBuilder;
+
     /**
      * @plexus.requirement
-     *              role="org.apache.maven.archiva.dependency.graph.DependencyGraphBuilder"
-     *              role-hint="project-model"
      */
-    private DependencyGraphBuilder graphBuilder;
+    private UserRepositories userRepositories;
 
-    private DependencyGraphFactory graphFactory = new DependencyGraphFactory();
-
-    public class TreeEntry
+    public static class TreeEntry
     {
         private String pre = "";
 
         private String post = "";
 
-        private ArtifactReference artifact;
+        private Artifact artifact;
 
-        public void setArtifact( ArtifactReference artifact )
+        public void setArtifact( Artifact artifact )
         {
             this.artifact = artifact;
         }
 
-        public ArtifactReference getArtifact()
+        public Artifact getArtifact()
         {
             return artifact;
         }
@@ -89,19 +80,9 @@ public class DependencyTree
             return post;
         }
 
-        public void setPost( String post )
-        {
-            this.post = post;
-        }
-
         public String getPre()
         {
             return pre;
-        }
-
-        public void setPre( String pre )
-        {
-            this.pre = pre;
         }
 
         public void appendPre( String string )
@@ -115,59 +96,64 @@ public class DependencyTree
         }
     }
 
-    public List<TreeEntry> gatherTreeList( String groupId, String artifactId, String modelVersion, String nodevar,
-                                PageContext pageContext ) throws ArchivaException
+    public List<TreeEntry> gatherTreeList( String groupId, String artifactId, String modelVersion )
+        throws ArchivaException
     {
         if ( StringUtils.isBlank( groupId ) )
         {
-            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
-                + "]: groupId is blank.";
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion ) +
+                "]: groupId is blank.";
             log.error( emsg );
             throw new ArchivaException( emsg );
         }
 
         if ( StringUtils.isBlank( artifactId ) )
         {
-            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
-                + "]: artifactId is blank.";
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion ) +
+                "]: artifactId is blank.";
             log.error( emsg );
             throw new ArchivaException( emsg );
         }
 
         if ( StringUtils.isBlank( modelVersion ) )
         {
-            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
-                + "]: version is blank.";
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion ) +
+                "]: version is blank.";
             log.error( emsg );
             throw new ArchivaException( emsg );
         }
 
-        DependencyGraph graph = fetchGraph( groupId, artifactId, modelVersion );
+        // TODO Cache the results to disk, in XML format, in the same place as the artifact is located.
 
-        if ( graph == null )
+        TreeListVisitor visitor = new TreeListVisitor();
+        try
         {
-            throw new ArchivaException( "Graph is unexpectedly null." );
+            dependencyTreeBuilder.buildDependencyTree( userRepositories.getObservableRepositoryIds( getPrincipal() ),
+                                                       groupId, artifactId, modelVersion, visitor );
+        }
+        catch ( DependencyTreeBuilderException e )
+        {
+            throw new ArchivaException( "Unable to build dependency tree: " + e.getMessage(), e );
         }
 
-        TreeListVisitor treeListVisitor = new TreeListVisitor();
-        DependencyGraphWalker walker = new WalkDepthFirstSearch();
-        walker.visit( graph, treeListVisitor );
-
-        return treeListVisitor.getList();
+        return visitor.getList();
     }
 
-    class TreeListVisitor
-        extends BaseVisitor
+    private String getPrincipal()
+    {
+        return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
+    }
+
+    private static class TreeListVisitor
+        implements DependencyNodeVisitor
     {
         private List<TreeEntry> list;
 
-        private int walkDepth;
-
-        private int outputDepth;
-
-        private Stack<TreeEntry> entryStack = new Stack<TreeEntry>();
-
         private TreeEntry currentEntry;
+
+        boolean firstChild = true;
+
+        private DependencyNode firstNode;
 
         public TreeListVisitor()
         {
@@ -179,86 +165,48 @@ public class DependencyTree
             return this.list;
         }
 
-        public void discoverGraph( DependencyGraph graph )
+        public boolean visit( DependencyNode node )
         {
-            super.discoverGraph( graph );
-            this.list.clear();
-            this.entryStack.clear();
-            walkDepth = 0;
-            outputDepth = -1;
-        }
+            if ( firstNode == null )
+            {
+                firstNode = node;
+            }
 
-        public void discoverNode( DependencyGraphNode node )
-        {
-            super.discoverNode( node );
             currentEntry = new TreeEntry();
 
-            while ( walkDepth > outputDepth )
+            if ( firstChild )
             {
                 currentEntry.appendPre( "<ul>" );
-                outputDepth++;
             }
+
             currentEntry.appendPre( "<li>" );
             currentEntry.setArtifact( node.getArtifact() );
             currentEntry.appendPost( "</li>" );
             this.list.add( currentEntry );
-            this.entryStack.push( currentEntry );
-        }
 
-        public void finishNode( DependencyGraphNode node )
-        {
-            super.finishNode( node );
-
-            while ( walkDepth < outputDepth )
+            if ( !node.getChildren().isEmpty() )
             {
-                currentEntry.appendPost( "</ul>" );
-                outputDepth--;
+                firstChild = true;
             }
 
-            this.entryStack.pop();
+            return true;
         }
 
-        public void discoverEdge( DependencyGraphEdge edge )
+        public boolean endVisit( DependencyNode node )
         {
-            super.discoverEdge( edge );
-            walkDepth++;
+            firstChild = false;
+
+            if ( !node.getChildren().isEmpty() )
+            {
+                currentEntry.appendPost( "</ul>" );
+            }
+
+            if ( node == firstNode )
+            {
+                currentEntry.appendPost( "</ul>" );
+            }
+
+            return true;
         }
-
-        public void finishEdge( DependencyGraphEdge edge )
-        {
-            super.finishEdge( edge );
-            walkDepth--;
-        }
-    }
-
-    private DependencyGraph fetchGraph( String groupId, String artifactId, String modelVersion )
-        throws ArchivaException
-    {
-        // TODO Cache the results to disk, in XML format, in the same place as the artifact is located.
-
-        VersionedReference projectRef = new VersionedReference();
-        projectRef.setGroupId( groupId );
-        projectRef.setArtifactId( artifactId );
-        projectRef.setVersion( modelVersion );
-
-        try
-        {
-            DependencyGraph depGraph = graphFactory.getGraph( projectRef );
-
-            return depGraph;
-        }
-        catch ( GraphTaskException e )
-        {
-            String emsg = "Unable to generate graph for [" + Keys.toKey( projectRef ) + "] : " + e.getMessage();
-            log.warn( emsg, e );
-            throw new ArchivaException( emsg, e );
-        }
-    }
-
-    public void initialize()
-        throws InitializationException
-    {
-        this.graphFactory.setGraphBuilder( graphBuilder );
-        this.graphFactory.setDesiredScope( DependencyScope.TEST );
     }
 }

@@ -83,7 +83,7 @@ public class DependencyTreeTag
 
         if ( treeIterator.hasNext() )
         {
-            currentTreeEntry = (TreeEntry) treeIterator.next();
+            currentTreeEntry = treeIterator.next();
             out( currentTreeEntry.getPre() );
             exposeVariables();
             return EVAL_BODY_AGAIN;
@@ -132,7 +132,7 @@ public class DependencyTreeTag
         out( "<div class=\"dependency-graph\">" );
         try
         {
-            this.tree = deptree.gatherTreeList( groupId, artifactId, modelVersion, nodevar, pageContext );
+            this.tree = deptree.gatherTreeList( groupId, artifactId, modelVersion );
     
             if ( CollectionUtils.isEmpty( this.tree ) )
             {
@@ -141,7 +141,7 @@ public class DependencyTreeTag
     
             treeIterator = tree.iterator();
     
-            currentTreeEntry = (TreeEntry) treeIterator.next();
+            currentTreeEntry = treeIterator.next();
             out( currentTreeEntry.getPre() );
             exposeVariables();
         }

@@ -31,10 +31,6 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-dependency-graph</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-report-manager</artifactId>
     </dependency>
     <dependency>
