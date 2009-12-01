@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,7 +46,6 @@ import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.SnapshotVersion;
@@ -59,14 +59,14 @@ import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
-import org.apache.maven.archiva.repository.project.ProjectModelWriter;
-import org.apache.maven.archiva.repository.project.writers.ProjectModel400Writer;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.codehaus.plexus.util.IOUtil;
 
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
@@ -149,8 +149,6 @@ public class UploadAction
     private ArchivaTaskScheduler scheduler;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5};
-
-    private ProjectModelWriter pomWriter = new ProjectModel400Writer();
 
     public void setArtifact( File file )
     {
@@ -391,11 +389,6 @@ public class UploadAction
                     addActionError( "Error encountered while writing pom file: " + ie.getMessage() );
                     return ERROR;
                 }
-                catch ( ProjectModelException pe )
-                {
-                    addActionError( "Error encountered while generating pom file: " + pe.getMessage() );
-                    return ERROR;
-                }
             }
 
             if ( pomFile != null && pomFile.length() > 0 )
@@ -475,16 +468,26 @@ public class UploadAction
     }
 
     private File createPom( File targetPath, String filename )
-        throws IOException, ProjectModelException
+        throws IOException
     {
-        ArchivaProjectModel projectModel = new ArchivaProjectModel();
+        Model projectModel = new Model();
+        projectModel.setModelVersion( "4.0.0" );
         projectModel.setGroupId( groupId );
         projectModel.setArtifactId( artifactId );
         projectModel.setVersion( version );
         projectModel.setPackaging( packaging );
 
         File pomFile = new File( targetPath, filename );
-        pomWriter.write( projectModel, pomFile );
+        MavenXpp3Writer writer = new MavenXpp3Writer();
+        FileWriter w = new FileWriter( pomFile );
+        try
+        {
+            writer.write( w, projectModel );
+        }
+        finally
+        {
+            IOUtil.close( w );
+        }
 
         return pomFile;
     }
