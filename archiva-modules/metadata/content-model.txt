@@ -18,7 +18,7 @@ The following is the intended content model for the metadata content repository:
         |                   |   |   |   |-- asc=
         |                   |   |   |   |-- created=
         |                   |   |   |   |-- maven:buildNumber=
-        |                   |   |   |   |-- maven:classifier=
+        |                   |   |   |   |-- maven:classifier
         |                   |   |   |   |-- maven:timestamp=
         |                   |   |   |   |-- maven:type=
         |                   |   |   |   |-- md5=
@@ -87,11 +87,43 @@ The following is the intended content model for the metadata content repository:
         |                   |   |   `-- url=
         |                   |   `-- maven:artifactId=
         |                   `-- maven:groupId=
-        `-- metadata/
+        `-- references/
+            `-- org/
+                `-- apache/
+                    `-- archiva/
+                        |-- parent/
+                        |   `-- 1/
+                        |       `-- references/
+                        |           `-- org/
+                        |               `-- apache/
+                        |                   `-- archiva/
+                        |                       |-- platform/
+                        |                       |   `-- scanner/
+                        |                       |       `-- 1.0-SNAPSHOT/
+                        |                       |           `-- referenceType=parent
+                        |                       `-- web/
+                        |                           `-- webapp/
+                        |                               `-- 1.0-SNAPSHOT/
+                        |                                   `-- referenceType=parent
+                        `-- platform/
+                            `-- scanner/
+                                `-- 1.0-SNAPSHOT/
+                                    `-- references/
+                                        `-- org/
+                                            `-- apache/
+                                                `-- archiva/
+                                                    `-- web/
+                                                        `-- webapp/
+                                                            `-- 1.0-SNAPSHOT/
+                                                                `-- referenceType=dependency
+
 
 (To update - run "tree --dirstfirst -F" on the unpacked content-model.zip from the sandbox)
 
 Notes: 
+
+*) config should be reflected to an external configuration file and only stored in the content repository for purposes
+   of accessing through a REST API, for example
 
 *) In the above example, we have the following coordinates:
    - namespace = org.apache.archiva.platform (namespaces are of arbitrary depth, and are project namespaces, not to be
@@ -133,7 +165,7 @@ Notes:
 *) created/updated timestamps may be maintained by the metadata repository implementation
 
 *) references are stored outside the main model so that their creation doesn't imply a "stub" model - we know if the
-   project exists whether a reference is created or not. References need not infer referential integrity
+   project exists whether a reference is created or not. References need not infer referential integrity.
 
 *) some of the above needs to be reviewed before going into production. For example:
    - the maven specific aspects of dependencies should become a faceted part of the content
