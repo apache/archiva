@@ -9,7 +9,7 @@ package org.apache.maven.archiva.consumers.database;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -34,10 +34,7 @@ import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactCons
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.CiManagement;
-import org.apache.maven.archiva.model.IssueManagement;
 import org.apache.maven.archiva.model.Keys;
-import org.apache.maven.archiva.model.Organization;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.reporting.artifact.CorruptArtifactReport;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;

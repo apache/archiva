@@ -20,17 +20,20 @@ package org.apache.maven.archiva.reporting.artifact;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.updater.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.reporting.DynamicReportSource;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
 
 /**
  * DuplicateArtifactReportTest
@@ -42,13 +45,17 @@ public class DuplicateArtifactReportTest
 {
     private static final String TESTABLE_REPO = "testable";
 
-    private static final String HASH3 = "f3f653289f3217c65324830ab3415bc92feddefa";
+    private static final String HASH3 = "94ca33031e37aa3f3b67e5b921c729f08a6bba75";
 
-    private static final String HASH2 = "a49810ad3eba8651677ab57cd40a0f76fdef9538";
+    private static final String HASH2 = "43f7aa390f1a0265fc2de7010133951c0718a67e";
 
-    private static final String HASH1 = "232f01b24b1617c46a3d4b0ab3415bc9237dcdec";
+    private static final String HASH1 = "8107759ababcbfa34bcb02bc4309caf6354982ab";
 
     private ArtifactDAO artifactDao;
+
+    private ManagedRepositoryConfiguration repoConfig;
+
+    private ManagedRepositoryContent content;
 
     @Override
     protected void setUp()
@@ -60,19 +67,41 @@ public class DuplicateArtifactReportTest
 
         ArchivaConfiguration config = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "default" );
 
-        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
+        repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( TESTABLE_REPO );
         repoConfig.setLayout( "default" );
         File testRepoDir = new File( getBasedir(), "target/test-repository" );
         FileUtils.forceMkdir( testRepoDir );
         repoConfig.setLocation( testRepoDir.getAbsolutePath() );
         config.getConfiguration().addManagedRepository( repoConfig );
+
+        RepositoryContentFactory factory = (RepositoryContentFactory) lookup( RepositoryContentFactory.class );
+        content = factory.getManagedRepositoryContent( TESTABLE_REPO );
+
+        createArtifactFile( testRepoDir, "test-one", "1.0", "value1" );
+        createArtifactFile( testRepoDir, "test-one", "1.1", "value1" );
+        createArtifactFile( testRepoDir, "test-one", "1.2", "value1" );
+        createArtifactFile( testRepoDir, "test-two", "1.0", "value1" );
+        createArtifactFile( testRepoDir, "test-two", "2.0", "value3" );
+        createArtifactFile( testRepoDir, "test-two", "2.1", "value2" );
+        createArtifactFile( testRepoDir, "test-two", "3.0", "value2" );
+    }
+
+    private void createArtifactFile( File testRepoDir, String artifactId, String version, String value )
+        throws IOException
+    {
+        File file = new File( testRepoDir,
+                              "org/apache/maven/archiva/test/" + artifactId + "/" + version + "/" + artifactId + "-" +
+                                  version + ".jar" );
+        file.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( file, value );
     }
 
     public ArchivaArtifact createArtifact( String artifactId, String version )
     {
         ArchivaArtifact artifact =
-            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar", TESTABLE_REPO );
+            artifactDao.createArtifact( "org.apache.maven.archiva.test", artifactId, version, "", "jar",
+                                        TESTABLE_REPO );
         artifact.getModel().setLastModified( new Date() );
         return artifact;
     }
@@ -142,14 +171,15 @@ public class DuplicateArtifactReportTest
         throws Exception
     {
         List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts( null );
-        ArchivaArtifactConsumer consumer =
-            (ArchivaArtifactConsumer) lookup( ArchivaArtifactConsumer.class.getName(), "duplicate-artifacts" );
-        consumer.beginScan();
+        KnownRepositoryContentConsumer consumer =
+            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class.getName(),
+                                                     "duplicate-artifacts" );
+        consumer.beginScan( repoConfig, new Date() );
         try
         {
             for ( ArchivaArtifact artifact : artifacts )
             {
-                consumer.processArchivaArtifact( artifact );
+                consumer.processFile( content.toPath( artifact ) );
             }
         }
         finally
