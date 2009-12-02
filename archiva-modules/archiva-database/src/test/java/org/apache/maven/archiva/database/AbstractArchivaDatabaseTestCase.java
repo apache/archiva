@@ -29,8 +29,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
-import org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
@@ -126,16 +124,6 @@ public abstract class AbstractArchivaDatabaseTestCase
         pm.close();
 
         this.dao = (ArchivaDAO) lookup( ArchivaDAO.class.getName(), "jdo" );
-    }
-
-    protected TestDatabaseUnprocessedConsumer lookupTestUnprocessedConsumer()
-        throws Exception
-    {
-        TestDatabaseUnprocessedConsumer consumer = (TestDatabaseUnprocessedConsumer) lookup(
-                                                                                             DatabaseUnprocessedArtifactConsumer.class,
-                                                                                             "test-db-unprocessed" );
-        assertNotNull( "Test Database Unprocessed Consumer should not be null.", consumer );
-        return consumer;
     }
 
     protected Date toDate( String txt )

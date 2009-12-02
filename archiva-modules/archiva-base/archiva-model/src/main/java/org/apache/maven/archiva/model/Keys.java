@@ -28,11 +28,6 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Keys
 {
-    public static String toKey( ArchivaProjectModel model )
-    {
-        return toKey( model.getGroupId(), model.getArtifactId(), model.getVersion() );
-    }
-    
     public static String toKey( String groupId, String artifactId, String version, String classifier, String type )
     {
         StringBuffer key = new StringBuffer();

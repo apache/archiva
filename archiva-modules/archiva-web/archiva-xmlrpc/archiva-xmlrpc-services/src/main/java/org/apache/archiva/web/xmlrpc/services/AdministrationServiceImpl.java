@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
-import org.apache.archiva.scheduler.database.DatabaseArchivaTaskScheduler;
-import org.apache.archiva.scheduler.database.DatabaseTask;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
@@ -33,7 +31,6 @@ import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
@@ -43,8 +40,6 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
-import org.apache.maven.archiva.database.updater.DatabaseConsumers;
-import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
@@ -71,67 +66,25 @@ public class AdministrationServiceImpl
 
     private RepositoryContentConsumers repoConsumersUtil;
 
-    private DatabaseConsumers dbConsumersUtil;
-
     private RepositoryContentFactory repoFactory;
 
     private ArtifactDAO artifactDAO;
-
-    private DatabaseArchivaTaskScheduler databaseTaskScheduler;
 
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     private Collection<RepositoryListener> listeners;
 
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
-                                      DatabaseConsumers dbConsumersUtil, RepositoryContentFactory repoFactory,
-                                      ArtifactDAO artifactDAO, DatabaseArchivaTaskScheduler databaseTaskScheduler,
+                                      RepositoryContentFactory repoFactory, ArtifactDAO artifactDAO,
                                       RepositoryArchivaTaskScheduler repositoryTaskScheduler,
                                       Collection<RepositoryListener> listeners )
     {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
-        this.dbConsumersUtil = dbConsumersUtil;
         this.repoFactory = repoFactory;
         this.artifactDAO = artifactDAO;
-        this.databaseTaskScheduler = databaseTaskScheduler;
         this.repositoryTaskScheduler = repositoryTaskScheduler;
         this.listeners = listeners;
-    }
-
-    /**
-     * @see AdministrationService#configureDatabaseConsumer(String, boolean)
-     */
-    public Boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception
-    {
-        List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers =
-            dbConsumersUtil.getAvailableUnprocessedConsumers();
-
-        boolean found = false;
-
-        for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
-        {
-            if( consumer.getId().equals( consumerId ) )
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if( !found )
-        {
-            throw new Exception( "Invalid database consumer." );
-        }
-
-        Configuration config = archivaConfiguration.getConfiguration();
-        DatabaseScanningConfiguration dbScanningConfig = config.getDatabaseScanning();
-
-        dbScanningConfig.addUnprocessedConsumer( consumerId );
-
-        config.setDatabaseScanning( dbScanningConfig );
-        saveConfiguration( config );
-
-        return new Boolean( true );
     }
 
     /**
@@ -260,24 +213,6 @@ public class AdministrationServiceImpl
     }
 
     /**
-     * @see AdministrationService#executeDatabaseScanner()
-     */
-    public Boolean executeDatabaseScanner() throws Exception
-    {
-        if ( databaseTaskScheduler.isProcessingDatabaseTask() )
-        {
-            return false;
-        }
-
-        log.info( "Queueing database task on request from administration service" );
-        DatabaseTask task = new DatabaseTask();
-
-        databaseTaskScheduler.queueTask( task );
-
-        return new Boolean( true );
-    }
-
-    /**
      * @see AdministrationService#executeRepositoryScanner(String)
      */
     public Boolean executeRepositoryScanner( String repoId ) throws Exception
@@ -299,23 +234,6 @@ public class AdministrationServiceImpl
         repositoryTaskScheduler.queueTask( task );
 
         return new Boolean( true );
-    }
-
-    /**
-     * @see AdministrationService#getAllDatabaseConsumers()
-     */
-    public List<String> getAllDatabaseConsumers()
-    {
-        List<String> consumers = new ArrayList<String>();
-
-        List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers = dbConsumersUtil.getAvailableUnprocessedConsumers();
-
-        for( DatabaseUnprocessedArtifactConsumer consumer : unprocessedConsumers )
-        {
-            consumers.add( consumer.getId() );
-        }
-
-        return consumers;
     }
 
     /**

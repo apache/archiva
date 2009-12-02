@@ -32,7 +32,6 @@ public class JdoArchivaDAOTest
     public void testSubDAOs()
     {
         assertNotNull( "Artifact DAO", dao.getArtifactDAO() );
-        assertNotNull( "Project Model DAO", dao.getProjectModelDAO() );
         assertNotNull( "Repository Problem DAO", dao.getRepositoryProblemDAO() );
     }
 }

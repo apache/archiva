@@ -51,10 +51,8 @@
   <bean name="administrationService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
     <constructor-arg ref="archivaConfiguration"/>
     <constructor-arg ref="repositoryContentConsumers"/>
-    <constructor-arg ref="databaseConsumers"/>
     <constructor-arg ref="repositoryContentFactory"/>
     <constructor-arg ref="artifactDAO#jdo"/>
-    <constructor-arg ref="archivaTaskScheduler#database"/>
     <constructor-arg ref="archivaTaskScheduler#repository"/>
     <constructor-arg>
       <bean class="org.apache.maven.archiva.repository.events.RepositoryListenerFactoryBean" />

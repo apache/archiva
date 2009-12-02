@@ -26,8 +26,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
-import org.apache.archiva.scheduler.database.DatabaseArchivaTaskScheduler;
-import org.apache.archiva.scheduler.database.DatabaseTask;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
@@ -36,7 +34,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
@@ -44,8 +41,6 @@ import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.updater.DatabaseConsumers;
-import org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -83,8 +78,6 @@ public class AdministrationServiceImplTest
     
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
     
-    private DatabaseArchivaTaskScheduler databaseTaskScheduler;
-
     // repository consumers
     private MockControl repoConsumerUtilsControl;
     
@@ -102,18 +95,7 @@ public class AdministrationServiceImplTest
 
     private InvalidRepositoryContentConsumer checkMetadataConsumer;
     
-    // database consumers
-    private MockControl dbConsumersUtilControl;
-    
-    private DatabaseConsumers dbConsumersUtil;
-    
-    private MockControl unprocessedConsumersControl;
-    
-    private DatabaseUnprocessedArtifactConsumer processArtifactConsumer;
-    
-    private DatabaseUnprocessedArtifactConsumer processPomConsumer;
-    
-    // delete artifact    
+    // delete artifact
     private MockControl repoFactoryControl;
     
     private RepositoryContentFactory repositoryFactory;
@@ -139,9 +121,6 @@ public class AdministrationServiceImplTest
         configControl = MockClassControl.createControl( Configuration.class );
         config = ( Configuration ) configControl.getMock();      
         
-        databaseTaskSchedulerControl = MockClassControl.createControl( DatabaseArchivaTaskScheduler.class );
-        databaseTaskScheduler = (DatabaseArchivaTaskScheduler) databaseTaskSchedulerControl.getMock();
-        
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
         repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
 
@@ -157,14 +136,6 @@ public class AdministrationServiceImplTest
         checkPomConsumer = ( InvalidRepositoryContentConsumer ) invalidContentConsumerControl.getMock();
         checkMetadataConsumer = ( InvalidRepositoryContentConsumer ) invalidContentConsumerControl.getMock();
         
-        // db consumers
-        dbConsumersUtilControl = MockClassControl.createControl( DatabaseConsumers.class );
-        dbConsumersUtil = ( DatabaseConsumers ) dbConsumersUtilControl.getMock();
-                
-        unprocessedConsumersControl = MockControl.createControl( DatabaseUnprocessedArtifactConsumer.class );
-        processArtifactConsumer = ( DatabaseUnprocessedArtifactConsumer ) unprocessedConsumersControl.getMock();
-        processPomConsumer = ( DatabaseUnprocessedArtifactConsumer ) unprocessedConsumersControl.getMock();
-        
         // delete artifact
         repoFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
         repositoryFactory = ( RepositoryContentFactory ) repoFactoryControl.getMock();
@@ -176,137 +147,12 @@ public class AdministrationServiceImplTest
         listener = (RepositoryListener) listenerControl.getMock();
         
         service =
-            new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, dbConsumersUtil, repositoryFactory,
-                                           artifactDao, databaseTaskScheduler, repositoryTaskScheduler,
+            new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
+                                           artifactDao, repositoryTaskScheduler,
                                            Collections.singletonList( listener ) );
     }
   
-/* Tests for database consumers  */
-    
-    public void testGetAllDbConsumers()
-        throws Exception
-    {   
-        recordDbConsumers();
-        
-        dbConsumersUtilControl.replay();
-        unprocessedConsumersControl.replay();
-        
-        List<String> dbConsumers = service.getAllDatabaseConsumers();
-        
-        dbConsumersUtilControl.verify();
-        unprocessedConsumersControl.verify();
-        
-        assertNotNull( dbConsumers );
-        assertEquals( 2, dbConsumers.size() );
-        assertTrue( dbConsumers.contains( "process-artifact" ) );
-        assertTrue( dbConsumers.contains( "process-pom" ) );
-    }
-    
-    public void testConfigureValidDatabaseConsumer()
-        throws Exception
-    {
-        DatabaseScanningConfiguration dbScanning = new DatabaseScanningConfiguration();
-        dbScanning.addCleanupConsumer( "cleanup-index" );
-        dbScanning.addCleanupConsumer( "cleanup-database" );
-        dbScanning.addUnprocessedConsumer( "process-artifact" );
-        
-        recordDbConsumers();
-        
-        // test enable "process-pom" db consumer
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.getDatabaseScanning(), dbScanning );
-        
-        config.setDatabaseScanning( dbScanning );
-        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        configControl.setVoidCallable();
-        
-        archivaConfig.save( config );
-        archivaConfigControl.setVoidCallable();
-        
-        dbConsumersUtilControl.replay();
-        unprocessedConsumersControl.replay();
-        archivaConfigControl.replay();
-        configControl.replay();
-        
-        try
-        {
-            boolean success = service.configureDatabaseConsumer( "process-pom", true );
-            assertTrue( success );
-        }
-        catch ( Exception e )
-        {
-            fail( "An exception should not have been thrown." );
-        }
-        
-        dbConsumersUtilControl.verify();
-        unprocessedConsumersControl.verify();
-        archivaConfigControl.verify();
-        configControl.verify();
-                
-        // test disable "process-pom" db consumer        
-        dbConsumersUtilControl.reset();
-        unprocessedConsumersControl.reset();
-        archivaConfigControl.reset();
-        configControl.reset();
-                
-        dbScanning.addUnprocessedConsumer( "process-pom" );
-        
-        recordDbConsumers();
-        
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.getDatabaseScanning(), dbScanning );
-        
-        config.setDatabaseScanning( dbScanning );
-        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        configControl.setVoidCallable();
-        
-        archivaConfig.save( config );
-        archivaConfigControl.setVoidCallable();
-        
-        dbConsumersUtilControl.replay();
-        unprocessedConsumersControl.replay();
-        archivaConfigControl.replay();
-        configControl.replay();
-        
-        try
-        {
-            boolean success = service.configureDatabaseConsumer( "process-pom", false );
-            assertTrue( success );
-        }
-        catch ( Exception e )
-        {
-            fail( "An exception should not have been thrown." );
-        }
-        
-        dbConsumersUtilControl.verify();
-        unprocessedConsumersControl.verify();
-        archivaConfigControl.verify();
-        configControl.verify();
-    }
-    
-    public void testConfigureInvalidDatabaseConsumer()
-        throws Exception
-    {
-        recordDbConsumers();
-        
-        dbConsumersUtilControl.replay();
-        unprocessedConsumersControl.replay();
-        
-        try
-        {
-            service.configureDatabaseConsumer( "invalid-consumer", true );
-            fail( "An exception should have been thrown." );
-        }
-        catch ( Exception e )
-        {
-            assertEquals( "Invalid database consumer.", e.getMessage() );
-        }
-        
-        dbConsumersUtilControl.verify();
-        unprocessedConsumersControl.verify();
-    }
-        
-/* Tests for repository consumers  */
+    /* Tests for repository consumers  */
     
     public void testGetAllRepoConsumers()
         throws Exception
@@ -707,43 +553,7 @@ public class AdministrationServiceImplTest
         configControl.verify();
     }
     
-/* Tests for db scanning  */
-    
-    public void testExecuteDbScannerDbNotBeingScanned()
-        throws Exception
-    {
-        DatabaseTask task = new DatabaseTask();
-        
-        databaseTaskSchedulerControl.expectAndReturn( databaseTaskScheduler.isProcessingDatabaseTask(), false );
-                
-        databaseTaskScheduler.queueTask( task );
-        databaseTaskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        databaseTaskSchedulerControl.setVoidCallable();
-        
-        databaseTaskSchedulerControl.replay();
-
-        boolean success = service.executeDatabaseScanner();
-        
-        databaseTaskSchedulerControl.verify();
-        
-        assertTrue( success );
-    }
-    
-    public void testExecuteDbScannerDbIsBeingScanned()
-        throws Exception
-    {        
-        databaseTaskSchedulerControl.expectAndReturn( databaseTaskScheduler.isProcessingDatabaseTask(), true );
-                
-        databaseTaskSchedulerControl.replay();
-
-        boolean success = service.executeDatabaseScanner();
-        
-        databaseTaskSchedulerControl.verify();        
-        
-        assertFalse( success );
-    }
-     
-/* Tests for querying repositories  */
+    /* Tests for querying repositories  */
     
     public void testGetAllManagedRepositories()
         throws Exception
@@ -859,19 +669,7 @@ public class AdministrationServiceImplTest
         invalidContentConsumerControl.expectAndReturn( checkPomConsumer.getId(), "check-pom" );
         invalidContentConsumerControl.expectAndReturn( checkMetadataConsumer.getId(), "check-metadata" );
     }
-    
-    private void recordDbConsumers()
-    {
-        List<DatabaseUnprocessedArtifactConsumer> unprocessedConsumers =
-            new ArrayList<DatabaseUnprocessedArtifactConsumer>();
-        unprocessedConsumers.add( processArtifactConsumer );
-        unprocessedConsumers.add( processPomConsumer );
-        
-        dbConsumersUtilControl.expectAndReturn( dbConsumersUtil.getAvailableUnprocessedConsumers(), unprocessedConsumers );
-        unprocessedConsumersControl.expectAndReturn( processArtifactConsumer.getId(), "process-artifact" );
-        unprocessedConsumersControl.expectAndReturn( processPomConsumer.getId(), "process-pom" );
-    }    
-    
+
     private void recordInManagedLegacyRepoContent( MockControl fileTypesControl, FileTypes fileTypes,
                                                    MockControl pathParserControl, PathParser parser )
         throws LayoutException

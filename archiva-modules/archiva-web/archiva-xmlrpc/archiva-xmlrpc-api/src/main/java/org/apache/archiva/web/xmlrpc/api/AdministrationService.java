@@ -21,10 +21,9 @@ package org.apache.archiva.web.xmlrpc.api;
 
 import java.util.List;
 
+import com.atlassian.xmlrpc.ServiceObject;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
-
-import com.atlassian.xmlrpc.ServiceObject;
 
 @ServiceObject( "AdministrationService" )
 public interface AdministrationService
@@ -37,30 +36,6 @@ public interface AdministrationService
      * @throws Exception
      */
     public Boolean executeRepositoryScanner( String repoId ) throws Exception;
-   
-    /**
-     * Executes the database scanner.
-     * 
-     * @return
-     * @throws Exception
-     */
-    public Boolean executeDatabaseScanner() throws Exception;
-
-    /**
-     * Gets all available database consumers.
-     * @return
-     */
-    public List<String> getAllDatabaseConsumers();
-   
-    /**
-     * Configures (enable or disable) database consumer.
-     * 
-     * @param consumerId id of the database consumer
-     * @param enable flag whether to enable or disable the specified consumer
-     * @return
-     * @throws Exception
-     */
-    public Boolean configureDatabaseConsumer( String consumerId, boolean enable ) throws Exception;
 
     /**
      * Gets all available repository consumers.

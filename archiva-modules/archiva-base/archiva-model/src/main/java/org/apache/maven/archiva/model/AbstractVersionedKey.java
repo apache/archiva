@@ -19,9 +19,9 @@ package org.apache.maven.archiva.model;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-
 import java.io.Serializable;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>
@@ -42,14 +42,6 @@ import java.io.Serializable;
  *     <th>Version</th>
  *     <th>Classifier</th>
  *     <th>Type</th>
- *   </tr>
- *   <tr>
- *     <td>{@link AbstractProjectKey}</td>
- *     <td align="center">Yes</td>
- *     <td align="center">Yes</td>
- *     <td>&nbsp;</td>
- *     <td>&nbsp;</td>
- *     <td>&nbsp;</td>
  *   </tr>
  *   <tr>
  *     <td>{@link AbstractVersionedKey}</td>

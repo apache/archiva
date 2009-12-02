@@ -40,7 +40,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
-import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -114,11 +113,6 @@ public class DeleteArtifactAction
      * @plexus.requirement role-hint="jdo"
      */
     private ArtifactDAO artifactDAO;
-
-    /**
-     * @plexus.requirement 
-     */
-    private DatabaseConsumers databaseConsumers;
 
     /** @plexus.requirement role="org.apache.maven.archiva.repository.events.RepositoryListener" */
     private List<RepositoryListener> listeners;

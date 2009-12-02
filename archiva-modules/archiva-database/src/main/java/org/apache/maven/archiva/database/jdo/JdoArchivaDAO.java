@@ -19,15 +19,14 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
+import java.io.Serializable;
+import java.util.List;
+
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * JdoArchivaDAO 
@@ -52,11 +51,6 @@ public class JdoArchivaDAO
     /**
      * @plexus.requirement role-hint="jdo"
      */
-    private ProjectModelDAO projectModelDAO;
-
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
     private RepositoryProblemDAO repositoryProblemDAO;
     
     /**
@@ -64,6 +58,10 @@ public class JdoArchivaDAO
      */
     private RepositoryContentStatisticsDAO repositoryContentStatisticsDAO;
 
+    public JdoArchivaDAO()
+    {
+        super();    //To change body of overridden methods use File | Settings | File Templates.
+    }
 
     public List<?> query( SimpleConstraint constraint )
     {
@@ -78,11 +76,6 @@ public class JdoArchivaDAO
     public ArtifactDAO getArtifactDAO()
     {
         return artifactDAO;
-    }
-
-    public ProjectModelDAO getProjectModelDAO()
-    {
-        return projectModelDAO;
     }
 
     public RepositoryProblemDAO getRepositoryProblemDAO()

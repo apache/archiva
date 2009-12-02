@@ -14,12 +14,6 @@
         </otherProperties>
       </configuration>
     </component>
-    
-    <component>
-      <role>org.apache.maven.archiva.database.updater.DatabaseUnprocessedArtifactConsumer</role>
-      <role-hint>test-db-unprocessed</role-hint>
-      <implementation>org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer</implementation>
-    </component>
   </components>
 </component-set>
 

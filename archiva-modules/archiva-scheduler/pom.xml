@@ -31,7 +31,6 @@
   <modules>
     <module>archiva-scheduler-api</module>
     <module>archiva-scheduler-indexing</module>
-    <module>archiva-scheduler-database</module>
     <module>archiva-scheduler-repository</module>
   </modules>
 </project>

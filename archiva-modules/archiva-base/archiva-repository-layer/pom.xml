@@ -80,18 +80,6 @@
               <goal>generate-metadata</goal>
             </goals>
           </execution>
-          <execution>
-            <id>merge</id>
-            <goals>
-              <goal>merge-metadata</goal>
-            </goals>
-            <configuration>
-              <descriptors>
-                <descriptor>${basedir}/src/main/resources/META-INF/plexus/components-fragment.xml</descriptor>
-                <descriptor>${project.build.outputDirectory}/META-INF/plexus/components.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
     </plugins>

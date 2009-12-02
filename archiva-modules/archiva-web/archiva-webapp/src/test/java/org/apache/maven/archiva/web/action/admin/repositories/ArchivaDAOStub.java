@@ -8,7 +8,6 @@ import junit.framework.Assert;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
@@ -47,8 +46,6 @@ public class ArchivaDAOStub
     private ArchivaConfiguration configuration;
 
     private ArtifactDAO artifactDao;
-
-    private ProjectModelDAO projectDao;
 
     private List<String> versions;
 
@@ -95,11 +92,6 @@ public class ArchivaDAOStub
         return artifactDao;
     }
 
-    public ProjectModelDAO getProjectModelDAO()
-    {
-        return projectDao;
-    }
-
     public RepositoryProblemDAO getRepositoryProblemDAO()
     {
         throw new UnsupportedOperationException( "method not implemented for stub" );
@@ -113,11 +105,6 @@ public class ArchivaDAOStub
     public void setArtifactDao( ArtifactDAO artifactDao )
     {
         this.artifactDao = artifactDao;
-    }
-
-    public void setProjectDao( ProjectModelDAO projectDao )
-    {
-        this.projectDao = projectDao;
     }
 
     public void setVersions( List<String> versions )

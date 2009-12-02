@@ -19,12 +19,15 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Preparable;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
+import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
@@ -32,17 +35,9 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstraint;
 import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
-
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-
 import org.codehaus.plexus.redback.role.RoleManagerException;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * DeleteManagedRepositoryAction
@@ -182,11 +177,6 @@ public class DeleteManagedRepositoryAction
             {
                 archivaDAO.getArtifactDAO().deleteArtifact( artifact );
 
-                ArchivaProjectModel projectModel =
-                    archivaDAO.getProjectModelDAO().getProjectModel( artifact.getGroupId(), artifact.getArtifactId(),
-                                                                     artifact.getVersion() );
-
-                archivaDAO.getProjectModelDAO().deleteProjectModel( projectModel );
             }
             catch ( ObjectNotFoundException oe )
             {

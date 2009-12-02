@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
@@ -37,12 +36,6 @@ public class ArchivaDAOStub
 {
 
     public ArtifactDAO getArtifactDAO()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public ProjectModelDAO getProjectModelDAO()
     {
         // TODO Auto-generated method stub
         return null;

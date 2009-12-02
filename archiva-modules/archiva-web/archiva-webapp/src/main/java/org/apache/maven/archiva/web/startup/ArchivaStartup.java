@@ -23,7 +23,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
-import org.apache.archiva.scheduler.database.DatabaseArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
@@ -48,21 +47,14 @@ public class ArchivaStartup
 
         SecuritySynchronization securitySync =
             (SecuritySynchronization) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySynchronization.class ) );
-        ResolverFactoryInit resolverFactory =
-            (ResolverFactoryInit) wac.getBean( PlexusToSpringUtils.buildSpringId( ResolverFactoryInit.class ) );
-        DatabaseArchivaTaskScheduler databaseTaskScheduler = (DatabaseArchivaTaskScheduler) wac.getBean(
-            PlexusToSpringUtils.buildSpringId( ArchivaTaskScheduler.class, "database" ) );
         RepositoryArchivaTaskScheduler repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) wac.getBean(
             PlexusToSpringUtils.buildSpringId( ArchivaTaskScheduler.class, "repository" ) );
-        wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class, "database-update" ) );
         wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class, "repository-scanning" ) );
         wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class, "indexing" ) );
 
         try
         {
             securitySync.startup();
-            resolverFactory.startup();
-            databaseTaskScheduler.startup();
             repositoryTaskScheduler.startup();
             Banner.display();
         }

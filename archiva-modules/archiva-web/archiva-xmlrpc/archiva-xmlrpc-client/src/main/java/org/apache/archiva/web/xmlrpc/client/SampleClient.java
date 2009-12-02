@@ -22,15 +22,14 @@ package org.apache.archiva.web.xmlrpc.client;
 import java.net.URL;
 import java.util.List;
 
-import org.apache.archiva.web.xmlrpc.api.AdministrationService;
-import org.apache.archiva.web.xmlrpc.api.PingService;
-import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
-import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
-
 import com.atlassian.xmlrpc.AuthenticationInfo;
 import com.atlassian.xmlrpc.Binder;
 import com.atlassian.xmlrpc.BindingException;
 import com.atlassian.xmlrpc.DefaultBinder;
+import org.apache.archiva.web.xmlrpc.api.AdministrationService;
+import org.apache.archiva.web.xmlrpc.api.PingService;
+import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
+import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 
 /**
  * TestClient
@@ -92,28 +91,14 @@ public class SampleClient
                 System.out.println( consumer );
             }
             
-            System.out.println( "\n******** Database Consumers ********" );
-            List<String> dbConsumers = adminService.getAllDatabaseConsumers();
-            for( String consumer : dbConsumers )
-            {
-                System.out.println( consumer );
-            }
-            
             Boolean success = adminService.configureRepositoryConsumer( "internal", "repository-purge", true );
             System.out.println( "\nConfigured repo consumer 'repository-purge' : " +
-                ( (Boolean) success ).booleanValue() );
-            
-            success = adminService.configureDatabaseConsumer( "update-db-bytecode-stats", false );
-            System.out.println( "\nConfigured db consumer 'update-db-bytecode-stats' : " +
                 ( (Boolean) success ).booleanValue() );
             
             success = adminService.executeRepositoryScanner( "internal" );
             System.out.println( "\nExecuted repo scanner of repository 'internal' : " +
                 ( (Boolean) success ).booleanValue() );
             
-            success = adminService.executeDatabaseScanner();
-            System.out.println( "\nExecuted database scanner : " + ( (Boolean) success ).booleanValue() );
-           
             /* delete artifact */
             /* 
              * NOTE: before enabling & invoking deleteArtifact, make sure that the repository and artifact exists first!

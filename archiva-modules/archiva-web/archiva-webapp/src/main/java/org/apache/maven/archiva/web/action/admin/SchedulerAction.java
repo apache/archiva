@@ -19,8 +19,6 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.archiva.scheduler.database.DatabaseArchivaTaskScheduler;
-import org.apache.archiva.scheduler.database.DatabaseTask;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.lang.StringUtils;
@@ -45,11 +43,6 @@ public class SchedulerAction
      * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
-
-    /**
-     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="database"
-     */
-    private DatabaseArchivaTaskScheduler databaseTaskScheduler;
 
     private String repoid;
     
@@ -86,32 +79,6 @@ public class SchedulerAction
         }
 
         // Return to the repositories screen.
-        return SUCCESS;
-    }
-
-    public String updateDatabase()
-    {
-        log.info( "Queueing database task on request from user interface" );
-        DatabaseTask task = new DatabaseTask();
-
-        if ( databaseTaskScheduler.isProcessingDatabaseTask() )
-        {
-            addActionError( "Database task was already queued." );
-        }
-        else
-        {
-            try
-            {
-                databaseTaskScheduler.queueTask( task );
-                addActionMessage( "Your request to update the database has been queued." );
-            }
-            catch ( TaskQueueException e )
-            {
-                addActionError( "Unable to queue your request to update the database: " + e.getMessage() );
-            }
-        }
-
-        // Return to the database screen.
         return SUCCESS;
     }
 

@@ -61,11 +61,6 @@
           <field-name>artifactDAO</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.database.ProjectModelDAO</role>
-          <role-hint>jdo</role-hint>
-          <field-name>projectModelDAO</field-name>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.database.RepositoryContentStatisticsDAO</role>
           <role-hint>jdo</role-hint>
           <field-name>repoContentStatisticsDAO</field-name>
@@ -77,11 +72,6 @@
       <role-hint>jdo</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArtifactDAOStub</implementation>
     </component>        
-    <component>
-      <role>org.apache.maven.archiva.database.ProjectModelDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.ProjectModelDAOStub</implementation>
-    </component>   
     <component>
       <role>org.apache.maven.archiva.database.RepositoryContentStatisticsDAO</role>
       <role-hint>jdo</role-hint>

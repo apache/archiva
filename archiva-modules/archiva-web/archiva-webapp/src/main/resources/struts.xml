@@ -440,19 +440,6 @@
       </result>
     </action>
 
-    <!-- .\ DATABASE \.________________________________________________ -->
-
-    <action name="database" class="databaseAction" method="input">
-      <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
-      <result name="success" type="redirect-action">
-        <param name="actionName">database</param>
-      </result>
-    </action>
-
-    <action name="updateDatabase" class="schedulerAction" method="updateDatabase">
-      <result type="redirect-action">database</result>
-    </action>
-
     <!-- .\ CONFIGURATION \.___________________________________________ -->
 
     <action name="configureAppearance" class="organisationInfo">
