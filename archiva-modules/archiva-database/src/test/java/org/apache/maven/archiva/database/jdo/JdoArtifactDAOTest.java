@@ -21,7 +21,6 @@ package org.apache.maven.archiva.database.jdo;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.jdo.JDOHelper;
 import javax.jdo.spi.JDOImplHelper;
 
@@ -67,7 +66,6 @@ public class JdoArtifactDAOTest
 
         // Set some mandatory values
         artifact.getModel().setLastModified( new Date() );
-        artifact.getModel().setOrigin( "test" );
 
         // Save it.
         ArchivaArtifact savedArtifact = artiDao.saveArtifact( artifact );
@@ -90,7 +88,7 @@ public class JdoArtifactDAOTest
         assertEquals( "jar", firstArtifact.getType() );
 
         // Change value and save.
-        savedArtifact.getModel().setOrigin( "changed" );
+        savedArtifact.getModel().setLastModified( new Date() );
         artiDao.saveArtifact( savedArtifact );
 
         // Test that only 1 object is saved.
@@ -103,7 +101,6 @@ public class JdoArtifactDAOTest
 
         // Test expected values.
         assertEquals( "archiva-test-module", actualArtifact.getArtifactId() );
-        assertEquals( "changed", actualArtifact.getModel().getOrigin() );
 
         // Test that only 1 object is saved.
         assertEquals( 1, artiDao.queryArtifacts( null ).size() );

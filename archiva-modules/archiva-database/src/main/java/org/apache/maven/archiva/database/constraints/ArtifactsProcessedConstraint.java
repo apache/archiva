@@ -19,9 +19,9 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.Constraint;
-
 import java.util.Date;
+
+import org.apache.maven.archiva.database.Constraint;
 
 /**
  * ArtifactsProcessedConstraint 
@@ -33,18 +33,6 @@ public class ArtifactsProcessedConstraint
     implements Constraint
 {
     private String whereClause;
-
-    public ArtifactsProcessedConstraint( boolean isProcessed )
-    {
-        if ( isProcessed )
-        {
-            whereClause = "whenProcessed != null";
-        }
-        else
-        {
-            whereClause = "whenProcessed == null";
-        }
-    }
 
     /**
      * A Constraint showing artifacts processed since date provided.

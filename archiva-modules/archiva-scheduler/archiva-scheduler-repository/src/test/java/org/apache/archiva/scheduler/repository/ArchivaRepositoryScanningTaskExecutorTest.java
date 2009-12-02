@@ -32,7 +32,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
@@ -174,7 +173,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         taskExecutor.executeTask( repoTask );
 
         ArtifactDAO adao = dao.getArtifactDAO();
-        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( null );
         
         assertNotNull( unprocessedResultList );
         assertEquals("Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );
@@ -215,7 +214,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         taskExecutor.executeTask( repoTask );
 
         ArtifactDAO adao = dao.getArtifactDAO();
-        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( null );
         
         assertNotNull( unprocessedResultList );
         assertEquals("Incorrect number of unprocessed artifacts detected. No new artifacts should have been found.", 0, unprocessedResultList.size() );
@@ -232,7 +231,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         
         taskExecutor.executeTask( repoTask );
         
-        unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        unprocessedResultList = adao.queryArtifacts( null );
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected. One new artifact should have been found.", 1, unprocessedResultList.size() );        
     }
@@ -272,7 +271,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         taskExecutor.executeTask( repoTask );
 
         ArtifactDAO adao = dao.getArtifactDAO();
-        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( null );
         
         assertNotNull( unprocessedResultList );
         assertEquals("Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );

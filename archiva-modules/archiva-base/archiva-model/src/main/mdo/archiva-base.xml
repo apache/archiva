@@ -5,7 +5,10 @@
        xsd.target-namespace="http://archiva.apache.org/model/1.2.0">
   <id>archiva-base-model</id>
   <name>ArchivaBaseModel</name>
-  <version>1.2.1</version>
+  <!-- Note that we've outright removed old model information instead of setting the finish version to be 1.2.1.
+  if for any reason this model needs to be retained for some other use (eg, migration), then those may need to be
+  restored. Otherwise, the previous archiva-model artifact can be used if necessary -->
+  <version>1.3.0</version>
   <description>Archiva Model</description>
   <defaults>
     <default>
@@ -220,47 +223,6 @@
             The size of the artifact on disk.
           </description>
         </field>
-        <field stash.maxSize="16">
-          <name>platform</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The platform of this artifact. (default: "java")
-          </description>
-          <defaultValue>java</defaultValue>
-        </field>
-        <field>
-          <name>whenIndexed</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <type>Date</type>
-          <required>false</required>
-          <description>
-            The timestamp when this artifact was indexed.
-          </description>
-        </field>
-        <field>
-          <name>whenProcessed</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <type>Date</type>
-          <required>false</required>
-          <description>
-            When this artifact's contents was processed.
-          </description>
-        </field>
-        <field>
-          <name>origin</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>
-            The origin of this artifact. (Filesystem, Proxy, Deploy)
-          </description>
-        </field>
         <field>
           <name>whenGathered</name>
           <identifier>false</identifier>
@@ -277,20 +239,6 @@
           <version>1.0.0+</version>
           <code><![CDATA[
     private static final long serialVersionUID = -6292417108113887384L;
-          ]]></code>
-        </codeSegment>
-        <codeSegment>
-          <version>1.0.0+</version>
-          <code><![CDATA[
-    /**
-     * Identify if this artifact's contents have been processed or not.
-     * 
-     * @return true if the artifact's contents have been processed.
-     */
-    public boolean isProcessed()
-    {
-        return !(whenProcessed == null);
-    }          
           ]]></code>
         </codeSegment>
       </codeSegments>
@@ -441,26 +389,6 @@
           <required>true</required>
           <description>
             The size of the artifact on disk.
-          </description>
-        </field>
-        <field>
-          <name>whenIndexed</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <type>Date</type>
-          <required>false</required>
-          <description>
-            The timestamp when this artifact was indexed.
-          </description>
-        </field>
-        <field>
-          <name>origin</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>
-            The origin of this artifact. (Filesystem, Proxy, Deploy)
           </description>
         </field>
       </fields>

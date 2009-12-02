@@ -19,6 +19,11 @@ package org.apache.maven.archiva.consumers.database;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -40,11 +45,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * ArtifactUpdateDatabaseConsumer - Take an artifact off of disk and put it into the repository.
@@ -193,8 +193,6 @@ public class ArtifactUpdateDatabaseConsumer
 
             artifact.getModel().setLastModified( new Date( artifactFile.lastModified() ) );
             artifact.getModel().setSize( artifactFile.length() );
-            artifact.getModel().setOrigin( "FileSystem" );
-            artifact.getModel().setWhenProcessed( null );
             
             // set this to when the artifact was first discovered in the repo
             if ( artifact.getModel().getWhenGathered() == null )

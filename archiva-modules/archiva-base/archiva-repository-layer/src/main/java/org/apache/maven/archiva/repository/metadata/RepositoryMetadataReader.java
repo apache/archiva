@@ -19,6 +19,9 @@ package org.apache.maven.archiva.repository.metadata;
  * under the License.
  */
 
+import java.io.File;
+import java.util.Date;
+
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.Plugin;
@@ -26,9 +29,6 @@ import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLReader;
 import org.dom4j.Element;
-
-import java.io.File;
-import java.util.Date;
 
 /**
  * RepositoryMetadataReader - read maven-metadata.xml files.
@@ -60,7 +60,6 @@ public class RepositoryMetadataReader
             metadata.setVersion( xml.getElementText( "//metadata/version" ) );
             metadata.setFileLastModified( new Date( metadataFile.lastModified() ) );
             metadata.setFileSize( metadataFile.length() );
-            metadata.setWhenIndexed( null );
 
             metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
             metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );
