@@ -20,14 +20,18 @@ package org.apache.archiva.consumers.metadata;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -42,13 +46,15 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Take an artifact off of disk and put it into the metadata repository.
- * 
+ *
  * @version $Id: ArtifactUpdateDatabaseConsumer.java 718864 2008-11-19 06:33:35Z brett $
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="create-archiva-metadata" instantiation-strategy="per-lookup"
+ * role-hint="create-archiva-metadata" instantiation-strategy="per-lookup"
  */
 public class ArchivaMetadataCreationConsumer
     extends AbstractMonitoredConsumer
@@ -87,6 +93,8 @@ public class ArchivaMetadataCreationConsumer
      * @plexus.requirement
      */
     private MetadataRepository metadataRepository;
+
+    private static final Logger log = LoggerFactory.getLogger( ArchivaMetadataCreationConsumer.class );
 
     public String getId()
     {
@@ -143,22 +151,41 @@ public class ArchivaMetadataCreationConsumer
         project.setId( artifact.getArtifactId() );
 
         ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
-        versionMetadata.setId( artifact.getVersion() ); // TODO: this should be the version from the POM, not the timestamped version
+        versionMetadata.setId( VersionUtil.getBaseVersion( artifact.getVersion() ) );
 
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
         artifactMeta.setId( file.getName() );
-        artifactMeta.setUpdated( file.lastModified() );
+        artifactMeta.setFileLastModified( file.lastModified() );
         artifactMeta.setSize( file.length() );
         artifactMeta.setVersion( artifact.getVersion() );
+        artifactMeta.setWhenGathered( whenGathered );
+
+        ChecksummedFile checksummedFile = new ChecksummedFile( file );
+        try
+        {
+            artifactMeta.setMd5( checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 ) );
+        }
+        catch ( IOException e )
+        {
+            log.error( "Error attempting to get MD5 checksum for " + file + ": " + e.getMessage() );
+        }
+        try
+        {
+            artifactMeta.setSha1( checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 ) );
+        }
+        catch ( IOException e )
+        {
+            log.error( "Error attempting to get SHA-1 checksum for " + file + ": " + e.getMessage() );
+        }
 
         // TODO: read the POM and fill in the rest of the information
 
-        // TODO: store "whenGathered"
-
         // TODO: transaction
         // read the metadata and update it if it is newer or doesn't exist
-        metadataRepository.updateArtifact( repository.getId(), project.getNamespace(), project.getId(), versionMetadata.getId(), artifactMeta );
-        metadataRepository.updateProjectVersion( repository.getId(), project.getNamespace(), project.getId(), versionMetadata );
+        metadataRepository.updateArtifact( repository.getId(), project.getNamespace(), project.getId(),
+                                           versionMetadata.getId(), artifactMeta );
+        metadataRepository.updateProjectVersion( repository.getId(), project.getNamespace(), project.getId(),
+                                                 versionMetadata );
         metadataRepository.updateProject( repository.getId(), project );
     }
 

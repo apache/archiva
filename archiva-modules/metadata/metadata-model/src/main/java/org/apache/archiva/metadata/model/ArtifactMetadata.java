@@ -25,11 +25,17 @@ public class ArtifactMetadata
 {
     private String id;
     
-    private Date updated;
-    
     private long size;
 
     private String version;
+
+    private Date fileLastModified;
+
+    private Date whenGathered;
+
+    private String md5;
+
+    private String sha1;
 
     public String getId()
     {
@@ -39,21 +45,6 @@ public class ArtifactMetadata
     public void setId( String id )
     {
         this.id = id;
-    }
-
-    public Date getUpdated()
-    {
-        return updated;
-    }
-
-    public void setUpdated( Date updated )
-    {
-        this.updated = updated;
-    }
-
-    public void setUpdated( long updated )
-    {
-        this.updated = new Date( updated );
     }
 
     public long getSize()
@@ -74,5 +65,46 @@ public class ArtifactMetadata
     public void setVersion( String version )
     {
         this.version = version;
+    }
+
+    public void setFileLastModified( long fileLastModified )
+    {
+        this.fileLastModified = new Date( fileLastModified );
+    }
+
+    public void setWhenGathered( Date whenGathered )
+    {
+        this.whenGathered = whenGathered;
+    }
+
+    public void setMd5( String md5 )
+    {
+        this.md5 = md5;
+    }
+
+    public void setSha1( String sha1 )
+    {
+        this.sha1 = sha1;
+    }
+
+    public Date getWhenGathered()
+    {
+        return whenGathered;
+    }
+
+    public String getMd5()
+    {
+        return md5;
+    }
+
+    public String getSha1()
+    {
+        return sha1;
+    }
+
+    public Date getFileLastModified()
+    {
+
+        return fileLastModified;
     }
 }

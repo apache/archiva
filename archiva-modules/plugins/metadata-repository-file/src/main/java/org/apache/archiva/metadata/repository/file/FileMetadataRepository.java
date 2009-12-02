@@ -268,8 +268,12 @@ public class FileMetadataRepository
         Properties properties = readProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
         properties.setProperty( "artifact:updated:" + artifact.getId(),
-                                Long.toString( artifact.getUpdated().getTime() ) );
+                                Long.toString( artifact.getFileLastModified().getTime() ) );
+        properties.setProperty( "artifact:whenGathered:" + artifact.getId(),
+                                Long.toString( artifact.getWhenGathered().getTime() ) );
         properties.setProperty( "artifact:size:" + artifact.getId(), Long.toString( artifact.getSize() ) );
+        properties.setProperty( "artifact:md5:" + artifact.getId(), artifact.getMd5() );
+        properties.setProperty( "artifact:sha1:" + artifact.getId(), artifact.getMd5() );
         properties.setProperty( "artifact:version:" + artifact.getId(), artifact.getVersion() );
 
         try
