@@ -139,7 +139,8 @@ public class DeleteManagedRepositoryAction
         removeRepositoryRoles( cleanupRepository );
         cleanupDatabase( cleanupRepository.getId() );
         cleanupScanStats( cleanupRepository.getId() );
-        
+        // TODO: delete all content for a repository from the content API?
+
         List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {

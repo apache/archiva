@@ -19,8 +19,21 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Preparable;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.servlet.http.HttpServletRequest;
 
+import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -44,29 +57,14 @@ import org.apache.maven.archiva.reporting.DataLimits;
 import org.apache.maven.archiva.reporting.RepositoryStatistics;
 import org.apache.maven.archiva.reporting.RepositoryStatisticsReportGenerator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport" instantiation-strategy="per-lookup"
@@ -76,18 +74,16 @@ public class GenerateReportAction
     implements SecureAction, ServletRequestAware, Preparable
 {
     private Logger log = LoggerFactory.getLogger( GenerateReportAction.class );
-    
+
     /**
      * @plexus.requirement role-hint="jdo"
      */
     protected ArchivaDAO dao;
-    
+
     /**
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-
-    protected Constraint constraint;
 
     protected HttpServletRequest request;
 
@@ -357,8 +353,8 @@ public class GenerateReportAction
                 	    addFieldError( "startDate", "Start Date must be earlier than the End Date" );
                 	    return INPUT;
                     }
-                	
-                    List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics( 
+
+                    List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics(
                            new RepositoryContentStatisticsByRepositoryConstraint( selectedRepo, startDateInDF, endDateInDF ) );
                                         
                     if( contentStats == null || contentStats.isEmpty() )

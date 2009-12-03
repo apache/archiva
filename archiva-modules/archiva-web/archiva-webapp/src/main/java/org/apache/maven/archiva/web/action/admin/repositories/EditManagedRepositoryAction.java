@@ -19,9 +19,12 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -35,15 +38,10 @@ import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 /**
- * AddManagedRepositoryAction 
+ * AddManagedRepositoryAction
  *
  * @version $Id$
- * 
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="editManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
 public class EditManagedRepositoryAction
@@ -56,7 +54,7 @@ public class EditManagedRepositoryAction
     private ManagedRepositoryConfiguration repository;
 
     private String repoid;
-    
+
     private final String action = "editRepository";
 
     /**
@@ -90,10 +88,10 @@ public class EditManagedRepositoryAction
 
     public String confirmUpdate()
     {
-    	// location was changed
+        // location was changed
         return save( true );
     }
-    
+
     public String commit()
     {
         ManagedRepositoryConfiguration existingConfig =
@@ -102,17 +100,17 @@ public class EditManagedRepositoryAction
         boolean resetStats = false;
 
         // check if the location was changed
-        if( !StringUtils.equalsIgnoreCase( existingConfig.getLocation().trim(), repository.getLocation().trim() ) )
+        if ( !StringUtils.equalsIgnoreCase( existingConfig.getLocation().trim(), repository.getLocation().trim() ) )
         {
             resetStats = true;
 
             File dir = new File( repository.getLocation() );
-            if( dir.exists() )
+            if ( dir.exists() )
             {
                 return CONFIRM;
             }
         }
-        
+
         return save( resetStats );
     }
 
@@ -120,7 +118,7 @@ public class EditManagedRepositoryAction
     {
         // Ensure that the fields are valid.
         Configuration configuration = archivaConfiguration.getConfiguration();
-        
+
         // We are in edit mode, remove the old repository configuration.
         removeRepository( repository.getId(), configuration );
 
@@ -132,7 +130,10 @@ public class EditManagedRepositoryAction
             triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO );
             addRepositoryRoles( repository );
             result = saveConfiguration( configuration );
-            resetStatistics( resetStats );
+            if ( resetStats )
+            {
+                resetStatistics();
+            }
         }
         catch ( IOException e )
         {
@@ -157,7 +158,7 @@ public class EditManagedRepositoryAction
 
         return result;
     }
-    
+
     @Override
     public void validate()
     {
@@ -169,14 +170,9 @@ public class EditManagedRepositoryAction
         }
     }
 
-    private void resetStatistics( boolean reset )
+    private void resetStatistics()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        if ( !reset )
-        {
-            return;
-        }
-
         RepositoryContentStatisticsDAO repoContentStatsDao = archivaDAO.getRepositoryContentStatisticsDAO();
 
         List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics(
@@ -189,7 +185,7 @@ public class EditManagedRepositoryAction
                 repoContentStatsDao.deleteRepositoryContentStatistics( stats );
             }
         }
-	} 
+	}
 
     public String getRepoid()
     {
@@ -210,7 +206,7 @@ public class EditManagedRepositoryAction
     {
         this.repository = repository;
     }
-    
+
     public String getAction()
     {
         return action;
