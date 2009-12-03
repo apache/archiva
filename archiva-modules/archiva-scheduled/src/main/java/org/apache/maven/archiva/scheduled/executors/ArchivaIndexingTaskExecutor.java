@@ -93,9 +93,9 @@ public class ArchivaIndexingTaskExecutor
                 }
                 catch ( IOException e )
                 {
-                    log.error( "Error occurred while executing indexing task '" + indexingTask + "'" );
+                    log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
                     throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
-                        + "'" );
+                        + "'", e );
                 }
                 finally
                 {
@@ -168,9 +168,9 @@ public class ArchivaIndexingTaskExecutor
                 }
                 catch ( IOException e )
                 {
-                    log.error( "Error occurred while executing indexing task '" + indexingTask + "'" );
+                    log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
                     throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
-                        + "'" );
+                        + "'", e );
                 }
             }
         }
