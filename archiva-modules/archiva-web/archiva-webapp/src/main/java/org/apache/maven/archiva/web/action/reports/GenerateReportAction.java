@@ -97,8 +97,6 @@ public class GenerateReportAction
 
     protected String next;
 
-    protected int[] range = new int[2];
-
     protected int page = 1;
 
     protected int rowCount = 100;
@@ -106,8 +104,6 @@ public class GenerateReportAction
     protected boolean isLastPage;
 
     public static final String BLANK = "blank";
-
-    public static final String BASIC = "basic";
 
     private static Boolean jasperPresent;
 
@@ -140,7 +136,7 @@ public class GenerateReportAction
 
     private DataLimits limits = new DataLimits();
 
-    private String[] datePatterns =
+    private static final String[] datePatterns =
         new String[]{"MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", "dd MMMMM yyyy", "dd/MM/yy",
             "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy", "MM-dd-yy"};
 
@@ -675,8 +671,8 @@ public class GenerateReportAction
     {
         Constraint constraint;
 
-        range[0] = ( page - 1 ) * rowCount;
-        range[1] = ( page * rowCount ) + 1; // Add 1 to check if it's the last page or not.
+        int[] range =
+            new int[]{( page - 1 ) * rowCount, ( page * rowCount ) + 1}; // Add 1 to check if it's the last page or not.
 
         if ( groupId != null && ( !groupId.equals( "" ) ) )
         {
