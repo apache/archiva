@@ -137,7 +137,7 @@ public class ArchivaRepositoryScanningTaskExecutor
                     RepositoryContentStatistics lastStats = results.get( 0 );
                     if ( !repoTask.isScanAll() )
                     {
-                        sinceWhen = lastStats.getWhenGathered().getTime();
+                        sinceWhen = lastStats.getWhenGathered().getTime() - lastStats.getDuration();
                     }
                 }
 
@@ -173,6 +173,7 @@ public class ArchivaRepositoryScanningTaskExecutor
         // total artifact count
         try
         {
+            // note that when gathered is the end of the scan, so we look for all those before that time
             List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts(
                 new ArtifactsByRepositoryConstraint( arepo.getId(), stats.getWhenGathered(), "groupId", true ) );
             dbstats.setTotalArtifactCount( artifacts.size() );

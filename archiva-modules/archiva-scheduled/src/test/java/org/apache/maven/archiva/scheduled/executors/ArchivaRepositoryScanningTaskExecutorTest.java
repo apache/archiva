@@ -141,9 +141,19 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         File sourceRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
         repoDir = new File( getBasedir(), "target/default-repository" );
 
+        FileUtils.deleteDirectory( repoDir );
+        assertFalse( "Default Test Repository should not exist.", repoDir.exists() );
+
         repoDir.mkdir();
 
         FileUtils.copyDirectoryStructure( sourceRepoDir, repoDir );
+        // set the timestamps to a time well in the past
+        Calendar cal = Calendar.getInstance();
+        cal.add( Calendar.YEAR, -1 );
+        for ( File f : (List<File>) FileUtils.getFiles( repoDir, "**", null ) )
+        {
+            f.setLastModified( cal.getTimeInMillis() );
+        }
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -193,18 +203,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         repoTask.setRepositoryId( TEST_REPO_ID );
         repoTask.setScanAll( false );
 
-        RepositoryContentStatistics stats = new RepositoryContentStatistics();
-        stats.setDuration( 1234567 );
-        stats.setNewFileCount( 31 );
-        stats.setRepositoryId( TEST_REPO_ID );
-        stats.setTotalArtifactCount( 8 );
-        stats.setTotalFileCount( 31 );
-        stats.setTotalGroupCount( 3 );
-        stats.setTotalProjectCount( 5 );
-        stats.setTotalSize( 38545 );
-        stats.setWhenGathered( Calendar.getInstance().getTime() );
-
-        dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( stats );
+        createAndSaveTestStats();
 
         taskExecutor.executeTask( repoTask );
 
@@ -272,25 +271,14 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         repoTask.setRepositoryId( TEST_REPO_ID );
         repoTask.setScanAll( false );
 
-        RepositoryContentStatistics stats = new RepositoryContentStatistics();
-        stats.setDuration( 1234567 );
-        stats.setNewFileCount( 31 );
-        stats.setRepositoryId( TEST_REPO_ID );
-        stats.setTotalArtifactCount( 8 );
-        stats.setTotalFileCount( 31 );
-        stats.setTotalGroupCount( 3 );
-        stats.setTotalProjectCount( 5 );
-        stats.setTotalSize( 38545 );
-        stats.setWhenGathered( Calendar.getInstance().getTime() );
-
-        dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( stats );
+        createAndSaveTestStats();
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
 
         FileUtils.copyDirectoryStructure( new File( getBasedir(), "target/test-classes/test-repo/org/apache/archiva" ),
                                           newArtifactGroup );
 
-        // update last modified date
+        // update last modified date, placing shortly after last scan
         new File( newArtifactGroup, "archiva-index-methods-jar-test/1.0/pom.xml" ).setLastModified(
             Calendar.getInstance().getTimeInMillis() + 1000 );
         new File( newArtifactGroup,
@@ -321,6 +309,70 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
         assertEquals( 43687, newStats.getTotalSize() );
+    }
+
+    public void testExecutorScanOnlyNewArtifactsMidScan()
+        throws Exception
+    {
+        RepositoryTask repoTask = new RepositoryTask();
+
+        repoTask.setRepositoryId( TEST_REPO_ID );
+        repoTask.setScanAll( false );
+
+        createAndSaveTestStats();
+
+        File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
+
+        FileUtils.copyDirectoryStructure( new File( getBasedir(), "target/test-classes/test-repo/org/apache/archiva" ),
+                                          newArtifactGroup );
+
+        // update last modified date, placing in middle of last scan
+        new File( newArtifactGroup, "archiva-index-methods-jar-test/1.0/pom.xml" ).setLastModified(
+            Calendar.getInstance().getTimeInMillis() - 50000 );
+        new File( newArtifactGroup,
+                  "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ).setLastModified(
+            Calendar.getInstance().getTimeInMillis() - 50000 );
+
+        assertTrue( newArtifactGroup.exists() );
+
+        // scan using the really long previous duration
+        taskExecutor.executeTask( repoTask );
+
+        // check no artifacts processed
+        ArtifactDAO adao = dao.getArtifactDAO();
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        assertNotNull( unprocessedResultList );
+        assertEquals( "Incorrect number of unprocessed artifacts detected. One new artifact should have been found.", 1,
+                      unprocessedResultList.size() );
+
+        // check correctness of new stats
+        List<RepositoryContentStatistics> results =
+            (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( TEST_REPO_ID ) );
+        RepositoryContentStatistics newStats = results.get( 0 );
+        assertEquals( 2, newStats.getNewFileCount() );
+        assertEquals( TEST_REPO_ID, newStats.getRepositoryId() );
+        assertEquals( 33, newStats.getTotalFileCount() );
+        // TODO: can't test these as they weren't stored in the database
+//        assertEquals( 8, newStats.getTotalArtifactCount() );
+//        assertEquals( 3, newStats.getTotalGroupCount() );
+//        assertEquals( 5, newStats.getTotalProjectCount() );
+        assertEquals( 43687, newStats.getTotalSize() );
+    }
+
+    private void createAndSaveTestStats()
+    {
+        RepositoryContentStatistics stats = new RepositoryContentStatistics();
+        stats.setDuration( 1234567 );
+        stats.setNewFileCount( 31 );
+        stats.setRepositoryId( TEST_REPO_ID );
+        stats.setTotalArtifactCount( 8 );
+        stats.setTotalFileCount( 31 );
+        stats.setTotalGroupCount( 3 );
+        stats.setTotalProjectCount( 5 );
+        stats.setTotalSize( 38545 );
+        stats.setWhenGathered( Calendar.getInstance().getTime() );
+
+        dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( stats );
     }
 
     public void testExecutorForceScanAll()
