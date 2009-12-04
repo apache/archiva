@@ -33,6 +33,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
+import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
@@ -194,25 +195,39 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         RepositoryContentStatistics stats = new RepositoryContentStatistics();
         stats.setDuration( 1234567 );
-        stats.setNewFileCount( 8 );
+        stats.setNewFileCount( 31 );
         stats.setRepositoryId( TEST_REPO_ID );
         stats.setTotalArtifactCount( 8 );
-        stats.setTotalFileCount( 8 );
+        stats.setTotalFileCount( 31 );
         stats.setTotalGroupCount( 3 );
         stats.setTotalProjectCount( 5 );
-        stats.setTotalSize( 999999 );
+        stats.setTotalSize( 38545 );
         stats.setWhenGathered( Calendar.getInstance().getTime() );
 
         dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( stats );
 
         taskExecutor.executeTask( repoTask );
 
+        // check no artifacts processed
         ArtifactDAO adao = dao.getArtifactDAO();
         List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
 
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected. No new artifacts should have been found.", 0,
                       unprocessedResultList.size() );
+
+        // check correctness of new stats
+        List<RepositoryContentStatistics> results =
+            (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( TEST_REPO_ID ) );
+        RepositoryContentStatistics newStats = results.get( 0 );
+        assertEquals( 0, newStats.getNewFileCount() );
+        assertEquals( TEST_REPO_ID, newStats.getRepositoryId() );
+        assertEquals( 31, newStats.getTotalFileCount() );
+        // TODO: can't test these as they weren't stored in the database
+//        assertEquals( 8, newStats.getTotalArtifactCount() );
+//        assertEquals( 3, newStats.getTotalGroupCount() );
+//        assertEquals( 5, newStats.getTotalProjectCount() );
+        assertEquals( 38545, newStats.getTotalSize() );
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
 
@@ -234,6 +249,19 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected. One new artifact should have been found.", 1,
                       unprocessedResultList.size() );
+
+        // check correctness of new stats
+        results =
+            (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( TEST_REPO_ID ) );
+        RepositoryContentStatistics updatedStats = results.get( 0 );
+        assertEquals( 2, updatedStats.getNewFileCount() );
+        assertEquals( TEST_REPO_ID, updatedStats.getRepositoryId() );
+        assertEquals( 33, updatedStats.getTotalFileCount() );
+        // TODO: can't test these as they weren't stored in the database
+//        assertEquals( 8, newStats.getTotalArtifactCount() );
+//        assertEquals( 3, newStats.getTotalGroupCount() );
+//        assertEquals( 5, newStats.getTotalProjectCount() );
+        assertEquals( 43687, updatedStats.getTotalSize() );
     }
 
     public void testExecutorForceScanAll()
