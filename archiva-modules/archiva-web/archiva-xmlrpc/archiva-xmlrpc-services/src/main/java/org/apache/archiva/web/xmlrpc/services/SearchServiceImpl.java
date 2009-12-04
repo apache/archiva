@@ -45,19 +45,6 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * SearchServiceImpl
- *
- * quick/general text search which returns a list of artifacts
- * query for an artifact based on a checksum
- * query for all available versions of an artifact, sorted in version significance order
- * query for all available versions of an artifact since a given date
- * query for an artifact's direct dependencies
- * query for an artifact's dependency tree (as with mvn dependency:tree - no duplicates should be included)
- * query for all artifacts that depend on a given artifact
- *
- * @version $Id: SearchServiceImpl.java
- */
 public class SearchServiceImpl
     implements SearchService
 {
@@ -214,9 +201,11 @@ public class SearchServiceImpl
         List<Artifact> artifacts = new ArrayList<Artifact>();
 
         // 1. get observable repositories
-        // 2. use metadata repository to query uniqueVersions? (but with date)
+        // 2. use RepositoryBrowsing method to query uniqueVersions? (but with date)
+        
+        throw new UnsupportedOperationException( "getArtifactVersionsByDate not yet implemented" );
 
-        return artifacts;
+//        return artifacts;
     }
 
     public List<Dependency> getDependencies( String groupId, String artifactId, String version )
@@ -248,8 +237,9 @@ public class SearchServiceImpl
         throws Exception
     {
         List<Artifact> a = new ArrayList<Artifact>();
-
-        return a;
+        
+        throw new UnsupportedOperationException( "getDependencyTree not yet implemented" );
+//        return a;
     }
 
     public List<Artifact> getDependees( String groupId, String artifactId, String version )

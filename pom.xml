@@ -1221,28 +1221,4 @@
       </build>
     </profile>
   </profiles>
-  <repositories>
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>sonatype.public</id>
-      <name>Sonatype Public Repo</name>
-      <url>http://repository.sonatype.org/content/repositories/sonatype-apache-releases</url>
-    </repository> 
-    <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>codehaus.org.snapshots</id>
-      <name>Codehaus Snapshots Repository</name>
-      <url>http://snapshots.repository.codehaus.org</url>
-    </repository> 
-  </repositories>
 </project>
