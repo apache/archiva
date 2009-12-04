@@ -340,7 +340,7 @@ public abstract class AbstractRepositoryTest
 		assertTextPresent( "Administration - Database" );
 		assertTextPresent( "Database - Unprocessed Artifacts Scanning" );
 		assertTextPresent( "Cron:" );
-		assertElementPresent( "cron" );
+		assertElementPresent( "database_cron" );
 		assertButtonWithValuePresent( "Update Cron" );
 		assertButtonWithValuePresent( "Update Database Now" );
 		assertTextPresent( "Database - Unprocessed Artifacts Scanning" );

@@ -39,7 +39,8 @@ public class RepositoryTest
 	
 	@Test(dependsOnMethods = { "testAddManagedRepoValidValues" } )
 	public void testAddManagedRepoInvalidValues()
-	{		
+	{	
+		goToRepositoriesPage();	
 	    assertRepositoriesPage();
 	    clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRepository.action']" );	
 		addManagedRepository( "", "" , "" , "", "Maven 2.x Repository", "", "", "" );
