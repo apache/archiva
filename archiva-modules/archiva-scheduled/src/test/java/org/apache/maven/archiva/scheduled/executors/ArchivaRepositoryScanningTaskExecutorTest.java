@@ -264,6 +264,65 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         assertEquals( 43687, updatedStats.getTotalSize() );
     }
 
+    public void testExecutorScanOnlyNewArtifactsChangeTimes()
+        throws Exception
+    {
+        RepositoryTask repoTask = new RepositoryTask();
+
+        repoTask.setRepositoryId( TEST_REPO_ID );
+        repoTask.setScanAll( false );
+
+        RepositoryContentStatistics stats = new RepositoryContentStatistics();
+        stats.setDuration( 1234567 );
+        stats.setNewFileCount( 31 );
+        stats.setRepositoryId( TEST_REPO_ID );
+        stats.setTotalArtifactCount( 8 );
+        stats.setTotalFileCount( 31 );
+        stats.setTotalGroupCount( 3 );
+        stats.setTotalProjectCount( 5 );
+        stats.setTotalSize( 38545 );
+        stats.setWhenGathered( Calendar.getInstance().getTime() );
+
+        dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( stats );
+
+        File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
+
+        FileUtils.copyDirectoryStructure( new File( getBasedir(), "target/test-classes/test-repo/org/apache/archiva" ),
+                                          newArtifactGroup );
+
+        // update last modified date
+        new File( newArtifactGroup, "archiva-index-methods-jar-test/1.0/pom.xml" ).setLastModified(
+            Calendar.getInstance().getTimeInMillis() + 1000 );
+        new File( newArtifactGroup,
+                  "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ).setLastModified(
+            Calendar.getInstance().getTimeInMillis() + 1000 );
+
+        assertTrue( newArtifactGroup.exists() );
+
+        // scan using the really long previous duration
+        taskExecutor.executeTask( repoTask );
+
+        // check no artifacts processed
+        ArtifactDAO adao = dao.getArtifactDAO();
+        List<ArchivaArtifact> unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        assertNotNull( unprocessedResultList );
+        assertEquals( "Incorrect number of unprocessed artifacts detected. One new artifact should have been found.", 1,
+                      unprocessedResultList.size() );
+
+        // check correctness of new stats
+        List<RepositoryContentStatistics> results =
+            (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( TEST_REPO_ID ) );
+        RepositoryContentStatistics newStats = results.get( 0 );
+        assertEquals( 2, newStats.getNewFileCount() );
+        assertEquals( TEST_REPO_ID, newStats.getRepositoryId() );
+        assertEquals( 33, newStats.getTotalFileCount() );
+        // TODO: can't test these as they weren't stored in the database
+//        assertEquals( 8, newStats.getTotalArtifactCount() );
+//        assertEquals( 3, newStats.getTotalGroupCount() );
+//        assertEquals( 5, newStats.getTotalProjectCount() );
+        assertEquals( 43687, newStats.getTotalSize() );
+    }
+
     public void testExecutorForceScanAll()
         throws Exception
     {
