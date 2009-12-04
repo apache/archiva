@@ -231,7 +231,7 @@ public class SearchServiceImplTest
         assertEquals( ARCHIVA_TEST_ARTIFACT_ID, artifact.getArtifactId() );
         assertEquals( "1.0", artifact.getVersion() );
         assertEquals( "jar", artifact.getType() );
-        assertNull( "Repository should be null since the model was not found in the database!", artifact.getRepositoryId() );
+        assertEquals( "public.releases", artifact.getRepositoryId() );
     }
 
     public void testQuickSearchArtifactRegularSearch()
