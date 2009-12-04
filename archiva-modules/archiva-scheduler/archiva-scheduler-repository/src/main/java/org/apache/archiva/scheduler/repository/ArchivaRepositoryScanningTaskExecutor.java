@@ -9,7 +9,7 @@ package org.apache.archiva.scheduler.repository;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -152,7 +152,7 @@ public class ArchivaRepositoryScanningTaskExecutor
                     RepositoryContentStatistics lastStats = results.get( 0 );
                     if( !repoTask.isScanAll() )
                     {
-                        sinceWhen = lastStats.getWhenGathered().getTime() + lastStats.getDuration();
+                        sinceWhen = lastStats.getWhenGathered().getTime() - lastStats.getDuration();
                     }
                 }
 
@@ -210,7 +210,7 @@ public class ArchivaRepositoryScanningTaskExecutor
             log.error( "Error occurred while querying artifacts for artifact count : " + ae.getMessage() );
         }
 
-        // total repo size
+        // total repo size -- TODO: needs to exclude ignored files (eg .svn)
         long size = FileUtils.sizeOfDirectory( new File( arepo.getLocation() ) );
         dbstats.setTotalSize( size );
 

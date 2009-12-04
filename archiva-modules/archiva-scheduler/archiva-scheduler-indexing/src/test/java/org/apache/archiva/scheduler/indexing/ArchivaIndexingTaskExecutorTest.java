@@ -203,6 +203,8 @@ public class ArchivaIndexingTaskExecutorTest
         IndexSearcher searcher = new IndexSearcher( repositoryConfig.getLocation() + "/.indexer" );
         TopDocs topDocs = searcher.search( q, null, 10 );
 
+        searcher.close();
+
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
         assertFalse( new File( repositoryConfig.getLocation(), ".index" ).exists() );
 
