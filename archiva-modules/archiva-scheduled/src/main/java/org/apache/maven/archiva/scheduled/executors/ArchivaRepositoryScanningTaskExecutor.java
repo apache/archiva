@@ -187,7 +187,7 @@ public class ArchivaRepositoryScanningTaskExecutor
             log.error( "Error occurred while querying artifacts for artifact count : " + ae.getMessage() );
         }
 
-        // total repo size
+        // total repo size -- TODO: needs to exclude ignored files (eg .svn)
         long size = FileUtils.sizeOfDirectory( new File( arepo.getLocation() ) );
         dbstats.setTotalSize( size );
 

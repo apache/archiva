@@ -154,6 +154,10 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         {
             f.setLastModified( cal.getTimeInMillis() );
         }
+        for ( String dir : (List<String>) FileUtils.getDirectoryNames( repoDir, "**/.svn", null, false ) )
+        {
+            FileUtils.deleteDirectory( new File( repoDir, dir ) );
+        }
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -226,7 +230,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
-        assertEquals( 38545, newStats.getTotalSize() );
+        assertEquals( 14159, newStats.getTotalSize() );
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
 
@@ -260,7 +264,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
-        assertEquals( 43687, updatedStats.getTotalSize() );
+        assertEquals( 19301, updatedStats.getTotalSize() );
     }
 
     public void testExecutorScanOnlyNewArtifactsChangeTimes()
@@ -308,7 +312,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
-        assertEquals( 43687, newStats.getTotalSize() );
+        assertEquals( 19301, newStats.getTotalSize() );
     }
 
     public void testExecutorScanOnlyNewArtifactsMidScan()
@@ -356,7 +360,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
-        assertEquals( 43687, newStats.getTotalSize() );
+        assertEquals( 19301, newStats.getTotalSize() );
     }
 
     private void createAndSaveTestStats()
@@ -369,7 +373,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         stats.setTotalFileCount( 31 );
         stats.setTotalGroupCount( 3 );
         stats.setTotalProjectCount( 5 );
-        stats.setTotalSize( 38545 );
+        stats.setTotalSize( 14159 );
         stats.setWhenGathered( Calendar.getInstance().getTime() );
 
         dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( stats );
