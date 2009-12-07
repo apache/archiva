@@ -73,6 +73,11 @@ public class DefaultRepositoryStatisticsManager
                                              repositoryStatistics );
     }
 
+    public void deleteStatistics( String repositoryId )
+    {
+        metadataRepository.removeMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
+    }
+
     public void setMetadataRepository( MetadataRepository metadataRepository )
     {
         this.metadataRepository = metadataRepository;

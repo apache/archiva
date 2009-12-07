@@ -46,6 +46,11 @@ public class TestRepositoryStatisticsManager
         stats.add( repositoryStatistics );
     }
 
+    public void deleteStatistics( String repositoryId )
+    {
+        repoStats.remove( repositoryId );
+    }
+
     private List<RepositoryStatistics> getStatsList( String repositoryId )
     {
         List<RepositoryStatistics> stats = repoStats.get( repositoryId );

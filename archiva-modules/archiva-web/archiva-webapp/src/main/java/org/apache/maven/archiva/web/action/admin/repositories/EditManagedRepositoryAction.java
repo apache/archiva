@@ -21,19 +21,13 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
-import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
@@ -58,9 +52,9 @@ public class EditManagedRepositoryAction
     private final String action = "editRepository";
 
     /**
-     * @plexus.requirement role-hint="jdo"
+     * @plexus.requirement
      */
-    private ArchivaDAO archivaDAO;
+    private RepositoryStatisticsManager repositoryStatisticsManager;
 
     public void prepare()
     {
@@ -145,16 +139,6 @@ public class EditManagedRepositoryAction
             addActionError( "Role Manager Exception: " + e.getMessage() );
             result = ERROR;
         }
-        catch ( ObjectNotFoundException e )
-        {
-            addActionError( e.getMessage() );
-            result = ERROR;
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            addActionError( e.getMessage() );
-            result = ERROR;
-        }
 
         return result;
     }
@@ -171,20 +155,8 @@ public class EditManagedRepositoryAction
     }
 
     private void resetStatistics()
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        RepositoryContentStatisticsDAO repoContentStatsDao = archivaDAO.getRepositoryContentStatisticsDAO();
-
-        List<RepositoryContentStatistics> contentStats = repoContentStatsDao.queryRepositoryContentStatistics(
-                new RepositoryContentStatisticsByRepositoryConstraint( repository.getId() ) );
-
-        if ( contentStats != null )
-        {
-            for ( RepositoryContentStatistics stats : contentStats )
-            {
-                repoContentStatsDao.deleteRepositoryContentStatistics( stats );
-            }
-        }
+        repositoryStatisticsManager.deleteStatistics( repository.getId() );
 	}
 
     public String getRepoid()
@@ -212,10 +184,8 @@ public class EditManagedRepositoryAction
         return action;
     }
 
-    // for testing
-
-    public void setArchivaDAO( ArchivaDAO archivaDao )
+    public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
     {
-        this.archivaDAO = archivaDao;
+        this.repositoryStatisticsManager = repositoryStatisticsManager;
     }
 }

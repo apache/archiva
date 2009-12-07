@@ -49,6 +49,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -288,6 +289,19 @@ public class FileMetadataRepository
         {
             writeProperties( properties, new File( getMetadataDirectory( repositoryId, facetId ), name ),
                              METADATA_KEY );
+        }
+        catch ( IOException e )
+        {
+            // TODO!
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void removeMetadataFacets( String repositoryId, String facetId )
+    {
+        try
+        {
+            FileUtils.deleteDirectory( getMetadataDirectory( repositoryId, facetId ) );
         }
         catch ( IOException e )
         {

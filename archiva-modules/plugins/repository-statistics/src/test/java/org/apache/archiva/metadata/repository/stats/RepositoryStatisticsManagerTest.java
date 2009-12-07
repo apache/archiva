@@ -113,24 +113,17 @@ public class RepositoryStatisticsManagerTest
         Date current = new Date();
         Date startTime = new Date( current.getTime() - 12345 );
 
-        RepositoryStatistics stats = new RepositoryStatistics();
-        stats.setScanStartTime( startTime );
-        stats.setScanEndTime( current );
-        stats.setTotalArtifactFileSize( 1400032000L );
-        stats.setNewFileCount( 45 );
-        stats.setTotalArtifactCount( 10412 );
-        stats.setTotalProjectCount( 2036 );
-        stats.setTotalGroupCount( 531 );
-        stats.setTotalFileCount( 56345 );
+        RepositoryStatistics stats1 = createTestStats( startTime, current );
 
         String startTimeAsString = DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( startTime );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString, stats );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString, stats1 );
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
             Arrays.asList( startTimeAsString ) );
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString ),
-            stats );
+            stats1 );
+        RepositoryStatistics stats = stats1;
 
         metadataRepositoryControl.replay();
 
@@ -148,5 +141,78 @@ public class RepositoryStatisticsManagerTest
         assertEquals( current, stats.getScanEndTime() );
 
         metadataRepositoryControl.verify();
+    }
+
+    public void testDeleteStats()
+    {
+        Date current = new Date();
+
+        Date startTime1 = new Date( current.getTime() - 12345 );
+        RepositoryStatistics stats1 = createTestStats( startTime1, new Date( current.getTime() - 6000 ) );
+        String startTimeAsString1 = DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( startTime1 );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString1, stats1 );
+
+        Date startTime2 = new Date( current.getTime() - 3000 );
+        RepositoryStatistics stats2 = createTestStats( startTime2, current );
+        String startTimeAsString2 = DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( startTime2 );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString2, stats2 );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
+            Arrays.asList( startTimeAsString1, startTimeAsString2 ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString2 ),
+            stats2 );
+
+        metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
+            Collections.emptyList() );
+
+        metadataRepositoryControl.replay();
+
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats1 );
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats2 );
+
+        assertNotNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+
+        repositoryStatisticsManager.deleteStatistics( TEST_REPO_ID );
+
+        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+
+        metadataRepositoryControl.verify();
+    }
+
+    public void testDeleteStatsWhenEmpty()
+    {
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
+            Collections.emptyList(), 2 );
+        metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID );
+
+        metadataRepositoryControl.replay();
+
+        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+
+        repositoryStatisticsManager.deleteStatistics( TEST_REPO_ID );
+
+        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+
+        metadataRepositoryControl.verify();
+    }
+
+    private RepositoryStatistics createTestStats( Date startTime, Date endTime )
+    {
+        RepositoryStatistics stats = new RepositoryStatistics();
+        stats.setScanStartTime( startTime );
+        stats.setScanEndTime( endTime );
+        stats.setTotalArtifactFileSize( 1400032000L );
+        stats.setNewFileCount( 45 );
+        stats.setTotalArtifactCount( 10412 );
+        stats.setTotalProjectCount( 2036 );
+        stats.setTotalGroupCount( 531 );
+        stats.setTotalFileCount( 56345 );
+        return stats;
     }
 }

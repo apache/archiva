@@ -160,6 +160,35 @@ public class FileMetadataRepositoryTest
         assertTrue( facets.isEmpty() );
     }
 
+    public void testRemoveFacets()
+    {
+        List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertTrue( facets.isEmpty() );
+
+        repository.removeMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+
+        facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertTrue( facets.isEmpty() );
+    }
+
+    public void testRemoveFacetsWhenEmpty()
+    {
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+
+        List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertFalse( facets.isEmpty() );
+
+        repository.removeMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+
+        facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertTrue( facets.isEmpty() );
+    }
+
+    public void testRemoveFacetsWhenUnknown()
+    {
+        repository.removeMetadataFacets( TEST_REPO_ID, UNKNOWN );
+    }
+
     private static class TestMetadataFacet
         implements MetadataFacet
     {

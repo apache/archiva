@@ -54,4 +54,6 @@ public interface MetadataRepository
     MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name );
 
     void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet );
+
+    void removeMetadataFacets( String repositoryId, String facetId );
 }

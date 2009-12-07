@@ -19,27 +19,21 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
-import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 /**
  * EditManagedRepositoryActionTest 
@@ -58,14 +52,6 @@ public class EditManagedRepositoryActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
-
-    private MockControl archivaDaoControl;
-
-    private ArchivaDAO archivaDao;
-
-    private MockControl repoContentStatsDaoControl;
-
-    private RepositoryContentStatisticsDAO repoContentStatsDao;
 
     private static final String REPO_ID = "repo-ident";
 
@@ -92,13 +78,6 @@ public class EditManagedRepositoryActionTest
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
         location = getTestFile( "target/test/location" );
-
-        archivaDaoControl = MockControl.createControl( ArchivaDAO.class );
-        archivaDao = (ArchivaDAO) archivaDaoControl.getMock();
-        action.setArchivaDAO( archivaDao );
-
-        repoContentStatsDaoControl = MockControl.createControl( RepositoryContentStatisticsDAO.class );
-        repoContentStatsDao = (RepositoryContentStatisticsDAO) repoContentStatsDaoControl.getMock();
     }
 
     public void testSecureActionBundle()
@@ -204,24 +183,15 @@ public class EditManagedRepositoryActionTest
 
         archivaConfigurationControl.replay();
 
-        archivaDaoControl.expectAndReturn( archivaDao.getRepositoryContentStatisticsDAO(), repoContentStatsDao );
+        MockControl repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
+        RepositoryStatisticsManager repositoryStatisticsManager =
+            (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
+        action.setRepositoryStatisticsManager( repositoryStatisticsManager );
 
-        archivaDaoControl.replay();
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
 
-        repoContentStatsDao.queryRepositoryContentStatistics(
-                new RepositoryContentStatisticsByRepositoryConstraint( REPO_ID ) );
-        repoContentStatsDaoControl.setMatcher( MockControl.ALWAYS_MATCHER );
+        repositoryStatisticsManagerControl.replay();
 
-        List<RepositoryContentStatistics> repoStats = createRepositoryContentStatisticsList();
-        repoContentStatsDaoControl.setReturnValue( repoStats );
-
-        repoContentStatsDao.deleteRepositoryContentStatistics( repoStats.get( 0 ) );
-        repoContentStatsDaoControl.setVoidCallable();
-        repoContentStatsDao.deleteRepositoryContentStatistics( repoStats.get( 1 ) );
-        repoContentStatsDaoControl.setVoidCallable();
-
-        repoContentStatsDaoControl.replay();
-        
         action.setRepoid( REPO_ID );
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
@@ -236,8 +206,7 @@ public class EditManagedRepositoryActionTest
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
-        archivaDaoControl.verify();
-        repoContentStatsDaoControl.verify();
+        repositoryStatisticsManagerControl.verify();
     }
     
     private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
@@ -287,31 +256,5 @@ public class EditManagedRepositoryActionTest
         repository.setSnapshots( true );
         repository.setScanned( false );
         repository.setDeleteReleasedSnapshots( true );
-    }
-
-    private List<RepositoryContentStatistics> createRepositoryContentStatisticsList()
-    {
-        List<RepositoryContentStatistics> repoStatsList = new ArrayList<RepositoryContentStatistics>();
-
-        repoStatsList.add( createRepositoryContentStatistics() );
-        repoStatsList.add( createRepositoryContentStatistics() );
-
-        return repoStatsList;
-    }
-
-    private RepositoryContentStatistics createRepositoryContentStatistics()
-    {
-        RepositoryContentStatistics repoStats = new RepositoryContentStatistics();
-        repoStats.setRepositoryId( REPO_ID );
-        repoStats.setDuration( 1000 );
-        repoStats.setTotalArtifactCount( 100 );
-        repoStats.setTotalSize( 10 );
-        repoStats.setTotalFileCount( 10 );
-        repoStats.setTotalProjectCount( 2 );
-        repoStats.setTotalGroupCount( 1 );
-        repoStats.setNewFileCount( 3 );
-        repoStats.setWhenGathered( new Date( System.currentTimeMillis() ) );
-
-        return repoStats;
     }
 }
