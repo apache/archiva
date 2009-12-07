@@ -16,15 +16,20 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>repository-statistics</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-database</artifactId>
+      <artifactId>archiva-repository-scanner</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-scanner</artifactId>
+      <artifactId>archiva-repository-layer</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -33,11 +38,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-database-consumers</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -49,11 +49,6 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -63,12 +58,13 @@
         <executions>
           <execution>
             <id>merge</id>
+            <phase>process-resources</phase>
             <goals>
               <goal>merge-metadata</goal>
             </goals>
             <configuration>
               <descriptors>
-                <descriptor>${basedir}/src/main/resources/META-INF/plexus/components.xml</descriptor>
+                <descriptor>${basedir}/src/main/components-fragment.xml</descriptor>
                 <descriptor>${project.build.outputDirectory}/META-INF/plexus/components.xml</descriptor>
               </descriptors>
             </configuration>

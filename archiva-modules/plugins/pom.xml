@@ -29,5 +29,6 @@
   <modules>
     <module>metadata-repository-file</module>
     <module>maven2-repository</module>
+    <module>repository-statistics</module>
   </modules>
 </project>

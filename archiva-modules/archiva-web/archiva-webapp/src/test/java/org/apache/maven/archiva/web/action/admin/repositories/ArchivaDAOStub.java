@@ -1,10 +1,8 @@
 package org.apache.maven.archiva.web.action.admin.repositories;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
@@ -14,7 +12,6 @@ import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -67,19 +64,7 @@ public class ArchivaDAOStub
         {
             return artifacts;
         }
-        else
-        {
-            Assert.assertEquals( RepositoryContentStatistics.class, constraint.getResultClass() );
-
-            List<RepositoryContentStatistics> stats = new ArrayList<RepositoryContentStatistics>();
-            for ( String repo : configuration.getConfiguration().getManagedRepositoriesAsMap().keySet() )
-            {
-                RepositoryContentStatistics statistics = new RepositoryContentStatistics();
-                statistics.setRepositoryId( repo );
-                stats.add( statistics );
-            }
-            return stats;
-        }
+        throw new UnsupportedOperationException();
     }
 
     public Object save( Serializable obj )

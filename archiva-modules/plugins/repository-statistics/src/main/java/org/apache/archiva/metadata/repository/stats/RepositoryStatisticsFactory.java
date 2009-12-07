@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.model;
+package org.apache.archiva.metadata.repository.stats;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,10 +19,17 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
+
 /**
- * Information about the repository as a whole.
+ * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.metadata.repository.stats"
  */
-public class RepositoryMetadata
+public class RepositoryStatisticsFactory
+    implements MetadataFacetFactory
 {
-    // TODO
+    public MetadataFacet createMetadataFacet()
+    {
+        return new RepositoryStatistics();
+    }
 }

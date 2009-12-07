@@ -25,15 +25,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
@@ -74,9 +72,9 @@ public class RepositoryArchivaTaskScheduler
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role-hint="jdo"
+     * @plexus.requirement
      */
-    private ArchivaDAO dao;
+    private RepositoryStatisticsManager repositoryStatisticsManager;
 
     private static final String REPOSITORY_SCAN_GROUP = "rg";
 
@@ -264,15 +262,7 @@ public class RepositoryArchivaTaskScheduler
     @SuppressWarnings("unchecked")
     private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig )
     {
-        List<RepositoryScanStatistics> results =
-            (List<RepositoryScanStatistics>) dao.query( new MostRecentRepositoryScanStatistics( repoConfig.getId() ) );
-
-        if ( results != null && !results.isEmpty() )
-        {
-            return true;
-        }
-
-        return false;
+        return repositoryStatisticsManager.getLastStatistics( repoConfig.getId() ) != null;
     }
 
     // MRM-848: Pre-configured repository initially appear to be empty

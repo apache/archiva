@@ -91,29 +91,7 @@
       </fileType>
     </fileTypes>
     <knownContentConsumers>
-      <knownContentConsumer>update-db-artifact</knownContentConsumer>
-      <knownContentConsumer>create-missing-checksums</knownContentConsumer>
-      <knownContentConsumer>update-db-repository-metadata</knownContentConsumer>
-      <knownContentConsumer>validate-checksum</knownContentConsumer>
-      <knownContentConsumer>validate-signature</knownContentConsumer>
-      <knownContentConsumer>index-content</knownContentConsumer>
-      <knownContentConsumer>auto-remove</knownContentConsumer>
-      <knownContentConsumer>auto-rename</knownContentConsumer>
+      <knownContentConsumer>test-consumer</knownContentConsumer>
     </knownContentConsumers>
-    <invalidContentConsumers>
-      <invalidContentConsumer>update-db-bad-content</invalidContentConsumer>
-    </invalidContentConsumers>
   </repositoryScanning>
-
-  <databaseScanning>
-    <cronExpression>0 0 * * * ?</cronExpression>
-    <unprocessedConsumers>
-      <unprocessedConsumer>test-db-unprocessed</unprocessedConsumer>
-      <unprocessedConsumer>update-db-artifact</unprocessedConsumer>
-    </unprocessedConsumers>
-    <cleanupConsumers>
-      <cleanupConsumer>test-db-cleanup</cleanupConsumer>
-    </cleanupConsumers>
-  </databaseScanning>
-
 </configuration>

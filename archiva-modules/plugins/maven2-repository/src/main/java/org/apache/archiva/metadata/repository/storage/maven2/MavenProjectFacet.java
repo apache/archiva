@@ -22,10 +22,10 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.archiva.metadata.model.ProjectVersionFacet;
+import org.apache.archiva.metadata.model.MetadataFacet;
 
 public class MavenProjectFacet
-    implements ProjectVersionFacet
+    implements MetadataFacet
 {
     private String groupId;
 

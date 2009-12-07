@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.model;
+package org.apache.archiva.metadata.repository.stats;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,13 +19,9 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import java.util.Map;
-
-public interface ProjectVersionFacet
+public interface RepositoryStatisticsManager
 {
-    String getFacetId();
+    RepositoryStatistics getLastStatistics( String repositoryId );
 
-    Map<String, String> toProperties();
-
-    void fromProperties( Map<String, String> properties );
+    void addStatisticsAfterScan( String repositoryId, RepositoryStatistics repositoryStatistics );
 }

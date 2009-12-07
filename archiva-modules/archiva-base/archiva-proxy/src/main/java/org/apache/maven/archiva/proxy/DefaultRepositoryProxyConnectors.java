@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -134,7 +134,7 @@ public class DefaultRepositoryProxyConnectors
     /**
      * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
-    private RepositoryArchivaTaskScheduler scheduler;
+    private ArchivaTaskScheduler scheduler;
 
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException

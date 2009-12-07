@@ -19,7 +19,10 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
@@ -45,4 +48,10 @@ public interface MetadataRepository
                                  ProjectVersionReference reference );
 
     void updateNamespace( String repoId, String namespace );
+
+    List<String> getMetadataFacets( String repodId, String facetId );
+
+    MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name );
+
+    void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet );
 }

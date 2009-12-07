@@ -94,35 +94,60 @@ The following is the intended content model for the metadata content repository:
         |                   |-- maven:groupId=
         |                   |-- maven:plugins.compiler.artifactId=
         |                   `-- maven:plugins.compiler.name=
-        `-- references/
-            `-- org/
-                `-- apache/
-                    `-- archiva/
-                        |-- parent/
-                        |   `-- 1/
-                        |       `-- references/
-                        |           `-- org/
-                        |               `-- apache/
-                        |                   `-- archiva/
-                        |                       |-- platform/
-                        |                       |   `-- scanner/
-                        |                       |       `-- 1.0-SNAPSHOT/
-                        |                       |           `-- referenceType=parent
-                        |                       `-- web/
-                        |                           `-- webapp/
-                        |                               `-- 1.0-SNAPSHOT/
-                        |                                   `-- referenceType=parent
-                        `-- platform/
-                            `-- scanner/
-                                `-- 1.0-SNAPSHOT/
-                                    `-- references/
-                                        `-- org/
-                                            `-- apache/
-                                                `-- archiva/
-                                                    `-- web/
-                                                        `-- webapp/
-                                                            `-- 1.0-SNAPSHOT/
-                                                                `-- referenceType=dependency
+        |-- references/
+        |   `-- org/
+        |       `-- apache/
+        |           `-- archiva/
+        |               |-- parent/
+        |               |   `-- 1/
+        |               |       `-- references/
+        |               |           `-- org/
+        |               |               `-- apache/
+        |               |                   `-- archiva/
+        |               |                       |-- platform/
+        |               |                       |   `-- scanner/
+        |               |                       |       `-- 1.0-SNAPSHOT/
+        |               |                       |           `-- referenceType=parent
+        |               |                       `-- web/
+        |               |                           `-- webapp/
+        |               |                               `-- 1.0-SNAPSHOT/
+        |               |                                   `-- referenceType=parent
+        |               `-- platform/
+        |                   `-- scanner/
+        |                       `-- 1.0-SNAPSHOT/
+        |                           `-- references/
+        |                               `-- org/
+        |                                   `-- apache/
+        |                                       `-- archiva/
+        |                                           `-- web/
+        |                                               `-- webapp/
+        |                                                   `-- 1.0-SNAPSHOT/
+        |                                                       `-- referenceType=dependency
+        `-- stats/
+            `-- 2009/
+                `-- 12/
+                    |-- 02/
+                    |   `-- 23/
+                    |       `-- 47/
+                    |           `-- 00/
+                    |               |-- scanEndTime=
+                    |               |-- scanStartTime=
+                    |               |-- totalArtifactCount=
+                    |               |-- totalArtifactFileSize=
+                    |               |-- totalFileCount=
+                    |               |-- totalGroupCount=
+                    |               `-- totalProjectCount=
+                    `-- 03/
+                        `-- 09/
+                            `-- 00/
+                                `-- 00/
+                                    |-- scanEndTime=
+                                    |-- scanStartTime=
+                                    |-- totalArtifactCount=
+                                    |-- totalArtifactFileSize=
+                                    |-- totalFileCount=
+                                    |-- totalGroupCount=
+                                    `-- totalProjectCount=
 
 (To update - run "tree --dirstfirst -F" on the unpacked content-model.zip from the sandbox)
 
@@ -179,6 +204,9 @@ Notes:
 *) some of the above needs to be reviewed before going into production. For example:
    - the maven specific aspects of dependencies should become a faceted part of the content
    - more of the metadata might be faceted in general, keeping the content model basic by default
+   - determine if any of the stats can be derived by functions of the content repository rather than storing and trying
+     to keep them up to date. Historical data might be retained by versioning and taking a snapshot at a given point in
+     time. The current approach of tying them to the scanning process is not optimal
    - the storing of metadata as 0-indexed lists would be better in as child nodes. This might require additional levels
      in the current repository (.../scanner/versions/1.0-SNAPSHOT/artifacts/scanner-1.0-20091120.012345-1.pom), or
      for listed information to be in a separate tree

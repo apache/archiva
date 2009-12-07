@@ -21,5 +21,5 @@ package org.apache.archiva.metadata.model;
 
 public interface MetadataFacetFactory
 {
-    ProjectVersionFacet createProjectVersionFacet();
+    MetadataFacet createMetadataFacet();
 }

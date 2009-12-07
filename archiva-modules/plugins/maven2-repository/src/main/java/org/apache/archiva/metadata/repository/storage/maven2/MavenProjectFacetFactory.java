@@ -19,8 +19,8 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.model.ProjectVersionFacet;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.metadata.repository.storage.maven2"
@@ -28,7 +28,7 @@ import org.apache.archiva.metadata.model.ProjectVersionFacet;
 public class MavenProjectFacetFactory
     implements MetadataFacetFactory
 {
-    public ProjectVersionFacet createProjectVersionFacet()
+    public MetadataFacet createMetadataFacet()
     {
         return new MavenProjectFacet();
     }

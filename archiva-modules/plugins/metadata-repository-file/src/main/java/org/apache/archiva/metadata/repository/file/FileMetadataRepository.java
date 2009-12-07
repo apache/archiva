@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -40,10 +41,10 @@ import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
+import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionFacet;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
@@ -78,6 +79,8 @@ public class FileMetadataRepository
 
     private static final String NAMESPACE_METADATA_KEY = "namespace-metadata";
 
+    private static final String METADATA_KEY = "metadata";
+
     public void updateProject( String repoId, ProjectMetadata project )
     {
         updateProject( repoId, project.getNamespace(), project.getId() );
@@ -95,7 +98,6 @@ public class FileMetadataRepository
             properties.setProperty( "namespace", namespace );
             properties.setProperty( "id", id );
             writeProperties( properties, new File( namespaceDirectory, id ), PROJECT_METADATA_KEY );
-
         }
         catch ( IOException e )
         {
@@ -112,7 +114,7 @@ public class FileMetadataRepository
         File directory =
             new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + versionMetadata.getId() );
 
-        Properties properties = readProperties( directory, PROJECT_VERSION_METADATA_KEY );
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
         for ( String name : properties.stringPropertyNames() )
         {
@@ -180,7 +182,7 @@ public class FileMetadataRepository
         facetIds.addAll( Arrays.asList( properties.getProperty( "facetIds", "" ).split( "," ) ) );
         properties.setProperty( "facetIds", join( facetIds ) );
 
-        for ( ProjectVersionFacet facet : versionMetadata.getFacetList() )
+        for ( MetadataFacet facet : versionMetadata.getFacetList() )
         {
             properties.putAll( facet.toProperties() );
         }
@@ -201,7 +203,7 @@ public class FileMetadataRepository
     {
         File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
 
-        Properties properties = readProperties( directory, PROJECT_VERSION_METADATA_KEY );
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         int i = Integer.valueOf( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
         setProperty( properties, "ref:lastReferenceNum", Integer.toString( i ) );
         setProperty( properties, "ref:reference." + i + ".namespace", reference.getNamespace() );
@@ -237,6 +239,68 @@ public class FileMetadataRepository
         }
     }
 
+    public List<String> getMetadataFacets( String repoId, String facetId )
+    {
+        File directory = getMetadataDirectory( repoId, facetId );
+        String[] list = directory.list();
+        return list != null ? Arrays.asList( list ) : Collections.<String>emptyList();
+    }
+
+    public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
+    {
+        Properties properties;
+        try
+        {
+            properties =
+                readProperties( new File( getMetadataDirectory( repositoryId, facetId ), name ), METADATA_KEY );
+        }
+        catch ( FileNotFoundException e )
+        {
+            return null;
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return null;
+        }
+        MetadataFacet metadataFacet = null;
+        MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
+        if ( metadataFacetFactory != null )
+        {
+            metadataFacet = metadataFacetFactory.createMetadataFacet();
+            Map<String, String> map = new HashMap<String, String>();
+            for ( String key : properties.stringPropertyNames() )
+            {
+                map.put( key, properties.getProperty( key ) );
+            }
+            metadataFacet.fromProperties( map );
+        }
+        return metadataFacet;
+    }
+
+    public void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet )
+    {
+        Properties properties = new Properties();
+        properties.putAll( metadataFacet.toProperties() );
+
+        try
+        {
+            writeProperties( properties, new File( getMetadataDirectory( repositoryId, facetId ), name ),
+                             METADATA_KEY );
+        }
+        catch ( IOException e )
+        {
+            // TODO!
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    private File getMetadataDirectory( String repositoryId, String facetId )
+    {
+        return new File( this.directory, repositoryId + "/.meta/" + facetId );
+    }
+
     private String join( Collection<String> ids )
     {
         if ( !ids.isEmpty() )
@@ -265,7 +329,7 @@ public class FileMetadataRepository
     {
         File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
 
-        Properties properties = readProperties( directory, PROJECT_VERSION_METADATA_KEY );
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
         properties.setProperty( "artifact:updated:" + artifact.getId(),
                                 Long.toString( artifact.getFileLastModified().getTime() ) );
@@ -287,7 +351,26 @@ public class FileMetadataRepository
         }
     }
 
+    private Properties readOrCreateProperties( File directory, String propertiesKey )
+    {
+        try
+        {
+            return readProperties( directory, propertiesKey );
+        }
+        catch ( FileNotFoundException e )
+        {
+            // ignore and return new properties
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return new Properties();
+    }
+
     private Properties readProperties( File directory, String propertiesKey )
+        throws IOException
     {
         Properties properties = new Properties();
         FileInputStream in = null;
@@ -295,15 +378,6 @@ public class FileMetadataRepository
         {
             in = new FileInputStream( new File( directory, propertiesKey + ".properties" ) );
             properties.load( in );
-        }
-        catch ( FileNotFoundException e )
-        {
-            // skip - use blank properties
-        }
-        catch ( IOException e )
-        {
-            // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         finally
         {
@@ -316,7 +390,7 @@ public class FileMetadataRepository
     {
         File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId );
 
-        Properties properties = readProperties( directory, PROJECT_VERSION_METADATA_KEY );
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
         ProjectMetadata project = new ProjectMetadata();
         project.setNamespace( properties.getProperty( "namespace" ) );
@@ -329,7 +403,7 @@ public class FileMetadataRepository
     {
         File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
 
-        Properties properties = readProperties( directory, PROJECT_VERSION_METADATA_KEY );
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         String id = properties.getProperty( "id" );
         ProjectVersionMetadata versionMetadata = null;
         if ( id != null )
@@ -461,7 +535,7 @@ public class FileMetadataRepository
                 }
                 else
                 {
-                    ProjectVersionFacet facet = factory.createProjectVersionFacet();
+                    MetadataFacet facet = factory.createMetadataFacet();
                     Map<String, String> map = new HashMap<String, String>();
                     for ( String key : properties.stringPropertyNames() )
                     {
@@ -475,7 +549,7 @@ public class FileMetadataRepository
                 }
             }
 
-            for ( ProjectVersionFacet facet : versionMetadata.getFacetList() )
+            for ( MetadataFacet facet : versionMetadata.getFacetList() )
             {
                 properties.putAll( facet.toProperties() );
             }
@@ -488,7 +562,7 @@ public class FileMetadataRepository
     {
         File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
 
-        Properties properties = readProperties( directory, PROJECT_VERSION_METADATA_KEY );
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
         List<String> versions = new ArrayList<String>();
         for ( Map.Entry entry : properties.entrySet() )
@@ -507,7 +581,7 @@ public class FileMetadataRepository
     {
         File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
 
-        Properties properties = readProperties( directory, PROJECT_VERSION_METADATA_KEY );
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         int numberOfRefs = Integer.valueOf( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
 
         List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();

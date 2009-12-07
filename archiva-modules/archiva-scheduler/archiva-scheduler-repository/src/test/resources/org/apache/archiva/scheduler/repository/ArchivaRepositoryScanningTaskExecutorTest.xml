@@ -25,13 +25,7 @@
       <role-hint>test-repository-scanning</role-hint>
       <implementation>org.apache.archiva.scheduler.repository.ArchivaRepositoryScanningTaskExecutor
       </implementation>
-      <description></description>
       <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.database.ArchivaDAO</role>
-          <role-hint>jdo</role-hint>
-          <field-name>dao</field-name>
-        </requirement>
         <requirement>
           <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
           <field-name>archivaConfiguration</field-name>
@@ -39,6 +33,9 @@
         <requirement>
           <role>org.apache.archiva.repository.scanner.RepositoryScanner</role>
           <field-name>repoScanner</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager</role>
         </requirement>
       </requirements>
     </component>
@@ -76,19 +73,19 @@
     </component>
 
     <component>
-      <role>org.codehaus.plexus.jdo.JdoFactory</role>
-      <role-hint>archiva</role-hint>
-      <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>
-      <configuration>
-        <persistenceManagerFactoryClass>org.jpox.PersistenceManagerFactoryImpl</persistenceManagerFactoryClass>
-        <otherProperties>
-          <property>
-            <name>javax.jdo.PersistenceManagerFactoryClass</name>
-            <value>org.jpox.PersistenceManagerFactoryImpl</value>
-          </property>
-        </otherProperties>
-      </configuration>
+      <role>org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager</role>
+      <implementation>org.apache.archiva.scheduler.repository.TestRepositoryStatisticsManager</implementation>
     </component>
 
+    <component>
+      <role>org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer</role>
+      <role-hint>test-consumer</role-hint>
+      <implementation>org.apache.archiva.scheduler.repository.TestConsumer</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+        </requirement>
+      </requirements>
+    </component>
   </components>
 </component-set>

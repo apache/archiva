@@ -66,21 +66,6 @@ public class RepositoryScanStatistics
     private long newFileCount = 0;
 
     /**
-     * Field totalProjectCount
-     */
-    private long totalProjectCount = 0;
-
-    /**
-     * Field totalGroupCount
-     */
-    private long totalGroupCount = 0;
-
-    /**
-     * Field totalArtifactCount
-     */
-    private long totalArtifactCount = 0;
-
-    /**
      * Field totalSize
      */
     private long totalSize = 0;
@@ -214,21 +199,6 @@ public class RepositoryScanStatistics
     public long getNewFileCount()
     {
         return newFileCount;
-    }
-
-    public long getTotalProjectCount()
-    {
-        return totalProjectCount;
-    }
-
-    public long getTotalGroupCount()
-    {
-        return totalGroupCount;
-    }
-
-    public long getTotalArtifactCount()
-    {
-        return totalArtifactCount;
     }
 
     public long getTotalSize()

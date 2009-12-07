@@ -108,11 +108,10 @@
         <time-to-live-seconds>1800</time-to-live-seconds>
       </configuration>
     </component> 
-    
+
     <component>
-      <role>org.apache.maven.archiva.database.ArchivaDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.proxy.stubs.ArchivaDAOStub</implementation>
+      <role>org.apache.archiva.metadata.repository.MetadataRepository</role>
+      <implementation>org.apache.archiva.metadata.repository.TestMetadataRepository</implementation>
     </component>
   </components>
 </component-set>
