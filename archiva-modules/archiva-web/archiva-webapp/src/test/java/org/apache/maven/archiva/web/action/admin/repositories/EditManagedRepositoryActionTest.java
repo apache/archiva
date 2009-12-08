@@ -57,12 +57,6 @@ public class EditManagedRepositoryActionTest
 
     private File location;
 
-    @Override
-    protected String getPlexusConfigLocation()
-    {
-        return AbstractManagedRepositoriesAction.class.getName().replace( '.', '/' ) + "Test.xml";
-    }
-    
     protected void setUp()
         throws Exception
     {

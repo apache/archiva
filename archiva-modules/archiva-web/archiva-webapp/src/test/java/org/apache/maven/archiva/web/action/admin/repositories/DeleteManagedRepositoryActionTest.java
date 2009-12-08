@@ -68,12 +68,6 @@ public class DeleteManagedRepositoryActionTest
 
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
-    @Override
-    protected String getPlexusConfigLocation()
-    {
-        return AbstractManagedRepositoriesAction.class.getName().replace( '.', '/' ) + "Test.xml";
-    }
-    
     protected void setUp()
         throws Exception
     {
