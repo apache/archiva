@@ -101,7 +101,8 @@ public class DefaultRepositoryStatisticsManager
             try
             {
                 Date date = SCAN_TIMESTAMP.parse( name );
-                if ( !date.before( startTime ) && !date.after( endTime ) )
+                if ( ( startTime == null || !date.before( startTime ) ) &&
+                    ( endTime == null || !date.after( endTime ) ) )
                 {
                     RepositoryStatistics stats =
                         (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId,

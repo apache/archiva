@@ -191,7 +191,7 @@ public class GenerateReportAction
                     return ERROR;
                 }
 
-                if ( startDateInDF.after( endDateInDF ) )
+                if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
                 {
                     addFieldError( "startDate", "Start Date must be earlier than the End Date" );
                     return INPUT;
@@ -220,7 +220,7 @@ public class GenerateReportAction
                     startDateInDF = getStartDateInDateFormat();
                     endDateInDF = getEndDateInDateFormat();
 
-                    if ( startDateInDF.after( endDateInDF ) )
+                    if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
                     {
                         addFieldError( "startDate", "Start Date must be earlier than the End Date" );
                         return INPUT;
@@ -310,11 +310,15 @@ public class GenerateReportAction
                 return ERROR;
             }
 
-            if ( startDateInDF.after( endDateInDF ) )
+            if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
             {
                 addFieldError( "startDate", "Start Date must be earlier than the End Date" );
                 return INPUT;
             }
+
+            input = new StringBuffer(
+                "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count," +
+                    "Plugins,Archetypes,Jars,Wars,Deployments,Downloads\n" );
 
             // multiple repos
             for ( String repo : selectedRepositories )
@@ -332,16 +336,12 @@ public class GenerateReportAction
                 RepositoryStatistics repositoryStats = stats.get( 0 );
                 repositoryStatistics.add( repositoryStats );
 
-                input = new StringBuffer(
-                    "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count," +
-                        "Plugins,Archetypes,Jars,Wars,Deployments,Downloads\n" );
-
                 input.append( repo ).append( "," );
                 input.append( repositoryStats.getTotalFileCount() ).append( "," );
                 input.append( repositoryStats.getTotalArtifactFileSize() ).append( "," );
                 input.append( repositoryStats.getTotalArtifactCount() ).append( "," );
                 input.append( repositoryStats.getTotalGroupCount() ).append( "," );
-                input.append( repositoryStats.getTotalProjectCount() ).append( "," );
+                input.append( repositoryStats.getTotalProjectCount() );//.append( "," );
                 // TODO
 //                input.append( repositoryStats.getPluginCount() ).append( "," );
 //                input.append( repositoryStats.getArchetypeCount() ).append( "," );
@@ -360,7 +360,7 @@ public class GenerateReportAction
                 startDateInDF = getStartDateInDateFormat();
                 endDateInDF = getEndDateInDateFormat();
 
-                if ( startDateInDF.after( endDateInDF ) )
+                if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
                 {
                     addFieldError( "startDate", "Start Date must be earlier than the End Date" );
                     return INPUT;
@@ -385,7 +385,7 @@ public class GenerateReportAction
                     input.append( repositoryStats.getTotalArtifactFileSize() ).append( "," );
                     input.append( repositoryStats.getTotalArtifactCount() ).append( "," );
                     input.append( repositoryStats.getTotalGroupCount() ).append( "," );
-                    input.append( repositoryStats.getTotalProjectCount() ).append( "," );
+                    input.append( repositoryStats.getTotalProjectCount() );//.append( "," );
                     // TODO
 //                input.append( repositoryStats.getPluginCount() ).append( "," );
 //                input.append( repositoryStats.getArchetypeCount() ).append( "," );
@@ -460,7 +460,7 @@ public class GenerateReportAction
         Date startDateInDF;
         if ( startDate == null || "".equals( startDate ) )
         {
-            startDateInDF = getDefaultStartDate();
+            startDateInDF = null;
         }
         else
         {
@@ -475,7 +475,7 @@ public class GenerateReportAction
         Date endDateInDF;
         if ( endDate == null || "".equals( endDate ) )
         {
-            endDateInDF = getDefaultEndDate();
+            endDateInDF = null;
         }
         else
         {
@@ -489,20 +489,6 @@ public class GenerateReportAction
         }
 
         return endDateInDF;
-    }
-
-    private Date getDefaultStartDate()
-    {
-        Calendar cal = Calendar.getInstance();
-        cal.clear();
-        cal.set( 1900, 1, 1, 0, 0, 0 );
-
-        return cal.getTime();
-    }
-
-    private Date getDefaultEndDate()
-    {
-        return Calendar.getInstance().getTime();
     }
 
     public String execute()
@@ -602,23 +588,6 @@ public class GenerateReportAction
         bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_ACCESS_REPORT, Resource.GLOBAL );
 
         return bundle;
-    }
-
-    private void addToList( RepositoryProblemReport repoProblemReport )
-    {
-        List<RepositoryProblemReport> problemsList = null;
-
-        if ( repositoriesMap.containsKey( repoProblemReport.getRepositoryId() ) )
-        {
-            problemsList = (List<RepositoryProblemReport>) repositoriesMap.get( repoProblemReport.getRepositoryId() );
-        }
-        else
-        {
-            problemsList = new ArrayList<RepositoryProblemReport>();
-            repositoriesMap.put( repoProblemReport.getRepositoryId(), problemsList );
-        }
-
-        problemsList.add( repoProblemReport );
     }
 
     public Collection<String> getRepositoryIds()
@@ -749,5 +718,10 @@ public class GenerateReportAction
     public int getNumPages()
     {
         return numPages;
+    }
+
+    public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
+    {
+        this.repositoryStatisticsManager = repositoryStatisticsManager;
     }
 }

@@ -76,4 +76,50 @@ public class RepositoryProblemReport
     {
         return versionURL;
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        RepositoryProblemReport that = (RepositoryProblemReport) o;
+
+        if ( artifactURL != null ? !artifactURL.equals( that.artifactURL ) : that.artifactURL != null )
+        {
+            return false;
+        }
+        if ( groupURL != null ? !groupURL.equals( that.groupURL ) : that.groupURL != null )
+        {
+            return false;
+        }
+        if ( versionURL != null ? !versionURL.equals( that.versionURL ) : that.versionURL != null )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = groupURL != null ? groupURL.hashCode() : 0;
+        result = 31 * result + ( artifactURL != null ? artifactURL.hashCode() : 0 );
+        result = 31 * result + ( versionURL != null ? versionURL.hashCode() : 0 );
+        return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "RepositoryProblemReport{" + "groupURL='" + groupURL + '\'' + ", artifactURL='" + artifactURL + '\'' +
+            ", versionURL='" + versionURL + '\'' + '}';
+    }
 }

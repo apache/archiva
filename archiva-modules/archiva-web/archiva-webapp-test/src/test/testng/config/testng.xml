@@ -41,6 +41,7 @@ under the License.
 				<include name= "appearance" />
 				<include name= "findartifact" />
 				<include name= "legacysupport" />
+				<include name= "database" />
 			</run>
 		</groups>
 		<packages>

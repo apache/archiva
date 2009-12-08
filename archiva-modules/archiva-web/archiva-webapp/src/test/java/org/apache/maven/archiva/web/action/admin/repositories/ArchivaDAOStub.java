@@ -1,17 +1,5 @@
 package org.apache.maven.archiva.web.action.admin.repositories;
 
-import java.io.Serializable;
-import java.util.List;
-
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.RepositoryProblemDAO;
-import org.apache.maven.archiva.database.SimpleConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -31,6 +19,19 @@ import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
  * under the License.
  */
 
+import java.io.Serializable;
+import java.util.List;
+
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.RepositoryProblemDAO;
+import org.apache.maven.archiva.database.SimpleConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
+
 /**
  * Stub class for Archiva DAO to avoid having to set up a database for tests.
  *
@@ -49,6 +50,10 @@ public class ArchivaDAOStub
 
     private List<String> artifacts;
 
+    private List<String> repositoryIds;
+
+    private RepositoryProblemDAO repositoryProblemDAO;
+
     public List<?> query( SimpleConstraint constraint )
     {
         if ( constraint instanceof UniqueVersionConstraint )
@@ -62,6 +67,10 @@ public class ArchivaDAOStub
         else if ( constraint instanceof UniqueArtifactIdConstraint )
         {
             return artifacts;
+        }
+        else if ( constraint instanceof UniqueFieldConstraint )
+        {
+            return repositoryIds;
         }
         throw new UnsupportedOperationException();
     }
@@ -78,7 +87,7 @@ public class ArchivaDAOStub
 
     public RepositoryProblemDAO getRepositoryProblemDAO()
     {
-        throw new UnsupportedOperationException( "method not implemented for stub" );
+        return repositoryProblemDAO;
     }
 
     public void setArtifactDao( ArtifactDAO artifactDao )
@@ -99,5 +108,15 @@ public class ArchivaDAOStub
     public void setArtifacts( List<String> artifacts )
     {
         this.artifacts = artifacts;
+    }
+
+    public void setRepositoryIds( List<String> repositoryIds )
+    {
+        this.repositoryIds = repositoryIds;
+    }
+
+    public void setRepositoryProblemDAO( RepositoryProblemDAO repositoryProblemDAO )
+    {
+        this.repositoryProblemDAO = repositoryProblemDAO;
     }
 }
