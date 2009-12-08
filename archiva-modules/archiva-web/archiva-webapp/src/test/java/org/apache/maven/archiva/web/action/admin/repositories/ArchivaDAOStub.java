@@ -19,7 +19,6 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -27,9 +26,7 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 
 /**
@@ -46,10 +43,6 @@ public class ArchivaDAOStub
 
     private List<String> versions;
 
-    private List<String> groups;
-
-    private List<String> artifacts;
-
     private List<String> repositoryIds;
 
     private RepositoryProblemDAO repositoryProblemDAO;
@@ -60,24 +53,11 @@ public class ArchivaDAOStub
         {
             return versions;
         }
-        else if ( constraint instanceof UniqueGroupIdConstraint )
-        {
-            return groups;
-        }
-        else if ( constraint instanceof UniqueArtifactIdConstraint )
-        {
-            return artifacts;
-        }
         else if ( constraint instanceof UniqueFieldConstraint )
         {
             return repositoryIds;
         }
         throw new UnsupportedOperationException();
-    }
-
-    public Object save( Serializable obj )
-    {
-        throw new UnsupportedOperationException( "query not implemented for stub" );
     }
 
     public ArtifactDAO getArtifactDAO()
@@ -98,16 +78,6 @@ public class ArchivaDAOStub
     public void setVersions( List<String> versions )
     {
         this.versions = versions;
-    }
-
-    public void setGroups( List<String> groups )
-    {
-        this.groups = groups;
-    }
-
-    public void setArtifacts( List<String> artifacts )
-    {
-        this.artifacts = artifacts;
     }
 
     public void setRepositoryIds( List<String> repositoryIds )

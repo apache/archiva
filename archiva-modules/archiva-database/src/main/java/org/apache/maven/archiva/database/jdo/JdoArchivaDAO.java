@@ -19,7 +19,6 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.apache.maven.archiva.database.ArchivaDAO;
@@ -62,11 +61,6 @@ public class JdoArchivaDAO
         return jdo.queryObjects( constraint );
     }
 
-    public Object save( Serializable obj )
-    {
-        return jdo.saveObject( obj );
-    }
-    
     public ArtifactDAO getArtifactDAO()
     {
         return artifactDAO;

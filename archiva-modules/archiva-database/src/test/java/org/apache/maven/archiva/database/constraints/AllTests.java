@@ -36,9 +36,7 @@ public class AllTests
         //$JUnit-BEGIN$
         suite.addTestSuite( ArtifactsByChecksumConstraintTest.class );
         suite.addTestSuite( OlderArtifactsByAgeConstraintTest.class );
-        suite.addTestSuite( UniqueGroupIdConstraintTest.class );
         suite.addTestSuite( OlderSnapshotArtifactsByAgeConstraintTest.class );
-        suite.addTestSuite( RecentArtifactsByAgeConstraintTest.class );
         //$JUnit-END$
         return suite;
     }

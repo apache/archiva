@@ -19,7 +19,6 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -39,14 +38,6 @@ public interface ArchivaDAO
      */
     List<?> query( SimpleConstraint constraint );
 
-    /**
-     * Perform a simple save of a peristable object to the database.
-     * 
-     * @param o the serializable (persistable) object to save.
-     * @return the post-serialized object.
-     */
-    Object save( Serializable obj );
-    
     ArtifactDAO getArtifactDAO();
 
     RepositoryProblemDAO getRepositoryProblemDAO();
