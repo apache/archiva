@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
@@ -78,11 +77,6 @@ public class ArchivaDAOStub
     }
 
     public RepositoryProblemDAO getRepositoryProblemDAO()
-    {
-        throw new UnsupportedOperationException( "method not implemented for stub" );
-    }
-
-    public RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO()
     {
         throw new UnsupportedOperationException( "method not implemented for stub" );
     }

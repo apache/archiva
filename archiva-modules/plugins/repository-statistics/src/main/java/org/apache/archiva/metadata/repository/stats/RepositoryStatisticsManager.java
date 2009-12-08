@@ -19,6 +19,9 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
+import java.util.Date;
+import java.util.List;
+
 public interface RepositoryStatisticsManager
 {
     RepositoryStatistics getLastStatistics( String repositoryId );
@@ -26,4 +29,6 @@ public interface RepositoryStatisticsManager
     void addStatisticsAfterScan( String repositoryId, RepositoryStatistics repositoryStatistics );
 
     void deleteStatistics( String repositoryId );
+
+    List<RepositoryStatistics> getStatisticsInRange( String repositoryId, Date startTime, Date endTime );
 }

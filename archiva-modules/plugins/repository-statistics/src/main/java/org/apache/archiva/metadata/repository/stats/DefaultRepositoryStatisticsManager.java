@@ -20,11 +20,16 @@ package org.apache.archiva.metadata.repository.stats;
  */
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager" role-hint="default"
@@ -32,6 +37,8 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 public class DefaultRepositoryStatisticsManager
     implements RepositoryStatisticsManager
 {
+    private static final Logger log = LoggerFactory.getLogger( DefaultRepositoryStatisticsManager.class );
+
     /**
      * @plexus.requirement
      */
@@ -58,7 +65,13 @@ public class DefaultRepositoryStatisticsManager
 
     public void addStatisticsAfterScan( String repositoryId, RepositoryStatistics repositoryStatistics )
     {
-        // TODO
+        // In the future, instead of being tied to a scan we might want to record information in the fly based on
+        // events that are occurring. Even without these totals we could query much of the information on demand based
+        // on information from the metadata content repository. In the mean time, we lock information in at scan time.
+        // Note that if new types are later discoverable due to a code change or new plugin, historical stats will not
+        // be updated and the repository will need to be rescanned.
+
+        // TODO, populate these and also a count per artifact type
         // populate total artifact count from content repository
 //        repositoryStatistics.setTotalArtifactCount(  );
         // populate total size from content repository
@@ -76,6 +89,34 @@ public class DefaultRepositoryStatisticsManager
     public void deleteStatistics( String repositoryId )
     {
         metadataRepository.removeMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
+    }
+
+    public List<RepositoryStatistics> getStatisticsInRange( String repositoryId, Date startTime, Date endTime )
+    {
+        List<RepositoryStatistics> results = new ArrayList<RepositoryStatistics>();
+        List<String> list = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
+        Collections.sort( list, Collections.reverseOrder() );
+        for ( String name : list )
+        {
+            try
+            {
+                Date date = SCAN_TIMESTAMP.parse( name );
+                if ( !date.before( startTime ) && !date.after( endTime ) )
+                {
+                    RepositoryStatistics stats =
+                        (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId,
+                                                                                    RepositoryStatistics.FACET_ID,
+                                                                                    name );
+                    results.add( stats );
+                }
+            }
+            catch ( ParseException e )
+            {
+                log.error( "Invalid scan result found in the metadata repository: " + e.getMessage() );
+                // continue and ignore this one
+            }
+        }
+        return results;
     }
 
     public void setMetadataRepository( MetadataRepository metadataRepository )

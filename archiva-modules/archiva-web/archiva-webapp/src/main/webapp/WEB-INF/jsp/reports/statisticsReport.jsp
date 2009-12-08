@@ -75,15 +75,15 @@
     
   <%-- Google-style pagination --%>
   <c:choose>
-    <c:when test="${limits.countOfPages > 11}">
+    <c:when test="${numPages > 11}">
       <c:choose>
         <c:when test="${(page - 5) < 0}">
           <c:set var="beginVal">0</c:set>
           <c:set var="endVal">10</c:set> 
         </c:when>			        
-        <c:when test="${(page + 5) > (limits.countOfPages - 1)}">
-          <c:set var="beginVal">${(limits.countOfPages -1) - 10}</c:set>
-          <c:set var="endVal">${limits.countOfPages - 1}</c:set>
+        <c:when test="${(page + 5) > (numPages - 1)}">
+          <c:set var="beginVal">${(numPages - 1) - 10}</c:set>
+          <c:set var="endVal">${numPages - 1}</c:set>
         </c:when>
         <c:otherwise>
           <c:set var="beginVal">${page - 5}</c:set>
@@ -93,7 +93,7 @@
     </c:when>
     <c:otherwise>
       <c:set var="beginVal">0</c:set>
-      <c:set var="endVal">${limits.countOfPages - 1}</c:set> 
+      <c:set var="endVal">${numPages - 1}</c:set>
     </c:otherwise>
   </c:choose>
     
@@ -118,7 +118,7 @@
   </c:forEach>
      
   <c:choose>
-    <c:when test="${page == limits.countOfPages}">
+    <c:when test="${page == numPages}">
       <img src="${imgNextPageDisabledUrl}"/>
     </c:when>
     <c:otherwise>
@@ -139,7 +139,7 @@
   <s:a href="%{downloadStatsReportUrl}">Export to CSV</s:a>
             
   <c:choose>
-    <c:when test="${reposSize > 1}">
+    <c:when test="${repositoryId == null}">
   	
       <h1>Latest Statistics Comparison Report</h1>  	    
       <table class="infoTable" border="1">
@@ -150,35 +150,39 @@
           <th>Artifact Count</th>
           <th>Group Count</th>
           <th>Project Count</th>
+          <%-- TODO
           <th>Plugins</th>
           <th>Archetypes</th>
           <th>Jars</th>
           <th>Wars</th>
           <th>Deployments</th>
           <th>Downloads</th>
+          --%>
         </tr>			
 		
-        <c:forEach var="stats" items="${repositoryStatistics}">
+        <c:forEach var="stats" items="${repositoryStatistics}" varStatus="i">
         <tr>
-          <td>${stats.repositoryId}</td>
-          <td align="right">${stats.fileCount}</td>
-          <td align="right">${stats.totalSize}</td>
-          <td align="right">${stats.artifactCount}</td>
-          <td align="right">${stats.groupCount}</td>
-          <td align="right">${stats.projectCount}</td>
+          <td>${selectedRepositories[i.count-1]}</td>
+          <td align="right">${stats.totalFileCount}</td>
+          <td align="right">${stats.totalArtifactFileSize}</td>
+          <td align="right">${stats.totalArtifactCount}</td>
+          <td align="right">${stats.totalGroupCount}</td>
+          <td align="right">${stats.totalProjectCount}</td>
+          <%-- TODO
           <td align="right">${stats.pluginCount}</td>
           <td align="right">${stats.archetypeCount}</td>
           <td align="right">${stats.jarCount}</td>
           <td align="right">${stats.warCount}</td>
           <td align="right">${stats.deploymentCount}</td>
           <td align="right">${stats.downloadCount}</td>
+          --%>
         </tr>				
         </c:forEach>
       </table>  		
     </c:when>
     <c:otherwise>
   	
-      <h1>Statistics for Repository '${selectedRepo}'</h1>
+      <h1>Statistics for Repository '${repositoryId}'</h1>
       <table class="infoTable" border="1">
         <tr>
           <th>Date of Scan</th>
@@ -187,29 +191,33 @@
           <th>Artifact Count</th>
           <th>Group Count</th>
           <th>Project Count</th>
+          <%-- TODO
           <th>Plugins</th>
           <th>Archetypes</th>
           <th>Jars</th>
           <th>Wars</th>
           <th>Deployments</th>
           <th>Downloads</th>
+          --%>
         </tr>			
 	  		
         <c:forEach var="stats" items="${repositoryStatistics}">
         <tr>
-          <td align="right">${stats.dateOfScan}</td>
-          <td align="right">${stats.fileCount}</td>
-          <td align="right">${stats.totalSize}</td>
-          <td align="right">${stats.artifactCount}</td>
-          <td align="right">${stats.groupCount}</td>
-          <td align="right">${stats.projectCount}</td>
+          <td align="right">${stats.scanStartTime}</td>
+          <td align="right">${stats.totalFileCount}</td>
+          <td align="right">${stats.totalArtifactFileSize}</td>
+          <td align="right">${stats.totalArtifactCount}</td>
+          <td align="right">${stats.totalGroupCount}</td>
+          <td align="right">${stats.totalProjectCount}</td>
+          <%-- TODO
           <td align="right">${stats.pluginCount}</td>
           <td align="right">${stats.archetypeCount}</td>
           <td align="right">${stats.jarCount}</td>
           <td align="right">${stats.warCount}</td>
           <td align="right">${stats.deploymentCount}</td>
           <td align="right">${stats.downloadCount}</td>
-        </tr>				
+          --%>
+        </tr>
         </c:forEach>
       </table>
         		  		

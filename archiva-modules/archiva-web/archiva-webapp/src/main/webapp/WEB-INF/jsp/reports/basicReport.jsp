@@ -32,8 +32,6 @@
 
 <div id="contentArea">
 
-  <s:set name="reports" value="reports"/>  
-    
   <c:forEach var="repository" items="${repositoriesMap}">
 	<strong>Repository: ${repository.key}</strong>
 	<c:forEach var="report" items='${repository.value}'>
@@ -54,11 +52,27 @@
 	</c:forEach>
   </c:forEach>
 
+  <c:set var="prevPageUrl">
+    <s:url action="generateReport" namespace="/">
+      <s:param name="groupId" value="${groupId}"/>
+      <s:param name="repositoryId" value="${repositoryId}"/>
+      <s:param name="rowCount" value="${rowCount}"/>
+      <s:param name="page" value="${page - 1}"/>
+    </s:url>
+  </c:set>
+  <c:set var="nextPageUrl">
+    <s:url action="generateReport" namespace="/">
+      <s:param name="groupId" value="${groupId}"/>
+      <s:param name="repositoryId" value="${repositoryId}"/>
+      <s:param name="rowCount" value="${rowCount}"/>
+      <s:param name="page" value="${page + 1}"/>
+    </s:url>
+  </c:set>
   <s:set name="page" value="page"/>
-  <c:if test="${page > 1}"><a href="<s:property value='prev' />">&lt;&lt;</a></c:if>
+  <c:if test="${page > 1}"><a href="${prevPageUrl}">&lt;&lt;</a></c:if>
   Page: ${page}
-  <s:set name="isLastPage" value="isLastPage"/>
-  <c:if test="${!isLastPage}"><a href="<s:property value='next' />">&gt;&gt;</a></c:if>
+  <s:set name="lastPage" value="lastPage"/>
+  <c:if test="${!lastPage}"><a href="${nextPageUrl}">&gt;&gt;</a></c:if>
 
 </div>
 </body>

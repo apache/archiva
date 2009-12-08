@@ -20,9 +20,13 @@ package org.apache.archiva.metadata.repository.stats;
  */
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -42,6 +46,8 @@ public class RepositoryStatisticsManagerTest
     private static final String FIRST_TEST_SCAN = "20091201.123456.789";
 
     private static final String SECOND_TEST_SCAN = "20091202.012345.678";
+
+    private Map<String, RepositoryStatistics> statsCreated = new LinkedHashMap<String, RepositoryStatistics>();
 
     @Override
     protected void setUp()
@@ -200,6 +206,199 @@ public class RepositoryStatisticsManagerTest
         assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
 
         metadataRepositoryControl.verify();
+    }
+
+    public void testGetStatsRangeInside()
+    {
+        Date current = new Date();
+
+        addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
+        addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
+        addStats( new Date( current.getTime() - 1000 ), current );
+
+        ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
+        // only match the middle one
+        String key = keys.get( 1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
+            statsCreated.get( key ) );
+
+        metadataRepositoryControl.replay();
+
+        for ( RepositoryStatistics stats : statsCreated.values() )
+        {
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );           
+        }
+
+        List<RepositoryStatistics> list =
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date( current.getTime() - 4000 ),
+                                                              new Date( current.getTime() - 2000 ) );
+
+        assertEquals( 1, list.size() );
+        assertEquals( new Date( current.getTime() - 3000 ), list.get( 0 ).getScanStartTime() );
+
+        metadataRepositoryControl.verify();
+    }
+
+    public void testGetStatsRangeUpperOutside()
+    {
+        Date current = new Date();
+
+        addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
+        addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
+        addStats( new Date( current.getTime() - 1000 ), current );
+
+        ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
+        String key = keys.get( 1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
+            statsCreated.get( key ) );
+        key = keys.get( 2 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
+            statsCreated.get( key ) );
+
+        metadataRepositoryControl.replay();
+
+        for ( RepositoryStatistics stats : statsCreated.values() )
+        {
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );
+        }
+
+        List<RepositoryStatistics> list =
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date( current.getTime() - 4000 ),
+                                                              current );
+
+        assertEquals( 2, list.size() );
+        assertEquals( new Date( current.getTime() - 3000 ), list.get( 1 ).getScanStartTime() );
+        assertEquals( new Date( current.getTime() - 1000 ), list.get( 0 ).getScanStartTime() );
+
+        metadataRepositoryControl.verify();
+    }
+
+    public void testGetStatsRangeLowerOutside()
+    {
+        Date current = new Date();
+
+        addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
+        addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
+        addStats( new Date( current.getTime() - 1000 ), current );
+
+        ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
+        String key = keys.get( 0 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
+            statsCreated.get( key ) );
+        key = keys.get( 1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
+            statsCreated.get( key ) );
+
+        metadataRepositoryControl.replay();
+
+        for ( RepositoryStatistics stats : statsCreated.values() )
+        {
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );
+        }
+
+        List<RepositoryStatistics> list =
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date( current.getTime() - 20000 ),
+                                                              new Date( current.getTime() - 2000 ) );
+
+        assertEquals( 2, list.size() );
+        assertEquals( new Date( current.getTime() - 12345 ), list.get( 1 ).getScanStartTime() );
+        assertEquals( new Date( current.getTime() - 3000 ), list.get( 0 ).getScanStartTime() );
+
+        metadataRepositoryControl.verify();
+    }
+
+    public void testGetStatsRangeLowerAndUpperOutside()
+    {
+        Date current = new Date();
+
+        addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
+        addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
+        addStats( new Date( current.getTime() - 1000 ), current );
+
+        ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
+        String key = keys.get( 0 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
+            statsCreated.get( key ) );
+        key = keys.get( 1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
+            statsCreated.get( key ) );
+        key = keys.get( 2 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
+            statsCreated.get( key ) );
+
+        metadataRepositoryControl.replay();
+
+        for ( RepositoryStatistics stats : statsCreated.values() )
+        {
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );
+        }
+
+        List<RepositoryStatistics> list =
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date( current.getTime() - 20000 ),
+                                                              current );
+
+        assertEquals( 3, list.size() );
+        assertEquals( new Date( current.getTime() - 12345 ), list.get( 2 ).getScanStartTime() );
+        assertEquals( new Date( current.getTime() - 3000 ), list.get( 1 ).getScanStartTime() );
+        assertEquals( new Date( current.getTime() - 1000 ), list.get( 0 ).getScanStartTime() );
+
+        metadataRepositoryControl.verify();
+    }
+
+    public void testGetStatsRangeNotInside()
+    {
+        Date current = new Date();
+
+        addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
+        addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
+        addStats( new Date( current.getTime() - 1000 ), current );
+
+        ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
+        metadataRepositoryControl.replay();
+
+        for ( RepositoryStatistics stats : statsCreated.values() )
+        {
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );
+        }
+
+        List<RepositoryStatistics> list =
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date( current.getTime() - 20000 ),
+                                                              new Date( current.getTime() - 16000 ) );
+
+        assertEquals( 0, list.size() );
+
+        metadataRepositoryControl.verify();
+    }
+
+    private void addStats( Date startTime, Date endTime )
+    {
+        RepositoryStatistics stats = createTestStats( startTime, endTime );
+        String startTimeAsString = DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( startTime );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString, stats );
+        statsCreated.put( startTimeAsString, stats );
     }
 
     private RepositoryStatistics createTestStats( Date startTime, Date endTime )

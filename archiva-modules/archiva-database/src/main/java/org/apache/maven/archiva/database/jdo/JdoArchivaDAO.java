@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 
@@ -52,11 +51,6 @@ public class JdoArchivaDAO
      * @plexus.requirement role-hint="jdo"
      */
     private RepositoryProblemDAO repositoryProblemDAO;
-    
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private RepositoryContentStatisticsDAO repositoryContentStatisticsDAO;
 
     public JdoArchivaDAO()
     {
@@ -82,9 +76,5 @@ public class JdoArchivaDAO
     {
         return repositoryProblemDAO;
     }
-    
-    public RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO()
-    {
-        return repositoryContentStatisticsDAO;
-    }
+
 }

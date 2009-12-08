@@ -52,14 +52,6 @@
             <multiplicity>*</multiplicity>
           </association>
         </field>
-        <field>
-          <name>repositoryContentStatistics</name>
-          <version>1.0.0+</version>
-          <association>
-            <type>RepositoryContentStatistics</type>
-            <multiplicity>*</multiplicity>
-          </association>
-        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -944,116 +936,6 @@
           <version>1.0.0+</version>
           <code><![CDATA[
     private static final long serialVersionUID = -3426958367216659565L;
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
-    </class>
-
-    <!-- _______________________________________________________________
-          ____  _        _   _     _   _
-         / ___|| |_ __ _| |_(_)___| |_(_) ___ ___
-         \___ \| __/ _` | __| / __| __| |/ __/ __|
-          ___) | || (_| | |_| \__ \ |_| | (__\__ \
-         |____/ \__\__,_|\__|_|___/\__|_|\___|___/
-      -->
-
-    <class stash.storable="true"
-           jpox.table="REPOSITORY_STATS">
-      <name>RepositoryContentStatistics</name>
-      <version>1.0.0+</version>
-      <fields>
-        <field stash.maxSize="50">
-          <name>repositoryId</name>
-          <version>1.0.0+</version>
-          <identifier>false</identifier>
-          <required>true</required>
-          <type>String</type>
-          <description>
-            The repository id the statistics belong to.
-          </description>
-        </field>
-        <field>
-          <name>whenGathered</name>
-          <version>1.0.0+</version>
-          <identifier>false</identifier>
-          <required>true</required>
-          <type>Date</type>
-          <description>
-            The timestamp on when this set of statistics was gathered.
-          </description>
-        </field>
-        <field>
-          <name>duration</name>
-          <version>1.0.0+</version>
-          <identifier>false</identifier>
-          <required>true</required>
-          <type>long</type>
-          <description>
-            The duration (in milliseconds) for the gathering of the statistics.
-          </description>
-        </field>
-        <field>
-          <name>totalFileCount</name>
-          <version>1.0.0+</version>
-          <identifier>false</identifier>
-          <required>true</required>
-          <type>long</type>
-          <description>
-            The total number of files in the repository.
-          </description>
-        </field>
-        <field>
-          <name>newFileCount</name>
-          <version>1.0.0+</version>
-          <identifier>false</identifier>
-          <required>true</required>
-          <type>long</type>
-          <description>
-            The number of new files discovered.
-          </description>
-        </field>
-        <field jpox.null-value="default">
-          <name>totalProjectCount</name>
-          <version>1.2.0+</version>
-          <identifier>false</identifier>
-          <type>long</type>
-          <description>
-            The total number of unique projects in the repository.
-          </description>
-        </field>
-        <field jpox.null-value="default">
-          <name>totalGroupCount</name>
-          <version>1.2.0+</version>
-          <identifier>false</identifier>
-          <type>long</type>
-          <description>
-            The total number of unique groups in the repository.
-          </description>
-        </field>
-        <field jpox.null-value="default">
-          <name>totalArtifactCount</name>
-          <version>1.2.0+</version>
-          <identifier>false</identifier>
-          <type>long</type>
-          <description>
-            The total number of artifacts in the repository. 
-          </description>
-        </field>
-        <field jpox.null-value="default">
-          <name>totalSize</name>
-          <version>1.2.0+</version>
-          <identifier>false</identifier>
-          <type>long</type>
-          <description>
-            The total size in bytes of the repository.
-          </description>
-        </field>
-      </fields>
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0+</version>
-          <code><![CDATA[
-    private static final long serialVersionUID = -7113629916828442780L;
           ]]></code>
         </codeSegment>
       </codeSegments>

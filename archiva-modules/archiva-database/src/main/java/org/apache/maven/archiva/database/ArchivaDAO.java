@@ -50,6 +50,5 @@ public interface ArchivaDAO
     ArtifactDAO getArtifactDAO();
 
     RepositoryProblemDAO getRepositoryProblemDAO();
-    
-    RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO();
+
 }

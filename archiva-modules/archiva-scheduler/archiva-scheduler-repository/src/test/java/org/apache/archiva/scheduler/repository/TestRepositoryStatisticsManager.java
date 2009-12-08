@@ -20,6 +20,7 @@ package org.apache.archiva.scheduler.repository;
  */
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,11 @@ public class TestRepositoryStatisticsManager
     public void deleteStatistics( String repositoryId )
     {
         repoStats.remove( repositoryId );
+    }
+
+    public List<RepositoryStatistics> getStatisticsInRange( String repositoryId, Date startDate, Date endDate )
+    {
+        throw new UnsupportedOperationException();
     }
 
     private List<RepositoryStatistics> getStatsList( String repositoryId )
