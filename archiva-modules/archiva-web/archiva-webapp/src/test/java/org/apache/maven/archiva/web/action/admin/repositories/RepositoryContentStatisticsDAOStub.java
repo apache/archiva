@@ -20,10 +20,10 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.Assert;
-
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
@@ -33,12 +33,16 @@ import org.apache.maven.archiva.model.RepositoryContentStatistics;
 
 /**
  * RepositoryContentStatisticsDAOStub
- * 
- * @version
  */
 public class RepositoryContentStatisticsDAOStub
     implements RepositoryContentStatisticsDAO
 {
+    private List<RepositoryContentStatistics> stats;
+
+    public RepositoryContentStatisticsDAOStub()
+    {
+        stats = createDefaultStats();
+    }
 
     public void deleteRepositoryContentStatistics( RepositoryContentStatistics stats )
         throws ArchivaDatabaseException
@@ -51,11 +55,18 @@ public class RepositoryContentStatisticsDAOStub
     {
         Assert.assertTrue( constraint instanceof RepositoryContentStatisticsByRepositoryConstraint );
 
+        // TODO: need to honour criteria?
+
+        return stats;
+    }
+
+    private List<RepositoryContentStatistics> createDefaultStats()
+    {
         List<RepositoryContentStatistics> stats = new ArrayList<RepositoryContentStatistics>();
         RepositoryContentStatistics statistics = new RepositoryContentStatistics();
         statistics.setRepositoryId( "repo-ident" );
+        statistics.setWhenGathered( new Date() );
         stats.add( statistics );
-
         return stats;
     }
 
@@ -64,4 +75,8 @@ public class RepositoryContentStatisticsDAOStub
         return null;
     }
 
+    public void setStats( List<RepositoryContentStatistics> stats )
+    {
+        this.stats = stats;
+    }
 }

@@ -13,6 +13,7 @@ import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
@@ -56,6 +57,12 @@ public class ArchivaDAOStub
 
     private List<String> artifacts;
 
+    private List<String> repositoryIds;
+
+    private RepositoryContentStatisticsDAO repositoryContentStatisticsDAO;
+
+    private RepositoryProblemDAO repositoryProblemDAO;
+
     public List<?> query( SimpleConstraint constraint )
     {
         if ( constraint instanceof UniqueVersionConstraint )
@@ -69,6 +76,10 @@ public class ArchivaDAOStub
         else if ( constraint instanceof UniqueArtifactIdConstraint )
         {
             return artifacts;
+        }
+        else if ( constraint instanceof UniqueFieldConstraint )
+        {
+            return repositoryIds;
         }
         else
         {
@@ -102,12 +113,12 @@ public class ArchivaDAOStub
 
     public RepositoryProblemDAO getRepositoryProblemDAO()
     {
-        throw new UnsupportedOperationException( "method not implemented for stub" );
+        return repositoryProblemDAO;
     }
 
     public RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO()
     {
-        throw new UnsupportedOperationException( "method not implemented for stub" );
+        return repositoryContentStatisticsDAO;
     }
 
     public void setArtifactDao( ArtifactDAO artifactDao )
@@ -133,5 +144,15 @@ public class ArchivaDAOStub
     public void setArtifacts( List<String> artifacts )
     {
         this.artifacts = artifacts;
+    }
+
+    public void setRepositoryIds( List<String> repositoryIds )
+    {
+        this.repositoryIds = repositoryIds;
+    }
+
+    public void setRepositoryProblemDAO( RepositoryProblemDAO repositoryProblemDAO )
+    {
+        this.repositoryProblemDAO = repositoryProblemDAO;
     }
 }

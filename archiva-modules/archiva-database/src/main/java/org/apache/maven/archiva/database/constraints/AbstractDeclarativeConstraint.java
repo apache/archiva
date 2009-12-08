@@ -19,13 +19,15 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.DeclarativeConstraint;
 
 /**
- * AbstractDeclarativeConstraint 
+ * AbstractDeclarativeConstraint
  *
  * @version $Id$
  */
@@ -35,20 +37,20 @@ public abstract class AbstractDeclarativeConstraint
     protected String[] declImports;
 
     protected String[] declParams;
-    
+
     protected String[] variables;
 
     protected Object[] params;
 
     protected int[] range;
-    
+
     protected String sortDirection = Constraint.ASCENDING;
 
     public String getFilter()
     {
         return null;
     }
-    
+
     public String getFetchLimits()
     {
         return null;
@@ -73,7 +75,7 @@ public abstract class AbstractDeclarativeConstraint
     {
         return sortDirection;
     }
-    
+
     public String[] getVariables()
     {
         return variables;
@@ -81,7 +83,7 @@ public abstract class AbstractDeclarativeConstraint
 
     public int[] getRange()
     {
-    	return range;
+        return range;
     }
 
     @Override
@@ -137,5 +139,25 @@ public abstract class AbstractDeclarativeConstraint
         result = 31 * result + ( range != null ? Arrays.hashCode( range ) : 0 );
         result = 31 * result + ( sortDirection != null ? sortDirection.hashCode() : 0 );
         return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        List<Integer> r = null;
+        if ( range != null )
+        {
+            r = new ArrayList<Integer>();
+            for ( int i : range )
+            {
+                r.add( i );
+            }
+        }
+        return "AbstractDeclarativeConstraint{" + "declImports=" +
+            ( declImports == null ? null : Arrays.asList( declImports ) ) + ", declParams=" +
+            ( declParams == null ? null : Arrays.asList( declParams ) ) + ", variables=" +
+            ( variables == null ? null : Arrays.asList( variables ) ) + ", params=" +
+            ( params == null ? null : Arrays.asList( params ) ) + ", range=" + r + ", sortDirection='" + sortDirection +
+            '\'' + '}';
     }
 }
