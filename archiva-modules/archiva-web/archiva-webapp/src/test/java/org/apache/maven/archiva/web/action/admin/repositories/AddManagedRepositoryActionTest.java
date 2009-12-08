@@ -19,6 +19,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import java.io.File;
+import java.util.Collections;
+
 import com.opensymphony.xwork2.Action;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -26,13 +29,10 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
-
-import java.io.File;
-import java.util.Collections;
 
 /**
  * AddManagedRepositoryActionTest 
@@ -68,7 +68,7 @@ public class AddManagedRepositoryActionTest
     {
         super.setUp();
 
-        action = (AddManagedRepositoryAction) lookup( Action.class.getName(), "addManagedRepositoryAction" );
+        action = new AddManagedRepositoryAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -63,6 +64,10 @@ public class DeleteManagedRepositoryActionTest
 
     private File location;
 
+    private MockControl repositoryStatisticsManagerControl;
+
+    private RepositoryStatisticsManager repositoryStatisticsManager;
+
     @Override
     protected String getPlexusConfigLocation()
     {
@@ -74,7 +79,7 @@ public class DeleteManagedRepositoryActionTest
     {
         super.setUp();
 
-        action = (DeleteManagedRepositoryAction) lookup( Action.class.getName(), "deleteManagedRepositoryAction" );
+        action = new DeleteManagedRepositoryAction();
         
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
@@ -83,7 +88,13 @@ public class DeleteManagedRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
-        location = getTestFile( "target/test/location" );          
+        location = getTestFile( "target/test/location" );
+
+        repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
+        repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
+        action.setRepositoryStatisticsManager( repositoryStatisticsManager );
+
+        action.setArtifactDao( new ArtifactDAOStub() );
     }
 
     public void testSecureActionBundle()
@@ -126,7 +137,11 @@ public class DeleteManagedRepositoryActionTest
 
     public void testDeleteRepositoryKeepContent()
         throws Exception
-    {    	
+    {
+        // even when we keep the content, we don't keep the metadata at this point
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
         prepareRoleManagerMock();
         
         Configuration configuration = prepDeletionTest( createRepository(), 4 );                
@@ -138,11 +153,16 @@ public class DeleteManagedRepositoryActionTest
         assertTrue( configuration.getManagedRepositories().isEmpty() );
 
         assertTrue( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
     }
 
     public void testDeleteRepositoryDeleteContent()
         throws Exception
     {
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
         prepareRoleManagerMock();
         
         Configuration configuration = prepDeletionTest( createRepository(), 4 );              
@@ -154,11 +174,16 @@ public class DeleteManagedRepositoryActionTest
         assertTrue( configuration.getManagedRepositories().isEmpty() );
 
         assertFalse( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
     }
     
     public void testDeleteRepositoryAndAssociatedProxyConnectors()
         throws Exception
     {
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
         Configuration configuration = prepDeletionTest( createRepository(), 5 );
         configuration.addRemoteRepository( createRemoteRepository( "codehaus", "http://repository.codehaus.org" ) );
         configuration.addRemoteRepository( createRemoteRepository( "java.net", "http://dev.java.net/maven2" ) );
@@ -175,11 +200,15 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( 0, configuration.getProxyConnectors().size() );
 
         assertFalse( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
     }
     
     public void testDeleteRepositoryCancelled()
         throws Exception
     {
+        repositoryStatisticsManagerControl.replay();
+
         ManagedRepositoryConfiguration originalRepository = createRepository();
         Configuration configuration = prepDeletionTest( originalRepository, 3 );
         String status = action.execute();
@@ -190,11 +219,16 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
 
         assertTrue( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
     }
     
     public void testDeleteRepositoryAndReposUnderRepoGroup()
         throws Exception
     {
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
         Configuration configuration = prepDeletionTest( createRepository(), 5 );
         List<String> repoIds = new ArrayList<String>();
         repoIds.add( REPO_ID );
@@ -211,6 +245,8 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( 0, ( ( RepositoryGroupConfiguration ) configuration.getRepositoryGroups().get( 0 ) ).getRepositories().size() );
 
         assertFalse( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
     }
 
     private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, int expectCountGetConfig )

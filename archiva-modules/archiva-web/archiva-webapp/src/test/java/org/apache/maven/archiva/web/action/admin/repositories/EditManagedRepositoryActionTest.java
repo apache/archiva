@@ -68,7 +68,7 @@ public class EditManagedRepositoryActionTest
     {
         super.setUp();
 
-        action = (EditManagedRepositoryAction) lookup( Action.class.getName(), "editManagedRepositoryAction" );
+        action = new EditManagedRepositoryAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
