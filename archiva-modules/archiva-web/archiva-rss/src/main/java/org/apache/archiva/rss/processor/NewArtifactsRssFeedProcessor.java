@@ -22,10 +22,11 @@ package org.apache.archiva.rss.processor;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
+import com.sun.syndication.feed.synd.SyndFeed;
 import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
@@ -33,8 +34,6 @@ import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstr
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
  * Retrieve and process all artifacts of a repository from the database and generate a rss feed.
@@ -65,6 +64,8 @@ public class NewArtifactsRssFeedProcessor
      */
     private ArtifactDAO artifactDAO;
 
+    private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone( "GMT" );
+
     /**
      * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
      * new versions of artifact.
@@ -85,7 +86,7 @@ public class NewArtifactsRssFeedProcessor
     private SyndFeed processNewArtifactsInRepo( String repoId ) throws ArchivaDatabaseException
     {
         
-        Calendar greaterThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+        Calendar greaterThanThisDate = Calendar.getInstance( GMT_TIME_ZONE );
         greaterThanThisDate.add( Calendar.DATE, -( getNumberOfDaysBeforeNow() ) );
         
         Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, greaterThanThisDate.getTime(), "whenGathered", false );
