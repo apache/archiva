@@ -35,7 +35,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -59,8 +58,6 @@ public class NexusIndexerConsumer
 
     private FileTypes filetypes;
 
-    private ManagedDefaultRepositoryContent repositoryContent;
-
     private File managedRepository;
 
     private ArchivaTaskScheduler<ArtifactIndexingTask> scheduler;
@@ -68,6 +65,8 @@ public class NexusIndexerConsumer
     private IndexingContext context;
 
     private List<String> includes = new ArrayList<String>();
+
+    private ManagedRepositoryConfiguration repository;
 
     public NexusIndexerConsumer( ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
                                  ArchivaConfiguration configuration, FileTypes filetypes )
@@ -95,10 +94,8 @@ public class NexusIndexerConsumer
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
+        this.repository = repository;
         managedRepository = new File( repository.getLocation() );
-
-        repositoryContent = new ManagedDefaultRepositoryContent();
-        repositoryContent.setRepository( repository );
 
         try
         {
@@ -120,8 +117,7 @@ public class NexusIndexerConsumer
         File artifactFile = new File( managedRepository, path );
 
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repositoryContent.getRepository(), artifactFile, ArtifactIndexingTask.Action.ADD,
-                                      context );
+            new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, context );
         try
         {
             log.debug( "Queueing indexing task + '" + task + "' to add or update the artifact in the index." );
@@ -136,8 +132,7 @@ public class NexusIndexerConsumer
     public void completeScan()
     {
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repositoryContent.getRepository(), null, ArtifactIndexingTask.Action.FINISH,
-                                      context );
+            new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
         try
         {
             log.debug( "Queueing indexing task + '" + task + "' to finish indexing." );
