@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -33,7 +35,7 @@ public interface MetadataRepository
     /**
      * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
      *
-     * @param repoId the repository the project is in
+     * @param repoId  the repository the project is in
      * @param project the project metadata to create or update
      */
     void updateProject( String repoId, ProjectMetadata project );
@@ -56,4 +58,11 @@ public interface MetadataRepository
     void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet );
 
     void removeMetadataFacets( String repositoryId, String facetId );
+
+    List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime );
+
+    Collection<String> getRepositories();
+
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion );
 }

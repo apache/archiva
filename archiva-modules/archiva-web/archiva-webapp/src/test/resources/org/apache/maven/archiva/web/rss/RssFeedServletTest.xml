@@ -21,11 +21,10 @@
 <plexus>
   <components>
     <component>
-      <role>org.apache.maven.archiva.database.ArtifactDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.rss.ArtifactDAOStub</implementation>      
+      <role>org.apache.archiva.metadata.repository.MetadataRepository</role>
+      <implementation>org.apache.archiva.metadata.repository.memory.TestMetadataRepository</implementation>
     </component>
-    
+
     <component>
       <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
       <role-hint>default</role-hint>

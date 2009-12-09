@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository;
+package org.apache.archiva.metadata.repository.memory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -29,81 +30,120 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolverException;
 
 public class TestMetadataRepository
     implements MetadataRepository
 {
+    private static final String TEST_REPO = "test-repo";
+
+    private static final String TEST_NAMESPACE = "org.apache.archiva";
+
+    private List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+
+    private List<String> versions = new ArrayList<String>();
+
+    public TestMetadataRepository()
+    {
+        Date whenGathered = new Date( 123456789 );
+
+        addArtifact( "artifact-one", "1.0", whenGathered );
+        addArtifact( "artifact-one", "1.1", whenGathered );
+        addArtifact( "artifact-one", "2.0", whenGathered );
+        addArtifact( "artifact-two", "1.0.1", whenGathered );
+        addArtifact( "artifact-two", "1.0.2", whenGathered );
+        addArtifact( "artifact-two", "1.0.3-SNAPSHOT", whenGathered );
+        addArtifact( "artifact-three", "2.0-SNAPSHOT", whenGathered );
+        addArtifact( "artifact-four", "1.1-beta-2", whenGathered );
+    }
+
+    private void addArtifact( String projectId, String projectVersion, Date whenGathered )
+    {
+        ArtifactMetadata artifact = new ArtifactMetadata();
+        artifact.setFileLastModified( System.currentTimeMillis() );
+        artifact.setNamespace( TEST_NAMESPACE );
+        artifact.setVersion( projectVersion );
+        artifact.setId( projectId + "-" + projectVersion + ".jar" );
+        artifact.setProject( projectId );
+        artifact.setRepositoryId( TEST_REPO );
+        artifact.setWhenGathered( whenGathered );
+        artifacts.add( artifact );
+
+        versions.add( projectVersion );
+    }
+
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
         throws MetadataResolverException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                                      String projectVersion )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public Collection<String> getRootNamespaces( String repoId )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public Collection<String> getNamespaces( String repoId, String namespace )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
         throws MetadataResolverException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return versions;
     }
 
     public void updateProject( String repoId, ProjectMetadata project )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public void updateProjectVersion( String repoId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
                                         ProjectVersionReference reference )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public void updateNamespace( String repoId, String namespace )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public List<String> getMetadataFacets( String repodId, String facetId )
@@ -113,32 +153,32 @@ public class TestMetadataRepository
 
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return artifacts;
     }
 
     public Collection<String> getRepositories()
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return Collections.singletonList( TEST_REPO );
     }
 
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return artifacts;
     }
 }

@@ -28,12 +28,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
@@ -310,6 +312,111 @@ public class FileMetadataRepository
         }
     }
 
+    public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
+    {
+        // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
+        //  of this information (eg. in Lucene, as before)
+
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        for ( String ns : getRootNamespaces( repoId ) )
+        {
+            getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
+        }
+        return artifacts;
+    }
+
+    private void getArtifactsByDateRange( List<ArtifactMetadata> artifacts, String repoId, String ns, Date startTime,
+                                          Date endTime )
+    {
+        for ( String namespace : getNamespaces( repoId, ns ) )
+        {
+            getArtifactsByDateRange( artifacts, repoId, ns + "." + namespace, startTime, endTime );
+        }
+
+        for ( String project : getProjects( repoId, ns ) )
+        {
+            for ( String version : getProjectVersions( repoId, ns, project ) )
+            {
+                for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
+                {
+                    if ( startTime == null || startTime.before( artifact.getWhenGathered() ) )
+                    {
+                        if ( endTime == null || endTime.after( artifact.getWhenGathered() ) )
+                        {
+                            artifacts.add( artifact );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion )
+    {
+        Map<String, ArtifactMetadata> artifacts = new HashMap<String, ArtifactMetadata>();
+
+        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+        for ( Map.Entry entry : properties.entrySet() )
+        {
+            String name = (String) entry.getKey();
+            StringTokenizer tok = new StringTokenizer( name, ":" );
+            if ( tok.hasMoreTokens() && "artifact".equals( tok.nextToken() ) )
+            {
+                String field = tok.nextToken();
+                String id = tok.nextToken();
+
+                ArtifactMetadata artifact = artifacts.get( id );
+                if ( artifact == null )
+                {
+                    artifact = new ArtifactMetadata();
+                    artifact.setRepositoryId( repoId );
+                    artifact.setNamespace( namespace );
+                    artifact.setProject( projectId );
+                    artifact.setVersion( projectVersion );
+                    artifact.setId( id );
+                    artifacts.put( id, artifact );
+                }
+
+                String value = (String) entry.getValue();
+                if ( "updated".equals( field ) )
+                {
+                    artifact.setFileLastModified( Long.valueOf( value ) );
+                }
+                else if ( "size".equals( field ) )
+                {
+                    artifact.setSize( Long.valueOf( value ) );
+                }
+                else if ( "whenGathered".equals( field ) )
+                {
+                    artifact.setWhenGathered( new Date( Long.valueOf( value ) ) );
+                }
+                else if ( "version".equals( field ) )
+                {
+                    artifact.setVersion( value );
+                }
+                else if ( "md5".equals( field ) )
+                {
+                    artifact.setMd5( value );
+                }
+                else if ( "sha1".equals( field ) )
+                {
+                    artifact.setSha1( value );
+                }
+            }
+        }
+        return artifacts.values();
+    }
+
+    public Collection<String> getRepositories()
+    {
+        String[] repoIds = this.directory.list();
+        return repoIds != null ? Arrays.asList( repoIds ) : Collections.<String>emptyList();
+    }
+
     private File getMetadataDirectory( String repositoryId, String facetId )
     {
         return new File( this.directory, repositoryId + "/.meta/" + facetId );
@@ -350,8 +457,14 @@ public class FileMetadataRepository
         properties.setProperty( "artifact:whenGathered:" + artifact.getId(),
                                 Long.toString( artifact.getWhenGathered().getTime() ) );
         properties.setProperty( "artifact:size:" + artifact.getId(), Long.toString( artifact.getSize() ) );
-        properties.setProperty( "artifact:md5:" + artifact.getId(), artifact.getMd5() );
-        properties.setProperty( "artifact:sha1:" + artifact.getId(), artifact.getMd5() );
+        if ( artifact.getMd5() != null )
+        {
+            properties.setProperty( "artifact:md5:" + artifact.getId(), artifact.getMd5() );
+        }
+        if ( artifact.getSha1() != null )
+        {
+            properties.setProperty( "artifact:sha1:" + artifact.getId(), artifact.getSha1() );
+        }
         properties.setProperty( "artifact:version:" + artifact.getId(), artifact.getVersion() );
 
         try

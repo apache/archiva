@@ -20,14 +20,19 @@ package org.apache.archiva.metadata.repository.file;
  */
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -52,6 +57,8 @@ public class FileMetadataRepositoryTest
     private static final String TEST_VALUE = "test-value";
 
     private static final String UNKNOWN = "unknown";
+
+    private static final String OTHER_REPO = "other-repo";
 
     public void setUp()
         throws Exception
@@ -187,6 +194,154 @@ public class FileMetadataRepositoryTest
     public void testRemoveFacetsWhenUnknown()
     {
         repository.removeMetadataFacets( TEST_REPO_ID, UNKNOWN );
+    }
+
+    public void testGetArtifacts()
+    {
+        ArtifactMetadata artifact1 = createArtifact();
+        ArtifactMetadata artifact2 = createArtifact( "pom" );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
+
+        assertEquals( Arrays.asList( artifact2, artifact1 ), new ArrayList<ArtifactMetadata>(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
+    }
+
+    public void testRepositories()
+    {
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+        repository.addMetadataFacet( OTHER_REPO, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+
+        assertEquals( Arrays.asList( OTHER_REPO, TEST_REPO_ID ), repository.getRepositories() );
+    }
+
+    public void testRepositoriesWhenEmpty()
+    {
+        assertTrue( repository.getRepositories().isEmpty() );
+    }
+
+    public void testGetArtifactsByDateRangeOpen()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
+    }
+
+    public void testGetArtifactsByDateRangeSparseNamespace()
+    {
+        String namespace = "org.apache.archiva";
+        repository.updateNamespace( TEST_REPO_ID, namespace );
+        repository.updateProject( TEST_REPO_ID, createProject( namespace ) );
+        ArtifactMetadata artifact = createArtifact();
+        artifact.setNamespace( namespace );
+        repository.updateArtifact( TEST_REPO_ID, namespace, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
+    }
+
+    public void testGetArtifactsByDateRangeLowerBound()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        Date date = new Date( artifact.getWhenGathered().getTime() - 10000 );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, date, null ) );
+    }
+
+    public void testGetArtifactsByDateRangeLowerBoundOutOfRange()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        Date date = new Date( artifact.getWhenGathered().getTime() + 10000 );
+        assertTrue( repository.getArtifactsByDateRange( TEST_REPO_ID, date, null ).isEmpty() );
+    }
+
+    public void testGetArtifactsByDateRangeLowerAndUpperBound()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        Date lower = new Date( artifact.getWhenGathered().getTime() - 10000 );
+        Date upper = new Date( artifact.getWhenGathered().getTime() + 10000 );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, lower, upper ) );
+    }
+
+    public void testGetArtifactsByDateRangeUpperBound()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        Date upper = new Date( artifact.getWhenGathered().getTime() + 10000 );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, null, upper ) );
+    }
+
+    public void testGetArtifactsByDateRangeUpperBoundOutOfRange()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        Date upper = new Date( artifact.getWhenGathered().getTime() - 10000 );
+        assertTrue( repository.getArtifactsByDateRange( TEST_REPO_ID, null, upper ).isEmpty() );
+    }
+
+    public void testGetNamespacesWithSparseDepth()
+    {
+        repository.updateNamespace( TEST_REPO_ID, "org.apache.maven.shared" );
+
+        assertEquals( Arrays.asList( "org" ), repository.getRootNamespaces( TEST_REPO_ID ) );
+        assertEquals( Arrays.asList( "apache" ), repository.getNamespaces( TEST_REPO_ID, "org" ) );
+        assertEquals( Arrays.asList( "maven" ), repository.getNamespaces( TEST_REPO_ID, "org.apache" ) );
+        assertEquals( Arrays.asList( "shared" ), repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) );
+    }
+
+    private ProjectMetadata createProject()
+    {
+        return createProject( TEST_NAMESPACE );
+    }
+
+    private ProjectMetadata createProject( String ns )
+    {
+        ProjectMetadata project = new ProjectMetadata();
+        project.setId( TEST_PROJECT );
+        project.setNamespace( ns );
+        return project;
+    }
+
+    private ArtifactMetadata createArtifact()
+    {
+        return createArtifact( "jar" );
+    }
+
+    private ArtifactMetadata createArtifact( String type )
+    {
+        ArtifactMetadata artifact = new ArtifactMetadata();
+        artifact.setId( TEST_PROJECT + "-" + TEST_PROJECT_VERSION + "." + type );
+        artifact.setWhenGathered( new Date() );
+        artifact.setNamespace( TEST_NAMESPACE );
+        artifact.setProject( TEST_PROJECT );
+        artifact.setRepositoryId( TEST_REPO_ID );
+        artifact.setFileLastModified( System.currentTimeMillis() );
+        artifact.setVersion( TEST_PROJECT_VERSION );
+        return artifact;
     }
 
     private static class TestMetadataFacet

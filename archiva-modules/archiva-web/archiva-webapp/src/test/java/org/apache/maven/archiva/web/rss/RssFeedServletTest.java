@@ -21,23 +21,17 @@ package org.apache.maven.archiva.web.rss;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.Encoder;
-import org.apache.commons.codec.binary.Base64;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
-import sun.misc.BASE64Encoder;
-
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
+import org.apache.commons.codec.Encoder;
+import org.apache.commons.codec.binary.Base64;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import sun.misc.BASE64Encoder;
 
-/**
- * 
- * @version
- */
 public class RssFeedServletTest
     extends PlexusInSpringTestCase
 {
@@ -68,45 +62,43 @@ public class RssFeedServletTest
         assertNotNull( servlet );
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/test-repo" );
-        
+
         BASE64Encoder encoder = new BASE64Encoder();
         String userPass = "user1:password1";
-        String encodedUserPass = encoder.encode( userPass.getBytes() );        
+        String encodedUserPass = encoder.encode( userPass.getBytes() );
         request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
-        
+
         WebResponse response = client.getResponse( request );
         assertEquals( RssFeedServlet.MIME_TYPE, response.getHeaderField( "CONTENT-TYPE" ) );
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
     }
-    
+
     public void testRequestNewVersionsOfArtifact()
         throws Exception
     {
-        RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation(
-                                                   "http://localhost/feeds/org/apache/archiva/artifact-two" ).getServlet();
+        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
+            "http://localhost/feeds/org/apache/archiva/artifact-two" ).getServlet();
         assertNotNull( servlet );
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/org/apache/archiva/artifact-two" );
-        
+
         BASE64Encoder encoder = new BASE64Encoder();
         String userPass = "user1:password1";
-        String encodedUserPass = encoder.encode( userPass.getBytes() );        
-        request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );        
-        
-        WebResponse response = client.getResponse( request );        
+        String encodedUserPass = encoder.encode( userPass.getBytes() );
+        request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
+
+        WebResponse response = client.getResponse( request );
         assertEquals( RssFeedServlet.MIME_TYPE, response.getHeaderField( "CONTENT-TYPE" ) );
         assertNotNull( "Should have recieved a response", response );
-        assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );        
+        assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
     }
-    
+
     public void XXX_testInvalidRequest()
         throws Exception
     {
         RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation(
-                                                   "http://localhost/feeds?invalid_param=xxx" ).getServlet();
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds?invalid_param=xxx" ).getServlet();
         assertNotNull( servlet );
 
         try
@@ -116,64 +108,63 @@ public class RssFeedServletTest
         }
         catch ( HttpException he )
         {
-            assertEquals( "Should have been a bad request response code.", HttpServletResponse.SC_BAD_REQUEST, he.getResponseCode() );
-        }                
+            assertEquals( "Should have been a bad request response code.", HttpServletResponse.SC_BAD_REQUEST,
+                          he.getResponseCode() );
+        }
     }
-       
+
     public void XXX_testInvalidAuthenticationRequest()
         throws Exception
     {
         RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation(
-                                                   "http://localhost/feeds/unauthorized-repo" ).getServlet();
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/unauthorized-repo" ).getServlet();
         assertNotNull( servlet );
-    
-        
+
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
-        
+
         Encoder encoder = new Base64();
         String userPass = "unauthUser:unauthPass";
-        String encodedUserPass = new String( ( byte[] ) encoder.encode( userPass.getBytes() ) );        
-        request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );        
-        
+        String encodedUserPass = new String( (byte[]) encoder.encode( userPass.getBytes() ) );
+        request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
+
         try
         {
             WebResponse resp = client.getResponse( request );
             assertEquals( HttpServletResponse.SC_UNAUTHORIZED, resp.getResponseCode() );
         }
         catch ( HttpException he )
-        {            
-            assertEquals( "Should have been a unauthorized response.", HttpServletResponse.SC_UNAUTHORIZED, he.getResponseCode() );
+        {
+            assertEquals( "Should have been a unauthorized response.", HttpServletResponse.SC_UNAUTHORIZED,
+                          he.getResponseCode() );
         }
     }
-    
+
     public void XXX_testUnauthorizedRequest()
         throws Exception
     {
         RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation(
-                                                   "http://localhost/feeds/unauthorized-repo" ).getServlet();
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/unauthorized-repo" ).getServlet();
         assertNotNull( servlet );
-    
-        
+
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
-        
+
         BASE64Encoder encoder = new BASE64Encoder();
         String userPass = "user1:password1";
-        String encodedUserPass = encoder.encode( userPass.getBytes() );        
-        request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );        
-        
+        String encodedUserPass = encoder.encode( userPass.getBytes() );
+        request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
+
         try
         {
             WebResponse resp = client.getResponse( request );
             assertEquals( HttpServletResponse.SC_UNAUTHORIZED, resp.getResponseCode() );
         }
         catch ( HttpException he )
-        {            
-            assertEquals( "Should have been a unauthorized response.", HttpServletResponse.SC_UNAUTHORIZED, he.getResponseCode() );
+        {
+            assertEquals( "Should have been a unauthorized response.", HttpServletResponse.SC_UNAUTHORIZED,
+                          he.getResponseCode() );
         }
-    } 
-    
+    }
+
     @Override
     protected String getPlexusConfigLocation()
     {

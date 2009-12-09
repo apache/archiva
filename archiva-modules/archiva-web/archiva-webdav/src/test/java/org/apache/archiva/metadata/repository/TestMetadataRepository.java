@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -88,7 +89,8 @@ public class TestMetadataRepository
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void updateProjectVersion( String repoId, String namespace, String projectId, ProjectVersionMetadata versionMetadata )
+    public void updateProjectVersion( String repoId, String namespace, String projectId,
+                                      ProjectVersionMetadata versionMetadata )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -122,5 +124,21 @@ public class TestMetadataRepository
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<String> getRepositories()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion )
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

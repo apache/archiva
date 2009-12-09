@@ -154,6 +154,9 @@ public class ArchivaMetadataCreationConsumer
         versionMetadata.setId( VersionUtil.getBaseVersion( artifact.getVersion() ) );
 
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
+        artifactMeta.setRepositoryId( repository.getId() );
+        artifactMeta.setNamespace( artifact.getGroupId() );
+        artifactMeta.setProject( artifact.getArtifactId() );
         artifactMeta.setId( file.getName() );
         artifactMeta.setFileLastModified( file.lastModified() );
         artifactMeta.setSize( file.length() );

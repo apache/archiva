@@ -25,18 +25,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.archiva.rss.RssFeedGenerator;
-import org.apache.archiva.rss.stubs.ArtifactDAOStub;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import java.util.TimeZone;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.rss.RssFeedGenerator;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.easymock.MockControl;
 
-/**
- * @version
- */
 public class NewArtifactsRssFeedProcessorTest
     extends PlexusInSpringTestCase
 {
@@ -44,9 +42,9 @@ public class NewArtifactsRssFeedProcessorTest
 
     private NewArtifactsRssFeedProcessor newArtifactsProcessor;
 
-    private ArtifactDAOStub artifactDAOStub;
+    private MetadataRepository metadataRepository;
 
-    private RssFeedGenerator rssFeedGenerator;
+    private MockControl metadataRepositoryControl;
 
     @Override
     public void setUp()
@@ -55,69 +53,65 @@ public class NewArtifactsRssFeedProcessorTest
         super.setUp();
 
         newArtifactsProcessor = new NewArtifactsRssFeedProcessor();
-        artifactDAOStub = new ArtifactDAOStub();
+        newArtifactsProcessor.setGenerator( new RssFeedGenerator() );
 
-        rssFeedGenerator = new RssFeedGenerator();
-
-        newArtifactsProcessor.setGenerator( rssFeedGenerator );
-        newArtifactsProcessor.setArtifactDAO( artifactDAOStub );
+        metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+        newArtifactsProcessor.setMetadataRepository( metadataRepository );
     }
 
     @SuppressWarnings("unchecked")
     public void testProcess()
         throws Exception
     {
-        List<ArchivaArtifact> newArtifacts = new ArrayList<ArchivaArtifact>();
+        List<ArtifactMetadata> newArtifacts = new ArrayList<ArtifactMetadata>();
         Date whenGathered = Calendar.getInstance().getTime();
 
-        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.0", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
+        newArtifacts.add( createArtifact( "artifact-one", "1.0", whenGathered ) );
+        newArtifacts.add( createArtifact( "artifact-one", "1.1", whenGathered ) );
+        newArtifacts.add( createArtifact( "artifact-one", "2.0", whenGathered ) );
+        newArtifacts.add( createArtifact( "artifact-two", "1.0.1", whenGathered ) );
+        newArtifacts.add( createArtifact( "artifact-two", "1.0.2", whenGathered ) );
+        newArtifacts.add( createArtifact( "artifact-two", "1.0.3-SNAPSHOT", whenGathered ) );
+        newArtifacts.add( createArtifact( "artifact-three", "2.0-SNAPSHOT", whenGathered ) );
+        newArtifacts.add( createArtifact( "artifact-four", "1.1-beta-2", whenGathered ) );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "1.1", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
-
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-one", "2.0", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
-
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
-
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
-
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
-
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-three", "2.0-SNAPSHOT", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
-
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-four", "1.1-beta-2", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        newArtifacts.add( artifact );
-
-        artifactDAOStub.setArtifacts( newArtifacts );
+        Calendar cal = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
+        cal.add( Calendar.DATE, -30 );
+        cal.clear( Calendar.MILLISECOND );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifactsByDateRange( TEST_REPO, cal.getTime(), null ), newArtifacts );
+        metadataRepositoryControl.replay();
 
         Map<String, String> reqParams = new HashMap<String, String>();
-        reqParams.put( RssFeedProcessor.KEY_REPO_ID, "test-repo" );
+        reqParams.put( RssFeedProcessor.KEY_REPO_ID, TEST_REPO );
 
         SyndFeed feed = newArtifactsProcessor.process( reqParams );
 
-        assertTrue( feed.getTitle().equals( "New Artifacts in Repository 'test-repo'" ) );        
-        assertTrue( feed.getDescription().equals(
-                                                  "New artifacts found in repository 'test-repo' during repository scan." ) );
+        assertTrue( feed.getTitle().equals( "New Artifacts in Repository 'test-repo'" ) );
+        assertTrue(
+            feed.getDescription().equals( "New artifacts found in repository 'test-repo' during repository scan." ) );
         assertTrue( feed.getLanguage().equals( "en-us" ) );
         assertTrue( feed.getPublishedDate().equals( whenGathered ) );
 
         List<SyndEntry> entries = feed.getEntries();
         assertEquals( entries.size(), 1 );
-        assertTrue( entries.get( 0 ).getTitle().equals( "New Artifacts in Repository 'test-repo' as of " + whenGathered ) );
+        assertTrue(
+            entries.get( 0 ).getTitle().equals( "New Artifacts in Repository 'test-repo' as of " + whenGathered ) );
         assertTrue( entries.get( 0 ).getPublishedDate().equals( whenGathered ) );
+
+        metadataRepositoryControl.verify();
+    }
+
+    private ArtifactMetadata createArtifact( String artifactId, String version, Date whenGathered )
+    {
+        ArtifactMetadata artifact = new ArtifactMetadata();
+        artifact.setNamespace( "org.apache.archiva" );
+        artifact.setId( artifactId + "-" + version + ".jar" );
+        artifact.setRepositoryId( TEST_REPO );
+        artifact.setWhenGathered( whenGathered );
+        artifact.setProject( artifactId );
+        artifact.setVersion( version );
+        return artifact;
     }
 }

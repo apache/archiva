@@ -19,25 +19,23 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.syndication.feed.synd.SyndFeed;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-
-import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
  * Retrieve and process new versions of an artifact from the database and
- * generate a rss feed. The versions will be grouped by the date when the artifact 
+ * generate a rss feed. The versions will be grouped by the date when the artifact
  * was gathered. Each group will appear as one entry in the feed.
- * 
- * @version
+ *
  * @plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-versions"
  */
 public class NewVersionsOfArtifactRssFeedProcessor
@@ -53,39 +51,80 @@ public class NewVersionsOfArtifactRssFeedProcessor
     private RssFeedGenerator generator;
 
     /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArtifactDAO artifactDAO;
-
-    /**
      * Process all versions of the artifact which had a rss feed request.
      */
-    public SyndFeed process( Map<String, String> reqParams ) throws ArchivaDatabaseException
+    public SyndFeed process( Map<String, String> reqParams )
+        throws MetadataResolverException
     {
-        String repoId = reqParams.get( RssFeedProcessor.KEY_REPO_ID );
         String groupId = reqParams.get( RssFeedProcessor.KEY_GROUP_ID );
         String artifactId = reqParams.get( RssFeedProcessor.KEY_ARTIFACT_ID );
-        
+
         if ( groupId != null && artifactId != null )
         {
-            return processNewVersionsOfArtifact( repoId, groupId, artifactId );
+            return processNewVersionsOfArtifact( groupId, artifactId );
         }
 
         return null;
     }
 
-    private SyndFeed processNewVersionsOfArtifact( String repoId, String groupId, String artifactId )
-        throws ArchivaDatabaseException
+    private SyndFeed processNewVersionsOfArtifact( String groupId, String artifactId )
+        throws MetadataResolverException
     {
-                    
-        Constraint artifactVersions = new ArtifactVersionsConstraint( repoId, groupId, artifactId, "whenGathered" );
-        List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactVersions );
-        
-        List<RssFeedEntry> entries = processData( artifacts, false );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        for ( String repoId : metadataRepository.getRepositories() )
+        {
+            Collection<String> versions = metadataRepository.getProjectVersions( repoId, groupId, artifactId );
+            for ( String version : versions )
+            {
+                artifacts.addAll( metadataRepository.getArtifacts( repoId, groupId, artifactId, version ) );
+            }
+        }
+
+        long tmp = 0;
+        RssFeedEntry entry = null;
+        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        String description = "";
+        int idx = 0;
+        for ( ArtifactMetadata artifact : artifacts )
+        {
+            long whenGathered = artifact.getWhenGathered().getTime();
+
+            if ( tmp != whenGathered )
+            {
+                if ( entry != null )
+                {
+                    entry.setDescription( description );
+                    entries.add( entry );
+                    entry = null;
+                }
+
+                entry = new RssFeedEntry(
+                    this.getTitle() + "\'" + groupId + ":" + artifactId + "\'" + " as of " + new Date( whenGathered ) );
+                entry.setPublishedDate( artifact.getWhenGathered() );
+                description =
+                    this.getDescription() + "\'" + groupId + ":" + artifactId + "\'" + ": \n" + artifact.getId() +
+                        " | ";
+            }
+            else
+            {
+                description = description + artifact.getId() + " | ";
+            }
+
+            if ( idx == ( artifacts.size() - 1 ) )
+            {
+                entry.setDescription( description );
+                entries.add( entry );
+            }
+
+            tmp = whenGathered;
+            idx++;
+        }
+
         String key = groupId + ":" + artifactId;
-        
-        return generator.generateFeed( getTitle() + "\'" + key + "\'", "New versions of artifact " + "\'" + key +
-            "\' found in repository " + "\'" + repoId + "\'" + " during repository scan.", entries );
+
+        return generator.generateFeed( getTitle() + "\'" + key + "\'",
+                                       "New versions of artifact " + "\'" + key + "\' found during repository scan.",
+                                       entries );
     }
 
     public String getTitle()
@@ -107,15 +146,4 @@ public class NewVersionsOfArtifactRssFeedProcessor
     {
         this.generator = generator;
     }
-
-    public ArtifactDAO getArtifactDAO()
-    {
-        return artifactDAO;
-    }
-
-    public void setArtifactDAO( ArtifactDAO artifactDAO )
-    {
-        this.artifactDAO = artifactDAO;
-    }
-
 }

@@ -37,6 +37,12 @@ public class ArtifactMetadata
 
     private String sha1;
 
+    private String namespace;
+
+    private String project;
+
+    private String repositoryId;
+
     public String getId()
     {
         return id;
@@ -106,5 +112,102 @@ public class ArtifactMetadata
     {
 
         return fileLastModified;
+    }
+
+    public String getNamespace()
+    {
+        return namespace;
+    }
+
+    public void setNamespace( String namespace )
+    {
+        this.namespace = namespace;
+    }
+
+    public void setProject( String project )
+    {
+        this.project = project;
+    }
+
+    public String getProject()
+    {
+        return project;
+    }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        ArtifactMetadata that = (ArtifactMetadata) o;
+
+        if ( size != that.size )
+        {
+            return false;
+        }
+        if ( !fileLastModified.equals( that.fileLastModified ) )
+        {
+            return false;
+        }
+        if ( !id.equals( that.id ) )
+        {
+            return false;
+        }
+        if ( md5 != null ? !md5.equals( that.md5 ) : that.md5 != null )
+        {
+            return false;
+        }
+        if ( namespace != null ? !namespace.equals( that.namespace ) : that.namespace != null )
+        {
+            return false;
+        }
+        if ( project != null ? !project.equals( that.project ) : that.project != null )
+        {
+            return false;
+        }
+        if ( repositoryId != null ? !repositoryId.equals( that.repositoryId ) : that.repositoryId != null )
+        {
+            return false;
+        }
+        if ( sha1 != null ? !sha1.equals( that.sha1 ) : that.sha1 != null )
+        {
+            return false;
+        }
+        if ( !version.equals( that.version ) )
+        {
+            return false;
+        }
+        if ( !whenGathered.equals( that.whenGathered ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ArtifactMetadata{" + "id='" + id + '\'' + ", size=" + size + ", version='" + version + '\'' +
+            ", fileLastModified=" + fileLastModified + ", whenGathered=" + whenGathered + ", md5='" + md5 + '\'' +
+            ", sha1='" + sha1 + '\'' + ", namespace='" + namespace + '\'' + ", project='" + project + '\'' +
+            ", repositoryId='" + repositoryId + '\'' + '}';
     }
 }
