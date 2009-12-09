@@ -695,7 +695,7 @@ public class FileMetadataRepository
         for ( Map.Entry entry : properties.entrySet() )
         {
             String name = (String) entry.getKey();
-            if ( name.startsWith( "version:" ) )
+            if ( name.startsWith( "artifact:version:" ) )
             {
                 versions.add( (String) entry.getValue() );
             }

@@ -207,6 +207,24 @@ public class FileMetadataRepositoryTest
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
     }
 
+    public void testGetArtifactVersions()
+    {
+        ArtifactMetadata artifact1 = createArtifact();
+        String version1 = "1.0-20091212.012345-1";
+        artifact1.setId( artifact1.getProject() + "-" + version1 + ".jar" );
+        artifact1.setVersion( version1 );
+        ArtifactMetadata artifact2 = createArtifact();
+        String version2 = "1.0-20091212.123456-2";
+        artifact2.setId( artifact2.getProject() + "-" + version2 + ".jar" );
+        artifact2.setVersion( version2 );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
+
+        assertEquals( Arrays.asList( version2, version1 ),
+                      repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                                      TEST_PROJECT_VERSION ) );
+    }
+
     public void testRepositories()
     {
         repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
