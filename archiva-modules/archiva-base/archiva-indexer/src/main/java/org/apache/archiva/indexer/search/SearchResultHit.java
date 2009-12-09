@@ -19,9 +19,6 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +47,6 @@ public class SearchResultHit
     private String repositoryId = "";
 
     private List<String> versions = new ArrayList<String>();
-
-    private ArchivaArtifact artifact;
 
     public String getContext()
     {
@@ -86,37 +81,6 @@ public class SearchResultHit
     public void setArtifactId( String artifactId )
     {
         this.artifactId = artifactId;
-    }
-
-    public void setArtifact( ArchivaArtifact artifact )
-    {
-        this.artifact = artifact;
-        final String ver = artifact.getVersion();
-
-        if ( !this.versions.contains( ver ) )
-        {
-            this.versions.add( ver );
-        }
-
-        if ( StringUtils.isBlank( this.groupId ) )
-        {
-            this.groupId = artifact.getGroupId();
-        }
-
-        if ( StringUtils.isBlank( this.artifactId ) )
-        {
-            this.artifactId = artifact.getArtifactId();
-        }
-
-        if ( StringUtils.isBlank( this.version ) )
-        {
-            this.version = ver;            
-        }
-    }
-
-    public ArchivaArtifact getArtifact()
-    {
-        return artifact;
     }
 
     public String getGroupId()
