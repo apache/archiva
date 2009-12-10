@@ -49,7 +49,6 @@ import org.apache.maven.archiva.database.constraints.RepositoryProblemConstraint
 import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.model.RepositoryProblemReport;
-import org.apache.maven.archiva.reporting.ArchivaReportException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -171,25 +170,52 @@ public class GenerateReportAction
             addFieldError( "rowCount", "Row count must be larger than 10." );
             return INPUT;
         }
-        try
+        Date startDateInDF;
+        Date endDateInDF;
+
+        if ( selectedRepositories.size() > 1 )
         {
-            Date startDateInDF;
-            Date endDateInDF;
+            numPages = 1;
 
-            if ( selectedRepositories.size() > 1 )
+            try
             {
-                numPages = 1;
+                startDateInDF = getStartDateInDateFormat();
+                endDateInDF = getEndDateInDateFormat();
+            }
+            catch ( ParseException e )
+            {
+                addActionError( "Error parsing date(s)." );
+                return ERROR;
+            }
 
-                try
+            if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
+            {
+                addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                return INPUT;
+            }
+
+            // multiple repos
+            for ( String repo : selectedRepositories )
+            {
+                List<RepositoryStatistics> stats =
+                    repositoryStatisticsManager.getStatisticsInRange( repo, startDateInDF, endDateInDF );
+                if ( stats.isEmpty() )
                 {
-                    startDateInDF = getStartDateInDateFormat();
-                    endDateInDF = getEndDateInDateFormat();
+                    log.info( "No statistics available for repository '" + repo + "'." );
+                    // TODO set repo's stats to 0
+                    continue;
                 }
-                catch ( ParseException e )
-                {
-                    addActionError( "Error parsing date(s)." );
-                    return ERROR;
-                }
+
+                repositoryStatistics.add( stats.get( 0 ) );
+            }
+        }
+        else if ( selectedRepositories.size() == 1 )
+        {
+            repositoryId = selectedRepositories.get( 0 );
+            try
+            {
+                startDateInDF = getStartDateInDateFormat();
+                endDateInDF = getEndDateInDateFormat();
 
                 if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
                 {
@@ -197,87 +223,54 @@ public class GenerateReportAction
                     return INPUT;
                 }
 
-                // multiple repos
-                for ( String repo : selectedRepositories )
+                List<RepositoryStatistics> stats =
+                    repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDateInDF, endDateInDF );
+
+                if ( stats.isEmpty() )
                 {
-                    List<RepositoryStatistics> stats =
-                        repositoryStatisticsManager.getStatisticsInRange( repo, startDateInDF, endDateInDF );
-                    if ( stats.isEmpty() )
-                    {
-                        log.info( "No statistics available for repository '" + repo + "'." );
-                        // TODO set repo's stats to 0
-                        continue;
-                    }
-
-                    repositoryStatistics.add( stats.get( 0 ) );
-                }
-            }
-            else if ( selectedRepositories.size() == 1 )
-            {
-                repositoryId = selectedRepositories.get( 0 );
-                try
-                {
-                    startDateInDF = getStartDateInDateFormat();
-                    endDateInDF = getEndDateInDateFormat();
-
-                    if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
-                    {
-                        addFieldError( "startDate", "Start Date must be earlier than the End Date" );
-                        return INPUT;
-                    }
-
-                    List<RepositoryStatistics> stats =
-                        repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDateInDF, endDateInDF );
-
-                    if ( stats.isEmpty() )
-                    {
-                        addActionError(
-                            "No statistics available for repository. Repository might not have been scanned." );
-                        return ERROR;
-                    }
-
-                    int rowCount = getRowCount();
-                    int extraPage = ( stats.size() % rowCount ) != 0 ? 1 : 0;
-                    int totalPages = ( stats.size() / rowCount ) + extraPage;
-                    numPages = totalPages;
-
-                    int currentPage = getPage();
-                    if ( currentPage > totalPages )
-                    {
-                        throw new ArchivaReportException( "The requested page exceeds the total number of pages." );
-                    }
-
-                    int start = rowCount * ( currentPage - 1 );
-                    int end = ( start + rowCount ) - 1;
-
-                    if ( end > stats.size() )
-                    {
-                        end = stats.size() - 1;
-                    }
-
-                    repositoryStatistics = stats.subList( start, end + 1 );
-                }
-                catch ( ParseException pe )
-                {
-                    addActionError( pe.getMessage() );
+                    addActionError(
+                        "No statistics available for repository. Repository might not have been scanned." );
                     return ERROR;
                 }
-            }
-            else
-            {
-                addFieldError( "availableRepositories", "Please select a repository (or repositories) from the list." );
-                return INPUT;
-            }
 
-            if ( repositoryStatistics.isEmpty() )
+                int rowCount = getRowCount();
+                int extraPage = ( stats.size() % rowCount ) != 0 ? 1 : 0;
+                int totalPages = ( stats.size() / rowCount ) + extraPage;
+                numPages = totalPages;
+
+                int currentPage = getPage();
+                if ( currentPage > totalPages )
+                {
+                    addActionError(
+                        "Error encountered while generating report :: The requested page exceeds the total number of pages." );
+                    return ERROR;
+                }
+
+                int start = rowCount * ( currentPage - 1 );
+                int end = ( start + rowCount ) - 1;
+
+                if ( end > stats.size() )
+                {
+                    end = stats.size() - 1;
+                }
+
+                repositoryStatistics = stats.subList( start, end + 1 );
+            }
+            catch ( ParseException pe )
             {
-                return BLANK;
+                addActionError( pe.getMessage() );
+                return ERROR;
             }
         }
-        catch ( ArchivaReportException e )
+        else
         {
-            addActionError( "Error encountered while generating report :: " + e.getMessage() );
-            return ERROR;
+            addFieldError( "availableRepositories", "Please select a repository (or repositories) from the list." );
+            return INPUT;
+        }
+
+        if ( repositoryStatistics.isEmpty() )
+        {
+            return BLANK;
         }
 
         return SUCCESS;
