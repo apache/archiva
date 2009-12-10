@@ -29,9 +29,6 @@
 
   <modules>
     <module>archiva-report-manager</module>
-    <!-- TODO: some reports not currently used -->
     <module>archiva-artifact-reports</module>
-    <module>archiva-metadata-reports</module>
-    <module>archiva-project-reports</module>
   </modules>
 </project>
