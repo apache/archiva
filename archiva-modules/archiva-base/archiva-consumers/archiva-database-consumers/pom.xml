@@ -32,6 +32,10 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-artifact-reports</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-database</artifactId>
     </dependency>
     <dependency>
