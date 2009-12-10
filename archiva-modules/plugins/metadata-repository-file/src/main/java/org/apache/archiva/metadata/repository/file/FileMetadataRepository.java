@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -691,7 +692,7 @@ public class FileMetadataRepository
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
-        List<String> versions = new ArrayList<String>();
+        Set<String> versions = new HashSet<String>();
         for ( Map.Entry entry : properties.entrySet() )
         {
             String name = (String) entry.getKey();

@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -220,7 +221,21 @@ public class FileMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
 
-        assertEquals( Arrays.asList( version2, version1 ),
+        assertEquals( new HashSet<String>( Arrays.asList( version2, version1 ) ),
+                      repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                                      TEST_PROJECT_VERSION ) );
+    }
+
+    public void testGetArtifactVersionsMultipleArtifactsSingleVersion()
+    {
+        ArtifactMetadata artifact1 = createArtifact();
+        artifact1.setId( TEST_PROJECT + "-" + TEST_PROJECT_VERSION + ".jar" );
+        ArtifactMetadata artifact2 = createArtifact();
+        artifact2.setId( TEST_PROJECT + "-" + TEST_PROJECT_VERSION + "-sources.jar" );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
+
+        assertEquals( Collections.singleton( TEST_PROJECT_VERSION ),
                       repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
                                                       TEST_PROJECT_VERSION ) );
     }
