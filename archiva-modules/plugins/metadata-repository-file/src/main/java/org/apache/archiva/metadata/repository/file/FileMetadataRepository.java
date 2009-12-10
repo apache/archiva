@@ -418,6 +418,44 @@ public class FileMetadataRepository
         return repoIds != null ? Arrays.asList( repoIds ) : Collections.<String>emptyList();
     }
 
+    public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+    {
+        // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
+        //  of this information (eg. in Lucene, as before)
+        // alternatively, we could build a referential tree in the content repository, however it would need some levels
+        // of depth to avoid being too broad to be useful (eg. /repository/checksums/a/ab/abcdef1234567)
+
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        for ( String ns : getRootNamespaces( repositoryId ) )
+        {
+            getArtifactsByChecksum( artifacts, repositoryId, ns, checksum );
+        }
+        return artifacts;
+    }
+
+    private void getArtifactsByChecksum( List<ArtifactMetadata> artifacts, String repositoryId, String ns,
+                                         String checksum )
+    {
+        for ( String namespace : getNamespaces( repositoryId, ns ) )
+        {
+            getArtifactsByChecksum( artifacts, repositoryId, ns + "." + namespace, checksum );
+        }
+
+        for ( String project : getProjects( repositoryId, ns ) )
+        {
+            for ( String version : getProjectVersions( repositoryId, ns, project ) )
+            {
+                for ( ArtifactMetadata artifact : getArtifacts( repositoryId, ns, project, version ) )
+                {
+                    if ( checksum.equals( artifact.getMd5() ) || checksum.equals( artifact.getSha1() ) )
+                    {
+                        artifacts.add( artifact );
+                    }
+                }
+            }
+        }
+    }
+
     private File getMetadataDirectory( String repositoryId, String facetId )
     {
         return new File( this.directory, repositoryId + "/.meta/" + facetId );

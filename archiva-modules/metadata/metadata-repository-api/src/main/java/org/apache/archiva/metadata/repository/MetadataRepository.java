@@ -62,4 +62,6 @@ public interface MetadataRepository
     List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime );
 
     Collection<String> getRepositories();
+
+    List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum );
 }

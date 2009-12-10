@@ -136,6 +136,11 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum )
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
     {

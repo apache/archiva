@@ -61,6 +61,10 @@ public class FileMetadataRepositoryTest
 
     private static final String OTHER_REPO = "other-repo";
 
+    private static final String TEST_MD5 = "bd4a9b642562547754086de2dab26b7d";
+
+    private static final String TEST_SHA1 = "2e5daf0201ddeb068a62d5e08da18657ab2c6be9";
+
     public void setUp()
         throws Exception
     {
@@ -346,6 +350,60 @@ public class FileMetadataRepositoryTest
         assertEquals( Arrays.asList( "shared" ), repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) );
     }
 
+    public void testGetArtifactsByChecksumSingleResultMd5()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) );
+    }
+
+    public void testGetArtifactsByChecksumSingleResultSha1()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
+    }
+
+    public void testGetArtifactsByChecksumMultipleResult()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+
+        ProjectMetadata projectMetadata = createProject();
+        repository.updateProject( TEST_REPO_ID, projectMetadata );
+        ArtifactMetadata artifact1 = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
+
+        projectMetadata = createProject();
+        String newProjectId = "another-project";
+        projectMetadata.setId( newProjectId );
+        repository.updateProject( TEST_REPO_ID, projectMetadata );
+        ArtifactMetadata artifact2 = createArtifact();
+        artifact2.setProject( newProjectId );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, newProjectId, TEST_PROJECT_VERSION, artifact2 );
+
+        assertEquals( Arrays.asList( artifact2, artifact1 ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
+    }
+
+    public void testGetArtifactsByChecksumNoResult()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( Collections.<ArtifactMetadata>emptyList(),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, "not a checksum" ) );
+    }
+
     private ProjectMetadata createProject()
     {
         return createProject( TEST_NAMESPACE );
@@ -374,6 +432,8 @@ public class FileMetadataRepositoryTest
         artifact.setRepositoryId( TEST_REPO_ID );
         artifact.setFileLastModified( System.currentTimeMillis() );
         artifact.setVersion( TEST_PROJECT_VERSION );
+        artifact.setMd5( TEST_MD5 );
+        artifact.setSha1( TEST_SHA1 );
         return artifact;
     }
 
