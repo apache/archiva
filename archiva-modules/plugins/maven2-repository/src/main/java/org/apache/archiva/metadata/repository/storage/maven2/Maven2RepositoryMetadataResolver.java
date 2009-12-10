@@ -21,12 +21,17 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
@@ -370,6 +375,12 @@ public class Maven2RepositoryMetadataResolver
         return getProjectVersions( repoId, namespace, projectId, ALL );
     }
 
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion )
+    {
+        return getArtifacts( repoId, namespace, projectId, projectVersion, ALL );
+    }
+
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId,
                                                   Filter<String> filter )
     {
@@ -378,6 +389,51 @@ public class Maven2RepositoryMetadataResolver
         // all directories in a project directory can be considered a version
         String[] files = dir.list( new DirectoryFilter( filter ) );
         return files != null ? Arrays.asList( files ) : Collections.<String>emptyList();
+    }
+
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion, Filter<String> filter )
+    {
+        File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId, projectVersion );
+
+        // all files that are not metadata and not a checksum / signature are considered artifacts
+        File[] files = dir.listFiles( new ArtifactDirectoryFilter( filter ) );
+
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        if ( files != null )
+        {
+            for ( File file : files )
+            {
+                ArtifactMetadata metadata = new ArtifactMetadata();
+                metadata.setId( file.getName() );
+                metadata.setProject( projectId );
+                metadata.setNamespace( namespace );
+                metadata.setRepositoryId( repoId );
+                metadata.setWhenGathered( new Date() );
+                metadata.setFileLastModified( file.lastModified() );
+                ChecksummedFile checksummedFile = new ChecksummedFile( file );
+                try
+                {
+                    metadata.setMd5( checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 ) );
+                }
+                catch ( IOException e )
+                {
+                    log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
+                }
+                try
+                {
+                    metadata.setSha1( checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 ) );
+                }
+                catch ( IOException e )
+                {
+                    log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
+                }
+                metadata.setSize( file.length() );
+                metadata.setVersion( projectVersion );
+                artifacts.add( metadata );
+            }
+        }
+        return artifacts;
     }
 
     private boolean isProject( File dir, Filter<String> filter )
@@ -496,6 +552,43 @@ public class Maven2RepositoryMetadataResolver
                 return false;
             }
             else if ( !new File( dir, name ).isDirectory() )
+            {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private class ArtifactDirectoryFilter
+        implements FilenameFilter
+    {
+        private final Filter<String> filter;
+
+        public ArtifactDirectoryFilter( Filter<String> filter )
+        {
+            this.filter = filter;
+        }
+
+        public boolean accept( File dir, String name )
+        {
+            // TODO compare to logic in maven-repository-layer
+            if ( !filter.accept( name ) )
+            {
+                return false;
+            }
+            else if ( name.startsWith( "." ) )
+            {
+                return false;
+            }
+            else if ( name.endsWith( ".md5" ) || name.endsWith( ".sha1" ) || name.endsWith( ".asc" ) )
+            {
+                return false;
+            }
+            else if ( name.equals( METADATA_FILENAME ) )
+            {
+                return false;
+            }
+            else if ( new File( dir, name ).isDirectory() )
             {
                 return false;
             }

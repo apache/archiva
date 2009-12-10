@@ -34,7 +34,7 @@ import javax.servlet.jsp.PageContext;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.util.ValueStack;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -57,7 +57,7 @@ public class DownloadArtifact
 
     private RepositoryContentFactory repositoryFactory;
 
-    private MetadataRepository metadataRepository;
+    private MetadataResolver metadataResolver;
 
     private HttpServletRequest req;
 
@@ -92,7 +92,7 @@ public class DownloadArtifact
         this.req = (HttpServletRequest) pageContext.getRequest();
         try
         {
-            metadataRepository = (MetadataRepository) PlexusTagUtil.lookup( pageContext, MetadataRepository.class );
+            metadataResolver = (MetadataResolver) PlexusTagUtil.lookup( pageContext, MetadataResolver.class );
             repositoryFactory =
                 (RepositoryContentFactory) PlexusTagUtil.lookup( pageContext, RepositoryContentFactory.class );
             userRepositories = (UserRepositories) PlexusTagUtil.lookup( pageContext, UserRepositories.class );
@@ -113,7 +113,7 @@ public class DownloadArtifact
             List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
             for ( String repoId : getObservableRepos() )
             {
-                artifacts.addAll( metadataRepository.getArtifacts( repoId, groupId, artifactId, version ) );
+                artifacts.addAll( metadataResolver.getArtifacts( repoId, groupId, artifactId, version ) );
             }
 
             if ( !artifacts.isEmpty() )

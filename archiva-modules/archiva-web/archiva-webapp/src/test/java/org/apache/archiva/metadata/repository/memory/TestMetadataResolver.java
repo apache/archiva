@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
@@ -117,6 +118,12 @@ public class TestMetadataResolver
     {
         Collection<String> list = versionsInProject.get( namespace + ":" + projectId );
         return list != null ? list : Collections.<String>emptyList();
+    }
+
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion )
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void setProjectVersion( String repoId, String namespace, String projectId,

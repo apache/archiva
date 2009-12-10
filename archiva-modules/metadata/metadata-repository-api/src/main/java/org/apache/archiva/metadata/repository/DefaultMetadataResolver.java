@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -186,5 +187,35 @@ public class DefaultMetadataResolver
             projectVersions.addAll( storageProjectVersions );
         }
         return projectVersions;
+    }
+
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion )
+    {
+        Collection<ArtifactMetadata> artifacts =
+            metadataRepository.getArtifacts( repoId, namespace, projectId, projectVersion );
+        Collection<ArtifactMetadata> storageArtifacts =
+            storageResolver.getArtifacts( repoId, namespace, projectId, projectVersion,
+                                          new ExcludesFilter<String>( createArtifactIdList( artifacts ) ) );
+        if ( storageArtifacts != null && !storageArtifacts.isEmpty() )
+        {
+            for ( ArtifactMetadata artifact : storageArtifacts )
+            {
+                metadataRepository.updateArtifact( repoId, namespace, projectId, projectVersion, artifact );
+            }
+            artifacts = new ArrayList<ArtifactMetadata>( artifacts );
+            artifacts.addAll( storageArtifacts );
+        }
+        return artifacts;
+    }
+
+    private Collection<String> createArtifactIdList( Collection<ArtifactMetadata> artifacts )
+    {
+        Collection<String> artifactIds = new ArrayList<String>();
+        for ( ArtifactMetadata artifact : artifacts )
+        {
+            artifactIds.add( artifact.getId() );
+        }
+        return artifactIds;
     }
 }

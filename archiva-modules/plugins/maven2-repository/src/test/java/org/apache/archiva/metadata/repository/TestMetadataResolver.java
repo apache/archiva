@@ -2,6 +2,7 @@ package org.apache.archiva.metadata.repository;
 
 import java.util.Collection;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
@@ -69,6 +70,12 @@ public class TestMetadataResolver
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
         throws MetadataResolverException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

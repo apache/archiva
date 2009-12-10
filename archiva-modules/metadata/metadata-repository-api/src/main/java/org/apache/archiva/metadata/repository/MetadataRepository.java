@@ -62,7 +62,4 @@ public interface MetadataRepository
     List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime );
 
     Collection<String> getRepositories();
-
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                                      String projectVersion );
 }

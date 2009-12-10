@@ -1,10 +1,5 @@
 package org.apache.archiva.metadata.repository.storage;
 
-import java.util.Collection;
-
-import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.filter.Filter;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,6 +19,12 @@ import org.apache.archiva.metadata.repository.filter.Filter;
  * under the License.
  */
 
+import java.util.Collection;
+
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.filter.Filter;
+
 public interface StorageMetadataResolver
     extends MetadataResolver
 {
@@ -33,5 +34,8 @@ public interface StorageMetadataResolver
 
     Collection<String> getProjects( String repoId, String namespace, Filter<String> filter );
 
-    Collection<String> getProjectVersions( String repoId, String namespace, String projectId, Filter<String> filter );    
+    Collection<String> getProjectVersions( String repoId, String namespace, String projectId, Filter<String> filter );
+
+    Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId, String projectVersion,
+                                               Filter<String> filter );
 }

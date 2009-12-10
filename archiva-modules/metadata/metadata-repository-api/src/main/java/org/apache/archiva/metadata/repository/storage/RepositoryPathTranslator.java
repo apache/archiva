@@ -30,4 +30,6 @@ public interface RepositoryPathTranslator
     File toFile( File basedir, String namespace, String projectId );
 
     File toFile( File basedir, String namespace );
+
+    File toFile( File basedir, String namespace, String projectId, String projectVersion );
 }

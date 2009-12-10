@@ -38,13 +38,34 @@ public class Maven2RepositoryPathTranslator
         return new File( basedir, toPath( namespace, projectId, projectVersion, filename ) );
     }
 
+    public File toFile( File basedir, String namespace, String projectId, String projectVersion )
+    {
+        return new File( basedir, toPath( namespace, projectId, projectVersion ) );
+    }
+
     public String toPath( String namespace, String projectId, String projectVersion, String filename )
     {
         StringBuilder path = new StringBuilder();
 
-        appendNamespaceAndProject( path, namespace, projectId );
-        path.append( projectVersion ).append( PATH_SEPARATOR );
+        appendNamespaceToProjectVersion( path, namespace, projectId, projectVersion );
+        path.append( PATH_SEPARATOR );
         path.append( filename );
+
+        return path.toString();
+    }
+
+    private void appendNamespaceToProjectVersion( StringBuilder path, String namespace, String projectId,
+                                                  String projectVersion )
+    {
+        appendNamespaceAndProject( path, namespace, projectId );
+        path.append( projectVersion );
+    }
+
+    public String toPath( String namespace, String projectId, String projectVersion )
+    {
+        StringBuilder path = new StringBuilder();
+
+        appendNamespaceToProjectVersion( path, namespace, projectId, projectVersion );
 
         return path.toString();
     }

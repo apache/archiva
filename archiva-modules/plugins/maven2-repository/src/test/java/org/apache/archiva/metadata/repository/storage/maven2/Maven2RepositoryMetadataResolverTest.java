@@ -22,13 +22,16 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
+import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -47,6 +50,10 @@ public class Maven2RepositoryMetadataResolverTest
     private static final String ASF_SCM_DEV_CONN_BASE = "scm:svn:https://svn.apache.org/repos/asf/";
 
     private static final String ASF_SCM_VIEWVC_BASE = "http://svn.apache.org/viewvc/";
+
+    private static final String EMPTY_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
+
+    private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
     public void setUp()
         throws Exception
@@ -290,6 +297,56 @@ public class Maven2RepositoryMetadataResolverTest
 
         assertEquals( Collections.<String>emptyList(),
                       resolver.getProjectVersions( TEST_REPO_ID, "org.apache.maven.shared", "maven-downloader" ) );
+    }
+
+    public void testGetArtifacts()
+    {
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+            resolver.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2" ) );
+        assertEquals( 3, artifacts.size() );
+        Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
+        {
+            public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
+            {
+                return o1.getId().compareTo( o2.getId() );
+            }
+        } );
+
+        assertArtifact( artifacts.get( 0 ), "plexus-spring-1.2-sources.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
+        assertArtifact( artifacts.get( 1 ), "plexus-spring-1.2.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
+        assertArtifact( artifacts.get( 2 ), "plexus-spring-1.2.pom", 7407, "96b14cf880e384b2d15e8193c57b65c5420ca4c5",
+                        "f83aa25f016212a551a4b2249985effc" );
+    }
+
+    public void testGetArtifactsFiltered()
+    {
+        ExcludesFilter<String> filter =
+            new ExcludesFilter<String>( Collections.singletonList( "plexus-spring-1.2.pom" ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+            resolver.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", filter ) );
+        assertEquals( 2, artifacts.size() );
+        Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
+        {
+            public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
+            {
+                return o1.getId().compareTo( o2.getId() );
+            }
+        } );
+
+        assertArtifact( artifacts.get( 0 ), "plexus-spring-1.2-sources.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
+        assertArtifact( artifacts.get( 1 ), "plexus-spring-1.2.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
+    }
+
+    private void assertArtifact( ArtifactMetadata artifact, String id, int size, String sha1, String md5 )
+    {
+        assertEquals( id, artifact.getId() );
+        assertEquals( md5, artifact.getMd5() );
+        assertEquals( sha1, artifact.getSha1() );
+        assertEquals( size, artifact.getSize() );
+        assertEquals( "org.codehaus.plexus", artifact.getNamespace() );
+        assertEquals( "plexus-spring", artifact.getProject() );
+        assertEquals( "1.2", artifact.getVersion() );
+        assertEquals( TEST_REPO_ID, artifact.getRepositoryId() );
     }
 
     private void assertMailingList( MailingList mailingList, String name, String archive, String post, String subscribe,
