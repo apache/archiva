@@ -21,13 +21,11 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import java.util.List;
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 
 /**
  * Stub class for Archiva DAO to avoid having to set up a database for tests.
@@ -37,11 +35,8 @@ import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 public class ArchivaDAOStub
     implements ArchivaDAO
 {
-    private ArchivaConfiguration configuration;
 
     private ArtifactDAO artifactDao;
-
-    private List<String> versions;
 
     private List<String> repositoryIds;
 
@@ -49,11 +44,7 @@ public class ArchivaDAOStub
 
     public List<?> query( SimpleConstraint constraint )
     {
-        if ( constraint instanceof UniqueVersionConstraint )
-        {
-            return versions;
-        }
-        else if ( constraint instanceof UniqueFieldConstraint )
+        if ( constraint instanceof UniqueFieldConstraint )
         {
             return repositoryIds;
         }
@@ -73,11 +64,6 @@ public class ArchivaDAOStub
     public void setArtifactDao( ArtifactDAO artifactDao )
     {
         this.artifactDao = artifactDao;
-    }
-
-    public void setVersions( List<String> versions )
-    {
-        this.versions = versions;
     }
 
     public void setRepositoryIds( List<String> repositoryIds )
