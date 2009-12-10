@@ -40,10 +40,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
-    <dependency> <!--  FIXME: temporary coupling to file based repo -->
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-repository-file</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>

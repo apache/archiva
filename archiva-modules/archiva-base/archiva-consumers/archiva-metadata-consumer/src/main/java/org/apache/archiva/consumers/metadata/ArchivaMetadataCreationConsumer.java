@@ -31,6 +31,8 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolverException;
+import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -94,6 +96,15 @@ public class ArchivaMetadataCreationConsumer
      */
     private MetadataRepository metadataRepository;
 
+    /**
+     * FIXME: this needs to be configurable based on storage type, and availability of proxy module
+     * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
+     * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
+     *
+     * @plexus.requirement role-hint="maven2"
+     */
+    private StorageMetadataResolver storageResolver;
+
     private static final Logger log = LoggerFactory.getLogger( ArchivaMetadataCreationConsumer.class );
 
     public String getId()
@@ -150,8 +161,18 @@ public class ArchivaMetadataCreationConsumer
         project.setNamespace( artifact.getGroupId() );
         project.setId( artifact.getArtifactId() );
 
-        ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
-        versionMetadata.setId( VersionUtil.getBaseVersion( artifact.getVersion() ) );
+        // TODO: maybe not too efficient since it may have already been read and stored for this artifact
+        ProjectVersionMetadata versionMetadata = null;
+        try
+        {
+            versionMetadata =
+                storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
+                                                   VersionUtil.getBaseVersion( artifact.getVersion() ) );
+        }
+        catch ( MetadataResolverException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }
 
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
         artifactMeta.setRepositoryId( repository.getId() );
@@ -181,7 +202,6 @@ public class ArchivaMetadataCreationConsumer
             log.error( "Error attempting to get SHA-1 checksum for " + file + ": " + e.getMessage() );
         }
 
-        // TODO: read the POM and fill in the rest of the information
 
         // TODO: transaction
         // read the metadata and update it if it is newer or doesn't exist
