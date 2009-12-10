@@ -31,19 +31,16 @@ import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
@@ -66,14 +63,6 @@ public class SearchServiceImplTest
 
     private RepositorySearch search;
 
-    private MockControl archivaDAOControl;
-
-    private ArchivaDAO archivaDAO;
-
-    private MockControl artifactDAOControl;
-
-    private ArtifactDAO artifactDAO;
-
     private static final String ARCHIVA_TEST_ARTIFACT_ID = "archiva-xmlrpc-test";
 
     private static final String ARCHIVA_TEST_GROUP_ID = "org.apache.archiva";
@@ -82,16 +71,20 @@ public class SearchServiceImplTest
 
     private MetadataResolver metadataResolver;
 
+    private MockControl metadataRepositoryControl;
+
+    private MetadataRepository metadataRepository;
+
+    private static final String CHECKSUM = "a1b2c3aksjhdasfkdasasd";
+
+    private static final String TEST_REPO = "test-repo";
+
     @Override
     public void setUp()
         throws Exception
     {
         userReposControl = MockClassControl.createControl( XmlRpcUserRepositories.class );
         userRepos = (XmlRpcUserRepositories) userReposControl.getMock();
-
-        archivaDAOControl = MockControl.createControl( ArchivaDAO.class );
-        archivaDAOControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        archivaDAO = (ArchivaDAO) archivaDAOControl.getMock();
 
         searchControl = MockControl.createControl( RepositorySearch.class );
         searchControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
@@ -100,13 +93,14 @@ public class SearchServiceImplTest
         metadataResolverControl = MockControl.createControl( MetadataResolver.class );
         metadataResolver = (MetadataResolver) metadataResolverControl.getMock();
 
-        artifactDAOControl = MockControl.createControl( ArtifactDAO.class );
-        artifactDAO = (ArtifactDAO) artifactDAOControl.getMock();
+        metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
 
-        searchService = new SearchServiceImpl( userRepos, archivaDAO, metadataResolver, search );
+        searchService = new SearchServiceImpl( userRepos, metadataResolver, metadataRepository, search );
     }
 
     // MRM-1230
+
     public void testQuickSearchModelPackagingIsUsed()
         throws Exception
     {
@@ -133,10 +127,6 @@ public class SearchServiceImplTest
         searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ),
                                               results );
 
-        archivaDAOControl.expectAndReturn( archivaDAO.query(
-            new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(), resultHit.getArtifactId() ) ),
-                                           null );
-
         ProjectVersionMetadata model = new ProjectVersionMetadata();
         model.setId( "1.0" );
         MavenProjectFacet facet = new MavenProjectFacet();
@@ -150,14 +140,14 @@ public class SearchServiceImplTest
         userReposControl.replay();
         searchControl.replay();
         metadataResolverControl.replay();
-        archivaDAOControl.replay();
+        metadataRepositoryControl.replay();
 
         List<Artifact> artifacts = searchService.quickSearch( "archiva" );
 
         userReposControl.verify();
         searchControl.verify();
         metadataResolverControl.verify();
-        archivaDAOControl.verify();
+        metadataRepositoryControl.verify();
 
         assertNotNull( artifacts );
         assertEquals( 1, artifacts.size() );
@@ -197,10 +187,6 @@ public class SearchServiceImplTest
         searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ),
                                               results );
 
-        archivaDAOControl.expectAndReturn( archivaDAO.query(
-            new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(), resultHit.getArtifactId() ) ),
-                                           null );
-
         metadataResolverControl.expectAndReturn(
             metadataResolver.getProjectVersion( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
                                                 "1.0" ), null );
@@ -214,14 +200,14 @@ public class SearchServiceImplTest
         userReposControl.replay();
         searchControl.replay();
         metadataResolverControl.replay();
-        archivaDAOControl.replay();
+        metadataRepositoryControl.replay();
 
         List<Artifact> artifacts = searchService.quickSearch( "archiva" );
 
         userReposControl.verify();
         searchControl.verify();
         metadataResolverControl.verify();
-        archivaDAOControl.verify();
+        metadataRepositoryControl.verify();
 
         assertNotNull( artifacts );
         assertEquals( 1, artifacts.size() );
@@ -255,10 +241,6 @@ public class SearchServiceImplTest
 
         results.addHit( SearchUtil.getHitId( resultHit.getGroupId(), resultHit.getArtifactId() ), resultHit );
 
-        archivaDAOControl.expectAndReturn( archivaDAO.query(
-            new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(), resultHit.getArtifactId() ) ),
-                                           null );
-
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
 
         searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ),
@@ -276,14 +258,14 @@ public class SearchServiceImplTest
 
         userReposControl.replay();
         searchControl.replay();
-        archivaDAOControl.replay();
+        metadataRepositoryControl.replay();
         metadataResolverControl.replay();
 
         List<Artifact> artifacts = searchService.quickSearch( "archiva" );
 
         userReposControl.verify();
         searchControl.verify();
-        archivaDAOControl.verify();
+        metadataRepositoryControl.verify();
         metadataResolverControl.verify();
 
         assertNotNull( artifacts );
@@ -327,30 +309,31 @@ public class SearchServiceImplTest
     public void testGetArtifactByChecksum()
         throws Exception
     {
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(),
+                                          Collections.singletonList( TEST_REPO ) );
+
         Date whenGathered = new Date();
 
-        ArtifactsByChecksumConstraint constraint = new ArtifactsByChecksumConstraint( "a1b2c3aksjhdasfkdasasd" );
-        List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();
-        ArchivaArtifact artifact =
-            new ArchivaArtifact( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0", "", "jar", "test-repo" );
-        artifact.getModel().setWhenGathered( whenGathered );
-        artifacts.add( artifact );
+        ArtifactMetadata artifact = createArtifact( whenGathered );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifactsByChecksum( TEST_REPO, CHECKSUM ),
+                                                   Collections.singletonList( artifact ) );
 
-        archivaDAOControl.expectAndReturn( archivaDAO.getArtifactDAO(), artifactDAO );
-        artifactDAO.queryArtifacts( constraint );
-        artifactDAOControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        artifactDAOControl.setReturnValue( artifacts );
+        metadataRepositoryControl.replay();
+        userReposControl.replay();
 
-        archivaDAOControl.replay();
-        artifactDAOControl.replay();
+        List<Artifact> results = searchService.getArtifactByChecksum( CHECKSUM );
 
-        List<Artifact> results = searchService.getArtifactByChecksum( "a1b2c3aksjhdasfkdasasd" );
-
-        archivaDAOControl.verify();
-        artifactDAOControl.verify();
+        metadataRepositoryControl.verify();
+        userReposControl.verify();
 
         assertNotNull( results );
         assertEquals( 1, results.size() );
+        Artifact result = results.get( 0 );
+        assertEquals( ARCHIVA_TEST_GROUP_ID, result.getGroupId() );
+        assertEquals( ARCHIVA_TEST_ARTIFACT_ID, result.getArtifactId() );
+        assertEquals( "1.0", result.getVersion() );
+        assertEquals( "jar", result.getType() );
+        assertEquals( TEST_REPO, result.getRepositoryId() );
     }
 
     public void testGetArtifactVersionsArtifactExists()
@@ -552,5 +535,19 @@ public class SearchServiceImplTest
         metadataResolverControl.replay();
 
         assertTrue( searchService.getDependees( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ).isEmpty() );
+    }
+
+    private ArtifactMetadata createArtifact( Date whenGathered )
+    {
+        String version = "1.0";
+        ArtifactMetadata artifactMetadata = new ArtifactMetadata();
+        artifactMetadata.setVersion( version );
+        artifactMetadata.setId( ARCHIVA_TEST_ARTIFACT_ID + "-" + version + ".jar" );
+        artifactMetadata.setProject( ARCHIVA_TEST_ARTIFACT_ID );
+        artifactMetadata.setNamespace( ARCHIVA_TEST_GROUP_ID );
+        artifactMetadata.setMd5( CHECKSUM );
+        artifactMetadata.setWhenGathered( whenGathered );
+        artifactMetadata.setRepositoryId( TEST_REPO );
+        return artifactMetadata;
     }
 }

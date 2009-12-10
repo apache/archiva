@@ -28,43 +28,36 @@ import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 
 public class SearchServiceImpl
     implements SearchService
 {
-    private Logger log = LoggerFactory.getLogger( SearchServiceImpl.class );
-
     private RepositorySearch search;
 
     private XmlRpcUserRepositories xmlRpcUserRepositories;
 
-    private ArchivaDAO archivaDAO;
-
     private MetadataResolver metadataResolver;
 
-    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, ArchivaDAO archivaDAO,
-                              MetadataResolver metadataResolver, RepositorySearch search )
+    private MetadataRepository metadataRepository;
+
+    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, MetadataResolver metadataResolver,
+                              MetadataRepository metadataRepository, RepositorySearch search )
     {
         this.xmlRpcUserRepositories = xmlRpcUserRepositories;
-        this.archivaDAO = archivaDAO;
         this.search = search;
         this.metadataResolver = metadataResolver;
+        this.metadataRepository = metadataRepository;
     }
 
     @SuppressWarnings("unchecked")
@@ -74,21 +67,12 @@ public class SearchServiceImpl
         List<Artifact> artifacts = new ArrayList<Artifact>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
-        SearchResults results = null;
+        SearchResults results;
 
         results = search.search( "", observableRepos, queryString, limits, null );
 
         for ( SearchResultHit resultHit : results.getHits() )
         {
-            // double-check all versions as done in SearchAction
-            final List<String> versions = (List<String>) archivaDAO.query(
-                new UniqueVersionConstraint( observableRepos, resultHit.getGroupId(), resultHit.getArtifactId() ) );
-            if ( versions != null && !versions.isEmpty() )
-            {
-                resultHit.setVersion( null );
-                resultHit.setVersions( filterTimestampedSnapshots( versions ) );
-            }
-
             List<String> resultHitVersions = resultHit.getVersions();
             if ( resultHitVersions != null )
             {
@@ -130,47 +114,40 @@ public class SearchServiceImpl
         return artifacts;
     }
 
-    /**
-     * Remove timestamped snapshots from versions
-     */
-    private static List<String> filterTimestampedSnapshots( List<String> versions )
-    {
-        final List<String> filtered = new ArrayList<String>();
-        for ( final String version : versions )
-        {
-            final String baseVersion = VersionUtil.getBaseVersion( version );
-            if ( !filtered.contains( baseVersion ) )
-            {
-                filtered.add( baseVersion );
-            }
-        }
-        return filtered;
-    }
-
     public List<Artifact> getArtifactByChecksum( String checksum )
         throws Exception
     {
-        // 1. get ArtifactDAO from ArchivaDAO
-        // 2. create ArtifactsByChecksumConstraint( "queryTerm" )
-        // 3. query artifacts using constraint
-        // 4. convert results to list of Artifact objects
+        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
 
         List<Artifact> results = new ArrayList<Artifact>();
-        ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO();
-
-        ArtifactsByChecksumConstraint constraint = new ArtifactsByChecksumConstraint( checksum );
-        List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( constraint );
-
-        for ( ArchivaArtifact archivaArtifact : artifacts )
+        for ( String repoId : observableRepos )
         {
-            Artifact artifact =
-                new Artifact( archivaArtifact.getModel().getRepositoryId(), archivaArtifact.getModel().getGroupId(),
-                              archivaArtifact.getModel().getArtifactId(), archivaArtifact.getModel().getVersion(),
-                              archivaArtifact.getType() );
-            //archivaArtifact.getModel().getWhenGathered() );
-            results.add( artifact );
+            for ( ArtifactMetadata artifact : metadataRepository.getArtifactsByChecksum( repoId, checksum ) )
+            {
+                // TODO: use a maven facet instead, for now just using the extension and classifier
+                String type = null;
+                String key = artifact.getProject() + "-" + artifact.getVersion();
+                String filename = artifact.getId();
+                int extIndex = filename.lastIndexOf( "." );
+                if ( filename.startsWith( key ) )
+                {
+                    int i = key.length();
+                    char nextToken = filename.charAt( i );
+                    if ( nextToken == '-' )
+                    {
+                        String classifier = filename.substring( i + 1, extIndex );
+                        String extension = filename.substring( extIndex + 1 );
+                        type = ArtifactExtensionMapping.mapExtensionAndClassifierToType( classifier, extension );
+                    }
+                    else if ( nextToken == '.' )
+                    {
+                        type = ArtifactExtensionMapping.mapExtensionToType( filename.substring( i + 1 ) );
+                    }
+                }
+                results.add( new Artifact( artifact.getRepositoryId(), artifact.getNamespace(), artifact.getProject(),
+                                           artifact.getVersion(), type ) );
+            }
         }
-
         return results;
     }
 
@@ -198,11 +175,11 @@ public class SearchServiceImpl
     public List<Artifact> getArtifactVersionsByDate( String groupId, String artifactId, String version, Date since )
         throws Exception
     {
-        List<Artifact> artifacts = new ArrayList<Artifact>();
+//        List<Artifact> artifacts = new ArrayList<Artifact>();
 
         // 1. get observable repositories
         // 2. use RepositoryBrowsing method to query uniqueVersions? (but with date)
-        
+
         throw new UnsupportedOperationException( "getArtifactVersionsByDate not yet implemented" );
 
 //        return artifacts;
@@ -236,8 +213,8 @@ public class SearchServiceImpl
     public List<Artifact> getDependencyTree( String groupId, String artifactId, String version )
         throws Exception
     {
-        List<Artifact> a = new ArrayList<Artifact>();
-        
+//        List<Artifact> a = new ArrayList<Artifact>();
+
         throw new UnsupportedOperationException( "getDependencyTree not yet implemented" );
 //        return a;
     }
