@@ -395,7 +395,7 @@ public class JdoAccess
             case 3:
                 return (List<?>) query.execute( parameters[0], parameters[1], parameters[2] );
             default:
-                throw new JDOException( "Unable to use more than 3 parameters." );
+                return (List<?>) query.executeWithArray( parameters );                
         }
     }
 

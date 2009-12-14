@@ -20,7 +20,9 @@ package org.apache.maven.archiva.web.action.reports;
  */
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +31,10 @@ import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.ArchivaAuditLogsConstraint;
 import org.apache.maven.archiva.database.constraints.MostRecentArchivaAuditLogsConstraint;
 import org.apache.maven.archiva.model.ArchivaAuditLogs;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
@@ -69,11 +73,19 @@ public class ViewAuditLogReportAction
     private String groupId;
     
     private String artifactId;
+    
+    private Date startDate;
+
+    private Date endDate;
         
     private int rowCount = 30;
     
-    private List<ArchivaAuditLogs> auditLogs = new ArrayList<ArchivaAuditLogs>();    
+    private int page;
+
+    private List<ArchivaAuditLogs> auditLogs;    
     
+    private static final String ALL_REPOSITORIES = "all";
+        
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {        
@@ -88,7 +100,11 @@ public class ViewAuditLogReportAction
     public void prepare()
         throws Exception
     {     
-        repositories = getObservableRepositories();
+        repositories = new ArrayList<String>();
+        repositories.add( ALL_REPOSITORIES );
+        repositories.addAll( getObservableRepositories() );
+        
+        auditLogs = null;
         
         Constraint constraint = new MostRecentArchivaAuditLogsConstraint();
         
@@ -108,7 +124,65 @@ public class ViewAuditLogReportAction
     
     public String execute()
         throws Exception
-    {   
+    {     
+        auditLogs = null;
+        String artifact = null;
+        
+        if( groupId != null || !"".equals( groupId ) )
+        {
+            artifact = groupId;
+        }
+        
+        if( artifactId != null || !"".equals( artifactId ) )
+        {
+            artifact = artifact + ":" + artifactId;
+        }
+        
+        if( startDate == null )
+        {
+            Calendar cal = Calendar.getInstance();
+            cal.set( Calendar.HOUR, 0 );
+            cal.set( Calendar.MINUTE, 0 );
+            cal.set( Calendar.SECOND, 0 );            
+            
+            startDate = cal.getTime(); 
+        }
+        
+        if( startDate.equals( endDate ) || endDate == null )
+        {
+            endDate = Calendar.getInstance().getTime();
+        }
+                
+        int[] range = {1, 30 };        
+
+        ArchivaAuditLogsConstraint constraint = null;
+        if( !repository.equals( ALL_REPOSITORIES ) )
+        {
+            //constraint = new ArchivaAuditLogsConstraint( range, artifact, repository, AuditEvent.UPLOAD_FILE, startDate, endDate );
+            constraint = new ArchivaAuditLogsConstraint( artifact, repository, AuditEvent.UPLOAD_FILE, startDate, endDate );
+        }
+        else
+        {
+            constraint = new ArchivaAuditLogsConstraint( range, artifact, null, AuditEvent.UPLOAD_FILE, startDate, endDate );
+        }
+        
+        try
+        {
+            auditLogs = auditLogsDao.queryAuditLogs( constraint );
+            startDate = null;
+            endDate = null;
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            addActionError( "No audit logs found." );
+            return ERROR;
+        }
+        catch( ArchivaDatabaseException e )
+        {
+            addActionError( "Error occurred while querying audit logs." );
+            return ERROR;
+        }
+        
         return SUCCESS;
     }
     
@@ -191,5 +265,35 @@ public class ViewAuditLogReportAction
     public void setRowCount( int rowCount )
     {
         this.rowCount = rowCount;
+    }
+    
+    public Date getStartDate()
+    {
+        return startDate;
+    }
+
+    public void setStartDate( Date startDate )
+    {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate()
+    {
+        return endDate;
+    }
+
+    public void setEndDate( Date endDate )
+    {
+        this.endDate = endDate;
+    }
+    
+    public int getPage()
+    {
+        return page;
+    }
+
+    public void setPage( int page )
+    {
+        this.page = page;
     }
 }

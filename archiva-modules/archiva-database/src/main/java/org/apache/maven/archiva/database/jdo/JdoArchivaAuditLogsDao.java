@@ -48,6 +48,7 @@ public class JdoArchivaAuditLogsDao
         jdo.removeObject( logs );
     }
 
+    @SuppressWarnings( "unchecked" )
     public List<ArchivaAuditLogs> queryAuditLogs( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {

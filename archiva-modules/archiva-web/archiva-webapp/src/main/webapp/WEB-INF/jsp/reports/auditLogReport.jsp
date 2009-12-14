@@ -83,25 +83,26 @@
     </div>
   </s:form> 
   
-  
-  <table border="1">
-    <tr>
-      <th align="center">Event</th>
-      <th align="center">Repository</th>
-      <th align="center">Artifact</th>
-      <th align="center">Event Date</th>
-      <th align="center">Username</th>
-    </tr>
-    <c:forEach items="${auditLogs}" var="auditLog" varStatus="i">
-      <tr>
-        <td>${auditLog.event}</td>
-        <td>${auditLog.repositoryId}</td>
-          <td>${auditLog.artifact}</td>
-          <td>${auditLog.eventDate}</td>
-          <td>${auditLog.username}</td>
-        </tr>
-    </c:forEach>
-  </table>   
+  <c:if test="${not empty (auditLogs)}">
+	  <table border="1">
+	    <tr>
+	      <th align="center">Event</th>
+	      <th align="center">Repository</th>
+	      <th align="center">Artifact</th>
+	      <th align="center">Event Date</th>
+	      <th align="center">Username</th>
+	    </tr>
+	    <c:forEach items="${auditLogs}" var="auditLog" varStatus="i">
+	      <tr>
+	        <td>${auditLog.event}</td>
+	        <td>${auditLog.repositoryId}</td>
+	          <td>${auditLog.artifact}</td>
+	          <td>${auditLog.eventDate}</td>
+	          <td>${auditLog.username}</td>
+	        </tr>
+	    </c:forEach>
+	  </table>   
+  </c:if>
 
 </div>
 
