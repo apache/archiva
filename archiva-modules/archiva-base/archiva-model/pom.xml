@@ -70,7 +70,7 @@
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>
         <configuration>
-          <version>1.2.1</version>
+          <version>1.2.3</version>
           <packageWithVersion>false</packageWithVersion>
           <models>
             <model>src/main/mdo/archiva-base.xml</model>

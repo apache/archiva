@@ -25,6 +25,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.MostRecentArchivaAuditLogsConstraint;
+import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
@@ -51,6 +57,11 @@ public class ViewAuditLogReportAction
      */
     private UserRepositories userRepositories;
     
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaAuditLogsDao auditLogsDao;
+    
     private String repository;
 
     private List<String> repositories;
@@ -61,16 +72,8 @@ public class ViewAuditLogReportAction
         
     private int rowCount = 30;
     
-    public int getRowCount()
-    {
-        return rowCount;
-    }
-
-    public void setRowCount( int rowCount )
-    {
-        this.rowCount = rowCount;
-    }
-
+    private List<ArchivaAuditLogs> auditLogs = new ArrayList<ArchivaAuditLogs>();    
+    
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {        
@@ -87,12 +90,25 @@ public class ViewAuditLogReportAction
     {     
         repositories = getObservableRepositories();
         
+        Constraint constraint = new MostRecentArchivaAuditLogsConstraint();
         
+        try
+        {
+            this.auditLogs = auditLogsDao.queryAuditLogs( constraint );            
+        }
+        catch( ObjectNotFoundException e )
+        {
+            log.warn( "No audit logs found." );
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            log.warn( "Error occurred while querying audit logs." );
+        }
     }
     
     public String execute()
         throws Exception
-    {
+    {   
         return SUCCESS;
     }
     
@@ -155,5 +171,25 @@ public class ViewAuditLogReportAction
     public void setArtifactId( String artifactId )
     {
         this.artifactId = artifactId;
+    }
+    
+    public List<ArchivaAuditLogs> getAuditLogs()
+    {
+        return auditLogs;
+    }
+
+    public void setAuditLogs( List<ArchivaAuditLogs> auditLogs )
+    {
+        this.auditLogs = auditLogs;
+    }
+
+    public int getRowCount()
+    {
+        return rowCount;
+    }
+
+    public void setRowCount( int rowCount )
+    {
+        this.rowCount = rowCount;
     }
 }

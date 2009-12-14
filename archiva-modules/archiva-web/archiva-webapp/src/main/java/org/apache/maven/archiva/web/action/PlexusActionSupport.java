@@ -20,11 +20,14 @@ package org.apache.maven.archiva.web.action;
  */
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
+import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.audit.Auditable;
@@ -53,6 +56,11 @@ public abstract class PlexusActionSupport
      */
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaAuditLogsDao auditLogsDao;
+    
     private String principal;
 
     @SuppressWarnings("unchecked")
@@ -85,6 +93,15 @@ public abstract class PlexusActionSupport
         {
             listener.auditEvent( event );
         }
+        
+        ArchivaAuditLogs auditLogs = new ArchivaAuditLogs();
+        auditLogs.setArtifact( resource );
+        auditLogs.setEvent( action );
+        auditLogs.setEventDate( Calendar.getInstance().getTime() );
+        auditLogs.setRepositoryId( repositoryId );
+        auditLogs.setUsername( getPrincipal() );
+        
+        auditLogsDao.saveAuditLogs( auditLogs );
     }
 
     protected void triggerAuditEvent( String resource, String action )
