@@ -5,7 +5,7 @@
        xsd.target-namespace="http://archiva.apache.org/model/1.2.0">
   <id>archiva-base-model</id>
   <name>ArchivaBaseModel</name>
-  <version>1.2.3</version>
+  <version>1.3.0</version>
   <description>Archiva Model</description>
   <defaults>
     <default>
@@ -2289,11 +2289,11 @@
     <class stash.storable="true"
            jpox.table="AUDIT_LOGS">
       <name>ArchivaAuditLogs</name>
-      <version>1.2.3+</version>
+      <version>1.3.0+</version>
       <fields>
         <field stash.maxSize="50">
           <name>repositoryId</name>
-          <version>1.2.3+</version>
+          <version>1.3.0+</version>
           <identifier>false</identifier>
           <required>true</required>
           <type>String</type>
@@ -2303,7 +2303,7 @@
         </field>
         <field>
           <name>eventDate</name>
-          <version>1.2.3+</version>
+          <version>1.3.0+</version>
           <identifier>false</identifier>
           <required>true</required>
           <type>Date</type>
@@ -2313,7 +2313,7 @@
         </field>
         <field>
           <name>artifact</name>
-          <version>1.2.3+</version>
+          <version>1.3.0+</version>
           <identifier>false</identifier>
           <required>false</required>
           <type>String</type>
@@ -2323,7 +2323,7 @@
         </field>
         <field>
           <name>event</name>
-          <version>1.2.3+</version>
+          <version>1.3.0+</version>
           <identifier>false</identifier>
           <required>false</required>
           <type>String</type>
@@ -2333,7 +2333,7 @@
         </field>
         <field>
           <name>username</name>
-          <version>1.2.3+</version>
+          <version>1.3.0+</version>
           <identifier>false</identifier>
           <required>true</required>
           <type>String</type>
@@ -2344,7 +2344,7 @@
       </fields>
       <codeSegments>
         <codeSegment>
-          <version>1.2.3+</version>
+          <version>1.3.0+</version>
           <code><![CDATA[
     private static final long serialVersionUID = -7113629916828442780L;
           ]]></code>
