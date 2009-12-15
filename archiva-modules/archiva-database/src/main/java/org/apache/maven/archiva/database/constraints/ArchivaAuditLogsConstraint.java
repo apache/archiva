@@ -30,23 +30,13 @@ public class ArchivaAuditLogsConstraint
     extends RangeConstraint
 {
     private String whereClause;
-
-    /**
-     * Complete custom query!
-     * 
-     * @param desiredArtifact
-     * @param desiredRepositoryId
-     * @param desiredEvent
-     * @param startDate
-     * @param endDate
-     */
+    
     private void createWhereClause( String desiredArtifact, String desiredRepositoryId, String desiredEvent,
                                     Date startDate, Date endDate )
     {
-        whereClause = "eventDate >= desiredStartDate && eventDate <= desiredEndDate";
-
+        whereClause = "eventDate >= desiredStartDate && eventDate <= desiredEndDate";        
         declImports = new String[] { "import java.util.Date" };
-
+                
         List<String> declParamsList = new ArrayList<String>();
         declParamsList.add( "Date desiredStartDate" );
         declParamsList.add( "Date desiredEndDate" );

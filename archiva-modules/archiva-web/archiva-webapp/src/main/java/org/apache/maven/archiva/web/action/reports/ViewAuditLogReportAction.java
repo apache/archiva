@@ -28,9 +28,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
+import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.database.constraints.ArchivaAuditLogsConstraint;
 import org.apache.maven.archiva.database.constraints.MostRecentArchivaAuditLogsConstraint;
 import org.apache.maven.archiva.model.ArchivaAuditLogs;
@@ -66,6 +67,11 @@ public class ViewAuditLogReportAction
      */
     private ArchivaAuditLogsDao auditLogsDao;
     
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaDAO dao;
+    
     private String repository;
 
     private List<String> repositories;
@@ -80,11 +86,13 @@ public class ViewAuditLogReportAction
         
     private int rowCount = 30;
     
-    private int page;
+    private int page = 1;
 
     private List<ArchivaAuditLogs> auditLogs;    
     
     private static final String ALL_REPOSITORIES = "all";
+    
+    protected int[] range = new int[2];
         
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
@@ -97,6 +105,7 @@ public class ViewAuditLogReportAction
         this.request = request;
     }
 
+    @SuppressWarnings( "unchecked" )
     public void prepare()
         throws Exception
     {     
@@ -106,34 +115,22 @@ public class ViewAuditLogReportAction
         
         auditLogs = null;
         
-        Constraint constraint = new MostRecentArchivaAuditLogsConstraint();
-        
-        try
-        {
-            this.auditLogs = auditLogsDao.queryAuditLogs( constraint );            
-        }
-        catch( ObjectNotFoundException e )
-        {
-            log.warn( "No audit logs found." );
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            log.warn( "Error occurred while querying audit logs." );
-        }
+        SimpleConstraint constraint = new MostRecentArchivaAuditLogsConstraint();        
+        auditLogs = (List<ArchivaAuditLogs>) dao.query( constraint );
     }
     
     public String execute()
         throws Exception
     {     
         auditLogs = null;
-        String artifact = null;
+        String artifact = "";
         
-        if( groupId != null || !"".equals( groupId ) )
+        if( groupId != null || !"".equals( groupId.trim() ) )
         {
             artifact = groupId;
         }
         
-        if( artifactId != null || !"".equals( artifactId ) )
+        if( artifactId != null || !"".equals( artifactId.trim() ) )
         {
             artifact = artifact + ":" + artifactId;
         }
@@ -153,13 +150,13 @@ public class ViewAuditLogReportAction
             endDate = Calendar.getInstance().getTime();
         }
                 
-        int[] range = {1, 30 };        
+        range[0] = ( page - 1 ) * rowCount;
+        range[1] = ( page * rowCount ) + 1; 
 
         ArchivaAuditLogsConstraint constraint = null;
         if( !repository.equals( ALL_REPOSITORIES ) )
         {
-            //constraint = new ArchivaAuditLogsConstraint( range, artifact, repository, AuditEvent.UPLOAD_FILE, startDate, endDate );
-            constraint = new ArchivaAuditLogsConstraint( artifact, repository, AuditEvent.UPLOAD_FILE, startDate, endDate );
+            constraint = new ArchivaAuditLogsConstraint( range, artifact, repository, AuditEvent.UPLOAD_FILE, startDate, endDate );
         }
         else
         {

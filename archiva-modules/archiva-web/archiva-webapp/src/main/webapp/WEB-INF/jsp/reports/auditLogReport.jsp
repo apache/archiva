@@ -80,30 +80,34 @@
 		<s:textfield label="Row Count" name="rowCount" />
 		
 	    <s:submit value="View Audit Log"/>
-    </div>
-  </s:form> 
+    </div>    
+   
+  </s:form>
   
-  <c:if test="${not empty (auditLogs)}">
+   <c:if test="${not empty (auditLogs)}">
 	  <table border="1">
-	    <tr>
-	      <th align="center">Event</th>
-	      <th align="center">Repository</th>
-	      <th align="center">Artifact</th>
-	      <th align="center">Event Date</th>
-	      <th align="center">Username</th>
-	    </tr>
+        <thead>
+	      <tr>
+	        <th align="center">Event</th>
+	        <th align="center">Repository</th>
+	        <th align="center">Artifact</th>
+	        <th align="center">Event Date</th>
+	        <th align="center">Username</th>
+	      </tr>
+	    </thead>
 	    <c:forEach items="${auditLogs}" var="auditLog" varStatus="i">
+	    <tbody>
 	      <tr>
 	        <td>${auditLog.event}</td>
 	        <td>${auditLog.repositoryId}</td>
-	          <td>${auditLog.artifact}</td>
-	          <td>${auditLog.eventDate}</td>
-	          <td>${auditLog.username}</td>
-	        </tr>
+	        <td>${auditLog.artifact}</td>
+	        <td>${auditLog.eventDate}</td>
+	        <td>${auditLog.username}</td>
+	      </tr>
+	    </tbody>
 	    </c:forEach>
 	  </table>   
-  </c:if>
-
+    </c:if> 
 </div>
 
 </body>

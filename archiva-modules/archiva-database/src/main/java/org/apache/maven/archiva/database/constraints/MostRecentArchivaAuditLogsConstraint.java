@@ -20,6 +20,7 @@ package org.apache.maven.archiva.database.constraints;
  */
 
 import org.apache.maven.archiva.model.ArchivaAuditLogs;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
 
 public class MostRecentArchivaAuditLogsConstraint
     extends AbstractSimpleConstraint
@@ -28,7 +29,12 @@ public class MostRecentArchivaAuditLogsConstraint
 
     public MostRecentArchivaAuditLogsConstraint()
     {
-        sql = "SELECT FROM " + ArchivaAuditLogs.class.getName() + " ORDER BY eventDate DESCENDING RANGE 0,1";
+        sql =
+            "SELECT FROM " + ArchivaAuditLogs.class.getName() +
+                " WHERE event == uploadArtifact PARAMETERS String uploadArtifact" +
+                " ORDER BY eventDate DESCENDING RANGE 0,10";
+
+        super.params = new Object[] { AuditEvent.UPLOAD_FILE };
     }
 
     public Class<?> getResultClass()
