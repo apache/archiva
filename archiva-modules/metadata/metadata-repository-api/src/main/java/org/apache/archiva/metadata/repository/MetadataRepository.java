@@ -55,9 +55,11 @@ public interface MetadataRepository
 
     MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name );
 
-    void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet );
+    void addMetadataFacet( String repositoryId, String facetId, MetadataFacet metadataFacet );
 
     void removeMetadataFacets( String repositoryId, String facetId );
+
+    void removeMetadataFacet( String repoId, String facetId, String name );
 
     List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime );
 

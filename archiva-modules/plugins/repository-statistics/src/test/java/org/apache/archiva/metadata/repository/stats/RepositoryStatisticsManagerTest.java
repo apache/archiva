@@ -65,11 +65,10 @@ public class RepositoryStatisticsManagerTest
     public void testGetLatestStats()
         throws ParseException
     {
-        Date endTime =
-            new Date( DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.parse( SECOND_TEST_SCAN ).getTime() + 60000 );
+        Date endTime = new Date( RepositoryStatistics.SCAN_TIMESTAMP.parse( SECOND_TEST_SCAN ).getTime() + 60000 );
 
         RepositoryStatistics stats = new RepositoryStatistics();
-        stats.setScanStartTime( DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.parse( SECOND_TEST_SCAN ) );
+        stats.setScanStartTime( RepositoryStatistics.SCAN_TIMESTAMP.parse( SECOND_TEST_SCAN ) );
         stats.setScanEndTime( endTime );
         stats.setTotalArtifactFileSize( 1314527915L );
         stats.setNewFileCount( 123 );
@@ -94,8 +93,8 @@ public class RepositoryStatisticsManagerTest
         assertEquals( 2031, stats.getTotalProjectCount() );
         assertEquals( 529, stats.getTotalGroupCount() );
         assertEquals( 56229, stats.getTotalFileCount() );
-        assertEquals( SECOND_TEST_SCAN,
-                      DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( stats.getScanStartTime() ) );
+        assertEquals( SECOND_TEST_SCAN, RepositoryStatistics.SCAN_TIMESTAMP.format( stats.getScanStartTime() ) );
+        assertEquals( SECOND_TEST_SCAN, stats.getName() );
         assertEquals( endTime, stats.getScanEndTime() );
 
         metadataRepositoryControl.verify();
@@ -119,17 +118,15 @@ public class RepositoryStatisticsManagerTest
         Date current = new Date();
         Date startTime = new Date( current.getTime() - 12345 );
 
-        RepositoryStatistics stats1 = createTestStats( startTime, current );
+        RepositoryStatistics stats = createTestStats( startTime, current );
 
-        String startTimeAsString = DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( startTime );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString, stats1 );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats );
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
-            Arrays.asList( startTimeAsString ) );
+            Arrays.asList( stats.getName() ) );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString ),
-            stats1 );
-        RepositoryStatistics stats = stats1;
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats.getName() ),
+            stats );
 
         metadataRepositoryControl.replay();
 
@@ -155,19 +152,17 @@ public class RepositoryStatisticsManagerTest
 
         Date startTime1 = new Date( current.getTime() - 12345 );
         RepositoryStatistics stats1 = createTestStats( startTime1, new Date( current.getTime() - 6000 ) );
-        String startTimeAsString1 = DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( startTime1 );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString1, stats1 );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats1 );
 
         Date startTime2 = new Date( current.getTime() - 3000 );
         RepositoryStatistics stats2 = createTestStats( startTime2, current );
-        String startTimeAsString2 = DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( startTime2 );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString2, stats2 );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats2 );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
-            Arrays.asList( startTimeAsString1, startTimeAsString2 ) );
+            Arrays.asList( stats1.getName(), stats2.getName() ) );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString2 ),
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats2.getName() ),
             stats2 );
 
         metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID );
@@ -230,7 +225,7 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );           
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );
         }
 
         List<RepositoryStatistics> list =
@@ -396,9 +391,8 @@ public class RepositoryStatisticsManagerTest
     private void addStats( Date startTime, Date endTime )
     {
         RepositoryStatistics stats = createTestStats( startTime, endTime );
-        String startTimeAsString = DefaultRepositoryStatisticsManager.SCAN_TIMESTAMP.format( startTime );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, startTimeAsString, stats );
-        statsCreated.put( startTimeAsString, stats );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats );
+        statsCreated.put( stats.getName(), stats );
     }
 
     private RepositoryStatistics createTestStats( Date startTime, Date endTime )

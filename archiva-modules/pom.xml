@@ -30,7 +30,6 @@
   <modules>
     <module>archiva-base</module>
     <module>archiva-database</module>
-    <module>archiva-reporting</module>
     <module>archiva-scheduler</module>
     <module>archiva-web</module>
     <module>metadata</module>

@@ -27,31 +27,23 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.servlet.http.HttpServletRequest;
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.constraints.RangeConstraint;
-import org.apache.maven.archiva.database.constraints.RepositoryProblemByGroupIdConstraint;
-import org.apache.maven.archiva.database.constraints.RepositoryProblemByRepositoryIdConstraint;
-import org.apache.maven.archiva.database.constraints.RepositoryProblemConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
-import org.apache.maven.archiva.model.RepositoryProblem;
-import org.apache.maven.archiva.model.RepositoryProblemReport;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
-import org.apache.struts2.interceptor.ServletRequestAware;
+import org.apache.maven.archiva.web.action.AbstractRepositoryBasedAction;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
@@ -63,8 +55,8 @@ import org.slf4j.LoggerFactory;
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport" instantiation-strategy="per-lookup"
  */
 public class GenerateReportAction
-    extends PlexusActionSupport
-    implements SecureAction, ServletRequestAware, Preparable
+    extends AbstractRepositoryBasedAction
+    implements SecureAction, Preparable
 {
     public static final String ALL_REPOSITORIES = "All Repositories";
 
@@ -79,11 +71,6 @@ public class GenerateReportAction
     private Logger log = LoggerFactory.getLogger( GenerateReportAction.class );
 
     /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaDAO dao;
-
-    /**
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
@@ -92,8 +79,6 @@ public class GenerateReportAction
      * @plexus.requirement
      */
     private RepositoryStatisticsManager repositoryStatisticsManager;
-
-    private HttpServletRequest request;
 
     private String groupId;
 
@@ -113,8 +98,8 @@ public class GenerateReportAction
 
     private Collection<String> repositoryIds;
 
-    private Map<String, List<RepositoryProblemReport>> repositoriesMap =
-        new TreeMap<String, List<RepositoryProblemReport>>();
+    private Map<String, List<RepositoryProblemFacet>> repositoriesMap =
+        new TreeMap<String, List<RepositoryProblemFacet>>();
 
     private List<String> availableRepositories;
 
@@ -124,13 +109,17 @@ public class GenerateReportAction
 
     private boolean lastPage;
 
+    /**
+     * @plexus.requirement
+     */
+    private MetadataRepository metadataRepository;
+
     @SuppressWarnings("unchecked")
     public void prepare()
     {
         repositoryIds = new ArrayList<String>();
         repositoryIds.add( ALL_REPOSITORIES ); // comes first to be first in the list
-        repositoryIds.addAll( (List<String>) dao.query(
-            new UniqueFieldConstraint( RepositoryProblem.class.getName(), "repositoryId" ) ) );
+        repositoryIds.addAll( getObservableRepos() );
 
         availableRepositories = new ArrayList<String>();
 
@@ -228,8 +217,7 @@ public class GenerateReportAction
 
                 if ( stats.isEmpty() )
                 {
-                    addActionError(
-                        "No statistics available for repository. Repository might not have been scanned." );
+                    addActionError( "No statistics available for repository. Repository might not have been scanned." );
                     return ERROR;
                 }
 
@@ -289,7 +277,7 @@ public class GenerateReportAction
         selectedRepositories = parseSelectedRepositories();
         List<RepositoryStatistics> repositoryStatistics = new ArrayList<RepositoryStatistics>();
 
-        StringBuffer input = null;
+        StringBuffer input;
         if ( selectedRepositories.size() > 1 )
         {
             try
@@ -425,6 +413,7 @@ public class GenerateReportAction
     }
 
     // hack for parsing the struts list passed as param in <s:url ../>
+
     private List<String> parseSelectedRepositories()
     {
         List<String> pasedSelectedRepos = new ArrayList<String>();
@@ -499,31 +488,65 @@ public class GenerateReportAction
             return INPUT;
         }
 
-        List<RepositoryProblem> problemArtifacts =
-            dao.getRepositoryProblemDAO().queryRepositoryProblems( configureConstraint() );
-
-        String contextPath =
-            request.getRequestURL().substring( 0, request.getRequestURL().indexOf( request.getRequestURI() ) );
-        for ( RepositoryProblem problem : problemArtifacts )
+        List<String> observableRepos = getObservableRepos();
+        Collection<String> repoIds;
+        if ( StringUtils.isEmpty( repositoryId ) || ALL_REPOSITORIES.equals( repositoryId ) )
         {
-            RepositoryProblemReport problemArtifactReport = new RepositoryProblemReport( problem );
+            repoIds = observableRepos;
+        }
+        else if ( observableRepos.contains( repositoryId ) )
+        {
+            repoIds = Collections.singletonList( repositoryId );
+        }
+        else
+        {
+            repoIds = Collections.emptyList();
+        }
 
-            problemArtifactReport.setGroupURL( contextPath + "/browse/" + problem.getGroupId() );
-            problemArtifactReport.setArtifactURL(
-                contextPath + "/browse/" + problem.getGroupId() + "/" + problem.getArtifactId() );
-
-            List<RepositoryProblemReport> problemsList;
-            if ( repositoriesMap.containsKey( problemArtifactReport.getRepositoryId() ) )
+        List<RepositoryProblemFacet> problemArtifacts = new ArrayList<RepositoryProblemFacet>();
+        for ( String repoId : repoIds )
+        {
+            // TODO: improve performance by navigating into a group subtree. Currently group is property, not part of name of item
+            for ( String name : metadataRepository.getMetadataFacets( repoId, RepositoryProblemFacet.FACET_ID ) )
             {
-                problemsList = repositoriesMap.get( problemArtifactReport.getRepositoryId() );
+                RepositoryProblemFacet metadataFacet =
+                    (RepositoryProblemFacet) metadataRepository.getMetadataFacet( repoId,
+                                                                                  RepositoryProblemFacet.FACET_ID,
+                                                                                  name );
+
+                if ( StringUtils.isEmpty( groupId ) || groupId.equals( metadataFacet.getNamespace() ) )
+                {
+                    problemArtifacts.add( metadataFacet );
+                }
+            }
+        }
+
+        // TODO: getting range only after reading is not efficient for a large number of artifacts
+        int lowerBound = ( page - 1 ) * rowCount;
+        int upperBound = ( page * rowCount ) + 1; // Add 1 to check if it's the last page or not.
+        if ( upperBound <= problemArtifacts.size() )
+        {
+            problemArtifacts = problemArtifacts.subList( lowerBound, upperBound );
+        }
+        else
+        {
+            problemArtifacts = problemArtifacts.subList( lowerBound, problemArtifacts.size() );
+        }
+
+        for ( RepositoryProblemFacet problem : problemArtifacts )
+        {
+            List<RepositoryProblemFacet> problemsList;
+            if ( repositoriesMap.containsKey( problem.getRepositoryId() ) )
+            {
+                problemsList = repositoriesMap.get( problem.getRepositoryId() );
             }
             else
             {
-                problemsList = new ArrayList<RepositoryProblemReport>();
-                repositoriesMap.put( problemArtifactReport.getRepositoryId(), problemsList );
+                problemsList = new ArrayList<RepositoryProblemFacet>();
+                repositoriesMap.put( problem.getRepositoryId(), problemsList );
             }
 
-            problemsList.add( problemArtifactReport );
+            problemsList.add( problem );
         }
 
         // TODO: handling should be improved
@@ -542,36 +565,6 @@ public class GenerateReportAction
         }
     }
 
-    private Constraint configureConstraint()
-    {
-        Constraint constraint;
-
-        int[] range =
-            new int[]{( page - 1 ) * rowCount, ( page * rowCount ) + 1}; // Add 1 to check if it's the last page or not.
-
-        if ( groupId != null && ( !groupId.equals( "" ) ) )
-        {
-            if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( ALL_REPOSITORIES ) ) )
-            {
-                constraint = new RepositoryProblemConstraint( range, groupId, repositoryId );
-            }
-            else
-            {
-                constraint = new RepositoryProblemByGroupIdConstraint( range, groupId );
-            }
-        }
-        else if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( ALL_REPOSITORIES ) ) )
-        {
-            constraint = new RepositoryProblemByRepositoryIdConstraint( range, repositoryId );
-        }
-        else
-        {
-            constraint = new RangeConstraint( range, "repositoryId" );
-        }
-
-        return constraint;
-    }
-
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
@@ -586,11 +579,6 @@ public class GenerateReportAction
     public Collection<String> getRepositoryIds()
     {
         return repositoryIds;
-    }
-
-    public void setServletRequest( HttpServletRequest request )
-    {
-        this.request = request;
     }
 
     public String getGroupId()
@@ -633,12 +621,12 @@ public class GenerateReportAction
         this.rowCount = rowCount;
     }
 
-    public void setRepositoriesMap( Map<String, List<RepositoryProblemReport>> repositoriesMap )
+    public void setRepositoriesMap( Map<String, List<RepositoryProblemFacet>> repositoriesMap )
     {
         this.repositoriesMap = repositoriesMap;
     }
 
-    public Map<String, List<RepositoryProblemReport>> getRepositoriesMap()
+    public Map<String, List<RepositoryProblemFacet>> getRepositoriesMap()
     {
         return repositoriesMap;
     }
@@ -716,5 +704,10 @@ public class GenerateReportAction
     public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
     {
         this.repositoryStatisticsManager = repositoryStatisticsManager;
+    }
+
+    public void setMetadataRepository( MetadataRepository metadataRepository )
+    {
+        this.metadataRepository = metadataRepository;
     }
 }

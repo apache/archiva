@@ -37,14 +37,14 @@
 	<c:forEach var="report" items='${repository.value}'>
 	
 	    <p>
-      	<archiva:groupIdLink var="${report.groupId}" includeTop="true"/>
+      	<archiva:groupIdLink var="${report.namespace}" includeTop="true"/>
       	<c:set var="url">
         <s:url action="browseArtifact" namespace="/">
-          <s:param name="groupId" value="%{#attr.report.groupId}"/>
-          <s:param name="artifactId" value="%{#attr.report.artifactId}"/>
+          <s:param name="groupId" value="%{#attr.report.namespace}"/>
+          <s:param name="artifactId" value="%{#attr.report.project}"/>
         </s:url>
       	</c:set>
-      	<a href="${url}">${report.artifactId}</a> /
+      	<a href="${url}">${report.project}</a> /
       	<strong>${report.version}</strong>
     	</p>
     
@@ -54,18 +54,18 @@
 
   <c:set var="prevPageUrl">
     <s:url action="generateReport" namespace="/">
-      <s:param name="groupId" value="${groupId}"/>
-      <s:param name="repositoryId" value="${repositoryId}"/>
-      <s:param name="rowCount" value="${rowCount}"/>
-      <s:param name="page" value="${page - 1}"/>
+      <s:param name="groupId" />
+      <s:param name="repositoryId" />
+      <s:param name="rowCount" />
+      <s:param name="page" value="%{#attr.page - 1}"/>
     </s:url>
   </c:set>
   <c:set var="nextPageUrl">
     <s:url action="generateReport" namespace="/">
-      <s:param name="groupId" value="${groupId}"/>
-      <s:param name="repositoryId" value="${repositoryId}"/>
-      <s:param name="rowCount" value="${rowCount}"/>
-      <s:param name="page" value="${page + 1}"/>
+      <s:param name="groupId" />
+      <s:param name="repositoryId" />
+      <s:param name="rowCount" />
+      <s:param name="page" value="%{#attr.page + 1}"/>
     </s:url>
   </c:set>
   <s:set name="page" value="page"/>

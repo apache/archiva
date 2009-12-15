@@ -21,7 +21,6 @@ package org.apache.maven.archiva.web.action;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +39,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -54,7 +49,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
  */
 public class SearchAction 
-    extends PlexusActionSupport
+    extends AbstractRepositoryBasedAction
     implements Preparable
 {
     /**
@@ -69,12 +64,7 @@ public class SearchAction
      * The Search Results.
      */
     private SearchResults results;
-    
-    /**
-     * @plexus.requirement
-     */
-    private UserRepositories userRepositories;
-    
+
     private static final String RESULTS = "results";
 
     private static final String ARTIFACT = "artifact";
@@ -303,14 +293,6 @@ public class SearchAction
         {
             totalPages = totalPages + 1;
         }
-        // TODO: filter / combine the artifacts by version? (is that even possible with non-artifact hits?)
-
-        /* I don't think that we should, as I expect us to utilize the 'score' system in lucene in
-         * the future to return relevant links better.
-         * I expect the lucene scoring system to take multiple hits on different areas of a single document
-         * to result in a higher score.
-         *   - Joakim
-         */
 
         if( !isEqualToPreviousSearchTerm( q ) )
         {
@@ -355,27 +337,6 @@ public class SearchAction
     public String doInput()
     {
         return INPUT;
-    }
-
-    private List<String> getObservableRepos()
-    {
-        try
-        {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
-        }
-        catch ( PrincipalNotFoundException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( AccessDeniedException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( ArchivaSecurityException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        return Collections.emptyList();
     }
 
     private void buildCompleteQueryString( String searchTerm )
@@ -592,16 +553,6 @@ public class SearchAction
     public void setNexusSearch( RepositorySearch nexusSearch )
     {
         this.nexusSearch = nexusSearch;
-    }
-
-    public UserRepositories getUserRepositories()
-    {
-        return userRepositories;
-    }
-
-    public void setUserRepositories( UserRepositories userRepositories )
-    {
-        this.userRepositories = userRepositories;
     }
 
     public Map<String, String> getSearchFields()

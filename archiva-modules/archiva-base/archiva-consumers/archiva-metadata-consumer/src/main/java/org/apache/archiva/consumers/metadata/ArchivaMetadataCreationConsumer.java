@@ -162,7 +162,7 @@ public class ArchivaMetadataCreationConsumer
         project.setId( artifact.getArtifactId() );
 
         // TODO: maybe not too efficient since it may have already been read and stored for this artifact
-        ProjectVersionMetadata versionMetadata = null;
+        ProjectVersionMetadata versionMetadata;
         try
         {
             versionMetadata =
@@ -172,6 +172,11 @@ public class ArchivaMetadataCreationConsumer
         catch ( MetadataResolverException e )
         {
             throw new ConsumerException( e.getMessage(), e );
+        }
+
+        if ( versionMetadata == null )
+        {
+            throw new ConsumerException( "Unable to read metadata for artifact: " + artifact );
         }
 
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
@@ -201,7 +206,6 @@ public class ArchivaMetadataCreationConsumer
         {
             log.error( "Error attempting to get SHA-1 checksum for " + file + ": " + e.getMessage() );
         }
-
 
         // TODO: transaction
         // read the metadata and update it if it is newer or doesn't exist

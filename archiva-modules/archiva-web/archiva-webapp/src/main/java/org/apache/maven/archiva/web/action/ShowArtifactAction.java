@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.opensymphony.xwork2.Validateable;
@@ -31,10 +30,6 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
 
 /**
  * Browse the repository.
@@ -44,15 +39,10 @@ import org.apache.maven.archiva.security.UserRepositories;
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction" instantiation-strategy="per-lookup"
  */
 public class ShowArtifactAction
-    extends PlexusActionSupport
+    extends AbstractRepositoryBasedAction
     implements Validateable
 {
     /* .\ Not Exposed \._____________________________________________ */
-
-    /**
-     * @plexus.requirement
-     */
-    private UserRepositories userRepositories;
 
     /**
      * @plexus.requirement
@@ -209,8 +199,7 @@ public class ShowArtifactAction
      */
     public String reports()
     {
-        // TODO: hook up reports on project - this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId,
-        // version );
+        // TODO: hook up reports on project
 
         return SUCCESS;
     }
@@ -272,28 +261,6 @@ public class ShowArtifactAction
         // (especially in the case of pre-population import)
 
         return artifact();
-    }
-
-    private List<String> getObservableRepos()
-    {
-        try
-        {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
-        }
-        catch ( PrincipalNotFoundException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( AccessDeniedException e )
-        {
-            log.warn( e.getMessage(), e );
-            // TODO: pass this onto the screen.
-        }
-        catch ( ArchivaSecurityException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        return Collections.emptyList();
     }
 
     @Override

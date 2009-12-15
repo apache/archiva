@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 
 /**
@@ -46,11 +45,6 @@ public class JdoArchivaDAO
      */
     private ArtifactDAO artifactDAO;
 
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private RepositoryProblemDAO repositoryProblemDAO;
-
     public JdoArchivaDAO()
     {
         super();    //To change body of overridden methods use File | Settings | File Templates.
@@ -64,11 +58,6 @@ public class JdoArchivaDAO
     public ArtifactDAO getArtifactDAO()
     {
         return artifactDAO;
-    }
-
-    public RepositoryProblemDAO getRepositoryProblemDAO()
-    {
-        return repositoryProblemDAO;
     }
 
 }

@@ -23,9 +23,7 @@ import java.util.List;
 
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
 
 /**
  * Stub class for Archiva DAO to avoid having to set up a database for tests.
@@ -38,16 +36,8 @@ public class ArchivaDAOStub
 
     private ArtifactDAO artifactDao;
 
-    private List<String> repositoryIds;
-
-    private RepositoryProblemDAO repositoryProblemDAO;
-
     public List<?> query( SimpleConstraint constraint )
     {
-        if ( constraint instanceof UniqueFieldConstraint )
-        {
-            return repositoryIds;
-        }
         throw new UnsupportedOperationException();
     }
 
@@ -56,23 +46,9 @@ public class ArchivaDAOStub
         return artifactDao;
     }
 
-    public RepositoryProblemDAO getRepositoryProblemDAO()
-    {
-        return repositoryProblemDAO;
-    }
-
     public void setArtifactDao( ArtifactDAO artifactDao )
     {
         this.artifactDao = artifactDao;
     }
 
-    public void setRepositoryIds( List<String> repositoryIds )
-    {
-        this.repositoryIds = repositoryIds;
-    }
-
-    public void setRepositoryProblemDAO( RepositoryProblemDAO repositoryProblemDAO )
-    {
-        this.repositoryProblemDAO = repositoryProblemDAO;
-    }
 }

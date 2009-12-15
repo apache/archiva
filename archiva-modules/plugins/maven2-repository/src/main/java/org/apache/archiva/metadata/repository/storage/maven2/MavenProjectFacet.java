@@ -82,6 +82,12 @@ public class MavenProjectFacet
         return FACET_ID;
     }
 
+    public String getName()
+    {
+        // TODO: not needed, perhaps version metadata facet should be separate interface?
+        return null;
+    }
+
     public Map<String, String> toProperties()
     {
         HashMap<String, String> properties = new HashMap<String, String>();

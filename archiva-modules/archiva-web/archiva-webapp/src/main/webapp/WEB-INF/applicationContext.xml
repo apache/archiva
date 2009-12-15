@@ -42,8 +42,8 @@
   <!-- Web Services : Search Service -->
   <bean name="searchService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">    
     <constructor-arg ref="xmlRpcUserRepositories"/>   
-    <constructor-arg ref="archivaDAO#jdo"/>
     <constructor-arg ref="metadataResolver"/>
+    <constructor-arg ref="metadataRepository"/>
     <constructor-arg ref="nexusSearch"/>
   </bean>
   

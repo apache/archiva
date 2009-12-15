@@ -32,30 +32,20 @@ import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
 
 /**
  * Browse the repository.
  *
- * @todo cache browsing results.
  * @todo implement repository selectors (all or specific repository)
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction" instantiation-strategy="per-lookup"
  */
 public class BrowseAction
-    extends PlexusActionSupport
+    extends AbstractRepositoryBasedAction
 {
     /**
      * @plexus.requirement
      */
     private MetadataResolver metadataResolver;
-
-    /**
-     * @plexus.requirement
-     */
-    private UserRepositories userRepositories;
 
     private String groupId;
 
@@ -287,28 +277,6 @@ public class BrowseAction
 
             isFirstVersion = false;
         }
-    }
-
-    private List<String> getObservableRepos()
-    {
-        try
-        {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
-        }
-        catch ( PrincipalNotFoundException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( AccessDeniedException e )
-        {
-            log.warn( e.getMessage(), e );
-            // TODO: pass this onto the screen.
-        }
-        catch ( ArchivaSecurityException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        return Collections.emptyList();
     }
 
     public String getGroupId()

@@ -156,7 +156,7 @@ public class TestMetadataRepository
         throw new UnsupportedOperationException();
     }
 
-    public void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet )
+    public void addMetadataFacet( String repositoryId, String facetId, MetadataFacet metadataFacet )
     {
         throw new UnsupportedOperationException();
     }
@@ -164,6 +164,11 @@ public class TestMetadataRepository
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
         throw new UnsupportedOperationException();
+    }
+
+    public void removeMetadataFacet( String repoId, String facetId, String name )
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )

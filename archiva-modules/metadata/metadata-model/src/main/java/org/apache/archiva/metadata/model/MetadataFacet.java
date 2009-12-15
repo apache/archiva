@@ -25,6 +25,8 @@ public interface MetadataFacet
 {
     String getFacetId();
 
+    String getName();
+
     Map<String, String> toProperties();
 
     void fromProperties( Map<String, String> properties );

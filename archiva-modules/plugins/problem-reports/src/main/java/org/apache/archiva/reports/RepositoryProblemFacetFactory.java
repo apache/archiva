@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.database.jdo;
+package org.apache.archiva.reports;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.archiva.database.jdo;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,18 +19,17 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
+import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
 
 /**
- * JdoArchivaDAOTest 
- *
- * @version $Id$
+ * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.reports"
  */
-public class JdoArchivaDAOTest
-    extends AbstractArchivaDatabaseTestCase
+public class RepositoryProblemFacetFactory
+    implements MetadataFacetFactory
 {
-    public void testSubDAOs()
+    public MetadataFacet createMetadataFacet()
     {
-        assertNotNull( "Artifact DAO", dao.getArtifactDAO() );
+        return new RepositoryProblemFacet();
     }
 }

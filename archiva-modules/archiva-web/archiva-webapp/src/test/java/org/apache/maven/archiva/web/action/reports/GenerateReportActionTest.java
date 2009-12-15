@@ -26,22 +26,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.RepositoryProblemDAO;
-import org.apache.maven.archiva.database.constraints.RangeConstraint;
-import org.apache.maven.archiva.database.constraints.RepositoryProblemByGroupIdConstraint;
-import org.apache.maven.archiva.database.constraints.RepositoryProblemByRepositoryIdConstraint;
-import org.apache.maven.archiva.database.constraints.RepositoryProblemConstraint;
-import org.apache.maven.archiva.model.RepositoryProblem;
-import org.apache.maven.archiva.model.RepositoryProblemReport;
-import org.apache.maven.archiva.web.action.admin.repositories.ArchivaDAOStub;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
@@ -59,17 +51,17 @@ public class GenerateReportActionTest
 
     private static final String INTERNAL = "internal";
 
-    private RepositoryProblemDAO repositoryProblemDAO;
-
-    private MockControl repositoryProblemDAOControl;
-
     private static final String GROUP_ID = "groupId";
-
-    private static final String URL = "http://localhost/reports/generateReport.action";
 
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     private MockControl repositoryStatisticsManagerControl;
+
+    private MockControl metadataRepositoryControl;
+
+    private MetadataRepository metadataRepository;
+
+    private static final String PROBLEM = "problem";
 
     @Override
     protected void setUp()
@@ -77,18 +69,15 @@ public class GenerateReportActionTest
     {
         super.setUp();
 
-        ArchivaDAOStub archivaDAOStub = (ArchivaDAOStub) lookup( ArchivaDAO.class, "jdo" );
-        archivaDAOStub.setRepositoryIds( Arrays.asList( "repo1", "repo2" ) );
-
-        repositoryProblemDAOControl = MockControl.createControl( RepositoryProblemDAO.class );
-        repositoryProblemDAO = (RepositoryProblemDAO) repositoryProblemDAOControl.getMock();
-        archivaDAOStub.setRepositoryProblemDAO( repositoryProblemDAO );
-
         action = (GenerateReportAction) lookup( Action.class, "generateReport" );
 
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
         action.setRepositoryStatisticsManager( repositoryStatisticsManager );
+
+        metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+        action.setMetadataRepository( metadataRepository );
     }
 
     private void prepareAction( List<String> selectedRepositories, List<String> availableRepositories )
@@ -96,7 +85,7 @@ public class GenerateReportActionTest
         action.setSelectedRepositories( selectedRepositories );
         action.prepare();
 
-        assertEquals( Arrays.asList( GenerateReportAction.ALL_REPOSITORIES, "repo1", "repo2" ),
+        assertEquals( Arrays.asList( GenerateReportAction.ALL_REPOSITORIES, INTERNAL, SNAPSHOTS ),
                       action.getRepositoryIds() );
         assertEquals( availableRepositories, action.getAvailableRepositories() );
     }
@@ -424,42 +413,41 @@ public class GenerateReportActionTest
     public void testHealthReportSingleRepo()
         throws Exception
     {
-        RepositoryProblem problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
-        RepositoryProblem problem2 = createProblem( GROUP_ID, "artifactId-2", INTERNAL );
-        repositoryProblemDAOControl.expectAndReturn( repositoryProblemDAO.queryRepositoryProblems(
-            new RepositoryProblemByRepositoryIdConstraint( new int[]{0, 101}, INTERNAL ) ),
-                                                     Arrays.asList( problem1, problem2 ) );
-        repositoryProblemDAOControl.replay();
+        RepositoryProblemFacet problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
+        RepositoryProblemFacet problem2 = createProblem( GROUP_ID, "artifactId-2", INTERNAL );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
+            Arrays.asList( problem1.getName(), problem2.getName() ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem1.getName() ),
+            problem1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem2.getName() ),
+            problem2 );
+        metadataRepositoryControl.replay();
 
         action.setRepositoryId( INTERNAL );
-        ServletRunner sr = new ServletRunner();
-        ServletUnitClient sc = sr.newClient();
 
-        action.setServletRequest( sc.newInvocation( URL ).getRequest() );
         prepareAction( Collections.<String>emptyList(), Arrays.asList( SNAPSHOTS, INTERNAL ) );
 
         String result = action.execute();
         assertSuccessResult( result );
 
-        RepositoryProblemReport problemReport1 = createProblemReport( problem1 );
-        RepositoryProblemReport problemReport2 = createProblemReport( problem2 );
         assertEquals( Collections.singleton( INTERNAL ), action.getRepositoriesMap().keySet() );
-        assertEquals( Arrays.asList( problemReport1, problemReport2 ), action.getRepositoriesMap().get( INTERNAL ) );
+        assertEquals( Arrays.asList( problem1, problem2 ), action.getRepositoriesMap().get( INTERNAL ) );
 
-        repositoryProblemDAOControl.verify();
+        metadataRepositoryControl.verify();
     }
 
     public void testHealthReportInvalidRowCount()
         throws Exception
     {
-        repositoryProblemDAOControl.replay();
+        metadataRepositoryControl.replay();
 
         action.setRowCount( 0 );
         action.setRepositoryId( INTERNAL );
-        ServletRunner sr = new ServletRunner();
-        ServletUnitClient sc = sr.newClient();
 
-        action.setServletRequest( sc.newInvocation( URL ).getRequest() );
         prepareAction( Collections.<String>emptyList(), Arrays.asList( SNAPSHOTS, INTERNAL ) );
 
         String result = action.execute();
@@ -467,113 +455,119 @@ public class GenerateReportActionTest
         assertFalse( action.hasActionErrors() );
         assertTrue( action.hasFieldErrors() );
 
-        repositoryProblemDAOControl.verify();
+        metadataRepositoryControl.verify();
     }
 
     public void testHealthReportAllRepos()
         throws Exception
     {
-        RepositoryProblem problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
-        RepositoryProblem problem2 = createProblem( GROUP_ID, "artifactId-2", SNAPSHOTS );
-        repositoryProblemDAOControl.expectAndReturn(
-            repositoryProblemDAO.queryRepositoryProblems( new RangeConstraint( new int[]{0, 101} ) ),
-            Arrays.asList( problem1, problem2 ) );
-        repositoryProblemDAOControl.replay();
+        RepositoryProblemFacet problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
+        RepositoryProblemFacet problem2 = createProblem( GROUP_ID, "artifactId-2", SNAPSHOTS );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
+            Arrays.asList( problem1.getName() ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( SNAPSHOTS, RepositoryProblemFacet.FACET_ID ),
+            Arrays.asList( problem2.getName() ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem1.getName() ),
+            problem1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( SNAPSHOTS, RepositoryProblemFacet.FACET_ID, problem2.getName() ),
+            problem2 );
+        metadataRepositoryControl.replay();
 
         action.setRepositoryId( GenerateReportAction.ALL_REPOSITORIES );
-        ServletRunner sr = new ServletRunner();
-        ServletUnitClient sc = sr.newClient();
 
-        action.setServletRequest( sc.newInvocation( URL ).getRequest() );
         prepareAction( Collections.<String>emptyList(), Arrays.asList( SNAPSHOTS, INTERNAL ) );
 
         String result = action.execute();
         assertSuccessResult( result );
 
-        RepositoryProblemReport problemReport1 = createProblemReport( problem1 );
-        RepositoryProblemReport problemReport2 = createProblemReport( problem2 );
         assertEquals( Arrays.asList( INTERNAL, SNAPSHOTS ),
                       new ArrayList<String>( action.getRepositoriesMap().keySet() ) );
-        assertEquals( Arrays.asList( problemReport1 ), action.getRepositoriesMap().get( INTERNAL ) );
-        assertEquals( Arrays.asList( problemReport2 ), action.getRepositoriesMap().get( SNAPSHOTS ) );
+        assertEquals( Arrays.asList( problem1 ), action.getRepositoriesMap().get( INTERNAL ) );
+        assertEquals( Arrays.asList( problem2 ), action.getRepositoriesMap().get( SNAPSHOTS ) );
 
-        repositoryProblemDAOControl.verify();
+        metadataRepositoryControl.verify();
     }
 
     public void testHealthReportSingleRepoByCorrectGroupId()
         throws Exception
     {
-        RepositoryProblem problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
-        RepositoryProblem problem2 = createProblem( GROUP_ID, "artifactId-2", INTERNAL );
-        repositoryProblemDAOControl.expectAndReturn( repositoryProblemDAO.queryRepositoryProblems(
-            new RepositoryProblemConstraint( new int[]{0, 101}, GROUP_ID, INTERNAL ) ),
-                                                     Arrays.asList( problem1, problem2 ) );
-        repositoryProblemDAOControl.replay();
+        RepositoryProblemFacet problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
+        RepositoryProblemFacet problem2 = createProblem( GROUP_ID, "artifactId-2", INTERNAL );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
+            Arrays.asList( problem1.getName(), problem2.getName() ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem1.getName() ),
+            problem1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem2.getName() ),
+            problem2 );
+        metadataRepositoryControl.replay();
 
         action.setGroupId( GROUP_ID );
         action.setRepositoryId( INTERNAL );
-        ServletRunner sr = new ServletRunner();
-        ServletUnitClient sc = sr.newClient();
 
-        action.setServletRequest( sc.newInvocation( URL ).getRequest() );
         prepareAction( Collections.<String>emptyList(), Arrays.asList( SNAPSHOTS, INTERNAL ) );
 
         String result = action.execute();
         assertSuccessResult( result );
 
-        RepositoryProblemReport problemReport1 = createProblemReport( problem1 );
-        RepositoryProblemReport problemReport2 = createProblemReport( problem2 );
         assertEquals( Collections.singleton( INTERNAL ), action.getRepositoriesMap().keySet() );
-        assertEquals( Arrays.asList( problemReport1, problemReport2 ), action.getRepositoriesMap().get( INTERNAL ) );
+        assertEquals( Arrays.asList( problem1, problem2 ), action.getRepositoriesMap().get( INTERNAL ) );
 
-        repositoryProblemDAOControl.verify();
+        metadataRepositoryControl.verify();
     }
 
     public void testHealthReportSingleRepoByCorrectGroupIdAllRepositories()
         throws Exception
     {
-        RepositoryProblem problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
-        RepositoryProblem problem2 = createProblem( GROUP_ID, "artifactId-2", SNAPSHOTS );
-        repositoryProblemDAOControl.expectAndReturn( repositoryProblemDAO.queryRepositoryProblems(
-            new RepositoryProblemByGroupIdConstraint( new int[]{0, 101}, GROUP_ID ) ),
-                                                     Arrays.asList( problem1, problem2 ) );
-        repositoryProblemDAOControl.replay();
+        RepositoryProblemFacet problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
+        RepositoryProblemFacet problem2 = createProblem( GROUP_ID, "artifactId-2", SNAPSHOTS );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
+            Arrays.asList( problem1.getName() ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( SNAPSHOTS, RepositoryProblemFacet.FACET_ID ),
+            Arrays.asList( problem2.getName() ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem1.getName() ),
+            problem1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( SNAPSHOTS, RepositoryProblemFacet.FACET_ID, problem2.getName() ),
+            problem2 );
+        metadataRepositoryControl.replay();
 
         action.setGroupId( GROUP_ID );
         action.setRepositoryId( GenerateReportAction.ALL_REPOSITORIES );
-        ServletRunner sr = new ServletRunner();
-        ServletUnitClient sc = sr.newClient();
 
-        action.setServletRequest( sc.newInvocation( URL ).getRequest() );
         prepareAction( Collections.<String>emptyList(), Arrays.asList( SNAPSHOTS, INTERNAL ) );
 
         String result = action.execute();
         assertSuccessResult( result );
 
-        RepositoryProblemReport problemReport1 = createProblemReport( problem1 );
-        RepositoryProblemReport problemReport2 = createProblemReport( problem2 );
         assertEquals( Arrays.asList( INTERNAL, SNAPSHOTS ),
                       new ArrayList<String>( action.getRepositoriesMap().keySet() ) );
-        assertEquals( Arrays.asList( problemReport1 ), action.getRepositoriesMap().get( INTERNAL ) );
-        assertEquals( Arrays.asList( problemReport2 ), action.getRepositoriesMap().get( SNAPSHOTS ) );
+        assertEquals( Arrays.asList( problem1 ), action.getRepositoriesMap().get( INTERNAL ) );
+        assertEquals( Arrays.asList( problem2 ), action.getRepositoriesMap().get( SNAPSHOTS ) );
 
-        repositoryProblemDAOControl.verify();
+        metadataRepositoryControl.verify();
     }
 
     public void testHealthReportSingleRepoByIncorrectGroupId()
         throws Exception
     {
-        repositoryProblemDAOControl.expectAndReturn( repositoryProblemDAO.queryRepositoryProblems(
-            new RepositoryProblemConstraint( new int[]{0, 101}, "not.it", INTERNAL ) ),
-                                                     Collections.<Object>emptyList() );
-        repositoryProblemDAOControl.replay();
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
+            Collections.<MetadataFacet>emptyList() );
+        metadataRepositoryControl.replay();
 
         action.setGroupId( "not.it" );
         action.setRepositoryId( INTERNAL );
-        ServletRunner sr = new ServletRunner();
-        ServletUnitClient sc = sr.newClient();
 
-        action.setServletRequest( sc.newInvocation( URL ).getRequest() );
         prepareAction( Collections.<String>emptyList(), Arrays.asList( SNAPSHOTS, INTERNAL ) );
 
         String result = action.execute();
@@ -581,7 +575,7 @@ public class GenerateReportActionTest
         assertFalse( action.hasActionErrors() );
         assertFalse( action.hasFieldErrors() );
 
-        repositoryProblemDAOControl.verify();
+        metadataRepositoryControl.verify();
     }
 
     private void assertMultiRepoCsvResult()
@@ -595,20 +589,13 @@ public class GenerateReportActionTest
                 "snapshots,0,0,0,0,0\n" + "internal,0,0,0,0,0\n", IOUtils.toString( action.getInputStream() ) );
     }
 
-    private RepositoryProblemReport createProblemReport( RepositoryProblem problem )
+    private RepositoryProblemFacet createProblem( String groupId, String artifactId, String repoId )
     {
-        RepositoryProblemReport problemReport = new RepositoryProblemReport( problem );
-        problemReport.setGroupURL( "http://localhost/browse/" + problem.getGroupId() );
-        problemReport.setArtifactURL( problemReport.getGroupURL() + "/" + problem.getArtifactId() );
-        return problemReport;
-    }
-
-    private RepositoryProblem createProblem( String groupId, String artifactId, String repoId )
-    {
-        RepositoryProblem problem = new RepositoryProblem();
+        RepositoryProblemFacet problem = new RepositoryProblemFacet();
         problem.setRepositoryId( repoId );
-        problem.setGroupId( groupId );
-        problem.setArtifactId( artifactId );
+        problem.setNamespace( groupId );
+        problem.setProject( artifactId );
+        problem.setProblem( PROBLEM );
         return problem;
     }
 

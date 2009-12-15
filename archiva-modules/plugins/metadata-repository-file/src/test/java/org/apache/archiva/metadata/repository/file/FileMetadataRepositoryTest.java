@@ -53,7 +53,7 @@ public class FileMetadataRepositoryTest
 
     private static final String TEST_FACET_ID = "test-facet-id";
 
-    private static final String TEST_NAME = "test-name";
+    private static final String TEST_NAME = "test/name";
 
     private static final String TEST_VALUE = "test-value";
 
@@ -125,7 +125,7 @@ public class FileMetadataRepositoryTest
 
     public void testGetMetadataFacet()
     {
-        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, new TestMetadataFacet( TEST_VALUE ) );
 
         assertEquals( new TestMetadataFacet( TEST_VALUE ),
                       repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
@@ -138,14 +138,14 @@ public class FileMetadataRepositoryTest
 
     public void testGetMetadataFacetWhenUnknownName()
     {
-        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, new TestMetadataFacet( TEST_VALUE ) );
 
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, UNKNOWN ) );
     }
 
     public void testGetMetadataFacetWhenDefaultValue()
     {
-        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( null ) );
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, new TestMetadataFacet( null ) );
 
         assertEquals( new TestMetadataFacet( "test-metadata" ),
                       repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
@@ -153,14 +153,14 @@ public class FileMetadataRepositoryTest
 
     public void testGetMetadataFacetWhenUnknownFacetId()
     {
-        repository.addMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+        repository.addMetadataFacet( TEST_REPO_ID, UNKNOWN, new TestMetadataFacet( TEST_VALUE ) );
 
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME ) );
     }
 
     public void testGetMetadataFacets()
     {
-        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, new TestMetadataFacet( TEST_VALUE ) );
 
         assertEquals( Collections.singletonList( TEST_NAME ),
                       repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID ) );
@@ -174,18 +174,7 @@ public class FileMetadataRepositoryTest
 
     public void testRemoveFacets()
     {
-        List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
-        assertTrue( facets.isEmpty() );
-
-        repository.removeMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
-
-        facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
-        assertTrue( facets.isEmpty() );
-    }
-
-    public void testRemoveFacetsWhenEmpty()
-    {
-        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, new TestMetadataFacet( TEST_VALUE ) );
 
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
         assertFalse( facets.isEmpty() );
@@ -196,9 +185,54 @@ public class FileMetadataRepositoryTest
         assertTrue( facets.isEmpty() );
     }
 
+    public void testRemoveFacetsWhenEmpty()
+    {
+        List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertTrue( facets.isEmpty() );
+
+        repository.removeMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+
+        facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertTrue( facets.isEmpty() );
+    }
+
     public void testRemoveFacetsWhenUnknown()
     {
         repository.removeMetadataFacets( TEST_REPO_ID, UNKNOWN );
+    }
+
+    public void testRemoveFacet()
+    {
+        TestMetadataFacet metadataFacet = new TestMetadataFacet( TEST_VALUE );
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, metadataFacet );
+
+        assertEquals( metadataFacet, repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
+        List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertFalse( facets.isEmpty() );
+
+        repository.removeMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME );
+
+        assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
+        facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertTrue( facets.isEmpty() );
+    }
+
+    public void testRemoveFacetWhenEmpty()
+    {
+        List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertTrue( facets.isEmpty() );
+        assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
+
+        repository.removeMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME );
+
+        facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
+        assertTrue( facets.isEmpty() );
+        assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
+    }
+
+    public void testRemoveFacetWhenUnknown()
+    {
+        repository.removeMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME );
     }
 
     public void testGetArtifacts()
@@ -246,8 +280,8 @@ public class FileMetadataRepositoryTest
 
     public void testRepositories()
     {
-        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
-        repository.addMetadataFacet( OTHER_REPO, TEST_FACET_ID, TEST_NAME, new TestMetadataFacet( TEST_VALUE ) );
+        repository.addMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, new TestMetadataFacet( TEST_VALUE ) );
+        repository.addMetadataFacet( OTHER_REPO, TEST_FACET_ID, new TestMetadataFacet( TEST_VALUE ) );
 
         assertEquals( Arrays.asList( OTHER_REPO, TEST_REPO_ID ), repository.getRepositories() );
     }
@@ -450,6 +484,11 @@ public class FileMetadataRepositoryTest
         public String getFacetId()
         {
             return TEST_FACET_ID;
+        }
+
+        public String getName()
+        {
+            return TEST_NAME;
         }
 
         public Map<String, String> toProperties()

@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +47,8 @@ public class RepositoryStatistics
     private long newFileCount;
 
     public static String FACET_ID = "org.apache.archiva.metadata.repository.stats";
+
+    static final DateFormat SCAN_TIMESTAMP = new SimpleDateFormat( "yyyyMMdd.HHmmss.SSS" );
 
     public Date getScanEndTime()
     {
@@ -134,6 +138,11 @@ public class RepositoryStatistics
     public String getFacetId()
     {
         return FACET_ID;
+    }
+
+    public String getName()
+    {
+        return SCAN_TIMESTAMP.format( scanStartTime );
     }
 
     public Map<String, String> toProperties()

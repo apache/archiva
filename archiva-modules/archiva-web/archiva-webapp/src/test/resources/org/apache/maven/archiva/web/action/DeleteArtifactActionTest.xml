@@ -31,11 +31,6 @@
       </requirements>
     </component>
     <component>
-      <role>org.apache.maven.archiva.database.RepositoryProblemDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.RepositoryProblemDAOStub</implementation>
-    </component>
-    <component>
       <role>org.apache.maven.archiva.database.ArtifactDAO</role>
       <role-hint>jdo</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArtifactDAOStub</implementation>

@@ -19,9 +19,7 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,8 +41,6 @@ public class DefaultRepositoryStatisticsManager
      * @plexus.requirement
      */
     private MetadataRepository metadataRepository;
-
-    static final DateFormat SCAN_TIMESTAMP = new SimpleDateFormat( "yyyyMMdd.HHmmss.SSS" );
 
     public RepositoryStatistics getLastStatistics( String repositoryId )
     {
@@ -81,9 +77,7 @@ public class DefaultRepositoryStatisticsManager
         // populate total project count from content repository
 //        repositoryStatistics.setTotalProjectCount(  );
 
-        metadataRepository.addMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID,
-                                             SCAN_TIMESTAMP.format( repositoryStatistics.getScanStartTime() ),
-                                             repositoryStatistics );
+        metadataRepository.addMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID, repositoryStatistics );
     }
 
     public void deleteStatistics( String repositoryId )
@@ -100,7 +94,7 @@ public class DefaultRepositoryStatisticsManager
         {
             try
             {
-                Date date = SCAN_TIMESTAMP.parse( name );
+                Date date = RepositoryStatistics.SCAN_TIMESTAMP.parse( name );
                 if ( ( startTime == null || !date.before( startTime ) ) &&
                     ( endTime == null || !date.after( endTime ) ) )
                 {

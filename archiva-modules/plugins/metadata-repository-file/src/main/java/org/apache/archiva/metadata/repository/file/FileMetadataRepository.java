@@ -246,8 +246,28 @@ public class FileMetadataRepository
     public List<String> getMetadataFacets( String repoId, String facetId )
     {
         File directory = getMetadataDirectory( repoId, facetId );
-        String[] list = directory.list();
-        return list != null ? Arrays.asList( list ) : Collections.<String>emptyList();
+        List<String> facets = new ArrayList<String>();
+        recurse( facets, "", directory );
+        return facets;
+    }
+
+    private void recurse( List<String> facets, String prefix, File directory )
+    {
+        File[] list = directory.listFiles();
+        if ( list != null )
+        {
+            for ( File dir : list )
+            {
+                if ( dir.isDirectory() )
+                {
+                    recurse( facets, prefix + "/" + dir.getName(), dir );
+                }
+                else if ( dir.getName().equals( METADATA_KEY + ".properties" ) )
+                {
+                    facets.add( prefix.substring( 1 ) );
+                }
+            }
+        }
     }
 
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
@@ -283,14 +303,15 @@ public class FileMetadataRepository
         return metadataFacet;
     }
 
-    public void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet )
+    public void addMetadataFacet( String repositoryId, String facetId, MetadataFacet metadataFacet )
     {
         Properties properties = new Properties();
         properties.putAll( metadataFacet.toProperties() );
 
         try
         {
-            writeProperties( properties, new File( getMetadataDirectory( repositoryId, facetId ), name ),
+            writeProperties( properties,
+                             new File( getMetadataDirectory( repositoryId, facetId ), metadataFacet.getName() ),
                              METADATA_KEY );
         }
         catch ( IOException e )
@@ -309,6 +330,20 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO!
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void removeMetadataFacet( String repoId, String facetId, String name )
+    {
+        File dir = new File( getMetadataDirectory( repoId, facetId ), name );
+        try
+        {
+            FileUtils.deleteDirectory( dir );
+        }
+        catch ( IOException e )
+        {
+            // TODO
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }

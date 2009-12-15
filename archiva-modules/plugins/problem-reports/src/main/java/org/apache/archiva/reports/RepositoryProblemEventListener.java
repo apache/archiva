@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.database;
+package org.apache.archiva.reports;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.archiva.database;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,6 +19,7 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
@@ -26,28 +27,22 @@ import org.apache.maven.archiva.repository.events.RepositoryListener;
 /**
  * Process repository management events and respond appropriately.
  *
- * @plexus.component role="org.apache.maven.archiva.repository.events.RepositoryListener" role-hint="database"
+ * @plexus.component role="org.apache.maven.archiva.repository.events.RepositoryListener" role-hint="problem-reports"
  */
-public class RepositoryDatabaseEventListener
+public class RepositoryProblemEventListener
     implements RepositoryListener
 {
     /**
-     * @plexus.requirement role-hint="jdo"
+     * @plexus.requirement
      */
-    private ArtifactDAO artifactDAO;
+    private MetadataRepository metadataRepository;
 
     public void deleteArtifact( ManagedRepositoryContent repository, ArchivaArtifact artifact )
     {
-        try
-        {
-            ArchivaArtifact queriedArtifact =
-                artifactDAO.getArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                                         artifact.getClassifier(), artifact.getType(), repository.getId() );
-            artifactDAO.deleteArtifact( queriedArtifact );
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            // ignored
-        }
+        String name =
+            RepositoryProblemFacet.createName( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                                               repository.toFile( artifact ).getName() );
+
+        metadataRepository.removeMetadataFacet( repository.getId(), RepositoryProblemFacet.FACET_ID, name );
     }
 }

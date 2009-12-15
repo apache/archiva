@@ -44,14 +44,6 @@
             <multiplicity>*</multiplicity>
           </association>
         </field>
-        <field>
-          <name>repositoryProblems</name>
-          <version>1.0.0+</version>
-          <association>
-            <type>RepositoryProblem</type>
-            <multiplicity>*</multiplicity>
-          </association>
-        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -834,108 +826,6 @@
         
         return true;
     }          
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
-    </class>
-
-    <!-- _______________________________________________________________
-          _   _            _ _   _
-         | | | | ___  __ _| | |_| |__
-         | |_| |/ _ \/ _` | | __| '_ \
-         |  _  |  __/ (_| | | |_| | | |
-         |_| |_|\___|\__,_|_|\__|_| |_|
-      -->
-
-    <class stash.storable="true"
-           jpox.table="REPOSITORY_PROBLEMS">
-      <name>RepositoryProblem</name>
-      <version>1.0.0+</version>
-      <fields>
-        <field stash.maxSize="50">
-          <name>repositoryId</name>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <type>String</type>
-          <description>
-            The repository associated with this path and problem.
-          </description>
-        </field>
-        <field stash.maxSize="250"
-               jpox.column="REPO_PATH">
-          <name>path</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The path into the repository for the problem.
-          </description>
-        </field>
-        <field stash.maxSize="250">
-          <name>groupId</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>
-            The Group ID of the repository content with the problem.
-          </description>
-        </field>
-        <field stash.maxSize="80">
-          <name>artifactId</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>
-            The Artifact ID of the repository content with the problem.
-          </description>
-        </field>
-        <field stash.maxSize="50">
-          <name>version</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>
-            The version of the repository content with the problem.
-          </description>
-        </field>
-        <field stash.maxSize="50"
-               jpox.column="PROBLEM_TYPE">
-          <name>type</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <type>String</type>
-          <description>
-            The type of health problem.
-          </description>
-        </field>
-        <field stash.maxSize="20"
-               jpox.column="PROBLEM_ORIGIN">
-          <name>origin</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <type>String</type>
-          <description>
-            The origin of the health problem.
-          </description>
-        </field>
-        <field stash.maxSize="4096">
-          <name>message</name>
-          <identifier>false</identifier>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <type>String</type>
-          <description>
-            The origin of the health problem.
-          </description>
-        </field>
-      </fields>
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0+</version>
-          <code><![CDATA[
-    private static final long serialVersionUID = -3426958367216659565L;
           ]]></code>
         </codeSegment>
       </codeSegments>

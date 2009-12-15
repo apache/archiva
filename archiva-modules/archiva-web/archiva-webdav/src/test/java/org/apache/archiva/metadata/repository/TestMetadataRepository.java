@@ -116,12 +116,17 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void addMetadataFacet( String repositoryId, String facetId, String name, MetadataFacet metadataFacet )
+    public void addMetadataFacet( String repositoryId, String facetId, MetadataFacet metadataFacet )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void removeMetadataFacets( String repositoryId, String facetId )
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void removeMetadataFacet( String repoId, String facetId, String name )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
