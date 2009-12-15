@@ -436,3 +436,45 @@ div.versions a.expand {
     font-size: 7pt;
 	color: gray;	
 }
+
+table.auditlogs {
+	text-align: center;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif ;
+	font-weight: normal;
+	font-size: 11px;
+	color: #fff;
+	width: 100%;
+	background-color: #666;
+	border: 0px;
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
+
+table.auditlogs th {
+	background-color: #666;
+	color: #fff;
+	padding: 4px;
+	text-align: center;
+	border-bottom: 2px #fff solid;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+table.auditlogs td {
+	background-color: #CCC;
+	color: #000;
+	padding: 4px;
+	text-align: center;
+	border: 1px #fff solid;
+}
+
+div.auditLogReportResults {
+	border: 1px dashed #DFDEDE;
+	margin-bottom: 15px;
+	margin-left: 2px;
+	padding: 5px;
+}
+
+
+
+

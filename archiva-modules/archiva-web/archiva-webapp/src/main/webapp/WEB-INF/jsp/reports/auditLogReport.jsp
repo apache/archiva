@@ -46,79 +46,106 @@
   
   <s:form action="viewAuditLogReport" namespace="/report" validate="false">
      
-    <p>
-    <s:actionerror/>
-    </p>
-   
+    <s:hidden name="initial"/>
+    
     <div id="auditLogReport"> 	
-	   	<s:select label="Repository" name="repository" list="repositories"/>
-	   	
-	   	<s:textfield label="Group ID" id="groupId" name="groupId"/>
-	   	
-	   	<s:textfield label="Artifact ID" id="artifactId" name="artifactId"/>
-	   	
-		<s:textfield label="Start Date" id="startDate" name="startDate"/>	      
-	    <%--
-	    <script type="text/javascript">
-	      Calendar.setup({
-	        inputField     :    "startDate",     
-	        ifFormat       :    "%Y-%m-%d",             
-	        align          :    "Tl",           
-	        singleClick    :    true
-	      });
-	    </script>
-	    --%>
-		
-		<s:textfield label="End Date" id="endDate" name="endDate"/>
-		<%--
-		<script type="text/javascript">
-	      Calendar.setup({
-	        inputField     :    "endDate",     
-	        ifFormat       :    "%Y-%m-%d",             
-	        align          :    "Tl",           
-	        singleClick    :    true
-	      });
-	    </script>
-		--%>    
-		
-		<s:textfield label="Row Count" name="rowCount" />
-		
-	    <s:submit value="View Audit Log"/>
-	    
-	    <s:set name="page" value="page"/>
-      	<c:if test="${page > 1}"><a href="<s:property value='prev' />">&lt;&lt;</a></c:if>
-		  Page: ${page}
-		<s:set name="isLastPage" value="isLastPage"/>
-		<c:if test="${!isLastPage}"><a href="<s:property value='next' />">&gt;&gt;</a></c:if>     
-      
+        <table id="auditLogFieds">
+          <tbody>
+            <tr>
+	   	      <td>Repository: </td>
+	   	      <td><s:select name="repository" list="repositories" theme="simple"/></td>
+	   	    <tr>
+	   	    <tr>
+	   	      <td>Group ID: </td>
+	   	      <td><s:textfield id="groupId" name="groupId" theme="simple"/></td>
+	   	    <tr>
+	   	    <tr>
+	   	      <td>Artifact ID: </td>
+	   	      <td><s:textfield id="artifactId" name="artifactId" theme="simple"/></td>
+	   	    <tr>
+	   	    <tr>
+	   	      <td>Start Date: </td>
+	   	      <td><s:textfield id="startDate" name="startDate" theme="simple"/>	      
+			    <%--
+			    <script type="text/javascript">
+			      Calendar.setup({
+			        inputField     :    "startDate",     
+			        ifFormat       :    "%Y-%m-%d",             
+			        align          :    "Tl",           
+			        singleClick    :    true
+			      });
+			    </script>
+			    --%>
+	    	  </td>
+	   	    <tr>
+	   	    <tr>
+	   	      <td>End Date: </td>
+	   	      <td><s:textfield id="endDate" name="endDate" theme="simple"/>
+				<%--
+				<script type="text/javascript">
+			      Calendar.setup({
+			        inputField     :    "endDate",     
+			        ifFormat       :    "%Y-%m-%d",             
+			        align          :    "Tl",           
+			        singleClick    :    true
+			      });
+			    </script>
+				--%>    		
+	    	  </td>
+	   	    <tr>
+	   	    <tr>
+	   	      <td>Row Count: </td>
+	   	      <td><s:textfield name="rowCount" theme="simple"/></td>
+	   	    <tr>
+	   	    <tr>
+	   	      <td/>
+	   	      <td style="text-align: right"><s:submit value="View Audit Log" theme="simple"/></td>
+	   	    </tr>
+	   	  </tbody>
+	   	</table>	
     </div>    
+    
+    <p/>
+    
+    <div class="auditLogReportResults">
+    
+    <h2>${headerName}</h2>
+      <p>
+        <s:actionerror/>
+      </p>
+        
+	    <c:if test="${not empty (auditLogs)}">  
+		  <table class="auditlogs" cellspacing="0">
+	         <tr>
+		        <th>Event</th>
+		        <th>Repository</th>
+		        <th>Artifact</th>
+		        <th>Event Date</th>
+		        <th>Username</th>
+		      </tr>
+		    
+		    <c:forEach items="${auditLogs}" var="auditLog" varStatus="i">	    
+		      <tr>
+		        <td>${auditLog.event}</td>
+		        <td>${auditLog.repositoryId}</td>
+		        <td>${auditLog.artifact}</td>
+		        <td>${auditLog.eventDate}</td>
+		        <td>${auditLog.username}</td>
+		      </tr>		    
+		    </c:forEach>
+		  </table>	
+		  
+		  <s:set name="page" value="page"/>
+	      <c:if test="${page > 1}"><a href="<s:property value='prev' />">&lt;&lt;</a></c:if>
+			  <strong>Page: </strong>${page}
+		  <s:set name="isLastPage" value="isLastPage"/>		  
+		  <c:if test="${!isLastPage}"><a href="<s:property value='next' />">&gt;&gt;</a></c:if>
+		</c:if>  
+	</div>
    
   </s:form>
     
-  <c:if test="${not empty (auditLogs)}">
-	  <table border="1" cellpadding="5" cellspacing="5" width="100%">
-        <thead>
-	      <tr>
-	        <th style="text-align:center">Event</th>
-	        <th style="text-align:center">Repository</th>
-	        <th style="text-align:center">Artifact</th>
-	        <th style="text-align:center">Event Date</th>
-	        <th style="text-align:center">Username</th>
-	      </tr>
-	    </thead>
-	    <c:forEach items="${auditLogs}" var="auditLog" varStatus="i">
-	    <tbody>
-	      <tr>
-	        <td>${auditLog.event}</td>
-	        <td>${auditLog.repositoryId}</td>
-	        <td>${auditLog.artifact}</td>
-	        <td>${auditLog.eventDate}</td>
-	        <td>${auditLog.username}</td>
-	      </tr>
-	    </tbody>
-	    </c:forEach>
-	  </table>	 
-	</c:if>  
+  
 </div>
 
 </body>

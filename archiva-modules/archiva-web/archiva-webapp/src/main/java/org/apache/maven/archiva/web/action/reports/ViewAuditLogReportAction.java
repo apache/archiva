@@ -24,10 +24,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -82,10 +83,10 @@ public class ViewAuditLogReportAction
 
     private String artifactId;
 
-    private Date startDate;
+    private String startDate;
 
-    private Date endDate;
-
+    private String endDate;
+    
     private int rowCount = 30;
 
     private int page = 1;
@@ -101,6 +102,18 @@ public class ViewAuditLogReportAction
     private static final String ALL_REPOSITORIES = "all";
 
     protected int[] range = new int[2];
+    
+    private String initial = "true";
+    
+    private String headerName;
+    
+    private static final String HEADER_LATEST_EVENTS = "Latest Events";
+    
+    private static final String HEADER_RESULTS = "Results";
+    
+    private String[] datePatterns = new String[] { "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", 
+        "dd MMMMM yyyy", "dd/MM/yy", "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy",
+        "MM-dd-yy" };
 
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
@@ -125,6 +138,15 @@ public class ViewAuditLogReportAction
         groupId = "";
         artifactId = "";
         repository = "";
+                
+        if( Boolean.parseBoolean( initial ) )
+        {
+            headerName = HEADER_LATEST_EVENTS;
+        }
+        else
+        {
+            headerName = HEADER_RESULTS;
+        }
 
         SimpleConstraint constraint = new MostRecentArchivaAuditLogsConstraint();
         auditLogs = (List<ArchivaAuditLogs>) dao.query( constraint );
@@ -144,44 +166,72 @@ public class ViewAuditLogReportAction
         {               
             artifact = ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( "%:" + artifactId + ":%" ) : "";
         }        
-        
-        if ( startDate == null )
-        {
+                
+        Date startDateInDF = null;
+        Date endDateInDF = null;        
+        if ( startDate == null || "".equals( startDate ) )
+        {            
             Calendar cal = Calendar.getInstance();
             cal.set( Calendar.HOUR, 0 );
             cal.set( Calendar.MINUTE, 0 );
             cal.set( Calendar.SECOND, 0 );
 
-            startDate = cal.getTime();
+            startDateInDF = cal.getTime();
+        }
+        else
+        {
+            startDateInDF = DateUtils.parseDate( startDate, datePatterns );
         }
 
-        if ( startDate.equals( endDate ) || endDate == null )
+        if ( endDate == null || "".equals( endDate ) )
         {
-            endDate = Calendar.getInstance().getTime();
+            endDateInDF = Calendar.getInstance().getTime();
+        } 
+        else
+        {
+            endDateInDF = DateUtils.parseDate( endDate, datePatterns );     
+            if( endDate.equals( startDate ) )
+            {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime( endDateInDF );
+                cal.set( Calendar.HOUR, 23 );
+                cal.set( Calendar.MINUTE, 59 );
+                cal.set( Calendar.SECOND, 59 );
+                
+                endDateInDF = cal.getTime();
+            }
         }
 
         range[0] = ( page - 1 ) * rowCount;
         range[1] = ( page * rowCount ) + 1;
-
+        
         ArchivaAuditLogsConstraint constraint = null;
         if ( !repository.equals( ALL_REPOSITORIES ) )
         {
             constraint =
-                new ArchivaAuditLogsConstraint( range, artifact, repository, AuditEvent.UPLOAD_FILE, startDate, endDate );
+                new ArchivaAuditLogsConstraint( range, artifact, repository, AuditEvent.UPLOAD_FILE, startDateInDF, endDateInDF );
         }
         else
         {
             constraint =
-                new ArchivaAuditLogsConstraint( range, artifact, null, AuditEvent.UPLOAD_FILE, startDate, endDate );
+                new ArchivaAuditLogsConstraint( range, artifact, null, AuditEvent.UPLOAD_FILE, startDateInDF, endDateInDF );
         }
 
         try
         {
-            auditLogs = auditLogsDao.queryAuditLogs( constraint );
+            auditLogs = auditLogsDao.queryAuditLogs( constraint );            
             if( auditLogs.isEmpty() )
             {
                 addActionError( "No audit logs found." );
+                initial = "true";                
             }
+            else
+            {   
+                initial = "false";
+            }
+            
+            headerName = HEADER_RESULTS;         
+            paginate();
         }
         catch ( ObjectNotFoundException e )
         {
@@ -193,31 +243,34 @@ public class ViewAuditLogReportAction
             addActionError( "Error occurred while querying audit logs." );
             return ERROR;
         }
-        
-        // pagination
-        paginate();
-
-        startDate = null;
-        endDate = null;
 
         return SUCCESS;
     }
-
+    
     private void paginate()
     {
         if ( auditLogs.size() <= rowCount )
         {
             isLastPage = true;
         }
+        else
+        {   
+            isLastPage = false;
+            auditLogs.remove( rowCount );
+        }
 
         prev =
             request.getRequestURL() + "?page=" + ( page - 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
-                "&artifactId=" + artifactId + "&repositoryId=" + repository + "&startDate=" + startDate + "&endDate=" +
+                "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate=" +
                 endDate;
+        
         next =
             request.getRequestURL() + "?page=" + ( page + 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
-                "&artifactId=" + artifactId + "&repositoryId=" + repository + "&startDate=" + startDate + "&endDate=" +
+                "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate=" +
                 endDate;
+        
+        prev = StringUtils.replace( prev, " ", "%20" );
+        next = StringUtils.replace( next, " ", "%20" );
     }
 
     private List<String> getObservableRepositories()
@@ -301,22 +354,22 @@ public class ViewAuditLogReportAction
         this.rowCount = rowCount;
     }
 
-    public Date getStartDate()
+    public String getStartDate()
     {
         return startDate;
     }
 
-    public void setStartDate( Date startDate )
+    public void setStartDate( String startDate )
     {
         this.startDate = startDate;
     }
 
-    public Date getEndDate()
+    public String getEndDate()
     {
         return endDate;
     }
 
-    public void setEndDate( Date endDate )
+    public void setEndDate( String endDate )
     {
         this.endDate = endDate;
     }
@@ -331,12 +384,12 @@ public class ViewAuditLogReportAction
         this.page = page;
     }
 
-    public boolean isLastPage()
+    public boolean getIsLastPage()
     {
         return isLastPage;
     }
 
-    public void setLastPage( boolean isLastPage )
+    public void setIsLastPage( boolean isLastPage )
     {
         this.isLastPage = isLastPage;
     }
@@ -359,5 +412,25 @@ public class ViewAuditLogReportAction
     public void setNext( String next )
     {
         this.next = next;
+    }
+    
+    public String getInitial()
+    {
+        return initial;
+    }
+
+    public void setInitial( String initial )
+    {
+        this.initial = initial;
+    }
+
+    public String getHeaderName()
+    {
+        return headerName;
+    }
+
+    public void setHeaderName( String headerName )
+    {
+        this.headerName = headerName;
     }
 }
