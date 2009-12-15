@@ -23,9 +23,11 @@ import com.opensymphony.xwork2.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
+import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -66,6 +68,10 @@ public class EditManagedRepositoryActionTest
     private MockControl repoContentStatsDaoControl;
 
     private RepositoryContentStatisticsDAO repoContentStatsDao;
+    
+    private ArchivaAuditLogsDao auditLogsDao;
+
+    private MockControl auditLogsDaoControl;
 
     private static final String REPO_ID = "repo-ident";
 
@@ -96,6 +102,11 @@ public class EditManagedRepositoryActionTest
         archivaDaoControl = MockControl.createControl( ArchivaDAO.class );
         archivaDao = (ArchivaDAO) archivaDaoControl.getMock();
         action.setArchivaDAO( archivaDao );
+        
+        auditLogsDaoControl = MockControl.createControl( ArchivaAuditLogsDao.class );
+        auditLogsDaoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
+        auditLogsDao = (ArchivaAuditLogsDao) auditLogsDaoControl.getMock();
+        action.setAuditLogsDao( auditLogsDao );
 
         repoContentStatsDaoControl = MockControl.createControl( RepositoryContentStatisticsDAO.class );
         repoContentStatsDao = (RepositoryContentStatisticsDAO) repoContentStatsDaoControl.getMock();
@@ -167,10 +178,13 @@ public class EditManagedRepositoryActionTest
         ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
-
+        
+        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
+        auditLogsDaoControl.replay();
+        
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
-
+        
         ManagedRepositoryConfiguration newRepository = createRepository();
         newRepository.setName( "new repo name" );
         assertRepositoryEquals( repository, newRepository );
@@ -178,6 +192,7 @@ public class EditManagedRepositoryActionTest
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
+        auditLogsDaoControl.verify();
     }
 
     public void testEditRepositoryLocationChanged()
@@ -226,6 +241,9 @@ public class EditManagedRepositoryActionTest
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
         
+        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
+        auditLogsDaoControl.replay();
+        
         ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
         populateRepository( repository );
         repository.setLocation( new File( "target/test/location/new" ).getCanonicalPath() );
@@ -238,6 +256,7 @@ public class EditManagedRepositoryActionTest
         archivaConfigurationControl.verify();
         archivaDaoControl.verify();
         repoContentStatsDaoControl.verify();
+        auditLogsDaoControl.verify();
     }
     
     private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,

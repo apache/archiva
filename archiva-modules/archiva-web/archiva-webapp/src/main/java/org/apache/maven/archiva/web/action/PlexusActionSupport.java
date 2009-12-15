@@ -59,8 +59,8 @@ public abstract class PlexusActionSupport
     /**
      * @plexus.requirement role-hint="jdo"
      */
-    private ArchivaAuditLogsDao auditLogsDao;
-    
+    private ArchivaAuditLogsDao auditLogsDao;    
+
     private String principal;
 
     @SuppressWarnings("unchecked")
@@ -145,5 +145,10 @@ public abstract class PlexusActionSupport
     void setPrincipal( String principal )
     {
         this.principal = principal;
+    }
+    
+    public void setAuditLogsDao( ArchivaAuditLogsDao auditLogsDao )
+    {
+        this.auditLogsDao = auditLogsDao;
     }
 }

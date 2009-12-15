@@ -27,6 +27,8 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
+import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -60,6 +62,10 @@ public class DeleteManagedRepositoryActionTest
 
     private ArchivaConfiguration archivaConfiguration;
     
+    private ArchivaAuditLogsDao auditLogsDao;
+
+    private MockControl auditLogsDaoControl;
+    
     private static final String REPO_ID = "repo-ident";
 
     private File location;
@@ -80,6 +86,11 @@ public class DeleteManagedRepositoryActionTest
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
+        
+        auditLogsDaoControl = MockControl.createControl( ArchivaAuditLogsDao.class );
+        auditLogsDaoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
+        auditLogsDao = (ArchivaAuditLogsDao) auditLogsDaoControl.getMock();
+        action.setAuditLogsDao( auditLogsDao );
 
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
@@ -117,9 +128,10 @@ public class DeleteManagedRepositoryActionTest
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
-
+        
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
+                
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
@@ -132,8 +144,13 @@ public class DeleteManagedRepositoryActionTest
         
         Configuration configuration = prepDeletionTest( createRepository(), 4 );                
         
+        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
+        auditLogsDaoControl.replay();
+        
         String status = action.deleteEntry();        
                 
+        auditLogsDaoControl.verify();
+        
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -148,7 +165,12 @@ public class DeleteManagedRepositoryActionTest
         
         Configuration configuration = prepDeletionTest( createRepository(), 4 );              
         
+        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
+        auditLogsDaoControl.replay();
+        
         String status = action.deleteContents();
+        
+        auditLogsDaoControl.verify();
                
         assertEquals( Action.SUCCESS, status );
 
@@ -169,7 +191,12 @@ public class DeleteManagedRepositoryActionTest
 
         assertEquals( 1, configuration.getProxyConnectors().size() );
         
+        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
+        auditLogsDaoControl.replay();
+        
         String status = action.deleteContents();
+        
+        auditLogsDaoControl.verify();
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -183,6 +210,7 @@ public class DeleteManagedRepositoryActionTest
     {
         ManagedRepositoryConfiguration originalRepository = createRepository();
         Configuration configuration = prepDeletionTest( originalRepository, 3 );
+                
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
 
@@ -205,8 +233,12 @@ public class DeleteManagedRepositoryActionTest
 
         assertEquals( 1, configuration.getRepositoryGroups().size() );
         
+        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
+        auditLogsDaoControl.replay();
+        
         String status = action.deleteContents();
         assertEquals( Action.SUCCESS, status );
+        auditLogsDaoControl.verify();
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
         assertEquals( 0, ( ( RepositoryGroupConfiguration ) configuration.getRepositoryGroups().get( 0 ) ).getRepositories().size() );
