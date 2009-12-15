@@ -50,6 +50,7 @@ public class AuditLogsReportTest
     {
         goToAuditLogReports();        
         assertAuditLogsReportPage();
+        assertTextPresent( "Latest Events" );
     }
     
     @Test(dependsOnMethods = { "testWithCorrectUsernamePassword" } )
@@ -61,7 +62,8 @@ public class AuditLogsReportTest
         setFieldValue( "groupId", "non.existing" );
         submit();
         
-        assertPage( "Apache Archiva \\ Audit Log Report" );        
+        assertPage( "Apache Archiva \\ Audit Log Report" );   
+        assertTextPresent( "Results" );
         assertTextPresent( "No audit logs found." );
     }    
     
@@ -76,6 +78,7 @@ public class AuditLogsReportTest
         submit();
                 
         assertAuditLogsReportPage();
+        assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
         assertTextPresent( "test:test:1.0" );
         assertTextPresent( "Uploaded File" );
@@ -94,6 +97,7 @@ public class AuditLogsReportTest
         submit();
                 
         assertAuditLogsReportPage();
+        assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
         assertTextPresent( "test:test:1.0" );
         assertTextPresent( "Uploaded File" );
@@ -111,6 +115,7 @@ public class AuditLogsReportTest
         submit();
         
         assertAuditLogsReportPage();
+        assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
         assertTextPresent( "test:test:1.0" );
         assertTextPresent( "Uploaded File" );
