@@ -46,6 +46,10 @@
   
   <s:form action="viewAuditLogReport" namespace="/report" validate="false">
      
+    <p>
+    <s:actionerror/>
+    </p>
+   
     <div id="auditLogReport"> 	
 	   	<s:select label="Repository" name="repository" list="repositories"/>
 	   	
@@ -80,19 +84,26 @@
 		<s:textfield label="Row Count" name="rowCount" />
 		
 	    <s:submit value="View Audit Log"/>
+	    
+	    <s:set name="page" value="page"/>
+      	<c:if test="${page > 1}"><a href="<s:property value='prev' />">&lt;&lt;</a></c:if>
+		  Page: ${page}
+		<s:set name="isLastPage" value="isLastPage"/>
+		<c:if test="${!isLastPage}"><a href="<s:property value='next' />">&gt;&gt;</a></c:if>     
+      
     </div>    
    
   </s:form>
-  
-   <c:if test="${not empty (auditLogs)}">
-	  <table border="1">
+    
+  <c:if test="${not empty (auditLogs)}">
+	  <table border="1" cellpadding="5" cellspacing="5" width="100%">
         <thead>
 	      <tr>
-	        <th align="center">Event</th>
-	        <th align="center">Repository</th>
-	        <th align="center">Artifact</th>
-	        <th align="center">Event Date</th>
-	        <th align="center">Username</th>
+	        <th style="text-align:center">Event</th>
+	        <th style="text-align:center">Repository</th>
+	        <th style="text-align:center">Artifact</th>
+	        <th style="text-align:center">Event Date</th>
+	        <th style="text-align:center">Username</th>
 	      </tr>
 	    </thead>
 	    <c:forEach items="${auditLogs}" var="auditLog" varStatus="i">
@@ -106,8 +117,8 @@
 	      </tr>
 	    </tbody>
 	    </c:forEach>
-	  </table>   
-    </c:if> 
+	  </table>	 
+	</c:if>  
 </div>
 
 </body>

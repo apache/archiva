@@ -90,7 +90,7 @@
         </redback:ifAuthorized>
         <redback:ifAuthorized permission="archiva-view-audit-logs">
           <li class="none">
-            <my:currentWWUrl action="queryAuditLogReport" namespace="/report">Audit Log Reports</my:currentWWUrl>
+            <my:currentWWUrl action="queryAuditLogReport" namespace="/report">Audit Log Report</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
         <redback:ifAuthorized permission="archiva-manage-users">

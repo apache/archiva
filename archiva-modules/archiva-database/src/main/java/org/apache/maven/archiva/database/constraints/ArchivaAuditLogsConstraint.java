@@ -49,7 +49,7 @@ public class ArchivaAuditLogsConstraint
         {
             whereClause = whereClause + " && artifact.like(desiredArtifact)";
             declParamsList.add( "String desiredArtifact" );
-            paramsList.add( desiredArtifact + "%" );
+            paramsList.add( desiredArtifact );
         }
 
         if ( desiredRepositoryId != null && !"".equals( desiredRepositoryId ) )

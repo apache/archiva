@@ -394,12 +394,13 @@ public abstract class AbstractArchivaTest
 			assertLinkPresent( "Browse" );
 			assertLinkPresent( "Upload Artifact" );
 			assertLinkPresent( "Delete Artifact" );
+			assertLinkPresent( "Audit Log Report" );
 			assertLinkNotPresent( "Repositories" );
 		}
 		else 
 		{
 			assertTextPresent( "Search" );
-			String navMenu = "Find Artifact,Browse,Reports,User Management,User Roles,Appearance,Upload Artifact,Delete Artifact,Repository Groups,Repositories,Proxy Connectors,Legacy Support,Network Proxies,Repository Scanning,Database";
+			String navMenu = "Find Artifact,Browse,Reports,Audit Log Report,User Management,User Roles,Appearance,Upload Artifact,Delete Artifact,Repository Groups,Repositories,Proxy Connectors,Legacy Support,Network Proxies,Repository Scanning,Database";
 			String[] arrayMenu = navMenu.split( "," );
 			for (String navmenu : arrayMenu )
 				assertLinkPresent( navmenu );
