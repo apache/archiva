@@ -43,6 +43,7 @@ import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
@@ -168,6 +169,11 @@ public class ArchivaDavResourceFactory
      * @plexus.requirement
      */
     private ArchivaTaskScheduler scheduler;
+    
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaAuditLogsDao auditLogsDao;
 
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
@@ -264,7 +270,7 @@ public class ArchivaDavResourceFactory
                             new ArchivaDavResource( metadataChecksum.getAbsolutePath(), logicalResource.getPath(),
                                                     null, request.getRemoteAddr(), activePrincipal,
                                                     request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                    auditListeners, scheduler );
+                                                    auditListeners, scheduler, auditLogsDao );
                     }
                 }
                 else
@@ -299,7 +305,7 @@ public class ArchivaDavResourceFactory
                                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                                         null, request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                        auditListeners, scheduler );
+                                                        auditListeners, scheduler, auditLogsDao );
                         }
                         catch ( RepositoryMetadataException r )
                         {
@@ -418,7 +424,7 @@ public class ArchivaDavResourceFactory
             resource =
                 new ArchivaDavResource( resourceFile.getAbsolutePath(), path, managedRepository.getRepository(),
                                         request.getRemoteAddr(), activePrincipal, request.getDavSession(),
-                                        archivaLocator, this, mimeTypes, auditListeners, scheduler );
+                                        archivaLocator, this, mimeTypes, auditListeners, scheduler, auditLogsDao );
 
             if ( WebdavMethodUtil.isReadMethod( request.getMethod() ) )
             {
@@ -449,7 +455,7 @@ public class ArchivaDavResourceFactory
                                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                                         managedRepository.getRepository(), request.getRemoteAddr(),
                                                         activePrincipal, request.getDavSession(), archivaLocator, this,
-                                                        mimeTypes, auditListeners, scheduler );
+                                                        mimeTypes, auditListeners, scheduler, auditLogsDao );
                         }
                         catch ( LayoutException e )
                         {
@@ -529,7 +535,7 @@ public class ArchivaDavResourceFactory
                     log.debug( "Creating destination directory '" + destDir.getName() + "' (current user '" +
                         activePrincipal + "')" );
 
-                    triggerAuditEvent( request.getRemoteAddr(), logicalResource.getPath(), relPath,
+                    triggerAuditEvent( request.getRemoteAddr(), managedRepository.getId(), relPath,
                                        AuditEvent.CREATE_DIR, activePrincipal );
                 }
             }
@@ -565,7 +571,7 @@ public class ArchivaDavResourceFactory
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource );
         DavResource resource =
             new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource, managedRepository.getRepository(),
-                                    davSession, archivaLocator, this, mimeTypes, auditListeners, scheduler );
+                                    davSession, archivaLocator, this, mimeTypes, auditListeners, scheduler, auditLogsDao );
 
         resource.addLockManager( lockManager );
         return resource;
@@ -1092,5 +1098,10 @@ public class ArchivaDavResourceFactory
     public void setConnectors( RepositoryProxyConnectors connectors )
     {
         this.connectors = connectors;
+    }
+    
+    public void setAuditLogsDao( ArchivaAuditLogsDao auditLogsDao )
+    {
+        this.auditLogsDao = auditLogsDao;
     }
 }

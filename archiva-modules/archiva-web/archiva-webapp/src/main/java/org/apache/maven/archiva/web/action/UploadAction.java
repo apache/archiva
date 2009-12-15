@@ -423,7 +423,7 @@ public class UploadAction
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deployed to repository \'" + repositoryId + "\'";
 
-            triggerAuditEvent( repositoryId, groupId + ":" + artifactId + ":" + version, AuditEvent.UPLOAD_FILE );
+            triggerAuditEvent( repositoryId, artifactPath, AuditEvent.UPLOAD_FILE );  
 
             addActionMessage( msg );
 

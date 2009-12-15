@@ -160,6 +160,11 @@
           <role>org.apache.maven.archiva.scheduled.ArchivaTaskScheduler</role>
           <field-name>scheduler</field-name>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.database.ArchivaAuditLogsDao</role>
+          <role-hint>jdo</role-hint>
+          <field-name>auditLogsDao</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>

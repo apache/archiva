@@ -160,11 +160,11 @@ public class ViewAuditLogReportAction
         
         if ( groupId != null && !"".equals( groupId.trim() ) )
         {
-            artifact = groupId + ( ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( ":" + artifactId + ":%" ) : ":%" );
+            artifact = groupId + ( ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( "/" + artifactId + "/%" ) : "%" );
         }
         else
         {               
-            artifact = ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( "%:" + artifactId + ":%" ) : "";
+            artifact = ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( "%" + artifactId + "%" ) : "";
         }        
                 
         Date startDateInDF = null;
@@ -189,17 +189,14 @@ public class ViewAuditLogReportAction
         } 
         else
         {
-            endDateInDF = DateUtils.parseDate( endDate, datePatterns );     
-            if( endDate.equals( startDate ) )
-            {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime( endDateInDF );
-                cal.set( Calendar.HOUR, 23 );
-                cal.set( Calendar.MINUTE, 59 );
-                cal.set( Calendar.SECOND, 59 );
-                
-                endDateInDF = cal.getTime();
-            }
+            endDateInDF = DateUtils.parseDate( endDate, datePatterns );
+            Calendar cal = Calendar.getInstance();
+            cal.setTime( endDateInDF );
+            cal.set( Calendar.HOUR, 23 );
+            cal.set( Calendar.MINUTE, 59 );
+            cal.set( Calendar.SECOND, 59 );
+            
+            endDateInDF = cal.getTime();            
         }
 
         range[0] = ( page - 1 ) * rowCount;

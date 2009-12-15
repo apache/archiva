@@ -39,6 +39,7 @@ import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
@@ -352,11 +353,14 @@ public class RepositoryServletSecurityTest
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
 
+        User user = new SimpleUser();
+        user.setUsername( "admin" );
+        
         // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
         httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
         httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
-        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
+        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), user );
         servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
         servletAuthControl.expectAndReturn(
                                             servletAuth.isAuthorized( null, session, "internal",

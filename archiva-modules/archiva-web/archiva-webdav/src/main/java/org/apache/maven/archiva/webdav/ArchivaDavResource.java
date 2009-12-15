@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -54,6 +55,8 @@ import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
+import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
@@ -104,11 +107,13 @@ public class ArchivaDavResource
     private ArchivaTaskScheduler scheduler;
     
     private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
+    
+    private ArchivaAuditLogsDao auditLogsDao;
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               ArchivaTaskScheduler scheduler )
+                               ArchivaTaskScheduler scheduler, ArchivaAuditLogsDao auditLogsDao )
     {
         this.localResource = new File( localResource ); 
         this.logicalResource = logicalResource;
@@ -123,15 +128,16 @@ public class ArchivaDavResource
         this.mimeTypes = mimeTypes;        
         this.auditListeners = auditListeners;
         this.scheduler = scheduler;
+        this.auditLogsDao = auditLogsDao;
     }
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
                                String remoteAddr, String principal, DavSession session, ArchivaDavResourceLocator locator,
                                DavResourceFactory factory, MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               ArchivaTaskScheduler scheduler )
+                               ArchivaTaskScheduler scheduler, ArchivaAuditLogsDao auditLogsDao )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
-              scheduler );
+              scheduler, auditLogsDao );
 
         this.remoteAddr = remoteAddr;
         this.principal = principal;
@@ -641,6 +647,27 @@ public class ArchivaDavResource
         {
             listener.auditEvent( event );
         }
+        
+        // identify as artifact deployment/upload
+        if( action.equals( AuditEvent.CREATE_FILE ) )
+        {
+            action = AuditEvent.UPLOAD_FILE;
+        }
+        
+        String user = principal;
+        if( principal == null )
+        {
+            user = "guest";
+        }
+        
+        ArchivaAuditLogs auditLogs = new ArchivaAuditLogs();
+        auditLogs.setArtifact( resource );
+        auditLogs.setEvent( action );
+        auditLogs.setEventDate( Calendar.getInstance().getTime() );
+        auditLogs.setRepositoryId( repositoryId );
+        auditLogs.setUsername( user );
+        
+        auditLogsDao.saveAuditLogs( auditLogs );
     }
     
     private void queueRepositoryTask( File localFile )
