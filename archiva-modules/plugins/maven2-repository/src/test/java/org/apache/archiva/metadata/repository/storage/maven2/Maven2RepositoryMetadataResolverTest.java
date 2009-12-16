@@ -225,6 +225,22 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( "invalid-pom", facet.getProblem() );
     }
 
+    public void testGetProjectVersionMetadataForMislocatedPom()
+        throws MetadataResolverException
+    {
+        assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
+
+        ProjectVersionMetadata metadata =
+            resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "mislocated-pom", "1.0" );
+        assertNull( metadata );
+
+        assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
+        RepositoryProblemFacet facet =
+            (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID,
+                                                                          "com.example.test/mislocated-pom/1.0" );
+        assertEquals( "mislocated-pom", facet.getProblem() );
+    }
+
     public void testGetProjectVersionMetadataForMissingPom()
         throws MetadataResolverException
     {
@@ -271,8 +287,8 @@ public class Maven2RepositoryMetadataResolverTest
     {
         assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "com" ) );
         assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "com.example" ) );
-        assertEquals( Arrays.asList( "incomplete-metadata", "invalid-pom", "malformed-metadata", "missing-metadata" ),
-                      resolver.getProjects( TEST_REPO_ID, "com.example.test" ) );
+        assertEquals( Arrays.asList( "incomplete-metadata", "invalid-pom", "malformed-metadata", "mislocated-pom",
+                                     "missing-metadata" ), resolver.getProjects( TEST_REPO_ID, "com.example.test" ) );
 
         assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "org" ) );
         assertEquals( Arrays.asList( "apache" ), resolver.getProjects( TEST_REPO_ID, "org.apache" ) );

@@ -140,15 +140,8 @@ public class Maven2RepositoryMetadataResolver
         if ( !file.exists() )
         {
             // TODO: an event mechanism would remove coupling to the problem reporting plugin
-            RepositoryProblemFacet problem = new RepositoryProblemFacet();
-            problem.setProblem( "missing-pom" );
-            problem.setMessage( "The artifact's POM file '" + file + "' was missing" );
-            problem.setProject( projectId );
-            problem.setNamespace( namespace );
-            problem.setRepositoryId( repoId );
-            problem.setVersion( projectVersion );
-
-            metadataRepository.addMetadataFacet( repoId, problem );
+            addProblemReport( repoId, namespace, projectId, projectVersion, "missing-pom",
+                              "The artifact's POM file '" + file + "' was missing" );
 
             // metadata could not be resolved
             return null;
@@ -167,16 +160,34 @@ public class Maven2RepositoryMetadataResolver
         }
         catch ( ModelBuildingException e )
         {
-            // TODO: an event mechanism would remove coupling to the problem reporting plugin
-            RepositoryProblemFacet problem = new RepositoryProblemFacet();
-            problem.setProblem( "invalid-pom" );
-            problem.setMessage( "The artifact's POM file '" + file + "' was invalid: " + e.getMessage() );
-            problem.setProject( projectId );
-            problem.setNamespace( namespace );
-            problem.setRepositoryId( repoId );
-            problem.setVersion( projectVersion );
+            addProblemReport( repoId, namespace, projectId, projectVersion, "invalid-pom",
+                              "The artifact's POM file '" + file + "' was invalid: " + e.getMessage() );
 
-            metadataRepository.addMetadataFacet( repoId, problem );
+            // metadata could not be resolved
+            return null;
+        }
+
+        // Check if the POM is in the correct location
+        boolean correctGroupId = namespace.equals( model.getGroupId() );
+        boolean correctArtifactId = projectId.equals( model.getArtifactId() );
+        boolean correctVersion = projectVersion.equals( model.getVersion() );
+        if ( !correctGroupId || !correctArtifactId || !correctVersion )
+        {
+            StringBuilder message = new StringBuilder( "Incorrect POM coordinates in '" + file + "':" );
+            if ( !correctGroupId )
+            {
+                message.append( "\nIncorrect group ID: " ).append( model.getGroupId() );
+            }
+            if ( !correctArtifactId )
+            {
+                message.append( "\nIncorrect artifact ID: " ).append( model.getArtifactId() );
+            }
+            if ( !correctVersion )
+            {
+                message.append( "\nIncorrect version: " ).append( model.getVersion() );
+            }
+
+            addProblemReport( repoId, namespace, projectId, projectVersion, "mislocated-pom", message.toString() );
 
             // metadata could not be resolved
             return null;
@@ -210,6 +221,21 @@ public class Maven2RepositoryMetadataResolver
         metadata.addFacet( facet );
 
         return metadata;
+    }
+
+    private void addProblemReport( String repoId, String namespace, String projectId, String projectVersion,
+                                   String problemId, String message )
+    {
+        // TODO: an event mechanism would remove coupling to the problem reporting plugin
+        RepositoryProblemFacet problem = new RepositoryProblemFacet();
+        problem.setProblem( problemId );
+        problem.setMessage( message );
+        problem.setProject( projectId );
+        problem.setNamespace( namespace );
+        problem.setRepositoryId( repoId );
+        problem.setVersion( projectVersion );
+
+        metadataRepository.addMetadataFacet( repoId, problem );
     }
 
     private List<org.apache.archiva.metadata.model.Dependency> convertDependencies( List<Dependency> dependencies )
