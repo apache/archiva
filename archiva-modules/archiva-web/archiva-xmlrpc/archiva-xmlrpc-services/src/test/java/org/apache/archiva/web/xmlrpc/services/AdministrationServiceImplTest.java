@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
@@ -40,9 +42,6 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
@@ -74,8 +73,6 @@ public class AdministrationServiceImplTest
     
     private MockControl repositoryTaskSchedulerControl;
 
-    private MockControl databaseTaskSchedulerControl;
-    
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
     
     // repository consumers
@@ -100,16 +97,14 @@ public class AdministrationServiceImplTest
     
     private RepositoryContentFactory repositoryFactory;
     
-    private MockControl artifactDaoControl;
-    
-    private ArtifactDAO artifactDao;
-    
     private MockControl listenerControl;
 
     private RepositoryListener listener;
 
-    private MockControl cleanupConsumersControl;
-        
+    private MockControl metadataRepositoryControl;
+
+    private MetadataRepository metadataRepository;
+
     protected void setUp()
         throws Exception
     {
@@ -140,15 +135,15 @@ public class AdministrationServiceImplTest
         repoFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
         repositoryFactory = ( RepositoryContentFactory ) repoFactoryControl.getMock();
         
-        artifactDaoControl = MockControl.createControl( ArtifactDAO.class );
-        artifactDao = ( ArtifactDAO ) artifactDaoControl.getMock();
+        metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
                 
         listenerControl = MockControl.createControl( RepositoryListener.class );
         listener = (RepositoryListener) listenerControl.getMock();
         
         service =
             new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
-                                           artifactDao, repositoryTaskScheduler,
+                                           metadataRepository, repositoryTaskScheduler,
                                            Collections.singletonList( listener ) );
     }
   
@@ -305,19 +300,23 @@ public class AdministrationServiceImplTest
         
         repoFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( "internal" ), repoContent );
                 
-        List<ArchivaArtifact> artifacts = getArtifacts();
-        
-        artifactDao.queryArtifacts( null );
-        artifactDaoControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        artifactDaoControl.setReturnValue( artifacts );
-        
-        listener.deleteArtifact( repoContent, artifacts.get( 0 ) );
+        List<ArtifactMetadata> artifacts = getArtifacts();
+        ArtifactMetadata artifact = artifacts.get( 0 );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifacts( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                             artifact.getVersion() ), artifacts );
+        metadataRepository.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                           artifact.getVersion(), artifact.getId() );
+
+        listener.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                 artifact.getVersion(), artifact.getId() );
         listenerControl.setVoidCallable( 1 );
                   
         archivaConfigControl.replay();
         configControl.replay();
         repoFactoryControl.replay();    
-        artifactDaoControl.replay();
+        metadataRepositoryControl.replay();
         listenerControl.replay();
        
         boolean success = service.deleteArtifact( "internal", "org.apache.archiva", "archiva-test", "1.0" );
@@ -326,7 +325,7 @@ public class AdministrationServiceImplTest
         archivaConfigControl.verify();
         configControl.verify();
         repoFactoryControl.verify();
-        artifactDaoControl.verify();
+        metadataRepositoryControl.verify();
         listenerControl.verify();
         
         assertFalse( new File( managedRepo.getLocation(), "org/apache/archiva/archiva-test/1.0" ).exists() );
@@ -356,19 +355,23 @@ public class AdministrationServiceImplTest
         
         recordInManagedLegacyRepoContent( fileTypesControl, fileTypes, pathParserControl, parser );
         
-        List<ArchivaArtifact> artifacts = getArtifacts();
-        
-        artifactDao.queryArtifacts( null );
-        artifactDaoControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        artifactDaoControl.setReturnValue( artifacts );
-                
-        listener.deleteArtifact( repoContent, artifacts.get( 0 ) );
+        List<ArtifactMetadata> artifacts = getArtifacts();
+        ArtifactMetadata artifact = artifacts.get( 0 );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifacts( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                             artifact.getVersion() ), artifacts );
+        metadataRepository.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                           artifact.getVersion(), artifact.getId() );
+
+        listener.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                 artifact.getVersion(), artifact.getId() );
         listenerControl.setVoidCallable( 1 );
         
         archivaConfigControl.replay();
         configControl.replay();
         repoFactoryControl.replay();
-        artifactDaoControl.replay();
+        metadataRepositoryControl.replay();
         listenerControl.replay();
         fileTypesControl.replay();
         pathParserControl.replay();
@@ -379,7 +382,7 @@ public class AdministrationServiceImplTest
         archivaConfigControl.verify();
         configControl.verify();
         repoFactoryControl.verify();
-        artifactDaoControl.verify();
+        metadataRepositoryControl.verify();
         listenerControl.verify();
         fileTypesControl.verify();
         pathParserControl.verify();
@@ -576,8 +579,8 @@ public class AdministrationServiceImplTest
         assertNotNull( repos );
         assertEquals( 2, repos.size() );
                 
-        assertManagedRepo( ( ManagedRepository ) repos.get( 0 ), managedRepos.get( 0 ) );
-        assertManagedRepo( ( ManagedRepository ) repos.get( 1 ), managedRepos.get( 1 ) );
+        assertManagedRepo( repos.get( 0 ), managedRepos.get( 0 ) );
+        assertManagedRepo( repos.get( 1 ), managedRepos.get( 1 ) );
     }
 
     public void testGetAllRemoteRepositories()
@@ -601,8 +604,8 @@ public class AdministrationServiceImplTest
         assertNotNull( repos );
         assertEquals( 2, repos.size() );
          
-        assertRemoteRepo( (RemoteRepository) repos.get( 0 ), remoteRepos.get( 0 ) );
-        assertRemoteRepo( (RemoteRepository) repos.get( 1 ), remoteRepos.get( 1 ) );        
+        assertRemoteRepo( repos.get( 0 ), remoteRepos.get( 0 ) );
+        assertRemoteRepo( repos.get( 1 ), remoteRepos.get( 1 ) );        
     }
     
 /* private methods  */
@@ -708,18 +711,16 @@ public class AdministrationServiceImplTest
         pathParserControl.expectAndReturn( parser.toArtifactReference( at11j ), aRef );
     }
     
-    private List<ArchivaArtifact> getArtifacts()
+    private List<ArtifactMetadata> getArtifacts()
     {
-        List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
         
-        ArchivaArtifactModel model = new ArchivaArtifactModel();
-        model.setRepositoryId( "internal" );
-        model.setGroupId( "org.apache.archiva" );
-        model.setArtifactId( "archiva-test" );
-        model.setVersion( "1.0" );
-        model.setType( "jar" );
-        
-        ArchivaArtifact artifact = new ArchivaArtifact( model );
+        ArtifactMetadata artifact = new ArtifactMetadata();
+        artifact.setId( "archiva-test-1.0.jar" );
+        artifact.setProject( "archiva-test" );
+        artifact.setVersion( "1.0" );
+        artifact.setNamespace( "org.apache.archiva" );
+        artifact.setRepositoryId( "internal" );
         artifacts.add( artifact );
         return artifacts;
     }

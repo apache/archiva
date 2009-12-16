@@ -24,7 +24,6 @@ import java.io.FilenameFilter;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
@@ -56,33 +55,6 @@ public abstract class AbstractRepositoryPurge
     }
 
     /**
-     * Get all files from the directory that matches the specified filename.
-     * 
-     * @param dir the directory to be scanned
-     * @param filename the filename to be matched
-     * @return
-     */
-    protected File[] getFiles( File dir, String filename )
-    {
-        FilenameFilter filter = new ArtifactFilenameFilter( filename );
-
-        File[] files = dir.listFiles( filter );
-
-        return files;
-    }
-
-    protected String toRelativePath( File artifactFile )
-    {
-        String artifactPath = artifactFile.getAbsolutePath();
-        if ( artifactPath.startsWith( repository.getRepoRoot() ) )
-        {
-            artifactPath = artifactPath.substring( repository.getRepoRoot().length() );
-        }
-
-        return artifactPath;
-    }
-
-    /**
      * Purge the repo. Update db and index of removed artifacts.
      * 
      * @param references
@@ -94,14 +66,11 @@ public abstract class AbstractRepositoryPurge
             for ( ArtifactReference reference : references )
             {   
                 File artifactFile = repository.toFile( reference );
-                
-                ArchivaArtifact artifact =
-                    new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
-                                         reference.getClassifier(), reference.getType(), repository.getId() );
-    
+
                 for ( RepositoryListener listener : listeners )
                 {
-                    listener.deleteArtifact( repository, artifact );
+                    listener.deleteArtifact( repository.getId(), reference.getGroupId(), reference.getArtifactId(),
+                                             reference.getVersion(), artifactFile.getName() );
                 }
                 
                 // TODO: this needs to be logged

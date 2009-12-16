@@ -33,7 +33,6 @@ import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
@@ -247,7 +246,7 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsSingleRepo()
-        throws IOException, ArchivaDatabaseException
+        throws IOException
     {
         Date date = new Date();
         repositoryStatisticsManagerControl.expectAndReturn(
@@ -269,7 +268,7 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsMultipleRepos()
-        throws IOException, ArchivaDatabaseException
+        throws IOException
     {
         repositoryStatisticsManagerControl.expectAndReturn(
             repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS, null, null ),

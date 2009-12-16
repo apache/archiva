@@ -21,10 +21,8 @@ package org.apache.maven.archiva.consumers.core.repository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
 
@@ -52,9 +50,9 @@ public class DaysOldRepositoryPurgeTest
     {
         File dir = new File( dirPath );
         File[] contents = dir.listFiles();
-        for ( int i = 0; i < contents.length; i++ )
+        for ( File content : contents )
         {
-            contents[i].setLastModified( lastModified );
+            content.setLastModified( lastModified );
         }
     }
 
@@ -74,10 +72,10 @@ public class DaysOldRepositoryPurgeTest
         setLastModified( projectRoot + "/2.2-SNAPSHOT/", 1179382029 );
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-install-plugin",
-                                                                  "2.2-SNAPSHOT", "maven-plugin" ) );
-        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-install-plugin",
-                                                                  "2.2-SNAPSHOT", "pom" ) );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
+                                 "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.jar" );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
+                                 "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.pom" );
         listenerControl.replay();
         
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
@@ -122,10 +120,10 @@ public class DaysOldRepositoryPurgeTest
         setLastModified( projectRoot + "/1.1.2-SNAPSHOT/", 1179382029 );
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-assembly-plugin",
-                                                                  "1.1.2-20070427.065136-1", "maven-plugin" ) );
-        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-assembly-plugin",
-                                                                  "1.1.2-20070427.065136-1", "pom" ) );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
+                                 "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
+                                 "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
         
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
@@ -205,18 +203,11 @@ public class DaysOldRepositoryPurgeTest
 
         createFiles( versionRoot );
 
-        List<String> versions = new ArrayList<String>();
-        versions.add( "1.4.3-20070113.163208-4" );
-        versions.add( "1.4.3-" + year + mon + day + "." + hr + min + sec + "-5" );
-        versions.add( "1.4.3-" + year + mon + day + "." + hr + min + sec + "-6" );
-        versions.add( "1.4.3-" + year + mon + day + "." + hr + min + sec + "-7" );
-        versions.add( "1.4.3-SNAPSHOT" );
-
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository(), createArtifact( "org.codehaus.plexus", "plexus-utils",
-                                                                  "1.4.3-20070113.163208-4", "jar" ) );
-        listener.deleteArtifact( getRepository(), createArtifact( "org.codehaus.plexus", "plexus-utils",
-                                                                  "1.4.3-20070113.163208-4", "pom" ) );
+        listener.deleteArtifact( getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
+                                 "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.jar" );
+        listener.deleteArtifact( getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
+                                 "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.pom" );
         listenerControl.replay();
         
         repoPurge.process( PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT );
@@ -234,20 +225,19 @@ public class DaysOldRepositoryPurgeTest
         assertExists( versionRoot + "/plexus-utils-1.4.3-SNAPSHOT.jar" );
         assertExists( versionRoot + "/plexus-utils-1.4.3-SNAPSHOT.pom" );
 
-        for ( int i = 0; i < extensions.length; i++ )
+        for ( String extension : extensions )
         {
-            assertExists( versionRoot + "/plexus-utils-1.4.3-" + year + mon + day + "." + hr + min + sec +
-                extensions[i] );
+            assertExists( versionRoot + "/plexus-utils-1.4.3-" + year + mon + day + "." + hr + min + sec + extension );
         }
     }
 
     private void createFiles( String versionRoot )
         throws IOException
     {
-        for ( int i = 0; i < extensions.length; i++ )
+        for ( String extension : extensions )
         {
             File file =
-                new File( versionRoot, "/plexus-utils-1.4.3-" + year + mon + day + "." + hr + min + sec + extensions[i] );
+                new File( versionRoot, "/plexus-utils-1.4.3-" + year + mon + day + "." + hr + min + sec + extension );
             file.createNewFile();
         }
     }

@@ -33,7 +33,6 @@
   <modules>
     <module>archiva-consumer-api</module>
     <module>archiva-core-consumers</module>
-    <module>archiva-database-consumers</module>
     <module>archiva-lucene-consumers</module>
     <module>archiva-signature-consumers</module>
     <module>archiva-dependency-tree-consumer</module>

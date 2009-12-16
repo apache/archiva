@@ -76,8 +76,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         String repoRoot = prepareTestRepos();        
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-plugin-plugin",
-                                                                  "2.3-SNAPSHOT", "maven-plugin" ) );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-plugin-plugin",
+                                 "2.3-SNAPSHOT", "maven-plugin-plugin-2.3-SNAPSHOT.jar" );
         listenerControl.replay();
         
         repoPurge.process( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
@@ -133,9 +133,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         String repoRoot = prepareTestRepos();        
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.archiva",
-                                                                  "released-artifact-in-diff-repo", "1.0-SNAPSHOT",
-                                                                  "jar" ) );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.archiva", "released-artifact-in-diff-repo",
+                                 "1.0-SNAPSHOT", "released-artifact-in-diff-repo-1.0-SNAPSHOT.jar" );
         listenerControl.replay();
         
         repoPurge.process( PATH_TO_RELEASED_SNAPSHOT_IN_DIFF_REPO );

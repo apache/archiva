@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -88,7 +89,12 @@ public class DeleteManagedRepositoryActionTest
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
         action.setRepositoryStatisticsManager( repositoryStatisticsManager );
 
-        action.setArtifactDao( new ArtifactDAOStub() );
+        MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+        metadataRepository.deleteRepository( REPO_ID );
+        action.setMetadataRepository( metadataRepository );
+
+        metadataRepositoryControl.replay();
     }
 
     public void testSecureActionBundle()

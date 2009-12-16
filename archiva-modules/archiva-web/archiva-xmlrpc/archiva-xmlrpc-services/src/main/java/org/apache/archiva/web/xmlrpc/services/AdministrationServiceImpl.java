@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
@@ -37,10 +39,6 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -68,23 +66,23 @@ public class AdministrationServiceImpl
 
     private RepositoryContentFactory repoFactory;
 
-    private ArtifactDAO artifactDAO;
-
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     private Collection<RepositoryListener> listeners;
 
+    private MetadataRepository metadataRepository;
+
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
-                                      RepositoryContentFactory repoFactory, ArtifactDAO artifactDAO,
+                                      RepositoryContentFactory repoFactory, MetadataRepository metadataRepository,
                                       RepositoryArchivaTaskScheduler repositoryTaskScheduler,
                                       Collection<RepositoryListener> listeners )
     {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
         this.repoFactory = repoFactory;
-        this.artifactDAO = artifactDAO;
         this.repositoryTaskScheduler = repositoryTaskScheduler;
         this.listeners = listeners;
+        this.metadataRepository = metadataRepository;
     }
 
     /**
@@ -142,7 +140,7 @@ public class AdministrationServiceImpl
         config.setRepositoryScanning( repoScanningConfig );
         saveConfiguration( config );
 
-        return new Boolean( true );
+        return true;
     }
 
     /**
@@ -151,6 +149,8 @@ public class AdministrationServiceImpl
     public Boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
         throws Exception
     {
+        // TODO: remove duplication with web
+
         Configuration config = archivaConfiguration.getConfiguration();
         ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repoId );
 
@@ -170,28 +170,23 @@ public class AdministrationServiceImpl
             // delete from file system
             repoContent.deleteVersion( ref );
 
-            ArtifactVersionsConstraint constraint = new ArtifactVersionsConstraint( repoId, groupId, artifactId, false );
-            List<ArchivaArtifact> artifacts = null;
+            Collection<ArtifactMetadata> artifacts =
+                metadataRepository.getArtifacts( repoId, groupId, artifactId, version );
 
-            try
+            for ( ArtifactMetadata artifact : artifacts )
             {
-                artifacts = artifactDAO.queryArtifacts( constraint );
-            }
-            catch ( ArchivaDatabaseException e )
-            {
-                throw new Exception( "Error occurred while cleaning up database." );
-            }
-
-            if ( artifacts != null )
-            {
-                for ( ArchivaArtifact artifact : artifacts )
+                if ( artifact.getVersion().equals( version ) )
                 {
-                    if ( artifact.getVersion().equals( version ) )
+                    metadataRepository.deleteArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
+                                                       artifact.getProject(), artifact.getVersion(),
+                                                       artifact.getId() );
+
+                    // TODO: move into the metadata repository proper - need to differentiate attachment of
+                    //       repository metadata to an artifact
+                    for ( RepositoryListener listener : listeners )
                     {
-                        for ( RepositoryListener listener : listeners )
-                        {
-                            listener.deleteArtifact( repoContent, artifact );
-                        }
+                        listener.deleteArtifact( repoId, artifact.getNamespace(), artifact.getProject(),
+                                                 artifact.getVersion(), artifact.getId() );
                     }
                 }
             }
@@ -209,7 +204,7 @@ public class AdministrationServiceImpl
             throw new Exception( "Repository exception occurred." );
         }
 
-        return new Boolean( true );
+        return true;
     }
 
     /**
@@ -233,7 +228,7 @@ public class AdministrationServiceImpl
 
         repositoryTaskScheduler.queueTask( task );
 
-        return new Boolean( true );
+        return true;
     }
 
     /**

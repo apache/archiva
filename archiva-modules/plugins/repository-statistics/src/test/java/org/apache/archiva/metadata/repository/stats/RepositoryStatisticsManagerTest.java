@@ -456,6 +456,8 @@ public class RepositoryStatisticsManagerTest
         stats.setTotalProjectCount( 5 );
         stats.setTotalGroupCount( 4 );
         stats.setTotalFileCount( 56345 );
+        stats.setTotalCountForType( "jar", 10 );
+        stats.setTotalCountForType( "pom", 10 );
         return stats;
     }
 
@@ -513,13 +515,13 @@ public class RepositoryStatisticsManagerTest
                 Arrays.asList( "1.3-SNAPSHOT", "1.3" ) );
             metadataRepositoryControl.expectAndReturn(
                 metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT" ),
-                Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT", "jar" ),
-                               createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT",
+                Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "jar" ),
+                               createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT",
                                                "pom" ) ) );
             metadataRepositoryControl.expectAndReturn(
                 metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3" ),
-                Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "jar" ),
-                               createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "pom" ) ) );
+                Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3", "jar" ),
+                               createArtifact( "org.apache.archiva", "metadata-model", "1.3", "pom" ) ) );
             metadataRepositoryControl.expectAndReturn(
                 metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ), Arrays.asList() );
             metadataRepositoryControl.expectAndReturn(
@@ -529,8 +531,8 @@ public class RepositoryStatisticsManagerTest
                 Arrays.asList( "2.2.1" ) );
             metadataRepositoryControl.expectAndReturn(
                 metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.maven", "maven-model", "2.2.1" ),
-                Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "2.2.1", "jar" ),
-                               createArtifact( "org.apache.archiva", "metadata-repository-api", "2.2.1", "pom" ) ) );
+                Arrays.asList( createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "jar" ),
+                               createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "pom" ) ) );
             metadataRepositoryControl.expectAndReturn( metadataRepository.getNamespaces( TEST_REPO_ID, "org.codehaus" ),
                                                        Arrays.asList( "plexus" ) );
             metadataRepositoryControl.expectAndReturn( metadataRepository.getProjects( TEST_REPO_ID, "org" ),

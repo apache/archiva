@@ -468,6 +468,45 @@ public class FileMetadataRepository
         return artifacts;
     }
 
+    public void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
+    {
+        File directory = new File( this.directory, repositoryId + "/" + namespace + "/" + project + "/" + version );
+
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+        properties.remove( "artifact:updated:" + id );
+        properties.remove( "artifact:whenGathered:" + id );
+        properties.remove( "artifact:size:" + id );
+        properties.remove( "artifact:md5:" + id );
+        properties.remove( "artifact:sha1:" + id );
+        properties.remove( "artifact:version:" + id );
+
+        try
+        {
+            writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void deleteRepository( String repoId )
+    {
+        File directory = new File( this.directory, repoId );
+
+        try
+        {
+            FileUtils.deleteDirectory( directory );
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
     private void getArtifactsByChecksum( List<ArtifactMetadata> artifacts, String repositoryId, String ns,
                                          String checksum )
     {

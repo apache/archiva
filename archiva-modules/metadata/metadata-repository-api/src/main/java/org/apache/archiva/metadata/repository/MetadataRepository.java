@@ -66,4 +66,8 @@ public interface MetadataRepository
     Collection<String> getRepositories();
 
     List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum );
+
+    void deleteArtifact( String repositoryId, String namespace, String project, String version, String id );
+
+    void deleteRepository( String repoId );
 }

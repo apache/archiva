@@ -67,6 +67,10 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

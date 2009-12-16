@@ -436,6 +436,48 @@ public class FileMetadataRepositoryTest
                       repository.getArtifactsByChecksum( TEST_REPO_ID, "not a checksum" ) );
     }
 
+    public void testDeleteArtifact()
+    {
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
+
+        repository.deleteArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
+
+        assertTrue(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
+    }
+
+    public void testDeleteRepository()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+
+        ProjectMetadata project1 = new ProjectMetadata();
+        project1.setNamespace( TEST_NAMESPACE );
+        project1.setId( "project1" );
+        repository.updateProject( TEST_REPO_ID, project1 );
+        ProjectMetadata project2 = new ProjectMetadata();
+        project2.setNamespace( TEST_NAMESPACE );
+        project2.setId( "project2" );
+        repository.updateProject( TEST_REPO_ID, project2 );
+
+        ArtifactMetadata artifact1 = createArtifact();
+        artifact1.setProject( "project1" );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, "project1", TEST_PROJECT_VERSION, artifact1 );
+        ArtifactMetadata artifact2 = createArtifact();
+        artifact2.setProject( "project2" );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, "project2", TEST_PROJECT_VERSION, artifact2 );
+
+        assertEquals( Arrays.asList( artifact1, artifact2 ), new ArrayList<ArtifactMetadata>(
+            repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) ) );
+
+        repository.deleteRepository( TEST_REPO_ID );
+
+        assertTrue( repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ).isEmpty() );
+    }
+
     private ProjectMetadata createProject()
     {
         return createProject( TEST_NAMESPACE );

@@ -104,4 +104,14 @@ public class TestMetadataRepository
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void deleteRepository( String repoId )
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

@@ -20,8 +20,6 @@ package org.apache.archiva.reports;
  */
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.events.RepositoryListener;
 
 /**
@@ -37,12 +35,10 @@ public class RepositoryProblemEventListener
      */
     private MetadataRepository metadataRepository;
 
-    public void deleteArtifact( ManagedRepositoryContent repository, ArchivaArtifact artifact )
+    public void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
     {
-        String name =
-            RepositoryProblemFacet.createName( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                                               repository.toFile( artifact ).getName() );
+        String name = RepositoryProblemFacet.createName( namespace, project, version, id );
 
-        metadataRepository.removeMetadataFacet( repository.getId(), RepositoryProblemFacet.FACET_ID, name );
+        metadataRepository.removeMetadataFacet( repositoryId, RepositoryProblemFacet.FACET_ID, name );
     }
 }
