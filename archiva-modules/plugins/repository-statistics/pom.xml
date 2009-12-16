@@ -51,5 +51,9 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
   </dependencies>
 </project>

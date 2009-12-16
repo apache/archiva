@@ -28,6 +28,10 @@ import java.util.List;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +47,11 @@ public class DefaultRepositoryStatisticsManager
      * @plexus.requirement
      */
     private MetadataRepository metadataRepository;
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repositoryContentFactory;
 
     public RepositoryStatistics getLastStatistics( String repositoryId )
     {
@@ -61,11 +70,12 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
-    private void walkRepository( RepositoryStatistics stats, String repositoryId, String ns )
+    private void walkRepository( RepositoryStatistics stats, String repositoryId, String ns,
+                                 ManagedRepositoryContent repositoryContent )
     {
         for ( String namespace : metadataRepository.getNamespaces( repositoryId, ns ) )
         {
-            walkRepository( stats, repositoryId, ns + "." + namespace );
+            walkRepository( stats, repositoryId, ns + "." + namespace, repositoryContent );
         }
 
         Collection<String> projects = metadataRepository.getProjects( repositoryId, ns );
@@ -84,7 +94,18 @@ public class DefaultRepositoryStatisticsManager
                         stats.setTotalArtifactCount( stats.getTotalArtifactCount() + 1 );
                         stats.setTotalArtifactFileSize( stats.getTotalArtifactFileSize() + artifact.getSize() );
 
-                        // TODO: add by type
+                        // TODO: need a maven2 metadata repository API equivalent
+                        try
+                        {
+                            String type = repositoryContent.toArtifactReference(
+                                ns.replace( '.', '/' ) + "/" + project + "/" + version + "/" +
+                                    artifact.getId() ).getType();
+                            stats.setTotalCountForType( type, stats.getTotalCountForType( type ) + 1 );
+                        }
+                        catch ( LayoutException e )
+                        {
+                            // ignore
+                        }
                     }
                 }
             }
@@ -92,7 +113,8 @@ public class DefaultRepositoryStatisticsManager
     }
 
 
-    public void addStatisticsAfterScan( String repositoryId, Date startTime, Date endTime, long totalFiles, long newFiles )
+    public void addStatisticsAfterScan( String repositoryId, Date startTime, Date endTime, long totalFiles,
+                                        long newFiles )
     {
         RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
         repositoryStatistics.setScanStartTime( startTime );
@@ -112,7 +134,16 @@ public class DefaultRepositoryStatisticsManager
         //       it on the fly
         for ( String ns : metadataRepository.getRootNamespaces( repositoryId ) )
         {
-            walkRepository( repositoryStatistics, repositoryId, ns );
+            ManagedRepositoryContent content;
+            try
+            {
+                content = repositoryContentFactory.getManagedRepositoryContent( repositoryId );
+            }
+            catch ( RepositoryException e )
+            {
+                throw new RuntimeException( e );
+            }
+            walkRepository( repositoryStatistics, repositoryId, ns, content );
         }
         log.info( "Repository walk for statistics executed in " + ( System.currentTimeMillis() - startWalk ) + "ms" );
 
@@ -156,5 +187,10 @@ public class DefaultRepositoryStatisticsManager
     public void setMetadataRepository( MetadataRepository metadataRepository )
     {
         this.metadataRepository = metadataRepository;
+    }
+
+    public void setRepositoryContentFactory( RepositoryContentFactory repositoryContentFactory )
+    {
+        this.repositoryContentFactory = repositoryContentFactory;
     }
 }

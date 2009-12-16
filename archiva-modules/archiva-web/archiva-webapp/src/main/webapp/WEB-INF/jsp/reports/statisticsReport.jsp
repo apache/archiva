@@ -150,14 +150,10 @@
           <th>Artifact Count</th>
           <th>Group Count</th>
           <th>Project Count</th>
-          <%-- TODO
           <th>Plugins</th>
           <th>Archetypes</th>
           <th>Jars</th>
           <th>Wars</th>
-          <th>Deployments</th>
-          <th>Downloads</th>
-          --%>
         </tr>			
 		
         <c:forEach var="stats" items="${repositoryStatistics}" varStatus="i">
@@ -168,15 +164,11 @@
           <td align="right">${stats.totalArtifactCount}</td>
           <td align="right">${stats.totalGroupCount}</td>
           <td align="right">${stats.totalProjectCount}</td>
-          <%-- TODO
-          <td align="right">${stats.pluginCount}</td>
-          <td align="right">${stats.archetypeCount}</td>
-          <td align="right">${stats.jarCount}</td>
-          <td align="right">${stats.warCount}</td>
-          <td align="right">${stats.deploymentCount}</td>
-          <td align="right">${stats.downloadCount}</td>
-          --%>
-        </tr>				
+          <td align="right">${stats.totalCountForType['maven-plugin']}</td>
+          <td align="right">${stats.totalCountForType['maven-archetype']}</td>
+          <td align="right">${stats.totalCountForType['jar']}</td>
+          <td align="right">${stats.totalCountForType['war']}</td>
+        </tr>
         </c:forEach>
       </table>  		
     </c:when>
@@ -191,15 +183,11 @@
           <th>Artifact Count</th>
           <th>Group Count</th>
           <th>Project Count</th>
-          <%-- TODO
           <th>Plugins</th>
           <th>Archetypes</th>
           <th>Jars</th>
           <th>Wars</th>
-          <th>Deployments</th>
-          <th>Downloads</th>
-          --%>
-        </tr>			
+        </tr>
 	  		
         <c:forEach var="stats" items="${repositoryStatistics}">
         <tr>
@@ -209,14 +197,10 @@
           <td align="right">${stats.totalArtifactCount}</td>
           <td align="right">${stats.totalGroupCount}</td>
           <td align="right">${stats.totalProjectCount}</td>
-          <%-- TODO
-          <td align="right">${stats.pluginCount}</td>
-          <td align="right">${stats.archetypeCount}</td>
-          <td align="right">${stats.jarCount}</td>
-          <td align="right">${stats.warCount}</td>
-          <td align="right">${stats.deploymentCount}</td>
-          <td align="right">${stats.downloadCount}</td>
-          --%>
+          <td align="right">${stats.totalCountForType['maven-plugin']}</td>
+          <td align="right">${stats.totalCountForType['maven-archetype']}</td>
+          <td align="right">${stats.totalCountForType['jar']}</td>
+          <td align="right">${stats.totalCountForType['war']}</td>
         </tr>
         </c:forEach>
       </table>

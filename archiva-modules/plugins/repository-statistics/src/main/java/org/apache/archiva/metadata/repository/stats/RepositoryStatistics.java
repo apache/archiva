@@ -50,6 +50,8 @@ public class RepositoryStatistics
 
     static final DateFormat SCAN_TIMESTAMP = new SimpleDateFormat( "yyyyMMdd.HHmmss.SSS" );
 
+    private Map<String, Long> totalCountForType = new HashMap<String, Long>();
+
     public Date getScanEndTime()
     {
         return scanEndTime;
@@ -156,6 +158,10 @@ public class RepositoryStatistics
         properties.put( "totalGroupCount", String.valueOf( totalGroupCount ) );
         properties.put( "totalProjectCount", String.valueOf( totalProjectCount ) );
         properties.put( "newFileCount", String.valueOf( newFileCount ) );
+        for ( Map.Entry<String, Long> entry : totalCountForType.entrySet() )
+        {
+            properties.put( "count-" + entry.getKey(), String.valueOf( entry.getValue() ) );
+        }
         return properties;
     }
 
@@ -169,15 +175,14 @@ public class RepositoryStatistics
         totalGroupCount = Long.valueOf( properties.get( "totalGroupCount" ) );
         totalProjectCount = Long.valueOf( properties.get( "totalProjectCount" ) );
         newFileCount = Long.valueOf( properties.get( "newFileCount" ) );
-    }
-
-    @Override
-    public String toString()
-    {
-        return "RepositoryStatistics{" + "scanEndTime=" + scanEndTime + ", scanStartTime=" + scanStartTime +
-            ", totalArtifactCount=" + totalArtifactCount + ", totalArtifactFileSize=" + totalArtifactFileSize +
-            ", totalFileCount=" + totalFileCount + ", totalGroupCount=" + totalGroupCount + ", totalProjectCount=" +
-            totalProjectCount + ", newFileCount=" + newFileCount + '}';
+        totalCountForType.clear();
+        for ( Map.Entry<String, String> entry : properties.entrySet() )
+        {
+            if ( entry.getKey().startsWith( "count-" ) )
+            {
+                totalCountForType.put( entry.getKey().substring( 6 ), Long.valueOf( entry.getValue() ) );
+            }
+        }
     }
 
     @Override
@@ -226,6 +231,10 @@ public class RepositoryStatistics
         {
             return false;
         }
+        if ( !totalCountForType.equals( that.totalCountForType ) )
+        {
+            return false;
+        }
 
         return true;
     }
@@ -241,6 +250,32 @@ public class RepositoryStatistics
         result = 31 * result + (int) ( totalGroupCount ^ ( totalGroupCount >>> 32 ) );
         result = 31 * result + (int) ( totalProjectCount ^ ( totalProjectCount >>> 32 ) );
         result = 31 * result + (int) ( newFileCount ^ ( newFileCount >>> 32 ) );
+        result = 31 * result + totalCountForType.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "RepositoryStatistics{" + "scanEndTime=" + scanEndTime + ", scanStartTime=" + scanStartTime +
+            ", totalArtifactCount=" + totalArtifactCount + ", totalArtifactFileSize=" + totalArtifactFileSize +
+            ", totalFileCount=" + totalFileCount + ", totalGroupCount=" + totalGroupCount + ", totalProjectCount=" +
+            totalProjectCount + ", newFileCount=" + newFileCount + ", totalCountForType=" + totalCountForType + '}';
+    }
+
+    public Map<String, Long> getTotalCountForType()
+    {
+        return totalCountForType;
+    }
+
+    public long getTotalCountForType( String type )
+    {
+        Long value = totalCountForType.get( type );
+        return value != null ? value : 0;
+    }
+
+    public void setTotalCountForType( String type, long count )
+    {
+        totalCountForType.put( type, count );
     }
 }

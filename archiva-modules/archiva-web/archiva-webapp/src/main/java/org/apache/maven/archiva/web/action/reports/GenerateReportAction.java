@@ -298,8 +298,8 @@ public class GenerateReportAction
             }
 
             input = new StringBuffer(
-                "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count," +
-                    "Plugins,Archetypes,Jars,Wars,Deployments,Downloads\n" );
+                "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes," +
+                    "Jars,Wars\n" );
 
             // multiple repos
             for ( String repo : selectedRepositories )
@@ -322,14 +322,11 @@ public class GenerateReportAction
                 input.append( repositoryStats.getTotalArtifactFileSize() ).append( "," );
                 input.append( repositoryStats.getTotalArtifactCount() ).append( "," );
                 input.append( repositoryStats.getTotalGroupCount() ).append( "," );
-                input.append( repositoryStats.getTotalProjectCount() );//.append( "," );
-                // TODO
-//                input.append( repositoryStats.getPluginCount() ).append( "," );
-//                input.append( repositoryStats.getArchetypeCount() ).append( "," );
-//                input.append( repositoryStats.getJarCount() ).append( "," );
-//                input.append( repositoryStats.getWarCount() ).append( "," );
-//                input.append( repositoryStats.getDeploymentCount() ).append( "," );
-//                input.append( repositoryStats.getDownloadCount() ).append( "\n" );
+                input.append( repositoryStats.getTotalProjectCount() ).append( "," );
+                input.append( repositoryStats.getTotalCountForType( "maven-plugin" ) ).append( "," );
+                input.append( repositoryStats.getTotalCountForType( "maven-archetype" ) ).append( "," );
+                input.append( repositoryStats.getTotalCountForType( "jar" ) ).append( "," );
+                input.append( repositoryStats.getTotalCountForType( "war" ) );
                 input.append( "\n" );
             }
         }
@@ -356,8 +353,8 @@ public class GenerateReportAction
                 }
 
                 input = new StringBuffer(
-                    "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count," +
-                        "Plugins,Archetypes,Jars,Wars,Deployments,Downloads\n" );
+                    "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins," +
+                        "Archetypes,Jars,Wars\n" );
 
                 for ( RepositoryStatistics repositoryStats : stats )
                 {
@@ -366,14 +363,11 @@ public class GenerateReportAction
                     input.append( repositoryStats.getTotalArtifactFileSize() ).append( "," );
                     input.append( repositoryStats.getTotalArtifactCount() ).append( "," );
                     input.append( repositoryStats.getTotalGroupCount() ).append( "," );
-                    input.append( repositoryStats.getTotalProjectCount() );//.append( "," );
-                    // TODO
-//                input.append( repositoryStats.getPluginCount() ).append( "," );
-//                input.append( repositoryStats.getArchetypeCount() ).append( "," );
-//                input.append( repositoryStats.getJarCount() ).append( "," );
-//                input.append( repositoryStats.getWarCount() ).append( "," );
-//                input.append( repositoryStats.getDeploymentCount() ).append( "," );
-//                input.append( repositoryStats.getDownloadCount() );
+                    input.append( repositoryStats.getTotalProjectCount() ).append( "," );
+                    input.append( repositoryStats.getTotalCountForType( "maven-plugin" ) ).append( "," );
+                    input.append( repositoryStats.getTotalCountForType( "maven-archetype" ) ).append( "," );
+                    input.append( repositoryStats.getTotalCountForType( "jar" ) ).append( "," );
+                    input.append( repositoryStats.getTotalCountForType( "war" ) );
                     input.append( "\n" );
                 }
 

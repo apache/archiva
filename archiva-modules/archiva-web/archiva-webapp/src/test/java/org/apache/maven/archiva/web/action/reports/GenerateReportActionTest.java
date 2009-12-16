@@ -262,12 +262,9 @@ public class GenerateReportActionTest
         assertFalse( action.hasActionErrors() );
         assertFalse( action.hasFieldErrors() );
 
-//        assertEquals(
-//            "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,Jars,Wars,Deployments,Downloads\n" +
-//                date + ",0,0,0,0,0,1,0,1,1,0,0\n", IOUtils.toString( action.getInputStream() ) );
         assertEquals(
-            "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,Jars,Wars,Deployments,Downloads\n" +
-                date + ",0,0,0,0,0\n", IOUtils.toString( action.getInputStream() ) );
+            "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,Jars,Wars\n" +
+                date + ",0,0,0,0,0,0,0,0,0\n", IOUtils.toString( action.getInputStream() ) );
         repositoryStatisticsManagerControl.verify();
     }
 
@@ -581,12 +578,10 @@ public class GenerateReportActionTest
     private void assertMultiRepoCsvResult()
         throws IOException
     {
-//        assertEquals(
-//            "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,Jars,Wars,Deployments,Downloads\n" +
-//                "snapshots,0,0,0,0,0,1,0,1,1,0,0\n" + "internal,0,0,0,0,0,1,0,1,1,0,0\n",
         assertEquals(
-            "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,Jars,Wars,Deployments,Downloads\n" +
-                "snapshots,0,0,0,0,0\n" + "internal,0,0,0,0,0\n", IOUtils.toString( action.getInputStream() ) );
+            "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,Jars,Wars\n" +
+                "snapshots,0,0,0,0,0,0,0,0,0\n" + "internal,0,0,0,0,0,0,0,0,0\n",
+            IOUtils.toString( action.getInputStream() ) );
     }
 
     private RepositoryProblemFacet createProblem( String groupId, String artifactId, String repoId )
