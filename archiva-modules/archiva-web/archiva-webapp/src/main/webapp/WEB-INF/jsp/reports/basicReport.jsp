@@ -48,28 +48,28 @@
       	<strong>${report.version}</strong>
     	</p>
     
-		<blockquote>${report.message}</blockquote>
+		<blockquote><c:out value="${report.message}" /></blockquote>
 	</c:forEach>
   </c:forEach>
 
   <c:set var="prevPageUrl">
-    <s:url action="generateReport" namespace="/">
-      <s:param name="groupId" />
-      <s:param name="repositoryId" />
-      <s:param name="rowCount" />
+    <s:url action="generateReport" namespace="/report">
+      <s:param name="groupId" value="%{#attr.groupId}" />
+      <s:param name="repositoryId" value="%{#attr.repositoryId }" />
+      <s:param name="rowCount" value="%{#attr.rowCount}" />
       <s:param name="page" value="%{#attr.page - 1}"/>
     </s:url>
   </c:set>
   <c:set var="nextPageUrl">
-    <s:url action="generateReport" namespace="/">
-      <s:param name="groupId" />
-      <s:param name="repositoryId" />
-      <s:param name="rowCount" />
+    <s:url action="generateReport" namespace="/report">
+      <s:param name="groupId" value="%{#attr.groupId}" />
+      <s:param name="repositoryId" value="%{#attr.repositoryId }" />
+      <s:param name="rowCount" value="%{#attr.rowCount}" />
       <s:param name="page" value="%{#attr.page + 1}"/>
     </s:url>
   </c:set>
-  <s:set name="page" value="page"/>
-  <c:if test="${page > 1}"><a href="${prevPageUrl}">&lt;&lt;</a></c:if>
+  <s:set name="page" value="page" />
+  <c:if test="${page gt 1}"><a href="${prevPageUrl}">&lt;&lt;</a></c:if>
   Page: ${page}
   <s:set name="lastPage" value="lastPage"/>
   <c:if test="${!lastPage}"><a href="${nextPageUrl}">&gt;&gt;</a></c:if>
