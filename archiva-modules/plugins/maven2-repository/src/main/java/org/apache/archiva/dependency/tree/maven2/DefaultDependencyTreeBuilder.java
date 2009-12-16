@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.RepositoryModelResolver;
 import org.apache.commons.lang.StringUtils;
@@ -421,25 +420,18 @@ public class DefaultDependencyTreeBuilder
                                                List remoteRepositories )
             throws ArtifactMetadataRetrievalException
         {
-            try
+            Set<ArtifactVersion> versions = new HashSet<ArtifactVersion>();
+            for ( String repoId : repositoryIds )
             {
-                Set<ArtifactVersion> versions = new HashSet<ArtifactVersion>();
-                for ( String repoId : repositoryIds )
+                Collection<String> projectVersions =
+                    metadataResolver.getProjectVersions( repoId, artifact.getGroupId(), artifact.getArtifactId() );
+                for ( String version : projectVersions )
                 {
-                    Collection<String> projectVersions =
-                        metadataResolver.getProjectVersions( repoId, artifact.getGroupId(), artifact.getArtifactId() );
-                    for ( String version : projectVersions )
-                    {
-                        versions.add( new DefaultArtifactVersion( version ) );
-                    }
+                    versions.add( new DefaultArtifactVersion( version ) );
                 }
+            }
 
-                return new ArrayList<ArtifactVersion>( versions );
-            }
-            catch ( MetadataResolverException e )
-            {
-                throw new ArtifactMetadataRetrievalException( e.getMessage(), e, artifact );
-            }
+            return new ArrayList<ArtifactVersion>( versions );
         }
     }
 }

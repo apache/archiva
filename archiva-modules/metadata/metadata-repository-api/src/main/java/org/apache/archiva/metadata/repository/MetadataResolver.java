@@ -30,8 +30,8 @@ public interface MetadataResolver
 {
     ProjectMetadata getProject( String repoId, String namespace, String projectId );
 
-    ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
-        throws MetadataResolverException;
+    ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
+                                              String projectVersion );
 
     Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion );
 
@@ -55,9 +55,8 @@ public interface MetadataResolver
 
     Collection<String> getProjects( String repoId, String namespace );
 
-    Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
-        throws MetadataResolverException;
+    Collection<String> getProjectVersions( String repoId, String namespace, String projectId );
 
     Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                                      String projectVersion );
+                                               String projectVersion );
 }

@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -153,7 +152,6 @@ public class BrowseAction
     }
 
     public String browseArtifact()
-        throws MetadataResolverException
     {
         if ( StringUtils.isEmpty( groupId ) )
         {
@@ -190,7 +188,6 @@ public class BrowseAction
     }
 
     private void populateSharedModel( Collection<String> selectedRepos, Collection<String> projectVersions )
-        throws MetadataResolverException
     {
         sharedModel = new ProjectVersionMetadata();
 

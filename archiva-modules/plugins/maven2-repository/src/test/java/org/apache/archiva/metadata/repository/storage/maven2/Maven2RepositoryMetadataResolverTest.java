@@ -31,7 +31,6 @@ import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.archiva.reports.RepositoryProblemFacet;
@@ -78,7 +77,6 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadata()
-        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "org.apache.archiva", "archiva-common", "1.2.1" );
@@ -149,7 +147,6 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
-        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" );
@@ -186,7 +183,6 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()
-        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT" );
@@ -194,7 +190,6 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotMalformedMetadata()
-        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "malformed-metadata", "1.0-SNAPSHOT" );
@@ -202,7 +197,6 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotIncompleteMetadata()
-        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "incomplete-metadata", "1.0-SNAPSHOT" );
@@ -210,7 +204,6 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForInvalidPom()
-        throws MetadataResolverException
     {
         assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
 
@@ -226,7 +219,6 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForMislocatedPom()
-        throws MetadataResolverException
     {
         assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
 
@@ -242,7 +234,6 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForMissingPom()
-        throws MetadataResolverException
     {
         assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
 

@@ -25,7 +25,6 @@ import java.util.List;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 
 public class BrowseActionTest
@@ -90,7 +89,6 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoObservableRepos()
-        throws MetadataResolverException
     {
         setObservableRepos( Collections.<String>emptyList() );
         String selectedGroupId = "org.apache";
@@ -205,7 +203,6 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoGroupId()
-        throws MetadataResolverException
     {
         String selectedArtifactId = "apache";
 
@@ -223,7 +220,6 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoArtifactId()
-        throws MetadataResolverException
     {
         String selectedGroupId = "org.apache";
 
@@ -241,7 +237,6 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifact()
-        throws MetadataResolverException
     {
         String selectedGroupId = "org.apache";
         String selectedArtifactId = "apache";
@@ -274,7 +269,6 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactWithSnapshots()
-        throws MetadataResolverException
     {
         String selectedGroupId = "org.apache";
         String selectedArtifactId = "apache";

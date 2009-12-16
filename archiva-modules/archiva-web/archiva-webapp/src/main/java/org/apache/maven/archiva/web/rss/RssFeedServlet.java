@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.rss.processor.RssFeedProcessor;
 import org.apache.commons.codec.Decoder;
 import org.apache.commons.codec.DecoderException;
@@ -217,11 +216,6 @@ public class RssFeedServlet
             }
             
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, USER_NOT_AUTHORIZED );
-        }
-        catch ( MetadataResolverException e )
-        {
-            log.debug( COULD_NOT_GENERATE_FEED_ERROR, e );
-            res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, COULD_NOT_GENERATE_FEED_ERROR );
         }
     }
 

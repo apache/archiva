@@ -36,7 +36,6 @@ public class TestMetadataResolver
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
-        throws MetadataResolverException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -69,7 +68,6 @@ public class TestMetadataResolver
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
-        throws MetadataResolverException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

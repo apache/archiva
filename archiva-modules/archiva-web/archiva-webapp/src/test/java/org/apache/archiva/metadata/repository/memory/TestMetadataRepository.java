@@ -31,7 +31,6 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 
 public class TestMetadataRepository
     implements MetadataRepository
@@ -80,7 +79,6 @@ public class TestMetadataRepository
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
-        throws MetadataResolverException
     {
         throw new UnsupportedOperationException();
     }
@@ -113,7 +111,6 @@ public class TestMetadataRepository
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
-        throws MetadataResolverException
     {
         return versions;
     }

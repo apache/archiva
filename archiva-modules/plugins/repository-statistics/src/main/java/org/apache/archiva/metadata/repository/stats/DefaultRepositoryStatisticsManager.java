@@ -21,10 +21,12 @@ package org.apache.archiva.metadata.repository.stats;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,23 +61,60 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
-    public void addStatisticsAfterScan( String repositoryId, RepositoryStatistics repositoryStatistics )
+    private void walkRepository( RepositoryStatistics stats, String repositoryId, String ns )
     {
+        for ( String namespace : metadataRepository.getNamespaces( repositoryId, ns ) )
+        {
+            walkRepository( stats, repositoryId, ns + "." + namespace );
+        }
+
+        Collection<String> projects = metadataRepository.getProjects( repositoryId, ns );
+        if ( !projects.isEmpty() )
+        {
+            stats.setTotalGroupCount( stats.getTotalGroupCount() + 1 );
+            stats.setTotalProjectCount( stats.getTotalProjectCount() + projects.size() );
+
+            for ( String project : projects )
+            {
+                for ( String version : metadataRepository.getProjectVersions( repositoryId, ns, project ) )
+                {
+                    for ( ArtifactMetadata artifact : metadataRepository.getArtifacts( repositoryId, ns, project,
+                                                                                       version ) )
+                    {
+                        stats.setTotalArtifactCount( stats.getTotalArtifactCount() + 1 );
+                        stats.setTotalArtifactFileSize( stats.getTotalArtifactFileSize() + artifact.getSize() );
+
+                        // TODO: add by type
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void addStatisticsAfterScan( String repositoryId, Date startTime, Date endTime, long totalFiles, long newFiles )
+    {
+        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
+        repositoryStatistics.setScanStartTime( startTime );
+        repositoryStatistics.setScanEndTime( endTime );
+        repositoryStatistics.setTotalFileCount( totalFiles );
+        repositoryStatistics.setNewFileCount( newFiles );
+
         // In the future, instead of being tied to a scan we might want to record information in the fly based on
         // events that are occurring. Even without these totals we could query much of the information on demand based
         // on information from the metadata content repository. In the mean time, we lock information in at scan time.
         // Note that if new types are later discoverable due to a code change or new plugin, historical stats will not
         // be updated and the repository will need to be rescanned.
 
-        // TODO, populate these and also a count per artifact type
-        // populate total artifact count from content repository
-//        repositoryStatistics.setTotalArtifactCount(  );
-        // populate total size from content repository
-//        repositoryStatistics.setTotalArtifactFileSize(  );
-        // populate total group count from content repository
-//        repositoryStatistics.setTotalGroupCount(  );
-        // populate total project count from content repository
-//        repositoryStatistics.setTotalProjectCount(  );
+        long startWalk = System.currentTimeMillis();
+        // TODO: we can probably get a more efficient implementation directly from the metadata repository, but for now
+        //       we just walk it. Alternatively, we could build an index, or store the aggregate information and update
+        //       it on the fly
+        for ( String ns : metadataRepository.getRootNamespaces( repositoryId ) )
+        {
+            walkRepository( repositoryStatistics, repositoryId, ns );
+        }
+        log.info( "Repository walk for statistics executed in " + ( System.currentTimeMillis() - startWalk ) + "ms" );
 
         metadataRepository.addMetadataFacet( repositoryId, repositoryStatistics );
     }

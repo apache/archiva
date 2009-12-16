@@ -31,7 +31,6 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -163,17 +162,9 @@ public class ArchivaMetadataCreationConsumer
 
         String projectVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
         // TODO: maybe not too efficient since it may have already been read and stored for this artifact
-        ProjectVersionMetadata versionMetadata;
-        try
-        {
-            versionMetadata =
-                storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
-                                                   projectVersion );
-        }
-        catch ( MetadataResolverException e )
-        {
-            throw new ConsumerException( e.getMessage(), e );
-        }
+        ProjectVersionMetadata versionMetadata =
+            storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
+                                               projectVersion );
 
         if ( versionMetadata == null )
         {

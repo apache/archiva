@@ -22,7 +22,6 @@ package org.apache.archiva.rss.processor;
 import java.util.Map;
 
 import com.sun.syndication.feed.synd.SyndFeed;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 
 /**
  * Retrieve and process the data that will be fed into the RssFeedGenerator.
@@ -35,6 +34,5 @@ public interface RssFeedProcessor
 
     public static final String KEY_ARTIFACT_ID = "artifactId";
 
-    SyndFeed process( Map<String, String> reqParams )
-        throws MetadataResolverException;
+    SyndFeed process( Map<String, String> reqParams );
 }

@@ -142,14 +142,11 @@ public class ArchivaRepositoryScanningTaskExecutor
 
                 log.info( "Finished first scan: " + stats.toDump( arepo ) );
 
-                RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
-                repositoryStatistics.setScanStartTime( stats.getWhenGathered() );
-                repositoryStatistics.setScanEndTime(
-                    new Date( stats.getWhenGathered().getTime() + stats.getDuration() ) );
-                repositoryStatistics.setTotalFileCount( stats.getTotalFileCount() );
-                repositoryStatistics.setNewFileCount( stats.getTotalFileCount() - previousFileCount );
                 // further statistics will be populated by the following method
-                repositoryStatisticsManager.addStatisticsAfterScan( repoId, repositoryStatistics );
+                Date endTime = new Date( stats.getWhenGathered().getTime() + stats.getDuration() );
+                repositoryStatisticsManager.addStatisticsAfterScan( repoId, stats.getWhenGathered(), endTime,
+                                                                    stats.getTotalFileCount(),
+                                                                    stats.getTotalFileCount() - previousFileCount );
 
 //                log.info( "Scanning for removed repository content" );
 

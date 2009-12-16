@@ -282,17 +282,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         repoTask.setScanAll( true );
 
         Date date = Calendar.getInstance().getTime();
-        RepositoryStatistics stats = new RepositoryStatistics();
-        stats.setScanStartTime( new Date( date.getTime() - 1234567 ) );
-        stats.setScanEndTime( date );
-        stats.setNewFileCount( 8 );
-        stats.setTotalArtifactCount( 8 );
-        stats.setTotalFileCount( 8 );
-        stats.setTotalGroupCount( 3 );
-        stats.setTotalProjectCount( 5 );
-        stats.setTotalArtifactFileSize( 999999 );
-
-        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, new Date( date.getTime() - 1234567 ), date, 8,
+                                                            8 );
 
         taskExecutor.executeTask( repoTask );
 
@@ -315,6 +306,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         stats.setTotalProjectCount( 5 );
         stats.setTotalArtifactFileSize( 38545 );
 
-        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats );
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, new Date( date.getTime() - 1234567 ), date,
+                                                            31, 31 );
     }
 }

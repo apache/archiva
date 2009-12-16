@@ -28,7 +28,6 @@ import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -96,15 +95,7 @@ public class ShowArtifactAction
 
                 // we don't want the implementation being that intelligent - so another resolver to do the
                 // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
-                try
-                {
-                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
-                }
-                catch ( MetadataResolverException e )
-                {
-                    addActionError( "Error occurred resolving metadata for project: " + e.getMessage() );
-                    return ERROR;
-                }
+                versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
                 if ( versionMetadata != null )
                 {
                     repositoryId = repoId;
@@ -136,15 +127,7 @@ public class ShowArtifactAction
         {
             if ( versionMetadata == null )
             {
-                try
-                {
-                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
-                }
-                catch ( MetadataResolverException e )
-                {
-                    addActionError( "Error occurred resolving metadata for project: " + e.getMessage() );
-                    return ERROR;
-                }
+                versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
             }
         }
 
@@ -170,15 +153,7 @@ public class ShowArtifactAction
         {
             if ( versionMetadata == null )
             {
-                try
-                {
-                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
-                }
-                catch ( MetadataResolverException e )
-                {
-                    addActionError( "Error occurred resolving metadata for project: " + e.getMessage() );
-                    return ERROR;
-                }
+                versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
             }
         }
 
@@ -214,15 +189,7 @@ public class ShowArtifactAction
         {
             if ( versionMetadata == null )
             {
-                try
-                {
-                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
-                }
-                catch ( MetadataResolverException e )
-                {
-                    addActionError( "Error occurred resolving metadata for project: " + e.getMessage() );
-                    return ERROR;
-                }
+                versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
             }
         }
 

@@ -36,7 +36,6 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -101,7 +100,6 @@ public class Maven2RepositoryMetadataResolver
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
-        throws MetadataResolverException
     {
         ManagedRepositoryConfiguration repositoryConfiguration =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );

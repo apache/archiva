@@ -170,4 +170,77 @@ public class RepositoryStatistics
         totalProjectCount = Long.valueOf( properties.get( "totalProjectCount" ) );
         newFileCount = Long.valueOf( properties.get( "newFileCount" ) );
     }
+
+    @Override
+    public String toString()
+    {
+        return "RepositoryStatistics{" + "scanEndTime=" + scanEndTime + ", scanStartTime=" + scanStartTime +
+            ", totalArtifactCount=" + totalArtifactCount + ", totalArtifactFileSize=" + totalArtifactFileSize +
+            ", totalFileCount=" + totalFileCount + ", totalGroupCount=" + totalGroupCount + ", totalProjectCount=" +
+            totalProjectCount + ", newFileCount=" + newFileCount + '}';
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        RepositoryStatistics that = (RepositoryStatistics) o;
+
+        if ( newFileCount != that.newFileCount )
+        {
+            return false;
+        }
+        if ( totalArtifactCount != that.totalArtifactCount )
+        {
+            return false;
+        }
+        if ( totalArtifactFileSize != that.totalArtifactFileSize )
+        {
+            return false;
+        }
+        if ( totalFileCount != that.totalFileCount )
+        {
+            return false;
+        }
+        if ( totalGroupCount != that.totalGroupCount )
+        {
+            return false;
+        }
+        if ( totalProjectCount != that.totalProjectCount )
+        {
+            return false;
+        }
+        if ( !scanEndTime.equals( that.scanEndTime ) )
+        {
+            return false;
+        }
+        if ( !scanStartTime.equals( that.scanStartTime ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = scanEndTime.hashCode();
+        result = 31 * result + scanStartTime.hashCode();
+        result = 31 * result + (int) ( totalArtifactCount ^ ( totalArtifactCount >>> 32 ) );
+        result = 31 * result + (int) ( totalArtifactFileSize ^ ( totalArtifactFileSize >>> 32 ) );
+        result = 31 * result + (int) ( totalFileCount ^ ( totalFileCount >>> 32 ) );
+        result = 31 * result + (int) ( totalGroupCount ^ ( totalGroupCount >>> 32 ) );
+        result = 31 * result + (int) ( totalProjectCount ^ ( totalProjectCount >>> 32 ) );
+        result = 31 * result + (int) ( newFileCount ^ ( newFileCount >>> 32 ) );
+        return result;
+    }
 }

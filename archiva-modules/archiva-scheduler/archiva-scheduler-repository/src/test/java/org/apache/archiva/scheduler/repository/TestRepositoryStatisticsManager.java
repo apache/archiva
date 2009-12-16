@@ -41,9 +41,17 @@ public class TestRepositoryStatisticsManager
             : null;
     }
 
-    public void addStatisticsAfterScan( String repositoryId, RepositoryStatistics repositoryStatistics )
+    public void addStatisticsAfterScan( String repositoryId, Date startTime, Date endTime, long totalFiles,
+                                        long newFiles )
     {
         List<RepositoryStatistics> stats = getStatsList( repositoryId );
+
+        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
+        repositoryStatistics.setScanStartTime( startTime );
+        repositoryStatistics.setScanEndTime( endTime );
+        repositoryStatistics.setNewFileCount( newFiles );
+        repositoryStatistics.setTotalFileCount( totalFiles );
+
         stats.add( repositoryStatistics );
     }
 

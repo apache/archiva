@@ -26,7 +26,7 @@ public interface RepositoryStatisticsManager
 {
     RepositoryStatistics getLastStatistics( String repositoryId );
 
-    void addStatisticsAfterScan( String repositoryId, RepositoryStatistics repositoryStatistics );
+    void addStatisticsAfterScan( String repositoryId, Date startTime, Date endTime, long totalFiles, long newFiles );
 
     void deleteStatistics( String repositoryId );
 

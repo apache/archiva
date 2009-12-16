@@ -27,7 +27,6 @@ import java.util.Map;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
 
@@ -54,7 +53,6 @@ public class NewVersionsOfArtifactRssFeedProcessor
      * Process all versions of the artifact which had a rss feed request.
      */
     public SyndFeed process( Map<String, String> reqParams )
-        throws MetadataResolverException
     {
         String groupId = reqParams.get( RssFeedProcessor.KEY_GROUP_ID );
         String artifactId = reqParams.get( RssFeedProcessor.KEY_ARTIFACT_ID );
@@ -68,7 +66,6 @@ public class NewVersionsOfArtifactRssFeedProcessor
     }
 
     private SyndFeed processNewVersionsOfArtifact( String groupId, String artifactId )
-        throws MetadataResolverException
     {
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
         for ( String repoId : metadataRepository.getRepositories() )

@@ -58,7 +58,6 @@ public class DefaultMetadataResolver
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
-        throws MetadataResolverException
     {
         ProjectVersionMetadata metadata =
             metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
@@ -166,7 +165,6 @@ public class DefaultMetadataResolver
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
-        throws MetadataResolverException
     {
         Collection<String> projectVersions = metadataRepository.getProjectVersions( repoId, namespace, projectId );
         Collection<String> storageProjectVersions = storageResolver.getProjectVersions( repoId, namespace, projectId,
