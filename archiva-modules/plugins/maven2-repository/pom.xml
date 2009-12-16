@@ -30,6 +30,10 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>problem-reports</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
     </dependency>
     <dependency>

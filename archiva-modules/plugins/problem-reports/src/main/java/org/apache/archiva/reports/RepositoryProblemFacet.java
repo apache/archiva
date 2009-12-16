@@ -60,7 +60,10 @@ public class RepositoryProblemFacet
         map.put( "namespace", namespace );
         map.put( "project", project );
         map.put( "version", version );
-        map.put( "id", id );
+        if ( id != null )
+        {
+            map.put( "id", id );
+        }
         map.put( "message", message );
         map.put( "problem", problem );
         return map;
@@ -147,8 +150,13 @@ public class RepositoryProblemFacet
         return problem;
     }
 
-    static String createName( String namespace, String project, String projectVersion, String id )
+    public static String createName( String namespace, String project, String projectVersion, String id )
     {
-        return namespace + "/" + project + "/" + projectVersion + "/" + id;
+        String name = namespace + "/" + project + "/" + projectVersion;
+        if ( id != null )
+        {
+            name = name + "/" + id;
+        }
+        return name;
     }
 }

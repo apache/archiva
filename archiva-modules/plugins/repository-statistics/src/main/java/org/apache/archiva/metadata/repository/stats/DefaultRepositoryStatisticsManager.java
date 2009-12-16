@@ -77,7 +77,7 @@ public class DefaultRepositoryStatisticsManager
         // populate total project count from content repository
 //        repositoryStatistics.setTotalProjectCount(  );
 
-        metadataRepository.addMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID, repositoryStatistics );
+        metadataRepository.addMetadataFacet( repositoryId, repositoryStatistics );
     }
 
     public void deleteStatistics( String repositoryId )

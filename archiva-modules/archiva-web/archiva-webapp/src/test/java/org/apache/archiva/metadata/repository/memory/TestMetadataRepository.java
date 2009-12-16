@@ -156,7 +156,7 @@ public class TestMetadataRepository
         throw new UnsupportedOperationException();
     }
 
-    public void addMetadataFacet( String repositoryId, String facetId, MetadataFacet metadataFacet )
+    public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
     {
         throw new UnsupportedOperationException();
     }

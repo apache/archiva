@@ -30,9 +30,11 @@ import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
+import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -55,6 +57,8 @@ public class Maven2RepositoryMetadataResolverTest
 
     private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
+    private MetadataRepository metadataRepository;
+
     public void setUp()
         throws Exception
     {
@@ -69,6 +73,8 @@ public class Maven2RepositoryMetadataResolverTest
         configuration.save( c );
 
         resolver = (Maven2RepositoryMetadataResolver) lookup( StorageMetadataResolver.class, "maven2" );
+        metadataRepository = (MetadataRepository) lookup( MetadataRepository.class );
+        metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID );
     }
 
     public void testGetProjectVersionMetadata()
@@ -204,26 +210,35 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForInvalidPom()
+        throws MetadataResolverException
     {
-        try
-        {
-            ProjectVersionMetadata metadata =
-                resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "invalid-pom", "1.0" );
+        assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
 
-            fail( "Expected failure, but received metadata: " + metadata );
-        }
-        catch ( MetadataResolverException e )
-        {
-            assertTrue( true );
-        }
+        ProjectVersionMetadata metadata =
+            resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "invalid-pom", "1.0" );
+        assertNull( metadata );
+
+        assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
+        RepositoryProblemFacet facet =
+            (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID,
+                                                                          "com.example.test/invalid-pom/1.0" );
+        assertEquals( "invalid-pom", facet.getProblem() );
     }
 
     public void testGetProjectVersionMetadataForMissingPom()
         throws MetadataResolverException
     {
+        assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
+
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "missing-pom", "1.0" );
         assertNull( metadata );
+
+        assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
+        RepositoryProblemFacet facet =
+            (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID,
+                                                                          "com.example.test/missing-pom/1.0" );
+        assertEquals( "missing-pom", facet.getProblem() );
 
     }
 

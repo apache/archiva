@@ -19,10 +19,12 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
@@ -31,52 +33,10 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 
 public class TestMetadataRepository
+    extends TestMetadataResolver
     implements MetadataRepository
 {
-    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
-                                                     String projectVersion )
-        throws MetadataResolverException
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
-                                                   String projectVersion )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
-                                                                     String projectVersion )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<String> getRootNamespaces( String repoId )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<String> getNamespaces( String repoId, String namespace )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<String> getProjects( String repoId, String namespace )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
-        throws MetadataResolverException
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    private Map<String, MetadataFacet> facets = new HashMap<String, MetadataFacet>();
 
     public void updateProject( String repoId, ProjectMetadata project )
     {
@@ -89,8 +49,7 @@ public class TestMetadataRepository
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void updateProjectVersion( String repoId, String namespace, String projectId,
-                                      ProjectVersionMetadata versionMetadata )
+    public void updateProjectVersion( String repoId, String namespace, String projectId, ProjectVersionMetadata versionMetadata )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -106,24 +65,24 @@ public class TestMetadataRepository
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public List<String> getMetadataFacets( String repodId, String facetId )
+    public List<String> getMetadataFacets( String repoId, String facetId )
     {
-        return Collections.emptyList();
+        return new ArrayList<String>( facets.keySet() );
     }
 
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return facets.get( name );
     }
 
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        facets.put( metadataFacet.getName(), metadataFacet );
     }
 
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        facets.clear();
     }
 
     public void removeMetadataFacet( String repoId, String facetId, String name )
@@ -142,12 +101,6 @@ public class TestMetadataRepository
     }
 
     public List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                                      String projectVersion )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

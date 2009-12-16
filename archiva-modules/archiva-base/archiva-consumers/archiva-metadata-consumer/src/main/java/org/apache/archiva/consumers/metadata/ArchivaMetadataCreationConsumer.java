@@ -161,13 +161,14 @@ public class ArchivaMetadataCreationConsumer
         project.setNamespace( artifact.getGroupId() );
         project.setId( artifact.getArtifactId() );
 
+        String projectVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
         // TODO: maybe not too efficient since it may have already been read and stored for this artifact
         ProjectVersionMetadata versionMetadata;
         try
         {
             versionMetadata =
                 storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
-                                                   VersionUtil.getBaseVersion( artifact.getVersion() ) );
+                                                   projectVersion );
         }
         catch ( MetadataResolverException e )
         {
@@ -176,7 +177,9 @@ public class ArchivaMetadataCreationConsumer
 
         if ( versionMetadata == null )
         {
-            throw new ConsumerException( "Unable to read metadata for artifact: " + artifact );
+            log.warn( "Missing POM for artifact: " + artifact + "; creating empty metadata" );
+            versionMetadata = new ProjectVersionMetadata();
+            versionMetadata.setId( projectVersion );
         }
 
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
@@ -209,8 +212,8 @@ public class ArchivaMetadataCreationConsumer
 
         // TODO: transaction
         // read the metadata and update it if it is newer or doesn't exist
-        metadataRepository.updateArtifact( repository.getId(), project.getNamespace(), project.getId(),
-                                           versionMetadata.getId(), artifactMeta );
+        metadataRepository.updateArtifact( repository.getId(), project.getNamespace(), project.getId(), projectVersion,
+                                           artifactMeta );
         metadataRepository.updateProjectVersion( repository.getId(), project.getNamespace(), project.getId(),
                                                  versionMetadata );
         metadataRepository.updateProject( repository.getId(), project );

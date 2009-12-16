@@ -303,16 +303,16 @@ public class FileMetadataRepository
         return metadataFacet;
     }
 
-    public void addMetadataFacet( String repositoryId, String facetId, MetadataFacet metadataFacet )
+    public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
     {
         Properties properties = new Properties();
         properties.putAll( metadataFacet.toProperties() );
 
         try
         {
-            writeProperties( properties,
-                             new File( getMetadataDirectory( repositoryId, facetId ), metadataFacet.getName() ),
-                             METADATA_KEY );
+            File directory =
+                new File( getMetadataDirectory( repositoryId, metadataFacet.getFacetId() ), metadataFacet.getName() );
+            writeProperties( properties, directory, METADATA_KEY );
         }
         catch ( IOException e )
         {

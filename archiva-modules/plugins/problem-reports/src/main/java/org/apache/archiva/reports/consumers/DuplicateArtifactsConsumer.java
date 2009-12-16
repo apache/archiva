@@ -209,7 +209,7 @@ public class DuplicateArtifactsConsumer
                         "/" + dupArtifact.getProject() + "/" + dupArtifact.getVersion() + "/" + dupArtifact.getId() );
                 problem.setProblem( "duplicate-artifact" );
 
-                metadataRepository.addMetadataFacet( repoId, RepositoryProblemFacet.FACET_ID, problem );
+                metadataRepository.addMetadataFacet( repoId, problem );
             }
         }
     }

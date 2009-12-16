@@ -120,7 +120,7 @@ public class RepositoryStatisticsManagerTest
 
         RepositoryStatistics stats = createTestStats( startTime, current );
 
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, stats );
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
             Arrays.asList( stats.getName() ) );
@@ -152,11 +152,11 @@ public class RepositoryStatisticsManagerTest
 
         Date startTime1 = new Date( current.getTime() - 12345 );
         RepositoryStatistics stats1 = createTestStats( startTime1, new Date( current.getTime() - 6000 ) );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats1 );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, stats1 );
 
         Date startTime2 = new Date( current.getTime() - 3000 );
         RepositoryStatistics stats2 = createTestStats( startTime2, current );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats2 );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, stats2 );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
@@ -391,7 +391,7 @@ public class RepositoryStatisticsManagerTest
     private void addStats( Date startTime, Date endTime )
     {
         RepositoryStatistics stats = createTestStats( startTime, endTime );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats );
+        metadataRepository.addMetadataFacet( TEST_REPO_ID, stats );
         statsCreated.put( stats.getName(), stats );
     }
 

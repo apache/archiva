@@ -23,5 +23,9 @@
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <implementation>org.apache.archiva.configuration.TestConfiguration</implementation>
     </component>
+    <component>
+      <role>org.apache.archiva.metadata.repository.MetadataRepository</role>
+      <implementation>org.apache.archiva.metadata.repository.TestMetadataRepository</implementation>
+    </component>
   </components>
 </component-set>

@@ -51,11 +51,11 @@ public interface MetadataRepository
 
     void updateNamespace( String repoId, String namespace );
 
-    List<String> getMetadataFacets( String repodId, String facetId );
+    List<String> getMetadataFacets( String repoId, String facetId );
 
     MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name );
 
-    void addMetadataFacet( String repositoryId, String facetId, MetadataFacet metadataFacet );
+    void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet );
 
     void removeMetadataFacets( String repositoryId, String facetId );
 

@@ -35,11 +35,13 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolverException;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
+import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -79,6 +81,11 @@ public class Maven2RepositoryMetadataResolver
      * @plexus.requirement role-hint="maven2"
      */
     private RepositoryPathTranslator pathTranslator;
+
+    /**
+     * @plexus.requirement
+     */
+    private MetadataRepository metadataRepository;
 
     private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryMetadataResolver.class );
 
@@ -127,11 +134,22 @@ public class Maven2RepositoryMetadataResolver
             }
         }
 
-        File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion,
-                                           projectId + "-" + artifactVersion + ".pom" );
+        String id = projectId + "-" + artifactVersion + ".pom";
+        File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion, id );
 
         if ( !file.exists() )
         {
+            // TODO: an event mechanism would remove coupling to the problem reporting plugin
+            RepositoryProblemFacet problem = new RepositoryProblemFacet();
+            problem.setProblem( "missing-pom" );
+            problem.setMessage( "The artifact's POM file '" + file + "' was missing" );
+            problem.setProject( projectId );
+            problem.setNamespace( namespace );
+            problem.setRepositoryId( repoId );
+            problem.setVersion( projectVersion );
+
+            metadataRepository.addMetadataFacet( repoId, problem );
+
             // metadata could not be resolved
             return null;
         }
@@ -149,8 +167,19 @@ public class Maven2RepositoryMetadataResolver
         }
         catch ( ModelBuildingException e )
         {
-            throw new MetadataResolverException( "Unable to build Maven POM to derive metadata from: " + e.getMessage(),
-                                                 e );
+            // TODO: an event mechanism would remove coupling to the problem reporting plugin
+            RepositoryProblemFacet problem = new RepositoryProblemFacet();
+            problem.setProblem( "invalid-pom" );
+            problem.setMessage( "The artifact's POM file '" + file + "' was invalid: " + e.getMessage() );
+            problem.setProject( projectId );
+            problem.setNamespace( namespace );
+            problem.setRepositoryId( repoId );
+            problem.setVersion( projectVersion );
+
+            metadataRepository.addMetadataFacet( repoId, problem );
+
+            // metadata could not be resolved
+            return null;
         }
 
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
@@ -529,6 +558,11 @@ public class Maven2RepositoryMetadataResolver
             }
         }
         return metadata;
+    }
+
+    public void setConfiguration( ArchivaConfiguration configuration )
+    {
+        this.archivaConfiguration = configuration;
     }
 
     private static class DirectoryFilter

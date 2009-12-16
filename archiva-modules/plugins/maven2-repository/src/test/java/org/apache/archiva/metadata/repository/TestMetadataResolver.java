@@ -1,12 +1,5 @@
 package org.apache.archiva.metadata.repository;
 
-import java.util.Collection;
-
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,6 +18,13 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import java.util.Collection;
+
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 
 public class TestMetadataResolver
     implements MetadataResolver
