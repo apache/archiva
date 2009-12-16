@@ -76,7 +76,7 @@
             </goals>
           </execution>
           <execution>
-            <id>archiva-jpox-registry-reader</id>
+            <id>archiva-registry-reader</id>
             <goals>
               <goal>generate</goal>
             </goals>
@@ -85,7 +85,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>archiva-jpox-registry-writer</id>
+            <id>archiva-registry-writer</id>
             <goals>
               <goal>generate</goal>
             </goals>

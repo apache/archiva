@@ -1,7 +1,5 @@
 <?xml version="1.0" ?>
-<model jpox.mapping-in-package="true"
-       jpox.table-prefix="ARCHIVA_"
-       xsd.namespace="http://archiva.apache.org/model/1.2.0"
+<model xsd.namespace="http://archiva.apache.org/model/1.2.0"
        xsd.target-namespace="http://archiva.apache.org/model/1.2.0">
   <id>archiva-base-model</id>
   <name>ArchivaBaseModel</name>
@@ -18,9 +16,7 @@
   </defaults>
 
   <classes>
-    <class stash.storable="false"
-           rootElement="true"
-           jpox.enabled="false">
+    <class rootElement="true">
       <name>ArchivaAll</name>
       <version>1.0.0+</version>
       <description>
@@ -64,11 +60,7 @@
 
       -->
 
-    <class stash.storable="true"
-           jpox.table="ARTIFACT"
-           jpox.use-identifiers-as-primary-key="false"
-           jpox.identity-type="application"
-           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey">
+    <class>
       <name>ArchivaArtifactModel</name>
       <version>1.0.0+</version>
       <fields>
@@ -77,10 +69,7 @@
            
            The ArchivaArtifact object should contain no platform specifics!!
          -->
-        <field stash.maxSize="250"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field>
           <name>groupId</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -90,10 +79,7 @@
             The Group ID of the repository content.
           </description>
         </field>
-        <field stash.maxSize="80"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field>
           <name>artifactId</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -103,10 +89,7 @@
             The Artifact ID of the repository content.
           </description>
         </field>
-        <field stash.maxSize="50"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field>
           <name>version</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -116,10 +99,7 @@
             The version of the repository content.
           </description>
         </field>
-        <field stash.maxSize="50"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field>
           <name>classifier</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -129,11 +109,7 @@
             The classifier for this artifact.
           </description>
         </field>
-        <field stash.maxSize="50"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent"
-               jpox.column="FILE_TYPE">
+        <field>
           <name>type</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -143,10 +119,7 @@
             The type of artifact.
           </description>
         </field>
-        <field stash.maxSize="50"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field>
           <name>repositoryId</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -156,7 +129,7 @@
             The repository associated with this content.
           </description>
         </field>
-        <field jpox.column="SNAPSHOT_VERSION">
+        <field>
           <name>snapshot</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -167,7 +140,7 @@
           </description>
           <defaultValue>false</defaultValue>
         </field>
-        <field stash.maxSize="35">
+        <field>
           <name>checksumMD5</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -177,7 +150,7 @@
             The MD5 checksum for the artifact file.
           </description>
         </field>
-        <field stash.maxSize="45">
+        <field>
           <name>checksumSHA1</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -197,7 +170,7 @@
             The Last Modified Timestamp of this artifact.
           </description>
         </field>
-        <field jpox.column="FILE_SIZE">
+        <field>
           <name>size</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -237,18 +210,11 @@
 
     -->
 
-    <class stash.storable="true"
-           jpox.use-identifiers-as-primary-key="false"
-           jpox.identity-type="application"
-           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaRepositoryMetadataKey"
-           jpox.table="REPOSITORY_METADATA">
+    <class>
       <name>ArchivaRepositoryMetadata</name>
       <version>1.0.0+</version>
       <fields>
-        <field stash.maxSize="250"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field>
           <name>groupId</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -258,10 +224,7 @@
             The Group ID of the metadata.
           </description>
         </field>
-        <field stash.maxSize="80"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field>
           <name>artifactId</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -271,10 +234,7 @@
             The Artifact ID of the metadata.
           </description>
         </field>
-        <field stash.maxSize="50"
-               jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field>
           <name>version</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
@@ -312,8 +272,7 @@
           <description>
             The snapshot version id.
           </description>
-          <association stash.part="true"
-                       jpox.join="false">
+          <association>
             <type>SnapshotVersion</type>
             <multiplicity>1</multiplicity>
           </association>
@@ -326,8 +285,7 @@
           <description>
             The available plugins.
           </description>
-          <association stash.part="true"
-                       jpox.join="false">
+          <association>
             <type>Plugin</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -365,7 +323,7 @@
             The Last Modified Timestamp of this file.
           </description>
         </field>
-        <field jpox.column="FILE_SIZE">
+        <field>
           <name>fileSize</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -403,14 +361,12 @@
       </codeSegments>
     </class>
 
-    <class stash.storable="true"
-           jpox.table="REPOSITORY_METADATA_SNAPSHOTS">
+    <class>
       <name>SnapshotVersion</name>
       <description>The Snapshot Version</description>
       <version>1.0.0+</version>
       <fields>
-        <field stash.maxSize="20"
-               jpox.column="VERSION_TIMESTAMP">
+        <field>
           <name>timestamp</name>
           <type>String</type>
           <identifier>false</identifier>
@@ -437,14 +393,12 @@
       </codeSegments>
     </class>
 
-    <class stash.storable="true"
-           jpox.table="REPOSITORY_METADATA_PLUGINS">
+    <class>
       <name>Plugin</name>
       <description>The Plugin</description>
       <version>1.0.0+</version>
       <fields>
-        <field stash.maxSize="20"
-               jpox.column="PLUGIN_PREFIX">
+        <field>
           <name>prefix</name>
           <type>String</type>
           <identifier>false</identifier>
@@ -453,8 +407,7 @@
             The prefix for a plugin
           </description>
         </field>
-        <field
-               jpox.column="PLUGIN_ARTIFACT_ID">
+        <field>
           <name>artifactId</name>
           <type>String</type>
           <identifier>true</identifier>
@@ -463,7 +416,7 @@
             The artifactId for a plugin
           </description>
         </field>
-        <field jpox.column="PLUGIN_NAME">
+        <field>
           <name>name</name>
           <type>String</type>
           <identifier>false</identifier>
@@ -484,14 +437,12 @@
        |_| \_\___|_|  \___|_|  \___|_| |_|\___\___||___/
     -->
 
-    <class stash.storable="true"
-           jpox.table="PROJECT_REFERENCE">
+    <class>
       <name>ProjectReference</name>
       <description>A reference to another (unversioned) Project</description>
       <version>1.0.0+</version>
       <fields>
-        <field stash.maxSize="250"
-               null-value="default">
+        <field null-value="default">
           <name>groupId</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -501,8 +452,7 @@
             The Group ID of the project reference.
           </description>
         </field>
-        <field stash.maxSize="80"
-               null-value="default">
+        <field null-value="default">
           <name>artifactId</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -547,14 +497,12 @@
       </codeSegments>
     </class>
 
-    <class stash.storable="true"
-           jpox.table="VERSIONED_REFERENCE">
+    <class>
       <name>VersionedReference</name>
       <description>A reference to another Versioned Project</description>
       <version>1.0.0+</version>
       <fields>
-        <field stash.maxSize="250"
-               null-value="default">
+        <field null-value="default">
           <name>groupId</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -564,8 +512,7 @@
             The Group ID of the repository content.
           </description>
         </field>
-        <field stash.maxSize="80"
-               null-value="default">
+        <field null-value="default">
           <name>artifactId</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -575,8 +522,7 @@
             The Artifact ID of the repository content.
           </description>
         </field>
-        <field stash.maxSize="50"
-               null-value="default">
+        <field null-value="default">
           <name>version</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -622,13 +568,11 @@
       </codeSegments>
     </class>
 
-    <class stash.storable="true"
-           jpox.table="ARTIFACT_REFERENCE">
+    <class>
       <name>ArtifactReference</name>
       <version>1.0.0+</version>
       <fields>
-        <field stash.maxSize="250"
-               null-value="default">
+        <field null-value="default">
           <name>groupId</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -638,8 +582,7 @@
             The Group ID of the repository content.
           </description>
         </field>
-        <field stash.maxSize="80"
-               null-value="default">
+        <field null-value="default">
           <name>artifactId</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -649,8 +592,7 @@
             The Artifact ID of the repository content.
           </description>
         </field>
-        <field stash.maxSize="50"
-               null-value="default">
+        <field null-value="default">
           <name>version</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -660,8 +602,7 @@
             The version of the repository content.
           </description>
         </field>
-        <field stash.maxSize="50"
-               null-value="default">
+        <field null-value="default">
           <name>classifier</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -671,9 +612,7 @@
             The classifier for this artifact.
           </description>
         </field>
-        <field stash.maxSize="50"
-               null-value="default"
-               jpox.column="FILE_TYPE">
+        <field null-value="default">
           <name>type</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>

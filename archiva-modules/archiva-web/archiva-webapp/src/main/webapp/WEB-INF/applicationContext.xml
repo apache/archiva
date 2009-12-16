@@ -52,7 +52,7 @@
     <constructor-arg ref="archivaConfiguration"/>
     <constructor-arg ref="repositoryContentConsumers"/>
     <constructor-arg ref="repositoryContentFactory"/>
-    <constructor-arg ref="artifactDAO#jdo"/>
+    <constructor-arg ref="metadataRepository"/>
     <constructor-arg ref="archivaTaskScheduler#repository"/>
     <constructor-arg>
       <bean class="org.apache.maven.archiva.repository.events.RepositoryListenerFactoryBean" />

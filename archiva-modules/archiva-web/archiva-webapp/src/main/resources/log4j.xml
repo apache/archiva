@@ -108,6 +108,7 @@
     <level value="error"/>
   </logger>
 
+  <!-- retained for Redback -->
   <logger name="JPOX">
     <level value="warn"/>
   </logger>

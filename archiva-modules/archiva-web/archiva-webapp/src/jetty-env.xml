@@ -39,31 +39,6 @@
     </Arg>
   </New>
 
-  <!-- Archiva database -->
-  <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg><Ref id="wac"/></Arg>
-    <Arg>jdbc/archiva</Arg>
-    <Arg>
-      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">../databases/archiva</Set>
-        <Set name="user">sa</Set>
-        <Set name="createDatabase">create</Set>
-      </New>
-    </Arg>
-  </New>
-
-  <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg><Ref id="wac"/></Arg>
-    <Arg>jdbc/archivaShutdown</Arg>
-    <Arg>
-      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">../databases/archiva</Set>
-        <Set name="user">sa</Set>
-        <Set name="shutdownDatabase">shutdown</Set>
-      </New>
-    </Arg>
-  </New>
-
   <!-- Users / Security Database -->
   <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg><Ref id="wac"/></Arg>
