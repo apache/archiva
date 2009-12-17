@@ -48,9 +48,9 @@ public class RepositoryStatisticsManagerTest
 
     private MetadataRepository metadataRepository;
 
-    private static final String FIRST_TEST_SCAN = "20091201.123456.789";
+    private static final String FIRST_TEST_SCAN = "2009/12/01/123456.789";
 
-    private static final String SECOND_TEST_SCAN = "20091202.012345.678";
+    private static final String SECOND_TEST_SCAN = "2009/12/02/012345.678";
 
     private Map<String, RepositoryStatistics> statsCreated = new LinkedHashMap<String, RepositoryStatistics>();
 

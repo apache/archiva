@@ -127,29 +127,25 @@ The following is the intended content model for the metadata content repository:
             `-- 2009/
                 `-- 12/
                     |-- 02/
-                    |   `-- 23/
-                    |       `-- 47/
-                    |           `-- 00/
-                    |               |-- scanEndTime=
-                    |               |-- scanStartTime=
-                    |               |-- totalArtifactCount=
-                    |               |-- totalArtifactFileSize=
-                    |               |-- totalFileCount=
-                    |               |-- totalGroupCount=
-                    |               `-- totalProjectCount=
+                    |   `-- 234700.000/
+                    |       |-- scanEndTime=
+                    |       |-- scanStartTime=
+                    |       |-- totalArtifactCount=
+                    |       |-- totalArtifactFileSize=
+                    |       |-- totalFileCount=
+                    |       |-- totalGroupCount=
+                    |       `-- totalProjectCount=
                     `-- 03/
-                        `-- 09/
-                            `-- 00/
-                                `-- 00/
-                                    |-- scanEndTime=
-                                    |-- scanStartTime=
-                                    |-- totalArtifactCount=
-                                    |-- totalArtifactFileSize=
-                                    |-- totalFileCount=
-                                    |-- totalGroupCount=
-                                    `-- totalProjectCount=
+                        `-- 090000.000/
+                            |-- scanEndTime=
+                            |-- scanStartTime=
+                            |-- totalArtifactCount=
+                            |-- totalArtifactFileSize=
+                            |-- totalFileCount=
+                            |-- totalGroupCount=
+                            `-- totalProjectCount=
 
-(To update - run "tree --dirstfirst -F" on the unpacked content-model.zip from the sandbox)
+(To update - run "tree --dirsfirst -F" on the unpacked content-model.zip from the sandbox)
 
 Notes:
 

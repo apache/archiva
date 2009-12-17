@@ -48,7 +48,7 @@ public class RepositoryStatistics
 
     public static String FACET_ID = "org.apache.archiva.metadata.repository.stats";
 
-    static final DateFormat SCAN_TIMESTAMP = new SimpleDateFormat( "yyyyMMdd.HHmmss.SSS" );
+    static final DateFormat SCAN_TIMESTAMP = new SimpleDateFormat( "yyyy/MM/dd/HHmmss.SSS" );
 
     private Map<String, Long> totalCountForType = new HashMap<String, Long>();
 
