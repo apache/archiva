@@ -22,7 +22,9 @@ package org.apache.maven.archiva.web.action;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +41,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 /**
  * Browse the repository.
@@ -99,7 +102,7 @@ public class ShowArtifactAction
     public String artifact()
     {
         ProjectVersionMetadata versionMetadata = null;
-        artifacts = new HashMap<String, List<ArtifactDownloadInfo>>();
+        artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
 
         List<String> repos = getObservableRepos();
         // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
@@ -115,7 +118,21 @@ public class ShowArtifactAction
                 {
                     repositoryId = repoId;
 
-                    Collection<ArtifactMetadata> artifacts = metadataResolver.getArtifacts( repoId, groupId, artifactId, version );
+                    List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+                        metadataResolver.getArtifacts( repoId, groupId, artifactId, version ) );
+                    Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
+                    {
+                        public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
+                        {
+                            // sort by version (reverse), then ID
+                            // TODO: move version sorting into repository handling (maven2 specific), and perhaps add a 
+                            //       way to get latest instead
+                            int result = new DefaultArtifactVersion( o2.getVersion() ).compareTo(
+                                new DefaultArtifactVersion( o1.getVersion() ) );
+                            return result != 0 ? result : o1.getId().compareTo( o2.getId() );
+                        }
+                    } );
+
                     for ( ArtifactMetadata artifact : artifacts )
                     {
                         List<ArtifactDownloadInfo> l = this.artifacts.get( artifact.getVersion() );
@@ -158,7 +175,7 @@ public class ShowArtifactAction
     public String mailingLists()
     {
         String result = artifact();
-        
+
         this.mailingLists = model.getMailingLists();
 
         return result;
@@ -281,7 +298,7 @@ public class ShowArtifactAction
         return dependees;
     }
 
-    public String  getRepositoryId()
+    public String getRepositoryId()
     {
         return repositoryId;
     }
@@ -317,6 +334,7 @@ public class ShowArtifactAction
     }
 
     // TODO: move this into the artifact metadata itself via facets where necessary
+
     public class ArtifactDownloadInfo
     {
         private String type;
