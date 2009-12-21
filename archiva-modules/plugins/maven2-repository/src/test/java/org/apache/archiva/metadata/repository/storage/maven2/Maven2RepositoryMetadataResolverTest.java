@@ -359,6 +359,20 @@ public class Maven2RepositoryMetadataResolverTest
         assertArtifact( artifacts.get( 1 ), "plexus-spring-1.2.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
     }
 
+    public void testGetArtifactsTimestampedSnapshots()
+    {
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+            resolver.getArtifacts( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT" ) );
+        assertEquals( 1, artifacts.size() );
+
+        ArtifactMetadata artifact = artifacts.get( 0 );
+        assertEquals( "missing-metadata-1.0-20091101.112233-1.pom", artifact.getId() );
+        assertEquals( "com.example.test", artifact.getNamespace() );
+        assertEquals( "missing-metadata", artifact.getProject() );
+        assertEquals( "1.0-20091101.112233-1", artifact.getVersion() );
+        assertEquals( TEST_REPO_ID, artifact.getRepositoryId() );
+    }
+
     private void assertArtifact( ArtifactMetadata artifact, String id, int size, String sha1, String md5 )
     {
         assertEquals( id, artifact.getId() );

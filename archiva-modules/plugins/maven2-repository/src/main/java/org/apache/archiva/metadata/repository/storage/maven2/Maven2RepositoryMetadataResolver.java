@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
@@ -482,7 +484,24 @@ public class Maven2RepositoryMetadataResolver
                     log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
                 }
                 metadata.setSize( file.length() );
-                metadata.setVersion( projectVersion );
+
+                // TODO: very crude, migrate the functionality from the repository-layer here
+                if ( VersionUtil.isGenericSnapshot( projectVersion ) )
+                {
+                    String mainVersion =
+                        projectVersion.substring( 0, projectVersion.length() - 8 ); // 8 is length of "SNAPSHOT"
+                    System.out.println( file.getName() + " " + mainVersion );
+                    Matcher m = Pattern.compile( projectId + "-" + mainVersion + "([0-9]{8}.[0-9]{6}-[0-9]+).*" ).matcher(
+                        file.getName() );
+                    m.matches();
+                    String version = mainVersion + m.group( 1 );
+
+                    metadata.setVersion( version );
+                }
+                else
+                {
+                    metadata.setVersion( projectVersion );
+                }
                 artifacts.add( metadata );
             }
         }
