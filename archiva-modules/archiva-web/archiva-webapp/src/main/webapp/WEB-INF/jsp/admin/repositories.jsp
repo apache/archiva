@@ -26,7 +26,7 @@
 <head>
   <title>Administration - Repositories</title>
   <s:head/>
-  <script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.2.6.pack.js'/>"></script>
+  <script type="text/javascript" src="<c:url value='/js/jquery-1.3.2.min.js'/>"></script>
   <script type="text/javascript">
   $(document).ready(function(){
     
