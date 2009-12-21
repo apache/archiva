@@ -380,10 +380,9 @@ public class ShowArtifactActionTest
             assertEquals( artifact.getId(), actual.getId() );
             assertEquals( artifact.getProject(), actual.getProject() );
             assertEquals( artifact.getRepositoryId(), actual.getRepositoryId() );
-            assertEquals( artifact.getSize(), actual.getSize() );
             assertEquals( artifact.getVersion(), actual.getVersion() );
             assertEquals( TEST_TYPE, actual.getType() );
-            assertEquals( TEST_SIZE, actual.getSize() );
+            assertEquals( "12.06 K", actual.getSize() );
             assertEquals( artifact.getNamespace() + "/" + artifact.getProject() + "/" + TEST_SNAPSHOT_VERSION + "/" +
                 artifact.getId(), actual.getPath() );
         }
