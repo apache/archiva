@@ -490,7 +490,6 @@ public class Maven2RepositoryMetadataResolver
                 {
                     String mainVersion =
                         projectVersion.substring( 0, projectVersion.length() - 8 ); // 8 is length of "SNAPSHOT"
-                    System.out.println( file.getName() + " " + mainVersion );
                     Matcher m = Pattern.compile( projectId + "-" + mainVersion + "([0-9]{8}.[0-9]{6}-[0-9]+).*" ).matcher(
                         file.getName() );
                     m.matches();
