@@ -175,6 +175,7 @@ public class AdministrationServiceImpl
 
             for ( ArtifactMetadata artifact : artifacts )
             {
+                // TODO: mismatch between artifact (snapshot) version and project (base) version here
                 if ( artifact.getVersion().equals( version ) )
                 {
                     metadataRepository.deleteArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
