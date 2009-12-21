@@ -27,8 +27,4 @@
   <decorator name="default" page="default.jsp">
     <pattern>/*</pattern>
   </decorator>
-  
-  <decorator name="artifactDetails" page="artifactDecorator.jsp">
-    <pattern>/*/dependencyTree</pattern>
-  </decorator>
 </decorators>

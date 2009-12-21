@@ -16,119 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-.sidebar3 {
-	width: 10em;
-	float: right;
-	text-align: center;
+
+#download {
+    float: right;
 }
 
-#sidebarb {
-	font-size: small;
-	text-align: center;
-	padding: 10px 10px 10px 10px;
-	border: 1px #DFDEDE solid;
-	width: 10em;
-}
-
-#sidebar {
-	float: right;
-	font-size: small;
-	margin: 10px;
-	padding: 10px;
-	border: 1px #DFDEDE solid;
-	width: 10em;
-}
-
-.download {
-	float: right;
-	font-size: small;
-	font-weight: bold;
-	margin: 15px auto 0px auto;
-	height: auto;
-	width: 150px;
-	min-width: 120px;
-	display: block;
-}
-
-.download .hd .c,
-.download .ft .c {
-	font-size: 1px; /* ensure minimum height */
-	height: 10px;
-}
-
-.download .ft .c {
-	height: 10px;
-}
-
-.download .hd {
-	background: transparent url(../images/download.tl.gif) no-repeat 0px 0px;
-}
-
-.download .hd .c {
-	background: transparent url(../images/download.tr.gif) no-repeat right 0px;
-}
-
-.download .bd {
-	background: transparent url(../images/download.ml.gif) repeat-y 0px 0px;
-}
-
-.download .bd .c {
-	background: transparent url(../images/download.mr.gif) repeat-y right 0px;
-}
-
-.download .bd .c .s {
-	margin: 0px 8px 0px 4px;
-	background: #000 url(../images/download.ms.jpg) repeat-x 0px 0px;
-	padding: 1em;
-}
-
-.download .ft {
-	background: transparent url(../images/download.bl.gif) no-repeat 0px 0px;
-}
-
-.download .ft .c {
-	background: transparent url(../images/download.br.gif) no-repeat right 0px;
-}
-
-.download .bd h2 {
-	margin: 0px;
-	text-align: center;
-	border-bottom-width: 0px !important;
-}
-
-.download .bd p {
-	margin: 0px;
-	border: 0px;
-	text-align: left;
-	padding-left: 0px;
-}
-
-.download a {
+#download a {
 	text-decoration: none;
 }
 
-.download p.body {
-  font-weight: bold;
+#download td.type {
+    padding-right: 1em;
+    white-space: nowrap;
 }
 
-.download table {
-  margin-left: 2px;
-  width: 140px;
-}
-
-.download .icon {
-  width: 16px;
-}
-
-.download .type {
-  font-size: 0.9em;
-  text-align: center;
-}
-
-.download .size {
-  font-weight: normal;
-  font-size: 0.8em;
-  text-align: right;
+#download td.size {
+    text-align: right;
 }
 
 #contentArea {

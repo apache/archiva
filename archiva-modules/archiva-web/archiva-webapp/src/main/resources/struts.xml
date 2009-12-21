@@ -215,7 +215,7 @@
     </action>
 
     <action name="showArtifactDependencyTree" class="showArtifactAction" method="dependencyTree">
-      <result>/WEB-INF/jsp/artifact/dependencyTree.jsp</result>
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
   </package>

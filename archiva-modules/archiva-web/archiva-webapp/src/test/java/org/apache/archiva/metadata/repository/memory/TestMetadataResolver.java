@@ -38,7 +38,7 @@ public class TestMetadataResolver
 {
     private Map<String, ProjectVersionMetadata> projectVersions = new HashMap<String, ProjectVersionMetadata>();
 
-    private Map<String, List<String>> artifactVersions = new HashMap<String, List<String>>();
+    private Map<String, List<ArtifactMetadata>> artifacts = new HashMap<String, List<ArtifactMetadata>>();
 
     private Map<String, List<ProjectVersionReference>> references =
         new HashMap<String, List<ProjectVersionReference>>();
@@ -66,8 +66,7 @@ public class TestMetadataResolver
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
     {
-        List<String> versions = artifactVersions.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
-        return ( versions != null ? versions : Collections.<String>emptyList() );
+        throw new UnsupportedOperationException();
     }
 
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
@@ -123,7 +122,9 @@ public class TestMetadataResolver
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<ArtifactMetadata> artifacts =
+            this.artifacts.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
+        return ( artifacts != null ? artifacts : Collections.<ArtifactMetadata>emptyList() );
     }
 
     public void setProjectVersion( String repoId, String namespace, String projectId,
@@ -149,10 +150,10 @@ public class TestMetadataResolver
         versions.add( versionMetadata.getId() );
     }
 
-    public void setArtifactVersions( String repoId, String namespace, String projectId, String projectVersion,
-                                     List<String> versions )
+    public void setArtifacts( String repoId, String namespace, String projectId, String projectVersion,
+                              List<ArtifactMetadata> artifacts )
     {
-        artifactVersions.put( createMapKey( repoId, namespace, projectId, projectVersion ), versions );
+        this.artifacts.put( createMapKey( repoId, namespace, projectId, projectVersion ), artifacts );
     }
 
     private String createMapKey( String repoId, String namespace, String projectId, String projectVersion )

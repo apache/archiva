@@ -22,13 +22,21 @@ package org.apache.maven.archiva.web.action;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
+import org.easymock.MockControl;
+import org.easymock.classextension.MockClassControl;
 
 public class ShowArtifactActionTest
     extends AbstractActionTestCase
@@ -41,12 +49,17 @@ public class ShowArtifactActionTest
 
     private static final String TEST_TS_SNAPSHOT_VERSION = "1.0-20091120.111111-1";
 
-    private static final List<String> ALL_TEST_SNAPSHOT_VERSIONS =
-        Arrays.asList( TEST_TS_SNAPSHOT_VERSION, "1.0-20091120.222222-2", "1.0-20091123.333333-3" );
-
     private static final String OTHER_TEST_REPO = "first-repo";
 
     private ShowArtifactAction action;
+
+    private static final List<ArtifactMetadata> TEST_SNAPSHOT_ARTIFACTS =
+        Arrays.asList( createArtifact( TEST_TS_SNAPSHOT_VERSION ), createArtifact( "1.0-20091120.222222-2" ),
+                       createArtifact( "1.0-20091123.333333-3" ) );
+
+    private static final long TEST_SIZE = 12345L;
+
+    private static final String TEST_TYPE = "jar";
 
     public void testInstantiation()
     {
@@ -73,15 +86,15 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertTrue( action.getSnapshotVersions().isEmpty() );
+        assertTrue( action.getArtifacts().isEmpty() );
     }
 
     public void testGetArtifactUniqueSnapshot()
     {
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                             createProjectModel( TEST_SNAPSHOT_VERSION ) );
-        metadataResolver.setArtifactVersions( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
-                                              ALL_TEST_SNAPSHOT_VERSIONS );
+        metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
+                                       TEST_SNAPSHOT_ARTIFACTS );
 
         action.setGroupId( TEST_GROUP_ID );
         action.setArtifactId( TEST_ARTIFACT_ID );
@@ -99,7 +112,7 @@ public class ShowArtifactActionTest
 
         assertEquals( TEST_REPO, action.getRepositoryId() );
 
-        assertEquals( ALL_TEST_SNAPSHOT_VERSIONS, action.getSnapshotVersions() );
+        assertArtifacts( TEST_SNAPSHOT_ARTIFACTS, action.getArtifacts() );
 
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
@@ -109,32 +122,17 @@ public class ShowArtifactActionTest
     public void testGetArtifactUniqueSnapshotTimestamped()
     {
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_TS_SNAPSHOT_VERSION ) );
-        metadataResolver.setArtifactVersions( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_TS_SNAPSHOT_VERSION,
-                                              ALL_TEST_SNAPSHOT_VERSIONS );
+                                            createProjectModel( TEST_SNAPSHOT_VERSION ) );
+        metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
+                                       TEST_SNAPSHOT_ARTIFACTS );
 
         action.setGroupId( TEST_GROUP_ID );
         action.setArtifactId( TEST_ARTIFACT_ID );
         action.setVersion( TEST_TS_SNAPSHOT_VERSION );
 
         String result = action.artifact();
-
-        assertActionSuccess( action, result );
-
-        assertEquals( TEST_GROUP_ID, action.getGroupId() );
-        assertEquals( TEST_ARTIFACT_ID, action.getArtifactId() );
-        assertEquals( TEST_TS_SNAPSHOT_VERSION, action.getVersion() );
-        ProjectVersionMetadata model = action.getModel();
-        assertDefaultModel( model, TEST_TS_SNAPSHOT_VERSION );
-
-        assertEquals( TEST_REPO, action.getRepositoryId() );
-
-        assertEquals( Arrays.asList( ALL_TEST_SNAPSHOT_VERSIONS.get( 1 ), ALL_TEST_SNAPSHOT_VERSIONS.get( 2 ) ),
-                      action.getSnapshotVersions() );
-
-        assertNull( action.getDependees() );
-        assertNull( action.getDependencies() );
-        assertNull( action.getMailingLists() );
+        assertError( result );
+        assertNoOutputFields();
     }
 
     public void testGetMissingProject()
@@ -197,7 +195,7 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertTrue( action.getSnapshotVersions().isEmpty() );
+        assertTrue( action.getArtifacts().isEmpty() );
     }
 
     public void testGetArtifactSeenInBothObservableRepo()
@@ -223,7 +221,7 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertTrue( action.getSnapshotVersions().isEmpty() );
+        assertTrue( action.getArtifacts().isEmpty() );
     }
 
     public void testGetArtifactCanOnlyObserveInOneOfTwoRepos()
@@ -249,7 +247,7 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertTrue( action.getSnapshotVersions().isEmpty() );
+        assertTrue( action.getArtifacts().isEmpty() );
     }
 
     public void testGetArtifactNoMavenFacet()
@@ -280,7 +278,7 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertTrue( action.getSnapshotVersions().isEmpty() );
+        assertTrue( action.getArtifacts().isEmpty() );
     }
 
     public void testGetMailingLists()
@@ -305,10 +303,10 @@ public class ShowArtifactActionTest
         assertMailingList( action.getMailingLists().get( 0 ), "Users List", "users" );
         assertMailingList( action.getMailingLists().get( 1 ), "Developers List", "dev" );
 
-        assertNull( action.getRepositoryId() );
+        assertEquals( TEST_REPO, action.getRepositoryId() );
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
-        assertNull( action.getSnapshotVersions() );
+        assertTrue( action.getArtifacts().isEmpty() );
     }
 
     public void testGetDependencies()
@@ -333,10 +331,10 @@ public class ShowArtifactActionTest
         assertDependencyBasic( action.getDependencies().get( 0 ), "artifactId1" );
         assertDependencyExtended( action.getDependencies().get( 1 ), "artifactId2" );
 
-        assertNull( action.getRepositoryId() );
+        assertEquals( TEST_REPO, action.getRepositoryId() );
         assertNull( action.getDependees() );
         assertNull( action.getMailingLists() );
-        assertNull( action.getSnapshotVersions() );
+        assertTrue( action.getArtifacts().isEmpty() );
     }
 
     public void testGetDependees()
@@ -362,10 +360,45 @@ public class ShowArtifactActionTest
         assertCoordinate( action.getDependees().get( 0 ), "artifactId1" );
         assertCoordinate( action.getDependees().get( 1 ), "artifactId2" );
 
-        assertNull( action.getRepositoryId() );
+        assertEquals( TEST_REPO, action.getRepositoryId() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertNull( action.getSnapshotVersions() );
+        assertTrue( action.getArtifacts().isEmpty() );
+    }
+
+    private void assertArtifacts( List<ArtifactMetadata> expectedArtifacts,
+                                  Map<String, List<ShowArtifactAction.ArtifactDownloadInfo>> artifactMap )
+    {
+        // assuming only one of each version at this point
+        assertEquals( expectedArtifacts.size(), artifactMap.size() );
+        for ( ArtifactMetadata artifact : expectedArtifacts )
+        {
+            assertTrue( artifactMap.containsKey( artifact.getVersion() ) );
+            List<ShowArtifactAction.ArtifactDownloadInfo> list = artifactMap.get( artifact.getVersion() );
+            ShowArtifactAction.ArtifactDownloadInfo actual = list.get( 0 );
+            assertEquals( artifact.getNamespace(), actual.getNamespace() );
+            assertEquals( artifact.getId(), actual.getId() );
+            assertEquals( artifact.getProject(), actual.getProject() );
+            assertEquals( artifact.getRepositoryId(), actual.getRepositoryId() );
+            assertEquals( artifact.getSize(), actual.getSize() );
+            assertEquals( artifact.getVersion(), actual.getVersion() );
+            assertEquals( TEST_TYPE, actual.getType() );
+            assertEquals( TEST_SIZE, actual.getSize() );
+            assertEquals( artifact.getNamespace() + "/" + artifact.getProject() + "/" + TEST_SNAPSHOT_VERSION + "/" +
+                artifact.getId(), actual.getPath() );
+        }
+    }
+
+    private static ArtifactMetadata createArtifact( String version )
+    {
+        ArtifactMetadata metadata = new ArtifactMetadata();
+        metadata.setProject( TEST_ARTIFACT_ID );
+        metadata.setId( TEST_ARTIFACT_ID + "-" + version + ".jar" );
+        metadata.setNamespace( TEST_GROUP_ID );
+        metadata.setRepositoryId( TEST_REPO );
+        metadata.setSize( TEST_SIZE );
+        metadata.setVersion( version );
+        return metadata;
     }
 
     private ProjectVersionReference createReference( String projectId )
@@ -452,7 +485,7 @@ public class ShowArtifactActionTest
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertTrue( action.getSnapshotVersions().isEmpty() );
+        assertTrue( action.getArtifacts().isEmpty() );
     }
 
     private void assertError( String result )
@@ -493,5 +526,17 @@ public class ShowArtifactActionTest
         super.setUp();
         action = (ShowArtifactAction) lookup( Action.class, ACTION_HINT );
         metadataResolver = (TestMetadataResolver) action.getMetadataResolver();
+        MockControl control = MockClassControl.createControl( RepositoryContentFactory.class );
+        RepositoryContentFactory factory = (RepositoryContentFactory) control.getMock();
+        action.setRepositoryFactory( factory );
+
+        ManagedRepositoryConfiguration config = new ManagedRepositoryConfiguration();
+        config.setId( TEST_REPO );
+        config.setLocation( getTestFile( "target/test-repo" ).getAbsolutePath() );
+        ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
+        content.setRepository( config );
+        factory.getManagedRepositoryContent( TEST_REPO );
+        control.setDefaultReturnValue( content );
+        control.replay();
     }
 }
