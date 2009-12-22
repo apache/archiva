@@ -29,6 +29,8 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver"
@@ -49,6 +51,8 @@ public class DefaultMetadataResolver
      * @plexus.requirement role-hint="maven2"
      */
     private StorageMetadataResolver storageResolver;
+
+    private static final Logger log = LoggerFactory.getLogger( DefaultMetadataResolver.class );
 
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
@@ -112,6 +116,10 @@ public class DefaultMetadataResolver
             storageResolver.getRootNamespaces( repoId, new ExcludesFilter<String>( namespaces ) );
         if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( "Resolved root namespaces from storage: " + storageNamespaces );
+            }
             for ( String n : storageNamespaces )
             {
                 metadataRepository.updateNamespace( repoId, n );
@@ -131,6 +139,10 @@ public class DefaultMetadataResolver
             storageResolver.getNamespaces( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
         if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( "Resolved namespaces from storage: " + storageNamespaces );
+            }
             for ( String n : storageNamespaces )
             {
                 metadataRepository.updateNamespace( repoId, namespace + "." + n );
@@ -150,6 +162,10 @@ public class DefaultMetadataResolver
             storageResolver.getProjects( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
         if ( storageProjects != null && !storageProjects.isEmpty() )
         {
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( "Resolved projects from storage: " + storageProjects );
+            }
             for ( String projectId : storageProjects )
             {
                 ProjectMetadata projectMetadata = storageResolver.getProject( repoId, namespace, projectId );
@@ -172,6 +188,10 @@ public class DefaultMetadataResolver
                                                                                             projectVersions ) );
         if ( storageProjectVersions != null && !storageProjectVersions.isEmpty() )
         {
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( "Resolved project versions from storage: " + storageProjectVersions );
+            }
             for ( String projectVersion : storageProjectVersions )
             {
                 ProjectVersionMetadata versionMetadata =
@@ -197,6 +217,10 @@ public class DefaultMetadataResolver
                                           new ExcludesFilter<String>( createArtifactIdList( artifacts ) ) );
         if ( storageArtifacts != null && !storageArtifacts.isEmpty() )
         {
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( "Resolved artifacts from storage: " + storageArtifacts );
+            }
             for ( ArtifactMetadata artifact : storageArtifacts )
             {
                 metadataRepository.updateArtifact( repoId, namespace, projectId, projectVersion, artifact );

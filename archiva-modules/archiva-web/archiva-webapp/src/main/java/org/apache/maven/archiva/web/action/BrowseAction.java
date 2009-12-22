@@ -91,6 +91,10 @@ public class BrowseAction
         Collection<String> subNamespaces = metadataResolver.getNamespaces( repoId, n );
         if ( subNamespaces.size() != 1 )
         {
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( n + " is not collapsible as it has sub-namespaces: " + subNamespaces );
+            }
             return n;
         }
         else
@@ -98,6 +102,10 @@ public class BrowseAction
             Collection<String> projects = metadataResolver.getProjects( repoId, n );
             if ( projects != null && !projects.isEmpty() )
             {
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( n + " is not collapsible as it has projects" );
+                }
                 return n;
             }
             else
