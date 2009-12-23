@@ -169,7 +169,7 @@ public class ArchivaMetadataCreationConsumer
         boolean createVersionMetadata = false;
         if ( versionMetadata == null )
         {
-            log.warn( "Missing POM for artifact: " + path + "; creating empty metadata" );
+            log.warn( "Missing or invalid POM for artifact: " + path + "; creating empty metadata" );
             versionMetadata = new ProjectVersionMetadata();
             versionMetadata.setId( projectVersion );
             createVersionMetadata = true;
