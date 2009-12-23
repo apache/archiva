@@ -72,6 +72,10 @@ public class DefaultMetadataResolver
             metadata = storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
             if ( metadata != null )
             {
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( "Resolved project version metadata from storage: " + metadata );
+                }
                 // FIXME: make this a more generic post-processing that plugins can take advantage of
                 //       eg. maven projects should be able to process parent here
                 if ( !metadata.getDependencies().isEmpty() )
