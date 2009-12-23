@@ -166,11 +166,13 @@ public class ArchivaMetadataCreationConsumer
             storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
                                                projectVersion );
 
+        boolean createVersionMetadata = false;
         if ( versionMetadata == null )
         {
             log.warn( "Missing POM for artifact: " + path + "; creating empty metadata" );
             versionMetadata = new ProjectVersionMetadata();
             versionMetadata.setId( projectVersion );
+            createVersionMetadata = true;
         }
 
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
@@ -205,8 +207,11 @@ public class ArchivaMetadataCreationConsumer
         // read the metadata and update it if it is newer or doesn't exist
         metadataRepository.updateArtifact( repository.getId(), project.getNamespace(), project.getId(), projectVersion,
                                            artifactMeta );
-        metadataRepository.updateProjectVersion( repository.getId(), project.getNamespace(), project.getId(),
-                                                 versionMetadata );
+        if ( createVersionMetadata )
+        {
+            metadataRepository.updateProjectVersion( repository.getId(), project.getNamespace(), project.getId(),
+                                                     versionMetadata );
+        }
         metadataRepository.updateProject( repository.getId(), project );
     }
 
