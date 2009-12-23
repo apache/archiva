@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -75,14 +76,24 @@ public class FileMetadataRepositoryTest
         FileUtils.deleteDirectory( directory );
         repository.setDirectory( directory );
 
-        repository.setMetadataFacetFactories(
-            Collections.<String, MetadataFacetFactory>singletonMap( TEST_FACET_ID, new MetadataFacetFactory()
+        Map<String, MetadataFacetFactory> factories = new HashMap<String, MetadataFacetFactory>();
+        factories.put( TEST_FACET_ID, new MetadataFacetFactory()
+        {
+            public MetadataFacet createMetadataFacet()
             {
-                public MetadataFacet createMetadataFacet()
-                {
-                    return new TestMetadataFacet( "test-metadata" );
-                }
-            } ) );
+                return new TestMetadataFacet( "test-metadata" );
+            }
+        } );
+
+        // add to ensure we don't accidentally create an empty facet ID.
+        factories.put( "", new MetadataFacetFactory()
+        {
+            public MetadataFacet createMetadataFacet()
+            {
+                return new TestMetadataFacet( "", "test-value" );
+            }
+        } );
+        repository.setMetadataFacetFactories( factories );
     }
 
     public void testRootNamespaceWithNoMetadataRepository()
@@ -121,6 +132,23 @@ public class FileMetadataRepositoryTest
         assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
         TestMetadataFacet testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
         assertEquals( "baz", testFacet.getValue() );
+    }
+
+    public void testUpdateProjectVersionMetadataWithNoExistingFacets()
+    {
+        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+        metadata.setId( TEST_PROJECT_VERSION );
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+
+        metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
+
+        metadata = new ProjectVersionMetadata();
+        metadata.setId( TEST_PROJECT_VERSION );
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+
+        metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
     }
 
     public void testGetMetadataFacet()
@@ -514,16 +542,25 @@ public class FileMetadataRepositoryTest
     private static class TestMetadataFacet
         implements MetadataFacet
     {
+        private String testFacetId;
+
         private TestMetadataFacet( String value )
         {
             this.value = value;
+            testFacetId = TEST_FACET_ID;
+        }
+
+        private TestMetadataFacet( String facetId, String value )
+        {
+            this.value = value;
+            testFacetId = facetId;
         }
 
         private String value;
 
         public String getFacetId()
         {
-            return TEST_FACET_ID;
+            return testFacetId;
         }
 
         public String getName()
@@ -535,7 +572,7 @@ public class FileMetadataRepositoryTest
         {
             if ( value != null )
             {
-                return Collections.singletonMap( TEST_FACET_ID + ":foo", value );
+                return Collections.singletonMap( testFacetId + ":foo", value );
             }
             else
             {
@@ -545,7 +582,7 @@ public class FileMetadataRepositoryTest
 
         public void fromProperties( Map<String, String> properties )
         {
-            String value = properties.get( TEST_FACET_ID + ":foo" );
+            String value = properties.get( testFacetId + ":foo" );
             if ( value != null )
             {
                 this.value = value;

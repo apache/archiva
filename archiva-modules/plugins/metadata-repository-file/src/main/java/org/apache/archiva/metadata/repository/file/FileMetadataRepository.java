@@ -766,26 +766,30 @@ public class FileMetadataRepository
                 i++;
             }
 
-            for ( String facetId : properties.getProperty( "facetIds" ).split( "," ) )
+            String facetIds = properties.getProperty( "facetIds", "" );
+            if ( facetIds.length() > 0 )
             {
-                MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
-                if ( factory == null )
+                for ( String facetId : facetIds.split( "," ) )
                 {
-                    log.error( "Attempted to load unknown metadata facet: " + facetId );
-                }
-                else
-                {
-                    MetadataFacet facet = factory.createMetadataFacet();
-                    Map<String, String> map = new HashMap<String, String>();
-                    for ( String key : properties.stringPropertyNames() )
+                    MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
+                    if ( factory == null )
                     {
-                        if ( key.startsWith( facet.getFacetId() ) )
-                        {
-                            map.put( key, properties.getProperty( key ) );
-                        }
+                        log.error( "Attempted to load unknown metadata facet: " + facetId );
                     }
-                    facet.fromProperties( map );
-                    versionMetadata.addFacet( facet );
+                    else
+                    {
+                        MetadataFacet facet = factory.createMetadataFacet();
+                        Map<String, String> map = new HashMap<String, String>();
+                        for ( String key : properties.stringPropertyNames() )
+                        {
+                            if ( key.startsWith( facet.getFacetId() ) )
+                            {
+                                map.put( key, properties.getProperty( key ) );
+                            }
+                        }
+                        facet.fromProperties( map );
+                        versionMetadata.addFacet( facet );
+                    }
                 }
             }
 
