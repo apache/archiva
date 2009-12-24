@@ -43,7 +43,7 @@ public class TestMetadataResolver
     private Map<String, List<ProjectVersionReference>> references =
         new HashMap<String, List<ProjectVersionReference>>();
 
-    private List<String> namespaces;
+    private Map<String, List<String>> namespaces = new HashMap<String, List<String>>();
 
     private Map<String, Collection<String>> projectsInNamespace = new HashMap<String, Collection<String>>();
 
@@ -77,14 +77,14 @@ public class TestMetadataResolver
 
     public Collection<String> getRootNamespaces( String repoId )
     {
-        return getNamespaces( null );
+        return getNamespaces( repoId, null );
     }
 
-    private Collection<String> getNamespaces( String baseNamespace )
+    public Collection<String> getNamespaces( String repoId, String baseNamespace )
     {
         Set<String> namespaces = new LinkedHashSet<String>();
         int fromIndex = baseNamespace != null ? baseNamespace.length() + 1 : 0;
-        for ( String namespace : this.namespaces )
+        for ( String namespace : this.namespaces.get( repoId ) )
         {
             if ( baseNamespace == null || namespace.startsWith( baseNamespace + "." ) )
             {
@@ -100,11 +100,6 @@ public class TestMetadataResolver
             }
         }
         return namespaces;
-    }
-
-    public Collection<String> getNamespaces( String repoId, String namespace )
-    {
-        return getNamespaces( namespace );
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
@@ -167,8 +162,8 @@ public class TestMetadataResolver
         this.references.put( createMapKey( repoId, namespace, projectId, projectVersion ), references );
     }
 
-    public void setNamespaces( List<String> namespaces )
+    public void setNamespaces( String repoId, List<String> namespaces )
     {
-        this.namespaces = namespaces;
+        this.namespaces.put( repoId, namespaces );
     }
 }

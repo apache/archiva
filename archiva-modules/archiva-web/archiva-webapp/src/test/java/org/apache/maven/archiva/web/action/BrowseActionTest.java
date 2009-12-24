@@ -38,6 +38,8 @@ public class BrowseActionTest
         Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven", "com.sun", "com.oracle",
                        "repeat.repeat" );
 
+    private static final String OTHER_TEST_REPO = "other-repo";
+
     public void testInstantiation()
     {
         assertFalse( action == lookup( Action.class, ACTION_HINT ) );
@@ -45,7 +47,7 @@ public class BrowseActionTest
 
     public void testBrowse()
     {
-        metadataResolver.setNamespaces( GROUPS );
+        metadataResolver.setNamespaces( TEST_REPO, GROUPS );
 
         String result = action.browse();
         assertSuccessResult( result );
@@ -120,7 +122,7 @@ public class BrowseActionTest
         String selectedGroupId = "org";
         List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache.maven" );
 
-        metadataResolver.setNamespaces( groups );
+        metadataResolver.setNamespaces( TEST_REPO, groups );
         action.setGroupId( selectedGroupId );
         String result = action.browseGroup();
         assertSuccessResult( result );
@@ -141,7 +143,7 @@ public class BrowseActionTest
         String selectedGroupId = "org.apache";
         List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache.maven" );
 
-        metadataResolver.setNamespaces( groups );
+        metadataResolver.setNamespaces( TEST_REPO, groups );
         metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, artifacts, new ProjectVersionMetadata() );
         action.setGroupId( selectedGroupId );
         String result = action.browseGroup();
@@ -161,7 +163,7 @@ public class BrowseActionTest
     {
         List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache" );
 
-        metadataResolver.setNamespaces( groups );
+        metadataResolver.setNamespaces( TEST_REPO, groups );
         // add an artifact in the tree to make sure "single" is not collapsed
         metadataResolver.setProjectVersion( TEST_REPO, "org.apache", "apache", new ProjectVersionMetadata() );
 
@@ -178,13 +180,36 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    public void testBrowseWithCollapsedGroupsAndArtifactsAcrossRepositories()
+    {
+        setObservableRepos( Arrays.asList( TEST_REPO, OTHER_TEST_REPO ) );
+
+        metadataResolver.setNamespaces( TEST_REPO, Arrays.asList( "org.apache.archiva", "org.apache" ) );
+        metadataResolver.setNamespaces( OTHER_TEST_REPO, Arrays.asList( "org.codehaus.plexus", "org.codehaus" ) );
+
+        // add an artifact in the tree to make sure "single" is not collapsed
+        metadataResolver.setProjectVersion( TEST_REPO, "org.apache", "apache", new ProjectVersionMetadata() );
+
+        String result = action.browse();
+        assertSuccessResult( result );
+
+        assertEquals( Collections.singletonList( "org" ), action.getNamespaces() );
+        assertNull( action.getProjectIds() );
+        assertNull( action.getProjectVersions() );
+
+        assertNull( action.getGroupId() );
+        assertNull( action.getArtifactId() );
+        assertNull( action.getRepositoryId() );
+        assertNull( action.getSharedModel() );
+    }
+
     public void testBrowseGroupWithCollapsedGroupsAndArtifacts()
     {
         String artifacts = "apache";
         String selectedGroupId = "org.apache";
         List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache" );
 
-        metadataResolver.setNamespaces( groups );
+        metadataResolver.setNamespaces( TEST_REPO, groups );
         // add an artifact in the tree to make sure "single" is not collapsed
         metadataResolver.setProjectVersion( TEST_REPO, "org.apache", "apache", new ProjectVersionMetadata() );
 

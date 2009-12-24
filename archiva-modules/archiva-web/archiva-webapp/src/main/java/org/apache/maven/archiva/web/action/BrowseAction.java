@@ -69,26 +69,33 @@ public class BrowseAction
         }
 
         Set<String> namespaces = new LinkedHashSet<String>();
+
+        // TODO: this logic should be optional, particularly remembering we want to keep this code simple
+        //       it is located here to avoid the content repository implementation needing to do too much for what
+        //       is essentially presentation code
+        Set<String> namespacesToCollapse = new LinkedHashSet<String>();
         for ( String repoId : selectedRepos )
         {
-            Collection<String> rootNamespaces = metadataResolver.getRootNamespaces( repoId );
-            // TODO: this logic should be optional, particularly remembering we want to keep this code simple
-            //       it is located here to avoid the content repository implementation needing to do too much for what
-            //       is essentially presentation code
-            for ( String n : rootNamespaces )
-            {
-                // TODO: check performance of this
-                namespaces.add( collapseNamespaces( repoId, n ) );
-            }
+            namespacesToCollapse.addAll( metadataResolver.getRootNamespaces( repoId ) );
+        }
+
+        for ( String n : namespacesToCollapse )
+        {
+            // TODO: check performance of this
+            namespaces.add( collapseNamespaces( selectedRepos, n ) );
         }
 
         this.namespaces = getSortedList( namespaces );
         return SUCCESS;
     }
 
-    private String collapseNamespaces( String repoId, String n )
+    private String collapseNamespaces( Collection<String> repoIds, String n )
     {
-        Collection<String> subNamespaces = metadataResolver.getNamespaces( repoId, n );
+        Set<String> subNamespaces = new LinkedHashSet<String>();
+        for ( String repoId : repoIds )
+        {
+            subNamespaces.addAll( metadataResolver.getNamespaces( repoId, n ) );
+        }
         if ( subNamespaces.size() != 1 )
         {
             if ( log.isDebugEnabled() )
@@ -99,19 +106,19 @@ public class BrowseAction
         }
         else
         {
-            Collection<String> projects = metadataResolver.getProjects( repoId, n );
-            if ( projects != null && !projects.isEmpty() )
+            for ( String repoId : repoIds )
             {
-                if ( log.isDebugEnabled() )
+                Collection<String> projects = metadataResolver.getProjects( repoId, n );
+                if ( projects != null && !projects.isEmpty() )
                 {
-                    log.debug( n + " is not collapsible as it has projects" );
+                    if ( log.isDebugEnabled() )
+                    {
+                        log.debug( n + " is not collapsible as it has projects" );
+                    }
+                    return n;
                 }
-                return n;
             }
-            else
-            {
-                return collapseNamespaces( repoId, n + "." + subNamespaces.iterator().next() );
-            }
+            return collapseNamespaces( repoIds, n + "." + subNamespaces.iterator().next() );
         }
     }
 
@@ -130,21 +137,24 @@ public class BrowseAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        Set<String> namespaces = new LinkedHashSet<String>();
         Set<String> projects = new LinkedHashSet<String>();
+
+        Set<String> namespacesToCollapse = new LinkedHashSet<String>();
         for ( String repoId : selectedRepos )
         {
-            Collection<String> childNamespaces = metadataResolver.getNamespaces( repoId, groupId );
-            // TODO: this logic should be optional, particularly remembering we want to keep this code simple
-            //       it is located here to avoid the content repository implementation needing to do too much for what
-            //       is essentially presentation code
-            for ( String n : childNamespaces )
-            {
-                // TODO: check performance of this
-                namespaces.add( collapseNamespaces( repoId, groupId + "." + n ) );
-            }
+            namespacesToCollapse.addAll( metadataResolver.getNamespaces( repoId, groupId ) );
 
             projects.addAll( metadataResolver.getProjects( repoId, groupId ) );
+        }
+
+        // TODO: this logic should be optional, particularly remembering we want to keep this code simple
+        //       it is located here to avoid the content repository implementation needing to do too much for what
+        //       is essentially presentation code
+        Set<String> namespaces = new LinkedHashSet<String>();
+        for ( String n : namespacesToCollapse )
+        {
+            // TODO: check performance of this
+            namespaces.add( collapseNamespaces( selectedRepos, groupId + "." + n ) );
         }
 
         this.namespaces = getSortedList( namespaces );
