@@ -95,6 +95,15 @@ public class Maven2RepositoryMetadataResolver
 
     private static final Filter<String> ALL = new AllFilter<String>();
 
+    private static final String PROBLEM_MISSING_POM = "missing-pom";
+
+    private static final String PROBLEM_INVALID_POM = "invalid-pom";
+
+    private static final String PROBLEM_MISLOCATED_POM = "mislocated-pom";
+
+    private static final List<String> POTENTIAL_PROBLEMS =
+        Arrays.asList( PROBLEM_INVALID_POM, PROBLEM_MISSING_POM, PROBLEM_MISLOCATED_POM );
+
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
         // TODO: could natively implement the "shared model" concept from the browse action to avoid needing it there?
@@ -105,6 +114,11 @@ public class Maven2RepositoryMetadataResolver
                                                      String projectVersion )
         throws MetadataResolutionException
     {
+        // TODO: an event mechanism would remove coupling to the problem reporting plugin
+        // TODO: this removes all problems - do we need something that just removes the problems created by this resolver?
+        String name = RepositoryProblemFacet.createName( namespace, projectId, projectVersion, null );
+        metadataRepository.removeMetadataFacet( repoId, RepositoryProblemFacet.FACET_ID, name );
+
         ManagedRepositoryConfiguration repositoryConfiguration =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
 
@@ -142,7 +156,7 @@ public class Maven2RepositoryMetadataResolver
         if ( !file.exists() )
         {
             // TODO: an event mechanism would remove coupling to the problem reporting plugin
-            addProblemReport( repoId, namespace, projectId, projectVersion, "missing-pom",
+            addProblemReport( repoId, namespace, projectId, projectVersion, PROBLEM_MISSING_POM,
                               "The artifact's POM file '" + file + "' was missing" );
 
             // metadata could not be resolved
@@ -162,7 +176,7 @@ public class Maven2RepositoryMetadataResolver
         }
         catch ( ModelBuildingException e )
         {
-            addProblemReport( repoId, namespace, projectId, projectVersion, "invalid-pom",
+            addProblemReport( repoId, namespace, projectId, projectVersion, PROBLEM_INVALID_POM,
                               "The artifact's POM file '" + file + "' was invalid: " + e.getMessage() );
 
             throw new MetadataResolutionException( e.getMessage() );
@@ -189,7 +203,7 @@ public class Maven2RepositoryMetadataResolver
             }
 
             String msg = message.toString();
-            addProblemReport( repoId, namespace, projectId, projectVersion, "mislocated-pom", msg );
+            addProblemReport( repoId, namespace, projectId, projectVersion, PROBLEM_MISLOCATED_POM, msg );
 
             throw new MetadataResolutionException( msg );
         }
