@@ -38,6 +38,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -102,6 +103,7 @@ public class Maven2RepositoryMetadataResolver
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
+        throws MetadataResolutionException
     {
         ManagedRepositoryConfiguration repositoryConfiguration =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
@@ -163,8 +165,7 @@ public class Maven2RepositoryMetadataResolver
             addProblemReport( repoId, namespace, projectId, projectVersion, "invalid-pom",
                               "The artifact's POM file '" + file + "' was invalid: " + e.getMessage() );
 
-            // metadata could not be resolved
-            return null;
+            throw new MetadataResolutionException( e.getMessage() );
         }
 
         // Check if the POM is in the correct location
@@ -187,10 +188,10 @@ public class Maven2RepositoryMetadataResolver
                 message.append( "\nIncorrect version: " ).append( model.getVersion() );
             }
 
-            addProblemReport( repoId, namespace, projectId, projectVersion, "mislocated-pom", message.toString() );
+            String msg = message.toString();
+            addProblemReport( repoId, namespace, projectId, projectVersion, "mislocated-pom", msg );
 
-            // metadata could not be resolved
-            return null;
+            throw new MetadataResolutionException( msg );
         }
 
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();

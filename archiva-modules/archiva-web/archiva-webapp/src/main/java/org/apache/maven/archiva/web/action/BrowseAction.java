@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.collections.CollectionUtils;
@@ -223,7 +224,16 @@ public class BrowseAction
             {
                 if ( versionMetadata == null )
                 {
-                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                    try
+                    {
+                        versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                    }
+                    catch ( MetadataResolutionException e )
+                    {
+                        log.error(
+                            "Skipping invalid metadata while compiling shared model for " + groupId + ":" + artifactId +
+                                " in repo " + repoId + ": " + e.getMessage() );
+                    }
                 }
             }
 

@@ -31,6 +31,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -162,9 +163,16 @@ public class ArchivaMetadataCreationConsumer
 
         String projectVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
         // TODO: maybe not too efficient since it may have already been read and stored for this artifact
-        ProjectVersionMetadata versionMetadata =
-            storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
+        ProjectVersionMetadata versionMetadata = null;
+        try
+        {
+            versionMetadata = storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
                                                projectVersion );
+        }
+        catch ( MetadataResolutionException e )
+        {
+            log.warn( "Error occurred resolving POM for artifact: " + path + "; message: " + e.getMessage() );
+        }
 
         boolean createVersionMetadata = false;
         if ( versionMetadata == null )

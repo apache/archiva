@@ -34,6 +34,7 @@ import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -107,13 +108,21 @@ public class ShowArtifactAction
         List<String> repos = getObservableRepos();
         // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
         // simple resource requests here and letting the resolver take care of it
+        String errorMsg = null;
         for ( String repoId : repos )
         {
             if ( versionMetadata == null )
             {
                 // we don't want the implementation being that intelligent - so another resolver to do the
                 // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
-                versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                try
+                {
+                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                }
+                catch ( MetadataResolutionException e )
+                {
+                    errorMsg = e.getMessage();
+                }
                 if ( versionMetadata != null )
                 {
                     repositoryId = repoId;
@@ -149,7 +158,7 @@ public class ShowArtifactAction
 
         if ( versionMetadata == null )
         {
-            addActionError( "Artifact not found" );
+            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
             return ERROR;
         }
         model = versionMetadata;

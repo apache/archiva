@@ -31,7 +31,8 @@ public interface MetadataResolver
     ProjectMetadata getProject( String repoId, String namespace, String projectId );
 
     ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
-                                              String projectVersion );
+                                              String projectVersion )
+        throws MetadataResolutionException;
 
     Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion );
 

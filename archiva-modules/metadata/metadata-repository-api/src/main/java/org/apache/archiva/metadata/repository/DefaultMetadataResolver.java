@@ -62,6 +62,7 @@ public class DefaultMetadataResolver
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
+        throws MetadataResolutionException
     {
         ProjectVersionMetadata metadata =
             metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
@@ -198,11 +199,19 @@ public class DefaultMetadataResolver
             }
             for ( String projectVersion : storageProjectVersions )
             {
-                ProjectVersionMetadata versionMetadata =
-                    storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
-                if ( versionMetadata != null )
+                try
                 {
-                    metadataRepository.updateProjectVersion( repoId, namespace, projectId, versionMetadata );
+                    ProjectVersionMetadata versionMetadata =
+                        storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
+                    if ( versionMetadata != null )
+                    {
+                        metadataRepository.updateProjectVersion( repoId, namespace, projectId, versionMetadata );
+                    }
+                }
+                catch ( MetadataResolutionException e )
+                {
+                    log.warn( "Not update project in metadata repository due to an error resolving it from storage: " +
+                        e.getMessage() );
                 }
             }
             projectVersions = new ArrayList<String>( projectVersions );

@@ -31,6 +31,7 @@ import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.archiva.reports.RepositoryProblemFacet;
@@ -77,6 +78,7 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadata()
+        throws Exception
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "org.apache.archiva", "archiva-common", "1.2.1" );
@@ -147,6 +149,7 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
+        throws Exception
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" );
@@ -183,6 +186,7 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()
+        throws Exception
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT" );
@@ -190,6 +194,7 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotMalformedMetadata()
+        throws Exception
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "malformed-metadata", "1.0-SNAPSHOT" );
@@ -197,6 +202,7 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotIncompleteMetadata()
+        throws Exception
     {
         ProjectVersionMetadata metadata =
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "incomplete-metadata", "1.0-SNAPSHOT" );
@@ -204,36 +210,47 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     public void testGetProjectVersionMetadataForInvalidPom()
+        throws Exception
     {
         assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
 
-        ProjectVersionMetadata metadata =
+        try
+        {
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "invalid-pom", "1.0" );
-        assertNull( metadata );
-
-        assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
-        RepositoryProblemFacet facet =
-            (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID,
-                                                                          "com.example.test/invalid-pom/1.0" );
-        assertEquals( "invalid-pom", facet.getProblem() );
+            fail( "Should have received an exception due to invalid POM" );
+        }
+        catch ( MetadataResolutionException e )
+        {
+            assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
+            RepositoryProblemFacet facet =
+                (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID,
+                                                                              "com.example.test/invalid-pom/1.0" );
+            assertEquals( "invalid-pom", facet.getProblem() );
+        }
     }
 
     public void testGetProjectVersionMetadataForMislocatedPom()
+        throws Exception
     {
         assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
 
-        ProjectVersionMetadata metadata =
+        try
+        {
             resolver.getProjectVersion( TEST_REPO_ID, "com.example.test", "mislocated-pom", "1.0" );
-        assertNull( metadata );
-
-        assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
-        RepositoryProblemFacet facet =
-            (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID,
-                                                                          "com.example.test/mislocated-pom/1.0" );
-        assertEquals( "mislocated-pom", facet.getProblem() );
+            fail( "Should have received an exception due to mislocated POM" );
+        }
+        catch ( MetadataResolutionException e )
+        {
+            assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
+            RepositoryProblemFacet facet =
+                (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID,
+                                                                              "com.example.test/mislocated-pom/1.0" );
+            assertEquals( "mislocated-pom", facet.getProblem() );
+        }
     }
 
     public void testGetProjectVersionMetadataForMissingPom()
+        throws Exception
     {
         assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
 
