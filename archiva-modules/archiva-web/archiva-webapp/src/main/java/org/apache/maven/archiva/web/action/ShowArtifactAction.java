@@ -121,7 +121,11 @@ public class ShowArtifactAction
                 }
                 catch ( MetadataResolutionException e )
                 {
-                    errorMsg = e.getMessage();
+                    addIncompleteModelWarning();
+                    
+                    // TODO: need a consistent way to construct this - same in ArchivaMetadataCreationConsumer
+                    versionMetadata = new ProjectVersionMetadata();
+                    versionMetadata.setId( version );
                 }
                 if ( versionMetadata != null )
                 {
@@ -161,9 +165,20 @@ public class ShowArtifactAction
             addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
             return ERROR;
         }
+
+        if ( versionMetadata.isIncomplete() )
+        {
+            addIncompleteModelWarning();
+        }
+
         model = versionMetadata;
 
         return SUCCESS;
+    }
+
+    private void addIncompleteModelWarning()
+    {
+        addActionMessage( "The model may be incomplete due to a previous error in resolving information. Refer to the repository problem reports for more information." );
     }
 
     /**

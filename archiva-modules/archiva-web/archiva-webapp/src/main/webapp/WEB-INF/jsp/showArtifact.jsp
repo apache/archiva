@@ -225,6 +225,12 @@
         <%@ include file="/WEB-INF/jsp/include/artifactInfo.jspf" %>
       </c:otherwise>
     </c:choose>
+
+    <s:if test="hasActionMessages()">
+      <div id="messages">
+        <s:actionmessage />
+      </div>
+    </s:if>
   </div>
 </div>
 

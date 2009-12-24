@@ -131,6 +131,7 @@ public class FileMetadataRepository
         setProperty( properties, "name", versionMetadata.getName() );
         setProperty( properties, "description", versionMetadata.getDescription() );
         setProperty( properties, "url", versionMetadata.getUrl() );
+        setProperty( properties, "incomplete", String.valueOf( versionMetadata.isIncomplete() ) );
         if ( versionMetadata.getScm() != null )
         {
             setProperty( properties, "scm.connection", versionMetadata.getScm().getConnection() );
@@ -653,6 +654,7 @@ public class FileMetadataRepository
             versionMetadata.setName( properties.getProperty( "name" ) );
             versionMetadata.setDescription( properties.getProperty( "description" ) );
             versionMetadata.setUrl( properties.getProperty( "url" ) );
+            versionMetadata.setIncomplete( Boolean.valueOf( properties.getProperty( "incomplete", "false" ) ) );
 
             String scmConnection = properties.getProperty( "scm.connection" );
             String scmDeveloperConnection = properties.getProperty( "scm.developerConnection" );

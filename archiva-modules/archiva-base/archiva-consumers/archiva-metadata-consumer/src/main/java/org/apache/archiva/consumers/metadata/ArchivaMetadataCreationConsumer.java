@@ -166,8 +166,9 @@ public class ArchivaMetadataCreationConsumer
         ProjectVersionMetadata versionMetadata = null;
         try
         {
-            versionMetadata = storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
-                                               projectVersion );
+            versionMetadata =
+                storageResolver.getProjectVersion( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
+                                                   projectVersion );
         }
         catch ( MetadataResolutionException e )
         {
@@ -180,6 +181,7 @@ public class ArchivaMetadataCreationConsumer
             log.warn( "Missing or invalid POM for artifact: " + path + "; creating empty metadata" );
             versionMetadata = new ProjectVersionMetadata();
             versionMetadata.setId( projectVersion );
+            versionMetadata.setIncomplete( true );
             createVersionMetadata = true;
         }
 

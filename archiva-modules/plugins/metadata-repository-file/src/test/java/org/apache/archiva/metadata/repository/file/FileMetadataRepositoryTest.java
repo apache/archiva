@@ -39,6 +39,9 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
+/**
+ * @todo should this be a generic MetadataRepository implementation test?
+ */
 public class FileMetadataRepositoryTest
     extends PlexusInSpringTestCase
 {
@@ -111,6 +114,17 @@ public class FileMetadataRepositoryTest
         mailingList.setOtherArchives( Collections.<String>emptyList() );
         metadata.setMailingLists( Collections.singletonList( mailingList ) );
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+    }
+
+    public void testUpdateProjectVersionMetadataIncomplete()
+    {
+        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+        metadata.setId( TEST_PROJECT_VERSION );
+        metadata.setIncomplete( true );
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+
+        metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( true, metadata.isIncomplete() );
     }
 
     public void testUpdateProjectVersionMetadataWithExistingFacets()

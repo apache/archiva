@@ -339,3 +339,14 @@ div.versions a.expand {
     font-size: 7pt;
 	color: gray;	
 }
+
+#messages {
+    background-color: yellow;
+    border: 1px solid orange;
+    margin-top: 2em;
+}
+
+#messages ul {
+    list-style-image: url(../images/icon_warning_sml.gif)
+}
+

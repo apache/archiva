@@ -51,6 +51,8 @@ public class ProjectVersionMetadata
 
     private List<Dependency> dependencies = new ArrayList<Dependency>();
 
+    private boolean incomplete;
+
     public String getId()
     {
         return id;
@@ -204,5 +206,15 @@ public class ProjectVersionMetadata
     public void addDependency( Dependency dependency )
     {
         this.dependencies.add( dependency );
+    }
+
+    public boolean isIncomplete()
+    {
+        return incomplete;
+    }
+
+    public void setIncomplete( boolean incomplete )
+    {
+        this.incomplete = incomplete;
     }
 }

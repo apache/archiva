@@ -68,7 +68,10 @@ public class DefaultMetadataResolver
             metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
         // TODO: do we want to detect changes as well by comparing timestamps? isProjectVersionNewerThan(updated)
         //       in such cases we might also remove/update stale metadata, including adjusting plugin-based facets
-        if ( metadata == null )
+        //       This would also be better than checking for completeness - we can then refresh only when fixed (though
+        //       sometimes this has an additional dependency - such as a parent - requesting the user to force an update
+        //       may then work here and be more efficient than always trying again)
+        if ( metadata == null || metadata.isIncomplete() )
         {
             metadata = storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
             if ( metadata != null )
