@@ -22,7 +22,7 @@
 
 <html>
 <head>
-  <title>You have access to no repositories</title>
+  <title>You do not have access to any repository</title>
   <s:head/>
 </head>
 
@@ -31,8 +31,8 @@
 <div id="contentArea">
   
    <div id="results">
-     You have access to no repositories.  
-     Ask your system administrator for access.  
+     You do not have access to any repository.  
+     Please contact your system administrator and request for access.  
    </div>
   
 </div>
