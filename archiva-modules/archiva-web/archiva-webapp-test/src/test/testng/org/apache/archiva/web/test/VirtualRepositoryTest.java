@@ -44,15 +44,14 @@ public class VirtualRepositoryTest
 	public void testAddRepositoryToRepositoryGroup()
 	{
 		addRepositoryToRepositoryGroup( "testing", "internal" );
-		assertTextPresent( "internal" );
+		assertTextPresent( "internal" );		
 		//clickLinkWithXPath( "/html/body/div[4]/div/div/div[2]/div/div/p[2]/a" );
 		//getSelenium().goBack();
 	}
 	
 	@Test(dependsOnMethods = { "testAddRepositoryToRepositoryGroup" } )
 	public void testDeleteRepositoryOfRepositoryGroup()
-	{   	    
-		goToRepositoryGroupsPage();
+	{
 		deleteRepositoryInRepositoryGroups();
 		assertTextPresent( "Repository Groups" );
 		assertTextNotPresent( "No Repository Groups Defined." );
