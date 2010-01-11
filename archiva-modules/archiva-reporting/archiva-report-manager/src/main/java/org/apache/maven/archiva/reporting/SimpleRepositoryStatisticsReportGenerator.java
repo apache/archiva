@@ -133,7 +133,22 @@ public class SimpleRepositoryStatisticsReportGenerator
                 types = artifactDao.queryArtifacts( 
                         new ArtifactsByRepositoryConstraint( repository, MAVEN_PLUGIN, endDate, "whenGathered" ) );
                 repoStatistics.setPluginCount( types.size() );
-                
+
+                types = artifactDao.queryArtifacts(
+                         new ArtifactsByRepositoryConstraint( repository, EAR_TYPE, endDate, "whenGathered" ) );
+                repoStatistics.setEarCount( types.size() );
+
+                types = artifactDao.queryArtifacts( 
+                         new ArtifactsByRepositoryConstraint( repository, DLL_TYPE, endDate, "whenGathered" ) );
+                repoStatistics.setDllCount( types.size() );
+
+                types = artifactDao.queryArtifacts(
+                         new ArtifactsByRepositoryConstraint( repository, EXE_TYPE, endDate, "whenGathered" ) );
+                repoStatistics.setExeCount( types.size() );
+
+                types = artifactDao.queryArtifacts(
+                         new ArtifactsByRepositoryConstraint( repository, ZIP_TYPE, endDate, "whenGathered" ) );
+                repoStatistics.setZipCount( types.size() );
                 // TODO: must need to be able to track archetypes. possible way of identifying an 
                 //      archetype is by checking if archetype.xml exists in src/main/resources/META-INF/
                 

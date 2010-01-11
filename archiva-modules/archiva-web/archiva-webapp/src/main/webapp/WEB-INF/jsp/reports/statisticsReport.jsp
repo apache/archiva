@@ -154,6 +154,10 @@
           <th>Archetypes</th>
           <th>Jars</th>
           <th>Wars</th>
+          <th>Ears</th>
+          <th>Exes</th>
+          <th>Dlls</th>
+          <th>Zips</th>
           <th>Deployments</th>
           <th>Downloads</th>
         </tr>			
@@ -170,6 +174,10 @@
           <td align="right">${stats.archetypeCount}</td>
           <td align="right">${stats.jarCount}</td>
           <td align="right">${stats.warCount}</td>
+          <td align="right">${stats.earCount}</td>
+          <td align="right">${stats.exeCount}</td>
+          <td align="right">${stats.dllCount}</td>
+          <td align="right">${stats.zipCount}</td>
           <td align="right">${stats.deploymentCount}</td>
           <td align="right">${stats.downloadCount}</td>
         </tr>				
@@ -191,6 +199,10 @@
           <th>Archetypes</th>
           <th>Jars</th>
           <th>Wars</th>
+          <th>Ears</th>
+          <th>Exes</th>
+          <th>Dlls</th>
+          <th>Zips</th>
           <th>Deployments</th>
           <th>Downloads</th>
         </tr>			
@@ -207,6 +219,10 @@
           <td align="right">${stats.archetypeCount}</td>
           <td align="right">${stats.jarCount}</td>
           <td align="right">${stats.warCount}</td>
+          <td align="right">${stats.earCount}</td>
+          <td align="right">${stats.exeCount}</td>
+          <td align="right">${stats.dllCount}</td>
+          <td align="right">${stats.zipCount}</td>
           <td align="right">${stats.deploymentCount}</td>
           <td align="right">${stats.downloadCount}</td>
         </tr>				

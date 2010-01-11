@@ -160,7 +160,11 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         List<ArchivaArtifact> jarArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.JAR_TYPE );        
         List<ArchivaArtifact> warArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.WAR_TYPE );
         List<ArchivaArtifact> mavenPlugins = createArtifacts( RepositoryStatisticsReportGenerator.MAVEN_PLUGIN );
-        
+        List<ArchivaArtifact> exeArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.EXE_TYPE );
+        List<ArchivaArtifact> earArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.EAR_TYPE );
+        List<ArchivaArtifact> dllArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.DLL_TYPE );
+        List<ArchivaArtifact> zipArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.ZIP_TYPE );
+
         List<RepositoryContentStatistics> repoContentStats = createStatisticsHistoryForSingleRepositoryTest( REPO );
         
         // get first page
@@ -174,7 +178,19 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         
         artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts( 
                 new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.MAVEN_PLUGIN, endDate, "whenGathered") ), mavenPlugins, 5 );
-        
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.EAR_TYPE, endDate, "whenGathered" ) ), earArtifacts, 5 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.EXE_TYPE, endDate, "whenGathered" ) ), exeArtifacts, 5 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.DLL_TYPE, endDate, "whenGathered" ) ), dllArtifacts, 5 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.ZIP_TYPE, endDate, "whenGathered" ) ), zipArtifacts, 5 );
+
         daoControl.replay(); 
         artifactDaoControl.replay();
         
@@ -191,6 +207,10 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         assertEquals( 5, stats.getJarCount() );
         assertEquals( 5, stats.getWarCount() );
         assertEquals( 5, stats.getPluginCount() );
+        assertEquals( 5, stats.getEarCount() );
+        assertEquals( 5, stats.getExeCount() );
+        assertEquals( 5, stats.getDllCount() );
+        assertEquals( 5, stats.getZipCount() );
         assertEquals( toDate( 2008, 11, 1, 0, 0, 0 ).getTime(), stats.getDateOfScan().getTime() );
         assertEquals( toDate( 2008, 9, 1, 0, 0, 0 ).getTime(), ( (RepositoryStatistics) data.get( 4 ) ).getDateOfScan().getTime() );
         
@@ -212,7 +232,19 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         
         artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts( 
                 new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.MAVEN_PLUGIN, endDate, "whenGathered") ), mavenPlugins );
-        
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.EAR_TYPE, endDate, "whenGathered" ) ), earArtifacts );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.EXE_TYPE, endDate, "whenGathered" ) ), exeArtifacts );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.DLL_TYPE, endDate, "whenGathered" ) ), dllArtifacts );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.ZIP_TYPE, endDate, "whenGathered" ) ), zipArtifacts );
+
         daoControl.replay(); 
         artifactDaoControl.replay();
         
@@ -241,6 +273,10 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         List<ArchivaArtifact> jarArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.JAR_TYPE );        
         List<ArchivaArtifact> warArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.WAR_TYPE );
         List<ArchivaArtifact> mavenPlugins = createArtifacts( RepositoryStatisticsReportGenerator.MAVEN_PLUGIN );
+        List<ArchivaArtifact> exeArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.EXE_TYPE );
+        List<ArchivaArtifact> earArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.EAR_TYPE );
+        List<ArchivaArtifact> dllArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.DLL_TYPE );
+        List<ArchivaArtifact> zipArtifacts = createArtifacts( RepositoryStatisticsReportGenerator.ZIP_TYPE );
         
         List<RepositoryContentStatistics> repoContentStats = createStatisticsHistoryForSingleRepositoryTest( REPO );
         
@@ -255,7 +291,19 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         
         artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts( 
                 new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.MAVEN_PLUGIN, endDate, "whenGathered") ), mavenPlugins, 21 );
-        
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.EAR_TYPE, endDate, "whenGathered" ) ), earArtifacts, 21 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.EXE_TYPE, endDate, "whenGathered" ) ), exeArtifacts, 21 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.DLL_TYPE, endDate, "whenGathered" ) ), dllArtifacts, 21 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.ZIP_TYPE, endDate, "whenGathered" ) ), zipArtifacts, 21 );
+
         daoControl.replay(); 
         artifactDaoControl.replay();
         
@@ -272,6 +320,10 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         assertEquals( 5, stats.getJarCount() );
         assertEquals( 5, stats.getWarCount() );
         assertEquals( 5, stats.getPluginCount() );
+        assertEquals( 5, stats.getEarCount() );
+        assertEquals( 5, stats.getExeCount() );
+        assertEquals( 5, stats.getDllCount() );
+        assertEquals( 5, stats.getZipCount() );
         assertEquals( toDate( 2008, 11, 1, 0, 0, 0 ).getTime(), stats.getDateOfScan().getTime() );
         assertEquals( toDate( 2008, 1, 1, 0, 0, 0 ).getTime(), ( (RepositoryStatistics) data.get( 20 ) ).getDateOfScan().getTime() );
     }
@@ -291,6 +343,10 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         List<ArchivaArtifact> jarArtifacts = new ArrayList<ArchivaArtifact>();        
         List<ArchivaArtifact> warArtifacts = new ArrayList<ArchivaArtifact>();
         List<ArchivaArtifact> mavenPlugins = new ArrayList<ArchivaArtifact>();
+        List<ArchivaArtifact> earArtifacts = new ArrayList<ArchivaArtifact>();
+        List<ArchivaArtifact> exeArtifacts = new ArrayList<ArchivaArtifact>();
+        List<ArchivaArtifact> dllArtifacts = new ArrayList<ArchivaArtifact>();
+        List<ArchivaArtifact> zipArtifacts = new ArrayList<ArchivaArtifact>();
         
         List<RepositoryContentStatistics> repoContentStats = createStatisticsHistoryForSingleRepositoryTest( REPO );
                 
@@ -304,7 +360,19 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         
         artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts( 
                 new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.MAVEN_PLUGIN, endDate, "whenGathered") ), mavenPlugins, 5 );
-        
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.EAR_TYPE, endDate, "whenGathered" ) ), earArtifacts, 5 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.EXE_TYPE, endDate, "whenGathered" ) ), exeArtifacts, 5 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.DLL_TYPE, endDate, "whenGathered" ) ), dllArtifacts, 5 );
+
+        artifactDaoControl.expectAndReturn( artifactDao.queryArtifacts(
+                new ArtifactsByRepositoryConstraint( REPO, RepositoryStatisticsReportGenerator.ZIP_TYPE, endDate, "whenGathered" ) ), zipArtifacts, 5 );
+
         daoControl.replay(); 
         artifactDaoControl.replay();
         
@@ -321,6 +389,10 @@ public class SimpleRepositoryStatisticsReportGeneratorTest
         assertEquals( 0, stats.getJarCount() );
         assertEquals( 0, stats.getWarCount() );
         assertEquals( 0, stats.getPluginCount() );
+        assertEquals( 0, stats.getEarCount() );
+        assertEquals( 0, stats.getExeCount() );
+        assertEquals( 0, stats.getDllCount() );
+        assertEquals( 0, stats.getZipCount() );
         assertEquals( toDate( 2008, 11, 1, 0, 0, 0 ).getTime(), stats.getDateOfScan().getTime() );
         assertEquals( toDate( 2008, 9, 1, 0, 0, 0 ).getTime(), ( (RepositoryStatistics) data.get( 4 ) ).getDateOfScan().getTime() );
         // no results found when ArtifactDAO was queried

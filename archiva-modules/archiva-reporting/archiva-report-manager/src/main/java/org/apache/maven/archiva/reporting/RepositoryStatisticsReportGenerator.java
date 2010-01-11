@@ -36,7 +36,15 @@ public interface RepositoryStatisticsReportGenerator
     public static final String WAR_TYPE = "war";
     
     public static final String POM_TYPE = "pom";
-    
+
+    public static final String EAR_TYPE = "ear";
+
+    public static final String DLL_TYPE = "dll";
+
+    public static final String EXE_TYPE = "exe";
+
+    public static final String ZIP_TYPE = "distribution-zip";
+
     public static final String MAVEN_PLUGIN = "maven-plugin";
     
     public static final String ARCHETYPE = "archetype";

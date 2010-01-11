@@ -52,9 +52,11 @@ public class RepositoryStatistics
     private long dllCount = 0;
     
     private long exeCount = 0;
-    
+
     private long pomCount = 0;
-    
+
+    private long zipCount = 0;
+
     private long deploymentCount = 0;
     
     private long downloadCount = 0;
@@ -199,6 +201,16 @@ public class RepositoryStatistics
     public void setPomCount( long pomCount )
     {
         this.pomCount = pomCount;
+    }
+
+    public long getZipCount()
+    {
+        return zipCount;
+    }
+
+    public void setZipCount( long zipCount )
+    {
+        this.zipCount = zipCount;
     }
 
     public long getDeploymentCount()
