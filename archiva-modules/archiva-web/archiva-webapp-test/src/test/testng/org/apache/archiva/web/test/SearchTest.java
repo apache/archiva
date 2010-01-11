@@ -66,12 +66,32 @@ public class SearchTest
         assertTextPresent( "Advanced Search - At least one search criteria must be provided." );
     }
 
-   /* public void testSearchExistingArtifactUsingAdvancedSearchArtifactId()
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" } )
+    public void testSearchExistingArtifactUsingAdvancedSearchArtifactId()
     {
-        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, null, null, null );
+        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, getProperty( "REPOSITORYID" ), null, null );
 		assertTextPresent( "Results" );
 		assertTextPresent( "Hits: 1 to 1 of 1" );
 		assertLinkPresent( "test" );   
-    }*/
+    }
+    
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" } )
+    public void testSearchExistingArtifactUsingAdvancedSearchGroupId()
+    {
+        searchForArtifactAdvancedSearch( getProperty( "GROUPID" ), null, null, getProperty( "REPOSITORYID" ), null, null );
+        assertTextPresent( "Results" );
+        assertTextPresent( "Hits: 1 to 1 of 1" );
+        assertLinkPresent( "test" );   
+    }
+    
+    @Test (dependsOnMethods = { "testAddManagedRepoValidValues", "testAddArtifactValidValues" } )
+    public void testSearchExistingArtifactUsingAdvancedSearchNoAccessToRepository()
+    {
+        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, "managedrepo1", null, null );
+        assertTextPresent( "No results found" );
+        assertTextNotPresent( "Results" );
+        assertTextNotPresent( "Hits: 1 to 1 of 1" );
+        assertLinkNotPresent( "test" );   
+    }
 }
 
