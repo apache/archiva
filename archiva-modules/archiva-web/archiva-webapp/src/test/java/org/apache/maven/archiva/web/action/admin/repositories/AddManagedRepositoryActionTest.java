@@ -24,6 +24,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
+import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
@@ -51,6 +53,10 @@ public class AddManagedRepositoryActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
+    
+    private ArchivaAuditLogsDao auditLogsDao;
+
+    private MockControl auditLogsDaoControl;
 
     private static final String REPO_ID = "repo-ident";
 
@@ -74,6 +80,11 @@ public class AddManagedRepositoryActionTest
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
 
+        auditLogsDaoControl = MockControl.createControl( ArchivaAuditLogsDao.class );
+        auditLogsDaoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
+        auditLogsDao = (ArchivaAuditLogsDao) auditLogsDaoControl.getMock();
+        action.setAuditLogsDao( auditLogsDao );
+        
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
@@ -148,15 +159,18 @@ public class AddManagedRepositoryActionTest
         ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
 
+        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
+        auditLogsDaoControl.replay();
+        
         assertFalse( location.exists() );
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
-        assertTrue( location.exists() );
-
+        assertTrue( location.exists() );        
         assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
+        auditLogsDaoControl.verify();
     }
     
     

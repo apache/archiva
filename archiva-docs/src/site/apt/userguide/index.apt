@@ -20,6 +20,8 @@ Users Guide
     * {{{virtual-repositories.html} Configuring Virtual Repositories}}
 
     * {{{rss.html}RSS Feeds in Archiva}}
+    
+    * {{{auditlog-report.html}Viewing the Audit Log Report}}
 
     []
 

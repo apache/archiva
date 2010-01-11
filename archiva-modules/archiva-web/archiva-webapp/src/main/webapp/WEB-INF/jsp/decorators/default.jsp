@@ -80,12 +80,17 @@
       </li>
     </ul>
 
-    <redback:ifAnyAuthorized permissions="archiva-upload-repository,archiva-delete-artifact,archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
+    <redback:ifAnyAuthorized permissions="archiva-upload-repository,archiva-delete-artifact,archiva-manage-users,archiva-access-reports,archiva-manage-configuration,archiva-view-audit-logs">
       <h5>Manage</h5>
       <ul>
         <redback:ifAuthorized permission="archiva-access-reports">
           <li class="none">
             <my:currentWWUrl action="pickReport" namespace="/report">Reports</my:currentWWUrl>
+          </li>
+        </redback:ifAuthorized>
+        <redback:ifAuthorized permission="archiva-view-audit-logs">
+          <li class="none">
+            <my:currentWWUrl action="queryAuditLogReport" namespace="/report">Audit Log Report</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
         <redback:ifAuthorized permission="archiva-manage-users">
@@ -112,7 +117,7 @@
           <li class="none">
             <my:currentWWUrl action="deleteArtifact" namespace="/">Delete Artifact</my:currentWWUrl>
           </li>
-        </redback:ifAuthorized>
+        </redback:ifAuthorized>        
           <%-- TODO: future options here.
              * Repository Statistics.
              * Web Services Statistics.

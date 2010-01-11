@@ -1,0 +1,38 @@
+ ------
+ Audit Log Report
+ ------
+
+Audit Log Report
+
+  Starting with Archiva 1.3, audit events can be viewed and queried from the web UI. In the current implementation, only artifact upload events are viewable 
+  but there are plans to include other events such as artifact delete, repository creation and deletion, configuration changes, etc.  
+ 
+  To view the audit events, click <<<Audit Log Report>>> from the navigation menu. Initially, the latest 10 artifact upload events are displayed.
+
+[../images/latest-events.png] Latest Events
+
+* Customizing the Audit Log Report
+
+  The following fields can be specified when querying for the audit events:
+  
+  [[1]] Repository - the repository where the events happened. Only those repositories which the logged in user has permission to access are listed in the drop-down
+  box.
+  
+  [[2]] Group ID - the <<<groupId>>> of the artifact whose audit events you want to view.
+  
+  [[3]] Artifact ID - the <<<artifactId>>> of the artifact whose audit events you want to view.
+  
+  [[4]] Start Date - the start date of the event(s) you want to view. This defaults to the current date if none is specified.
+  
+  [[5]] End Date - the end date of the event(s) you want to view. This defaults to the current date if none is specified.
+  
+  [[6]] Row Count - the number of rows you want displayed per page. This will be the basis for the pagination of the results. The default value is 30 rows.
+  
+  []
+  
+  Just specify values for either one or all of the above fields and then submit the form to perform the query. The results of the query will be displayed at the lower
+  section of the page, similar to that shown in the <<<Latest Events>>> except that the heading will be <<<Results>>> instead of <<<Latest Events>>>.
+
+
+
+

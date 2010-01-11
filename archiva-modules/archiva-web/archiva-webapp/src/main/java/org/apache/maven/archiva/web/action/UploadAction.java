@@ -149,7 +149,7 @@ public class UploadAction
      * @plexus.requirement
      */
     private ArchivaTaskScheduler scheduler;
-
+    
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5};
 
     private ProjectModelWriter pomWriter = new ProjectModel400Writer();
@@ -423,7 +423,7 @@ public class UploadAction
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deployed to repository \'" + repositoryId + "\'";
 
-            triggerAuditEvent( repositoryId, groupId + ":" + artifactId + ":" + version, AuditEvent.UPLOAD_FILE );
+            triggerAuditEvent( repositoryId, artifactPath, AuditEvent.UPLOAD_FILE );  
 
             addActionMessage( msg );
 

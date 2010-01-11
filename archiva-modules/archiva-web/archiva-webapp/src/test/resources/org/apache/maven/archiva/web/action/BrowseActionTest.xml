@@ -35,5 +35,10 @@
       <role-hint>default</role-hint>
       <implementation>org.apache.maven.archiva.security.UserRepositoriesStub</implementation>
     </component>
+    <component>
+      <role>org.apache.maven.archiva.database.ArchivaAuditLogsDao</role>
+      <role-hint>jdo</role-hint>
+      <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArchivaAuditLogsDaoStub</implementation>
+    </component>
   </components>
 </plexus>

@@ -45,5 +45,10 @@
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.RepositoryContentStatisticsDAOStub
       </implementation>
     </component>
+    <component>
+      <role>org.apache.maven.archiva.database.ArchivaAuditLogsDao</role>
+      <role-hint>jdo</role-hint>
+      <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArchivaAuditLogsDaoStub</implementation>
+    </component>
   </components>
 </component-set>
