@@ -31,7 +31,7 @@
   <artifactId>archiva-parent</artifactId>
   <packaging>pom</packaging>
   <name>Archiva Common Parent Project</name>
-  <version>5</version>
+  <version>6-SNAPSHOT</version>
   <inceptionYear>2006</inceptionYear>
   <description>
     Archiva is an application for managing one or more remote
@@ -89,9 +89,9 @@
     </mailingList>
    </mailingLists>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/tags/archiva-parent-5</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-parent-5</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/archiva/tags/archiva-parent-5</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/archiva/parent</url>
   </scm>
   <properties>
     <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
