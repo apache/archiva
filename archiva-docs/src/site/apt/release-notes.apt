@@ -1,10 +1,10 @@
  -----
- Release Notes for Archiva 1.2.2
+ Release Notes for Archiva 1.3
  -----
 
-Release Notes for Archiva 1.2.2
+Release Notes for Archiva 1.3
 
-  The Apache Archiva team would like to announce the release of Archiva 1.2.2.  Archiva is {{{http://archiva.apache.org/download.html}
+  The Apache Archiva team would like to announce the release of Archiva 1.3.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -17,36 +17,138 @@ Release Notes for Archiva 1.2.2
 
 * Compatibility Changes
 
-  * The Audit log filename has been renamed to <<<archiva-audit.log>>> instead of <<<audit.log>>> so that the log directory can be shared with other applications.
+  * If upgrading from versions of Archiva earlier than 1.2.2, the list of libraries
+    in <<<wrapper.conf>>> has changed. If you have customized your copy of
+    <<<wrapper.conf>>>, please update it for compatibility with the version distributed
+    with the current release.
 
-* New in Archiva 1.2
+* New in Archiva 1.3
 
-** Struts 2
+** Forced re-scan
 
-   The Archiva web application has been migrated from Webwork to Struts 2.
+   Sometimes it is necessary to force Archiva to rescan your repository, regardless of
+   file modification dates. There is now an option to do this directly from the
+   administration interface
 
-** Repository Statistics
+** Improved memory usage
 
-   Repository statistics are now available to help in monitoring the Archiva repositories. Statistics include the number of artifacts and size
-   of the repository, the number of plugins, jars, wars, etc. For more details about this feature, see {{{adminguide/reports.html}Reports}}.
+   Use of the indexing module has been thoroughly reviewed and some suboptimal memory
+   usage has been improved, requiring less memory for long running scan operations
+   (in turn improving performance).
 
-** Search
+** Audit logging of uploads
 
-   An advanced or filter search feature is added for more specific searching of artifacts. More details are available in {{{userguide/searching.html}Searching}}.
-   Archiva is also now using the Nexus index format for it's index.
-
-** Web Services
-
-   A web service for administrative tasks has been provided. It uses the Atlassian XML-RPC Binder which leverages the Apache XML-RPC.
-   For instructions on how to use this feature, see {{{adminguide/web-services.html}Using Archiva Web Services}}.
-
-** Delete Artifact
-
-   Artifacts can now be deleted from the web application. More details on how to use this feature is available in {{{userguide/delete-artifact.html}Deleting an Artifact}}.
+   Archiva's reporting user interface can now show audit information for artifacts
+   uploaded to repositories after the installation of Archiva 1.3.
 
 * Release Notes
 
-  The Archiva 1.2.2 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.3 feature set can be seen in the {{{tour/index.html} feature tour}}.
+
+* Changes in Archiva 1.3
+
+  Released: *13 Jan 2010*
+
+** Bug
+
+    * [MRM-612] - Repository scanning does not recognize newly added artifacts if they have an old timestamp
+
+    * [MRM-636] - war:inplace usage is not compatible with cobertura
+
+    * [MRM-747] - Archiva should prevent re-deployment of released or non-snapshot versioned artifacts
+
+    * [MRM-1033] - Changing the location of a scanned repository results to the contents of the new location not getting indexed
+
+    * [MRM-1228] - Ping service in not working
+
+    * [MRM-1229] - SearchService.quickSearch doesn't return the same result as the application
+
+    * [MRM-1230] - Type of artifact is allways "pom"
+
+    * [MRM-1231] -  Not authorized to use method with version parameter
+
+    * [MRM-1238] - NPE when updating consumers of known content without setting any of the checkboxes (enabled)
+
+    * [MRM-1240] - NPE when updating consumers (not setting any of the checkboxes) of Unprocessed Artifacts and Artifact Cleanup Scanning in Database
+
+    * [MRM-1243] - Encoding issues with Archiva UI: add Spring CharacterEncodingFilter
+
+    * [MRM-1246] - MetadataUpdaterConsumer didn't run during a repository scan after deleting a version of an artifact.
+
+    * [MRM-1249] - Archiva does not respect configuration of the index directory
+
+    * [MRM-1250] - Granting the Global Repository Manager/System Administrator role does not automatically assign the Global Repository Observer role
+
+    * [MRM-1253] - Artifacts cannot be found using the Search function
+
+    * [MRM-1259] - 'index-content' consumer processes all types of files, slowing down the indexing process
+
+    * [MRM-1265] - .indexer directory should not be scanned
+
+    * [MRM-1266] - results page fails when find artifact returns multiple results
+
+    * [MRM-1267] - Hide the sub-topics in documentation menu by default
+
+    * [MRM-1268] - X-Forwarded-Host handling when having more than one proxy
+
+    * [MRM-1272] - Empty Lucene Index
+
+    * [MRM-1274] - SearchService.quickSearch returns artifacts with null as repositoryId
+
+    * [MRM-1278] - Wrong repository displayed in Archiva browse
+
+    * [MRM-1290] - getDependees always returns results for archiva-test in xmlrpc
+
+    * [MRM-1294] - repository scan period is incorrect
+
+    * [MRM-1305] - Documentation for setting up archiva with tomcat 6 specifies invalid archiva.xml
+
+** Improvement
+
+    * [MRM-1056] - Option to force scanning of an artifact/repository regardless of file dates
+
+    * [MRM-1251] - Update documentation - Artifacts not displayed in Archiva GUI after release 
+
+    * [MRM-1262] - m2eclipse index should only be created at end of indexing run
+
+    * [MRM-1264] - reduce memory used by indexing process
+
+    * [MRM-1270] - Improve message when a user tries to search and the user does not have access to any repository
+
+    * [MRM-1275] - Include other file types for the index consumer instead of just the indexable-content
+
+** New Feature
+
+    * [MRM-1185] - Archiva Reporting Modification Request
+
+    * [MRM-1296] - Audit logging report
+
+** Task
+
+    * [MRM-1080] - Update SearchServiceImplTest so that it uses the new search API
+
+    * [MRM-1123] - ensure all nexus indexer dependencies are in central or built in to JAR appropriately
+
+    * [MRM-1164] - Fix the Selenium tests
+
+    * [MRM-1254] - Add more unit tests for searching artifacts
+
+    * [MRM-1277] - Create Selenium test for advanced search feature
+
+    * [MRM-1281] - remove unused consumers
+
+    * [MRM-1289] - need to document changes to wrapper.conf on upgrade
+
+    * [MRM-1306] - upgrade to jQuery UI 1.7.2 and jQuery 1.3.2
+
+    * [MRM-1309] - Upgrade to Redback 1.2.3
+
+** Test
+
+    * [MRM-1241] - Selenium Tests for Repository Scanning and Database
+
+    * [MRM-1257] - Selenium Test for accessing bundled repositories
+
 
 * Changes in Archiva 1.2.2
 
