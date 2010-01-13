@@ -1189,7 +1189,7 @@
   <!-- TODO: we need to push this into the parent, and also upgrade to the latest ASF parent POM -->
   <distributionManagement>
     <repository>
-      <id>apache.releases</id>
+      <id>vmbuild.staging</id>
       <name>Apache Release Staging Repository on VMBuild</name>
       <url>http://vmbuild.apache.org/archiva/repository/staged-archiva</url>
     </repository>
