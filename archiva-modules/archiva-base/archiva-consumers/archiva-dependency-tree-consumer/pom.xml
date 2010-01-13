@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-consumers</artifactId>
-    <version>1.3</version>
+    <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-dependency-tree-consumer</artifactId>
   <name>Archiva Consumers :: Dependency Tree Consumer</name>
