@@ -175,7 +175,7 @@
           <configuration>
             <tagBase>https://svn.apache.org/repos/asf/archiva/tags</tagBase>
             <useReleaseProfile>false</useReleaseProfile>
-            <autoVersionSubModules>true</autoVersionSubmodules>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
             <goals>deploy</goals>
             <preparationGoals>clean</preparationGoals>
             <arguments>-Papache-release</arguments>
