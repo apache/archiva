@@ -178,7 +178,8 @@
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <goals>deploy</goals>
             <preparationGoals>clean</preparationGoals>
-            <arguments>-Papache-release</arguments>
+            <!-- TODO: merge these when upgrading to latest ASF parent POM -->
+            <arguments>-Papache-release,release</arguments>
           </configuration>
         </plugin>
         <plugin>
