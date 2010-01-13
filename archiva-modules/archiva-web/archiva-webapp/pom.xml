@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.3</version>
   </parent>
   <artifactId>archiva-webapp</artifactId>
   <packaging>war</packaging>
@@ -293,9 +293,9 @@
             <phase>compile</phase>
             <configuration>
               <tasks>
-                <mkdir dir="${basedir}/target/archiva/WEB-INF/"/>
+                <mkdir dir="${basedir}/target/archiva/WEB-INF/" />
                 <copy todir="${basedir}/target/archiva/WEB-INF/">
-                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml"/>
+                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml" />
                 </copy>
               </tasks>
             </configuration>
