@@ -35,6 +35,13 @@ public class CaptureScreenShotsListener
     extends TestListenerAdapter
 {
     @Override
+    public void onTestSkipped( ITestResult tr )
+    {
+        System.out.println( "Test " + tr.getName() + " -> Skipped" );
+        super.onTestSkipped( tr );
+    }
+
+    @Override
     public void onTestFailure( ITestResult tr )
     {
         captureError( tr );
