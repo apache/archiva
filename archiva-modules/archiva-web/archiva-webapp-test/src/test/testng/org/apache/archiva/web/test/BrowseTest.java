@@ -63,6 +63,7 @@ public class BrowseTest
         
         String snapshotsRepo = getProperty( "SNAPSHOTS_REPOSITORY" );
 
+        // TODO: do this differently as uploading doesn't work on browsers other than *chrome (below as well)
         // upload a snapshot artifact to repository 'releases'        
         addArtifact( "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar", artifact.getPath(),
                      releasesRepo );
