@@ -80,12 +80,13 @@ public abstract class AbstractRepositoryTest
 	
 	public void deleteRepositoryInRepositoryGroups()
 	{
+		goToRepositoryGroupsPage();
 		getSelenium().click( "xpath=//div[@id='contentArea']/div[2]/div/div[3]/div[1]/a/img" );
+		waitPage();
 	}
 	
 	public void deleteRepositoryGroup( String repositoryName )
 	{
-		//goToRepositoryGroupsPage();
 		getSelenium().click( "xpath=//div[@id='contentArea']/div[2]/div/div[1]/div/a/img" );
 		waitPage();
 		assertDeleteRepositoryGroupPage( repositoryName );

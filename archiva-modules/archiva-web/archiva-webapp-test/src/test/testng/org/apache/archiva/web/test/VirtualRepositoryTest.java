@@ -21,6 +21,7 @@ package org.apache.archiva.web.test;
 
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
 import org.testng.annotations.Test;
+import org.testng.Assert;
 
 @Test( groups = { "virtualrepository" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
 public class VirtualRepositoryTest 
@@ -37,14 +38,14 @@ public class VirtualRepositoryTest
 	{
 		addRepositoryGroup( "testing" );
 		//assertAddedRepositoryLink( "testing" );
-		assertTextPresent( "testing" );
+		Assert.assertEquals( getSelenium().getText( "//div[@id='contentArea']/div[2]/div/div[1]/p[1]" ), "testing" );
 	}
 	
 	@Test(dependsOnMethods = { "testAddRepositoryGroupValidValue" } )
 	public void testAddRepositoryToRepositoryGroup()
 	{
 		addRepositoryToRepositoryGroup( "testing", "internal" );
-		assertTextPresent( "internal" );		
+		Assert.assertEquals( getSelenium().getText( "//div[@id='contentArea']/div[2]/div/div[3]/div[2]/p[1]" ), "internal" );
 		//clickLinkWithXPath( "/html/body/div[4]/div/div/div[2]/div/div/p[2]/a" );
 		//getSelenium().goBack();
 	}
@@ -55,7 +56,7 @@ public class VirtualRepositoryTest
 		deleteRepositoryInRepositoryGroups();
 		assertTextPresent( "Repository Groups" );
 		assertTextNotPresent( "No Repository Groups Defined." );
-		waitPage();
+		Assert.assertFalse( getSelenium().isElementPresent( "//div[@id='contentArea']/div[2]/div/div[3]/div[2]/p[1]" ) );
 	}
 	
 	@Test(dependsOnMethods = { "testDeleteRepositoryOfRepositoryGroup" } )
