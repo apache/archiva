@@ -85,6 +85,7 @@ public class ArtifactManagementTest
 	
 	public void testAddArtifactValidValues()
 	{
+		// TODO: disable test on non *chrome browsers, there is no way to do file uploads (SEL-63)
 		addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
 		assertTextPresent( "Artifact 'test:test:1.0' was successfully deployed to repository 'internal'" );
 	}
@@ -93,6 +94,7 @@ public class ArtifactManagementTest
 	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testAddArtifactBlockRedeployments()
 	{
+            // TODO: disable test on non *chrome browsers, there is no way to do file uploads (SEL-63)
             addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
             assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
 	}
@@ -105,6 +107,7 @@ public class ArtifactManagementTest
 		String version = getProperty( "VERSION1" );
 		String packaging = getProperty( "PACKAGING1" );
 		String repositoryId = getProperty( "REPOSITORYID1" );
+		// TODO: do this differently as it only works in Firefox's chrome mode
 		addArtifact( groupId , artifactId, version, packaging , getArtifactFilePath(), repositoryId );
 		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deployed to repository 'internal'" );
 
