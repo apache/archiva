@@ -14,7 +14,7 @@ public abstract class AbstractArtifactManagementTest
 	
 	public String getArtifactId()
 	{
-		String artifactId = getProperty( "GROUPID" ) ;
+		String artifactId = getProperty( "ARTIFACTID" ) ;
 		return artifactId;
 	}
 	
