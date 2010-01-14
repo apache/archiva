@@ -140,14 +140,13 @@ public abstract class AbstractSeleniumTest {
 	
     public void assertPage( String title )
     {
-        // Collapse spaces
-        String actualTitle = getSelenium().getTitle().replaceAll( "[ \n\r]+", " " );
-        Assert.assertEquals( actualTitle, title );
+        Assert.assertEquals( getTitle(), title );
     }
 	
 	public String getTitle()
 	{
-	    return getSelenium().getTitle();
+            // Collapse spaces
+            return getSelenium().getTitle().replaceAll( "[ \n\r]+", " " );
 	}
 	
 	public String getHtmlContent()

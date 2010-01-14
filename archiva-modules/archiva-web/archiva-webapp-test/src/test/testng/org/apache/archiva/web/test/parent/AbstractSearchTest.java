@@ -25,7 +25,7 @@ public abstract class AbstractSearchTest
 	//Search
 	public void goToSearchPage()
 	{
-        if ( !"Apache Archiva \\ Quick Search".equals( getSelenium().getTitle() ) )
+        if ( !"Apache Archiva \\ Quick Search".equals( getTitle() ) )
         {
             clickLinkWithText( "Search" );
             getSelenium().waitForPageToLoad( maxWaitTimeInMs );
