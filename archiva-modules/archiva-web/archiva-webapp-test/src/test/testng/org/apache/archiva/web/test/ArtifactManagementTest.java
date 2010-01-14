@@ -93,12 +93,13 @@ public class ArtifactManagementTest
 	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testAddArtifactBlockRedeployments()
 	{
-	    addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-        assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
+            addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
+            assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
 	}
 	
-	public void testAddArtifactValidValues1()
+	public void testDeleteArtifact()
 	{
+		//prep
 		String groupId = getProperty( "GROUPID1" );
 		String artifactId = getProperty( "ARTIFACTID1" );
 		String version = getProperty( "VERSION1" );
@@ -106,11 +107,7 @@ public class ArtifactManagementTest
 		String repositoryId = getProperty( "REPOSITORYID1" );
 		addArtifact( groupId , artifactId, version, packaging , getArtifactFilePath(), repositoryId );
 		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deployed to repository 'internal'" );
-	}
-	
-	@Test(dependsOnMethods = { "testAddArtifactValidValues1" } )
-	public void testDeleteArtifact()
-	{
+
 		deleteArtifact( "delete", "delete", "1.0", "internal");
 		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deleted from repository 'internal'" );
 	}
