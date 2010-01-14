@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 public class RepositoryTest
 	extends AbstractRepositoryTest
 {
-	@Test(dependsOnMethods = { "testWithCorrectUsernamePassword" } )
 	public void testAddManagedRepoValidValues()
 	{
 		goToRepositoriesPage();
@@ -37,10 +36,9 @@ public class RepositoryTest
 		assertRepositoriesPage();
 	}
 	
-	@Test(dependsOnMethods = { "testAddManagedRepoValidValues" } )
 	public void testAddManagedRepoInvalidValues()
 	{				
-	    assertRepositoriesPage();
+		goToRepositoriesPage();
 	    clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRepository.action']" );	
 		addManagedRepository( "", "" , "" , "", "Maven 2.x Repository", "", "", "" );
 		assertTextPresent( "You must enter a repository identifier." );
