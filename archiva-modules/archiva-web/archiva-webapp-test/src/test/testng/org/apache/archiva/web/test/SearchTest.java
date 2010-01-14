@@ -34,7 +34,6 @@ public class SearchTest
 		assertTextPresent( "No results found" );
 	}
     
-	@Test (dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testSearchExistingArtifact()
 	{
 		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
@@ -43,7 +42,6 @@ public class SearchTest
 		assertLinkPresent( "test" );
 	}
 	
-	@Test (dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testViewSearchedArtifact()
     {
 		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
@@ -66,7 +64,6 @@ public class SearchTest
         assertTextPresent( "Advanced Search - At least one search criteria must be provided." );
     }
 
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" } )
     public void testSearchExistingArtifactUsingAdvancedSearchArtifactId()
     {
         searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, getProperty( "REPOSITORYID" ), null, null );
@@ -75,7 +72,6 @@ public class SearchTest
 		assertLinkPresent( "test" );   
     }
     
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" } )
     public void testSearchExistingArtifactUsingAdvancedSearchGroupId()
     {
         searchForArtifactAdvancedSearch( getProperty( "GROUPID" ), null, null, getProperty( "REPOSITORYID" ), null, null );
@@ -84,7 +80,7 @@ public class SearchTest
         assertLinkPresent( "test" );   
     }
     
-    @Test (dependsOnMethods = { "testAddManagedRepoValidValues", "testAddArtifactValidValues" } )
+    @Test (dependsOnMethods = { "testAddManagedRepoValidValues" } )
     public void testSearchExistingArtifactUsingAdvancedSearchNoAccessToRepository()
     {
         searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, "managedrepo1", null, null );

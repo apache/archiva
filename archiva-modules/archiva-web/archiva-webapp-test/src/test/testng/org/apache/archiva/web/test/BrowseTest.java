@@ -45,6 +45,7 @@ public class BrowseTest
 	}
 
     // MRM-1278
+    @Test( enabled = false )
     public void testCorrectRepositoryInBrowse()
     {
         File artifact =

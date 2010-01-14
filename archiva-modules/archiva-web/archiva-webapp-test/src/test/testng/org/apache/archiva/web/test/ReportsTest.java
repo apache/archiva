@@ -22,13 +22,12 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArtifactReportsTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "reports" }, dependsOnMethods = { "testAddArtifactValidValues" } )
+@Test( groups = { "reports" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
 public class ReportsTest 
 	extends AbstractArtifactReportsTest
 {
 	//TODO Tests for repository with defects
 	
-//	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testRepoStatisticsWithoutRepoCompared()
 	{
 		goToReportsPage();
@@ -57,7 +56,6 @@ public class ReportsTest
 		assertTextPresent( "Start Date must be earlier than the End Date" );
 	}
 		
-	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )	
 	public void testRepositoryStatistics()
 	{
 		String repositoryName = getProperty( "REPOSITORY_NAME" ) ;
@@ -78,7 +76,6 @@ public class ReportsTest
 		assertTextPresent( "Statistics Report" );
 	}
 	
-	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testRepositoryHealthWithoutDefect()
 	{
 		goToReportsPage();
@@ -89,7 +86,6 @@ public class ReportsTest
 		assertTextPresent( "The operation generated an empty report." );
 	}
 	
-	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testRepositoryHealthWithoutGroupId()
 	{
 		goToReportsPage();
