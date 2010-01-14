@@ -20,13 +20,16 @@ package org.apache.archiva.web.test.listener;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.apache.archiva.web.test.parent.AbstractSeleniumTest;
+import org.apache.commons.io.FileUtils;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
+import com.thoughtworks.selenium.Selenium;
 
 public class CaptureScreenShotsListener
     extends TestListenerAdapter
@@ -48,40 +51,38 @@ public class CaptureScreenShotsListener
 
     private void captureError( ITestResult tr )
     {
-        try
-        {
-            captureScreenshot( tr );
-        }
-        catch ( RuntimeException e )
-        {
-            System.out.println( "Error when take screenshot for test " + tr.getName() );
-            e.printStackTrace();
-        }
-    }
-
-    // captureAssertionError() creates a 'target/screenshots' directory and saves '.png' page screenshot of the
-    // encountered error
-    private void captureScreenshot( ITestResult tr )
-    {
-        File f = new File( "" );
-        String filePath = f.getAbsolutePath();
-        Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd-HH_mm_ss" );
-        String time = sdf.format( d );
-        String fs = File.separator;
-        File targetPath = new File( filePath + fs + "target" + fs + "screenshots" );
-        targetPath.mkdir();
-        String cName = tr.getTestClass().getName();
+        String time = sdf.format( new Date() );
+        File targetPath = new File( "target", "screenshots" );
         StackTraceElement stackTrace[] = tr.getThrowable().getStackTrace();
+        String cName = tr.getTestClass().getName();
         int index = getStackTraceIndexOfCallingClass( cName, stackTrace );
         String methodName = stackTrace[index].getMethodName();
         int lNumber = stackTrace[index].getLineNumber();
         String lineNumber = Integer.toString( lNumber );
         String className = cName.substring( cName.lastIndexOf( '.' ) + 1 );
-        String fileName =
-            targetPath.toString() + fs + methodName + "(" + className + ".java_" + lineNumber + ")-" + time + ".png";
-        AbstractSeleniumTest.getSelenium().windowMaximize();
-        AbstractSeleniumTest.getSelenium().captureEntirePageScreenshot( fileName, "" );
+        targetPath.mkdirs();
+        Selenium selenium = AbstractSeleniumTest.getSelenium();
+        String fileBaseName = methodName + "_" + className + ".java_" + lineNumber + "-" + time;
+        try
+        {
+            selenium.windowMaximize();
+            File fileName = new File( targetPath, fileBaseName + ".png" );
+            selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "" );
+        }
+        catch ( RuntimeException e )
+        {
+            System.out.println( "Error when take screenshot for test " + tr.getName() + ": " + e.getMessage() );
+            try
+            {
+                File fileName = new File( targetPath, fileBaseName + ".html" );
+                FileUtils.writeStringToFile( fileName, selenium.getHtmlSource() );
+            }
+            catch ( IOException ioe )
+            {
+                System.out.println( ioe.getMessage() );
+            }
+        }
     }
 
     private int getStackTraceIndexOfCallingClass( String nameOfClass, StackTraceElement stackTrace[] )
