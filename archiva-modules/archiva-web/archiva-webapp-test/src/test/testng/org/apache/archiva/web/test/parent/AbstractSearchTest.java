@@ -107,6 +107,10 @@ public abstract class AbstractSearchTest
             setFieldValue( "rowCount", rowCount );
         }
 
+        if ( repositoryId != null )
+        {
+            selectValue( "filteredSearch_repositoryId", repositoryId );
+        }
         clickSubmitWithLocator( "filteredSearch_0" );
     }
 }

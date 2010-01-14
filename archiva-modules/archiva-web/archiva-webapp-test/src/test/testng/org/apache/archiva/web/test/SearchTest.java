@@ -19,6 +19,8 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.archiva.web.test.parent.AbstractSearchTest;
 import org.testng.annotations.Test;
 
@@ -80,10 +82,9 @@ public class SearchTest
         assertLinkPresent( "test" );   
     }
     
-    @Test (dependsOnMethods = { "testAddManagedRepoValidValues" } )
-    public void testSearchExistingArtifactUsingAdvancedSearchNoAccessToRepository()
+    public void testSearchExistingArtifactUsingAdvancedSearchNotInRepository()
     {
-        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, "managedrepo1", null, null );
+        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, "snapshots", null, null );
         assertTextPresent( "No results found" );
         assertTextNotPresent( "Results" );
         assertTextNotPresent( "Hits: 1 to 1 of 1" );
