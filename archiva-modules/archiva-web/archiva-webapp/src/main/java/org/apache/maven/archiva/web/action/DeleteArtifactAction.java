@@ -211,7 +211,8 @@ public class DeleteArtifactAction
 
             String path = repository.toMetadataPath( ref );
             int index = path.lastIndexOf( '/' );
-            File targetPath = new File( repoConfig.getLocation(), path.substring( 0, index ) );
+            path = path.substring( 0, index );
+            File targetPath = new File( repoConfig.getLocation(), path );
 
             if ( !targetPath.exists() )
             {
@@ -246,13 +247,13 @@ public class DeleteArtifactAction
                         listener.deleteArtifact( repository.getId(), artifact.getNamespace(), artifact.getProject(),
                                                  artifact.getVersion(), artifact.getId() );
                     }
+
+                    triggerAuditEvent( repositoryId, path, AuditEvent.REMOVE_FILE );
                 }
             }
 
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deleted from repository \'" + repositoryId + "\'";
-
-            triggerAuditEvent( repositoryId, groupId + ":" + artifactId + ":" + version, AuditEvent.REMOVE_FILE );
 
             addActionMessage( msg );
 
