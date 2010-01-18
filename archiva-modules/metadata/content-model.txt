@@ -94,56 +94,49 @@ The following is the intended content model for the metadata content repository:
         |                   |-- maven:groupId=
         |                   |-- maven:plugins.compiler.artifactId=
         |                   `-- maven:plugins.compiler.name=
-        |-- references/
-        |   `-- org/
-        |       `-- apache/
-        |           `-- archiva/
-        |               |-- parent/
-        |               |   `-- 1/
-        |               |       `-- references/
-        |               |           `-- org/
-        |               |               `-- apache/
-        |               |                   `-- archiva/
-        |               |                       |-- platform/
-        |               |                       |   `-- scanner/
-        |               |                       |       `-- 1.0-SNAPSHOT/
-        |               |                       |           `-- referenceType=parent
-        |               |                       `-- web/
-        |               |                           `-- webapp/
-        |               |                               `-- 1.0-SNAPSHOT/
-        |               |                                   `-- referenceType=parent
-        |               `-- platform/
-        |                   `-- scanner/
-        |                       `-- 1.0-SNAPSHOT/
-        |                           `-- references/
-        |                               `-- org/
-        |                                   `-- apache/
-        |                                       `-- archiva/
-        |                                           `-- web/
-        |                                               `-- webapp/
-        |                                                   `-- 1.0-SNAPSHOT/
-        |                                                       `-- referenceType=dependency
-        `-- stats/
-            `-- 2009/
-                `-- 12/
-                    |-- 02/
-                    |   `-- 234700.000/
-                    |       |-- scanEndTime=
-                    |       |-- scanStartTime=
-                    |       |-- totalArtifactCount=
-                    |       |-- totalArtifactFileSize=
-                    |       |-- totalFileCount=
-                    |       |-- totalGroupCount=
-                    |       `-- totalProjectCount=
-                    `-- 03/
-                        `-- 090000.000/
-                            |-- scanEndTime=
-                            |-- scanStartTime=
-                            |-- totalArtifactCount=
-                            |-- totalArtifactFileSize=
-                            |-- totalFileCount=
-                            |-- totalGroupCount=
-                            `-- totalProjectCount=
+        |-- facets/
+        |   |-- org.apache.archiva.metadata.repository.stats/
+        |   |   `-- 2009/
+        |   |       `-- 12/
+        |   |           `-- 03/
+        |   |               `-- 090000.000/
+        |   |                   |-- scanEndTime=
+        |   |                   |-- scanStartTime=
+        |   |                   |-- totalArtifactCount=
+        |   |                   |-- totalArtifactFileSize=
+        |   |                   |-- totalFileCount=
+        |   |                   |-- totalGroupCount=
+        |   |                   `-- totalProjectCount=
+        |   `-- org.apache.archiva.reports/
+        `-- references/
+            `-- org/
+                `-- apache/
+                    `-- archiva/
+                        |-- parent/
+                        |   `-- 1/
+                        |       `-- references/
+                        |           `-- org/
+                        |               `-- apache/
+                        |                   `-- archiva/
+                        |                       |-- platform/
+                        |                       |   `-- scanner/
+                        |                       |       `-- 1.0-SNAPSHOT/
+                        |                       |           `-- referenceType=parent
+                        |                       `-- web/
+                        |                           `-- webapp/
+                        |                               `-- 1.0-SNAPSHOT/
+                        |                                   `-- referenceType=parent
+                        `-- platform/
+                            `-- scanner/
+                                `-- 1.0-SNAPSHOT/
+                                    `-- references/
+                                        `-- org/
+                                            `-- apache/
+                                                `-- archiva/
+                                                    `-- web/
+                                                        `-- webapp/
+                                                            `-- 1.0-SNAPSHOT/
+                                                                `-- referenceType=dependency
 
 (To update - run "tree --dirsfirst -F" on the unpacked content-model.zip from the sandbox)
 
