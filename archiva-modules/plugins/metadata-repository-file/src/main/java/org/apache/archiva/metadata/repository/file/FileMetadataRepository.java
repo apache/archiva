@@ -120,7 +120,7 @@ public class FileMetadataRepository
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
-        for ( Object key : properties.keySet() )
+        for ( Object key : new ArrayList( properties.keySet() ) )
         {
             String name = (String) key;
             if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
@@ -296,7 +296,7 @@ public class FileMetadataRepository
         {
             metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
             Map<String, String> map = new HashMap<String, String>();
-            for ( Object key : properties.keySet() )
+            for ( Object key : new ArrayList( properties.keySet() ) )
             {
                 String property = (String) key;
                 map.put( property, properties.getProperty( property ) );
@@ -784,7 +784,7 @@ public class FileMetadataRepository
                     {
                         MetadataFacet facet = factory.createMetadataFacet();
                         Map<String, String> map = new HashMap<String, String>();
-                        for ( Object key : properties.keySet() )
+                        for ( Object key : new ArrayList( properties.keySet() ) )
                         {
                             String property = (String) key;
                             if ( property.startsWith( facet.getFacetId() ) )
