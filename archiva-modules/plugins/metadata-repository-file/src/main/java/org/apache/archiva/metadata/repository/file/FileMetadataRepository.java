@@ -120,8 +120,9 @@ public class FileMetadataRepository
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
-        for ( String name : properties.stringPropertyNames() )
+        for ( Object key : properties.keySet() )
         {
+            String name = (String) key;
             if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
             {
                 properties.remove( name );
@@ -295,9 +296,10 @@ public class FileMetadataRepository
         {
             metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
             Map<String, String> map = new HashMap<String, String>();
-            for ( String key : properties.stringPropertyNames() )
+            for ( Object key : properties.keySet() )
             {
-                map.put( key, properties.getProperty( key ) );
+                String property = (String) key;
+                map.put( property, properties.getProperty( property ) );
             }
             metadataFacet.fromProperties( map );
         }
@@ -782,11 +784,12 @@ public class FileMetadataRepository
                     {
                         MetadataFacet facet = factory.createMetadataFacet();
                         Map<String, String> map = new HashMap<String, String>();
-                        for ( String key : properties.stringPropertyNames() )
+                        for ( Object key : properties.keySet() )
                         {
-                            if ( key.startsWith( facet.getFacetId() ) )
+                            String property = (String) key;
+                            if ( property.startsWith( facet.getFacetId() ) )
                             {
-                                map.put( key, properties.getProperty( key ) );
+                                map.put( property, properties.getProperty( property ) );
                             }
                         }
                         facet.fromProperties( map );
