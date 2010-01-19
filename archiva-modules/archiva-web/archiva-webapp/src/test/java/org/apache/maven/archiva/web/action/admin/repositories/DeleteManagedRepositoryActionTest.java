@@ -21,6 +21,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +35,10 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.AuditEventArgumentsMatcher;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.RegistryException;
@@ -145,10 +149,14 @@ public class DeleteManagedRepositoryActionTest
 
         prepareRoleManagerMock();
         
-        Configuration configuration = prepDeletionTest( createRepository(), 4 );                
-        
+        Configuration configuration = prepDeletionTest( createRepository(), 4 );
+
+        MockControl control = mockAuditListeners();
+
+        MockControl metadataRepositoryControl = mockMetadataRepository();
+
         String status = action.deleteEntry();
-                
+
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -156,6 +164,29 @@ public class DeleteManagedRepositoryActionTest
         assertTrue( location.exists() );
 
         repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
+    }
+
+    private MockControl mockMetadataRepository()
+    {
+        MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+        metadataRepository.deleteRepository( REPO_ID );
+        metadataRepositoryControl.replay();
+        action.setMetadataRepository( metadataRepository );
+        return metadataRepositoryControl;
+    }
+
+    private MockControl mockAuditListeners()
+    {
+        MockControl control = MockControl.createControl( AuditListener.class );
+        AuditListener listener = (AuditListener) control.getMock();
+        listener.auditEvent( new AuditEvent( REPO_ID, "guest", null, AuditEvent.DELETE_MANAGED_REPO ) );
+        control.setMatcher( new AuditEventArgumentsMatcher() );
+        control.replay();
+        action.setAuditListeners( Arrays.asList( listener ) );
+        return control;
     }
 
     public void testDeleteRepositoryDeleteContent()
@@ -168,6 +199,10 @@ public class DeleteManagedRepositoryActionTest
         
         Configuration configuration = prepDeletionTest( createRepository(), 4 );              
         
+        MockControl control = mockAuditListeners();
+
+        MockControl metadataRepositoryControl = mockMetadataRepository();
+
         String status = action.deleteContents();
         
         assertEquals( Action.SUCCESS, status );
@@ -177,6 +212,8 @@ public class DeleteManagedRepositoryActionTest
         assertFalse( location.exists() );
 
         repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
     }
     
     public void testDeleteRepositoryAndAssociatedProxyConnectors()
@@ -194,6 +231,8 @@ public class DeleteManagedRepositoryActionTest
 
         assertEquals( 1, configuration.getProxyConnectors().size() );
         
+        MockControl control = mockAuditListeners();
+        MockControl metadataRepositoryControl = mockMetadataRepository();
         String status = action.deleteContents();
         
         assertEquals( Action.SUCCESS, status );
@@ -204,6 +243,8 @@ public class DeleteManagedRepositoryActionTest
         assertFalse( location.exists() );
 
         repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
     }
     
     public void testDeleteRepositoryCancelled()
@@ -241,15 +282,19 @@ public class DeleteManagedRepositoryActionTest
 
         assertEquals( 1, configuration.getRepositoryGroups().size() );
         
+        MockControl control = mockAuditListeners();
+        MockControl metadataRepositoryControl = mockMetadataRepository();
         String status = action.deleteContents();
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
-        assertEquals( 0, ( ( RepositoryGroupConfiguration ) configuration.getRepositoryGroups().get( 0 ) ).getRepositories().size() );
+        assertEquals( 0, configuration.getRepositoryGroups().get( 0 ).getRepositories().size() );
 
         assertFalse( location.exists() );
 
         repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
     }
 
     private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, int expectCountGetConfig )

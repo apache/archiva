@@ -47,7 +47,6 @@ import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.easymock.ArgumentsMatcher;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
@@ -681,27 +680,4 @@ public class UploadActionTest
         verifyChecksums( repoLocation );
     }
 
-    private static class AuditEventArgumentsMatcher
-        implements ArgumentsMatcher
-    {
-        public boolean matches( Object[] objects, Object[] objects1 )
-        {
-            if ( objects.length != 1 || objects1.length != 1 )
-            {
-                return false;
-            }
-            else
-            {
-                AuditEvent o1 = (AuditEvent) objects[0];
-                AuditEvent o2 = (AuditEvent) objects1[0];
-                o2.setTimestamp( o1.getTimestamp() ); // effectively ignore the timestamp
-                return o1.equals( o2 );
-            }
-        }
-
-        public String toString( Object[] objects )
-        {
-            return Arrays.asList( objects ).toString();
-        }
-    }
 }

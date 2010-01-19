@@ -69,5 +69,9 @@ public interface MetadataRepository
 
     void deleteArtifact( String repositoryId, String namespace, String project, String version, String id );
 
+    /**
+     * Delete a repository's metadata. This includes all associated metadata facets.
+     * @param repoId the repository to delete
+     */
     void deleteRepository( String repoId );
 }
