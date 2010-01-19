@@ -93,6 +93,12 @@ public class DefaultAuditManager
 
     public List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime )
     {
+        return getAuditEventsInRange( repositoryIds, null, startTime, endTime );
+    }
+
+    public List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, String resource, Date startTime,
+                                                   Date endTime )
+    {
         List<AuditEvent> results = new ArrayList<AuditEvent>();
         for ( String repositoryId : repositoryIds )
         {
@@ -107,7 +113,11 @@ public class DefaultAuditManager
                     {
                         AuditEvent event =
                             (AuditEvent) metadataRepository.getMetadataFacet( repositoryId, AuditEvent.FACET_ID, name );
-                        results.add( event );
+
+                        if ( resource == null || event.getResource().startsWith( resource ) )
+                        {
+                            results.add( event );
+                        }
                     }
                 }
                 catch ( ParseException e )

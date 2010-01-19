@@ -68,7 +68,7 @@ public class AuditManagerTest
     private static SimpleDateFormat createTimestampFormat()
     {
         SimpleDateFormat fmt = new SimpleDateFormat( AuditEvent.TIMESTAMP_FORMAT );
-        fmt.setTimeZone( TimeZone.getTimeZone( "UTC" ));
+        fmt.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
         return fmt;
     }
 
@@ -434,6 +434,79 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    public void testGetEventsWithResource()
+        throws ParseException
+    {
+        Date current = new Date();
+
+        String name1 = TIMESTAMP_FORMAT.format( new Date( current.getTime() - 12345 ) );
+        AuditEvent expectedEvent1 = createTestEvent( name1 );
+        Date expectedTimestamp = new Date( current.getTime() - 3000 );
+        String name2 = TIMESTAMP_FORMAT.format( expectedTimestamp );
+        AuditEvent expectedEvent2 = createTestEvent( name2 );
+        expectedEvent2.setResource( "different-resource" );
+        String name3 = TIMESTAMP_FORMAT.format( new Date( current.getTime() - 1000 ) );
+        AuditEvent expectedEvent3 = createTestEvent( name3 );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
+            Arrays.asList( name1, name2, name3 ) );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name1 ), expectedEvent1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name2 ), expectedEvent2 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name3 ), expectedEvent3 );
+
+        metadataRepositoryControl.replay();
+
+        List<AuditEvent> events =
+            auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ), TEST_RESOURCE_BASE,
+                                                new Date( current.getTime() - 20000 ), current );
+
+        assertEquals( 2, events.size() );
+        assertEvent( events.get( 0 ), name3, expectedEvent3.getResource() );
+        assertEvent( events.get( 1 ), name1, expectedEvent1.getResource() );
+
+        metadataRepositoryControl.verify();
+    }
+
+    public void testGetEventsWithNonExistantResource()
+        throws ParseException
+    {
+        Date current = new Date();
+
+        String name1 = TIMESTAMP_FORMAT.format( new Date( current.getTime() - 12345 ) );
+        AuditEvent expectedEvent1 = createTestEvent( name1 );
+        Date expectedTimestamp = new Date( current.getTime() - 3000 );
+        String name2 = TIMESTAMP_FORMAT.format( expectedTimestamp );
+        AuditEvent expectedEvent2 = createTestEvent( name2 );
+        expectedEvent2.setResource( "different-resource" );
+        String name3 = TIMESTAMP_FORMAT.format( new Date( current.getTime() - 1000 ) );
+        AuditEvent expectedEvent3 = createTestEvent( name3 );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
+            Arrays.asList( name1, name2, name3 ) );
+
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name1 ), expectedEvent1 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name2 ), expectedEvent2 );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name3 ), expectedEvent3 );
+
+        metadataRepositoryControl.replay();
+
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ), "foo",
+                                                                      new Date( current.getTime() - 20000 ), current );
+
+        assertEquals( 0, events.size() );
+
+        metadataRepositoryControl.verify();
+    }
+
     public void testGetEventsRangeMultipleRepositories()
         throws ParseException
     {
@@ -478,12 +551,9 @@ public class AuditManagerTest
         Date current = new Date();
 
         String name1 = TIMESTAMP_FORMAT.format( new Date( current.getTime() - 12345 ) );
-        AuditEvent expectedEvent1 = createTestEvent( name1 );
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
         String name2 = TIMESTAMP_FORMAT.format( expectedTimestamp );
-        AuditEvent expectedEvent2 = createTestEvent( name2 );
         String name3 = TIMESTAMP_FORMAT.format( new Date( current.getTime() - 1000 ) );
-        AuditEvent expectedEvent3 = createTestEvent( name3 );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),

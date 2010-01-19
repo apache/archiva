@@ -33,5 +33,25 @@ public interface AuditManager
 
     void deleteAuditEvents( String repositoryId );
 
+    /**
+     * Get all audit events from the given repositories that match a certain range
+     *
+     * @param repositoryIds the repositories to retrieve events for
+     * @param startTime     find events only after this time
+     * @param endTime       find events only before this time
+     * @return the list of events found
+     */
     List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime );
+
+    /**
+     * Get all audit events from the given repositories that match a certain range and resource pattern
+     *
+     * @param repositoryIds   the repositories to retrieve events for
+     * @param resourcePattern find all events whose resources start with this string
+     * @param startTime       find events only after this time
+     * @param endTime         find events only before this time
+     * @return the list of events found
+     */
+    List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, String resourcePattern, Date startTime,
+                                            Date endTime );
 }
