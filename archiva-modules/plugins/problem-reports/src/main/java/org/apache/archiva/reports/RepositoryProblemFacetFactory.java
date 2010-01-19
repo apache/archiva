@@ -32,4 +32,9 @@ public class RepositoryProblemFacetFactory
     {
         return new RepositoryProblemFacet();
     }
+
+    public MetadataFacet createMetadataFacet( String repositoryId, String name )
+    {
+        return new RepositoryProblemFacet();
+    }
 }

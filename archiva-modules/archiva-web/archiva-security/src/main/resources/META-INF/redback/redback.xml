@@ -66,6 +66,11 @@
           <description>Access Archiva Repository</description>
         </operation>
         <operation>
+          <id>archiva-view-audit-logs</id>
+          <name>archiva-view-audit-logs</name>
+          <description>View Archiva Audit Logs</description>
+        </operation>
+        <operation>
           <id>archiva-guest</id>
           <name>archiva-guest</name>
           <description>Active Archiva Guest</description>
@@ -217,6 +222,12 @@
               <id>archiva-upload-repository</id>
               <name>Archiva Upload to Repository</name>
               <operation>archiva-upload-repository</operation>
+              <resource>${resource}</resource>
+            </permission>
+            <permission>
+              <id>archiva-view-audit-logs</id>
+              <name>Archiva View Audit Logs</name>
+              <operation>archiva-view-audit-logs</operation>
               <resource>${resource}</resource>
             </permission>
           </permissions>

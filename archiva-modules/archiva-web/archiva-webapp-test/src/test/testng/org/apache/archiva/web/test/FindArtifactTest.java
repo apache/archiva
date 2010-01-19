@@ -22,7 +22,7 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "findartifact" }, dependsOnMethods = { "testAddArtifactValidValues1" }, sequential = true )
+@Test( groups = { "findartifact" }, sequential = true )
 public class FindArtifactTest
 	extends AbstractArchivaTest
 {
@@ -33,9 +33,9 @@ public class FindArtifactTest
 		assertTextPresent( "You must select a file, or enter the checksum. If the file was given and you receive this message, there may have been an error generating the checksum." );
 	}
 	
-	@Test( dependsOnMethods = { "testFindArtifactNullValues" })
 	public void testFindArtifactUsingChecksum()
 	{
+		goToFindArtifactPage();
 		setFieldValue( "checksumSearch_q" , "8e896baea663a45d7bd2737f8e464481" );
 		clickButtonWithValue( "Search" );
 		assertTextPresent( "No results found" );

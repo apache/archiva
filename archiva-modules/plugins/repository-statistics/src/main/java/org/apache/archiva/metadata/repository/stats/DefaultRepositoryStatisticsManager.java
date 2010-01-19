@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.stats;
  */
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -164,7 +165,7 @@ public class DefaultRepositoryStatisticsManager
         {
             try
             {
-                Date date = RepositoryStatistics.SCAN_TIMESTAMP.parse( name );
+                Date date = new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT ).parse( name );
                 if ( ( startTime == null || !date.before( startTime ) ) &&
                     ( endTime == null || !date.after( endTime ) ) )
                 {

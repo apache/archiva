@@ -40,7 +40,7 @@ public class DisableProxyConnectorActionTest extends AbstractWebworkTestCase
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
-
+    
     public void testConfirmDisableBadSourceOrTarget()
         throws Exception
     {

@@ -21,7 +21,7 @@
   <parent>
     <artifactId>archiva-modules</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>plugins</artifactId>
   <name>Archiva Core Plugins</name>
@@ -31,5 +31,6 @@
     <module>maven2-repository</module>
     <module>repository-statistics</module>
     <module>problem-reports</module>
+    <module>audit</module>
   </modules>
 </project>

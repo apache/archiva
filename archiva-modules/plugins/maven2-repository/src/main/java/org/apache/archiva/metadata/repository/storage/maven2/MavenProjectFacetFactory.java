@@ -32,4 +32,9 @@ public class MavenProjectFacetFactory
     {
         return new MavenProjectFacet();
     }
+
+    public MetadataFacet createMetadataFacet( String repositoryId, String name )
+    {
+        throw new UnsupportedOperationException( "There is no valid name for project version facets" );
+    }
 }

@@ -51,7 +51,7 @@ public class AddManagedRepositoryActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
-
+    
     private static final String REPO_ID = "repo-ident";
 
     private File location;
@@ -145,8 +145,7 @@ public class AddManagedRepositoryActionTest
         assertFalse( location.exists() );
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
-        assertTrue( location.exists() );
-
+        assertTrue( location.exists() );        
         assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
 
         roleManagerControl.verify();

@@ -154,6 +154,10 @@
           <th>Archetypes</th>
           <th>Jars</th>
           <th>Wars</th>
+          <th>Ears</th>
+          <th>Exes</th>
+          <th>Dlls</th>
+          <th>Zips</th>
         </tr>			
 		
         <c:forEach var="stats" items="${repositoryStatistics}" varStatus="i">
@@ -168,6 +172,10 @@
           <td align="right">${stats.totalCountForType['maven-archetype']}</td>
           <td align="right">${stats.totalCountForType['jar']}</td>
           <td align="right">${stats.totalCountForType['war']}</td>
+          <td align="right">${stats.totalCountForType['ear']}</td>
+          <td align="right">${stats.totalCountForType['exe']}</td>
+          <td align="right">${stats.totalCountForType['dll']}</td>
+          <td align="right">${stats.totalCountForType['zip']}</td>
         </tr>
         </c:forEach>
       </table>  		
@@ -187,6 +195,10 @@
           <th>Archetypes</th>
           <th>Jars</th>
           <th>Wars</th>
+          <th>Ears</th>
+          <th>Exes</th>
+          <th>Dlls</th>
+          <th>Zips</th>
         </tr>
 	  		
         <c:forEach var="stats" items="${repositoryStatistics}">
@@ -201,6 +213,10 @@
           <td align="right">${stats.totalCountForType['maven-archetype']}</td>
           <td align="right">${stats.totalCountForType['jar']}</td>
           <td align="right">${stats.totalCountForType['war']}</td>
+          <td align="right">${stats.totalCountForType['ear']}</td>
+          <td align="right">${stats.totalCountForType['exe']}</td>
+          <td align="right">${stats.totalCountForType['dll']}</td>
+          <td align="right">${stats.totalCountForType['zip']}</td>
         </tr>
         </c:forEach>
       </table>

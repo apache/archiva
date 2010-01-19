@@ -25,7 +25,7 @@ public abstract class AbstractSearchTest
 	//Search
 	public void goToSearchPage()
 	{
-        if ( !"Apache Archiva \\ Quick Search".equals( getSelenium().getTitle() ) )
+        if ( !"Apache Archiva \\ Quick Search".equals( getTitle() ) )
         {
             clickLinkWithText( "Search" );
             getSelenium().waitForPageToLoad( maxWaitTimeInMs );
@@ -107,6 +107,10 @@ public abstract class AbstractSearchTest
             setFieldValue( "rowCount", rowCount );
         }
 
+        if ( repositoryId != null )
+        {
+            selectValue( "filteredSearch_repositoryId", repositoryId );
+        }
         clickSubmitWithLocator( "filteredSearch_0" );
     }
 }

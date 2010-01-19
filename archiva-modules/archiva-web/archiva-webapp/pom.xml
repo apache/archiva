@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-webapp</artifactId>
   <packaging>war</packaging>
@@ -36,6 +36,10 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>problem-reports</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>audit</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -64,7 +68,6 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-metadata-consumer</artifactId>
-      <version>1.3-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -250,23 +253,19 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
-      <version>1.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
-      <version>1.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-file</artifactId>
-      <version>1.3-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>  <!--  FIXME: temporary coupling to plugin, should be runtime -->
       <artifactId>maven2-repository</artifactId>
-      <version>1.3-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
@@ -307,9 +306,9 @@
             <phase>compile</phase>
             <configuration>
               <tasks>
-                <mkdir dir="${basedir}/target/archiva/WEB-INF/"/>
+                <mkdir dir="${basedir}/target/archiva/WEB-INF/" />
                 <copy todir="${basedir}/target/archiva/WEB-INF/">
-                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml"/>
+                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml" />
                 </copy>
               </tasks>
             </configuration>

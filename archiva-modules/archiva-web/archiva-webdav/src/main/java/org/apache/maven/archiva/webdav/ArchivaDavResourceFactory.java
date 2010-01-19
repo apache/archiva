@@ -528,7 +528,7 @@ public class ArchivaDavResourceFactory
                     log.debug( "Creating destination directory '" + destDir.getName() + "' (current user '" +
                         activePrincipal + "')" );
 
-                    triggerAuditEvent( request.getRemoteAddr(), logicalResource.getPath(), relPath,
+                    triggerAuditEvent( request.getRemoteAddr(), managedRepository.getId(), relPath,
                                        AuditEvent.CREATE_DIR, activePrincipal );
                 }
             }

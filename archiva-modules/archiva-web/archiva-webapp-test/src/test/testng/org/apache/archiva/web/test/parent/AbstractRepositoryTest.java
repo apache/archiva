@@ -1,6 +1,26 @@
 package org.apache.archiva.web.test.parent;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.File;
+import org.testng.Assert;
 
 public abstract class AbstractRepositoryTest 
 	extends AbstractArchivaTest
@@ -80,12 +100,13 @@ public abstract class AbstractRepositoryTest
 	
 	public void deleteRepositoryInRepositoryGroups()
 	{
+		goToRepositoryGroupsPage();
 		getSelenium().click( "xpath=//div[@id='contentArea']/div[2]/div/div[3]/div[1]/a/img" );
+		waitPage();
 	}
 	
 	public void deleteRepositoryGroup( String repositoryName )
 	{
-		//goToRepositoryGroupsPage();
 		getSelenium().click( "xpath=//div[@id='contentArea']/div[2]/div/div[1]/div/a/img" );
 		waitPage();
 		assertDeleteRepositoryGroupPage( repositoryName );
@@ -306,23 +327,23 @@ public abstract class AbstractRepositoryTest
 		assertTextPresent( "Repository Scanning - File Types" );
 		String artifactsTypes = "**/*.pom,**/*.jar,**/*.ear,**/*.war,**/*.car,**/*.sar,**/*.mar,**/*.rar,**/*.dtd,**/*.tld,**/*.tar.gz,**/*.tar.bz2,**/*.zip";
 		String [] arrayArtifactTypes = artifactsTypes.split( "," );
-		for (String artifacttypes : arrayArtifactTypes )
-			assertTextPresent( artifacttypes );
+		for (int i = 0; i < arrayArtifactTypes.length; i++)
+			Assert.assertEquals(getSelenium().getTable("//div[@id='contentArea']/div/div[1]/table."+i+".0"), arrayArtifactTypes[i]);
 		
 		String autoremove = "**/*.bak,**/*~,**/*-";
 		String [] arrayAutoremove = autoremove.split( "," );
-		for ( String arrayautoremove : arrayAutoremove )
-			assertTextPresent( arrayautoremove );
+		for (int i = 0; i < arrayAutoremove.length; i++)
+			Assert.assertEquals(getSelenium().getTable("//div[@id='contentArea']/div/div[2]/table."+i+".0"), arrayAutoremove[i]);
 		
 		String ignored = "**/.htaccess,**/KEYS,**/*.rb,**/*.sh,**/.svn/**,**/.DAV/**";
 		String [] arrayIgnored = ignored.split( "," );
-		for ( String arrayignored : arrayIgnored )
-			assertTextPresent( arrayignored );
+		for (int i = 0; i < arrayIgnored.length; i++)
+			Assert.assertEquals(getSelenium().getTable("//div[@id='contentArea']/div/div[3]/table."+i+".0"), arrayIgnored[i]);
 		
 		String indexableContent = "**/*.txt,**/*.TXT,**/*.block,**/*.config,**/*.pom,**/*.xml,**/*.xsd,**/*.dtd,**/*.tld";
 		String [] arrayIndexableContent = indexableContent.split( "," );
-		for ( String indexablecontent : arrayIndexableContent )
-			assertTextPresent( indexablecontent );
+		for (int i = 0; i < arrayIndexableContent.length; i++)
+			Assert.assertEquals(getSelenium().getTable("//div[@id='contentArea']/div/div[4]/table."+i+".0"), arrayIndexableContent[i]);
 	}
 	
 	/////////////////////////////////////////////

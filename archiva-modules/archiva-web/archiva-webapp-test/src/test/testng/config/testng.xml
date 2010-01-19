@@ -33,6 +33,7 @@ under the License.
 				<include name= "reposcan" />
 				<include name= "artifactmanagement" />
 				<include name= "search" />
+				<include name= "auditlogsreport" />
 				<include name= "browse" />
 				<include name= "reports" />
 				<include name= "virtualrepository" />

@@ -32,4 +32,9 @@ public class RepositoryStatisticsFactory
     {
         return new RepositoryStatistics();
     }
+
+    public MetadataFacet createMetadataFacet( String repositoryId, String name )
+    {
+        return new RepositoryStatistics();
+    }
 }

@@ -89,7 +89,7 @@ public abstract class PlexusActionSupport
 
     protected void triggerAuditEvent( String resource, String action )
     {
-        AuditEvent event = new AuditEvent( getPrincipal(), resource, action );
+        AuditEvent event = new AuditEvent( null, getPrincipal(), resource, action );
         event.setRemoteIP( getRemoteAddr() );
         
         for ( AuditListener listener : auditListeners )
@@ -100,7 +100,7 @@ public abstract class PlexusActionSupport
 
     protected void triggerAuditEvent( String action )
     {
-        AuditEvent event = new AuditEvent( getPrincipal(), action );
+        AuditEvent event = new AuditEvent( null, getPrincipal(), null, action );
         event.setRemoteIP( getRemoteAddr() );
         
         for ( AuditListener listener : auditListeners )

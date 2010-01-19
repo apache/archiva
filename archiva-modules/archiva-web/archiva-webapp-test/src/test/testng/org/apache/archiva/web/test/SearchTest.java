@@ -19,6 +19,8 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.archiva.web.test.parent.AbstractSearchTest;
 import org.testng.annotations.Test;
 
@@ -34,7 +36,6 @@ public class SearchTest
 		assertTextPresent( "No results found" );
 	}
     
-	@Test (dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testSearchExistingArtifact()
 	{
 		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
@@ -43,7 +44,6 @@ public class SearchTest
 		assertLinkPresent( "test" );
 	}
 	
-	@Test (dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testViewSearchedArtifact()
     {
 		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
@@ -66,12 +66,29 @@ public class SearchTest
         assertTextPresent( "Advanced Search - At least one search criteria must be provided." );
     }
 
-   /* public void testSearchExistingArtifactUsingAdvancedSearchArtifactId()
+    public void testSearchExistingArtifactUsingAdvancedSearchArtifactId()
     {
-        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, null, null, null );
+        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, getProperty( "REPOSITORYID" ), null, null );
 		assertTextPresent( "Results" );
 		assertTextPresent( "Hits: 1 to 1 of 1" );
 		assertLinkPresent( "test" );   
-    }*/
+    }
+    
+    public void testSearchExistingArtifactUsingAdvancedSearchGroupId()
+    {
+        searchForArtifactAdvancedSearch( getProperty( "GROUPID" ), null, null, getProperty( "REPOSITORYID" ), null, null );
+        assertTextPresent( "Results" );
+        assertTextPresent( "Hits: 1 to 1 of 1" );
+        assertLinkPresent( "test" );   
+    }
+    
+    public void testSearchExistingArtifactUsingAdvancedSearchNotInRepository()
+    {
+        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, "snapshots", null, null );
+        assertTextPresent( "No results found" );
+        assertTextNotPresent( "Results" );
+        assertTextNotPresent( "Hits: 1 to 1 of 1" );
+        assertLinkNotPresent( "test" );   
+    }
 }
 

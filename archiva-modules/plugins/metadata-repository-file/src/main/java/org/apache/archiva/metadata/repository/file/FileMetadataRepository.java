@@ -293,7 +293,7 @@ public class FileMetadataRepository
         MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
         if ( metadataFacetFactory != null )
         {
-            metadataFacet = metadataFacetFactory.createMetadataFacet();
+            metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
             Map<String, String> map = new HashMap<String, String>();
             for ( String key : properties.stringPropertyNames() )
             {

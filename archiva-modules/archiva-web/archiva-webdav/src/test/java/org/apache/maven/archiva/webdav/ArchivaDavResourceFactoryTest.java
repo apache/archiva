@@ -81,7 +81,7 @@ public class ArchivaDavResourceFactoryTest
     private MockControl repoContentFactoryControl;
 
     private RepositoryContentFactory repoFactory;
-
+    
     public void setUp()
         throws Exception
     {
@@ -96,7 +96,7 @@ public class ArchivaDavResourceFactoryTest
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-
+        
         config = new Configuration();
         config.addManagedRepository( createManagedRepository( RELEASES_REPO, new File( getBasedir(),
                                                                                        "target/test-classes/" +
@@ -392,7 +392,7 @@ public class ArchivaDavResourceFactoryTest
             long date = 2039842134;
             response.addDateHeader( "last-modified", date );
             responseControl.setVoidCallable();
-
+            
             archivaConfigurationControl.replay();
             repoContentFactoryControl.replay();
             requestControl.replay();

@@ -140,10 +140,10 @@ public class EditManagedRepositoryActionTest
         ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
-
+        
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
-
+        
         ManagedRepositoryConfiguration newRepository = createRepository();
         newRepository.setName( "new repo name" );
         assertRepositoryEquals( repository, newRepository );

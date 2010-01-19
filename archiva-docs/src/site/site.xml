@@ -21,7 +21,7 @@
 <project>
   <body>
     <breadcrumbs>
-      <item name="1.2.2" href="/index.html" />
+      <item name="1.3" href="/index.html" />
     </breadcrumbs>
 
     <menu name="Introduction">
@@ -40,6 +40,7 @@
       <item name="Deploying to repository"   href="/userguide/deploy.html" />
       <item name="Configuring Virtual Repositories"   href="/userguide/virtual-repositories.html" />
       <item name="Rss Feeds in Archiva"      href="/userguide/rss.html"/>
+      <item name="Audit Log Report"      href="/userguide/auditlog-report.html"/>
     </menu>
 
     <menu name="Administrators Guide">

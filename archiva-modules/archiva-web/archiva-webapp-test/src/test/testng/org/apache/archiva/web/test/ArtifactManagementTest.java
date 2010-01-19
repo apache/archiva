@@ -83,34 +83,36 @@ public class ArtifactManagementTest
 		assertTextPresent( "Please add a file to upload." );
 	}
 	
+    @Test( enabled = false )
 	public void testAddArtifactValidValues()
 	{
-		addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
+		// TODO: disable test on non *chrome browsers, there is no way to do file uploads (SEL-63)
+		addArtifact( getGroupId() , "testAddArtifactValidValues", getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
 		assertTextPresent( "Artifact 'test:test:1.0' was successfully deployed to repository 'internal'" );
 	}
 		
 	//MRM-747
-	@Test(dependsOnMethods = { "testAddArtifactValidValues" } )
+    @Test( enabled = false )
 	public void testAddArtifactBlockRedeployments()
 	{
-	    addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-        assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
+            // TODO: disable test on non *chrome browsers, there is no way to do file uploads (SEL-63)
+            addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
+            assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
 	}
 	
-	public void testAddArtifactValidValues1()
+    @Test( enabled = false )
+	public void testDeleteArtifact()
 	{
+		//prep
 		String groupId = getProperty( "GROUPID1" );
 		String artifactId = getProperty( "ARTIFACTID1" );
 		String version = getProperty( "VERSION1" );
 		String packaging = getProperty( "PACKAGING1" );
 		String repositoryId = getProperty( "REPOSITORYID1" );
+		// TODO: do this differently as it only works in Firefox's chrome mode
 		addArtifact( groupId , artifactId, version, packaging , getArtifactFilePath(), repositoryId );
 		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deployed to repository 'internal'" );
-	}
-	
-	@Test(dependsOnMethods = { "testAddArtifactValidValues1" } )
-	public void testDeleteArtifact()
-	{
+
 		deleteArtifact( "delete", "delete", "1.0", "internal");
 		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deleted from repository 'internal'" );
 	}

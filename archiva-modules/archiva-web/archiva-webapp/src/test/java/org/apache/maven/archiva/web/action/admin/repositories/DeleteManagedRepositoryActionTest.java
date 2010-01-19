@@ -79,7 +79,7 @@ public class DeleteManagedRepositoryActionTest
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
-
+        
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
@@ -127,9 +127,10 @@ public class DeleteManagedRepositoryActionTest
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
-
+        
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
+                
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
@@ -146,7 +147,7 @@ public class DeleteManagedRepositoryActionTest
         
         Configuration configuration = prepDeletionTest( createRepository(), 4 );                
         
-        String status = action.deleteEntry();        
+        String status = action.deleteEntry();
                 
         assertEquals( Action.SUCCESS, status );
 
@@ -168,7 +169,7 @@ public class DeleteManagedRepositoryActionTest
         Configuration configuration = prepDeletionTest( createRepository(), 4 );              
         
         String status = action.deleteContents();
-               
+        
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -194,6 +195,7 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( 1, configuration.getProxyConnectors().size() );
         
         String status = action.deleteContents();
+        
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -211,6 +213,7 @@ public class DeleteManagedRepositoryActionTest
 
         ManagedRepositoryConfiguration originalRepository = createRepository();
         Configuration configuration = prepDeletionTest( originalRepository, 3 );
+                
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
 

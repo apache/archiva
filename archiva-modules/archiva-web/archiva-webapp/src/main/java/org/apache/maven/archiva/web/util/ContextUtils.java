@@ -111,6 +111,12 @@ public class ContextUtils
             }
             return name;
         }
+        else
+        {
+            // respect chains of proxies, return first one (as it's the outermost visible one)
+            String[] hosts = name.split( "," );
+            name = hosts[0].trim();
+        }
         return name;
     }
 }

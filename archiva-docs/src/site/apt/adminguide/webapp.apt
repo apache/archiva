@@ -20,7 +20,8 @@ To deploy Archiva on Tomcat 5.5 and Tomcat 6.0
 
    * Copy the war file into the new directory
 
-   * Create a <<<\<tomcat home\>/conf/Catalina/localhost/archiva.xml>>> file with the following data (replace the database paths with a suitable location):
+   * Create a <<<\<tomcat home\>/conf/Catalina/localhost/archiva.xml>>> file with the following data (replace the database paths with a suitable location). When using
+   Tomcat 6.0+, do not include the first line (XML encoding) in the <<<archiva.xml>>> configuration specified below to avoid parsing errors during startup: 
 
 +-------------------------------------------------------------------------+
  <?xml version="1.0" encoding="UTF-8"?>

@@ -22,4 +22,6 @@ package org.apache.archiva.metadata.model;
 public interface MetadataFacetFactory
 {
     MetadataFacet createMetadataFacet();
+
+    MetadataFacet createMetadataFacet( String repositoryId, String name );
 }

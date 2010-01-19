@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.stats;
  */
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,10 +83,11 @@ public class RepositoryStatisticsManagerTest
     public void testGetLatestStats()
         throws ParseException
     {
-        Date endTime = new Date( RepositoryStatistics.SCAN_TIMESTAMP.parse( SECOND_TEST_SCAN ).getTime() + 60000 );
+        Date startTime = parseTimestamp( SECOND_TEST_SCAN );
+        Date endTime = new Date( startTime.getTime() + 60000 );
 
         RepositoryStatistics stats = new RepositoryStatistics();
-        stats.setScanStartTime( RepositoryStatistics.SCAN_TIMESTAMP.parse( SECOND_TEST_SCAN ) );
+        stats.setScanStartTime( startTime );
         stats.setScanEndTime( endTime );
         stats.setTotalArtifactFileSize( 1314527915L );
         stats.setNewFileCount( 123 );
@@ -110,11 +112,22 @@ public class RepositoryStatisticsManagerTest
         assertEquals( 2031, stats.getTotalProjectCount() );
         assertEquals( 529, stats.getTotalGroupCount() );
         assertEquals( 56229, stats.getTotalFileCount() );
-        assertEquals( SECOND_TEST_SCAN, RepositoryStatistics.SCAN_TIMESTAMP.format( stats.getScanStartTime() ) );
+        assertEquals( SECOND_TEST_SCAN, formatTimestamp( stats.getScanStartTime() ) );
         assertEquals( SECOND_TEST_SCAN, stats.getName() );
         assertEquals( endTime, stats.getScanEndTime() );
 
         metadataRepositoryControl.verify();
+    }
+
+    private static String formatTimestamp( Date value )
+    {
+        return new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT ).format( value );
+    }
+
+    private static Date parseTimestamp( String value )
+        throws ParseException
+    {
+        return new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT ).parse( value );
     }
 
     public void testGetLatestStatsWhenEmpty()
@@ -516,8 +529,7 @@ public class RepositoryStatisticsManagerTest
             metadataRepositoryControl.expectAndReturn(
                 metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT" ),
                 Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "jar" ),
-                               createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT",
-                                               "pom" ) ) );
+                               createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "pom" ) ) );
             metadataRepositoryControl.expectAndReturn(
                 metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3" ),
                 Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3", "jar" ),

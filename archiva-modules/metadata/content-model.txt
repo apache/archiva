@@ -95,6 +95,18 @@ The following is the intended content model for the metadata content repository:
         |                   |-- maven:plugins.compiler.artifactId=
         |                   `-- maven:plugins.compiler.name=
         |-- facets/
+        |   |-- org.apache.archiva.audit/
+        |   |   `-- 2010/
+        |   |       `-- 01/
+        |   |           `-- 19/
+        |   |               `-- 093600.000/
+        |   |                   |-- action=
+        |   |                   |-- artifact.id=
+        |   |                   |-- artifact.namespace=
+        |   |                   |-- artifact.projectId=
+        |   |                   |-- artifact.version=
+        |   |                   |-- remoteIP=
+        |   |                   `-- user=
         |   |-- org.apache.archiva.metadata.repository.stats/
         |   |   `-- 2009/
         |   |       `-- 12/

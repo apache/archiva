@@ -69,6 +69,8 @@ public class FileMetadataRepositoryTest
 
     private static final String TEST_SHA1 = "2e5daf0201ddeb068a62d5e08da18657ab2c6be9";
 
+    private static final String TEST_METADATA_VALUE = "test-metadata";
+
     public void setUp()
         throws Exception
     {
@@ -84,7 +86,12 @@ public class FileMetadataRepositoryTest
         {
             public MetadataFacet createMetadataFacet()
             {
-                return new TestMetadataFacet( "test-metadata" );
+                return new TestMetadataFacet( TEST_METADATA_VALUE );
+            }
+
+            public MetadataFacet createMetadataFacet( String repositoryId, String name )
+            {
+                return new TestMetadataFacet( TEST_METADATA_VALUE );
             }
         } );
 
@@ -93,7 +100,12 @@ public class FileMetadataRepositoryTest
         {
             public MetadataFacet createMetadataFacet()
             {
-                return new TestMetadataFacet( "", "test-value" );
+                return new TestMetadataFacet( "", TEST_VALUE );
+            }
+
+            public MetadataFacet createMetadataFacet( String repositoryId, String name )
+            {
+                return new TestMetadataFacet( "", TEST_VALUE );
             }
         } );
         repository.setMetadataFacetFactories( factories );
@@ -189,7 +201,7 @@ public class FileMetadataRepositoryTest
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( null ) );
 
-        assertEquals( new TestMetadataFacet( "test-metadata" ),
+        assertEquals( new TestMetadataFacet( TEST_METADATA_VALUE ),
                       repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
     }
 

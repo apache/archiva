@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-cli</artifactId>
@@ -35,13 +35,12 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-dependency-tree-consumer</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>1.4-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-metadata-consumer</artifactId>
-      <version>1.3-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -101,7 +100,7 @@
               </transformers>
               <artifactSet>
                 <excludes>
-		  <exclude>xerces:xercesImpl</exclude>
+		              <exclude>xerces:xercesImpl</exclude>
                   <exclude>xml-apis:xml-apis</exclude>
                   <exclude>xalan:xalan</exclude>
                   <exclude>commons-beanutils:commons-beanutils</exclude>

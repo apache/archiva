@@ -65,6 +65,8 @@ public class ArchivaRoleConstants
     public static final String OPERATION_REPOSITORY_UPLOAD = "archiva-upload-repository";
 
     public static final String OPERATION_REPOSITORY_DELETE = "archiva-delete-artifact";
+    
+    public static final String OPERATION_VIEW_AUDIT_LOG = "archiva-view-audit-logs";
 
     // Role templates
     public static final String TEMPLATE_REPOSITORY_MANAGER = "archiva-repository-manager";

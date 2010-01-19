@@ -48,10 +48,6 @@ import org.easymock.classextension.MockClassControl;
 public class UploadActionTest
     extends PlexusInSpringTestCase
 {
-    private ArchivaTaskScheduler scheduler;
-
-    private MockControl schedulerControl;
-
     private UploadAction uploadAction;
 
     private ArchivaConfiguration archivaConfig;
@@ -61,25 +57,25 @@ public class UploadActionTest
     private RepositoryContentFactory repoFactory;
 
     private MockControl repoFactoryControl;
-
+    
     private static final String REPOSITORY_ID = "test-repo";
 
-    private Configuration config;
+    private Configuration config;    
 
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        schedulerControl = MockControl.createControl( ArchivaTaskScheduler.class );
-        scheduler = (ArchivaTaskScheduler) schedulerControl.getMock();
+        MockControl schedulerControl = MockControl.createControl( ArchivaTaskScheduler.class );
+        ArchivaTaskScheduler scheduler = (ArchivaTaskScheduler) schedulerControl.getMock();
 
         archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
 
         repoFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
         repoFactory = (RepositoryContentFactory) repoFactoryControl.getMock();
-
+        
         uploadAction = new UploadAction();
         uploadAction.setScheduler( scheduler );
         uploadAction.setConfiguration( archivaConfig );
@@ -411,7 +407,7 @@ public class UploadActionTest
         
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
-        
+
         archivaConfigControl.replay();
         repoFactoryControl.replay();
 
@@ -505,10 +501,10 @@ public class UploadActionTest
     
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content, 2 );
-    
+
         archivaConfigControl.replay();
         repoFactoryControl.replay();
-    
+
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
     

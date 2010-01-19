@@ -403,9 +403,15 @@ public class ArchivaDavResource
     private void triggerAuditEvent( DavResource member, String event ) throws DavException
     {
         String path = logicalResource + "/" + member.getDisplayName();
-        
-        triggerAuditEvent( checkDavResourceIsArchivaDavResource( member ).remoteAddr, locator.getRepositoryId(), path,
-                           event );
+
+        ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( member );
+        AuditEvent auditEvent = new AuditEvent( locator.getRepositoryId(), resource.principal, path, event );
+        auditEvent.setRemoteIP( resource.remoteAddr );
+
+        for ( AuditListener listener : auditListeners )
+        {
+            listener.auditEvent( auditEvent );
+        }
     }
 
     public void move( DavResource destination )

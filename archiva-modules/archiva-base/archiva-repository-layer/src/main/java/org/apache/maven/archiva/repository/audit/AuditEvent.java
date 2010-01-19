@@ -19,13 +19,25 @@ package org.apache.maven.archiva.repository.audit;
  * under the License.
  */
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.archiva.metadata.model.MetadataFacet;
+
 /**
  * AuditEvent
- * 
+ *
  * @version $Id$
  */
 public class AuditEvent
+    implements MetadataFacet
 {
+    public static final String TIMESTAMP_FORMAT = "yyyy/MM/dd/HHmmss.SSS";
+
     public static final String CREATE_DIR = "Created Directory";
 
     public static final String CREATE_FILE = "Created File";
@@ -82,15 +94,9 @@ public class AuditEvent
 
     public static final String DISABLE_REPO_CONSUMER = "Disabled Content Consumer";
 
-    public static final String ENABLE_DB_CONSUMER = "Enabled Database Consumer";
-
-    public static final String DISABLE_DB_CONSUMER = "Disabled Database Consumer";
-
     public static final String ADD_PATTERN = "Added File Type Pattern";
 
     public static final String REMOVE_PATTERN = "Removed File Type Pattern";
-
-    public static final String DB_SCHEDULE = "Modified Scanning Schedule";
 
     private String repositoryId;
 
@@ -98,13 +104,32 @@ public class AuditEvent
 
     private String remoteIP;
 
+    // TODO: change to artifact reference? does it ever refer to just a path?
+
     private String resource;
 
     private String action;
 
+    private Date timestamp;
+
+    public static final String FACET_ID = "org.apache.archiva.audit";
+
     public AuditEvent()
     {
         /* do nothing */
+    }
+
+    public AuditEvent( String name, String repositoryId )
+    {
+        try
+        {
+            timestamp = new SimpleDateFormat( TIMESTAMP_FORMAT ).parse( name );
+        }
+        catch ( ParseException e )
+        {
+            throw new IllegalArgumentException( "Improperly formatted timestamp for audit log event: " + name );
+        }
+        this.repositoryId = repositoryId;
     }
 
     public AuditEvent( String repoId, String user, String resource, String action )
@@ -113,16 +138,7 @@ public class AuditEvent
         this.userId = user;
         this.resource = resource;
         this.action = action;
-    }
-
-    public AuditEvent( String user, String resource, String action )
-    {
-        this( null, user, resource, action );
-    }
-
-    public AuditEvent( String principal, String action2 )
-    {
-        this( null, principal, action2 );
+        this.timestamp = Calendar.getInstance().getTime();
     }
 
     public String getRepositoryId()
@@ -173,5 +189,114 @@ public class AuditEvent
     public void setRemoteIP( String remoteIP )
     {
         this.remoteIP = remoteIP;
+    }
+
+    public Date getTimestamp()
+    {
+        return timestamp;
+    }
+
+    public void setTimestamp( Date timestamp )
+    {
+        this.timestamp = timestamp;
+    }
+
+    public String getFacetId()
+    {
+        return FACET_ID;
+    }
+
+    public String getName()
+    {
+        return new SimpleDateFormat( TIMESTAMP_FORMAT ).format( timestamp );
+    }
+
+    public Map<String, String> toProperties()
+    {
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put( "action", this.action );
+        if ( this.userId != null )
+        {
+            properties.put( "user", this.userId );
+        }
+        if ( this.remoteIP != null )
+        {
+            properties.put( "remoteIP", this.remoteIP );
+        }
+        if ( this.resource != null )
+        {
+            properties.put( "resource", this.resource );
+        }
+        return properties;
+    }
+
+    public void fromProperties( Map<String, String> properties )
+    {
+        this.action = properties.get( "action" );
+        this.remoteIP = properties.get( "remoteIP" );
+        this.userId = properties.get( "user" );
+        this.resource = properties.get( "resource" );
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        AuditEvent that = (AuditEvent) o;
+
+        if ( !action.equals( that.action ) )
+        {
+            return false;
+        }
+        if ( remoteIP != null ? !remoteIP.equals( that.remoteIP ) : that.remoteIP != null )
+        {
+            return false;
+        }
+        if ( repositoryId != null ? !repositoryId.equals( that.repositoryId ) : that.repositoryId != null )
+        {
+            return false;
+        }
+        if ( resource != null ? !resource.equals( that.resource ) : that.resource != null )
+        {
+            return false;
+        }
+        if ( !timestamp.equals( that.timestamp ) )
+        {
+            return false;
+        }
+        if ( userId != null ? !userId.equals( that.userId ) : that.userId != null )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = repositoryId != null ? repositoryId.hashCode() : 0;
+        result = 31 * result + ( userId != null ? userId.hashCode() : 0 );
+        result = 31 * result + ( remoteIP != null ? remoteIP.hashCode() : 0 );
+        result = 31 * result + ( resource != null ? resource.hashCode() : 0 );
+        result = 31 * result + action.hashCode();
+        result = 31 * result + timestamp.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "AuditEvent{" + "repositoryId='" + repositoryId + '\'' + ", userId='" + userId + '\'' + ", remoteIP='" +
+            remoteIP + '\'' + ", resource='" + resource + '\'' + ", action='" + action + '\'' + ", timestamp=" +
+            timestamp + '}';
     }
 }

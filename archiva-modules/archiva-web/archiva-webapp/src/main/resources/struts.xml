@@ -510,6 +510,16 @@
       </result>
     </action>
     
+    <!--  audit logs -->
+    <action name="queryAuditLogReport" class="viewAuditLogReport" method="input">
+      <result name="input">/WEB-INF/jsp/reports/auditLogReport.jsp</result>
+    </action>
+    
+    <action name="viewAuditLogReport" class="viewAuditLogReport">
+      <result name="input">/WEB-INF/jsp/reports/auditLogReport.jsp</result>
+      <result>/WEB-INF/jsp/reports/auditLogReport.jsp</result>
+    </action>
+    
   </package>
 </struts>
 

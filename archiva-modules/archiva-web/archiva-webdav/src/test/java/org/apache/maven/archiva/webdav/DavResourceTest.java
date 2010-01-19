@@ -77,11 +77,12 @@ public class DavResourceTest
         myResource = new File( baseDir, "myresource.jar" );
         assertTrue( "Could not create " + myResource.getAbsolutePath(), myResource.createNewFile() );
         resourceFactory = new RootContextDavResourceFactory();
+        
         resourceLocator =
-            (ArchivaDavResourceLocator) new ArchivaDavLocatorFactory().createResourceLocator( "/", REPOPATH );
+            (ArchivaDavResourceLocator) new ArchivaDavLocatorFactory().createResourceLocator( "/", REPOPATH );        
         resource = getDavResource( resourceLocator.getHref( false ), myResource );
         lockManager = new SimpleLockManager();
-        resource.addLockManager( lockManager );
+        resource.addLockManager( lockManager );        
     }
 
     @Override

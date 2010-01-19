@@ -49,3 +49,9 @@ Upgrading Archiva
    []
 
    If upgrading from a version lower than 1.2.2, you might also need to alter the lengths of the above fields as there is no upgrade task currently available for this.
+   
+   Since Archiva 1.2.2, the Jetty version has been upgraded to 6.1.19.
+   If upgrading to Archiva 1.2.2 (or higher versions), there is a need to update the library contents listed in
+   <<<$ARCHIVA_BASE/conf/wrapper.conf>>> with the ones included in the new distribution especially if the
+   <<<$ARCHIVA_BASE>>> directory is separate from the installation.
+   
