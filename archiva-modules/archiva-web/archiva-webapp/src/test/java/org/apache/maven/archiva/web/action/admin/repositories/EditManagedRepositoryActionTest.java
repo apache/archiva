@@ -25,6 +25,7 @@ import java.util.Collections;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -36,7 +37,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 
 /**
- * EditManagedRepositoryActionTest 
+ * EditManagedRepositoryActionTest
  *
  * @version $Id$
  */
@@ -140,10 +141,17 @@ public class EditManagedRepositoryActionTest
         ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
-        
+
+        MockControl repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
+        RepositoryStatisticsManager repositoryStatisticsManager =
+            (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
+        action.setRepositoryStatisticsManager( repositoryStatisticsManager );
+        // no deletion
+        repositoryStatisticsManagerControl.replay();
+
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
-        
+
         ManagedRepositoryConfiguration newRepository = createRepository();
         newRepository.setName( "new repo name" );
         assertRepositoryEquals( repository, newRepository );
@@ -151,6 +159,7 @@ public class EditManagedRepositoryActionTest
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
+        repositoryStatisticsManagerControl.verify();
     }
 
     public void testEditRepositoryLocationChanged()
@@ -181,18 +190,18 @@ public class EditManagedRepositoryActionTest
         RepositoryStatisticsManager repositoryStatisticsManager =
             (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
         action.setRepositoryStatisticsManager( repositoryStatisticsManager );
-
         repositoryStatisticsManager.deleteStatistics( REPO_ID );
-
         repositoryStatisticsManagerControl.replay();
 
         action.setRepoid( REPO_ID );
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        
+
         ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
         populateRepository( repository );
-        repository.setLocation( new File( "target/test/location/new" ).getCanonicalPath() );
+        File testFile = getTestFile( "target/test/location/new" );
+        FileUtils.deleteDirectory( testFile );
+        repository.setLocation( testFile.getCanonicalPath() );
         action.setRepository( repository );
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
@@ -202,7 +211,7 @@ public class EditManagedRepositoryActionTest
         archivaConfigurationControl.verify();
         repositoryStatisticsManagerControl.verify();
     }
-    
+
     private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
                                          ManagedRepositoryConfiguration actualRepository )
     {
