@@ -48,11 +48,11 @@ public class DefaultAuditManager
 
     private static final Logger log = LoggerFactory.getLogger( DefaultAuditManager.class );
 
-    public List<AuditEvent> getMostRecentAuditEvents()
+    public List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds )
     {
         // TODO: consider a more efficient implementation that directly gets the last ten from the content repository
         List<AuditRecord> records = new ArrayList<AuditRecord>();
-        for ( String repositoryId : metadataRepository.getRepositories() )
+        for ( String repositoryId : repositoryIds )
         {
             List<String> timestamps = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );
             for ( String timestamp : timestamps )
@@ -88,11 +88,8 @@ public class DefaultAuditManager
         metadataRepository.removeMetadataFacets( repositoryId, AuditEvent.FACET_ID );
     }
 
-    public List<AuditEvent> getAuditEventsInRange( String repoId, Date startTime, Date endTime )
+    public List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime )
     {
-        Collection<String> repositoryIds =
-            repoId != null ? Collections.singletonList( repoId ) : metadataRepository.getRepositories();
-
         List<AuditEvent> results = new ArrayList<AuditEvent>();
         for ( String repositoryId : repositoryIds )
         {

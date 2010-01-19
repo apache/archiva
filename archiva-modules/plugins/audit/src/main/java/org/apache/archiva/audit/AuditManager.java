@@ -19,6 +19,7 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -26,11 +27,11 @@ import org.apache.maven.archiva.repository.audit.AuditEvent;
 
 public interface AuditManager
 {
-    List<AuditEvent> getMostRecentAuditEvents();
+    List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds );
 
     void addAuditEvent( AuditEvent event );
 
     void deleteAuditEvents( String repositoryId );
 
-    List<AuditEvent> getAuditEventsInRange( String repositoryId, Date startTime, Date endTime );
+    List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime );
 }

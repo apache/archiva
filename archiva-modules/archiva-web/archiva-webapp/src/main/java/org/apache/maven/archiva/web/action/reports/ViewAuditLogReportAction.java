@@ -21,12 +21,13 @@ package org.apache.maven.archiva.web.action.reports;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
+import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.audit.AuditManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -40,8 +41,6 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-
-import com.opensymphony.xwork2.Preparable;
 
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="viewAuditLogReport"
@@ -106,7 +105,13 @@ public class ViewAuditLogReportAction
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
-        return null;
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        // TODO: should require this, but for now we trust in the list of repositories
+//        bundle.setRequiresAuthentication( true );
+//        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_VIEW_AUDIT_LOG );
+
+        return bundle;
     }
 
     public void setServletRequest( HttpServletRequest request )
@@ -120,7 +125,8 @@ public class ViewAuditLogReportAction
     {
         repositories = new ArrayList<String>();
         repositories.add( ALL_REPOSITORIES );
-        repositories.addAll( getObservableRepositories() );
+        List<String> repos = getManagableRepositories();
+        repositories.addAll( repos );
 
         auditLogs = null;
         groupId = "";
@@ -136,7 +142,7 @@ public class ViewAuditLogReportAction
             headerName = HEADER_RESULTS;
         }
 
-        auditLogs = auditManager.getMostRecentAuditEvents();
+        auditLogs = auditManager.getMostRecentAuditEvents( repos );
     }
 
     public String execute()
@@ -177,9 +183,20 @@ public class ViewAuditLogReportAction
         range[0] = ( page - 1 ) * rowCount;
         range[1] = ( page * rowCount ) + 1;
 
-        String repo = repository.equals( ALL_REPOSITORIES ) ? null : repository;
+        Collection<String> repos = getManagableRepositories();
+        if ( !repository.equals( ALL_REPOSITORIES ) )
+        {
+            if ( repos.contains( repository ) )
+            {
+                repos = Collections.singletonList( repository );
+            }
+            else
+            {
+                repos = Collections.emptyList();
+            }
+        }
         // TODO: query by artifact
-        auditLogs = auditManager.getAuditEventsInRange( repo, startDateInDF, endDateInDF );
+        auditLogs = auditManager.getAuditEventsInRange( repos, startDateInDF, endDateInDF );
 
         if( auditLogs.isEmpty() )
         {
@@ -223,11 +240,11 @@ public class ViewAuditLogReportAction
         next = StringUtils.replace( next, " ", "%20" );
     }
 
-    private List<String> getObservableRepositories()
+    private List<String> getManagableRepositories()
     {
         try
         {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
+            return userRepositories.getManagableRepositoryIds( getPrincipal() );
         }
         catch ( PrincipalNotFoundException e )
         {
