@@ -305,7 +305,8 @@ public class UploadAction
 
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
-            File targetPath = new File( repoConfig.getLocation(), artifactPath.substring( 0, lastIndex ) );
+            String path = artifactPath.substring( 0, lastIndex );
+            File targetPath = new File( repoConfig.getLocation(), path );
 
             Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
             int newBuildNumber = -1;
@@ -357,6 +358,7 @@ public class UploadAction
                 else
                 {
                     copyFile( artifactFile, targetPath, filename, fixChecksums );
+                    triggerAuditEvent( repository.getId(), path + "/" + filename, AuditEvent.UPLOAD_FILE );
                     queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );
                 }
             }
@@ -378,6 +380,7 @@ public class UploadAction
                 try
                 {
                     File generatedPomFile = createPom( targetPath, pomFilename );
+                    triggerAuditEvent( repoConfig.getId(), path + "/" + pomFilename, AuditEvent.UPLOAD_FILE );
                     if ( fixChecksums )
                     {
                         fixChecksums( generatedPomFile );
@@ -396,6 +399,7 @@ public class UploadAction
                 try
                 {
                     copyFile( pomFile, targetPath, pomFilename, fixChecksums );
+                    triggerAuditEvent( repoConfig.getId(), path + "/" + pomFilename, AuditEvent.UPLOAD_FILE );
                     queueRepositoryTask( repoConfig.getId(), new File( targetPath, pomFilename ) );
                 }
                 catch ( IOException ie )
@@ -414,8 +418,6 @@ public class UploadAction
 
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
                 "\' was successfully deployed to repository \'" + repositoryId + "\'";
-
-            triggerAuditEvent( repositoryId, artifactPath, AuditEvent.UPLOAD_FILE );  
 
             addActionMessage( msg );
 

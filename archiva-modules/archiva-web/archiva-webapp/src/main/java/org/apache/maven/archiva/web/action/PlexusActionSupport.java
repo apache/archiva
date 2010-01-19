@@ -22,9 +22,10 @@ package org.apache.maven.archiva.web.action;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionSupport;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.repository.audit.Auditable;
@@ -33,9 +34,6 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * LogEnabled and SessionAware ActionSupport
@@ -128,5 +126,10 @@ public abstract class PlexusActionSupport
     void setPrincipal( String principal )
     {
         this.principal = principal;
+    }
+
+    public void setAuditListeners( List<AuditListener> auditListeners )
+    {
+        this.auditListeners = auditListeners;
     }
 }
