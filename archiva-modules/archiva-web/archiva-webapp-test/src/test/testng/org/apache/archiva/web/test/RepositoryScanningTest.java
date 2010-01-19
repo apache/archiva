@@ -20,8 +20,8 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
-import org.testng.annotations.Test;
 import org.testng.Assert;
+import org.testng.annotations.Test;
 
 @Test( groups = { "reposcan" }, dependsOnMethods = { "testWithCorrectUsernamePassword" }, sequential = true )
 public class RepositoryScanningTest 
@@ -173,7 +173,6 @@ public class RepositoryScanningTest
 		getSelenium().uncheck( "//input[@name='enabledKnownContentConsumers' and @value='index-content']" );
 		getSelenium().uncheck( "//input[@name='enabledKnownContentConsumers' and @value='metadata-updater']" );
 		getSelenium().uncheck( "//input[@name='enabledKnownContentConsumers' and @value='repository-purge']" );
-		getSelenium().uncheck( "//input[@name='enabledKnownContentConsumers' and @value='update-db-artifact']" );
 		getSelenium().uncheck( "//input[@name='enabledKnownContentConsumers' and @value='validate-checksums']" );
 		clickButtonWithValue( "Update Consumers" );
 		
