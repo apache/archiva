@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -60,9 +61,16 @@ public class AuditManagerTest
 
     private static final String TEST_IP_ADDRESS = "127.0.0.1";
 
-    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat( AuditEvent.TIMESTAMP_FORMAT );
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = createTimestampFormat();
 
     private static final DecimalFormat MILLIS_FORMAT = new DecimalFormat( "000" );
+
+    private static SimpleDateFormat createTimestampFormat()
+    {
+        SimpleDateFormat fmt = new SimpleDateFormat( AuditEvent.TIMESTAMP_FORMAT );
+        fmt.setTimeZone( TimeZone.getTimeZone( "UTC" ));
+        return fmt;
+    }
 
     @Override
     protected void setUp()

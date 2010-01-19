@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 
@@ -50,6 +51,8 @@ public class RepositoryStatistics
     static final String SCAN_TIMESTAMP_FORMAT = "yyyy/MM/dd/HHmmss.SSS";
 
     private Map<String, Long> totalCountForType = new HashMap<String, Long>();
+
+    private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
     public Date getScanEndTime()
     {
@@ -143,7 +146,14 @@ public class RepositoryStatistics
 
     public String getName()
     {
-        return new SimpleDateFormat( SCAN_TIMESTAMP_FORMAT ).format( scanStartTime );
+        return createNameFormat().format( scanStartTime );
+    }
+
+    private static SimpleDateFormat createNameFormat()
+    {
+        SimpleDateFormat fmt = new SimpleDateFormat( SCAN_TIMESTAMP_FORMAT );
+        fmt.setTimeZone( UTC_TIME_ZONE );
+        return fmt;
     }
 
     public Map<String, String> toProperties()

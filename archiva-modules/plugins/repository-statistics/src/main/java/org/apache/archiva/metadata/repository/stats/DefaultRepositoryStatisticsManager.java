@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -53,6 +54,8 @@ public class DefaultRepositoryStatisticsManager
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryContentFactory;
+
+    private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
     public RepositoryStatistics getLastStatistics( String repositoryId )
     {
@@ -165,7 +168,7 @@ public class DefaultRepositoryStatisticsManager
         {
             try
             {
-                Date date = new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT ).parse( name );
+                Date date = createNameFormat().parse( name );
                 if ( ( startTime == null || !date.before( startTime ) ) &&
                     ( endTime == null || !date.after( endTime ) ) )
                 {
@@ -183,6 +186,13 @@ public class DefaultRepositoryStatisticsManager
             }
         }
         return results;
+    }
+
+    private static SimpleDateFormat createNameFormat()
+    {
+        SimpleDateFormat fmt = new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT );
+        fmt.setTimeZone( UTC_TIME_ZONE );
+        return fmt;
     }
 
     public void setMetadataRepository( MetadataRepository metadataRepository )

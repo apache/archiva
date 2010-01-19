@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
@@ -47,6 +48,8 @@ public class DefaultAuditManager
     private static final int NUM_RECENT_REVENTS = 10;
 
     private static final Logger log = LoggerFactory.getLogger( DefaultAuditManager.class );
+
+    private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
     public List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds )
     {
@@ -98,7 +101,7 @@ public class DefaultAuditManager
             {
                 try
                 {
-                    Date date = new SimpleDateFormat( AuditEvent.TIMESTAMP_FORMAT ).parse( name );
+                    Date date = createNameFormat().parse( name );
                     if ( ( startTime == null || !date.before( startTime ) ) &&
                         ( endTime == null || !date.after( endTime ) ) )
                     {
@@ -122,6 +125,13 @@ public class DefaultAuditManager
             }
         } );
         return results;
+    }
+
+    private static SimpleDateFormat createNameFormat()
+    {
+        SimpleDateFormat fmt = new SimpleDateFormat( AuditEvent.TIMESTAMP_FORMAT );
+        fmt.setTimeZone( UTC_TIME_ZONE );
+        return fmt;
     }
 
     public void setMetadataRepository( MetadataRepository metadataRepository )

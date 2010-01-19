@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 
@@ -114,6 +115,8 @@ public class AuditEvent
 
     public static final String FACET_ID = "org.apache.archiva.audit";
 
+    private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
+
     public AuditEvent()
     {
         /* do nothing */
@@ -123,7 +126,7 @@ public class AuditEvent
     {
         try
         {
-            timestamp = new SimpleDateFormat( TIMESTAMP_FORMAT ).parse( name );
+            timestamp = createNameFormat().parse( name );
         }
         catch ( ParseException e )
         {
@@ -208,7 +211,14 @@ public class AuditEvent
 
     public String getName()
     {
-        return new SimpleDateFormat( TIMESTAMP_FORMAT ).format( timestamp );
+        return createNameFormat().format( timestamp );
+    }
+
+    private static SimpleDateFormat createNameFormat()
+    {
+        SimpleDateFormat fmt = new SimpleDateFormat( TIMESTAMP_FORMAT );
+        fmt.setTimeZone( UTC_TIME_ZONE );
+        return fmt;
     }
 
     public Map<String, String> toProperties()

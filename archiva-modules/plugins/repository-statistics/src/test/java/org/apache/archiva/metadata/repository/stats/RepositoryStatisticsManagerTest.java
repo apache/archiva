@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -54,6 +55,15 @@ public class RepositoryStatisticsManagerTest
     private static final String SECOND_TEST_SCAN = "2009/12/02/012345.678";
 
     private Map<String, RepositoryStatistics> statsCreated = new LinkedHashMap<String, RepositoryStatistics>();
+
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = createTimestampFormat();
+
+    private static SimpleDateFormat createTimestampFormat()
+    {
+        SimpleDateFormat fmt = new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT );
+        fmt.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+        return fmt;
+    }
 
     @Override
     protected void setUp()
@@ -83,7 +93,7 @@ public class RepositoryStatisticsManagerTest
     public void testGetLatestStats()
         throws ParseException
     {
-        Date startTime = parseTimestamp( SECOND_TEST_SCAN );
+        Date startTime = TIMESTAMP_FORMAT.parse( SECOND_TEST_SCAN );
         Date endTime = new Date( startTime.getTime() + 60000 );
 
         RepositoryStatistics stats = new RepositoryStatistics();
@@ -112,22 +122,11 @@ public class RepositoryStatisticsManagerTest
         assertEquals( 2031, stats.getTotalProjectCount() );
         assertEquals( 529, stats.getTotalGroupCount() );
         assertEquals( 56229, stats.getTotalFileCount() );
-        assertEquals( SECOND_TEST_SCAN, formatTimestamp( stats.getScanStartTime() ) );
+        assertEquals( SECOND_TEST_SCAN, TIMESTAMP_FORMAT.format( stats.getScanStartTime() ) );
         assertEquals( SECOND_TEST_SCAN, stats.getName() );
         assertEquals( endTime, stats.getScanEndTime() );
 
         metadataRepositoryControl.verify();
-    }
-
-    private static String formatTimestamp( Date value )
-    {
-        return new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT ).format( value );
-    }
-
-    private static Date parseTimestamp( String value )
-        throws ParseException
-    {
-        return new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT ).parse( value );
     }
 
     public void testGetLatestStatsWhenEmpty()
