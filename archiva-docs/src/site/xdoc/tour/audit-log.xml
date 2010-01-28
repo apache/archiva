@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Audit Log Report</title>
+    <author email="oching@apache.org">Maria Odea Ching</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Audit Log Report">
+      <div style="text-align: center">
+        <img src="../images/tour/audit-log.png" width="640" height="401" alt="" />
+        <p>
+          Archiva provides a user interface for querying audit logs. The current
+          implementation only covers upload/deploy actions but will include other
+          actions such as artifact delete, repository configuration and more in the future.
+        </p>
+        <p>
+          <a href="reports.html">Previous: Integrity Reports</a> |
+          <strong>Audit Log Report</strong> |
+          <a href="maintenance.html">Next: Maintenance</a>
+        </p>
+      </div>
+    </section>
+  </body>
+</document>
