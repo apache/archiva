@@ -149,7 +149,7 @@ public class ViewAuditLogReportAction
         }
 
         SimpleConstraint constraint = new MostRecentArchivaAuditLogsConstraint();
-        auditLogs = (List<ArchivaAuditLogs>) dao.query( constraint );
+        auditLogs = filterLogs( (List<ArchivaAuditLogs>) dao.query( constraint ) );
     }
 
     public String execute()
@@ -216,7 +216,8 @@ public class ViewAuditLogReportAction
 
         try
         {
-            auditLogs = auditLogsDao.queryAuditLogs( constraint );            
+            auditLogs = filterLogs( auditLogsDao.queryAuditLogs( constraint ) );
+            
             if( auditLogs.isEmpty() )
             {
                 addActionError( "No audit logs found." );
@@ -244,6 +245,25 @@ public class ViewAuditLogReportAction
         return SUCCESS;
     }
     
+    private List<ArchivaAuditLogs> filterLogs( List<ArchivaAuditLogs> auditLogs )
+    {
+        List<String> observableRepos = getManageableRepositories();
+        List<ArchivaAuditLogs> filteredAuditLogs = new ArrayList<ArchivaAuditLogs>();
+        
+        if( auditLogs != null )
+        {
+            for( ArchivaAuditLogs auditLog : auditLogs )
+            {
+                if( observableRepos.contains( auditLog.getRepositoryId() ) )
+                {
+                    filteredAuditLogs.add( auditLog );
+                }
+            }
+        }
+        
+        return filteredAuditLogs;
+    }
+        
     private void paginate()
     {
         if ( auditLogs.size() <= rowCount )
@@ -270,6 +290,27 @@ public class ViewAuditLogReportAction
         next = StringUtils.replace( next, " ", "%20" );
     }
 
+    private List<String> getManageableRepositories()
+    {
+        try
+        {
+            return userRepositories.getManagableRepositoryIds( getPrincipal() );
+        }
+        catch ( PrincipalNotFoundException e )
+        {
+            log.warn( e.getMessage(), e );
+        }
+        catch ( AccessDeniedException e )
+        {
+            log.warn( e.getMessage(), e );
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            log.warn( e.getMessage(), e );
+        }
+        return Collections.emptyList();
+    }
+    
     private List<String> getObservableRepositories()
     {
         try
