@@ -28,7 +28,10 @@ public abstract class AbstractRepositoryTest
 	// Repository Groups
 	public void goToRepositoryGroupsPage()
 	{
-		clickLinkWithText( "Repository Groups" );
+	    if( !getTitle().equals( "Apache Archiva \\ Administration - Repository Groups" ) )
+	    {
+	        clickLinkWithText( "Repository Groups" );
+	    }
 		assertRepositoryGroupsPage();
 	}
 	
@@ -288,8 +291,8 @@ public abstract class AbstractRepositoryTest
 	}
 	
 	public void editManagedRepository( String fieldName, String value )
-	{
-		//goToRepositoriesPage();
+	{	    
+		goToRepositoriesPage();
 		clickLinkWithXPath( "//div[@id='contentArea']/div/div[5]/div[1]/a[1]/img" );
 		assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
 		setFieldValue(fieldName, value);
