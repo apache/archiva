@@ -128,4 +128,40 @@ public class AuditLogsReportTest
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
+    
+    @Test (dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, enabled = false )
+    public void testViewAuditLogsViewAuditEventsForManageableRepositoriesOnly()
+    {
+        String groupId = getProperty( "SNAPSHOT_GROUPID" );
+        String artifactId = getProperty( "SNAPSHOT_ARTIFACTID" );
+        String version = getProperty( "SNAPSHOT_VERSION" );
+        String repo = getProperty( "SNAPSHOT_REPOSITORYID" );
+        String packaging = getProperty( "SNAPSHOT_PACKAGING" );
+        
+        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repo );        
+        assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + version +
+            "' was successfully deployed to repository '" + repo + "'" );
+        
+        clickLinkWithText( "Logout" );
+                
+        login( getProperty( "REPOMANAGER_INTERNAL_USERNAME" ), getUserRolePassword() );
+        goToAuditLogReports();        
+        assertAuditLogsReportPage();
+        
+        selectValue( "repository", "all" );
+        submit();
+        
+        assertAuditLogsReportPage();
+        assertTextPresent( "Results" );
+        assertTextNotPresent( "No audit logs found." );
+        assertTextPresent( "test-1.0.jar" );
+        assertTextPresent( "Uploaded File" );
+        assertTextPresent( "internal" );
+        assertTextPresent( "admin" );
+        
+        assertTextNotPresent( artifactId + "-" + version + "." + packaging );
+        
+        clickLinkWithText( "Logout" );
+        login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
+    }
 }
