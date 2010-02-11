@@ -166,10 +166,6 @@ Notes:
 
 *) filename (scanner-1.0-20091120.012345-1.pom) is a node, and each is distinct except for checksums, etc.
 
-*) the top level version (1.0-SNAPSHOT) is the version best used to describe the project (the "marketed version"). It
-   must still be unique for lookup and comparing project versions to each other, but can contain several different
-   "build" artifacts.
-
 *) Projects are just a single code project. They do not have subprojects - if such modeling needs to be done, then we
    can create a products tree that will map what "Archiva 1.0" contains from the other repositories.
 

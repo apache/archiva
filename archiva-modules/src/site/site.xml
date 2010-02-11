@@ -32,7 +32,10 @@
     </breadcrumbs>
 
     <menu name="Developers">
-      <item name="About" href="/index.html" />
+      <item name="Overview" href="/index.html" />
+      <item name="Terminology" href="/terminology.html" />
+      <item name="Metadata" href="/metadata.html" />
+      <item name="Repositories" href="/repositories.html" />
     </menu>
     <menu ref="modules" />
   </body>

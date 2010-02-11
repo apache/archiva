@@ -1,0 +1,75 @@
+ ----
+ Archiva Developer's Documentation
+ ----
+
+Archiva Developer's Documentation
+
+    These documents cover the architecture of Archiva and how to work with it. Information for users and plugin
+    developers can be found instead in the
+    {{{http://archiva.apache.org/docs/${project.version}/index.html} main Archiva documentation}}.
+
+    <Note:> This documentation is far from complete, and mostly covers new improvements relevant to developers as they
+    are made, and may not cover older topics such as the <<<archiva-model>>> or <<<archiva-repository-layer>>> libraries
+    that are still in use and particularly coupled to certain repository types and the web interfaces.
+
+* Overview
+
+    Archiva is built as a layered application. It is intended to provide a platform for dealing with repositories of
+    varied types, and so is built as a series of modular libraries that aim to be able to be used independently (such as
+    embedded scenarios, from the CLI, or within the Archiva web application).
+
+    Central to the redesign of Archiva is the concept of a metadata content repository. Archiva separates the physical
+    storage of a repository from the representation it works on, allowing it to store information about the repository
+    in an extensible format that any plugin can operate on or add to, without all subsystems needing to know about
+    each other. The metadata is not specific to any repository type - for instance, the Maven 2 portions can be
+    completely optional. More information on the {{{./metadata.html} metadata format}} and how it is persisted is
+    present in the section below.
+
+    This structure allows metadata repositories to be physically separated from the repository they represent and
+    remotely updated. However, it is also possible to link the repository storage via the API so that the metadata can
+    operate "live" on a repository, detecting changes. This also allows plugins that wish to operate directly on a
+    repository (for example, Maven snapshot purging).
+
+    Similarly, the resolution strategy for resources in the repository is abstracted from the storage and metadata to
+    allow multiple strategies. This facilitates features such as repository proxying, repository grouping, and on the
+    fly format conversion. These are described in the {{{./repositories.html} Repository API}} documents.
+
+    On top of the metadata repository, components can be built to provide the services available in the application.
+    These are described as plugins, though at this time there is no formal plugin registration mechanism or interface -
+    they are loaded by the presence of the JAR in the application classpath, with the appropriate Spring or Plexus
+    manifest and implementation of a core interface that they can "plug in" to. At present, these plugins interact
+    either due to a user request (the repository resolution extension points), a distinct scheduled task, or as part of
+    a repository scanning operation (the Archiva 1.0+ 'consumer' mechanism). In the future, an event mechanism is
+    envisaged as the main means of triggering plugin operations, further decoupling them from the core interfaces.
+    Plugins generally interact directly with the metadata repository to retrieve information, or store their own.
+
+    Some examples of current plugins are:
+
+        * Maven 2 storage repository type
+
+        * Repository statistics
+
+        * File-based metadata content repository persistence
+
+        []
+
+    Finally, we look to the web application layers. At present, there is a single web application that serves both a
+    WebDAV and Struts 2-based application, and operates directly on the metadata repository and some of the legacy
+    APIs. Future development plans to better decouple these from the underlying plugins and legacy APIs, to allow
+    applications to be much more componentised in their deployment.
+
+** How it Works
+
+    * {{{./terminology.html} Terminology}}
+
+    * {{{./metadata.html} Repository metadata}}
+
+    * {{{./repositories.html} Repository APIs}}
+
+* More Information
+
+    More information is available on the Archiva Wiki:
+
+        * {{{http://cwiki.apache.org/confluence/display/ARCHIVA/Archiva+Developer+Notes} Developer Notes}}
+
+        * {{{http://cwiki.apache.org/confluence/display/ARCHIVA/Conventions+and+Processes} Conventions and Processes}}

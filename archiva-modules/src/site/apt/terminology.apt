@@ -1,0 +1,84 @@
+ ----
+ Terminology
+ ----
+
+Terminology
+
+    Archiva uses a lot of pieces of data that can have heavily overloaded meaning, so it is important to ensure the
+    terminology used is well defined and consistently used. The following section highlights the terms used in these
+    documents.
+
+* Repository
+
+    Repository is the most overloaded term, but when used alone it will refer to the abstract concept of anything that
+    can act as a repository. For example, an on-disk Maven 2 repository, a remote proxied repository, or a repository
+    group that appears as a single repository.
+
+    A repository is capable of storing a number of artifacts and their associated metadata. Each artifact is identified
+    by a number of elements: the repository itself, it's namespace, project, project version and artifact ID. Some
+    components are optional, depending on the repository type being discussed - for example each is mapped in a Maven 2
+    repository, while for a flat file storage only the repository and artifact ID (file path and name) is needed.
+
+* Namespace
+
+    A namespace is a hierarchical grouping for projects and artifacts, allowing project and artifact IDs to more easily
+    be made unique within their namespace and to assist in mapping between different repository types.
+
+    In a Maven 2 repository, this maps to the group ID of an artifact.
+
+* Project
+
+    A project is a simple grouping of artifacts that share a version in a repository. It does not contain subprojects.
+
+    In a Maven 2 repository, this maps to the artifact ID of an artifact. Note that multi-module projects will actually
+    represent multiple projects by default, and additional grouping (other than achieved by the namespace) would need
+    to be done through additional metadata.
+
+* Project Version
+
+    A project version is the version best used to describe the project (the "marketed version"). It must be unique for
+    lookup and comparing project versions to each other, but the artifact(s) it contains may still use a different
+    version. For example:
+
+        * Archiva 1.4-SNAPSHOT may have artifacts <<<archiva-1.4-20090909.123456-1.jar>>> and
+          <<<archiva-1.4-20100201.345612-2.jar>>>.
+
+        * Jetty 7.0.0 may have an artifact <<<jetty-7.0.0.v20091005.jar>>>
+
+    In a Maven 2 repository, this maps to the (base) version of a project.
+
+* Artifact ID
+
+    The artifact ID uniquely identifies an artifact within a given namespace, project and project version. For example,
+    <<<archiva-1.4-20100201.345612-2.jar>>> or <<<archiva-1.4-20100201.345612-2.pom>>>.
+
+    In a Maven 2 repository, this maps to the filename within the repository, including both the Maven artifact ID,
+    artifact version, classifier and type/extension. Note that the POM and the classic artifact will be stored with
+    separate artifact IDs, but the repository implementation stores the common information for the whole project
+    version (and perhaps all project versions in some instances).
+
+* Metadata Repository
+
+    The metadata repository is the metadata representation of a given repository, containing information about the
+    artifacts it contains, as well as other auxiliary information such as statistics, events, etc.
+
+* Metadata Content Repository
+
+    The metadata content repository is how the information in a metadata repository is persisted. It is effectively the
+    same in appearance to the metadata repository.
+
+* Repository Resolver
+
+    A resolver decides how to translate a request into a given set of metadata or an artifact retrieved from repository
+    storage. The default resolver first queries metadata, falling back to the repository storage if available if
+    necessary due to not being found or being out of date. It is possible that new resolvers can be introduced to also
+    check proxied repositories or to group multiple repositories.
+
+* Repository Storage
+
+    A physical storage medium for a type of repository. This may be a file system in Maven 2 format, a URL pointing to
+    a repository in a certain format, a flat set of files, etc. It can be queried and modified to affect the canonical
+    set of artifacts.
+
+
+
