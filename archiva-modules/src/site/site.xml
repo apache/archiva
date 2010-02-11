@@ -26,10 +26,6 @@
 -->
     </breadcrumbs>
 
-    <menu name="Developers">
-      <item name="About" href="/index.html" />
-    </menu>
-
     <menu ref="modules" />
   </body>
 </project>

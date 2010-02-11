@@ -36,11 +36,27 @@
   </modules>
   <reporting>
     <plugins>
+      <!-- No need for the standard project reports -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.0.1</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <!-- Disabled - not working
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.2</version>
       </plugin>
+      -->
+      <!-- Disabled - not currently being used to correct errors
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -48,12 +64,13 @@
         <configuration>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <configLocation>config/maven_checks.xml</configLocation>
-          <!-- TODO: enable when archiva-build-resources is active (released?)
+          <!- - TODO: enable when archiva-build-resources is active (released?)
           <configLocation>checkstyle.xml</configLocation>
           <headerLocation>header.txt</headerLocation>
-            -->
+            - ->
         </configuration>
       </plugin>
+      -->
 <!-- TODO: OOME
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -63,10 +80,6 @@
 -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>changelog-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
       </plugin>
       <plugin>
@@ -74,10 +87,6 @@
         <configuration>
           <aggregate>true</aggregate>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.4.2</version>
       </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -113,19 +122,30 @@
             <link>http://velocity.apache.org/engine/releases/velocity-1.5/apidocs/</link>
           </links>
         </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <!-- Don't need tests -->
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
+      <!-- TODO: choose appropriate rulesets
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <!-- TODO: choose appropriate rulesets -->
         <configuration>
           <targetJdk>1.5</targetJdk>
         </configuration>
       </plugin>
+      -->
+      <!-- Not being checked
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>clirr-maven-plugin</artifactId>
       </plugin>
+      -->
     </plugins>
   </reporting>
   <profiles>
