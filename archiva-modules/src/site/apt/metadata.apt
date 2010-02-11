@@ -12,6 +12,9 @@ Metadata Repository
 
 * Content Model
 
+    The content model is designed such that it models the most likely structure of the data both for storage and
+    retrieval. For example, audit logs are stored by the time they occur, not grouped under an action.
+
     The following is a sample tree that represents the content model:
 
 ----
@@ -172,13 +175,23 @@ Metadata Repository
     the structure above), and nodes can have properties and values (shown as <<<property=value>>> above).
 
     <Note:> Some of the properties have been put in place temporarily but need to be revisited - for example the use
-            of index counters for the lists of Maven POM information are not ideal.
+            of index counters for the lists of Maven POM information are not ideal, and some Maven specific aspects of
+            the dependencies should become faceted content
 
     The following sections walk through parts of the tree.
 
 ** Configuration section
 
-   ...
+   <Note:> The configuration section is not currently implemented in the code. It should be shadowed to a file on the
+           file system for easy editing and pre-configuration outside the server. A possible implementation is to use
+           the same storage and resolution mechanism to access the configuration so that this can be achieved, and it
+           can be loaded on the fly, etc.
+
+   It is desirable to be able to access and modify all configuration through the same interfaces, so it is also stored
+   in the content repository.
+
+   Each repository will have it's own metadata, but there also needs to be a server-level configuration for other parts
+   of the system.
 
 ** Content section
 
@@ -186,8 +199,7 @@ Metadata Repository
     {{{./terminology.html} Terminology}} document, artifacts are described by the following coordinates (with the values
     shown from the example above):
 
-        * Namespace (<<<org.apache.archiva.platform>>>) - namespaces are of arbitrary depth, and are project namespaces,
-                                                          not to be confused with JCR's item/node namespaces
+        * Namespace (<<<org.apache.archiva.platform>>>)
 
         * Project ID (<<<scanner>>>)
 
@@ -197,13 +209,27 @@ Metadata Repository
 
         []
 
+    Namespaces are of arbitrary depth, and are project namespaces, not to be confused with JCR's item/node namespaces.
+    A separate namespace and project identifier are retained to allow '.' in the project identifier without splitting,
+    while still allowing splitting on '.' in the namespace, when determining the most appropriate path for an artifact
+    in the content repository. The namespace may be null if there isn't one.
+
+    Projects are very simple entities. They do not have subprojects - if such modeling needs to be done, then we
+    would create a "products" tree (or similar) that will map what "Archiva 1.0" contains as a collection of project
+    version nodes, for example.
+
     Each artifact in the repository will contain an entry, though not necessarily every file. For example, in a Maven
     repository it is known that the <<<.md5>>>, <<<.sha1>>> and <<<.asc>>> files represent metadata about the artifact
     of the same name, so that is attached to that node instead.
 
     Metadata is stored at the level most appropriate to that piece of information. This means that in a Maven
     repository, while both the POM and other artifact(s) are considered be separate artifacts, they all share the
-    information in the POM that is stored at the project version or even project level.
+    information in the POM that is stored at the project version or even project level. We only keep one set of project
+    information for a version - this differs from Maven's storage of one POM per snapshot. The Maven 2 module will take
+    the latest snapshot data and use that. Those that need Maven's behaviour should retrieve the POM directly. 
+
+    Note that artifact data is not stored in the metadata repository (there is no data= property on the file). The
+    information here is enough to locate the file in the original storage when it is requested.
 
     The following describes some of the metadata at each level. Note that the Maven extensions are covered here - these
     are optional, and they wouldn't be present on a non-Maven storage repository. Likewise, plugins may store
@@ -219,9 +245,9 @@ Metadata Repository
 
 *** Project Version Metadata
 
-    * <<<created>>> - when the artifact was added to the repository
+    * <<<created>>> - when the metadata was added to the repository (see [1] below)
 
-    * <<<updated>>> - when the artifact was last updated
+    * <<<updated>>> - when the metadata was last updated (see [1] below)
 
     * <<<name>>> - human-readable project name
 
@@ -258,8 +284,73 @@ Metadata Repository
 
     * <<<maven:properties.*>>> - properties stored in a Maven POM
 
+    []
 
-    ~~ information about it (notes to convert)
+    Footnotes:
+
+        [[1]] created/updated timestamps may be maintained by the metadata repository implementation for the metadata
+              itself. Timestamps for individual files are stored as additional properties (<<<fileCreated>>>,
+              <<<fileLastModified>>>). It may make sense to add a "discovered" timestamp if an artifact is known to be
+              created at a different time to which it is added to the metadata repository.
+
+** Facets Section
+
+    The facets section allows storage of other repository metadata for specific plugins. Each is named by the plugin's
+    unique identifier.
+
+*** Audit Logs (<<<org.apache.archiva.audit>>>)
+
+    Audit logs are stored hierarchically by name, breaking down the date until getting to the timestamp of a particular
+    event. The event details are stored as properties of that node. Presently filtering by an action or other field
+    would require querying the content repository.
+
+        * <<<action>>> - the action that was taken, such as uploading an artifact
+
+        * <<<artifact.*>>> - the co-ordinates of the artifact affected
+
+        * <<<remoteIP>>> - the IP address of the person executing the action, if applicable
+
+        * <<<user>>> - the user affecting the action, if applicable
+
+        []
+
+    A future possibility is to store audit metadata on artifacts themselves (who uploaded, when, and how), or whether it
+    was discovered by scanning. While this duplicates some information, it would reduce the need to query by a certain
+    artifact ID and the nodes could be lined referentially.
+
+    Audit metadata may also need to be extended to other nodes such as configuration. In this case, it may make sense
+    to alter the artifact reference to a content repository path instead, or to utilise a native mechanism of the
+    content repository.
+
+*** Repository Statistics (<<<org.apache.archiva.metadata.repository.stats>>>)
+
+    Like audit logs, repository statistics are stored by timestamp, marking the time a scan started. The results are
+    stored as properties of the scan:
+
+        * <<<scanStartTime>>>, <<<scanEndTime>>> - when the scan ran from and until
+
+        * <<<total*>>> - the statistics gathered about certain totals in the repository
+
+        []
+
+    The current approach of tying statistics to the scanning process is not optimal, as it cannot be 'live'. We may
+    later determine if any of the stats can be derived by functions of the content repository rather than storing and
+    trying to keep them up to date. Historical data might be retained by versioning and taking a snapshot at a given
+    point in time. 
+
+*** Problem Reports (<<<org.apache.archiva.reports>>>)
+
+    While not shown above, the problem reporting plugin similarly stores a facet of information, recording particular
+    issues noticed in the repository such as invalid Maven POMs, etc.
+
+** References Section
+
+    The references section contains information about references to a given artifact. It is the inverse of the
+    dependency relationship.
+
+    References are stored outside the main model so that their creation doesn't imply a "stub" model - we know if the
+    project exists whether a reference is created or not. References need not infer referential integrity.
+
 
     ~~ Java API
 
@@ -267,3 +358,8 @@ Metadata Repository
 
     ~~ persistence
 
+        ~~ properties with '.' may be nested in other representations such as Java models or XML, if appropriate
+
+        ~~ while some information is stored at the most generic level in the metadata repository (eg maven:groupId,
+           maven:artifactId), for convenience when loaded by the implementation it may all be pushed into the projectVersion's
+           information. The metadata repository implementation can decide how best to store and retrieve the information.
