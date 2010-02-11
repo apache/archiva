@@ -1,19 +1,16 @@
  ----
- Metadata Repository
+ Metadata Control Model
  ----
 
-Metadata Repository
+Metadata Content Model
 
     The metadata repository stores all known information about a repository in a common format that other plugins can
     understand, and that eventually external applications will be able to query.
 
-    Dealing with metadata repositories covers two aspects: the content model, and the content repository access API
-    (and persistence).
-
-* Content Model
-
     The content model is designed such that it models the most likely structure of the data both for storage and
     retrieval. For example, audit logs are stored by the time they occur, not grouped under an action.
+
+* Content Model Structure
 
     The following is a sample tree that represents the content model:
 
@@ -173,6 +170,14 @@ Metadata Repository
 
     This uses a typical content repository structure, where there is a path to a particular node (the last paths in
     the structure above), and nodes can have properties and values (shown as <<<property=value>>> above).
+
+    Properties with '.' may be nested in other representations such as Java models or XML, if appropriate - this is
+    the decision of the content repository persistence implementation.
+
+    Additionally, while some information is stored at the most generic level in the metadata repository (eg
+    <<<maven:groupId>>>, <<<maven:artifactId>>>), for convenience when loaded by the implementation it may all be pushed
+    into the project version's information. The metadata repository implementation can decide how best to store and
+    retrieve the information.
 
     <Note:> Some of the properties have been put in place temporarily but need to be revisited - for example the use
             of index counters for the lists of Maven POM information are not ideal, and some Maven specific aspects of
@@ -351,15 +356,3 @@ Metadata Repository
     References are stored outside the main model so that their creation doesn't imply a "stub" model - we know if the
     project exists whether a reference is created or not. References need not infer referential integrity.
 
-
-    ~~ Java API
-
-    ~~ access
-
-    ~~ persistence
-
-        ~~ properties with '.' may be nested in other representations such as Java models or XML, if appropriate
-
-        ~~ while some information is stored at the most generic level in the metadata repository (eg maven:groupId,
-           maven:artifactId), for convenience when loaded by the implementation it may all be pushed into the projectVersion's
-           information. The metadata repository implementation can decide how best to store and retrieve the information.

@@ -62,9 +62,11 @@ Archiva Developer's Documentation
 
     * {{{./terminology.html} Terminology}}
 
-    * {{{./metadata.html} Repository metadata}}
+    * {{{./metadata-content-model.html} Repository metadata content model}}
 
-    * {{{./repositories.html} Repository APIs}}
+    * {{{./metadata-api.html} Repository metadata API and persistence}}
+
+    * {{{./repository-api.html} Repository APIs}}
 
 * More Information
 
