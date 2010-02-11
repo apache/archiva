@@ -19,6 +19,11 @@
   -->
 
 <project>
+  <skin>
+    <groupId>org.apache.archiva</groupId>
+    <artifactId>skin</artifactId>
+    <version>${project.version}</version>
+  </skin>
   <body>
     <breadcrumbs>
 <!-- TODO: need to stop them inheriting 
@@ -26,6 +31,9 @@
 -->
     </breadcrumbs>
 
+    <menu name="Developers">
+      <item name="About" href="/index.html" />
+    </menu>
     <menu ref="modules" />
   </body>
 </project>
