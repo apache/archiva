@@ -1,0 +1,269 @@
+ ----
+ Metadata Repository
+ ----
+
+Metadata Repository
+
+    The metadata repository stores all known information about a repository in a common format that other plugins can
+    understand, and that eventually external applications will be able to query.
+
+    Dealing with metadata repositories covers two aspects: the content model, and the content repository access API
+    (and persistence).
+
+* Content Model
+
+    The following is a sample tree that represents the content model:
+
+----
+.
+`-- repositories/
+    `-- central/
+        |-- config/
+        |   |-- name=
+        |   |-- storageUrl=
+        |   `-- uri=
+        |-- content/
+        |   `-- org/
+        |       `-- apache/
+        |           |-- archiva/
+        |           |   `-- platform/
+        |           |       |-- scanner/
+        |           |       |   |-- 1.0-SNAPSHOT/
+        |           |       |   |   |-- scanner-1.0-20091120.012345-1.pom/
+        |           |       |   |   |   |-- asc=
+        |           |       |   |   |   |-- created=
+        |           |       |   |   |   |-- fileCreated=
+        |           |       |   |   |   |-- fileLastModified=
+        |           |       |   |   |   |-- maven:buildNumber=
+        |           |       |   |   |   |-- maven:classifier
+        |           |       |   |   |   |-- maven:timestamp=
+        |           |       |   |   |   |-- maven:type=
+        |           |       |   |   |   |-- md5=
+        |           |       |   |   |   |-- sha1=
+        |           |       |   |   |   |-- size=
+        |           |       |   |   |   |-- updated=
+        |           |       |   |   |   `-- version=
+        |           |       |   |   |-- ciManagement.system=
+        |           |       |   |   |-- ciManagement.url=
+        |           |       |   |   |-- created=
+        |           |       |   |   |-- dependencies.0.artifactId=
+        |           |       |   |   |-- dependencies.0.classifier=
+        |           |       |   |   |-- dependencies.0.groupId=
+        |           |       |   |   |-- dependencies.0.optional=
+        |           |       |   |   |-- dependencies.0.scope=
+        |           |       |   |   |-- dependencies.0.systemPath=
+        |           |       |   |   |-- dependencies.0.type=
+        |           |       |   |   |-- dependencies.0.version=
+        |           |       |   |   |-- description=
+        |           |       |   |   |-- individuals.0.email=
+        |           |       |   |   |-- individuals.0.name=
+        |           |       |   |   |-- individuals.0.properties.scmId=
+        |           |       |   |   |-- individuals.0.roles.0=
+        |           |       |   |   |-- individuals.0.timezone=
+        |           |       |   |   |-- issueManagement.system=
+        |           |       |   |   |-- issueManagement.url=
+        |           |       |   |   |-- licenses.0.name=
+        |           |       |   |   |-- licenses.0.url=
+        |           |       |   |   |-- mailingLists.0.mainArchiveUrl=
+        |           |       |   |   |-- mailingLists.0.name=
+        |           |       |   |   |-- mailingLists.0.otherArchives.0=
+        |           |       |   |   |-- mailingLists.0.postAddress=
+        |           |       |   |   |-- mailingLists.0.subscribeAddress=
+        |           |       |   |   |-- mailingLists.0.unsubscribeAddress=
+        |           |       |   |   |-- maven:buildExtensions.0.artifactId=
+        |           |       |   |   |-- maven:buildExtensions.0.groupId=
+        |           |       |   |   |-- maven:buildExtensions.0.version=
+        |           |       |   |   |-- maven:packaging=
+        |           |       |   |   |-- maven:parent.artifactId=
+        |           |       |   |   |-- maven:parent.groupId=
+        |           |       |   |   |-- maven:parent.version=
+        |           |       |   |   |-- maven:plugins.0.artifactId=
+        |           |       |   |   |-- maven:plugins.0.groupId=
+        |           |       |   |   |-- maven:plugins.0.reporting=
+        |           |       |   |   |-- maven:plugins.0.version=
+        |           |       |   |   |-- maven:properties.mavenVersion=
+        |           |       |   |   |-- maven:repositories.0.id=
+        |           |       |   |   |-- maven:repositories.0.layout=
+        |           |       |   |   |-- maven:repositories.0.name=
+        |           |       |   |   |-- maven:repositories.0.plugins=
+        |           |       |   |   |-- maven:repositories.0.releases=
+        |           |       |   |   |-- maven:repositories.0.snapshots=
+        |           |       |   |   |-- maven:repositories.0.url=
+        |           |       |   |   |-- name=
+        |           |       |   |   |-- organization.favicon=
+        |           |       |   |   |-- organization.logo=
+        |           |       |   |   |-- organization.name=
+        |           |       |   |   |-- organization.url=
+        |           |       |   |   |-- relocatedTo.namespace=
+        |           |       |   |   |-- relocatedTo.project=
+        |           |       |   |   |-- relocatedTo.projectVersion=
+        |           |       |   |   |-- scm.connection=
+        |           |       |   |   |-- scm.developerConnection=
+        |           |       |   |   |-- scm.url=
+        |           |       |   |   |-- updated=
+        |           |       |   |   `-- url=
+        |           |       |   `-- maven:artifactId=
+        |           |       `-- maven:groupId=
+        |           `-- maven/
+        |               `-- plugins/
+        |                   |-- maven:groupId=
+        |                   |-- maven:plugins.compiler.artifactId=
+        |                   `-- maven:plugins.compiler.name=
+        |-- facets/
+        |   |-- org.apache.archiva.audit/
+        |   |   `-- 2010/
+        |   |       `-- 01/
+        |   |           `-- 19/
+        |   |               `-- 093600.000/
+        |   |                   |-- action=
+        |   |                   |-- artifact.id=
+        |   |                   |-- artifact.namespace=
+        |   |                   |-- artifact.projectId=
+        |   |                   |-- artifact.version=
+        |   |                   |-- remoteIP=
+        |   |                   `-- user=
+        |   |-- org.apache.archiva.metadata.repository.stats/
+        |   |   `-- 2009/
+        |   |       `-- 12/
+        |   |           `-- 03/
+        |   |               `-- 090000.000/
+        |   |                   |-- scanEndTime=
+        |   |                   |-- scanStartTime=
+        |   |                   |-- totalArtifactCount=
+        |   |                   |-- totalArtifactFileSize=
+        |   |                   |-- totalFileCount=
+        |   |                   |-- totalGroupCount=
+        |   |                   `-- totalProjectCount=
+        |   `-- org.apache.archiva.reports/
+        `-- references/
+            `-- org/
+                `-- apache/
+                    `-- archiva/
+                        |-- parent/
+                        |   `-- 1/
+                        |       `-- references/
+                        |           `-- org/
+                        |               `-- apache/
+                        |                   `-- archiva/
+                        |                       |-- platform/
+                        |                       |   `-- scanner/
+                        |                       |       `-- 1.0-SNAPSHOT/
+                        |                       |           `-- referenceType=parent
+                        |                       `-- web/
+                        |                           `-- webapp/
+                        |                               `-- 1.0-SNAPSHOT/
+                        |                                   `-- referenceType=parent
+                        `-- platform/
+                            `-- scanner/
+                                `-- 1.0-SNAPSHOT/
+                                    `-- references/
+                                        `-- org/
+                                            `-- apache/
+                                                `-- archiva/
+                                                    `-- web/
+                                                        `-- webapp/
+                                                            `-- 1.0-SNAPSHOT/
+                                                                `-- referenceType=dependency
+----
+
+    ~~ To update - run "tree --dirsfirst -F" on the unpacked content-model.zip from the sandbox
+
+    This uses a typical content repository structure, where there is a path to a particular node (the last paths in
+    the structure above), and nodes can have properties and values (shown as <<<property=value>>> above).
+
+    <Note:> Some of the properties have been put in place temporarily but need to be revisited - for example the use
+            of index counters for the lists of Maven POM information are not ideal.
+
+    The following sections walk through parts of the tree.
+
+** Configuration section
+
+   ...
+
+** Content section
+
+    The content section houses the information directly about the artifacts in the repository. As described in the
+    {{{./terminology.html} Terminology}} document, artifacts are described by the following coordinates (with the values
+    shown from the example above):
+
+        * Namespace (<<<org.apache.archiva.platform>>>) - namespaces are of arbitrary depth, and are project namespaces,
+                                                          not to be confused with JCR's item/node namespaces
+
+        * Project ID (<<<scanner>>>)
+
+        * Project version (<<<1.0-SNAPSHOT>>>)
+
+        * Artifact ID (<<<scanner-1.0-20091120.012345-1.pom>>>)
+
+        []
+
+    Each artifact in the repository will contain an entry, though not necessarily every file. For example, in a Maven
+    repository it is known that the <<<.md5>>>, <<<.sha1>>> and <<<.asc>>> files represent metadata about the artifact
+    of the same name, so that is attached to that node instead.
+
+    Metadata is stored at the level most appropriate to that piece of information. This means that in a Maven
+    repository, while both the POM and other artifact(s) are considered be separate artifacts, they all share the
+    information in the POM that is stored at the project version or even project level.
+
+    The following describes some of the metadata at each level. Note that the Maven extensions are covered here - these
+    are optional, and they wouldn't be present on a non-Maven storage repository. Likewise, plugins may store
+    additional metadata for each artifact.
+
+*** Namespace Metadata
+
+    * <<<maven:groupId>>> - the Maven group ID
+
+*** Project Metadata
+
+    * <<<maven:artifactId>>> - the Maven artifact ID
+
+*** Project Version Metadata
+
+    * <<<created>>> - when the artifact was added to the repository
+
+    * <<<updated>>> - when the artifact was last updated
+
+    * <<<name>>> - human-readable project name
+
+    * <<<description>>> - a human-readable description of this project
+
+    * <<<url>>> - a URL to the project's documentation or other information
+
+    * <<<organization[].*>>> - information about the organization
+
+    * <<<licenses[].*>>> - the license the project source code is available under
+
+    * <<<issueManagement.*>>> - the issue tracker used by the application
+
+    * <<<ciManagement.*>>> - continuous integration server information
+
+    * <<<dependencies[].*>>> - other projects that this project version depends on. Note that currently this contains
+                               Maven specifics that are expected to be abstracted out into the Maven extensions
+
+    * <<<individuals[].*>>> - participants in the development of, or otherwise associated with, the project
+
+    * <<<scm.*>>> - information about the SCM used to store the project source code
+
+    * <<<relocatedTo.*>>> - co-ordinates that this artifact has been relocated to
+
+    * <<<maven:packaging>>> - the packaging value in the Maven POM
+
+    * <<<maven:parent.*>>> - a reference to the Maven parent POM
+
+    * <<<maven.plugins[].*>>> - references to build plugins in a Maven POM
+
+    * <<<maven.repositories[].*>>> - references to other repositories in a Maven POM
+
+    * <<<maven:buildExtensions[].*>>> - references to build extensions in a Maven POM
+
+    * <<<maven:properties.*>>> - properties stored in a Maven POM
+
+
+    ~~ information about it (notes to convert)
+
+    ~~ Java API
+
+    ~~ access
+
+    ~~ persistence
+
