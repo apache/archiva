@@ -4,3 +4,30 @@
 
 Repository APIs
 
+    The repository APIs are the means for accessing metadata from any type of repository.
+
+    <Note:> currently, only metadata retrieval is available. As more of the application moves to this base, artifact
+            content may be read using a stream, for example.
+
+* Metadata Resolver
+
+    A repository request works in the following sequence:
+
+        [[1]] the user requests a project's metadata using a
+              {{{./apidocs/org/apache/archiva/metadata/repository/MetadataResolver.html} MetadataResolver}}
+
+        [[2]] the resolvers are chained together to locate the source of the metadata, and to determine where the most
+              up to date copy is. Included by default are the metadata repository and repository storage
+
+        [[3]] the metadata is retrieved, and if not up to date in the metadata repository it is stored there
+
+        [[4]] the metadata is returned to the requester
+
+* Storage Resolver
+
+    Currently storage only supports obtaining information as well. In the future, the ability to modify the storage
+    will be made available for plugins such as purging, etc.
+
+    More information can be found in the
+    {{{./apidocs/org/apache/archiva/metadata/repository/storage/StorageMetadataResolver.html} storage metadata resolver}}
+    class.
