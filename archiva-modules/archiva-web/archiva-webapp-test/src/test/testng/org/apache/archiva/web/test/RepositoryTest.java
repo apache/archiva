@@ -36,6 +36,7 @@ public class RepositoryTest
 		assertRepositoriesPage();
 	}
 	
+	 @Test(dependsOnMethods = { "testAddManagedRepoValidValues" } )
 	public void testAddManagedRepoInvalidValues()
 	{				
 		goToRepositoriesPage();

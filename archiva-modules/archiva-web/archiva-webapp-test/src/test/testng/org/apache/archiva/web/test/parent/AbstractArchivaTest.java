@@ -503,7 +503,10 @@ public abstract class AbstractArchivaTest
 
     public void goToRepositoriesPage()
     {
-    	clickLinkWithText( "Repositories" );
+        if( !getTitle().equals( "Apache Archiva \\ Administration - Repositories" ) )
+        {
+            clickLinkWithText( "Repositories" );
+        }
     	assertRepositoriesPage();
     }
 

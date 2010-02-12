@@ -92,9 +92,15 @@ table.bodyTable tr.b {
             </a>
           </td>
           <td>
+            <a href="audit-log.html">
+              <img src="../images/tour/audit-log.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+              10. Audit Log Report
+            </a>
+          </td>
+          <td>
             <a href="maintenance.html">
               <img src="../images/tour/maintenance.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
-              10. Maintenance
+              11. Maintenance
             </a>
           </td>
         </tr>
