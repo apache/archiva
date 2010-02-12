@@ -69,7 +69,7 @@ public class AuditLogsReportTest
     
     // TODO: add test for adding via WebDAV
     // TODO: disable if not running on *chrome
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, enabled = false )
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsDataFound()
     {
         goToAuditLogReports();        
@@ -90,7 +90,7 @@ public class AuditLogsReportTest
     
     // TODO: add test for adding via WebDAV
     // TODO: disable if not running on *chrome
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, enabled = false )
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsOnlyArtifactIdIsSpecified()
     {
         goToAuditLogReports();        
@@ -111,7 +111,7 @@ public class AuditLogsReportTest
     
     // TODO: add test for adding via WebDAV
     // TODO: disable if not running on *chrome
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, enabled = false )
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsForAllRepositories()
     {
         goToAuditLogReports();        
@@ -129,7 +129,7 @@ public class AuditLogsReportTest
         assertTextPresent( "admin" );
     }
     
-    @Test (dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, enabled = false )
+    @Test (dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, groups = "requiresUpload")
     public void testViewAuditLogsViewAuditEventsForManageableRepositoriesOnly()
     {
         String groupId = getProperty( "SNAPSHOT_GROUPID" );

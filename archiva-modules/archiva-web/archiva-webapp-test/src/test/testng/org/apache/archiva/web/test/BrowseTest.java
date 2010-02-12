@@ -45,7 +45,7 @@ public class BrowseTest
 	}
 
     // MRM-1278
-    @Test( enabled = false )
+    @Test(groups = {"requiresUpload"})
     public void testCorrectRepositoryInBrowse()
     {
         File artifact =
