@@ -87,7 +87,7 @@ public class ArtifactManagementTest
 	public void testAddArtifactValidValues()
 	{
 		addArtifact( getGroupId() , "testAddArtifactValidValues", getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "Artifact 'test:test:1.0' was successfully deployed to repository 'internal'" );
+		assertTextPresent( "Artifact 'test:testAddArtifactValidValues:1.0' was successfully deployed to repository 'internal'" );
 	}
 		
 	//MRM-747
