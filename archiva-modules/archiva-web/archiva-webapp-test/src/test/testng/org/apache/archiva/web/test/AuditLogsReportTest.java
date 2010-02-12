@@ -164,4 +164,27 @@ public class AuditLogsReportTest
         clickLinkWithText( "Logout" );
         login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
     }
+    
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    public void testViewAuditLogsReportForGroupId()
+    {
+        String groupId = getProperty("AUDITLOG_GROUPID");
+        String artifactId = getProperty("ARTIFACTID");
+        String version = getProperty("VERSION");
+        String packaging = getProperty("PACKAGING");
+        String repositoryId = getProperty("REPOSITORYID");
+        String expectedArtifact = getProperty("AUDITLOG_EXPECTED_ARTIFACT");
+    		
+        addArtifact( groupId, artifactId, version, packaging,  getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repositoryId );
+    			
+        goToAuditLogReports();
+    			
+        selectValue( "repository", repositoryId );
+        setFieldValue( "groupId", groupId );
+        submit();
+    	                
+        assertAuditLogsReportPage();
+        assertTextPresent( expectedArtifact );
+        assertTextPresent( repositoryId );
+    }
 }

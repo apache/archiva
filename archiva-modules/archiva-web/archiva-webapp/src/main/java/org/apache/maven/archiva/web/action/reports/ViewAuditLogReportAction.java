@@ -160,7 +160,8 @@ public class ViewAuditLogReportAction
         
         if ( groupId != null && !"".equals( groupId.trim() ) )
         {
-            artifact = groupId + ( ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( "/" + artifactId + "/%" ) : "%" );
+            String modifiedGroupId = groupId.replace( ".", "/" );
+            artifact = modifiedGroupId + ( ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( "/" + artifactId + "/%" ) : "%" );
         }
         else
         {               
