@@ -68,7 +68,6 @@ public class AuditLogsReportTest
     }    
     
     // TODO: add test for adding via WebDAV
-    // TODO: disable if not running on *chrome
     @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsDataFound()
     {
@@ -89,7 +88,6 @@ public class AuditLogsReportTest
     }
     
     // TODO: add test for adding via WebDAV
-    // TODO: disable if not running on *chrome
     @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsOnlyArtifactIdIsSpecified()
     {
@@ -110,7 +108,6 @@ public class AuditLogsReportTest
     }
     
     // TODO: add test for adding via WebDAV
-    // TODO: disable if not running on *chrome
     @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsForAllRepositories()
     {
