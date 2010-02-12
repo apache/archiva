@@ -81,7 +81,7 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "test-1.0.jar" );
+        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -101,7 +101,7 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "test-1.0.jar" );
+        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -120,7 +120,7 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "test-1.0.jar" );
+        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -141,23 +141,23 @@ public class AuditLogsReportTest
         
         clickLinkWithText( "Logout" );
                 
-        login( getProperty( "REPOMANAGER_INTERNAL_USERNAME" ), getUserRolePassword() );
-        goToAuditLogReports();        
+        login( getProperty( "REPOMANAGER_INTERNAL_USERNAME" ), getUserRoleNewPassword() );
+
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         selectValue( "repository", "all" );
         submit();
-        
+
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "test-1.0.jar" );
+        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
-        
+
         assertTextNotPresent( artifactId + "-" + version + "." + packaging );
-        
         clickLinkWithText( "Logout" );
         login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
     }

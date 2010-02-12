@@ -41,6 +41,7 @@ public abstract class AbstractArtifactManagementTest
 	
 	public void goToDeleteArtifactPage()
 	{
+        login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
 		clickLinkWithText( "Delete Artifact" );
 		assertDeleteArtifactPage();
 	}
