@@ -48,10 +48,6 @@ public class BrowseTest
     @Test(groups = {"requiresUpload"})
     public void testCorrectRepositoryInBrowse()
     {
-        File artifact =
-            new File( getBasedir(),
-                      "/src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar" );                     
-                
         String releasesRepo = getProperty( "RELEASES_REPOSITORY" );
         
         // create releases repository first
@@ -64,10 +60,10 @@ public class BrowseTest
         
         String snapshotsRepo = getProperty( "SNAPSHOTS_REPOSITORY" );
 
+        String path = "src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
         // TODO: do this differently as uploading doesn't work on browsers other than *chrome (below as well)
         // upload a snapshot artifact to repository 'releases'        
-        addArtifact( "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar", artifact.getPath(),
-                     releasesRepo );
+        addArtifact( "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar", path, releasesRepo );
         assertTextPresent( "Artifact 'archiva:archiva-webapp:1.0-SNAPSHOT' was successfully deployed to repository '" + releasesRepo + "'" );
 
         goToBrowsePage();
@@ -77,8 +73,7 @@ public class BrowseTest
         assertArtifactInfoPage( "1.0-SNAPSHOT/", releasesRepo, "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar" );
 
         // upload a snapshot artifact to repository 'snapshots'        
-        addArtifact( "continuum", "continuum-core", "1.0-SNAPSHOT", "jar", artifact.getPath(),
-                     snapshotsRepo );
+        addArtifact( "continuum", "continuum-core", "1.0-SNAPSHOT", "jar", path, snapshotsRepo );
         assertTextPresent( "Artifact 'continuum:continuum-core:1.0-SNAPSHOT' was successfully deployed to repository '" + snapshotsRepo + "'" );
 
         goToBrowsePage();
