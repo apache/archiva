@@ -150,12 +150,11 @@
         <configuration>
           <properties>
             <!--
-              Use this instead of suiteXmlFiles so that we can add the exclusion, as it is only accepted if you use
-              the 'all command line parameters' mode.
+              Use this instead of suiteXmlFiles so that we can add the exclusion, as it is only accepted without suiteXmlFiles
             -->
             <property>
-              <name>suitename</name>
-              <value>${basedir}/src/test/testng/config/testng.xml</value>
+              <name>listener</name>
+              <value>org.apache.archiva.web.test.listener.CaptureScreenShotsListener</value>
             </property>
             <property>
               <name>excludegroups</name>
