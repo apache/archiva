@@ -75,7 +75,7 @@ public class CaptureScreenShotsListener
         {
             selenium.windowMaximize();
             File fileName = new File( targetPath, fileBaseName + ".png" );
-            selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "" );
+            selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "background=#FFFFFF" );
         }
         catch ( RuntimeException e )
         {
