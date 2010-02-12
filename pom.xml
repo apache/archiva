@@ -198,11 +198,11 @@
     </pluginManagement>
   </build>
   <modules>
+    <module>skin</module>
     <module>archiva-cli</module>
     <module>archiva-docs</module>
     <module>archiva-jetty</module>
     <module>archiva-modules</module>
-    <module>skin</module>
   </modules>
   <dependencies>
     <dependency>
