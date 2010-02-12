@@ -1,6 +1,7 @@
 package org.apache.archiva.web.test.parent;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.archiva.web.test.XPathExpressionUtil;
 
@@ -495,7 +496,25 @@ public abstract class AbstractArchivaTest
             checkField( "generatePom" );
         }
 
-        setFieldValue( "artifact", artifactFilePath );
+        String path;
+        if ( artifactFilePath != null && artifactFilePath.trim().length() > 0 )
+        {
+            File f = new File( artifactFilePath );
+            try
+            {
+                path = f.getCanonicalPath();
+            }
+            catch ( IOException e )
+            {
+                path = f.getAbsolutePath();
+            }
+        }
+        else
+        {
+            path = artifactFilePath;
+        }
+
+        setFieldValue( "artifact", path );
         setFieldValue( "repositoryId", repositoryId );
 
         clickButtonWithValue( "Submit" );

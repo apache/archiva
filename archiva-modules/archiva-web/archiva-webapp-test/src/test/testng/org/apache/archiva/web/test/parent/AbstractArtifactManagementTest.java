@@ -1,8 +1,6 @@
 package org.apache.archiva.web.test.parent;
 
-import java.io.File;
-
-public abstract class AbstractArtifactManagementTest 
+public abstract class AbstractArtifactManagementTest
 	extends AbstractArchivaTest
 {
 	
@@ -32,9 +30,7 @@ public abstract class AbstractArtifactManagementTest
 	
 	public String getArtifactFilePath()
 	{
-		File f = new File( "" );
-		String artifactFilePath = f.getAbsolutePath();
-		return artifactFilePath + "/src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar" ;
+		return "src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
 	}
 	
 	public String getRepositoryId()
