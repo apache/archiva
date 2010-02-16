@@ -117,6 +117,8 @@ public class AuditEvent
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    private static final int TS_LENGTH = TIMESTAMP_FORMAT.length();
+
     public AuditEvent()
     {
         /* do nothing */
@@ -124,14 +126,26 @@ public class AuditEvent
 
     public AuditEvent( String name, String repositoryId )
     {
+        String ts = name.substring( 0, TS_LENGTH );
         try
         {
-            timestamp = createNameFormat().parse( name );
+            timestamp = createNameFormat().parse( ts );
         }
         catch ( ParseException e )
         {
-            throw new IllegalArgumentException( "Improperly formatted timestamp for audit log event: " + name );
+            throw new IllegalArgumentException( "Improperly formatted timestamp for audit log event: " + ts );
         }
+
+        if ( name.length() > TS_LENGTH )
+        {
+            if ( name.charAt( TS_LENGTH ) != '/' )
+            {
+                throw new IllegalArgumentException(
+                    "Improperly formatted name for audit log event, no / separator between timestamp and resource: " +
+                        name );
+            }
+        }
+
         this.repositoryId = repositoryId;
     }
 
@@ -211,7 +225,11 @@ public class AuditEvent
 
     public String getName()
     {
-        return createNameFormat().format( timestamp );
+        // use the hashCode here to make it unique if multiple events occur at a certain timestamp. None of the other
+        // fields is unique on its own
+        return createNameFormat().format( timestamp ) + "/" + Integer.toHexString( hashCode() );
+        // TODO: a simple incremental counter might be better since it will retain ordering, but then we need to do a
+        //  bit of locking...
     }
 
     private static SimpleDateFormat createNameFormat()

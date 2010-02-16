@@ -57,10 +57,10 @@ public class DefaultAuditManager
         List<AuditRecord> records = new ArrayList<AuditRecord>();
         for ( String repositoryId : repositoryIds )
         {
-            List<String> timestamps = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );
-            for ( String timestamp : timestamps )
+            List<String> names = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );
+            for ( String name : names )
             {
-                records.add( new AuditRecord( repositoryId, timestamp ) );
+                records.add( new AuditRecord( repositoryId, name ) );
             }
         }
         Collections.sort( records );

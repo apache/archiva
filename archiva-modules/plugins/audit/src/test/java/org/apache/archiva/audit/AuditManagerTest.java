@@ -178,10 +178,11 @@ public class AuditManagerTest
         eventNames.put( TEST_REPO_ID_2, new ArrayList<String>() );
         for ( int i = 0; i < numEvents; i++ )
         {
-            String name = createEventName( TIMESTAMP_FORMAT.parse( AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i ) ) );
             String repositoryId = i % 2 == 0 ? TEST_REPO_ID : TEST_REPO_ID_2;
-            eventNames.get( repositoryId ).add( name );
-            events.add( createTestEvent( repositoryId, name ) );
+            String num = MILLIS_FORMAT.format( i );
+            AuditEvent event = createEvent( repositoryId, AUDIT_EVENT_BASE + num, getDefaultTestResourceName( num ) );
+            events.add( event );
+            eventNames.get( repositoryId ).add( event.getName() );
         }
 
         metadataRepositoryControl.expectAndReturn(
@@ -551,10 +552,10 @@ public class AuditManagerTest
     }
 
     private static String createEventName( Date timestamp )
+        throws ParseException
     {
-        AuditEvent event = new AuditEvent();
-        event.setTimestamp( timestamp );
-        return event.getName();
+        // TODO: I think we can reverse the calls.
+        return createEvent( TEST_REPO_ID, TIMESTAMP_FORMAT.format( timestamp ), null ).getName();
     }
 
     private static AuditEvent createTestEvent( String name )
@@ -566,7 +567,8 @@ public class AuditManagerTest
     private static AuditEvent createTestEvent( String repoId, String name )
         throws ParseException
     {
-        return createEvent( repoId, name, getDefaultTestResourceName( name.substring( name.length() - 3 ) ) );
+        return createEvent( repoId, name, getDefaultTestResourceName(
+            name.substring( AUDIT_EVENT_BASE.length(), AUDIT_EVENT_BASE.length() + 3 ) ) );
     }
 
     private static AuditEvent createEvent( String repositoryId, String timestamp, String resource )
