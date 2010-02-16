@@ -194,13 +194,14 @@ public class ViewAuditLogReportAction
         String resource = null;
         if ( !StringUtils.isEmpty( groupId ) )
         {
+            String groupIdAsPath = groupId.replace( '.', '/' );
             if ( StringUtils.isEmpty( artifactId ) )
             {
-                resource = groupId;
+                resource = groupIdAsPath;
             }
             else
             {
-                resource = groupId + "/" + artifactId;
+                resource = groupIdAsPath + "/" + artifactId;
             }
         }
 
