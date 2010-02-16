@@ -37,7 +37,11 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.easymock.MockControl;
 
 /**
  * @todo should this be a generic MetadataRepository implementation test?
@@ -77,9 +81,17 @@ public class FileMetadataRepositoryTest
         super.setUp();
 
         repository = new FileMetadataRepository();
-        File directory = getTestFile( "target/test-repository" );
+        File directory = getTestFile( "target/test-repositories" );
         FileUtils.deleteDirectory( directory );
-        repository.setDirectory( directory );
+
+        MockControl control = MockControl.createControl( ArchivaConfiguration.class );
+        ArchivaConfiguration config = (ArchivaConfiguration) control.getMock();
+        Configuration configData = new Configuration();
+        configData.addManagedRepository( createManagedRepository( TEST_REPO_ID, directory ) );
+        configData.addManagedRepository( createManagedRepository( OTHER_REPO, directory ) );
+        control.expectAndDefaultReturn( config.getConfiguration(), configData );
+        control.replay();
+        repository.setConfiguration( config );
 
         Map<String, MetadataFacetFactory> factories = new HashMap<String, MetadataFacetFactory>();
         factories.put( TEST_FACET_ID, new MetadataFacetFactory()
@@ -109,6 +121,14 @@ public class FileMetadataRepositoryTest
             }
         } );
         repository.setMetadataFacetFactories( factories );
+    }
+
+    private static ManagedRepositoryConfiguration createManagedRepository( String repoId, File directory )
+    {
+        ManagedRepositoryConfiguration managedRepository = new ManagedRepositoryConfiguration();
+        managedRepository.setId( repoId );
+        managedRepository.setLocation( new File( directory, repoId ).getAbsolutePath() );
+        return managedRepository;
     }
 
     public void testRootNamespaceWithNoMetadataRepository()
@@ -328,19 +348,6 @@ public class FileMetadataRepositoryTest
         assertEquals( Collections.singleton( TEST_PROJECT_VERSION ),
                       repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
                                                       TEST_PROJECT_VERSION ) );
-    }
-
-    public void testRepositories()
-    {
-        repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
-        repository.addMetadataFacet( OTHER_REPO, new TestMetadataFacet( TEST_VALUE ) );
-
-        assertEquals( Arrays.asList( OTHER_REPO, TEST_REPO_ID ), repository.getRepositories() );
-    }
-
-    public void testRepositoriesWhenEmpty()
-    {
-        assertTrue( repository.getRepositories().isEmpty() );
     }
 
     public void testGetArtifactsByDateRangeOpen()

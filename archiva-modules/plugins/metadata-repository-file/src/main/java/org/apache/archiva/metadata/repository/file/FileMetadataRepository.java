@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +53,7 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,16 +64,14 @@ public class FileMetadataRepository
     implements MetadataRepository
 {
     /**
-     * TODO: this isn't suitable for production use
-     *
-     * @plexus.configuration
-     */
-    private File directory = new File( System.getProperty( "user.home" ), ".archiva-metadata" );
-
-    /**
      * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
      */
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
+
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration configuration;
 
     private static final Logger log = LoggerFactory.getLogger( FileMetadataRepository.class );
 
@@ -84,6 +82,19 @@ public class FileMetadataRepository
     private static final String NAMESPACE_METADATA_KEY = "namespace-metadata";
 
     private static final String METADATA_KEY = "metadata";
+
+    private File getBaseDirectory( String repoId )
+    {
+        // TODO: should be configurable, like the index
+        String basedir = configuration.getConfiguration().getManagedRepositoriesAsMap().get( repoId ).getLocation();
+        File dir = new File( basedir, ".archiva" );
+        return dir;
+    }
+
+    private File getDirectory( String repoId )
+    {
+        return new File( getBaseDirectory( repoId ), "content" );
+    }
 
     public void updateProject( String repoId, ProjectMetadata project )
     {
@@ -97,7 +108,7 @@ public class FileMetadataRepository
 
         try
         {
-            File namespaceDirectory = new File( this.directory, repoId + "/" + namespace );
+            File namespaceDirectory = new File( getDirectory( repoId ), namespace );
             Properties properties = new Properties();
             properties.setProperty( "namespace", namespace );
             properties.setProperty( "id", id );
@@ -116,7 +127,7 @@ public class FileMetadataRepository
         updateProject( repoId, namespace, projectId );
 
         File directory =
-            new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + versionMetadata.getId() );
+            new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + versionMetadata.getId() );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
@@ -207,7 +218,7 @@ public class FileMetadataRepository
     public void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
                                         ProjectVersionReference reference )
     {
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         int i = Integer.valueOf( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
@@ -232,7 +243,7 @@ public class FileMetadataRepository
     {
         try
         {
-            File namespaceDirectory = new File( this.directory, repoId + "/" + namespace );
+            File namespaceDirectory = new File( getDirectory( repoId ), namespace );
             Properties properties = new Properties();
             properties.setProperty( "namespace", namespace );
             writeProperties( properties, namespaceDirectory, NAMESPACE_METADATA_KEY );
@@ -395,7 +406,7 @@ public class FileMetadataRepository
     {
         Map<String, ArtifactMetadata> artifacts = new HashMap<String, ArtifactMetadata>();
 
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -452,8 +463,7 @@ public class FileMetadataRepository
 
     public Collection<String> getRepositories()
     {
-        String[] repoIds = this.directory.list();
-        return repoIds != null ? Arrays.asList( repoIds ) : Collections.<String>emptyList();
+        return configuration.getConfiguration().getManagedRepositoriesAsMap().keySet();
     }
 
     public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
@@ -471,9 +481,9 @@ public class FileMetadataRepository
         return artifacts;
     }
 
-    public void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
+    public void deleteArtifact( String repoId, String namespace, String project, String version, String id )
     {
-        File directory = new File( this.directory, repositoryId + "/" + namespace + "/" + project + "/" + version );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + project + "/" + version );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -497,11 +507,9 @@ public class FileMetadataRepository
 
     public void deleteRepository( String repoId )
     {
-        File directory = new File( this.directory, repoId );
-
         try
         {
-            FileUtils.deleteDirectory( directory );
+            FileUtils.deleteDirectory( getDirectory( repoId ) );
         }
         catch ( IOException e )
         {
@@ -533,9 +541,9 @@ public class FileMetadataRepository
         }
     }
 
-    private File getMetadataDirectory( String repositoryId, String facetId )
+    private File getMetadataDirectory( String repoId, String facetId )
     {
-        return new File( this.directory, repositoryId + "/.meta/" + facetId );
+        return new File( getBaseDirectory( repoId ), "facets/" + facetId );
     }
 
     private String join( Collection<String> ids )
@@ -564,7 +572,7 @@ public class FileMetadataRepository
     public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifact )
     {
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -631,7 +639,7 @@ public class FileMetadataRepository
 
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -644,7 +652,7 @@ public class FileMetadataRepository
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
     {
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         String id = properties.getProperty( "id" );
@@ -809,7 +817,7 @@ public class FileMetadataRepository
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
     {
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -828,7 +836,7 @@ public class FileMetadataRepository
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                                      String projectVersion )
     {
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId + "/" + projectVersion );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         int numberOfRefs = Integer.valueOf( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
@@ -855,7 +863,7 @@ public class FileMetadataRepository
     public Collection<String> getNamespaces( String repoId, String baseNamespace )
     {
         List<String> allNamespaces = new ArrayList<String>();
-        File directory = new File( this.directory, repoId );
+        File directory = getDirectory( repoId );
         File[] files = directory.listFiles();
         if ( files != null )
         {
@@ -891,7 +899,7 @@ public class FileMetadataRepository
     public Collection<String> getProjects( String repoId, String namespace )
     {
         List<String> projects = new ArrayList<String>();
-        File directory = new File( this.directory, repoId + "/" + namespace );
+        File directory = new File( getDirectory( repoId ), namespace );
         File[] files = directory.listFiles();
         if ( files != null )
         {
@@ -909,7 +917,7 @@ public class FileMetadataRepository
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
         List<String> projectVersions = new ArrayList<String>();
-        File directory = new File( this.directory, repoId + "/" + namespace + "/" + projectId );
+        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
         File[] files = directory.listFiles();
         if ( files != null )
         {
@@ -939,13 +947,13 @@ public class FileMetadataRepository
         }
     }
 
-    public void setDirectory( File directory )
-    {
-        this.directory = directory;
-    }
-
     public void setMetadataFacetFactories( Map<String, MetadataFacetFactory> metadataFacetFactories )
     {
         this.metadataFacetFactories = metadataFacetFactories;
+    }
+
+    public void setConfiguration( ArchivaConfiguration configuration )
+    {
+        this.configuration = configuration;
     }
 }

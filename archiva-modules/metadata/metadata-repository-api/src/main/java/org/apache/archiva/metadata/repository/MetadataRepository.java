@@ -63,6 +63,7 @@ public interface MetadataRepository
 
     List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime );
 
+    // TODO: remove from API, just use configuration
     Collection<String> getRepositories();
 
     List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum );
