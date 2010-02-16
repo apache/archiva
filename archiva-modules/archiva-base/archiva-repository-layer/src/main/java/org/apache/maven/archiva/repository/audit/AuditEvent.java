@@ -126,9 +126,7 @@ public class AuditEvent
     {
         try
         {
-            int index = name.lastIndexOf( '/' );
-            String ts = index > 0 ? name.substring( 0, index ) : name;
-            timestamp = createNameFormat().parse( ts );
+            timestamp = createNameFormat().parse( name );
         }
         catch ( ParseException e )
         {
@@ -213,9 +211,7 @@ public class AuditEvent
 
     public String getName()
     {
-        // we add the resource name to the end to avoid clashes at that timestamp
-        // TODO: this is still not robust enough and the content model should be revised
-        return createNameFormat().format( timestamp ) + "/" + resource.substring( resource.lastIndexOf( '/' ) + 1 );
+        return createNameFormat().format( timestamp );
     }
 
     private static SimpleDateFormat createNameFormat()

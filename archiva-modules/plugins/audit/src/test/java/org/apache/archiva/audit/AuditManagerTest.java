@@ -138,16 +138,16 @@ public class AuditManagerTest
         return createTestEvent( TEST_REPO_ID, name );
     }
 
-    private static AuditEvent createTestEvent( String repositoryId, String t )
+    private static AuditEvent createTestEvent( String repositoryId, String name )
         throws ParseException
     {
         AuditEvent event = new AuditEvent();
-        event.setTimestamp( TIMESTAMP_FORMAT.parse( AUDIT_EVENT_BASE + t ) );
+        event.setTimestamp( TIMESTAMP_FORMAT.parse( name ) );
         event.setAction( AuditEvent.UPLOAD_FILE );
         event.setRemoteIP( TEST_IP_ADDRESS );
         event.setRepositoryId( repositoryId );
         event.setUserId( TEST_USER );
-        event.setResource( TEST_RESOURCE_BASE + "/" + t );
+        event.setResource( TEST_RESOURCE_BASE + "/" + name.substring( AUDIT_EVENT_BASE.length() ) );
         return event;
     }
 
@@ -197,11 +197,10 @@ public class AuditManagerTest
         eventNames.put( TEST_REPO_ID_2, new ArrayList<String>() );
         for ( int i = 0; i < numEvents; i++ )
         {
-            String t = MILLIS_FORMAT.format( i );
-            String name = AUDIT_EVENT_BASE + t + "/" + t;
+            String name = AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i );
             String repositoryId = i % 2 == 0 ? TEST_REPO_ID : TEST_REPO_ID_2;
             eventNames.get( repositoryId ).add( name );
-            events.add( createTestEvent( repositoryId, t ) );
+            events.add( createTestEvent( repositoryId, name ) );
         }
 
         metadataRepositoryControl.expectAndReturn(
