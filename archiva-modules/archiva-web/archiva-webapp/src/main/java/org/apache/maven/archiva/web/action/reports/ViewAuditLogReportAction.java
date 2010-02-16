@@ -187,6 +187,7 @@ public class ViewAuditLogReportAction
         {
             // Until we store the full artifact metadata in the audit event, we can't query by these individually
             addActionError( "If you specify an artifact ID, you must specify a group ID" );
+            auditLogs = null;
             return INPUT;
         }
 
