@@ -46,9 +46,6 @@ public class RepositoriesActionTest
     {
         super.setUp();
 
-        // TODO: purely to quiet logging - shouldn't be needed
-        String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
-        System.setProperty( "appserver.base", appserverBase );
         action = (RepositoriesAction) lookup( Action.class.getName(), "repositoriesAction" );
     }
 
