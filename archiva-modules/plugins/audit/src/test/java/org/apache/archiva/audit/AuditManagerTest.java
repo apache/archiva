@@ -100,21 +100,21 @@ public class AuditManagerTest
         throws ParseException
     {
         int numEvents = 11;
-        List<String> eventNames = new ArrayList<String>( numEvents );
+        List<AuditEvent> expectedEvents = new ArrayList<AuditEvent>( numEvents );
         for ( int i = 0; i < numEvents; i++ )
         {
-            eventNames.add( createEventName( TIMESTAMP_FORMAT.parse( AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i ) ) ) );
+            AuditEvent event = createEvent( AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i ) );
+            expectedEvents.add( event );
         }
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ), eventNames );
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
+            getEventNames( expectedEvents ) );
 
-        for ( String name : eventNames.subList( 1, eventNames.size() ) )
+        for ( AuditEvent event : expectedEvents.subList( 1, expectedEvents.size() ) )
         {
-            AuditEvent event = createTestEvent( name );
-
             metadataRepositoryControl.expectAndReturn(
-                metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name ), event );
+                metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, event.getName() ), event );
         }
         metadataRepositoryControl.replay();
 
@@ -136,21 +136,20 @@ public class AuditManagerTest
         throws ParseException
     {
         int numEvents = 5;
-        List<String> eventNames = new ArrayList<String>( numEvents );
+        List<AuditEvent> expectedEvents = new ArrayList<AuditEvent>( numEvents );
         for ( int i = 0; i < numEvents; i++ )
         {
-            eventNames.add( createEventName( TIMESTAMP_FORMAT.parse( AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i ) ) ) );
+            expectedEvents.add( createEvent( AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i ) ) );
         }
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ), eventNames );
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
+            getEventNames( expectedEvents ) );
 
-        for ( String name : eventNames )
+        for ( AuditEvent event : expectedEvents )
         {
-            AuditEvent event = createTestEvent( name );
-
             metadataRepositoryControl.expectAndReturn(
-                metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name ), event );
+                metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, event.getName() ), event );
         }
         metadataRepositoryControl.replay();
 
@@ -228,8 +227,7 @@ public class AuditManagerTest
     public void testAddAuditEvent()
         throws ParseException
     {
-        String name = createEventName( new Date() );
-        AuditEvent event = createTestEvent( name );
+        AuditEvent event = createEvent( new Date() );
 
         metadataRepository.addMetadataFacet( TEST_REPO_ID, event );
 
@@ -243,8 +241,8 @@ public class AuditManagerTest
     public void testAddAuditEventNoRepositoryId()
         throws ParseException
     {
-        String name = createEventName( new Date() );
-        AuditEvent event = createTestEvent( null, name );
+        AuditEvent event = createEvent( new Date() );
+        event.setRepositoryId( null );
 
         // should just be ignored
 
@@ -271,19 +269,19 @@ public class AuditManagerTest
     {
         Date current = new Date();
 
-        String name1 = createEventName( new Date( current.getTime() - 12345 ) );
+        AuditEvent event1 = createEvent( new Date( current.getTime() - 12345 ) );
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
-        String name2 = createEventName( expectedTimestamp );
-        AuditEvent expectedEvent = createTestEvent( name2 );
-        String name3 = createEventName( new Date( current.getTime() - 1000 ) );
+        AuditEvent expectedEvent = createEvent( expectedTimestamp );
+        AuditEvent event3 = createEvent( new Date( current.getTime() - 1000 ) );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
-            Arrays.asList( name1, name2, name3 ) );
+            Arrays.asList( event1.getName(), expectedEvent.getName(), event3.getName() ) );
 
         // only match the middle one
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name2 ), expectedEvent );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent.getName() ),
+            expectedEvent );
 
         metadataRepositoryControl.replay();
 
@@ -302,22 +300,22 @@ public class AuditManagerTest
     {
         Date current = new Date();
 
-        String name1 = createEventName( new Date( current.getTime() - 12345 ) );
+        AuditEvent event1 = createEvent( new Date( current.getTime() - 12345 ) );
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
-        String name2 = createEventName( expectedTimestamp );
-        AuditEvent expectedEvent2 = createTestEvent( name2 );
+        AuditEvent expectedEvent2 = createEvent( expectedTimestamp );
         Date ts3 = new Date( current.getTime() - 1000 );
-        String name3 = createEventName( ts3 );
-        AuditEvent expectedEvent3 = createTestEvent( name3 );
+        AuditEvent expectedEvent3 = createEvent( ts3 );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
-            Arrays.asList( name1, name2, name3 ) );
+            Arrays.asList( event1.getName(), expectedEvent2.getName(), expectedEvent3.getName() ) );
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name2 ), expectedEvent2 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent2.getName() ),
+            expectedEvent2 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name3 ), expectedEvent3 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName() ),
+            expectedEvent3 );
 
         metadataRepositoryControl.replay();
 
@@ -337,21 +335,21 @@ public class AuditManagerTest
         Date current = new Date();
 
         Date ts1 = new Date( current.getTime() - 12345 );
-        String name1 = createEventName( ts1 );
-        AuditEvent expectedEvent1 = createTestEvent( name1 );
+        AuditEvent expectedEvent1 = createEvent( ts1 );
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
-        String name2 = createEventName( expectedTimestamp );
-        AuditEvent expectedEvent2 = createTestEvent( name2 );
-        String name3 = createEventName( new Date( current.getTime() - 1000 ) );
+        AuditEvent expectedEvent2 = createEvent( expectedTimestamp );
+        AuditEvent event3 = createEvent( new Date( current.getTime() - 1000 ) );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
-            Arrays.asList( name1, name2, name3 ) );
+            Arrays.asList( expectedEvent1.getName(), expectedEvent2.getName(), event3.getName() ) );
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name1 ), expectedEvent1 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName() ),
+            expectedEvent1 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name2 ), expectedEvent2 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent2.getName() ),
+            expectedEvent2 );
 
         metadataRepositoryControl.replay();
 
@@ -372,25 +370,25 @@ public class AuditManagerTest
         Date current = new Date();
 
         Date ts1 = new Date( current.getTime() - 12345 );
-        String name1 = createEventName( ts1 );
-        AuditEvent expectedEvent1 = createTestEvent( name1 );
+        AuditEvent expectedEvent1 = createEvent( ts1 );
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
-        String name2 = createEventName( expectedTimestamp );
-        AuditEvent expectedEvent2 = createTestEvent( name2 );
+        AuditEvent expectedEvent2 = createEvent( expectedTimestamp );
         Date ts3 = new Date( current.getTime() - 1000 );
-        String name3 = createEventName( ts3 );
-        AuditEvent expectedEvent3 = createTestEvent( name3 );
+        AuditEvent expectedEvent3 = createEvent( ts3 );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
-            Arrays.asList( name1, name2, name3 ) );
+            Arrays.asList( expectedEvent1.getName(), expectedEvent2.getName(), expectedEvent3.getName() ) );
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name1 ), expectedEvent1 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName() ),
+            expectedEvent1 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name2 ), expectedEvent2 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent2.getName() ),
+            expectedEvent2 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name3 ), expectedEvent3 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName() ),
+            expectedEvent3 );
 
         metadataRepositoryControl.replay();
 
@@ -411,26 +409,26 @@ public class AuditManagerTest
         Date current = new Date();
 
         Date ts1 = new Date( current.getTime() - 12345 );
-        String name1 = createEventName( ts1 );
-        AuditEvent expectedEvent1 = createTestEvent( name1 );
+        AuditEvent expectedEvent1 = createEvent( ts1 );
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
-        String name2 = createEventName( expectedTimestamp );
-        AuditEvent expectedEvent2 = createTestEvent( name2 );
+        AuditEvent expectedEvent2 = createEvent( expectedTimestamp );
         expectedEvent2.setResource( "different-resource" );
         Date ts3 = new Date( current.getTime() - 1000 );
-        String name3 = createEventName( ts3 );
-        AuditEvent expectedEvent3 = createTestEvent( name3 );
+        AuditEvent expectedEvent3 = createEvent( ts3 );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
-            Arrays.asList( name1, name2, name3 ) );
+            Arrays.asList( expectedEvent1.getName(), expectedEvent2.getName(), expectedEvent3.getName() ) );
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name1 ), expectedEvent1 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName() ),
+            expectedEvent1 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name2 ), expectedEvent2 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent2.getName() ),
+            expectedEvent2 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name3 ), expectedEvent3 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName() ),
+            expectedEvent3 );
 
         metadataRepositoryControl.replay();
 
@@ -450,25 +448,25 @@ public class AuditManagerTest
     {
         Date current = new Date();
 
-        String name1 = createEventName( new Date( current.getTime() - 12345 ) );
-        AuditEvent expectedEvent1 = createTestEvent( name1 );
+        AuditEvent expectedEvent1 = createEvent( new Date( current.getTime() - 12345 ) );
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
-        String name2 = createEventName( expectedTimestamp );
-        AuditEvent expectedEvent2 = createTestEvent( name2 );
+        AuditEvent expectedEvent2 = createEvent( expectedTimestamp );
         expectedEvent2.setResource( "different-resource" );
-        String name3 = createEventName( new Date( current.getTime() - 1000 ) );
-        AuditEvent expectedEvent3 = createTestEvent( name3 );
+        AuditEvent expectedEvent3 = createEvent( new Date( current.getTime() - 1000 ) );
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
-            Arrays.asList( name1, name2, name3 ) );
+            Arrays.asList( expectedEvent1.getName(), expectedEvent2.getName(), expectedEvent3.getName() ) );
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name1 ), expectedEvent1 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName() ),
+            expectedEvent1 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name2 ), expectedEvent2 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent2.getName() ),
+            expectedEvent2 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name3 ), expectedEvent3 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName() ),
+            expectedEvent3 );
 
         metadataRepositoryControl.replay();
 
@@ -486,26 +484,29 @@ public class AuditManagerTest
         Date current = new Date();
 
         Date ts1 = new Date( current.getTime() - 12345 );
-        String name1 = createEventName( ts1 );
-        AuditEvent expectedEvent1 = createTestEvent( TEST_REPO_ID, name1 );
+        AuditEvent expectedEvent1 = createEvent( ts1 );
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
-        String name2 = createEventName( expectedTimestamp );
-        AuditEvent expectedEvent2 = createTestEvent( TEST_REPO_ID_2, name2 );
+        AuditEvent expectedEvent2 = createEvent( expectedTimestamp );
+        expectedEvent2.setRepositoryId( TEST_REPO_ID_2 );
         Date ts3 = new Date( current.getTime() - 1000 );
-        String name3 = createEventName( ts3 );
-        AuditEvent expectedEvent3 = createTestEvent( TEST_REPO_ID, name3 );
+        AuditEvent expectedEvent3 = createEvent( ts3 );
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ), Arrays.asList( name1, name3 ) );
+            metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
+            Arrays.asList( expectedEvent1.getName(), expectedEvent3.getName() ) );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( TEST_REPO_ID_2, AuditEvent.FACET_ID ), Arrays.asList( name2 ) );
+            metadataRepository.getMetadataFacets( TEST_REPO_ID_2, AuditEvent.FACET_ID ),
+            Arrays.asList( expectedEvent2.getName() ) );
 
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name1 ), expectedEvent1 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName() ),
+            expectedEvent1 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID_2, AuditEvent.FACET_ID, name2 ), expectedEvent2 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID_2, AuditEvent.FACET_ID, expectedEvent2.getName() ),
+            expectedEvent2 );
         metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, name3 ), expectedEvent3 );
+            metadataRepository.getMetadataFacet( TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName() ),
+            expectedEvent3 );
 
         metadataRepositoryControl.replay();
 
@@ -526,10 +527,10 @@ public class AuditManagerTest
     {
         Date current = new Date();
 
-        String name1 = createEventName( new Date( current.getTime() - 12345 ) );
+        String name1 = createEvent( new Date( current.getTime() - 12345 ) ).getName();
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
-        String name2 = createEventName( expectedTimestamp );
-        String name3 = createEventName( new Date( current.getTime() - 1000 ) );
+        String name2 = createEvent( expectedTimestamp ).getName();
+        String name3 = createEvent( new Date( current.getTime() - 1000 ) ).getName();
 
         metadataRepositoryControl.expectAndReturn(
             metadataRepository.getMetadataFacets( TEST_REPO_ID, AuditEvent.FACET_ID ),
@@ -551,24 +552,17 @@ public class AuditManagerTest
         return TEST_RESOURCE_BASE + "/" + num + ".xml";
     }
 
-    private static String createEventName( Date timestamp )
+    private static AuditEvent createEvent( Date timestamp )
         throws ParseException
     {
-        // TODO: I think we can reverse the calls.
-        return createEvent( TEST_REPO_ID, TIMESTAMP_FORMAT.format( timestamp ), null ).getName();
+        return createEvent( TIMESTAMP_FORMAT.format( timestamp ) );
     }
 
-    private static AuditEvent createTestEvent( String name )
+    private static AuditEvent createEvent( String ts )
         throws ParseException
     {
-        return createTestEvent( TEST_REPO_ID, name );
-    }
-
-    private static AuditEvent createTestEvent( String repoId, String name )
-        throws ParseException
-    {
-        return createEvent( repoId, name, getDefaultTestResourceName(
-            name.substring( AUDIT_EVENT_BASE.length(), AUDIT_EVENT_BASE.length() + 3 ) ) );
+        return createEvent( TEST_REPO_ID, ts, getDefaultTestResourceName(
+            ts.substring( AUDIT_EVENT_BASE.length(), AUDIT_EVENT_BASE.length() + 3 ) ) );
     }
 
     private static AuditEvent createEvent( String repositoryId, String timestamp, String resource )
@@ -597,5 +591,15 @@ public class AuditManagerTest
         assertEquals( repositoryId, event.getRepositoryId() );
         assertEquals( TEST_USER, event.getUserId() );
         assertEquals( resource, event.getResource() );
+    }
+
+    private List<String> getEventNames( List<AuditEvent> events )
+    {
+        List<String> names = new ArrayList<String>( events.size() );
+        for ( AuditEvent event : events )
+        {
+            names.add( event.getName() );
+        }
+        return names;
     }
 }
