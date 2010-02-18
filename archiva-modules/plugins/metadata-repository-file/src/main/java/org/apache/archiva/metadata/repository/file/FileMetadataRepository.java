@@ -19,24 +19,6 @@ package org.apache.archiva.metadata.repository.file;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;
@@ -56,6 +38,26 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataRepository"
@@ -126,8 +128,8 @@ public class FileMetadataRepository
     {
         updateProject( repoId, namespace, projectId );
 
-        File directory =
-            new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + versionMetadata.getId() );
+        File directory = new File( getDirectory( repoId ),
+                                   namespace + "/" + projectId + "/" + versionMetadata.getId() );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
@@ -288,8 +290,8 @@ public class FileMetadataRepository
         Properties properties;
         try
         {
-            properties =
-                readProperties( new File( getMetadataDirectory( repositoryId, facetId ), name ), METADATA_KEY );
+            properties = readProperties( new File( getMetadataDirectory( repositoryId, facetId ), name ),
+                                         METADATA_KEY );
         }
         catch ( FileNotFoundException e )
         {
@@ -324,8 +326,8 @@ public class FileMetadataRepository
 
         try
         {
-            File directory =
-                new File( getMetadataDirectory( repositoryId, metadataFacet.getFacetId() ), metadataFacet.getName() );
+            File directory = new File( getMetadataDirectory( repositoryId, metadataFacet.getFacetId() ),
+                                       metadataFacet.getName() );
             writeProperties( properties, directory, METADATA_KEY );
         }
         catch ( IOException e )
@@ -372,6 +374,7 @@ public class FileMetadataRepository
         {
             getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
         }
+        Collections.sort( artifacts, new ArtifactComparator() );
         return artifacts;
     }
 
@@ -576,10 +579,10 @@ public class FileMetadataRepository
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
-        properties.setProperty( "artifact:updated:" + artifact.getId(),
-                                Long.toString( artifact.getFileLastModified().getTime() ) );
-        properties.setProperty( "artifact:whenGathered:" + artifact.getId(),
-                                Long.toString( artifact.getWhenGathered().getTime() ) );
+        properties.setProperty( "artifact:updated:" + artifact.getId(), Long.toString(
+            artifact.getFileLastModified().getTime() ) );
+        properties.setProperty( "artifact:whenGathered:" + artifact.getId(), Long.toString(
+            artifact.getWhenGathered().getTime() ) );
         properties.setProperty( "artifact:size:" + artifact.getId(), Long.toString( artifact.getSize() ) );
         if ( artifact.getMd5() != null )
         {
@@ -738,8 +741,8 @@ public class FileMetadataRepository
                     MailingList mailingList = new MailingList();
                     mailingList.setName( mailingListName );
                     mailingList.setMainArchiveUrl( properties.getProperty( "mailingList." + i + ".archive" ) );
-                    mailingList.setOtherArchives(
-                        Arrays.asList( properties.getProperty( "mailingList." + i + ".otherArchives" ).split( "," ) ) );
+                    mailingList.setOtherArchives( Arrays.asList( properties.getProperty(
+                        "mailingList." + i + ".otherArchives" ).split( "," ) ) );
                     mailingList.setPostAddress( properties.getProperty( "mailingList." + i + ".post" ) );
                     mailingList.setSubscribeAddress( properties.getProperty( "mailingList." + i + ".subscribe" ) );
                     mailingList.setUnsubscribeAddress( properties.getProperty( "mailingList." + i + ".unsubscribe" ) );
@@ -763,8 +766,8 @@ public class FileMetadataRepository
                     dependency.setArtifactId( dependencyArtifactId );
                     dependency.setGroupId( properties.getProperty( "dependency." + i + ".groupId" ) );
                     dependency.setClassifier( properties.getProperty( "dependency." + i + ".classifier" ) );
-                    dependency.setOptional(
-                        Boolean.valueOf( properties.getProperty( "dependency." + i + ".optional" ) ) );
+                    dependency.setOptional( Boolean.valueOf( properties.getProperty(
+                        "dependency." + i + ".optional" ) ) );
                     dependency.setScope( properties.getProperty( "dependency." + i + ".scope" ) );
                     dependency.setSystemPath( properties.getProperty( "dependency." + i + ".systemPath" ) );
                     dependency.setType( properties.getProperty( "dependency." + i + ".type" ) );
@@ -848,8 +851,8 @@ public class FileMetadataRepository
             reference.setProjectId( properties.getProperty( "ref:reference." + i + ".projectId" ) );
             reference.setNamespace( properties.getProperty( "ref:reference." + i + ".namespace" ) );
             reference.setProjectVersion( properties.getProperty( "ref:reference." + i + ".projectVersion" ) );
-            reference.setReferenceType( ProjectVersionReference.ReferenceType.valueOf(
-                properties.getProperty( "ref:reference." + i + ".referenceType" ) ) );
+            reference.setReferenceType( ProjectVersionReference.ReferenceType.valueOf( properties.getProperty(
+                "ref:reference." + i + ".referenceType" ) ) );
             references.add( reference );
         }
         return references;
@@ -955,5 +958,26 @@ public class FileMetadataRepository
     public void setConfiguration( ArchivaConfiguration configuration )
     {
         this.configuration = configuration;
+    }
+
+    private static class ArtifactComparator
+        implements Comparator<ArtifactMetadata>
+    {
+        public int compare( ArtifactMetadata artifact1, ArtifactMetadata artifact2 )
+        {
+            if ( artifact1.getWhenGathered() == artifact2.getWhenGathered() )
+            {
+                return 0;
+            }
+            if ( artifact1.getWhenGathered() == null )
+            {
+                return 1;
+            }
+            if ( artifact2.getWhenGathered() == null )
+            {
+                return -1;
+            }
+            return artifact1.getWhenGathered().compareTo( artifact2.getWhenGathered() );
+        }
     }
 }
