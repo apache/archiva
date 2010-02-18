@@ -19,18 +19,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -62,6 +50,18 @@ import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.storage.StorageMetadataResolver" role-hint="maven2"
@@ -101,8 +101,8 @@ public class Maven2RepositoryMetadataResolver
 
     private static final String PROBLEM_MISLOCATED_POM = "mislocated-pom";
 
-    private static final List<String> POTENTIAL_PROBLEMS =
-        Arrays.asList( PROBLEM_INVALID_POM, PROBLEM_MISSING_POM, PROBLEM_MISLOCATED_POM );
+    private static final List<String> POTENTIAL_PROBLEMS = Arrays.asList( PROBLEM_INVALID_POM, PROBLEM_MISSING_POM,
+                                                                          PROBLEM_MISLOCATED_POM );
 
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
@@ -127,8 +127,8 @@ public class Maven2RepositoryMetadataResolver
         File basedir = new File( repositoryConfiguration.getLocation() );
         if ( VersionUtil.isSnapshot( projectVersion ) )
         {
-            File metadataFile =
-                pathTranslator.toFile( basedir, namespace, projectId, projectVersion, METADATA_FILENAME );
+            File metadataFile = pathTranslator.toFile( basedir, namespace, projectId, projectVersion,
+                                                       METADATA_FILENAME );
             try
             {
                 MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
@@ -137,8 +137,8 @@ public class Maven2RepositoryMetadataResolver
                 MavenRepositoryMetadata.Snapshot snapshotVersion = metadata.getSnapshotVersion();
                 if ( snapshotVersion != null )
                 {
-                    artifactVersion =
-                        artifactVersion.substring( 0, artifactVersion.length() - 8 ); // remove SNAPSHOT from end
+                    artifactVersion = artifactVersion.substring( 0, artifactVersion.length() -
+                        8 ); // remove SNAPSHOT from end
                     artifactVersion =
                         artifactVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
                 }
@@ -378,8 +378,18 @@ public class Maven2RepositoryMetadataResolver
     {
         File dir = getRepositoryBasedir( repoId );
 
+        List<String> rootNamespaces;
         String[] files = dir.list( new DirectoryFilter( filter ) );
-        return files != null ? Arrays.asList( files ) : Collections.<String>emptyList();
+        if ( files != null )
+        {
+            rootNamespaces = new ArrayList<String>( Arrays.asList( files ) );
+            Collections.sort( rootNamespaces );
+        }
+        else
+        {
+            rootNamespaces = Collections.emptyList();
+        }
+        return rootNamespaces;
     }
 
     private File getRepositoryBasedir( String repoId )
@@ -400,7 +410,7 @@ public class Maven2RepositoryMetadataResolver
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
         // scan all the directories which are potential namespaces. Any directories known to be projects are excluded
-        Collection<String> namespaces = new ArrayList<String>();
+        List<String> namespaces = new ArrayList<String>();
         File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
@@ -412,6 +422,7 @@ public class Maven2RepositoryMetadataResolver
                 }
             }
         }
+        Collections.sort( namespaces );
         return namespaces;
     }
 
@@ -425,7 +436,7 @@ public class Maven2RepositoryMetadataResolver
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
         // scan all directories in the namespace, and only include those that are known to be projects
-        Collection<String> projects = new ArrayList<String>();
+        List<String> projects = new ArrayList<String>();
         File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
@@ -437,6 +448,7 @@ public class Maven2RepositoryMetadataResolver
                 }
             }
         }
+        Collections.sort( projects );
         return projects;
     }
 
@@ -503,10 +515,10 @@ public class Maven2RepositoryMetadataResolver
                 // TODO: very crude, migrate the functionality from the repository-layer here
                 if ( VersionUtil.isGenericSnapshot( projectVersion ) )
                 {
-                    String mainVersion =
-                        projectVersion.substring( 0, projectVersion.length() - 8 ); // 8 is length of "SNAPSHOT"
-                    Matcher m = Pattern.compile( projectId + "-" + mainVersion + "([0-9]{8}.[0-9]{6}-[0-9]+).*" ).matcher(
-                        file.getName() );
+                    String mainVersion = projectVersion.substring( 0, projectVersion.length() -
+                        8 ); // 8 is length of "SNAPSHOT"
+                    Matcher m = Pattern.compile(
+                        projectId + "-" + mainVersion + "([0-9]{8}.[0-9]{6}-[0-9]+).*" ).matcher( file.getName() );
                     m.matches();
                     String version = mainVersion + m.group( 1 );
 
