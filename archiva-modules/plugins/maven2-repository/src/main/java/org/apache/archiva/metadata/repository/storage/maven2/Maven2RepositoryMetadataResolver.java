@@ -378,18 +378,23 @@ public class Maven2RepositoryMetadataResolver
     {
         File dir = getRepositoryBasedir( repoId );
 
-        List<String> rootNamespaces;
+        return getSortedFiles( dir, filter );
+    }
+
+    private static Collection<String> getSortedFiles( File dir, Filter<String> filter )
+    {
+        List<String> fileNames;
         String[] files = dir.list( new DirectoryFilter( filter ) );
         if ( files != null )
         {
-            rootNamespaces = new ArrayList<String>( Arrays.asList( files ) );
-            Collections.sort( rootNamespaces );
+            fileNames = new ArrayList<String>( Arrays.asList( files ) );
+            Collections.sort( fileNames );
         }
         else
         {
-            rootNamespaces = Collections.emptyList();
+            fileNames = Collections.emptyList();
         }
-        return rootNamespaces;
+        return fileNames;
     }
 
     private File getRepositoryBasedir( String repoId )
@@ -469,8 +474,7 @@ public class Maven2RepositoryMetadataResolver
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId );
 
         // all directories in a project directory can be considered a version
-        String[] files = dir.list( new DirectoryFilter( filter ) );
-        return files != null ? Arrays.asList( files ) : Collections.<String>emptyList();
+        return getSortedFiles( dir, filter );
     }
 
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
