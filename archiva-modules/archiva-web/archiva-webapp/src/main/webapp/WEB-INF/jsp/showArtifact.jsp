@@ -27,31 +27,41 @@
 <head>
   <title>Browse Repository</title>
   <s:head/>
+  <script type="text/javascript" src="<c:url value='/js/jquery-1.3.2.min.js'/>"></script>
+  <script type="text/javascript" src="<c:url value='/js/jquery-ui-1.7.2.custom.min.js'/>"></script>
+  <script type="text/javascript">
+	$(function() {
+		$("#accordion").accordion({autoHeight:false});
+	});
+	</script>
+  <link rel="stylesheet" href="<c:url value='/css/no-theme/jquery-ui-1.7.2.custom.css'/>" type="text/css" media="all"/>
 </head>
 
 <body>
 
 <s:set name="model" value="model"/>
+<c:set var="mavenFacet" value="${model.facets['org.apache.archiva.metadata.repository.storage.maven2']}" />
+
 <c:choose>
-  <c:when test="${model.packaging == 'maven-plugin'}">
+  <c:when test="${mavenFacet.packaging == 'maven-plugin'}">
     <c:url var="imageUrl" value="/images/mavenplugin.gif"/>
     <c:set var="packageName">Maven Plugin</c:set>
   </c:when>
-  <c:when test="${model.packaging == 'pom'}">
+  <c:when test="${mavenFacet.packaging == 'pom'}">
     <c:url var="imageUrl" value="/images/pom.gif"/>
     <c:set var="packageName">POM</c:set>
   </c:when>
   <%-- These types aren't usually set in the POM yet, so we fudge them for the well known ones --%>
-  <c:when test="${model.packaging == 'maven-archetype' or model.groupId == 'org.apache.maven.archetypes'}">
+  <c:when test="${mavenFacet.packaging == 'maven-archetype' or mavenFacet.groupId == 'org.apache.maven.archetypes'}">
     <c:url var="imageUrl" value="/images/archetype.gif"/>
     <c:set var="packageName">Maven Archetype</c:set>
   </c:when>
-  <c:when test="${model.packaging == 'maven-skin' or model.groupId == 'org.apache.maven.skins'}">
+  <c:when test="${mavenFacet.packaging == 'maven-skin' or mavenFacet.groupId == 'org.apache.maven.skins'}">
     <c:url var="imageUrl" value="/images/skin.gif"/>
     <c:set var="packageName">Maven Skin</c:set>
   </c:when>
   <%-- Must be last so that the above get picked up if possible --%>
-  <c:when test="${model.packaging == 'jar'}">
+  <c:when test="${mavenFacet.packaging == 'jar'}">
     <c:url var="imageUrl" value="/images/jar.gif"/>
     <c:set var="packageName">JAR</c:set>
   </c:when>
@@ -65,7 +75,7 @@
 <h1>
   <c:choose>
     <c:when test="${empty (model.name)}">
-      ${model.artifactId}
+      ${mavenFacet.artifactId}
     </c:when>
     <c:otherwise>
       ${model.name}
@@ -132,8 +142,64 @@
     </span>
   </div>
 
-  <div class="sidebar3">
-    <archiva:downloadArtifact groupId="${model.groupId}" artifactId="${model.artifactId}" version="${model.version}"/>
+  <div id="download">
+    <h2>Download</h2>
+
+    <div id="accordion">
+      <c:forEach items="${snapshotVersions}" var="v">
+        <p><a href="#">${v}</a></p>
+        <div>
+          <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tbody>
+            <c:forEach items="${artifacts[v]}" var="a">
+              <c:choose>
+                <c:when test="${a.type == 'maven-plugin'}">
+                  <c:url var="imageUrl" value="/images/download-type-maven-plugin.png"/>
+                  <c:set var="packageName">Maven Plugin</c:set>
+                </c:when>
+                <c:when test="${a.type == 'pom'}">
+                  <c:url var="imageUrl" value="/images/download-type-pom.png"/>
+                  <c:set var="packageName">POM</c:set>
+                </c:when>
+                <%-- These types aren't usually set in the POM yet, so we fudge them for the well known ones --%>
+                <c:when test="${a.type == 'maven-archetype' or a.namespace == 'org.apache.maven.archetypes'}">
+                  <c:url var="imageUrl" value="/images/download-type-archetype.png"/>
+                  <c:set var="packageName">Maven Archetype</c:set>
+                </c:when>
+                <c:when test="${a.type == 'maven-skin' or a.namespace == 'org.apache.maven.skins'}">
+                  <c:url var="imageUrl" value="/images/download-type-skin.png"/>
+                  <c:set var="packageName">Maven Skin</c:set>
+                </c:when>
+                <c:when test="${a.type == 'java-source'}">
+                  <c:url var="imageUrl" value="/images/download-type-jar.png"/>
+                  <c:set var="packageName">Java Sources</c:set>
+                </c:when>
+                <c:when test="${a.type == 'javadoc'}">
+                  <c:url var="imageUrl" value="/images/download-type-other.png"/>
+                  <c:set var="packageName">JavaDoc Archive</c:set>
+                </c:when>
+                <%-- Must be last so that the above get picked up if possible --%>
+                <c:when test="${a.type == 'jar'}">
+                  <c:url var="imageUrl" value="/images/download-type-jar.png"/>
+                  <c:set var="packageName">JAR</c:set>
+                </c:when>
+                <c:otherwise>
+                  <c:url var="imageUrl" value="/images/download-type-other.png"/>
+                  <c:set var="packageName">${a.type}</c:set>
+                </c:otherwise>
+              </c:choose>
+              <c:url var="url" value="/repository/${a.repositoryId}/${a.path}" />
+              <tr>
+                <td><a href="${url}" title="Download ${a.id}"><img src="${imageUrl}" alt="" width="24" height="24"/></a></td>
+                <td class="type"><a href="${url}" title="Download ${a.id}">${packageName}</a></td>
+                <td class="size">${a.size}</td>
+              </tr>
+            </c:forEach>
+            </tbody>
+          </table>
+        </div>
+      </c:forEach>
+    </div>
   </div>
 
   <%-- TODO: perhaps using ajax? --%>
@@ -143,7 +209,7 @@
       <c:when test="${dependencies != null}">
         <%@ include file="/WEB-INF/jsp/include/artifactDependencies.jspf" %>
       </c:when>
-      <c:when test="${dependencyTree != null}">
+      <c:when test="${dependencyTree}">
         <%@ include file="/WEB-INF/jsp/include/dependencyTree.jspf" %>
       </c:when>
       <c:when test="${dependees != null}">
@@ -159,6 +225,12 @@
         <%@ include file="/WEB-INF/jsp/include/artifactInfo.jspf" %>
       </c:otherwise>
     </c:choose>
+
+    <s:if test="hasActionMessages()">
+      <div id="messages">
+        <s:actionmessage />
+      </div>
+    </s:if>
   </div>
 </div>
 

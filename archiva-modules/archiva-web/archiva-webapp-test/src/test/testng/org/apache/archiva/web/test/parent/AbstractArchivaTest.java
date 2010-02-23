@@ -118,8 +118,8 @@ public abstract class AbstractArchivaTest
 		submit();
         	if ( success )
         	{
-        	    	assertAuthenticatedPage( username );
-        	}
+                assertUserLoggedIn( username );
+            }
         	else
         	{
         	    assertLoginPage();
@@ -142,18 +142,8 @@ public abstract class AbstractArchivaTest
         	assertTextPresent( "Need an Account? Register!" );
         	assertTextPresent( "Forgot your Password? Request a password reset." );
 	}
-	
-	public void assertAuthenticatedPage( String username )
-	{
-		assertTextPresent( "Current User" );
-		assertTextPresent( "Edit Details" );
-		assertTextPresent( "Logout" );
-		assertTextNotPresent( "Login" );
-		assertTextPresent( username );
-	}
-	
-	
-	//User Management
+
+    //User Management
 	public void goToUserManagementPage()
 	{
 		clickLinkWithText( "User Management" );
@@ -278,6 +268,10 @@ public abstract class AbstractArchivaTest
 
             submitLoginPage( username, password, false, valid, assertReturnPage );
         }
+        if ( valid )
+        {
+            assertUserLoggedIn( username );
+        }
     }
     
     public void submitLoginPage( String username, String password )
@@ -304,10 +298,7 @@ public abstract class AbstractArchivaTest
 
         if ( validUsernamePassword )
         {
-            assertTextPresent( "Current User:" );
-            assertTextPresent( username );
-            assertLinkPresent( "Edit Details" );
-            assertLinkPresent( "Logout" );
+            assertUserLoggedIn( username );
         }
         else
         {
@@ -321,8 +312,17 @@ public abstract class AbstractArchivaTest
             }
         }
     }
-    
-	 // User Roles
+
+    protected void assertUserLoggedIn( String username )
+    {
+        assertTextPresent( "Current User:" );
+        assertTextPresent( username );
+        assertLinkPresent( "Edit Details" );
+        assertLinkPresent( "Logout" );
+        assertTextNotPresent( "Login" );
+    }
+
+    // User Roles
 	public void assertUserRoleCheckBoxPresent(String value) 
 	{
 		getSelenium()	.isElementPresent("xpath=//input[@id='addRolesToUser_addNDSelectedRoles' and @name='addNDSelectedRoles' and @value='"	+ value + "']");
@@ -400,7 +400,7 @@ public abstract class AbstractArchivaTest
 		else 
 		{
 			assertTextPresent( "Search" );
-			String navMenu = "Find Artifact,Browse,Reports,User Management,User Roles,Appearance,Upload Artifact,Delete Artifact,Repository Groups,Repositories,Proxy Connectors,Legacy Support,Network Proxies,Repository Scanning,Database";
+			String navMenu = "Find Artifact,Browse,Reports,User Management,User Roles,Appearance,Upload Artifact,Delete Artifact,Repository Groups,Repositories,Proxy Connectors,Legacy Support,Network Proxies,Repository Scanning";
 			String[] arrayMenu = navMenu.split( "," );
 			for (String navmenu : arrayMenu )
 				assertLinkPresent( navmenu );
@@ -552,5 +552,14 @@ public abstract class AbstractArchivaTest
     	setFieldValue( "repository.retentionCount" , retentionCount );
     	//TODO	
     	clickButtonWithValue( "Add Repository" );
+    }
+
+    protected void logout()
+    {
+        clickLinkWithText("Logout");
+        assertTextNotPresent( "Current User:" );
+        assertLinkNotPresent( "Edit Details" );
+        assertLinkNotPresent( "Logout" );
+        assertLinkPresent( "Login" );
     }
 }

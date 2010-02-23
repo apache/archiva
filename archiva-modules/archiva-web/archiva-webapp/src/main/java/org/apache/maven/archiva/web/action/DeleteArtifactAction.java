@@ -24,22 +24,22 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactVersionsConstraint;
-import org.apache.maven.archiva.database.updater.DatabaseConsumers;
-import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
@@ -49,6 +49,7 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.repository.audit.Auditable;
+import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
@@ -58,12 +59,9 @@ import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 
-import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.Validateable;
-
 /**
  * Delete an artifact. Metadata will be updated if one exists, otherwise it would be created.
- * 
+ *
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteArtifactAction" instantiation-strategy="per-lookup"
  */
 public class DeleteArtifactAction
@@ -111,16 +109,16 @@ public class DeleteArtifactAction
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * @plexus.requirement role-hint="jdo"
+     * @plexus.requirement role="org.apache.maven.archiva.repository.events.RepositoryListener"
      */
-    private ArtifactDAO artifactDAO;
+    private List<RepositoryListener> listeners;
+
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5};
 
     /**
-     * @plexus.requirement 
+     * @plexus.requirement
      */
-    private DatabaseConsumers databaseConsumers;
-
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+    private MetadataRepository metadataRepository;
 
     public String getGroupId()
     {
@@ -213,13 +211,15 @@ public class DeleteArtifactAction
 
             String path = repository.toMetadataPath( ref );
             int index = path.lastIndexOf( '/' );
-            File targetPath = new File( repoConfig.getLocation(), path.substring( 0, index ) );
+            path = path.substring( 0, index );
+            File targetPath = new File( repoConfig.getLocation(), path );
 
             if ( !targetPath.exists() )
             {
                 throw new ContentNotFoundException( groupId + ":" + artifactId + ":" + version );
             }
 
+            // TODO: this should be in the storage mechanism so that it is all tied together
             // delete from file system
             repository.deleteVersion( ref );
 
@@ -228,37 +228,32 @@ public class DeleteArtifactAction
 
             updateMetadata( metadata, metadataFile, lastUpdatedTimestamp );
 
-            ArtifactVersionsConstraint constraint =
-                new ArtifactVersionsConstraint( repositoryId, groupId, artifactId, false );
-            List<ArchivaArtifact> artifacts = null;
+            Collection<ArtifactMetadata> artifacts =
+                metadataRepository.getArtifacts( repositoryId, groupId, artifactId, version );
 
-            try
+            for ( ArtifactMetadata artifact : artifacts )
             {
-                artifacts = artifactDAO.queryArtifacts( constraint );
-
-                if ( artifacts != null )
+                // TODO: mismatch between artifact (snapshot) version and project (base) version here
+                if ( artifact.getVersion().equals( version ) )
                 {
-                    for ( ArchivaArtifact artifact : artifacts )
+                    metadataRepository.deleteArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
+                                                       artifact.getProject(), artifact.getVersion(),
+                                                       artifact.getId() );
+
+                    // TODO: move into the metadata repository proper - need to differentiate attachment of
+                    //       repository metadata to an artifact
+                    for ( RepositoryListener listener : listeners )
                     {
-                        if ( artifact.getVersion().equals( version ) )
-                        {
-                            databaseConsumers.executeCleanupConsumer( artifact );
-                        }
+                        listener.deleteArtifact( repository.getId(), artifact.getNamespace(), artifact.getProject(),
+                                                 artifact.getVersion(), artifact.getId() );
                     }
+
+                    triggerAuditEvent( repositoryId, path, AuditEvent.REMOVE_FILE );
                 }
             }
-            catch ( ArchivaDatabaseException e )
-            {
-                addActionError( "Error occurred while cleaning up database: " + e.getMessage() );
-                return ERROR;
-            }
 
-            String msg =
-                "Artifact \'" + groupId + ":" + artifactId + ":" + version +
-                    "\' was successfully deleted from repository \'" + repositoryId + "\'";
-
-            triggerAuditEvent( repositoryId, groupId + ":" + artifactId + ":" + version,
-                               AuditEvent.REMOVE_FILE );
+            String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
+                "\' was successfully deleted from repository \'" + repositoryId + "\'";
 
             addActionMessage( msg );
 
@@ -302,7 +297,7 @@ public class DeleteArtifactAction
 
     /**
      * Update artifact level metadata. Creates one if metadata does not exist after artifact deletion.
-     * 
+     *
      * @param metadata
      */
     private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp )
@@ -403,5 +398,10 @@ public class DeleteArtifactAction
             log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
+    }
+
+    public List<RepositoryListener> getListeners()
+    {
+        return listeners;
     }
 }

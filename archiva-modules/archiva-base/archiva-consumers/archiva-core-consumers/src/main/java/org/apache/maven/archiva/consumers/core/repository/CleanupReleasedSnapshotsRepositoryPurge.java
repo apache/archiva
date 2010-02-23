@@ -177,7 +177,8 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                     // TODO: looks incomplete, might not delete related artifacts?
                     for ( RepositoryListener listener : listeners )
                     {
-                        listener.deleteArtifact( repository, artifact );
+                        listener.deleteArtifact( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
+                                                 artifact.getVersion(), artifactFile.getName() );
                     }
                     
                     needsMetadataUpdate = true;

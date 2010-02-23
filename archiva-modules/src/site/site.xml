@@ -19,6 +19,11 @@
   -->
 
 <project>
+  <skin>
+    <groupId>org.apache.archiva</groupId>
+    <artifactId>skin</artifactId>
+    <version>${project.version}</version>
+  </skin>
   <body>
     <breadcrumbs>
 <!-- TODO: need to stop them inheriting 
@@ -26,6 +31,13 @@
 -->
     </breadcrumbs>
 
+    <menu name="Developers">
+      <item name="Overview" href="/index.html" />
+      <item name="Terminology" href="/terminology.html" />
+      <item name="Metadata Control Model" href="/metadata-content-model.html" />
+      <item name="Metadata API" href="/metadata-api.html" />
+      <item name="Repository API" href="/repository-api.html" />
+    </menu>
     <menu ref="modules" />
   </body>
 </project>

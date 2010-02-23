@@ -106,32 +106,6 @@
 END SNIPPET: setting-up-mysql
     -->
 
-  <!-- Archiva database -->
-  <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/archiva</Arg>
-    <Arg>
-      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
-        <Set name="serverName">localhost</Set>
-        <Set name="databaseName">archiva</Set>
-        <Set name="user">archiva</Set>
-        <Set name="password">sa</Set>
-      </New>
-    </Arg>
-  </New>
-
-  <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/archivaShutdown</Arg>
-    <Arg>
-      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
-        <!-- <Set name="url">jdbc:mysql://localhost/archiva</Set> -->
-        <Set name="serverName">localhost</Set>
-        <Set name="databaseName">archiva</Set>
-        <Set name="user">archiva</Set>
-        <Set name="password">sa</Set>
-      </New>
-    </Arg>
-  </New>
-
   <!-- users / Security Database -->
   <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/users</Arg>

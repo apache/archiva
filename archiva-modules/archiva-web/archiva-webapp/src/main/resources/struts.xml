@@ -177,7 +177,7 @@
       <result name="results">/WEB-INF/jsp/results.jsp</result>
       <result name="error">/WEB-INF/jsp/findArtifact.jsp</result>
       <result name="artifact" type="redirect">
-        /browse/${databaseResults.get(0).getGroupId()}/${databaseResults.get(0).getArtifactId()}/${databaseResults.get(0).getVersion()}
+        /browse/${databaseResults.get(0).getNamespace()}/${databaseResults.get(0).getProject()}/${databaseResults.get(0).getVersion()}
       </result>
     </action>    
 
@@ -215,7 +215,7 @@
     </action>
 
     <action name="showArtifactDependencyTree" class="showArtifactAction" method="dependencyTree">
-      <result>/WEB-INF/jsp/artifact/dependencyTree.jsp</result>
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
   </package>
@@ -438,19 +438,6 @@
       <result name="success" type="redirect-action">
         <param name="actionName">repositoryScanning</param>
       </result>
-    </action>
-
-    <!-- .\ DATABASE \.________________________________________________ -->
-
-    <action name="database" class="databaseAction" method="input">
-      <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
-      <result name="success" type="redirect-action">
-        <param name="actionName">database</param>
-      </result>
-    </action>
-
-    <action name="updateDatabase" class="schedulerAction" method="updateDatabase">
-      <result type="redirect-action">database</result>
     </action>
 
     <!-- .\ CONFIGURATION \.___________________________________________ -->

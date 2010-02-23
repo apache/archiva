@@ -21,22 +21,16 @@ package org.apache.maven.archiva.web.action.reports;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
+import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.audit.AuditManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.SimpleConstraint;
-import org.apache.maven.archiva.database.constraints.ArchivaAuditLogsConstraint;
-import org.apache.maven.archiva.database.constraints.MostRecentArchivaAuditLogsConstraint;
-import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
@@ -48,11 +42,9 @@ import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
-import com.opensymphony.xwork2.Preparable;
-
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="viewAuditLogReport"
- *                   instantiation-strategy="per-lookup"
+ * instantiation-strategy="per-lookup"
  */
 public class ViewAuditLogReportAction
     extends PlexusActionSupport
@@ -65,16 +57,6 @@ public class ViewAuditLogReportAction
      */
     private UserRepositories userRepositories;
 
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaAuditLogsDao auditLogsDao;
-
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaDAO dao;
-
     private String repository;
 
     private List<String> repositories;
@@ -86,7 +68,7 @@ public class ViewAuditLogReportAction
     private String startDate;
 
     private String endDate;
-    
+
     private int rowCount = 30;
 
     private int page = 1;
@@ -97,28 +79,39 @@ public class ViewAuditLogReportAction
 
     protected boolean isLastPage = true;
 
-    private List<ArchivaAuditLogs> auditLogs;
+    private List<AuditEvent> auditLogs;
 
     private static final String ALL_REPOSITORIES = "all";
 
     protected int[] range = new int[2];
-    
+
     private String initial = "true";
-    
+
     private String headerName;
-    
+
     private static final String HEADER_LATEST_EVENTS = "Latest Events";
-    
+
     private static final String HEADER_RESULTS = "Results";
-    
-    private String[] datePatterns = new String[] { "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", 
-        "dd MMMMM yyyy", "dd/MM/yy", "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy",
-        "MM-dd-yy" };
+
+    private String[] datePatterns =
+        new String[]{"MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", "dd MMMMM yyyy", "dd/MM/yy",
+            "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy", "MM-dd-yy"};
+
+    /**
+     * @plexus.requirement
+     */
+    private AuditManager auditManager;
 
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
-        return null;
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        // TODO: should require this, but for now we trust in the list of repositories
+//        bundle.setRequiresAuthentication( true );
+//        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_VIEW_AUDIT_LOG );
+
+        return bundle;
     }
 
     public void setServletRequest( HttpServletRequest request )
@@ -126,20 +119,21 @@ public class ViewAuditLogReportAction
         this.request = request;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public void prepare()
         throws Exception
     {
         repositories = new ArrayList<String>();
         repositories.add( ALL_REPOSITORIES );
-        repositories.addAll( getObservableRepositories() );
+        List<String> repos = getManagableRepositories();
+        repositories.addAll( repos );
 
         auditLogs = null;
         groupId = "";
         artifactId = "";
         repository = "";
-                
-        if( Boolean.parseBoolean( initial ) )
+
+        if ( Boolean.parseBoolean( initial ) )
         {
             headerName = HEADER_LATEST_EVENTS;
         }
@@ -148,47 +142,20 @@ public class ViewAuditLogReportAction
             headerName = HEADER_RESULTS;
         }
 
-        SimpleConstraint constraint = new MostRecentArchivaAuditLogsConstraint();
-        auditLogs = filterLogs( (List<ArchivaAuditLogs>) dao.query( constraint ) );
+        auditLogs = auditManager.getMostRecentAuditEvents( repos );
     }
 
     public String execute()
         throws Exception
     {
-        auditLogs = null;
-        String artifact = "";
-        
-        if ( groupId != null && !"".equals( groupId.trim() ) )
-        {
-            String modifiedGroupId = groupId.replace( ".", "/" );
-            artifact = modifiedGroupId + ( ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( "/" + artifactId + "/%" ) : "%" );
-        }
-        else
-        {               
-            artifact = ( artifactId != null  && !"".equals( artifactId.trim() ) ) ? ( "%" + artifactId + "%" ) : "";
-        }        
-                
         Date startDateInDF = null;
-        Date endDateInDF = null;        
-        if ( startDate == null || "".equals( startDate ) )
-        {            
-            Calendar cal = Calendar.getInstance();
-            cal.set( Calendar.HOUR, 0 );
-            cal.set( Calendar.MINUTE, 0 );
-            cal.set( Calendar.SECOND, 0 );
-
-            startDateInDF = cal.getTime();
-        }
-        else
+        Date endDateInDF = null;
+        if ( !StringUtils.isEmpty( startDate ) )
         {
             startDateInDF = DateUtils.parseDate( startDate, datePatterns );
         }
 
-        if ( endDate == null || "".equals( endDate ) )
-        {
-            endDateInDF = Calendar.getInstance().getTime();
-        } 
-        else
+        if ( !StringUtils.isEmpty( endDate ) )
         {
             endDateInDF = DateUtils.parseDate( endDate, datePatterns );
             Calendar cal = Calendar.getInstance();
@@ -196,75 +163,66 @@ public class ViewAuditLogReportAction
             cal.set( Calendar.HOUR, 23 );
             cal.set( Calendar.MINUTE, 59 );
             cal.set( Calendar.SECOND, 59 );
-            
-            endDateInDF = cal.getTime();            
+
+            endDateInDF = cal.getTime();
         }
 
         range[0] = ( page - 1 ) * rowCount;
         range[1] = ( page * rowCount ) + 1;
-        
-        ArchivaAuditLogsConstraint constraint = null;
+
+        Collection<String> repos = getManagableRepositories();
         if ( !repository.equals( ALL_REPOSITORIES ) )
         {
-            constraint =
-                new ArchivaAuditLogsConstraint( range, artifact, repository, AuditEvent.UPLOAD_FILE, startDateInDF, endDateInDF );
+            if ( repos.contains( repository ) )
+            {
+                repos = Collections.singletonList( repository );
+            }
+            else
+            {
+                repos = Collections.emptyList();
+            }
+        }
+
+        if ( StringUtils.isEmpty( groupId ) && !StringUtils.isEmpty( artifactId ) )
+        {
+            // Until we store the full artifact metadata in the audit event, we can't query by these individually
+            addActionError( "If you specify an artifact ID, you must specify a group ID" );
+            auditLogs = null;
+            return INPUT;
+        }
+
+        String resource = null;
+        if ( !StringUtils.isEmpty( groupId ) )
+        {
+            String groupIdAsPath = groupId.replace( '.', '/' );
+            if ( StringUtils.isEmpty( artifactId ) )
+            {
+                resource = groupIdAsPath;
+            }
+            else
+            {
+                resource = groupIdAsPath + "/" + artifactId;
+            }
+        }
+
+        auditLogs = auditManager.getAuditEventsInRange( repos, resource, startDateInDF, endDateInDF );
+
+        if ( auditLogs.isEmpty() )
+        {
+            addActionError( "No audit logs found." );
+            initial = "true";
         }
         else
         {
-            constraint =
-                new ArchivaAuditLogsConstraint( range, artifact, null, AuditEvent.UPLOAD_FILE, startDateInDF, endDateInDF );
+            initial = "false";
         }
 
-        try
-        {
-            auditLogs = filterLogs( auditLogsDao.queryAuditLogs( constraint ) );
-            
-            if( auditLogs.isEmpty() )
-            {
-                addActionError( "No audit logs found." );
-                initial = "true";                
-            }
-            else
-            {   
-                initial = "false";
-            }
-            
-            headerName = HEADER_RESULTS;         
-            paginate();
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            addActionError( "No audit logs found." );
-            return ERROR;
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            addActionError( "Error occurred while querying audit logs." );
-            return ERROR;
-        }
+        headerName = HEADER_RESULTS;
+        paginate();
 
         return SUCCESS;
     }
-    
-    private List<ArchivaAuditLogs> filterLogs( List<ArchivaAuditLogs> auditLogs )
-    {
-        List<String> observableRepos = getManageableRepositories();
-        List<ArchivaAuditLogs> filteredAuditLogs = new ArrayList<ArchivaAuditLogs>();
-        
-        if( auditLogs != null )
-        {
-            for( ArchivaAuditLogs auditLog : auditLogs )
-            {
-                if( observableRepos.contains( auditLog.getRepositoryId() ) )
-                {
-                    filteredAuditLogs.add( auditLog );
-                }
-            }
-        }
-        
-        return filteredAuditLogs;
-    }
-        
+
     private void paginate()
     {
         if ( auditLogs.size() <= rowCount )
@@ -272,51 +230,28 @@ public class ViewAuditLogReportAction
             isLastPage = true;
         }
         else
-        {   
+        {
             isLastPage = false;
             auditLogs.remove( rowCount );
         }
 
-        prev =
-            request.getRequestURL() + "?page=" + ( page - 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
-                "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate=" +
-                endDate;
-        
-        next =
-            request.getRequestURL() + "?page=" + ( page + 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
-                "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate=" +
-                endDate;
-        
+        prev = request.getRequestURL() + "?page=" + ( page - 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
+            "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate=" +
+            endDate;
+
+        next = request.getRequestURL() + "?page=" + ( page + 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
+            "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate=" +
+            endDate;
+
         prev = StringUtils.replace( prev, " ", "%20" );
         next = StringUtils.replace( next, " ", "%20" );
     }
 
-    private List<String> getManageableRepositories()
+    private List<String> getManagableRepositories()
     {
         try
         {
             return userRepositories.getManagableRepositoryIds( getPrincipal() );
-        }
-        catch ( PrincipalNotFoundException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( AccessDeniedException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( ArchivaSecurityException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        return Collections.emptyList();
-    }
-    
-    private List<String> getObservableRepositories()
-    {
-        try
-        {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
         }
         catch ( PrincipalNotFoundException e )
         {
@@ -373,14 +308,9 @@ public class ViewAuditLogReportAction
         this.artifactId = artifactId;
     }
 
-    public List<ArchivaAuditLogs> getAuditLogs()
+    public List<AuditEvent> getAuditLogs()
     {
         return auditLogs;
-    }
-
-    public void setAuditLogs( List<ArchivaAuditLogs> auditLogs )
-    {
-        this.auditLogs = auditLogs;
     }
 
     public int getRowCount()
@@ -432,7 +362,7 @@ public class ViewAuditLogReportAction
     {
         this.isLastPage = isLastPage;
     }
-    
+
     public String getPrev()
     {
         return prev;
@@ -452,7 +382,7 @@ public class ViewAuditLogReportAction
     {
         this.next = next;
     }
-    
+
     public String getInitial()
     {
         return initial;

@@ -21,37 +21,27 @@ package org.apache.maven.archiva.web.action;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.opensymphony.xwork2.Preparable;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -59,7 +49,7 @@ import com.opensymphony.xwork2.Preparable;
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
  */
 public class SearchAction 
-    extends PlexusActionSupport
+    extends AbstractRepositoryBasedAction
     implements Preparable
 {
     /**
@@ -71,25 +61,15 @@ public class SearchAction
     private String q;
 
     /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaDAO dao;
-
-    /**
      * The Search Results.
      */
     private SearchResults results;
-    
-    /**
-     * @plexus.requirement
-     */
-    private UserRepositories userRepositories;
-    
+
     private static final String RESULTS = "results";
 
     private static final String ARTIFACT = "artifact";
 
-    private List<ArchivaArtifact> databaseResults;
+    private List<ArtifactMetadata> databaseResults;
     
     private int currentPage = 0;
     
@@ -126,7 +106,12 @@ public class SearchAction
     private Map<String, String> searchFields;
 
     private String infoMessage;
-        
+
+    /**
+     * @plexus.requirement
+     */
+    private MetadataRepository metadataRepository;
+
     public boolean isFromResultsPage()
     {
         return fromResultsPage;
@@ -308,55 +293,13 @@ public class SearchAction
         {
             totalPages = totalPages + 1;
         }
-        // TODO: filter / combine the artifacts by version? (is that even possible with non-artifact hits?)
-
-        /* I don't think that we should, as I expect us to utilize the 'score' system in lucene in
-         * the future to return relevant links better.
-         * I expect the lucene scoring system to take multiple hits on different areas of a single document
-         * to result in a higher score.
-         *   - Joakim
-         */
 
         if( !isEqualToPreviousSearchTerm( q ) )
         {
             buildCompleteQueryString( q );
         }
        
-        //Lets get the versions for the artifact we just found and display them
-        //Yes, this is in the lucene index but its more challenging to get them out when we are searching by project
-        
-        // TODO: do we still need to do this? all hits are already filtered in the NexusRepositorySearch
-        //      before being returned as search results
-        for ( SearchResultHit resultHit : results.getHits() )
-        {
-            final List<String> versions =
-                (List<String>) dao.query( new UniqueVersionConstraint( getObservableRepos(), resultHit.getGroupId(),
-                                                    resultHit.getArtifactId() ) );
-            if ( versions != null && !versions.isEmpty() )
-            {
-                resultHit.setVersion( null );
-                resultHit.setVersions( filterTimestampedSnapshots( versions ) );
-            }
-        }
-       
         return SUCCESS;
-    }
-
-    /**
-     * Remove timestamped snapshots from versions
-     */
-    private static List<String> filterTimestampedSnapshots(List<String> versions)
-    {
-        final List<String> filtered = new ArrayList<String>();
-        for (final String version : versions)
-        {
-            final String baseVersion = VersionUtil.getBaseVersion(version);
-            if (!filtered.contains(baseVersion))
-            {
-                filtered.add(baseVersion);
-            }
-        }
-        return filtered;
     }
 
     public String findArtifact()
@@ -370,10 +313,11 @@ public class SearchAction
             return INPUT;
         }
 
-        Constraint constraint = new ArtifactsByChecksumConstraint( q );
-        
-        ArtifactDAO artifactDao = dao.getArtifactDAO();
-        databaseResults = artifactDao.queryArtifacts( constraint );
+        databaseResults = new ArrayList<ArtifactMetadata>();
+        for ( String repoId : getObservableRepos() )
+        {
+            databaseResults.addAll( metadataRepository.getArtifactsByChecksum( repoId, q ) );
+        }
 
         if ( databaseResults.isEmpty() )
         {
@@ -393,27 +337,6 @@ public class SearchAction
     public String doInput()
     {
         return INPUT;
-    }
-
-    private List<String> getObservableRepos()
-    {
-        try
-        {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
-        }
-        catch ( PrincipalNotFoundException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( AccessDeniedException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( ArchivaSecurityException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        return Collections.emptyList();
     }
 
     private void buildCompleteQueryString( String searchTerm )
@@ -471,7 +394,7 @@ public class SearchAction
         return results;
     }
 
-    public List<ArchivaArtifact> getDatabaseResults()
+    public List<ArtifactMetadata> getDatabaseResults()
     {
         return databaseResults;
     }
@@ -632,26 +555,6 @@ public class SearchAction
         this.nexusSearch = nexusSearch;
     }
 
-    public ArchivaDAO getDao()
-    {
-        return dao;
-    }
-
-    public void setDao( ArchivaDAO dao )
-    {
-        this.dao = dao;
-    }
-
-    public UserRepositories getUserRepositories()
-    {
-        return userRepositories;
-    }
-
-    public void setUserRepositories( UserRepositories userRepositories )
-    {
-        this.userRepositories = userRepositories;
-    }
-
     public Map<String, String> getSearchFields()
     {
         return searchFields;
@@ -670,5 +573,10 @@ public class SearchAction
     public void setInfoMessage( String infoMessage )
     {
         this.infoMessage = infoMessage;
+    }
+
+    public void setMetadataRepository( MetadataRepository metadataRepository )
+    {
+        this.metadataRepository = metadataRepository;
     }
 }

@@ -38,7 +38,69 @@ public class Dependency
     private String type;
     
     private String scope;
-    
+
+    @Override
+    public String toString()
+    {
+        return "Dependency{" + "groupId='" + groupId + '\'' + ", artifactId='" + artifactId + '\'' + ", version='" +
+            version + '\'' + ", classifier='" + classifier + '\'' + ", type='" + type + '\'' + ", scope='" + scope +
+            '\'' + '}';
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        Dependency that = (Dependency) o;
+
+        if ( !artifactId.equals( that.artifactId ) )
+        {
+            return false;
+        }
+        if ( classifier != null ? !classifier.equals( that.classifier ) : that.classifier != null )
+        {
+            return false;
+        }
+        if ( !groupId.equals( that.groupId ) )
+        {
+            return false;
+        }
+        if ( scope != null ? !scope.equals( that.scope ) : that.scope != null )
+        {
+            return false;
+        }
+        if ( type != null ? !type.equals( that.type ) : that.type != null )
+        {
+            return false;
+        }
+        if ( !version.equals( that.version ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = groupId.hashCode();
+        result = 31 * result + artifactId.hashCode();
+        result = 31 * result + version.hashCode();
+        result = 31 * result + ( classifier != null ? classifier.hashCode() : 0 );
+        result = 31 * result + ( type != null ? type.hashCode() : 0 );
+        result = 31 * result + ( scope != null ? scope.hashCode() : 0 );
+        return result;
+    }
+
     public Dependency( String groupId, String artifactId, String version, String classifier, String type, String scope )
     {
         this.groupId = groupId;

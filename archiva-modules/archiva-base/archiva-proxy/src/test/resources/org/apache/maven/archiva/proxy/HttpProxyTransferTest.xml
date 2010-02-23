@@ -72,7 +72,8 @@
           <role-hint>default</role-hint>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.scheduled.ArchivaTaskScheduler</role>
+          <role>org.apache.archiva.scheduler.ArchivaTaskScheduler</role>
+          <role-hint>repository</role-hint>
           <field-name>scheduler</field-name>
         </requirement>
       </requirements>
@@ -98,11 +99,10 @@
         <time-to-live-seconds>1800</time-to-live-seconds>
       </configuration>
     </component>
-    
+
     <component>
-      <role>org.apache.maven.archiva.database.ArchivaDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.proxy.stubs.ArchivaDAOStub</implementation>
+      <role>org.apache.archiva.metadata.repository.MetadataRepository</role>
+      <implementation>org.apache.archiva.metadata.repository.TestMetadataRepository</implementation>
     </component>
   </components>
 </component-set>

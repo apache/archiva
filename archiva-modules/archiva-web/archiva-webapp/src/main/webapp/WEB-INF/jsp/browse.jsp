@@ -46,20 +46,20 @@
 <h1>Browse Repository</h1>
 
 <div id="contentArea">
-  <c:if test="${not empty results.selectedGroupId}">
+  <c:if test="${not empty groupId}">
     <p>
-      <archiva:groupIdLink var="${results.selectedGroupId}" includeTop="true" />
-      <c:if test="${not empty results.selectedArtifactId}">
+      <archiva:groupIdLink var="${groupId}" includeTop="true" />
+      <c:if test="${not empty artifactId}">
         <strong>${artifactId}</strong>
       </c:if>      
     </p>
   </c:if>
 
-  <c:if test="${not empty results.groupIds}">
+  <c:if test="${not empty namespaces}">
     <div id="nameColumn">
       <h2>Groups</h2>
       <ul>
-        <c:forEach items="${results.groupIds}" var="groupId">
+        <c:forEach items="${namespaces}" var="groupId">
           <c:set var="url">
             <s:url action="browseGroup" namespace="/">
               <s:param name="groupId" value="%{#attr.groupId}"/>
@@ -71,15 +71,15 @@
     </div>
   </c:if>
   
-  <c:if test="${not empty results.artifacts}">
+  <c:if test="${not empty projectIds}">
     <div id="nameColumn">
       <h2>Artifacts</h2>
       <ul>
         <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
-        <c:forEach items="${results.artifacts}" var="artifactId">
+        <c:forEach items="${projectIds}" var="artifactId">
           <c:set var="url">
             <s:url action="browseArtifact" namespace="/">
-              <s:param name="groupId" value="%{#attr.results.selectedGroupId}"/>
+              <s:param name="groupId" value="%{#attr.groupId}"/>
               <s:param name="artifactId" value="%{#attr.artifactId}"/>
             </s:url>
           </c:set>
@@ -95,25 +95,26 @@
     </div>
   </c:if>  
   
-  <c:if test="${not empty results.versions}">
-    <%-- show shared project information (MRM-1041) --%>    
-    
+  <c:if test="${not empty projectVersions}">
+    <%-- show shared project information (MRM-1041) TODO - share JSP code with artifactInfo.jspf --%>
+
+    <c:set var="mavenFacet" value="${sharedModel.facets['org.apache.archiva.metadata.repository.storage.maven2']}" />
     <h2>Versions</h2>
     <div id="nameColumn" class="versions">  
       <a class="expand" href="#">Artifact Info</a>      
       <table class="infoTable">        
         <tr>
           <th>Group ID</th>
-          <td>${sharedModel.groupId}</td>
+          <td>${mavenFacet.groupId}</td>
         </tr>
         <tr>
           <th>Artifact ID</th>
-          <td>${sharedModel.artifactId}</td>
+          <td>${mavenFacet.artifactId}</td>
         </tr>        
-        <c:if test="${(sharedModel.packaging != null) && (!empty sharedModel.packaging)}">
+        <c:if test="${(mavenFacet.packaging != null) && (!empty mavenFacet.packaging)}">
         <tr>
           <th>Packaging</th>
-          <td><code>${sharedModel.packaging}</code></td>
+          <td><code>${mavenFacet.packaging}</code></td>
         </tr>
         </c:if>
         <c:if test="${(sharedModel.name != null) && (!empty sharedModel.name)}">
@@ -128,10 +129,10 @@
           <td>
             <c:choose>
               <c:when test="${(sharedModel.organization.url != null) && (!empty sharedModel.organization.url)}">
-                <a href="${sharedModel.organization.url}">${sharedModel.organization.organizationName}</a>
+                <a href="${sharedModel.organization.url}">${sharedModel.organization.name}</a>
               </c:when>
               <c:otherwise>
-                ${sharedModel.organization.organizationName}
+                ${sharedModel.organization.name}
               </c:otherwise>
             </c:choose>
           </td>
@@ -142,8 +143,8 @@
           <th>Issue Tracker</th>
           <td>
             <c:choose>
-              <c:when test="${!empty (sharedModel.issueManagement.issueManagementUrl)}">
-                <a href="${sharedModel.issueManagement.issueManagementUrl}">${sharedModel.issueManagement.system}</a>
+              <c:when test="${!empty (sharedModel.issueManagement.url)}">
+                <a href="${sharedModel.issueManagement.url}">${sharedModel.issueManagement.system}</a>
               </c:when>
               <c:otherwise>
                 ${sharedModel.issueManagement.system}
@@ -157,8 +158,8 @@
           <th>Continuous Integration</th>
           <td>
             <c:choose>
-              <c:when test="${!empty (sharedModel.ciManagement.ciUrl)}">
-                <a href="${sharedModel.ciManagement.ciUrl}">${sharedModel.ciManagement.system}</a>
+              <c:when test="${!empty (sharedModel.ciManagement.url)}">
+                <a href="${sharedModel.ciManagement.url}">${sharedModel.ciManagement.system}</a>
               </c:when>
               <c:otherwise>
                 ${sharedModel.ciManagement.system}
@@ -171,11 +172,11 @@
     </div>      
 
     <ul>
-      <c:forEach items="${results.versions}" var="version">
+      <c:forEach items="${projectVersions}" var="version">
         <c:set var="url">
           <s:url action="showArtifact" namespace="/">
-            <s:param name="groupId" value="%{#attr.results.selectedGroupId}"/>
-            <s:param name="artifactId" value="%{#attr.results.selectedArtifactId}"/>
+            <s:param name="groupId" value="%{#attr.groupId}"/>
+            <s:param name="artifactId" value="%{#attr.artifactId}"/>
             <s:param name="version" value="%{#attr.version}"/>
           </s:url>
         </c:set>

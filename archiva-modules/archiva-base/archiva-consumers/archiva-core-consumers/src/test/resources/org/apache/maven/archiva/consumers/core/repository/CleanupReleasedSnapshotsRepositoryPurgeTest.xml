@@ -20,40 +20,6 @@
 
 <component-set>
   <components>
-
-    <!-- JdoAccess -->
-    <component>
-      <role>org.apache.maven.archiva.database.jdo.JdoAccess</role>
-      <role-hint>archiva</role-hint>
-      <implementation>org.apache.maven.archiva.database.jdo.JdoAccess</implementation>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.jdo.JdoFactory</role>
-          <role-hint>archiva</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-
-    <!-- JDO Factory -->
-    <component>
-      <role>org.codehaus.plexus.jdo.JdoFactory</role>
-      <role-hint>archiva</role-hint>
-      <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>
-      <configuration>
-        <persistenceManagerFactoryClass>org.jpox.PersistenceManagerFactoryImpl</persistenceManagerFactoryClass>
-        <driverName>org.hsqldb.jdbcDriver</driverName>
-        <userName>sa</userName>
-        <password></password>
-        <url>jdbc:hsqldb:mem:testdb</url>
-        <otherProperties>
-          <property>
-            <name>javax.jdo.PersistenceManagerFactoryClass</name>
-            <value>org.jpox.PersistenceManagerFactoryImpl</value>
-          </property>
-        </otherProperties>
-      </configuration>
-    </component>
-    
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <role-hint>cleanup-released-snapshots</role-hint>

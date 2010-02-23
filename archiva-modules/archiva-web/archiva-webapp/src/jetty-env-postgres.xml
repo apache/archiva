@@ -43,28 +43,6 @@
   </Arg>
 </New>
 
-<New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
-  <Arg>jdbc/archiva</Arg>
-  <Arg>
-    <New class="org.postgresql.ds.PGPoolingDataSource">
-      <Set name="serverName">localhost</Set>
-      <Set name="databaseName">archiva</Set>
-      <Set name="user">postgres</Set>
-      <Set name="password">sparky</Set>
-    </New>
-  </Arg>
-</New>
-<New id="archiva_shutdown" class="org.mortbay.jetty.plus.naming.Resource">
-  <Arg>jdbc/archiva_shutdown</Arg>
-  <Arg>
-    <New class="org.postgresql.ds.PGPoolingDataSource">
-      <Set name="serverName">localhost</Set>
-      <Set name="databaseName">archiva</Set>
-      <Set name="user">postgres</Set>
-      <Set name="password">sparky</Set>  
-    </New>
-  </Arg>
-</New>
 <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
   <Arg>jdbc/users</Arg>
   <Arg>

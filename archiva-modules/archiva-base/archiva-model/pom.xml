@@ -46,10 +46,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.jdo</groupId>
-      <artifactId>jdo2-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
@@ -83,101 +79,6 @@
               <goal>java</goal>
               <goal>xsd</goal>
             </goals>
-          </execution>
-          <execution>
-            <id>archiva-jpox-jdo-mapping</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <generatorId>jpox-jdo-mapping</generatorId>
-            </configuration>
-          </execution>
-          <execution>
-            <id>archiva-jpox-metadata-class</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <generatorId>jpox-metadata-class</generatorId>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jpox-maven-plugin</artifactId>
-        <version>1.1.7</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>10.2.1.6</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <!-- TODO: put this into a profile
-       <execution>
-         <id>create-ddl</id>
-         <phase>generate-test-resources</phase>
-         <goals>
-           <goal>schema-create</goal>
-         </goals>
-         <configuration>
-           <outputFile>${basedir}/target/classes/org/apache/maven/archiva/model/schema.ddl</outputFile>
-           <toolProperties>
-             <property>
-               <name>javax.jdo.option.ConnectionDriverName</name>
-               <value>org.apache.derby.jdbc.EmbeddedDriver</value>
-             </property>
-             <property>
-               <name>javax.jdo.option.ConnectionURL</name>
-               <value>jdbc:derby:target/jdo-schema-create;create=true</value>
-             </property>
-             <property>
-               <name>javax.jdo.option.ConnectionUserName</name>
-               <value>sa</value>
-             </property>
-             <property>
-               <name>javax.jdo.option.ConnectionPassword</name>
-               <value></value>
-             </property>
-             <property>
-               <name>log4j.configuration</name>
-               <value>${basedir}/src/test/resources/log4j.xml</value>
-             </property>
-             <property>
-               <name>org.jpox.autoCreateTables</name>
-               <value>true</value>
-             </property>
-           </toolProperties>
-         </configuration>
-       </execution>
-          -->
-          <execution>
-            <id>enhance</id>
-            <goals>
-              <goal>enhance</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-	  <!-- stupid hack because jpox/modello is not supported anymore and it has bugs
-    -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <copy file="${project.build.directory}/generated-sources/modello/org/apache/maven/archiva/model/package.jdo" todir="${project.build.outputDirectory}/org/apache/maven/archiva/model/" />
-              </tasks>
-            </configuration>
           </execution>
         </executions>
       </plugin>

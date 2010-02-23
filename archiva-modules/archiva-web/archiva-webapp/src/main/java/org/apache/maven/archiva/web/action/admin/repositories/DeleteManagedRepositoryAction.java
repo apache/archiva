@@ -19,30 +19,19 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Preparable;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstraint;
-import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
-
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-
-import org.codehaus.plexus.redback.role.RoleManagerException;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.codehaus.plexus.redback.role.RoleManagerException;
 
 /**
  * DeleteManagedRepositoryAction
@@ -59,9 +48,14 @@ public class DeleteManagedRepositoryAction
     private String repoid;
 
     /**
-     * @plexus.requirement role-hint="jdo"
+     * @plexus.requirement
      */
-    private ArchivaDAO archivaDAO;
+    private RepositoryStatisticsManager repositoryStatisticsManager;
+
+    /**
+     * @plexus.requirement
+     */
+    private MetadataRepository metadataRepository;
 
     public void prepare()
     {
@@ -101,7 +95,7 @@ public class DeleteManagedRepositoryAction
             return ERROR;
         }
 
-        String result = SUCCESS;
+        String result;
 
         try
         {
@@ -129,22 +123,18 @@ public class DeleteManagedRepositoryAction
             addActionError( "Unable to delete repository: " + e.getMessage() );
             result = ERROR;
         }
-        catch ( ArchivaDatabaseException e )
-        {
-            addActionError( "Unable to delete repositoy: " + e.getMessage() );
-            result = ERROR;
-        }
 
         return result;
     }
 
     private void cleanupRepositoryData( ManagedRepositoryConfiguration cleanupRepository )
-        throws RoleManagerException, ArchivaDatabaseException
+        throws RoleManagerException
     {
         removeRepositoryRoles( cleanupRepository );
         cleanupDatabase( cleanupRepository.getId() );
-        cleanupScanStats( cleanupRepository.getId() );
-        
+        repositoryStatisticsManager.deleteStatistics( cleanupRepository.getId() );
+        // TODO: delete all content for a repository from the content API?
+
         List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
@@ -169,49 +159,8 @@ public class DeleteManagedRepositoryAction
     }
 
     private void cleanupDatabase( String repoId )
-        throws ArchivaDatabaseException
     {
-        Constraint constraint = new ArtifactsByRepositoryConstraint( repoId );
-
-        List<ArchivaArtifact> artifacts = archivaDAO.getArtifactDAO().queryArtifacts( constraint );
-
-        for ( ArchivaArtifact artifact : artifacts )
-        {
-            log.info( "Removing artifact " + artifact + " from the database." );
-            try
-            {
-                archivaDAO.getArtifactDAO().deleteArtifact( artifact );
-
-                ArchivaProjectModel projectModel =
-                    archivaDAO.getProjectModelDAO().getProjectModel( artifact.getGroupId(), artifact.getArtifactId(),
-                                                                     artifact.getVersion() );
-
-                archivaDAO.getProjectModelDAO().deleteProjectModel( projectModel );
-            }
-            catch ( ObjectNotFoundException oe )
-            {
-                log.info( "Project model of artifact " + artifact + " does not exist in the database. " +
-                                      "Moving on to the next artifact." );
-            }
-            catch ( ArchivaDatabaseException ae )
-            {
-                log.info( "Unable to delete artifact " + artifact + " from the database. " +
-                                      "Moving on to the next artifact." );
-            }
-        }
-    }
-
-    private void cleanupScanStats( String repoId )
-        throws ArchivaDatabaseException
-    {
-        List<RepositoryContentStatistics> results =
-            archivaDAO.getRepositoryContentStatisticsDAO().queryRepositoryContentStatistics(
-            new RepositoryContentStatisticsByRepositoryConstraint( repoId ) );
-
-        for ( RepositoryContentStatistics stats : results )
-        {
-            archivaDAO.getRepositoryContentStatisticsDAO().deleteRepositoryContentStatistics( stats );
-        }
+        metadataRepository.deleteRepository( repoId );
     }
 
     public ManagedRepositoryConfiguration getRepository()
@@ -234,13 +183,13 @@ public class DeleteManagedRepositoryAction
         this.repoid = repoid;
     }
 
-    public void setArchivaDAO( ArchivaDAO archivaDAO )
+    public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
     {
-        this.archivaDAO = archivaDAO;
+        this.repositoryStatisticsManager = repositoryStatisticsManager;
     }
 
-    public ArchivaDAO getArchivaDAO()
+    public void setMetadataRepository( MetadataRepository metadataRepository )
     {
-        return archivaDAO;
+        this.metadataRepository = metadataRepository;
     }
 }

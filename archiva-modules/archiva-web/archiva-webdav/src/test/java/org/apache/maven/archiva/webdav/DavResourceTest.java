@@ -20,9 +20,7 @@ package org.apache.maven.archiva.webdav;
  */
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
@@ -39,11 +37,6 @@ import org.apache.jackrabbit.webdav.lock.Scope;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -72,15 +65,12 @@ public class DavResourceTest
 
     private ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
     
-    private ArchivaAuditLogsDao auditLogsDao;
-    
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
         session = new ArchivaDavSession();
-        auditLogsDao = new ArchivaAuditLogsDaoImpl();
         mimeTypes = (MimeTypes) getApplicationContext().getBean( PlexusToSpringUtils.buildSpringId( MimeTypes.class ) );
         baseDir = getTestFile( "target/DavResourceTest" );
         baseDir.mkdirs();
@@ -107,7 +97,7 @@ public class DavResourceTest
     private DavResource getDavResource( String logicalPath, File file )
     {
         return new ArchivaDavResource( file.getAbsolutePath(), logicalPath, repository, session, resourceLocator,
-                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null, auditLogsDao );
+                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null );
     }
 
     public void testDeleteNonExistantResourceShould404()
@@ -314,28 +304,7 @@ public class DavResourceTest
         {
             return new ArchivaDavResource( baseDir.getAbsolutePath(), "/", repository, session, resourceLocator,
                                            resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
-                                           null, auditLogsDao );
-        }
-    }
-    
-    private class ArchivaAuditLogsDaoImpl
-        implements ArchivaAuditLogsDao
-    {
-        public List<ArchivaAuditLogs> queryAuditLogs( Constraint constraint )
-            throws ObjectNotFoundException, ArchivaDatabaseException
-        {
-            return new ArrayList<ArchivaAuditLogs>();
-        }
-
-        public ArchivaAuditLogs saveAuditLogs( ArchivaAuditLogs logs )
-        {
-            return new ArchivaAuditLogs();
-        }
-    
-        public void deleteAuditLogs( ArchivaAuditLogs logs )
-            throws ArchivaDatabaseException
-        {
-        
+                                           null );
         }
     }
 }

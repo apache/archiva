@@ -1,8 +1,5 @@
 package org.apache.maven.archiva.repository.events;
 
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -31,7 +28,6 @@ public interface RepositoryListener
 {
     /**
      * Event for the deletion of a given artifact.
-     * @param artifactPath the path to the artifact that was deleted.
      */
-    void deleteArtifact( ManagedRepositoryContent repository, ArchivaArtifact artifact );
+    void deleteArtifact( String repositoryId, String namespace, String project, String version, String id );
 }

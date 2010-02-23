@@ -19,22 +19,20 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import java.io.File;
+import java.util.Collections;
+
 import com.opensymphony.xwork2.Action;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
-import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
-
-import java.io.File;
-import java.util.Collections;
 
 /**
  * AddManagedRepositoryActionTest 
@@ -54,19 +52,9 @@ public class AddManagedRepositoryActionTest
 
     private ArchivaConfiguration archivaConfiguration;
     
-    private ArchivaAuditLogsDao auditLogsDao;
-
-    private MockControl auditLogsDaoControl;
-
     private static final String REPO_ID = "repo-ident";
 
     private File location;
-    
-    @Override
-    protected String getPlexusConfigLocation()
-    {
-        return AbstractManagedRepositoriesAction.class.getName().replace( '.', '/' ) + "Test.xml";
-    }
     
     @Override
     protected void setUp()
@@ -74,17 +62,12 @@ public class AddManagedRepositoryActionTest
     {
         super.setUp();
 
-        action = (AddManagedRepositoryAction) lookup( Action.class.getName(), "addManagedRepositoryAction" );
+        action = new AddManagedRepositoryAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
 
-        auditLogsDaoControl = MockControl.createControl( ArchivaAuditLogsDao.class );
-        auditLogsDaoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        auditLogsDao = (ArchivaAuditLogsDao) auditLogsDaoControl.getMock();
-        action.setAuditLogsDao( auditLogsDao );
-        
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
@@ -159,9 +142,6 @@ public class AddManagedRepositoryActionTest
         ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
 
-        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
-        auditLogsDaoControl.replay();
-        
         assertFalse( location.exists() );
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
@@ -170,7 +150,6 @@ public class AddManagedRepositoryActionTest
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
-        auditLogsDaoControl.verify();
     }
     
     

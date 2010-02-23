@@ -22,8 +22,9 @@ package org.apache.maven.archiva.web.startup;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
 import org.springframework.context.ApplicationContext;
@@ -32,28 +33,29 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * ArchivaStartup - the startup of all archiva features in a deterministic order. 
+ * ArchivaStartup - the startup of all archiva features in a deterministic order.
  *
  * @version $Id$
  */
 public class ArchivaStartup
     implements ServletContextListener
 {
-    public void contextInitialized(ServletContextEvent contextEvent) {
-        WebApplicationContext wac =  WebApplicationContextUtils.getRequiredWebApplicationContext(contextEvent.getServletContext());
-        
-        SecuritySynchronization securitySync = (SecuritySynchronization) wac.getBean(PlexusToSpringUtils.buildSpringId(SecuritySynchronization.class));
-        ResolverFactoryInit resolverFactory = (ResolverFactoryInit) wac.getBean(PlexusToSpringUtils.buildSpringId(ResolverFactoryInit.class));
-        ArchivaTaskScheduler taskScheduler = (ArchivaTaskScheduler) wac.getBean(PlexusToSpringUtils.buildSpringId(ArchivaTaskScheduler.class));
-        wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "database-update"));
-        wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "repository-scanning"));
-        wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "indexing"));
+    public void contextInitialized( ServletContextEvent contextEvent )
+    {
+        WebApplicationContext wac =
+            WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
+
+        SecuritySynchronization securitySync =
+            (SecuritySynchronization) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySynchronization.class ) );
+        RepositoryArchivaTaskScheduler repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) wac.getBean(
+            PlexusToSpringUtils.buildSpringId( ArchivaTaskScheduler.class, "repository" ) );
+        wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class, "repository-scanning" ) );
+        wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class, "indexing" ) );
 
         try
         {
             securitySync.startup();
-            resolverFactory.startup();
-            taskScheduler.startup();
+            repositoryTaskScheduler.startup();
             Banner.display();
         }
         catch ( ArchivaException e )
@@ -62,12 +64,13 @@ public class ArchivaStartup
         }
     }
 
-    public void contextDestroyed(ServletContextEvent contextEvent)
+    public void contextDestroyed( ServletContextEvent contextEvent )
     {
-        ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(contextEvent.getServletContext());
-        if (applicationContext != null && applicationContext instanceof ClassPathXmlApplicationContext)
+        ApplicationContext applicationContext =
+            WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
+        if ( applicationContext != null && applicationContext instanceof ClassPathXmlApplicationContext )
         {
-            ((ClassPathXmlApplicationContext)applicationContext).close();
+            ( (ClassPathXmlApplicationContext) applicationContext ).close();
         }
     }
 }

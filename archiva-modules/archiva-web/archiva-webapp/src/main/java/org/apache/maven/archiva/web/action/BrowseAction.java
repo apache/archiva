@@ -19,52 +19,48 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.browsing.BrowsingResults;
-import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
 
 /**
  * Browse the repository.
  *
- * @todo cache browsing results.
  * @todo implement repository selectors (all or specific repository)
- * @todo implement security around browse (based on repository id at first)
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction" instantiation-strategy="per-lookup"
  */
 public class BrowseAction
-    extends PlexusActionSupport
+    extends AbstractRepositoryBasedAction
 {
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private RepositoryBrowsing repoBrowsing;
-    
     /**
      * @plexus.requirement
      */
-    private UserRepositories userRepositories;
-    
-    private BrowsingResults results;
+    private MetadataResolver metadataResolver;
 
     private String groupId;
 
     private String artifactId;
-    
+
     private String repositoryId;
-    
-    private ArchivaProjectModel sharedModel;
-    
+
+    private ProjectVersionMetadata sharedModel;
+
+    private Collection<String> namespaces;
+
+    private Collection<String> projectIds;
+
+    private Collection<String> projectVersions;
+
     public String browse()
     {
         List<String> selectedRepos = getObservableRepos();
@@ -73,8 +69,58 @@ public class BrowseAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        this.results = repoBrowsing.getRoot( getPrincipal(), selectedRepos );
+        Set<String> namespaces = new LinkedHashSet<String>();
+
+        // TODO: this logic should be optional, particularly remembering we want to keep this code simple
+        //       it is located here to avoid the content repository implementation needing to do too much for what
+        //       is essentially presentation code
+        Set<String> namespacesToCollapse = new LinkedHashSet<String>();
+        for ( String repoId : selectedRepos )
+        {
+            namespacesToCollapse.addAll( metadataResolver.getRootNamespaces( repoId ) );
+        }
+
+        for ( String n : namespacesToCollapse )
+        {
+            // TODO: check performance of this
+            namespaces.add( collapseNamespaces( selectedRepos, n ) );
+        }
+
+        this.namespaces = getSortedList( namespaces );
         return SUCCESS;
+    }
+
+    private String collapseNamespaces( Collection<String> repoIds, String n )
+    {
+        Set<String> subNamespaces = new LinkedHashSet<String>();
+        for ( String repoId : repoIds )
+        {
+            subNamespaces.addAll( metadataResolver.getNamespaces( repoId, n ) );
+        }
+        if ( subNamespaces.size() != 1 )
+        {
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( n + " is not collapsible as it has sub-namespaces: " + subNamespaces );
+            }
+            return n;
+        }
+        else
+        {
+            for ( String repoId : repoIds )
+            {
+                Collection<String> projects = metadataResolver.getProjects( repoId, n );
+                if ( projects != null && !projects.isEmpty() )
+                {
+                    if ( log.isDebugEnabled() )
+                    {
+                        log.debug( n + " is not collapsible as it has projects" );
+                    }
+                    return n;
+                }
+            }
+            return collapseNamespaces( repoIds, n + "." + subNamespaces.iterator().next() );
+        }
     }
 
     public String browseGroup()
@@ -92,9 +138,36 @@ public class BrowseAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        
-        this.results = repoBrowsing.selectGroupId( getPrincipal(), selectedRepos, groupId );
+        Set<String> projects = new LinkedHashSet<String>();
+
+        Set<String> namespacesToCollapse = new LinkedHashSet<String>();
+        for ( String repoId : selectedRepos )
+        {
+            namespacesToCollapse.addAll( metadataResolver.getNamespaces( repoId, groupId ) );
+
+            projects.addAll( metadataResolver.getProjects( repoId, groupId ) );
+        }
+
+        // TODO: this logic should be optional, particularly remembering we want to keep this code simple
+        //       it is located here to avoid the content repository implementation needing to do too much for what
+        //       is essentially presentation code
+        Set<String> namespaces = new LinkedHashSet<String>();
+        for ( String n : namespacesToCollapse )
+        {
+            // TODO: check performance of this
+            namespaces.add( collapseNamespaces( selectedRepos, groupId + "." + n ) );
+        }
+
+        this.namespaces = getSortedList( namespaces );
+        this.projectIds = getSortedList( projects );
         return SUCCESS;
+    }
+
+    private ArrayList<String> getSortedList( Set<String> set )
+    {
+        ArrayList<String> list = new ArrayList<String>( set );
+        Collections.sort( list );
+        return list;
     }
 
     public String browseArtifact()
@@ -118,115 +191,117 @@ public class BrowseAction
         {
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
-        
-        this.results = repoBrowsing.selectArtifactId( getPrincipal(), selectedRepos, groupId, artifactId );
 
-        populateSharedModel();
-        
+        Set<String> versions = new LinkedHashSet<String>();
+        for ( String repoId : selectedRepos )
+        {
+            versions.addAll( metadataResolver.getProjectVersions( repoId, groupId, artifactId ) );
+        }
+
+        // TODO: sort by known version ordering method
+        this.projectVersions = new ArrayList<String>( versions );
+
+        populateSharedModel( selectedRepos, versions );
+
         return SUCCESS;
     }
 
-    private void populateSharedModel()
+    private void populateSharedModel( Collection<String> selectedRepos, Collection<String> projectVersions )
     {
-        sharedModel = new ArchivaProjectModel();
-        sharedModel.setGroupId( groupId );
-        sharedModel.setArtifactId( artifactId );
+        sharedModel = new ProjectVersionMetadata();
+
+        MavenProjectFacet mavenFacet = new MavenProjectFacet();
+        mavenFacet.setGroupId( groupId );
+        mavenFacet.setArtifactId( artifactId );
+        sharedModel.addFacet( mavenFacet );
+
         boolean isFirstVersion = true;
-                
-        for( String version :  this.results.getVersions() )
-        {            
-            try
+
+        for ( String version : projectVersions )
+        {
+            ProjectVersionMetadata versionMetadata = null;
+            for ( String repoId : selectedRepos )
             {
-                ArchivaProjectModel model =
-                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
-                
-                if( model == null )
+                if ( versionMetadata == null )
                 {
-                    continue;
-                }
-                
-                if( isFirstVersion )
-                {
-                    sharedModel = model;
-                    sharedModel.setVersion( null );
-                }
-                else
-                {
-                    if ( sharedModel.getPackaging() != null &&
-                        !StringUtils.equalsIgnoreCase( sharedModel.getPackaging(), model.getPackaging() ) )
+                    try
                     {
-                        sharedModel.setPackaging( null );
+                        versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
                     }
-                    
-                    if ( sharedModel.getName() != null &&
-                        !StringUtils.equalsIgnoreCase( sharedModel.getName(), model.getName() ) )
+                    catch ( MetadataResolutionException e )
                     {
-                        sharedModel.setName( "" );
-                    }
-
-                    if ( sharedModel.getDescription() != null &&
-                        !StringUtils.equalsIgnoreCase( sharedModel.getDescription(), model.getDescription() ) )
-                    {
-                        sharedModel.setDescription( null );
-                    }
-
-                    if ( sharedModel.getIssueManagement() != null && model.getIssueManagement() != null &&
-                        !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getIssueManagementUrl(), model.getIssueManagement().getIssueManagementUrl() ) )
-                    {
-                        sharedModel.setIssueManagement( null );
-                    }
-
-                    if ( sharedModel.getCiManagement() != null && model.getCiManagement() != null &&
-                        !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getCiUrl(), model.getCiManagement().getCiUrl() ) )
-                    {
-                        sharedModel.setCiManagement( null );
-                    }
-
-                    if ( sharedModel.getOrganization() != null && model.getOrganization() != null && 
-                        !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getOrganizationName(), model.getOrganization().getOrganizationName() ) )
-                    {
-                        sharedModel.setOrganization( null );
-                    }
-
-                    if ( sharedModel.getUrl() != null && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), model.getUrl() ) )
-                    {
-                        sharedModel.setUrl( null );
+                        log.error(
+                            "Skipping invalid metadata while compiling shared model for " + groupId + ":" + artifactId +
+                                " in repo " + repoId + ": " + e.getMessage() );
                     }
                 }
-                
-                isFirstVersion = false;
             }
-            catch ( ObjectNotFoundException e )
+
+            if ( versionMetadata == null )
             {
-                log.debug( e.getMessage(), e );
+                continue;
             }
-            catch ( ArchivaDatabaseException e )
+
+            if ( isFirstVersion )
             {
-                log.debug( e.getMessage(), e );
+                sharedModel = versionMetadata;
+                sharedModel.setId( null );
             }
-        }        
-    }
-    
-    private List<String> getObservableRepos()
-    {
-        try
-        {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
+            else
+            {
+                MavenProjectFacet versionMetadataMavenFacet =
+                    (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
+                if ( versionMetadataMavenFacet != null )
+                {
+                    if ( mavenFacet.getPackaging() != null && !StringUtils.equalsIgnoreCase( mavenFacet.getPackaging(),
+                                                                                             versionMetadataMavenFacet.getPackaging() ) )
+                    {
+                        mavenFacet.setPackaging( null );
+                    }
+                }
+
+                if ( sharedModel.getName() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getName(), versionMetadata.getName() ) )
+                {
+                    sharedModel.setName( "" );
+                }
+
+                if ( sharedModel.getDescription() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getDescription(), versionMetadata.getDescription() ) )
+                {
+                    sharedModel.setDescription( null );
+                }
+
+                if ( sharedModel.getIssueManagement() != null && versionMetadata.getIssueManagement() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(),
+                                                   versionMetadata.getIssueManagement().getUrl() ) )
+                {
+                    sharedModel.setIssueManagement( null );
+                }
+
+                if ( sharedModel.getCiManagement() != null && versionMetadata.getCiManagement() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(),
+                                                   versionMetadata.getCiManagement().getUrl() ) )
+                {
+                    sharedModel.setCiManagement( null );
+                }
+
+                if ( sharedModel.getOrganization() != null && versionMetadata.getOrganization() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(),
+                                                   versionMetadata.getOrganization().getName() ) )
+                {
+                    sharedModel.setOrganization( null );
+                }
+
+                if ( sharedModel.getUrl() != null &&
+                    !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), versionMetadata.getUrl() ) )
+                {
+                    sharedModel.setUrl( null );
+                }
+            }
+
+            isFirstVersion = false;
         }
-        catch ( PrincipalNotFoundException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( AccessDeniedException e )
-        {
-            log.warn( e.getMessage(), e );
-            // TODO: pass this onto the screen.
-        }
-        catch ( ArchivaSecurityException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        return Collections.emptyList();
     }
 
     public String getGroupId()
@@ -249,28 +324,40 @@ public class BrowseAction
         this.artifactId = artifactId;
     }
 
-    public BrowsingResults getResults()
+    public Collection<String> getNamespaces()
     {
-        return results;
-    }
-    
-    public String getRepositoryId(){
-    	
-    	return repositoryId;
-    }
-    
-    public void setRepositoryId(String repositoryId){
-    	
-    	this.repositoryId = repositoryId;
+        return namespaces;
     }
 
-    public ArchivaProjectModel getSharedModel()
+    public String getRepositoryId()
+    {
+
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+
+        this.repositoryId = repositoryId;
+    }
+
+    public ProjectVersionMetadata getSharedModel()
     {
         return sharedModel;
     }
 
-    public void setSharedModel( ArchivaProjectModel sharedModel )
+    public MetadataResolver getMetadataResolver()
     {
-        this.sharedModel = sharedModel;
+        return metadataResolver;
+    }
+
+    public Collection<String> getProjectIds()
+    {
+        return projectIds;
+    }
+
+    public Collection<String> getProjectVersions()
+    {
+        return projectVersions;
     }
 }

@@ -36,11 +36,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-layer</artifactId>
+      <artifactId>archiva-repository-scanner</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>                          
-      <artifactId>archiva-scheduled</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>

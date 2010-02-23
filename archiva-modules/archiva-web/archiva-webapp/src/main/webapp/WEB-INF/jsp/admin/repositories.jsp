@@ -225,7 +225,7 @@
           <table>
             <tr>
               <th>Last Scanned</th>
-              <td>${stats.whenGathered}</td>
+              <td>${stats.scanStartTime}</td>
             </tr>
             <tr>
               <th>Duration</th>

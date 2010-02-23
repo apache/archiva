@@ -19,7 +19,15 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -27,22 +35,17 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
-import org.apache.maven.archiva.model.ArchivaAuditLogs;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.AuditEventArgumentsMatcher;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * DeleteManagedRepositoryActionTest 
@@ -62,40 +65,40 @@ public class DeleteManagedRepositoryActionTest
 
     private ArchivaConfiguration archivaConfiguration;
     
-    private ArchivaAuditLogsDao auditLogsDao;
-
-    private MockControl auditLogsDaoControl;
-    
     private static final String REPO_ID = "repo-ident";
 
     private File location;
 
-    @Override
-    protected String getPlexusConfigLocation()
-    {
-        return AbstractManagedRepositoriesAction.class.getName().replace( '.', '/' ) + "Test.xml";
-    }
-    
+    private MockControl repositoryStatisticsManagerControl;
+
+    private RepositoryStatisticsManager repositoryStatisticsManager;
+
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
-        action = (DeleteManagedRepositoryAction) lookup( Action.class.getName(), "deleteManagedRepositoryAction" );
+        action = new DeleteManagedRepositoryAction();
         
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
         
-        auditLogsDaoControl = MockControl.createControl( ArchivaAuditLogsDao.class );
-        auditLogsDaoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        auditLogsDao = (ArchivaAuditLogsDao) auditLogsDaoControl.getMock();
-        action.setAuditLogsDao( auditLogsDao );
-
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
-        location = getTestFile( "target/test/location" );          
+        location = getTestFile( "target/test/location" );
+
+        repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
+        repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
+        action.setRepositoryStatisticsManager( repositoryStatisticsManager );
+
+        MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+        metadataRepository.deleteRepository( REPO_ID );
+        action.setMetadataRepository( metadataRepository );
+
+        metadataRepositoryControl.replay();
     }
 
     public void testSecureActionBundle()
@@ -139,49 +142,86 @@ public class DeleteManagedRepositoryActionTest
 
     public void testDeleteRepositoryKeepContent()
         throws Exception
-    {    	
+    {
+        // even when we keep the content, we don't keep the metadata at this point
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
         prepareRoleManagerMock();
         
-        Configuration configuration = prepDeletionTest( createRepository(), 4 );                
-        
-        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
-        auditLogsDaoControl.replay();
-        
-        String status = action.deleteEntry();        
-                
-        auditLogsDaoControl.verify();
-        
+        Configuration configuration = prepDeletionTest( createRepository(), 4 );
+
+        MockControl control = mockAuditListeners();
+
+        MockControl metadataRepositoryControl = mockMetadataRepository();
+
+        String status = action.deleteEntry();
+
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
 
         assertTrue( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
+    }
+
+    private MockControl mockMetadataRepository()
+    {
+        MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+        metadataRepository.deleteRepository( REPO_ID );
+        metadataRepositoryControl.replay();
+        action.setMetadataRepository( metadataRepository );
+        return metadataRepositoryControl;
+    }
+
+    private MockControl mockAuditListeners()
+    {
+        MockControl control = MockControl.createControl( AuditListener.class );
+        AuditListener listener = (AuditListener) control.getMock();
+        listener.auditEvent( new AuditEvent( REPO_ID, "guest", null, AuditEvent.DELETE_MANAGED_REPO ) );
+        control.setMatcher( new AuditEventArgumentsMatcher() );
+        control.replay();
+        action.setAuditListeners( Arrays.asList( listener ) );
+        return control;
     }
 
     public void testDeleteRepositoryDeleteContent()
         throws Exception
     {
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
         prepareRoleManagerMock();
         
         Configuration configuration = prepDeletionTest( createRepository(), 4 );              
         
-        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
-        auditLogsDaoControl.replay();
-        
+        MockControl control = mockAuditListeners();
+
+        MockControl metadataRepositoryControl = mockMetadataRepository();
+
         String status = action.deleteContents();
         
-        auditLogsDaoControl.verify();
-               
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
 
         assertFalse( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
     }
     
     public void testDeleteRepositoryAndAssociatedProxyConnectors()
         throws Exception
     {
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
         Configuration configuration = prepDeletionTest( createRepository(), 5 );
         configuration.addRemoteRepository( createRemoteRepository( "codehaus", "http://repository.codehaus.org" ) );
         configuration.addRemoteRepository( createRemoteRepository( "java.net", "http://dev.java.net/maven2" ) );
@@ -191,23 +231,27 @@ public class DeleteManagedRepositoryActionTest
 
         assertEquals( 1, configuration.getProxyConnectors().size() );
         
-        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
-        auditLogsDaoControl.replay();
-        
+        MockControl control = mockAuditListeners();
+        MockControl metadataRepositoryControl = mockMetadataRepository();
         String status = action.deleteContents();
         
-        auditLogsDaoControl.verify();
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
         assertEquals( 0, configuration.getProxyConnectors().size() );
 
         assertFalse( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
     }
     
     public void testDeleteRepositoryCancelled()
         throws Exception
     {
+        repositoryStatisticsManagerControl.replay();
+
         ManagedRepositoryConfiguration originalRepository = createRepository();
         Configuration configuration = prepDeletionTest( originalRepository, 3 );
                 
@@ -219,11 +263,16 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
 
         assertTrue( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
     }
     
     public void testDeleteRepositoryAndReposUnderRepoGroup()
         throws Exception
     {
+        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
         Configuration configuration = prepDeletionTest( createRepository(), 5 );
         List<String> repoIds = new ArrayList<String>();
         repoIds.add( REPO_ID );
@@ -233,17 +282,19 @@ public class DeleteManagedRepositoryActionTest
 
         assertEquals( 1, configuration.getRepositoryGroups().size() );
         
-        auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
-        auditLogsDaoControl.replay();
-        
+        MockControl control = mockAuditListeners();
+        MockControl metadataRepositoryControl = mockMetadataRepository();
         String status = action.deleteContents();
         assertEquals( Action.SUCCESS, status );
-        auditLogsDaoControl.verify();
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
-        assertEquals( 0, ( ( RepositoryGroupConfiguration ) configuration.getRepositoryGroups().get( 0 ) ).getRepositories().size() );
+        assertEquals( 0, configuration.getRepositoryGroups().get( 0 ).getRepositories().size() );
 
         assertFalse( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
     }
 
     private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, int expectCountGetConfig )
@@ -351,14 +402,4 @@ public class DeleteManagedRepositoryActionTest
         roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.replay();
     }
-    
-    protected ArchivaProjectModel createProjectModel( String groupId, String artifactId, String version )
-    {
-        ArchivaProjectModel projectModel = new ArchivaProjectModel();
-        projectModel.setGroupId( groupId );
-        projectModel.setArtifactId( artifactId );
-        projectModel.setVersion( version );
-
-        return projectModel;
-    }   
 }

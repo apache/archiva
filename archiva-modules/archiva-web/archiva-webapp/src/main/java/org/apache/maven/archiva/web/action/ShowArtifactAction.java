@@ -19,46 +19,54 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.Dependency;
+import org.apache.archiva.metadata.model.MailingList;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.Dependency;
-import org.apache.maven.archiva.model.MailingList;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 /**
- * Browse the repository. 
- * 
+ * Browse the repository.
+ *
  * TODO change name to ShowVersionedAction to conform to terminology.
- * 
+ *
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction" instantiation-strategy="per-lookup"
  */
 public class ShowArtifactAction
-    extends PlexusActionSupport
+    extends AbstractRepositoryBasedAction
     implements Validateable
 {
     /* .\ Not Exposed \._____________________________________________ */
 
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement
      */
-    private RepositoryBrowsing repoBrowsing;
+    private MetadataResolver metadataResolver;
 
     /**
      * @plexus.requirement
      */
-    private UserRepositories userRepositories;
-    
+    private RepositoryContentFactory repositoryFactory;
+
     /* .\ Exposed Output Objects \.__________________________________ */
 
     private String groupId;
@@ -72,91 +80,137 @@ public class ShowArtifactAction
     /**
      * The model of this versioned project.
      */
-    private ArchivaProjectModel model;
+    private ProjectVersionMetadata model;
 
     /**
      * The list of artifacts that depend on this versioned project.
      */
-    private List<ArchivaProjectModel> dependees;
+    private List<ProjectVersionReference> dependees;
 
     private List<MailingList> mailingLists;
 
     private List<Dependency> dependencies;
-    
-    private List<String> snapshotVersions;
+
+    private Map<String, List<ArtifactDownloadInfo>> artifacts;
+
+    private boolean dependencyTree = false;
 
     /**
-     * Show the versioned project information tab. TODO: Change name to 'project'
+     * Show the versioned project information tab.
+     * TODO: Change name to 'project' - we are showing project versions here, not specific artifact information (though
+     * that is rendered in the download box).
      */
     public String artifact()
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        try
+        ProjectVersionMetadata versionMetadata = null;
+        artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
+
+        List<String> repos = getObservableRepos();
+        // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
+        // simple resource requests here and letting the resolver take care of it
+        String errorMsg = null;
+        for ( String repoId : repos )
         {
-            if( VersionUtil.isSnapshot( version ) )
-            {                
-                this.model =
-                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
-                                
-                this.snapshotVersions =
-                    repoBrowsing.getOtherSnapshotVersions( getObservableRepos(), groupId, artifactId, version );
-                if( this.snapshotVersions.contains( version ) )
+            if ( versionMetadata == null )
+            {
+                // we don't want the implementation being that intelligent - so another resolver to do the
+                // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
+                try
                 {
-                    this.snapshotVersions.remove( version );
+                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                }
+                catch ( MetadataResolutionException e )
+                {
+                    addIncompleteModelWarning();
+                    
+                    // TODO: need a consistent way to construct this - same in ArchivaMetadataCreationConsumer
+                    versionMetadata = new ProjectVersionMetadata();
+                    versionMetadata.setId( version );
+                }
+                if ( versionMetadata != null )
+                {
+                    repositoryId = repoId;
+
+                    List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+                        metadataResolver.getArtifacts( repoId, groupId, artifactId, version ) );
+                    Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
+                    {
+                        public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
+                        {
+                            // sort by version (reverse), then ID
+                            // TODO: move version sorting into repository handling (maven2 specific), and perhaps add a 
+                            //       way to get latest instead
+                            int result = new DefaultArtifactVersion( o2.getVersion() ).compareTo(
+                                new DefaultArtifactVersion( o1.getVersion() ) );
+                            return result != 0 ? result : o1.getId().compareTo( o2.getId() );
+                        }
+                    } );
+
+                    for ( ArtifactMetadata artifact : artifacts )
+                    {
+                        List<ArtifactDownloadInfo> l = this.artifacts.get( artifact.getVersion() );
+                        if ( l == null )
+                        {
+                            l = new ArrayList<ArtifactDownloadInfo>();
+                            this.artifacts.put( artifact.getVersion(), l );
+                        }
+                        l.add( new ArtifactDownloadInfo( artifact ) );
+                    }
                 }
             }
-            else
-            {
-                this.model =
-                    repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
-            }
-            
-            this.repositoryId =
-                repoBrowsing.getRepositoryId( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
         }
-        catch ( ObjectNotFoundException e )
+
+        if ( versionMetadata == null )
         {
-            log.debug( e.getMessage(), e );
-            addActionError( e.getMessage() );
+            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
             return ERROR;
         }
 
+        if ( versionMetadata.isIncomplete() )
+        {
+            addIncompleteModelWarning();
+        }
+
+        model = versionMetadata;
+
         return SUCCESS;
+    }
+
+    private void addIncompleteModelWarning()
+    {
+        addActionMessage( "The model may be incomplete due to a previous error in resolving information. Refer to the repository problem reports for more information." );
     }
 
     /**
      * Show the artifact information tab.
      */
     public String dependencies()
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        String result = artifact();
 
         this.dependencies = model.getDependencies();
 
-        return SUCCESS;
+        return result;
     }
 
     /**
      * Show the mailing lists information tab.
      */
     public String mailingLists()
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        String result = artifact();
+
         this.mailingLists = model.getMailingLists();
 
-        return SUCCESS;
+        return result;
     }
 
     /**
      * Show the reports tab.
      */
     public String reports()
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        // TODO: hook up reports on project - this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId,
-        // version );
+        // TODO: hook up reports on project
 
         return SUCCESS;
     }
@@ -165,46 +219,38 @@ public class ShowArtifactAction
      * Show the dependees (other artifacts that depend on this project) tab.
      */
     public String dependees()
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+        // TODO: what if we get duplicates across repositories?
+        for ( String repoId : getObservableRepos() )
+        {
+            // TODO: what about if we want to see this irrespective of version?
+            references.addAll( metadataResolver.getProjectReferences( repoId, groupId, artifactId, version ) );
+        }
 
-        this.dependees = repoBrowsing.getUsedBy( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        this.dependees = references;
 
-        return SUCCESS;
+        // TODO: may need to note on the page that references will be incomplete if the other artifacts are not yet stored in the content repository
+        // (especially in the case of pre-population import)
+
+        return artifact();
     }
 
     /**
      * Show the dependencies of this versioned project tab.
      */
     public String dependencyTree()
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
+        // temporarily use this as we only need the model for the tag to perform, but we should be resolving the
+        // graph here instead
 
-        return SUCCESS;
-    }
+        // TODO: may need to note on the page that tree will be incomplete if the other artifacts are not yet stored in the content repository
+        // (especially in the case of pre-population import)
 
-    private List<String> getObservableRepos()
-    {
-        try
-        {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
-        }
-        catch ( PrincipalNotFoundException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( AccessDeniedException e )
-        {
-            log.warn( e.getMessage(), e );
-            // TODO: pass this onto the screen.
-        }
-        catch ( ArchivaSecurityException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        return Collections.emptyList();
+        // TODO: a bit ugly, should really be mapping all these results differently now
+        this.dependencyTree = true;
+
+        return artifact();
     }
 
     @Override
@@ -226,7 +272,7 @@ public class ShowArtifactAction
         }
     }
 
-    public ArchivaProjectModel getModel()
+    public ProjectVersionMetadata getModel()
     {
         return model;
     }
@@ -271,7 +317,7 @@ public class ShowArtifactAction
         return dependencies;
     }
 
-    public List<ArchivaProjectModel> getDependees()
+    public List<ProjectVersionReference> getDependees()
     {
         return dependees;
     }
@@ -286,14 +332,149 @@ public class ShowArtifactAction
         this.repositoryId = repositoryId;
     }
 
-    public List<String> getSnapshotVersions()
+    public MetadataResolver getMetadataResolver()
     {
-        return snapshotVersions;
+        return metadataResolver;
     }
 
-    public void setSnapshotVersions( List<String> snapshotVersions )
+    public Map<String, List<ArtifactDownloadInfo>> getArtifacts()
     {
-        this.snapshotVersions = snapshotVersions;
+        return artifacts;
     }
 
+    public Collection<String> getSnapshotVersions()
+    {
+        return artifacts.keySet();
+    }
+
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    public boolean isDependencyTree()
+    {
+        return dependencyTree;
+    }
+
+    // TODO: move this into the artifact metadata itself via facets where necessary
+
+    public class ArtifactDownloadInfo
+    {
+        private String type;
+
+        private String namespace;
+
+        private String project;
+
+        private String size;
+
+        private String id;
+
+        private String repositoryId;
+
+        private String version;
+
+        private String path;
+
+        public ArtifactDownloadInfo( ArtifactMetadata artifact )
+        {
+            repositoryId = artifact.getRepositoryId();
+
+            // TODO: use metadata resolver capability instead
+            ManagedRepositoryContent repo;
+            try
+            {
+                repo = repositoryFactory.getManagedRepositoryContent( repositoryId );
+            }
+            catch ( RepositoryException e )
+            {
+                throw new RuntimeException( e );
+            }
+
+            ArtifactReference ref = new ArtifactReference();
+            ref.setArtifactId( artifact.getProject() );
+            ref.setGroupId( artifact.getNamespace() );
+            ref.setVersion( artifact.getVersion() );
+            path = repo.toPath( ref );
+            path = path.substring( 0, path.lastIndexOf( "/" ) + 1 ) + artifact.getId();
+
+            try
+            {
+                type = repo.toArtifactReference( path ).getType();
+            }
+            catch ( LayoutException e )
+            {
+                throw new RuntimeException( e );
+            }
+
+            namespace = artifact.getNamespace();
+            project = artifact.getProject();
+
+            // TODO: find a reusable formatter for this
+            double s = artifact.getSize();
+            String symbol = "b";
+            if ( s > 1024 )
+            {
+                symbol = "K";
+                s /= 1024;
+
+                if ( s > 1024 )
+                {
+                    symbol = "M";
+                    s /= 1024;
+
+                    if ( s > 1024 )
+                    {
+                        symbol = "G";
+                        s /= 1024;
+                    }
+                }
+            }
+
+            size = new DecimalFormat( "#,###.##" ).format( s ) + " " + symbol;
+            id = artifact.getId();
+            version = artifact.getVersion();
+        }
+
+        public String getNamespace()
+        {
+            return namespace;
+        }
+
+        public String getType()
+        {
+            return type;
+        }
+
+        public String getProject()
+        {
+            return project;
+        }
+
+        public String getSize()
+        {
+            return size;
+        }
+
+        public String getId()
+        {
+            return id;
+        }
+
+        public String getVersion()
+        {
+            return version;
+        }
+
+        public String getRepositoryId()
+        {
+            return repositoryId;
+        }
+
+        public String getPath()
+        {
+            return path;
+        }
+    }
 }

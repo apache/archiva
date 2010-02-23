@@ -33,8 +33,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
-import org.apache.maven.archiva.model.ArchivaAuditLogs;
 import org.apache.maven.archiva.proxy.DefaultRepositoryProxyConnectors;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
@@ -84,10 +82,6 @@ public class ArchivaDavResourceFactoryTest
 
     private RepositoryContentFactory repoFactory;
     
-    private ArchivaAuditLogsDao auditLogsDao;
-
-    private MockControl auditLogsDaoControl;
-
     public void setUp()
         throws Exception
     {
@@ -103,10 +97,6 @@ public class ArchivaDavResourceFactoryTest
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         
-        auditLogsDaoControl = MockControl.createControl( ArchivaAuditLogsDao.class );
-        auditLogsDaoControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        auditLogsDao = (ArchivaAuditLogsDao) auditLogsDaoControl.getMock();
-
         config = new Configuration();
         config.addManagedRepository( createManagedRepository( RELEASES_REPO, new File( getBasedir(),
                                                                                        "target/test-classes/" +
@@ -135,7 +125,6 @@ public class ArchivaDavResourceFactoryTest
         resourceFactory.setRepositoryFactory( repoFactory );
         resourceFactory.setRepositoryRequest( repoRequest );
         resourceFactory.setConnectors( new OverridingRepositoryProxyConnectors() );
-        resourceFactory.setAuditLogsDao( auditLogsDao );
     }
 
     private ManagedRepositoryConfiguration createManagedRepository( String id, String location, String layout )

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -17,9 +16,7 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
     <maven>2.0.6</maven>
@@ -100,6 +97,7 @@
         <executions>
           <execution>
             <id>generate</id>
+            <phase>generate-resources</phase>
             <goals>
               <goal>generate-metadata</goal>
             </goals>
@@ -120,11 +118,6 @@
             <dependency>
               <groupId>org.codehaus.modello</groupId>
               <artifactId>modello-plugin-plexus-registry</artifactId>
-              <version>1.0-alpha-21</version>
-            </dependency>
-            <dependency>
-              <groupId>org.codehaus.modello</groupId>
-              <artifactId>modello-plugin-jpox</artifactId>
               <version>1.0-alpha-21</version>
             </dependency>
           </dependencies>
@@ -205,6 +198,7 @@
     </pluginManagement>
   </build>
   <modules>
+    <module>skin</module>
     <module>archiva-cli</module>
     <module>archiva-docs</module>
     <module>archiva-jetty</module>
@@ -292,6 +286,41 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>metadata-model</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>metadata-repository-api</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>metadata-repository-file</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>repository-statistics</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>problem-reports</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>audit</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>maven2-repository</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-applet</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
@@ -342,6 +371,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-metadata-consumer</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-database</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
@@ -377,17 +411,27 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-report-manager</artifactId>
-        <version>1.4-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-repository-layer</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-scheduled</artifactId>
+        <artifactId>archiva-repository-scanner</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-scheduler-api</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-scheduler-repository</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-scheduler-indexing</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -522,11 +566,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>javax.jdo</groupId>
-        <artifactId>jdo2-api</artifactId>
-        <version>2.0</version>
-      </dependency>
-      <dependency>
         <groupId>jpox</groupId>
         <artifactId>jpox</artifactId>
         <version>1.1.9</version>
@@ -575,24 +614,13 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
-        <artifactId>maven-artifact-manager</artifactId>
-        <version>${maven.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
-        <version>${maven.version}</version>
+        <version>${maven3x.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
-        <artifactId>maven-repository-metadata</artifactId>
-        <version>${maven.version}</version>
+        <artifactId>maven-model-builder</artifactId>
+        <version>${maven3x.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -619,17 +647,6 @@
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-i18n</artifactId>
         <version>1.0-beta-6</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-jdo2</artifactId>
-        <version>1.0-alpha-8</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
@@ -1054,22 +1071,6 @@
       </dependency>
        -->
       <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-artifact</artifactId>
-        <version>${maven.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-project</artifactId>
-        <version>${maven.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>jdom</groupId>
         <artifactId>jdom</artifactId>
         <version>1.0</version>
@@ -1086,6 +1087,38 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-dependency-tree</artifactId>
+        <version>1.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact-manager</artifactId>
+        <version>${maven.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-repository-metadata</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
         <version>1.3.0</version>
@@ -1100,6 +1133,7 @@
   </dependencyManagement>
   <properties>
     <maven.version>2.0.8</maven.version>
+    <maven3x.version>3.0-alpha-4</maven3x.version>
     <wagon.version>1.0-beta-5</wagon.version>
     <redback.version>1.2.3</redback.version>
     <jetty.version>6.1.19</jetty.version>

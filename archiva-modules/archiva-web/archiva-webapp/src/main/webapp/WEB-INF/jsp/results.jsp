@@ -332,16 +332,16 @@
           <c:otherwise>
             <c:forEach items="${databaseResults}" var="artifactModel" varStatus="i">
               <c:choose>
-                <c:when test="${not empty (artifactModel.groupId)}">
+                <c:when test="${not empty (artifactModel.namespace)}">
                   <h3 class="artifact-title">
-                    <archiva:showArtifactTitle groupId="${artifactModel.groupId}"
-                                               artifactId="${artifactModel.artifactId}"
+                    <archiva:showArtifactTitle groupId="${artifactModel.namespace}"
+                                               artifactId="${artifactModel.project}"
                                                version="${artifactModel.version}"/>
 
                   </h3>
                   <p>
-                    <archiva:showArtifactLink  groupId="${artifactModel.groupId}"
-                                               artifactId="${artifactModel.artifactId}"
+                    <archiva:showArtifactLink  groupId="${artifactModel.namespace}"
+                                               artifactId="${artifactModel.project}"
                                                version="${artifactModel.version}"/>
 
                   </p>

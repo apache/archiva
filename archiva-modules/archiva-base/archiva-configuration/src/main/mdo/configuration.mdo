@@ -1039,6 +1039,7 @@
           <name>cleanupConsumers</name>
           <version>1.0.0+</version>
           <required>true</required>
+          <deprecated>true</deprecated>
           <association>
             <type>String</type>
             <multiplicity>*</multiplicity>

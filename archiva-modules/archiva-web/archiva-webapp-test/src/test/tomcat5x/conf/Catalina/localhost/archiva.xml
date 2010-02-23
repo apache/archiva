@@ -27,10 +27,4 @@
             driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
             url="jdbc:derby:target/database/users;create=true"
       />
-  
-  <Resource name="jdbc/archiva" auth="Container" type="javax.sql.DataSource"
-            username="sa"
-            password=""
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:target/database/archiva;create=true" />
 </Context>

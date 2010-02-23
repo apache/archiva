@@ -25,18 +25,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.SyndFeedOutput;
 import org.apache.archiva.rss.processor.RssFeedProcessor;
 import org.apache.commons.codec.Decoder;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
@@ -58,10 +59,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedOutput;
 
 /**
  * Servlet for handling rss feed requests.
@@ -146,6 +143,7 @@ public class RssFeedServlet
                 }
                 else if ( ( groupId != null ) && ( artifactId != null ) )
                 {
+                    // TODO: this only works for guest - we could pass in the list of repos
                     // new versions of artifact feed request
                     processor =
                         (RssFeedProcessor) wac.getBean( PlexusToSpringUtils.buildSpringId(
@@ -181,11 +179,6 @@ public class RssFeedServlet
 
             SyndFeedOutput output = new SyndFeedOutput();
             output.output( feed, res.getWriter() );
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            log.debug( COULD_NOT_GENERATE_FEED_ERROR, e );
-            res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, COULD_NOT_GENERATE_FEED_ERROR );
         }
         catch ( UserNotFoundException unfe )
         {

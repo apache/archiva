@@ -38,11 +38,7 @@
         <!-- 30 minutes = 1800 seconds  -->
         <time-to-live-seconds>1800</time-to-live-seconds>
       </configuration>
-    </component>  
-    <component>
-      <role>org.apache.maven.archiva.database.ArchivaAuditLogsDao</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArchivaAuditLogsDaoStub</implementation>
     </component>
+    
   </components>
 </plexus>

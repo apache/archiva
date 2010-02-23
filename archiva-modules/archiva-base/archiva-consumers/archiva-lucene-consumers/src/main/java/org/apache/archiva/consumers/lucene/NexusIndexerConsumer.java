@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -33,10 +35,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
-import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -60,17 +58,18 @@ public class NexusIndexerConsumer
 
     private FileTypes filetypes;
 
-    private ManagedDefaultRepositoryContent repositoryContent;
-
     private File managedRepository;
 
-    private ArchivaTaskScheduler scheduler;
+    private ArchivaTaskScheduler<ArtifactIndexingTask> scheduler;
 
     private IndexingContext context;
 
     private List<String> includes = new ArrayList<String>();
 
-    public NexusIndexerConsumer( ArchivaTaskScheduler scheduler, ArchivaConfiguration configuration, FileTypes filetypes )
+    private ManagedRepositoryConfiguration repository;
+
+    public NexusIndexerConsumer( ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
+                                 ArchivaConfiguration configuration, FileTypes filetypes )
     {
         this.configuration = configuration;
         this.filetypes = filetypes;
@@ -95,14 +94,12 @@ public class NexusIndexerConsumer
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
+        this.repository = repository;
         managedRepository = new File( repository.getLocation() );
-
-        repositoryContent = new ManagedDefaultRepositoryContent();
-        repositoryContent.setRepository( repository );
 
         try
         {
-            context = TaskCreator.createContext( repository );
+            context = ArtifactIndexingTask.createContext( repository );
         }
         catch ( IOException e )
         {
@@ -120,12 +117,11 @@ public class NexusIndexerConsumer
         File artifactFile = new File( managedRepository, path );
 
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryContent.getRepository(), artifactFile,
-                                            ArtifactIndexingTask.Action.ADD, context );
+            new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, context );
         try
         {
             log.debug( "Queueing indexing task + '" + task + "' to add or update the artifact in the index." );
-            scheduler.queueIndexingTask( task );
+            scheduler.queueTask( task );
         }
         catch ( TaskQueueException e )
         {
@@ -136,12 +132,11 @@ public class NexusIndexerConsumer
     public void completeScan()
     {
         ArtifactIndexingTask task =
-            TaskCreator.createIndexingTask( repositoryContent.getRepository(), null,
-                                            ArtifactIndexingTask.Action.FINISH, context );
+            new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
         try
         {
             log.debug( "Queueing indexing task + '" + task + "' to finish indexing." );
-            scheduler.queueIndexingTask( task );
+            scheduler.queueTask( task );
         }
         catch ( TaskQueueException e )
         {
@@ -173,7 +168,7 @@ public class NexusIndexerConsumer
         includes.clear();
 
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.INDEXABLE_CONTENT ) );
-        
+
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 

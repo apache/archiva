@@ -27,20 +27,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
-import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
-import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 
 /**
  * NexusIndexerConsumerTest
@@ -49,26 +45,11 @@ public class NexusIndexerConsumerTest
     extends PlexusInSpringTestCase
 {
     private final class ArchivaTaskSchedulerStub
-        implements ArchivaTaskScheduler
+        implements ArchivaTaskScheduler<ArtifactIndexingTask>
     {
         Set<File> indexed = new HashSet<File>();
         
-        public void startup()
-            throws ArchivaException
-        {
-        }
-
-        public void scheduleDatabaseTasks()
-            throws TaskExecutionException
-        {
-        }
-
-        public void queueRepositoryTask( RepositoryTask task )
-            throws TaskQueueException
-        {
-        }
-
-        public void queueIndexingTask( ArtifactIndexingTask task )
+        public void queueTask( ArtifactIndexingTask task )
             throws TaskQueueException
         {
             switch ( task.getAction() )
@@ -90,21 +71,6 @@ public class NexusIndexerConsumerTest
                     }
                     break;
             }
-        }
-
-        public void queueDatabaseTask( DatabaseTask task )
-            throws TaskQueueException
-        {
-        }
-
-        public boolean isProcessingRepositoryTask( String repositoryId )
-        {
-            return false;
-        }
-
-        public boolean isProcessingDatabaseTask()
-        {
-            return false;
         }
     }
 

@@ -19,11 +19,9 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
@@ -42,9 +40,9 @@ public class SchedulerAction
     implements SecureAction
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
-    private ArchivaTaskScheduler taskScheduler;
+    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     private String repoid;
     
@@ -58,9 +56,11 @@ public class SchedulerAction
             return SUCCESS;
         }
 
-        RepositoryTask task = TaskCreator.createRepositoryTask( repoid, scanAll ); 
-        
-        if ( taskScheduler.isProcessingRepositoryTask( repoid ) )
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repoid );
+        task.setScanAll( scanAll );
+
+        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repoid ) )
         {
             addActionError( "Repository [" + repoid + "] task was already queued." );
         }
@@ -69,7 +69,7 @@ public class SchedulerAction
             try
             {
                 addActionMessage( "Your request to have repository [" + repoid + "] be indexed has been queued." );
-                taskScheduler.queueRepositoryTask( task );                
+                repositoryTaskScheduler.queueTask( task );
             }
             catch ( TaskQueueException e )
             {
@@ -79,32 +79,6 @@ public class SchedulerAction
         }
 
         // Return to the repositories screen.
-        return SUCCESS;
-    }
-
-    public String updateDatabase()
-    {
-        log.info( "Queueing database task on request from user interface" );
-        DatabaseTask task = new DatabaseTask();
-
-        if ( taskScheduler.isProcessingDatabaseTask() )
-        {
-            addActionError( "Database task was already queued." );
-        }
-        else
-        {
-            try
-            {
-                taskScheduler.queueDatabaseTask( task );
-                addActionMessage( "Your request to update the database has been queued." );
-            }
-            catch ( TaskQueueException e )
-            {
-                addActionError( "Unable to queue your request to update the database: " + e.getMessage() );
-            }
-        }
-
-        // Return to the database screen.
         return SUCCESS;
     }
 

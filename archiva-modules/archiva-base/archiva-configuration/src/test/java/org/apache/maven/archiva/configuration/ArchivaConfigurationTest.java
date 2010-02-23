@@ -582,7 +582,7 @@ public class ArchivaConfigurationTest
         archivaConfiguration.save( configuration );
 
         // Release existing
-//      FIXME spring equivalent ?  release( archivaConfiguration );
+        release( archivaConfiguration );
 
         // Reload.
         archivaConfiguration =

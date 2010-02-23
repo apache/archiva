@@ -43,8 +43,6 @@ public class RetentionCountRepositoryPurgeTest
 
     /**
      * Test if the artifact to be processed was a jar.
-     *
-     * @throws Exception
      */
     public void testIfAJarWasFound()
         throws Exception
@@ -52,14 +50,14 @@ public class RetentionCountRepositoryPurgeTest
         String repoRoot = prepareTestRepos();
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository(), createArtifact( "org.jruby.plugins", "jruby-rake-plugin",
-                                                                  "1.0RC1-20070504.153317-1", "jar" ) );
-        listener.deleteArtifact( getRepository(), createArtifact( "org.jruby.plugins", "jruby-rake-plugin",
-                                                                  "1.0RC1-20070504.153317-1", "pom" ) );
-        listener.deleteArtifact( getRepository(), createArtifact( "org.jruby.plugins", "jruby-rake-plugin",
-                                                                  "1.0RC1-20070504.160758-2", "jar" ) );
-        listener.deleteArtifact( getRepository(), createArtifact( "org.jruby.plugins", "jruby-rake-plugin",
-                                                                  "1.0RC1-20070504.160758-2", "pom" ) );
+        listener.deleteArtifact( getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+                                 "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" );
+        listener.deleteArtifact( getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+                                 "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1.pom" );
+        listener.deleteArtifact( getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+                                 "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.jar" );
+        listener.deleteArtifact( getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+                                 "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" );
         listenerControl.replay();
         
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
@@ -101,8 +99,6 @@ public class RetentionCountRepositoryPurgeTest
 
     /**
      * Test if the artifact to be processed is a pom
-     *
-     * @throws Exception
      */
     public void testIfAPomWasFound()
         throws Exception
@@ -110,10 +106,10 @@ public class RetentionCountRepositoryPurgeTest
         String repoRoot = prepareTestRepos();
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository(), createArtifact( "org.codehaus.castor", "castor-anttasks",
-                                                                  "1.1.2-20070427.065136-1", "jar" ) );
-        listener.deleteArtifact( getRepository(), createArtifact( "org.codehaus.castor", "castor-anttasks",
-                                                                  "1.1.2-20070427.065136-1", "pom" ) );
+        listener.deleteArtifact( getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
+                                 "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.jar" );
+        listener.deleteArtifact( getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
+                                 "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
         
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_POM );
@@ -158,10 +154,10 @@ public class RetentionCountRepositoryPurgeTest
         String repoRoot = prepareTestRepos();
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-assembly-plugin",
-                                                                  "1.1.2-20070427.065136-1", "maven-plugin" ) );
-        listener.deleteArtifact( getRepository(), createArtifact( "org.apache.maven.plugins", "maven-assembly-plugin",
-                                                                  "1.1.2-20070427.065136-1", "pom" ) );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
+                                 "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
+                                 "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
         
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );

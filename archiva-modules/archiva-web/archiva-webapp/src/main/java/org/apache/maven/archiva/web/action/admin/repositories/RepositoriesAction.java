@@ -19,30 +19,29 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import org.apache.struts2.interceptor.ServletRequestAware;
-import com.opensymphony.xwork2.Preparable;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.util.ContextUtils;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.redback.integration.interceptor.SecureAction;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+
+import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.util.ContextUtils;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.codehaus.plexus.redback.rbac.Resource;
+import org.codehaus.redback.integration.interceptor.SecureAction;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 /**
  * Shows the Repositories Tab for the administrator.
@@ -63,19 +62,19 @@ public class RepositoriesAction
 
     private List<RemoteRepositoryConfiguration> remoteRepositories;
 
-    private Map<String, RepositoryContentStatistics> repositoryStatistics;
-    
-    private Map<String, List<String>> repositoryToGroupMap;
+    private Map<String, RepositoryStatistics> repositoryStatistics;
 
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaDAO dao;
+    private Map<String, List<String>> repositoryToGroupMap;
 
     /**
      * Used to construct the repository WebDAV URL in the repository action.
      */
     private String baseUrl;
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryStatisticsManager repositoryStatisticsManager;
 
     public void setServletRequest( HttpServletRequest request )
     {
@@ -106,14 +105,13 @@ public class RepositoriesAction
         Collections.sort( managedRepositories, new RepositoryConfigurationComparator() );
         Collections.sort( remoteRepositories, new RepositoryConfigurationComparator() );
 
-        repositoryStatistics = new HashMap<String, RepositoryContentStatistics>();
+        repositoryStatistics = new HashMap<String, RepositoryStatistics>();
         for ( ManagedRepositoryConfiguration repo : managedRepositories )
         {
-            List<RepositoryContentStatistics> results =
-                (List<RepositoryContentStatistics>) dao.query( new MostRecentRepositoryScanStatistics( repo.getId() ) );
-            if ( !results.isEmpty() )
+            RepositoryStatistics stats = repositoryStatisticsManager.getLastStatistics( repo.getId() );
+            if ( stats != null )
             {
-                repositoryStatistics.put( repo.getId(), results.get( 0 ) );
+                repositoryStatistics.put( repo.getId(), stats );
             }
         }
     }
@@ -128,7 +126,7 @@ public class RepositoriesAction
         return remoteRepositories;
     }
 
-    public Map<String, RepositoryContentStatistics> getRepositoryStatistics()
+    public Map<String, RepositoryStatistics> getRepositoryStatistics()
     {
         return repositoryStatistics;
     }

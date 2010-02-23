@@ -29,5 +29,10 @@
         <resource>archiva-mime-types.txt</resource>
       </configuration>
     </component>
+
+    <component>
+      <role>org.apache.archiva.metadata.repository.MetadataRepository</role>
+      <implementation>org.apache.archiva.metadata.repository.TestMetadataRepository</implementation>
+    </component>
   </components>
 </component-set>

@@ -20,35 +20,15 @@
 <component-set>
   <components>
     <component>
-      <role>org.apache.maven.archiva.database.ArchivaDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArchivaDAOStub</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.database.ArtifactDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.database.RepositoryContentStatisticsDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.database.ArtifactDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArtifactDAOStub</implementation>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.database.RepositoryContentStatisticsDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.RepositoryContentStatisticsDAOStub
-      </implementation>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.database.ArchivaAuditLogsDao</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.ArchivaAuditLogsDaoStub</implementation>
+      <role>org.apache.maven.archiva.security.UserRepositories</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.archiva.security.UserRepositoriesStub</implementation>
+      <configuration>
+        <repoIds>
+          <repoId>internal</repoId>
+          <repoId>snapshots</repoId>
+        </repoIds>
+      </configuration>
     </component>
   </components>
 </component-set>

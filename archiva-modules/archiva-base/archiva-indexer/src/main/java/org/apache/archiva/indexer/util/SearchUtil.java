@@ -21,8 +21,6 @@ package org.apache.archiva.indexer.util;
 
 /**
  * SearchUtil - utility class for search.
- * 
- * @version
  */
 public class SearchUtil
 {

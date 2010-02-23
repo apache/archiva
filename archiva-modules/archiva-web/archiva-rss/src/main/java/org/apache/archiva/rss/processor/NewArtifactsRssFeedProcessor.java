@@ -19,29 +19,25 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.archiva.rss.RssFeedEntry;
-import org.apache.archiva.rss.RssFeedGenerator;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.TimeZone;
 
 import com.sun.syndication.feed.synd.SyndFeed;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.rss.RssFeedEntry;
+import org.apache.archiva.rss.RssFeedGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Retrieve and process all artifacts of a repository from the database and generate a rss feed.
  * The artifacts will be grouped by the date when the artifacts were gathered. 
  * Each group will appear as one entry in the feed.
  * 
- * @version
  * @plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-artifacts"
  */
 public class NewArtifactsRssFeedProcessor
@@ -60,16 +56,13 @@ public class NewArtifactsRssFeedProcessor
 
     private Logger log = LoggerFactory.getLogger( NewArtifactsRssFeedProcessor.class );
 
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArtifactDAO artifactDAO;
+    private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone( "GMT" );
 
     /**
      * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
      * new versions of artifact.
      */
-    public SyndFeed process( Map<String, String> reqParams ) throws ArchivaDatabaseException
+    public SyndFeed process( Map<String, String> reqParams )
     {
         log.debug( "Process new artifacts into rss feeds." );
 
@@ -82,16 +75,53 @@ public class NewArtifactsRssFeedProcessor
         return null;
     }
 
-    private SyndFeed processNewArtifactsInRepo( String repoId ) throws ArchivaDatabaseException
+    private SyndFeed processNewArtifactsInRepo( String repoId )
     {
-        
-        Calendar greaterThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+        Calendar greaterThanThisDate = Calendar.getInstance( GMT_TIME_ZONE );
         greaterThanThisDate.add( Calendar.DATE, -( getNumberOfDaysBeforeNow() ) );
-        
-        Constraint artifactsByRepo = new ArtifactsByRepositoryConstraint( repoId, greaterThanThisDate.getTime(), "whenGathered", false );
-        List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( artifactsByRepo );
+        greaterThanThisDate.clear( Calendar.MILLISECOND );
 
-        List<RssFeedEntry> entries = processData( artifacts, true );
+        List<ArtifactMetadata> artifacts =
+            metadataRepository.getArtifactsByDateRange( repoId, greaterThanThisDate.getTime(), null );
+
+        long tmp = 0;
+        RssFeedEntry entry = null;
+        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        String description = "";
+        int idx = 0;
+        for ( ArtifactMetadata artifact : artifacts )
+        {
+            long whenGathered = artifact.getWhenGathered().getTime();
+
+            String id = artifact.getNamespace() + "/" + artifact.getProject() + "/" + artifact.getId();
+            if ( tmp != whenGathered )
+            {
+                if ( entry != null )
+                {
+                    entry.setDescription( description );
+                    entries.add( entry );
+                    entry = null;
+                }
+
+                String repoId1 = artifact.getRepositoryId();
+                entry = new RssFeedEntry( this.getTitle() + "\'" + repoId1 + "\'" + " as of " + new Date( whenGathered ) );
+                entry.setPublishedDate( artifact.getWhenGathered() );
+                description = this.getDescription() + "\'" + repoId1 + "\'" + ": \n" + id + " | ";
+            }
+            else
+            {
+                description = description + id + " | ";
+            }
+
+            if ( idx == ( artifacts.size() - 1 ) )
+            {
+                entry.setDescription( description );
+                entries.add( entry );
+            }
+
+            tmp = whenGathered;
+            idx++;
+        }
 
         return generator.generateFeed( getTitle() + "\'" + repoId + "\'", "New artifacts found in repository " +
             "\'" + repoId + "\'" + " during repository scan.", entries );
@@ -117,16 +147,6 @@ public class NewArtifactsRssFeedProcessor
         this.generator = generator;
     }
 
-    public ArtifactDAO getArtifactDAO()
-    {
-        return artifactDAO;
-    }
-
-    public void setArtifactDAO( ArtifactDAO artifactDAO )
-    {
-        this.artifactDAO = artifactDAO;
-    }
-
     public int getNumberOfDaysBeforeNow()
     {
         return numberOfDaysBeforeNow;
@@ -136,5 +156,4 @@ public class NewArtifactsRssFeedProcessor
     {
         this.numberOfDaysBeforeNow = numberOfDaysBeforeNow;
     }
-    
 }

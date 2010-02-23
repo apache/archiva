@@ -25,9 +25,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
@@ -43,7 +43,6 @@ import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.maven.archiva.database.ArchivaAuditLogsDao;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
@@ -62,7 +61,6 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataMerge;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
@@ -166,14 +164,9 @@ public class ArchivaDavResourceFactory
     private Digester digestMd5;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
-    private ArchivaTaskScheduler scheduler;
-    
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaAuditLogsDao auditLogsDao;
+    private RepositoryArchivaTaskScheduler scheduler;
 
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
@@ -270,7 +263,7 @@ public class ArchivaDavResourceFactory
                             new ArchivaDavResource( metadataChecksum.getAbsolutePath(), logicalResource.getPath(),
                                                     null, request.getRemoteAddr(), activePrincipal,
                                                     request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                    auditListeners, scheduler, auditLogsDao );
+                                                    auditListeners, scheduler );
                     }
                 }
                 else
@@ -305,7 +298,7 @@ public class ArchivaDavResourceFactory
                                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                                         null, request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                        auditListeners, scheduler, auditLogsDao );
+                                                        auditListeners, scheduler );
                         }
                         catch ( RepositoryMetadataException r )
                         {
@@ -424,7 +417,7 @@ public class ArchivaDavResourceFactory
             resource =
                 new ArchivaDavResource( resourceFile.getAbsolutePath(), path, managedRepository.getRepository(),
                                         request.getRemoteAddr(), activePrincipal, request.getDavSession(),
-                                        archivaLocator, this, mimeTypes, auditListeners, scheduler, auditLogsDao );
+                                        archivaLocator, this, mimeTypes, auditListeners, scheduler );
 
             if ( WebdavMethodUtil.isReadMethod( request.getMethod() ) )
             {
@@ -455,7 +448,7 @@ public class ArchivaDavResourceFactory
                                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
                                                         managedRepository.getRepository(), request.getRemoteAddr(),
                                                         activePrincipal, request.getDavSession(), archivaLocator, this,
-                                                        mimeTypes, auditListeners, scheduler, auditLogsDao );
+                                                        mimeTypes, auditListeners, scheduler );
                         }
                         catch ( LayoutException e )
                         {
@@ -571,7 +564,7 @@ public class ArchivaDavResourceFactory
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource );
         DavResource resource =
             new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource, managedRepository.getRepository(),
-                                    davSession, archivaLocator, this, mimeTypes, auditListeners, scheduler, auditLogsDao );
+                                    davSession, archivaLocator, this, mimeTypes, auditListeners, scheduler );
 
         resource.addLockManager( lockManager );
         return resource;
@@ -1075,7 +1068,7 @@ public class ArchivaDavResourceFactory
         this.httpAuth = httpAuth;
     }
 
-    public void setScheduler( ArchivaTaskScheduler scheduler )
+    public void setScheduler( RepositoryArchivaTaskScheduler scheduler )
     {
         this.scheduler = scheduler;
     }
@@ -1098,10 +1091,5 @@ public class ArchivaDavResourceFactory
     public void setConnectors( RepositoryProxyConnectors connectors )
     {
         this.connectors = connectors;
-    }
-    
-    public void setAuditLogsDao( ArchivaAuditLogsDao auditLogsDao )
-    {
-        this.auditLogsDao = auditLogsDao;
     }
 }

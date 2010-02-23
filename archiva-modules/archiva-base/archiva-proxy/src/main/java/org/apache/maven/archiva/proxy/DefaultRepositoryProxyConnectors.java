@@ -27,9 +27,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,9 +57,6 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
@@ -133,7 +132,7 @@ public class DefaultRepositoryProxyConnectors
     private WagonFactory wagonFactory;
     
     /**
-     * @plexus.requirement
+     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
     private ArchivaTaskScheduler scheduler;
 
@@ -581,15 +580,19 @@ public class DefaultRepositoryProxyConnectors
         }
 
         return resource;
-    }    
-    
+    }
+
     private void queueRepositoryTask( String repositoryId, File localFile )
     {
-        RepositoryTask task = TaskCreator.createRepositoryTask( repositoryId, localFile, true, true );
-        
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repositoryId );
+        task.setResourceFile( localFile );
+        task.setUpdateRelatedArtifacts( true );
+        task.setScanAll( true );
+
         try
         {
-            scheduler.queueRepositoryTask( task );
+            scheduler.queueTask( task );
         }
         catch ( TaskQueueException e )
         {
@@ -623,8 +626,9 @@ public class DefaultRepositoryProxyConnectors
      * @param remoteRepository the remote repository to transfer from.
      * @param remotePath the remote path to the resource to get.
      * @param repository the managed repository that will hold the file
-     * @param localFile the local file that should contain the downloaded contents
-     * @param type the type of checksum to transfer (example: ".md5" or ".sha1")
+     * @param resource the local file that should contain the downloaded contents
+     * @param tmpDirectory the temporary directory to download to
+     * @param ext the type of checksum to transfer (example: ".md5" or ".sha1")
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
     private File transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,

@@ -19,31 +19,35 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.archiva.rss.RssFeedGenerator;
-import org.apache.archiva.rss.stubs.ArtifactDAOStub;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.rss.RssFeedGenerator;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.easymock.MockControl;
 
 public class NewVersionsOfArtifactRssFeedProcessorTest
     extends PlexusInSpringTestCase
 {
-    private static final String TEST_REPO = "test-repo";
-
     private NewVersionsOfArtifactRssFeedProcessor newVersionsProcessor;
 
-    private ArtifactDAOStub artifactDAOStub;
+    private static final String TEST_REPO = "test-repo";
 
-    private RssFeedGenerator rssFeedGenerator;
+    private static final String GROUP_ID = "org.apache.archiva";
+
+    private static final String ARTIFACT_ID = "artifact-two";
+
+    private MockControl metadataRepositoryControl;
+
+    private MetadataRepository metadataRepository;
 
     @Override
     public void setUp()
@@ -52,64 +56,78 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         super.setUp();
 
         newVersionsProcessor = new NewVersionsOfArtifactRssFeedProcessor();
-        artifactDAOStub = new ArtifactDAOStub();
+        newVersionsProcessor.setGenerator( new RssFeedGenerator() );
 
-        rssFeedGenerator = new RssFeedGenerator();
-
-        newVersionsProcessor.setGenerator( rssFeedGenerator );
-        newVersionsProcessor.setArtifactDAO( artifactDAOStub );
+        metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+        newVersionsProcessor.setMetadataRepository( metadataRepository );
     }
 
     @SuppressWarnings("unchecked")
     public void testProcess()
         throws Exception
     {
-        List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();
+        Date whenGathered = new Date( 123456789 );
 
-        Date whenGathered = Calendar.getInstance().getTime();
-        whenGathered.setTime( 123456789 );
- 
-        ArchivaArtifact artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.1", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        artifacts.add( artifact );
+        ArtifactMetadata artifact1 = createArtifact( whenGathered, "1.0.1" );
+        ArtifactMetadata artifact2 = createArtifact( whenGathered, "1.0.2" );
 
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.2", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGathered );
-        artifacts.add( artifact );
+        Date whenGatheredNext = new Date( 345678912 );
 
-        Date whenGatheredNext = Calendar.getInstance().getTime();
-        whenGatheredNext.setTime( 345678912 );      
-
-        artifact = new ArchivaArtifact( "org.apache.archiva", "artifact-two", "1.0.3-SNAPSHOT", "", "jar", TEST_REPO );
-        artifact.getModel().setWhenGathered( whenGatheredNext );
-        artifacts.add( artifact );
-
-        artifactDAOStub.setArtifacts( artifacts );
+        ArtifactMetadata artifact3 = createArtifact( whenGatheredNext, "1.0.3-SNAPSHOT" );
 
         Map<String, String> reqParams = new HashMap<String, String>();
-        reqParams.put( RssFeedProcessor.KEY_REPO_ID, "test-repo" );
-        reqParams.put( RssFeedProcessor.KEY_GROUP_ID, "org.apache.archiva" );
-        reqParams.put( RssFeedProcessor.KEY_ARTIFACT_ID, "artifact-two" );
+        reqParams.put( RssFeedProcessor.KEY_GROUP_ID, GROUP_ID );
+        reqParams.put( RssFeedProcessor.KEY_ARTIFACT_ID, ARTIFACT_ID );
+
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getRepositories(),
+                                                   Collections.singletonList( TEST_REPO ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getProjectVersions( TEST_REPO, GROUP_ID, ARTIFACT_ID ),
+            Arrays.asList( "1.0.1", "1.0.2", "1.0.3-SNAPSHOT" ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.1" ),
+            Collections.singletonList( artifact1 ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.2" ),
+            Collections.singletonList( artifact2 ) );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.3-SNAPSHOT" ),
+            Collections.singletonList( artifact3 ) );
+        metadataRepositoryControl.replay();
 
         SyndFeed feed = newVersionsProcessor.process( reqParams );
 
-        assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two'", feed.getTitle() );        
-        assertEquals(
-                      "New versions of artifact 'org.apache.archiva:artifact-two' found in repository 'test-repo' during repository scan.",
+        assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two'", feed.getTitle() );
+        assertEquals( "New versions of artifact 'org.apache.archiva:artifact-two' found during repository scan.",
                       feed.getDescription() );
         assertEquals( "en-us", feed.getLanguage() );
-        assertEquals( artifacts.get( 2 ).getModel().getWhenGathered(), feed.getPublishedDate() );
+        assertEquals( whenGatheredNext, feed.getPublishedDate() );
 
         List<SyndEntry> entries = feed.getEntries();
 
         assertEquals( 2, entries.size() );
-        
+
         assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGathered,
                       entries.get( 0 ).getTitle() );
         assertEquals( whenGathered, entries.get( 0 ).getPublishedDate() );
-        
+
         assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGatheredNext,
                       entries.get( 1 ).getTitle() );
         assertEquals( whenGatheredNext, entries.get( 1 ).getPublishedDate() );
+
+        metadataRepositoryControl.verify();
+    }
+
+    private ArtifactMetadata createArtifact( Date whenGathered, String version )
+    {
+        ArtifactMetadata artifact = new ArtifactMetadata();
+        artifact.setNamespace( GROUP_ID );
+        artifact.setProject( ARTIFACT_ID );
+        artifact.setVersion( version );
+        artifact.setRepositoryId( TEST_REPO );
+        artifact.setId( ARTIFACT_ID + "-" + version + ".jar" );
+        artifact.setWhenGathered( whenGathered );
+        return artifact;
     }
 }

@@ -21,14 +21,10 @@ package org.apache.archiva.rss.processor;
 
 import java.util.Map;
 
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-
 import com.sun.syndication.feed.synd.SyndFeed;
 
 /**
  * Retrieve and process the data that will be fed into the RssFeedGenerator.
- * 
- * @version
  */
 public interface RssFeedProcessor
 {
@@ -38,5 +34,5 @@ public interface RssFeedProcessor
 
     public static final String KEY_ARTIFACT_ID = "artifactId";
 
-    SyndFeed process( Map<String, String> reqParams ) throws ArchivaDatabaseException;
+    SyndFeed process( Map<String, String> reqParams );
 }

@@ -20,6 +20,7 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -27,234 +28,214 @@ import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.browsing.BrowsingResults;
-import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
-import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
-import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 
 public class SearchServiceImpl
     implements SearchService
-{ 
-    private Logger log = LoggerFactory.getLogger( SearchServiceImpl.class );
-                                                 
+{
     private RepositorySearch search;
-    
+
     private XmlRpcUserRepositories xmlRpcUserRepositories;
-    
-    private ArchivaDAO archivaDAO;
-    
-    private RepositoryBrowsing repoBrowsing;
-    
-    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, ArchivaDAO archivaDAO,
-                              RepositoryBrowsing repoBrowsing, RepositorySearch search )
+
+    private MetadataResolver metadataResolver;
+
+    private MetadataRepository metadataRepository;
+
+    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, MetadataResolver metadataResolver,
+                              MetadataRepository metadataRepository, RepositorySearch search )
     {
         this.xmlRpcUserRepositories = xmlRpcUserRepositories;
-        this.archivaDAO = archivaDAO;        
-        this.repoBrowsing = repoBrowsing;
         this.search = search;
+        this.metadataResolver = metadataResolver;
+        this.metadataRepository = metadataRepository;
     }
-      
-    @SuppressWarnings( "unchecked" )
+
+    @SuppressWarnings("unchecked")
     public List<Artifact> quickSearch( String queryString )
         throws Exception
-    {   
+    {
         List<Artifact> artifacts = new ArrayList<Artifact>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
-        SearchResults results = null;
-        
+        SearchResults results;
+
         results = search.search( "", observableRepos, queryString, limits, null );
-        
+
         for ( SearchResultHit resultHit : results.getHits() )
         {
-            // double-check all versions as done in SearchAction
-            final List<String> versions =
-                (List<String>) archivaDAO.query( new UniqueVersionConstraint( observableRepos, resultHit.getGroupId(),
-                                                    resultHit.getArtifactId() ) );
-            if ( versions != null && !versions.isEmpty() )
-            {
-                resultHit.setVersion( null );
-                resultHit.setVersions( filterTimestampedSnapshots( versions ) );
-            }
-                        
             List<String> resultHitVersions = resultHit.getVersions();
-            if( resultHitVersions != null )
+            if ( resultHitVersions != null )
             {
-                for( String version : resultHitVersions )
-                {   
-                    try
+                for ( String version : resultHitVersions )
+                {
+                    Artifact artifact = null;
+                    for ( String repoId : observableRepos )
                     {
-                        ArchivaProjectModel model = repoBrowsing.selectVersion( "", observableRepos, resultHit.getGroupId(), resultHit.getArtifactId(), version );
-                        
-                        String repoId = repoBrowsing.getRepositoryId( "", observableRepos, resultHit.getGroupId(), resultHit.getArtifactId(), version );
-                        
-                        Artifact artifact = null;
-                        if( model == null )
+                        // slight behaviour change to previous implementation: instead of allocating "jar" when not
+                        // found in the database, we can rely on the metadata repository to create it on the fly. We
+                        // just allocate the default packaging if the Maven facet is not found.
+                        ProjectVersionMetadata model =
+                            metadataResolver.getProjectVersion( repoId, resultHit.getGroupId(),
+                                                                resultHit.getArtifactId(), version );
+
+                        if ( model != null )
                         {
-                           artifact = new Artifact( repoId, resultHit.getGroupId(), resultHit.getArtifactId(), version, "jar" );                           
+                            String packaging = "jar";
+
+                            MavenProjectFacet facet = (MavenProjectFacet) model.getFacet( MavenProjectFacet.FACET_ID );
+                            if ( facet != null && facet.getPackaging() != null )
+                            {
+                                packaging = facet.getPackaging();
+                            }
+                            artifact = new Artifact( repoId, resultHit.getGroupId(), resultHit.getArtifactId(), version,
+                                                     packaging );
+                            break;
                         }
-                        else
-                        {                       
-                            artifact = new Artifact( repoId, model.getGroupId(), model.getArtifactId(), version, model.getPackaging() );
-                        }
+                    }
+
+                    if ( artifact != null )
+                    {
                         artifacts.add( artifact );
-                    }
-                    catch( ObjectNotFoundException e )
-                    {                          
-                        log.debug( "Unable to find pom artifact : " + e.getMessage() );                        
-                    }
-                    catch( ArchivaDatabaseException e )
-                    {                           
-                        log.debug( "Error occurred while getting pom artifact from database : " + e.getMessage() );
                     }
                 }
             }
-        }    
-        
+        }
+
         return artifacts;
     }
-    
-    /**
-     * Remove timestamped snapshots from versions
-     */
-    private static List<String> filterTimestampedSnapshots(List<String> versions)
+
+    public List<Artifact> getArtifactByChecksum( String checksum )
+        throws Exception
     {
-        final List<String> filtered = new ArrayList<String>();
-        for (final String version : versions)
+        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
+
+        List<Artifact> results = new ArrayList<Artifact>();
+        for ( String repoId : observableRepos )
         {
-            final String baseVersion = VersionUtil.getBaseVersion(version);
-            if (!filtered.contains(baseVersion))
+            for ( ArtifactMetadata artifact : metadataRepository.getArtifactsByChecksum( repoId, checksum ) )
             {
-                filtered.add(baseVersion);
+                // TODO: use a maven facet instead, for now just using the extension and classifier
+                String type = null;
+                String key = artifact.getProject() + "-" + artifact.getVersion();
+                String filename = artifact.getId();
+                int extIndex = filename.lastIndexOf( "." );
+                if ( filename.startsWith( key ) )
+                {
+                    int i = key.length();
+                    char nextToken = filename.charAt( i );
+                    if ( nextToken == '-' )
+                    {
+                        String classifier = filename.substring( i + 1, extIndex );
+                        String extension = filename.substring( extIndex + 1 );
+                        type = ArtifactExtensionMapping.mapExtensionAndClassifierToType( classifier, extension );
+                    }
+                    else if ( nextToken == '.' )
+                    {
+                        type = ArtifactExtensionMapping.mapExtensionToType( filename.substring( i + 1 ) );
+                    }
+                }
+                results.add( new Artifact( artifact.getRepositoryId(), artifact.getNamespace(), artifact.getProject(),
+                                           artifact.getVersion(), type ) );
             }
         }
-        return filtered;
-    }
-    
-    public List<Artifact> getArtifactByChecksum( String checksum ) 
-        throws Exception
-    {
-        // 1. get ArtifactDAO from ArchivaDAO
-        // 2. create ArtifactsByChecksumConstraint( "queryTerm" )
-        // 3. query artifacts using constraint
-        // 4. convert results to list of Artifact objects
-        
-        List<Artifact> results = new ArrayList<Artifact>();
-        ArtifactDAO artifactDAO = archivaDAO.getArtifactDAO();
-        
-        ArtifactsByChecksumConstraint constraint = new ArtifactsByChecksumConstraint( checksum );
-        List<ArchivaArtifact> artifacts = artifactDAO.queryArtifacts( constraint );
-        
-        for( ArchivaArtifact archivaArtifact : artifacts )
-        {
-            Artifact artifact = new Artifact( archivaArtifact.getModel().getRepositoryId(), archivaArtifact.getModel().getGroupId(),
-                          archivaArtifact.getModel().getArtifactId(), archivaArtifact.getModel().getVersion(), archivaArtifact.getType() ); 
-                          //archivaArtifact.getModel().getWhenGathered() );
-            results.add( artifact );
-        }
-        
         return results;
     }
-    
-    public List<Artifact> getArtifactVersions( String groupId, String artifactId ) 
-        throws Exception
-    {
-        final List<Artifact> artifacts = new ArrayList<Artifact>();        
-        final List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
-        
-        final BrowsingResults results = repoBrowsing.selectArtifactId( "", observableRepos, groupId, artifactId );
-        
-        for( final String version : results.getVersions() )
-        {
-            final Artifact artifact = new Artifact( "", groupId, artifactId, version, "pom" ); 
-            //ArchivaArtifact pomArtifact = artifactDAO.getArtifact( groupId, artifactId, version, "", "pom",  );
-            //Artifact artifact = new Artifact( "", groupId, artifactId, version, pomArtifact.getType() ); 
-                          //pomArtifact.getModel().getWhenGathered() );
-            
-            artifacts.add( artifact );
-        }
-        
-        // 1. get observable repositories
-        // 2. use RepositoryBrowsing method to query uniqueVersions?
-        return artifacts;
-    }
-    
-    public List<Artifact> getArtifactVersionsByDate( String groupId, String artifactId, String version, Date since )
+
+    public List<Artifact> getArtifactVersions( String groupId, String artifactId )
         throws Exception
     {
         List<Artifact> artifacts = new ArrayList<Artifact>();
-        
+        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
+
+        for ( String repoId : observableRepos )
+        {
+            Collection<String> results = metadataResolver.getProjectVersions( repoId, groupId, artifactId );
+
+            for ( final String version : results )
+            {
+                final Artifact artifact = new Artifact( repoId, groupId, artifactId, version, "pom" );
+
+                artifacts.add( artifact );
+            }
+        }
+
+        return artifacts;
+    }
+
+    public List<Artifact> getArtifactVersionsByDate( String groupId, String artifactId, String version, Date since )
+        throws Exception
+    {
+//        List<Artifact> artifacts = new ArrayList<Artifact>();
+
         // 1. get observable repositories
         // 2. use RepositoryBrowsing method to query uniqueVersions? (but with date)
-        
+
         throw new UnsupportedOperationException( "getArtifactVersionsByDate not yet implemented" );
 
 //        return artifacts;
     }
-    
-    public List<Dependency> getDependencies( String groupId, String artifactId, String version ) 
-        throws Exception
-    {  
-        List<Dependency> dependencies = new ArrayList<Dependency>();        
-        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
-        
-        try
-        {
-            ArchivaProjectModel model = repoBrowsing.selectVersion( "", observableRepos, groupId, artifactId, version );
-            List<org.apache.maven.archiva.model.Dependency> modelDeps = model.getDependencies();
-            for( org.apache.maven.archiva.model.Dependency dep : modelDeps )
-            {
-                Dependency dependency = new Dependency( 
-                    dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), dep.getClassifier(), dep.getType(), dep.getScope() );
-                dependencies.add( dependency );
-            }
-        }
-        catch ( ObjectNotFoundException oe )
-        {
-            throw new Exception( "Artifact does not exist." );
-        }
-        
-        return dependencies;
-    }
-    
-    public List<Artifact> getDependencyTree( String groupId, String artifactId, String version ) 
+
+    public List<Dependency> getDependencies( String groupId, String artifactId, String version )
         throws Exception
     {
-        List<Artifact> a = new ArrayList<Artifact>();
-        
+        List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
+
+        for ( String repoId : observableRepos )
+        {
+            ProjectVersionMetadata model = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+            if ( model != null )
+            {
+                List<Dependency> dependencies = new ArrayList<Dependency>();
+                List<org.apache.archiva.metadata.model.Dependency> modelDeps = model.getDependencies();
+                for ( org.apache.archiva.metadata.model.Dependency dep : modelDeps )
+                {
+                    Dependency dependency =
+                        new Dependency( dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), dep.getClassifier(),
+                                        dep.getType(), dep.getScope() );
+                    dependencies.add( dependency );
+                }
+                return dependencies;
+            }
+        }
+        throw new Exception( "Artifact does not exist." );
+    }
+
+    public List<Artifact> getDependencyTree( String groupId, String artifactId, String version )
+        throws Exception
+    {
+//        List<Artifact> a = new ArrayList<Artifact>();
+
         throw new UnsupportedOperationException( "getDependencyTree not yet implemented" );
 //        return a;
     }
-    
-  //get artifacts that depend on a given artifact
+
     public List<Artifact> getDependees( String groupId, String artifactId, String version )
         throws Exception
     {
         List<Artifact> artifacts = new ArrayList<Artifact>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
-        
-        List<ArchivaProjectModel> dependees = repoBrowsing.getUsedBy( "", observableRepos, groupId, artifactId, version );
-        for( ArchivaProjectModel model : dependees )
+
+        for ( String repoId : observableRepos )
         {
-            Artifact artifact =
-                new Artifact( "", model.getGroupId(), model.getArtifactId(), model.getVersion(), "" );
-                              //model.getWhenIndexed() );
-            artifacts.add( artifact );
+            Collection<ProjectVersionReference> refs =
+                metadataResolver.getProjectReferences( repoId, groupId, artifactId, version );
+            for ( ProjectVersionReference ref : refs )
+            {
+                artifacts.add(
+                    new Artifact( repoId, ref.getNamespace(), ref.getProjectId(), ref.getProjectVersion(), "" ) );
+            }
         }
-        
+
         return artifacts;
     }
 }

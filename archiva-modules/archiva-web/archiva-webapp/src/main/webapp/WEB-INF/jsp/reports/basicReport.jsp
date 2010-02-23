@@ -32,33 +32,47 @@
 
 <div id="contentArea">
 
-  <s:set name="reports" value="reports"/>  
-    
   <c:forEach var="repository" items="${repositoriesMap}">
 	<strong>Repository: ${repository.key}</strong>
 	<c:forEach var="report" items='${repository.value}'>
 	
 	    <p>
-      	<archiva:groupIdLink var="${report.groupId}" includeTop="true"/>
+      	<archiva:groupIdLink var="${report.namespace}" includeTop="true"/>
       	<c:set var="url">
         <s:url action="browseArtifact" namespace="/">
-          <s:param name="groupId" value="%{#attr.report.groupId}"/>
-          <s:param name="artifactId" value="%{#attr.report.artifactId}"/>
+          <s:param name="groupId" value="%{#attr.report.namespace}"/>
+          <s:param name="artifactId" value="%{#attr.report.project}"/>
         </s:url>
       	</c:set>
-      	<a href="${url}">${report.artifactId}</a> /
+      	<a href="${url}">${report.project}</a> /
       	<strong>${report.version}</strong>
     	</p>
     
-		<blockquote>${report.message}</blockquote>
+		<blockquote><c:out value="${report.message}" /></blockquote>
 	</c:forEach>
   </c:forEach>
 
-  <s:set name="page" value="page"/>
-  <c:if test="${page > 1}"><a href="<s:property value='prev' />">&lt;&lt;</a></c:if>
+  <c:set var="prevPageUrl">
+    <s:url action="generateReport" namespace="/report">
+      <s:param name="groupId" value="%{#attr.groupId}" />
+      <s:param name="repositoryId" value="%{#attr.repositoryId }" />
+      <s:param name="rowCount" value="%{#attr.rowCount}" />
+      <s:param name="page" value="%{#attr.page - 1}"/>
+    </s:url>
+  </c:set>
+  <c:set var="nextPageUrl">
+    <s:url action="generateReport" namespace="/report">
+      <s:param name="groupId" value="%{#attr.groupId}" />
+      <s:param name="repositoryId" value="%{#attr.repositoryId }" />
+      <s:param name="rowCount" value="%{#attr.rowCount}" />
+      <s:param name="page" value="%{#attr.page + 1}"/>
+    </s:url>
+  </c:set>
+  <s:set name="page" value="page" />
+  <c:if test="${page gt 1}"><a href="${prevPageUrl}">&lt;&lt;</a></c:if>
   Page: ${page}
-  <s:set name="isLastPage" value="isLastPage"/>
-  <c:if test="${!isLastPage}"><a href="<s:property value='next' />">&gt;&gt;</a></c:if>
+  <s:set name="lastPage" value="lastPage"/>
+  <c:if test="${!lastPage}"><a href="${nextPageUrl}">&gt;&gt;</a></c:if>
 
 </div>
 </body>

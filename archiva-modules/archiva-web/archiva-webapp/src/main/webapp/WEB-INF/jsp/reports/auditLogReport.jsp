@@ -27,9 +27,9 @@
   <title>Audit Log Report</title>
   <s:head theme="ajax" />
   
-  <link rel="stylesheet" href="<c:url value='/css/ui.datepicker.css'/>" type="text/css" media="all"/>
-  <script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.2.6.pack.js'/>"></script>
-  <script type="text/javascript" src="<c:url value='/js/jquery/ui.datepicker.packed.js'/>"></script>
+  <link rel="stylesheet" href="<c:url value='/css/no-theme/jquery-ui-1.7.2.custom.css'/>" type="text/css" />
+  <script type="text/javascript" src="<c:url value='/js/jquery-1.3.2.min.js'/>"></script>
+  <script type="text/javascript" src="<c:url value='/js/jquery-ui-1.7.2.custom.min.js'/>"></script>
   <script type="text/javascript" charset="utf-8">
     $(document).ready(function()
     {
@@ -119,18 +119,18 @@
 	         <tr>
 		        <th>Event</th>
 		        <th>Repository</th>
-		        <th>Artifact</th>
+		        <th>Resource</th>
 		        <th>Event Date</th>
 		        <th>Username</th>
 		      </tr>
 		    
 		    <c:forEach items="${auditLogs}" var="auditLog" varStatus="i">	    
 		      <tr>
-		        <td>${auditLog.event}</td>
+		        <td>${auditLog.action}</td>
 		        <td>${auditLog.repositoryId}</td>
-		        <td>${auditLog.artifact}</td>
-		        <td>${auditLog.eventDate}</td>
-		        <td>${auditLog.username}</td>
+		        <td>${auditLog.resource}</td>
+		        <td>${auditLog.timestamp}</td>
+		        <td>${auditLog.userId}</td>
 		      </tr>		    
 		    </c:forEach>
 		  </table>	

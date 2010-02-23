@@ -24,8 +24,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
-<%@ page import="org.apache.maven.archiva.web.startup.ArchivaVersion" %>
 <%@ page import="java.util.Calendar" %>
+<%@ page import="org.apache.maven.archiva.web.startup.ArchivaVersion" %>
 
 <html>
 <head>
@@ -145,9 +145,6 @@
         </li>
         <li class="none">
           <my:currentWWUrl action="repositoryScanning" namespace="/admin">Repository Scanning</my:currentWWUrl>
-        </li>
-        <li class="none">
-          <my:currentWWUrl action="database" namespace="/admin">Database</my:currentWWUrl>
         </li>
           <%-- TODO: future options here.
                * Repository Syncing Connectors. (rsync, ftp, scp, etc...)

@@ -19,22 +19,22 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.PathUtil;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.converter.RepositoryConversionException;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.archiva.repository.scanner.RepositoryScanner;
+import org.apache.archiva.repository.scanner.RepositoryScannerException;
+import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.archiva.converter.RepositoryConversionException;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 
 /**
  * DefaultLegacyRepositoryConverter 
@@ -97,7 +97,7 @@ public class DefaultLegacyRepositoryConverter
             repoScanner.scan( legacyRepository, knownConsumers, invalidConsumers, ignoredContent,
                               RepositoryScanner.FRESH_SCAN );
         }
-        catch ( RepositoryException e )
+        catch ( RepositoryScannerException e )
         {
             throw new RepositoryConversionException( "Error convering legacy repository.", e );
         }

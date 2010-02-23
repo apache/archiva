@@ -19,15 +19,15 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileType;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
+import org.apache.maven.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
-import java.io.File;
 
 public abstract class AbstractArtifactConsumerTest
     extends PlexusInSpringTestCase
