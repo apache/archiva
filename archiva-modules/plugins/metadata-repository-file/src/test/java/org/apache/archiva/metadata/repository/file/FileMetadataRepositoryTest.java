@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -531,8 +532,14 @@ public class FileMetadataRepositoryTest
         artifact2.setProject( "project2" );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, "project2", TEST_PROJECT_VERSION, artifact2 );
 
-        assertEquals( Arrays.asList( artifact1, artifact2 ), new ArrayList<ArtifactMetadata>(
-            repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) ) );
+        List<ArtifactMetadata> expected = Arrays.asList( artifact1, artifact2 );
+        Collections.sort( expected, new ArtifactMetadataComparator() );
+        
+        List<ArtifactMetadata> actual = new ArrayList<ArtifactMetadata>(
+                        repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
+        Collections.sort( actual, new ArtifactMetadataComparator() );
+        
+        assertEquals( expected, actual );
 
         repository.deleteRepository( TEST_REPO_ID );
 
@@ -572,6 +579,14 @@ public class FileMetadataRepositoryTest
         return artifact;
     }
 
+    private class ArtifactMetadataComparator implements Comparator<ArtifactMetadata>
+    {
+        public final int compare ( ArtifactMetadata a, ArtifactMetadata b)
+        {            
+            return ( (String) a.getProject() ).compareTo( (String) b.getProject() );
+        } 
+    }
+    
     private static class TestMetadataFacet
         implements MetadataFacet
     {
