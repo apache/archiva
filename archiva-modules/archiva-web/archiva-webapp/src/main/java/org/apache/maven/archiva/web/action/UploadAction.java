@@ -359,7 +359,7 @@ public class UploadAction
                 {
                     copyFile( artifactFile, targetPath, filename, fixChecksums );
                     triggerAuditEvent( repository.getId(), path + "/" + filename, AuditEvent.UPLOAD_FILE );
-                    queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );
+                    queueRepositoryTask( repository.getId(), targetFile );
                 }
             }
             catch ( IOException ie )
