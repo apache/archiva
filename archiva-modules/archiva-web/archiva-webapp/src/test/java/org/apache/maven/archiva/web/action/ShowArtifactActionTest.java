@@ -38,10 +38,7 @@ import org.apache.maven.archiva.model.License;
 import org.apache.maven.archiva.model.Organization;
 import org.apache.maven.archiva.model.Scm;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.security.UserRepositoriesStub;
 import org.apache.maven.archiva.web.action.admin.repositories.ArchivaDAOStub;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 public class ShowArtifactActionTest
