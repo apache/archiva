@@ -360,7 +360,7 @@ public class UploadAction
                 else
                 {
                     copyFile( artifactFile, targetPath, filename, fixChecksums );
-                    queueRepositoryTask( repository.getId(), repository.toFile( artifactReference ) );                    
+                    queueRepositoryTask( repository.getId(), targetFile );                    
                 }
             }
             catch ( IOException ie )
