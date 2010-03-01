@@ -71,6 +71,14 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  */
 public class ArchivaDavResource
@@ -89,9 +97,9 @@ public class ArchivaDavResource
     private DavPropertySet properties = null;
 
     private LockManager lockManager;
-    
+
     private final DavSession session;
-    
+
     private String remoteAddr;
 
     private final ManagedRepositoryConfiguration repository;
@@ -101,11 +109,11 @@ public class ArchivaDavResource
     private List<AuditListener> auditListeners;
 
     private String principal;
-    
+
     public static final String COMPLIANCE_CLASS = "1, 2";
-    
+
     private ArchivaTaskScheduler scheduler;
-    
+
     private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
     
     private ArchivaAuditLogsDao auditLogsDao;
@@ -115,17 +123,17 @@ public class ArchivaDavResource
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
                                ArchivaTaskScheduler scheduler, ArchivaAuditLogsDao auditLogsDao )
     {
-        this.localResource = new File( localResource ); 
+        this.localResource = new File( localResource );
         this.logicalResource = logicalResource;
         this.locator = locator;
         this.factory = factory;
         this.session = session;
-        
+
         // TODO: push into locator as well as moving any references out of the resource factory
         this.repository = repository;
-        
+
         // TODO: these should be pushed into the repository layer, along with the physical file operations in this class
-        this.mimeTypes = mimeTypes;        
+        this.mimeTypes = mimeTypes;
         this.auditListeners = auditListeners;
         this.scheduler = scheduler;
         this.auditLogsDao = auditLogsDao;
@@ -197,12 +205,12 @@ public class ArchivaDavResource
     public void spool( OutputContext outputContext )
         throws IOException
     {
-        if ( !isCollection())
+        if ( !isCollection() )
         {
             outputContext.setContentLength( localResource.length() );
             outputContext.setContentType( mimeTypes.getMimeType( localResource.getName() ) );
         }
-        
+
         if ( !isCollection() && outputContext.hasStream() )
         {
             FileInputStream is = null;
@@ -217,7 +225,7 @@ public class ArchivaDavResource
                 IOUtils.closeQuietly( is );
             }
         }
-        else if (outputContext.hasStream())
+        else if ( outputContext.hasStream() )
         {
             IndexWriter writer = new IndexWriter( this, localResource, logicalResource );
             writer.write( outputContext );
@@ -255,7 +263,7 @@ public class ArchivaDavResource
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public MultiStatusResponse alterProperties( List changeList )
         throws DavException
     {
@@ -272,7 +280,8 @@ public class ArchivaDavResource
             {
                 parentPath = "/";
             }
-            DavResourceLocator parentloc = locator.getFactory().createResourceLocator( locator.getPrefix(), parentPath );
+            DavResourceLocator parentloc = locator.getFactory().createResourceLocator( locator.getPrefix(),
+                                                                                       parentPath );
             try
             {
                 parent = factory.createResource( parentloc, session );
@@ -307,34 +316,40 @@ public class ArchivaDavResource
             {
                 IOUtils.closeQuietly( stream );
             }
-            
+
             // TODO: a bad deployment shouldn't delete an existing file - do we need to write to a temporary location first?
             if ( inputContext.getContentLength() != localFile.length() )
             {
                 FileUtils.deleteQuietly( localFile );
-                
-                throw new DavException( HttpServletResponse.SC_BAD_REQUEST, "Content Header length was " +
-                    inputContext.getContentLength() + " but was " + localFile.length() );
+
+                String msg =
+                    "Content Header length was " + inputContext.getContentLength() + " but was " + localFile.length();
+                log.debug( "Upload failed: " + msg );
+                throw new DavException( HttpServletResponse.SC_BAD_REQUEST, msg );
             }
-            
-            queueRepositoryTask( localFile );           
-            
-            log.debug( "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created ") + "(current user '" + this.principal + "')" );
-            
+
+            queueRepositoryTask( localFile );
+
+            log.debug(
+                "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created " ) + "(current user '" +
+                    this.principal + "')" );
+
             triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
         else if ( !inputContext.hasStream() && isCollection() ) // New directory
         {
             localFile.mkdir();
-            
+
             log.debug( "Directory '" + resource.getDisplayName() + "' (current user '" + this.principal + "')" );
-            
+
             triggerAuditEvent( resource, AuditEvent.CREATE_DIR );
         }
         else
-        {            
-            throw new DavException( HttpServletResponse.SC_BAD_REQUEST, "Could not write member " +
-                resource.getResourcePath() + " at " + getResourcePath() );
+        {
+            String msg = "Could not write member " + resource.getResourcePath() + " at " + getResourcePath() +
+                " as this is not a DAV collection";
+            log.debug( msg );
+            throw new DavException( HttpServletResponse.SC_BAD_REQUEST, msg );
         }
     }
 
@@ -350,10 +365,10 @@ public class ArchivaDavResource
                     if ( !item.startsWith( HIDDEN_PATH_PREFIX ) )
                     {
                         String path = locator.getResourcePath() + '/' + item;
-                        DavResourceLocator resourceLocator =
-                            locator.getFactory().createResourceLocator( locator.getPrefix(), path );
+                        DavResourceLocator resourceLocator = locator.getFactory().createResourceLocator(
+                            locator.getPrefix(), path );
                         DavResource resource = factory.createResource( resourceLocator, session );
-                        
+
                         if ( resource != null )
                         {
                             list.add( resource );
@@ -374,7 +389,7 @@ public class ArchivaDavResource
         throws DavException
     {
         File resource = checkDavResourceIsArchivaDavResource( member ).getLocalResource();
-        
+
         if ( resource.exists() )
         {
             try
@@ -394,7 +409,8 @@ public class ArchivaDavResource
 
                     triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
-                log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName() + "' removed (current user '" + this.principal + "')" );
+                log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName() +
+                    "' removed (current user '" + this.principal + "')" );
             }
             catch ( IOException e )
             {
@@ -407,7 +423,8 @@ public class ArchivaDavResource
         }
     }
 
-    private void triggerAuditEvent( DavResource member, String event ) throws DavException
+    private void triggerAuditEvent( DavResource member, String event )
+        throws DavException
     {
         String path = logicalResource + "/" + member.getDisplayName();
         
@@ -438,9 +455,9 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
-            
+
             log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '" +
-            		   destination + "' (current user '" + this.principal + "')" );
+                destination + "' (current user '" + this.principal + "')" );
         }
         catch ( IOException e )
         {
@@ -477,7 +494,7 @@ public class ArchivaDavResource
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
             log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '" +
-            		   destination + "' (current user '" + this.principal + "')" );
+                destination + "' (current user '" + this.principal + "')" );
         }
         catch ( IOException e )
         {
@@ -487,41 +504,41 @@ public class ArchivaDavResource
 
     public boolean isLockable( Type type, Scope scope )
     {
-        return Type.WRITE.equals(type) && Scope.EXCLUSIVE.equals(scope);
+        return Type.WRITE.equals( type ) && Scope.EXCLUSIVE.equals( scope );
     }
 
     public boolean hasLock( Type type, Scope scope )
     {
-        return getLock(type, scope) != null;
+        return getLock( type, scope ) != null;
     }
 
     public ActiveLock getLock( Type type, Scope scope )
     {
         ActiveLock lock = null;
-        if (exists() && Type.WRITE.equals(type) && Scope.EXCLUSIVE.equals(scope)) 
+        if ( exists() && Type.WRITE.equals( type ) && Scope.EXCLUSIVE.equals( scope ) )
         {
-            lock = lockManager.getLock(type, scope, this);
+            lock = lockManager.getLock( type, scope, this );
         }
         return lock;
     }
 
     public ActiveLock[] getLocks()
     {
-        ActiveLock writeLock = getLock(Type.WRITE, Scope.EXCLUSIVE);
-        return (writeLock != null) ? new ActiveLock[]{writeLock} : new ActiveLock[0];
+        ActiveLock writeLock = getLock( Type.WRITE, Scope.EXCLUSIVE );
+        return ( writeLock != null ) ? new ActiveLock[]{writeLock} : new ActiveLock[0];
     }
 
     public ActiveLock lock( LockInfo lockInfo )
         throws DavException
     {
         ActiveLock lock = null;
-        if (isLockable(lockInfo.getType(), lockInfo.getScope())) 
+        if ( isLockable( lockInfo.getType(), lockInfo.getScope() ) )
         {
-            lock = lockManager.createLock(lockInfo, this);
+            lock = lockManager.createLock( lockInfo, this );
         }
-        else 
+        else
         {
-            throw new DavException(DavServletResponse.SC_PRECONDITION_FAILED, "Unsupported lock type or scope.");
+            throw new DavException( DavServletResponse.SC_PRECONDITION_FAILED, "Unsupported lock type or scope." );
         }
         return lock;
     }
@@ -529,15 +546,18 @@ public class ArchivaDavResource
     public ActiveLock refreshLock( LockInfo lockInfo, String lockToken )
         throws DavException
     {
-        if (!exists()) {
-            throw new DavException(DavServletResponse.SC_NOT_FOUND);
+        if ( !exists() )
+        {
+            throw new DavException( DavServletResponse.SC_NOT_FOUND );
         }
-        ActiveLock lock = getLock(lockInfo.getType(), lockInfo.getScope());
-        if (lock == null) {
-            throw new DavException(DavServletResponse.SC_PRECONDITION_FAILED, "No lock with the given type/scope present on resource " + getResourcePath());
+        ActiveLock lock = getLock( lockInfo.getType(), lockInfo.getScope() );
+        if ( lock == null )
+        {
+            throw new DavException( DavServletResponse.SC_PRECONDITION_FAILED,
+                                    "No lock with the given type/scope present on resource " + getResourcePath() );
         }
 
-        lock = lockManager.refreshLock(lockInfo, lockToken, this);
+        lock = lockManager.refreshLock( lockInfo, lockToken, this );
 
         return lock;
     }
@@ -545,18 +565,18 @@ public class ArchivaDavResource
     public void unlock( String lockToken )
         throws DavException
     {
-        ActiveLock lock = getLock(Type.WRITE, Scope.EXCLUSIVE);
-        if (lock == null)
+        ActiveLock lock = getLock( Type.WRITE, Scope.EXCLUSIVE );
+        if ( lock == null )
         {
-            throw new DavException(HttpServletResponse.SC_PRECONDITION_FAILED);
+            throw new DavException( HttpServletResponse.SC_PRECONDITION_FAILED );
         }
-        else if (lock.isLockedByToken(lockToken))
+        else if ( lock.isLockedByToken( lockToken ) )
         {
-            lockManager.releaseLock(lockToken, this);
+            lockManager.releaseLock( lockToken, this );
         }
         else
         {
-            throw new DavException(DavServletResponse.SC_LOCKED);
+            throw new DavException( DavServletResponse.SC_LOCKED );
         }
     }
 
@@ -584,14 +604,14 @@ public class ArchivaDavResource
         {
             properties = new DavPropertySet();
         }
-        
+
         if ( properties != null )
         {
             return properties;
         }
 
         DavPropertySet properties = new DavPropertySet();
-        
+
         // set (or reset) fundamental properties
         if ( getDisplayName() != null )
         {
@@ -621,9 +641,9 @@ public class ArchivaDavResource
         properties.add( new DefaultDavProperty( DavPropertyName.CREATIONDATE, modifiedDate ) );
 
         properties.add( new DefaultDavProperty( DavPropertyName.GETCONTENTLENGTH, localResource.length() ) );
-        
+
         this.properties = properties;
-        
+
         return properties;
     }
 
@@ -669,9 +689,9 @@ public class ArchivaDavResource
         
         auditLogsDao.saveAuditLogs( auditLogs );
     }
-    
+
     private void queueRepositoryTask( File localFile )
-    {        
+    {
         RepositoryTask task = TaskCreator.createRepositoryTask( repository.getId(), localFile, false, true );
         
         try
@@ -680,8 +700,9 @@ public class ArchivaDavResource
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Unable to queue repository task to execute consumers on resource file ['" +
-                localFile.getName() + "']." );
+            log.error(
+                "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName() +
+                    "']." );
         }
     }
 }
