@@ -418,11 +418,9 @@ public abstract class AbstractArchivaTest
 		assertPage( "Apache Archiva \\ Find Artifact" );
 		assertTextPresent( "Find Artifact" );
 		assertTextPresent( "Search for:" );
-		assertElementPresent( "f" );
 		assertTextPresent( "Checksum:" );
 		assertElementPresent( "q" );
 		assertButtonWithValuePresent( "Search" );
-		assertTextPresent( "This allows you to search the repository using the checksum of an artifact that you are trying to identify. You can either specify the checksum to look for directly, or scan a local artifact file." );
 	}
 	
 	//Appearance
