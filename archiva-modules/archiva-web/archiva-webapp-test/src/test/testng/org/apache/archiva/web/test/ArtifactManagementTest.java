@@ -83,24 +83,22 @@ public class ArtifactManagementTest
 		assertTextPresent( "Please add a file to upload." );
 	}
 	
-    @Test( enabled = false )
+    @Test(groups = "requiresUpload")
 	public void testAddArtifactValidValues()
 	{
-		// TODO: disable test on non *chrome browsers, there is no way to do file uploads (SEL-63)
 		addArtifact( getGroupId() , "testAddArtifactValidValues", getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "Artifact 'test:test:1.0' was successfully deployed to repository 'internal'" );
+		assertTextPresent( "Artifact 'test:testAddArtifactValidValues:1.0' was successfully deployed to repository 'internal'" );
 	}
 		
 	//MRM-747
-    @Test( enabled = false )
+    @Test(groups = "requiresUpload")
 	public void testAddArtifactBlockRedeployments()
 	{
-            // TODO: disable test on non *chrome browsers, there is no way to do file uploads (SEL-63)
             addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
             assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
 	}
 	
-    @Test( enabled = false )
+    @Test(groups = "requiresUpload")
 	public void testDeleteArtifact()
 	{
 		//prep

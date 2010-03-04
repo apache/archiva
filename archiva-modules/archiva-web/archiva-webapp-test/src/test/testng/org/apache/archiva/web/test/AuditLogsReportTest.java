@@ -68,8 +68,7 @@ public class AuditLogsReportTest
     }    
     
     // TODO: add test for adding via WebDAV
-    // TODO: disable if not running on *chrome
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, enabled = false )
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsDataFound()
     {
         goToAuditLogReports();        
@@ -82,15 +81,14 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "test-1.0.jar" );
+        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
     
     // TODO: add test for adding via WebDAV
-    // TODO: disable if not running on *chrome
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, enabled = false )
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsOnlyArtifactIdIsSpecified()
     {
         goToAuditLogReports();        
@@ -101,17 +99,15 @@ public class AuditLogsReportTest
         submit();
                 
         assertAuditLogsReportPage();
-        assertTextPresent( "Results" );
+        assertTextPresent( "If you specify an artifact ID, you must specify a group ID" );
+        assertTextNotPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "test-1.0.jar" );
-        assertTextPresent( "Uploaded File" );
-        assertTextPresent( "internal" );
-        assertTextPresent( "admin" );
+        assertTextNotPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextNotPresent( "Uploaded File" );
     }
     
     // TODO: add test for adding via WebDAV
-    // TODO: disable if not running on *chrome
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, enabled = false )
+    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
     public void testViewAuditLogsForAllRepositories()
     {
         goToAuditLogReports();        
@@ -123,13 +119,13 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "test-1.0.jar" );
+        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
     
-    @Test (dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, enabled = false )
+    @Test (dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, groups = "requiresUpload")
     public void testViewAuditLogsViewAuditEventsForManageableRepositoriesOnly()
     {
         String groupId = getProperty( "SNAPSHOT_GROUPID" );
@@ -144,23 +140,23 @@ public class AuditLogsReportTest
         
         clickLinkWithText( "Logout" );
                 
-        login( getProperty( "REPOMANAGER_INTERNAL_USERNAME" ), getUserRolePassword() );
-        goToAuditLogReports();        
+        login( getProperty( "REPOMANAGER_INTERNAL_USERNAME" ), getUserRoleNewPassword() );
+
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         selectValue( "repository", "all" );
         submit();
-        
+
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "test-1.0.jar" );
+        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
-        
+
         assertTextNotPresent( artifactId + "-" + version + "." + packaging );
-        
         clickLinkWithText( "Logout" );
         login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
     }

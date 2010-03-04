@@ -148,9 +148,20 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <suiteXmlFiles>
-            <suiteXmlFile>src/test/testng/config/testng.xml</suiteXmlFile>
-          </suiteXmlFiles>
+          <properties>
+            <!--
+              Use this instead of suiteXmlFiles so that we can add the exclusion, as it is only accepted without suiteXmlFiles
+            -->
+            <property>
+              <name>listener</name>
+              <value>org.apache.archiva.web.test.listener.CaptureScreenShotsListener</value>
+            </property>
+            <property>
+              <name>excludegroups</name>
+              <!-- Exclude on all browsers but Firefox, as it is the only one that Selenium supports file uploads on -->
+              <value>${excluded.groups}</value>
+            </property>
+          </properties>
         </configuration>
         <executions>
           <execution>
@@ -165,7 +176,7 @@
                   <name>browser</name>
                   <value>${selenium.browser}</value>
                 </property>
-		<property>
+		            <property>
                   <name>baseUrl</name>
                   <value>${baseUrl}</value>
                 </property>
@@ -404,6 +415,7 @@
       </activation>
       <properties>
         <selenium.browser>*firefox</selenium.browser>
+        <excluded.groups />
       </properties>
     </profile>
     <profile>
@@ -416,6 +428,7 @@
       </activation>
       <properties>
         <selenium.browser>*iexplore</selenium.browser>
+        <excluded.groups>requiresUpload</excluded.groups>
       </properties>
     </profile>
     <profile>
@@ -428,6 +441,7 @@
       </activation>
       <properties>
         <selenium.browser>*safari</selenium.browser>
+        <excluded.groups>requiresUpload</excluded.groups>
       </properties>
     </profile>
     <profile>
@@ -440,6 +454,7 @@
       </activation>
       <properties>
         <selenium.browser>*custom ${browserPath}</selenium.browser>
+        <excluded.groups>requiresUpload</excluded.groups>
       </properties>
     </profile>
     <profile>

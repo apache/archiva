@@ -1,6 +1,7 @@
 package org.apache.archiva.web.test.parent;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.archiva.web.test.XPathExpressionUtil;
 
@@ -117,8 +118,8 @@ public abstract class AbstractArchivaTest
 		submit();
         	if ( success )
         	{
-        	    	assertAuthenticatedPage( username );
-        	}
+                assertUserLoggedIn( username );
+            }
         	else
         	{
         	    assertLoginPage();
@@ -141,18 +142,8 @@ public abstract class AbstractArchivaTest
         	assertTextPresent( "Need an Account? Register!" );
         	assertTextPresent( "Forgot your Password? Request a password reset." );
 	}
-	
-	public void assertAuthenticatedPage( String username )
-	{
-		assertTextPresent( "Current User" );
-		assertTextPresent( "Edit Details" );
-		assertTextPresent( "Logout" );
-		assertTextNotPresent( "Login" );
-		assertTextPresent( username );
-	}
-	
-	
-	//User Management
+
+    //User Management
 	public void goToUserManagementPage()
 	{
 		clickLinkWithText( "User Management" );
@@ -277,6 +268,10 @@ public abstract class AbstractArchivaTest
 
             submitLoginPage( username, password, false, valid, assertReturnPage );
         }
+        if ( valid )
+        {
+            assertUserLoggedIn( username );
+        }
     }
     
     public void submitLoginPage( String username, String password )
@@ -303,10 +298,7 @@ public abstract class AbstractArchivaTest
 
         if ( validUsernamePassword )
         {
-            assertTextPresent( "Current User:" );
-            assertTextPresent( username );
-            assertLinkPresent( "Edit Details" );
-            assertLinkPresent( "Logout" );
+            assertUserLoggedIn( username );
         }
         else
         {
@@ -320,8 +312,17 @@ public abstract class AbstractArchivaTest
             }
         }
     }
-    
-	 // User Roles
+
+    protected void assertUserLoggedIn( String username )
+    {
+        assertTextPresent( "Current User:" );
+        assertTextPresent( username );
+        assertLinkPresent( "Edit Details" );
+        assertLinkPresent( "Logout" );
+        assertTextNotPresent( "Login" );
+    }
+
+    // User Roles
 	public void assertUserRoleCheckBoxPresent(String value) 
 	{
 		getSelenium()	.isElementPresent("xpath=//input[@id='addRolesToUser_addNDSelectedRoles' and @name='addNDSelectedRoles' and @value='"	+ value + "']");
@@ -417,11 +418,9 @@ public abstract class AbstractArchivaTest
 		assertPage( "Apache Archiva \\ Find Artifact" );
 		assertTextPresent( "Find Artifact" );
 		assertTextPresent( "Search for:" );
-		assertElementPresent( "f" );
 		assertTextPresent( "Checksum:" );
 		assertElementPresent( "q" );
 		assertButtonWithValuePresent( "Search" );
-		assertTextPresent( "This allows you to search the repository using the checksum of an artifact that you are trying to identify. You can either specify the checksum to look for directly, or scan a local artifact file." );
 	}
 	
 	//Appearance
@@ -495,7 +494,25 @@ public abstract class AbstractArchivaTest
             checkField( "generatePom" );
         }
 
-        setFieldValue( "artifact", artifactFilePath );
+        String path;
+        if ( artifactFilePath != null && artifactFilePath.trim().length() > 0 )
+        {
+            File f = new File( artifactFilePath );
+            try
+            {
+                path = f.getCanonicalPath();
+            }
+            catch ( IOException e )
+            {
+                path = f.getAbsolutePath();
+            }
+        }
+        else
+        {
+            path = artifactFilePath;
+        }
+
+        setFieldValue( "artifact", path );
         setFieldValue( "repositoryId", repositoryId );
 
         clickButtonWithValue( "Submit" );
@@ -533,5 +550,14 @@ public abstract class AbstractArchivaTest
     	setFieldValue( "repository.retentionCount" , retentionCount );
     	//TODO	
     	clickButtonWithValue( "Add Repository" );
+    }
+
+    protected void logout()
+    {
+        clickLinkWithText("Logout");
+        assertTextNotPresent( "Current User:" );
+        assertLinkNotPresent( "Edit Details" );
+        assertLinkNotPresent( "Logout" );
+        assertLinkPresent( "Login" );
     }
 }

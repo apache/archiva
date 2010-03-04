@@ -40,4 +40,6 @@ public class FindArtifactTest
 		clickButtonWithValue( "Search" );
 		assertTextPresent( "No results found" );
 	}
+
+    // TODO: test using file upload on Firefox versions that support getAsBinary (ie, no applet)
 }

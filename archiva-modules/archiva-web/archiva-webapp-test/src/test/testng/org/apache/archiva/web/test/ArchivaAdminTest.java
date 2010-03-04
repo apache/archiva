@@ -62,8 +62,8 @@ public class ArchivaAdminTest
             String username = getProperty( "ADMIN_USERNAME" );
             String mail = getProperty( "ADMIN_EMAIL" );
             String password = getProperty( "ADMIN_PASSWORD" );
-            submitAdminData( fullname, mail, password );            
-            assertAuthenticatedPage( username );
+            submitAdminData( fullname, mail, password );
+            assertUserLoggedIn( username );
             submit();
             clickLinkWithText( "Logout" );
        }

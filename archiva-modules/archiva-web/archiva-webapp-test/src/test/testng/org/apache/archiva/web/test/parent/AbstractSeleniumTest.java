@@ -26,14 +26,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
-
-import org.apache.commons.io.IOUtils;
-import org.testng.Assert;
+import java.util.Properties;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
+import org.apache.commons.io.IOUtils;
+import org.testng.Assert;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -176,7 +175,7 @@ public abstract class AbstractSeleniumTest {
 	
 	public void assertLinkPresent( String text )
 	{
-	   Assert.assertTrue( isElementPresent( "link=" + text ), "The link '" + text + "' isî't present." );
+	   Assert.assertTrue( isElementPresent( "link=" + text ), "The link '" + text + "' isn't present." );
 	}
 	
 	public void assertLinkNotPresent( String text )
