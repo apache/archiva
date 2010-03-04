@@ -99,11 +99,12 @@ public class AuditLogsReportTest
         submit();
                 
         assertAuditLogsReportPage();
-        assertTextPresent( "If you specify an artifact ID, you must specify a group ID" );
-        assertTextNotPresent( "Results" );
+        assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextNotPresent( "testAddArtifactValidValues-1.0.jar" );
-        assertTextNotPresent( "Uploaded File" );
+        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextPresent( "Uploaded File" );
+        assertTextPresent( "internal" );
+        assertTextPresent( "admin" );
     }
     
     // TODO: add test for adding via WebDAV
