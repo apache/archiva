@@ -71,14 +71,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-
 /**
  */
 public class ArchivaDavResource
@@ -427,8 +419,9 @@ public class ArchivaDavResource
         throws DavException
     {
         String path = logicalResource + "/" + member.getDisplayName();
-        
-        triggerAuditEvent( checkDavResourceIsArchivaDavResource( member ).remoteAddr, locator.getRepositoryId(), path,
+
+        ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( member );
+        triggerAuditEvent( resource.remoteAddr, resource.principal, locator.getRepositoryId(), path,
                            event );
     }
 
@@ -447,13 +440,13 @@ public class ArchivaDavResource
             {
                 FileUtils.moveDirectory( getLocalResource(), resource.getLocalResource() );
 
-                triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_DIRECTORY );
+                triggerAuditEvent( remoteAddr, principal, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_DIRECTORY );
             }
             else
             {
                 FileUtils.moveFile( getLocalResource(), resource.getLocalResource() );
 
-                triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
+                triggerAuditEvent( remoteAddr, principal, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
 
             log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '" +
@@ -485,13 +478,13 @@ public class ArchivaDavResource
             {
                 FileUtils.copyDirectory( getLocalResource(), resource.getLocalResource() );
 
-                triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_DIRECTORY );
+                triggerAuditEvent( remoteAddr, principal, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_DIRECTORY );
             }
             else
             {
                 FileUtils.copyFile( getLocalResource(), resource.getLocalResource() );
 
-                triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
+                triggerAuditEvent( remoteAddr, principal, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
             log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '" +
                 destination + "' (current user '" + this.principal + "')" );
@@ -658,7 +651,8 @@ public class ArchivaDavResource
         return (ArchivaDavResource) resource;
     }
 
-    private void triggerAuditEvent( String remoteIP, String repositoryId, String resource, String action )
+    private void triggerAuditEvent( String remoteIP, String principal, String repositoryId, String resource,
+                                    String action )
     {
         AuditEvent event = new AuditEvent( repositoryId, principal, resource, action );
         event.setRemoteIP( remoteIP );

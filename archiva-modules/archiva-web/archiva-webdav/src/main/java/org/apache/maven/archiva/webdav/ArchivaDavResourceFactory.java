@@ -800,6 +800,11 @@ public class ArchivaDavResourceFactory
         return archivaLocator;
     }
 
+    public ArchivaAuditLogsDao getAuditLogsDao()
+    {
+        return auditLogsDao;
+    }
+
     private static class LogicalResource
     {
         private String path;
