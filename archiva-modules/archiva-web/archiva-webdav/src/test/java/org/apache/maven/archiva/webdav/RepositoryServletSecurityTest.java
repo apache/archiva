@@ -22,16 +22,19 @@ package org.apache.maven.archiva.webdav;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.ehcache.CacheManager;
 
+import org.apache.archiva.repository.audit.TestAuditListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -347,6 +350,8 @@ public class RepositoryServletSecurityTest
         archivaDavResourceFactory.setHttpAuth( httpAuth );
         archivaDavResourceFactory.setServletAuth( servletAuth );
 
+        TestAuditListener listener = new TestAuditListener();
+        archivaDavResourceFactory.addAuditListener( listener );
         servlet.setResourceFactory( archivaDavResourceFactory );
 
         AuthenticationResult result = new AuthenticationResult();
@@ -376,6 +381,8 @@ public class RepositoryServletSecurityTest
         servletAuthControl.verify();
 
         // assertEquals(HttpServletResponse.SC_CREATED, response.getResponseCode());
+
+        assertEquals( "admin", listener.getEvents().get( 0 ).getUserId() );
     }
 
     // test get with invalid user, and guest has read access to repo
