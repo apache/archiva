@@ -103,6 +103,7 @@
             <goals>
               <goal>generate-metadata</goal>
             </goals>
+            <phase>generate-resources</phase>
           </execution>
         </executions>
       </plugin>

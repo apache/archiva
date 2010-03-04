@@ -102,9 +102,10 @@
             <goals>
               <goal>merge-metadata</goal>
             </goals>
+            <phase>process-resources</phase>
             <configuration>
               <descriptors>
-                <descriptor>${basedir}/src/main/resources/META-INF/plexus/components.xml</descriptor>
+                <descriptor>${basedir}/src/main/resources/META-INF/plexus/components-fragment.xml</descriptor>
                 <descriptor>${project.build.outputDirectory}/META-INF/plexus/components.xml</descriptor>
               </descriptors>
             </configuration>
