@@ -19,6 +19,11 @@
   -->
 
 <project>
+  <bannerLeft>
+    <name>Apache Archiva</name>
+    <src>http://archiva.apache.org/images/archiva.png</src>
+    <href>http://archiva.apache.org/</href>
+  </bannerLeft>
   <body>
     <breadcrumbs>
       <item name="1.3" href="/index.html" />
