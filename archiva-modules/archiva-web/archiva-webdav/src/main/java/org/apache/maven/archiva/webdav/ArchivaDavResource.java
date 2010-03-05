@@ -310,13 +310,16 @@ public class ArchivaDavResource
             }
 
             // TODO: a bad deployment shouldn't delete an existing file - do we need to write to a temporary location first?
-            if ( inputContext.getContentLength() != localFile.length() )
+            long expectedContentLength = inputContext.getContentLength();
+            long actualContentLength = localFile.length();
+            // length of -1 is given for a chunked request or unknown length, in which case we accept what was uploaded
+            if ( expectedContentLength >= 0 && expectedContentLength != actualContentLength )
             {
-                FileUtils.deleteQuietly( localFile );
-
                 String msg =
-                    "Content Header length was " + inputContext.getContentLength() + " but was " + localFile.length();
+                    "Content Header length was " + expectedContentLength + " but was " + actualContentLength;
                 log.debug( "Upload failed: " + msg );
+
+                FileUtils.deleteQuietly( localFile );
                 throw new DavException( HttpServletResponse.SC_BAD_REQUEST, msg );
             }
 
