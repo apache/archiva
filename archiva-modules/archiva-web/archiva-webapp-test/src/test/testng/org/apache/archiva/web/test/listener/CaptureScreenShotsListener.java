@@ -19,17 +19,17 @@ package org.apache.archiva.web.test.listener;
  * under the License.
  */
 
+import com.thoughtworks.selenium.Selenium;
+import org.apache.archiva.web.test.parent.AbstractSeleniumTest;
+import org.apache.commons.io.FileUtils;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
-
-import org.apache.archiva.web.test.parent.AbstractSeleniumTest;
-import org.apache.commons.io.FileUtils;
-import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
-import com.thoughtworks.selenium.Selenium;
 
 public class CaptureScreenShotsListener
     extends TestListenerAdapter
@@ -80,15 +80,15 @@ public class CaptureScreenShotsListener
         catch ( RuntimeException e )
         {
             System.out.println( "Error when take screenshot for test " + tr.getName() + ": " + e.getMessage() );
-            try
-            {
-                File fileName = new File( targetPath, fileBaseName + ".html" );
-                FileUtils.writeStringToFile( fileName, selenium.getHtmlSource() );
-            }
-            catch ( IOException ioe )
-            {
-                System.out.println( ioe.getMessage() );
-            }
+        }
+        try
+        {
+            File fileName = new File( targetPath, fileBaseName + ".html" );
+            FileUtils.writeStringToFile( fileName, selenium.getHtmlSource() );
+        }
+        catch ( IOException ioe )
+        {
+            System.out.println( ioe.getMessage() );
         }
     }
 
