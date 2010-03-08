@@ -65,16 +65,6 @@
     <th>Packaging</th>
     <td><code>${mavenFacet.packaging}</code></td>
   </tr>
-  <%-- TODO: derivatives
-    <tr>
-      <th>Derivatives</th>
-      <td>
-        <a href="#">Source</a>
-        |
-        <a href="#">Javadoc</a>
-      </td>
-    </tr>
-  --%>
   <c:if test="${mavenFacet.parent != null}">
     <tr>
       <th>Parent</th>
@@ -103,7 +93,7 @@
     <tr>
       <th>Origin</th>
       <td>
-        <a href="TODO">Apache Repository</a>
+        <a href="...">Apache Repository</a>
       </td>
     </tr>
   --%>
