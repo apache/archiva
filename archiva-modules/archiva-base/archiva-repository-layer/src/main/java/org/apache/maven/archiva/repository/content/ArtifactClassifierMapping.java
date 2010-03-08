@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ArtifactExtensionMapping
- *
  * @since 1.1
  */
 public class ArtifactClassifierMapping
@@ -44,7 +42,7 @@ public class ArtifactClassifierMapping
         // Try specialized types first.
         if ( typeToClassifierMap.containsKey( type ) )
         {
-            return (String) typeToClassifierMap.get( type );
+            return typeToClassifierMap.get( type );
         }
 
         // No classifier
