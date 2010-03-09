@@ -140,6 +140,13 @@ public class Maven2RepositoryMetadataResolverTest
         Collection<ArtifactMetadata> springArtifacts = resolver.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus",
                                                                               "plexus-spring", "1.2" );
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( springArtifacts );
+        Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
+        {
+            public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
+            {
+                return o1.getId().compareTo( o2.getId() );
+            }
+        } );
 
         assertEquals( 3, artifacts.size() );
 
