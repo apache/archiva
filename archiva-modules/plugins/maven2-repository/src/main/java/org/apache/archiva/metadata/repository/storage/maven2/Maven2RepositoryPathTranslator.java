@@ -2,11 +2,9 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,19 +120,6 @@ public class Maven2RepositoryPathTranslator
         return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
     }
 
-    private static String parseTimestampedVersionFromId( String projectId, String projectVersion, String id )
-    {
-        String mainVersion = projectVersion.substring( 0, projectVersion.length() - 8 ); // 8 is length of "SNAPSHOT"
-        if ( mainVersion.length() == 0 )
-        {
-            throw new IllegalArgumentException(
-                "Timestamped snapshots must contain the main version, filename was '" + id + "'" );
-        }
-        Matcher m = Pattern.compile( projectId + "-" + mainVersion + "([0-9]{8}.[0-9]{6}-[0-9]+).*" ).matcher( id );
-        m.matches();
-        return mainVersion + m.group( 1 );
-    }
-
     public ArtifactMetadata getArtifactForPath( String repoId, String relativePath )
     {
         String[] parts = relativePath.replace( '\\', '/' ).split( "/" );
@@ -149,9 +134,15 @@ public class Maven2RepositoryPathTranslator
         String id = parts[--len];
         String baseVersion = parts[--len];
         String artifactId = parts[--len];
-        String groupId = StringUtils.join( Arrays.copyOfRange( parts, 0, len ), '.' );
+        StringBuilder groupIdBuilder = new StringBuilder();
+        for ( int i = 0; i < len - 1; i++ )
+        {
+            groupIdBuilder.append( parts[i] );
+            groupIdBuilder.append( '.' );
+        }
+        groupIdBuilder.append( parts[len - 1] );
 
-        return getArtifactFromId( repoId, groupId, artifactId, baseVersion, id );
+        return getArtifactFromId( repoId, groupIdBuilder.toString(), artifactId, baseVersion, id );
     }
 
     public ArtifactMetadata getArtifactFromId( String repoId, String namespace, String projectId, String projectVersion,
