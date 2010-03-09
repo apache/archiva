@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.model;
 import java.util.Date;
 
 public class ArtifactMetadata
+    extends FacetedMetadata
 {
     private String id;
     

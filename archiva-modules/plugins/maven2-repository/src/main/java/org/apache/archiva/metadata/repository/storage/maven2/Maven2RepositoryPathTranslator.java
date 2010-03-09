@@ -39,6 +39,8 @@ public class Maven2RepositoryPathTranslator
 
     private static final char GROUP_SEPARATOR = '.';
 
+    private static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "([0-9]{8}.[0-9]{6})-([0-9]+).*" );
+
     public File toFile( File basedir, String namespace, String projectId, String projectVersion, String filename )
     {
         return new File( basedir, toPath( namespace, projectId, projectVersion, filename ) );
@@ -133,28 +135,6 @@ public class Maven2RepositoryPathTranslator
         return mainVersion + m.group( 1 );
     }
 
-    public ArtifactMetadata getArtifactFromId( String repoId, String namespace, String projectId, String projectVersion,
-                                               String id )
-    {
-        ArtifactMetadata metadata = new ArtifactMetadata();
-        metadata.setId( id );
-        metadata.setProject( projectId );
-        metadata.setNamespace( namespace );
-        metadata.setRepositoryId( repoId );
-
-        if ( VersionUtil.isGenericSnapshot( projectVersion ) )
-        {
-            String version = parseTimestampedVersionFromId( projectId, projectVersion, id );
-
-            metadata.setVersion( version );
-        }
-        else
-        {
-            metadata.setVersion( projectVersion );
-        }
-        return metadata;
-    }
-
     public ArtifactMetadata getArtifactForPath( String repoId, String relativePath )
     {
         String[] parts = relativePath.replace( '\\', '/' ).split( "/" );
@@ -171,31 +151,51 @@ public class Maven2RepositoryPathTranslator
         String artifactId = parts[--len];
         String groupId = StringUtils.join( Arrays.copyOfRange( parts, 0, len ), '.' );
 
-        if ( !id.startsWith( artifactId + "-" ) )
+        return getArtifactFromId( repoId, groupId, artifactId, baseVersion, id );
+    }
+
+    public ArtifactMetadata getArtifactFromId( String repoId, String namespace, String projectId, String projectVersion,
+                                               String id )
+    {
+        if ( !id.startsWith( projectId + "-" ) )
         {
             throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + id +
-                "' doesn't start with artifact ID '" + artifactId + "'" );
+                "' doesn't start with artifact ID '" + projectId + "'" );
         }
 
-        int index = artifactId.length() + 1;
+        MavenArtifactFacet facet = new MavenArtifactFacet();
+
+        int index = projectId.length() + 1;
         String version;
-        if ( id.substring( index ).startsWith( baseVersion ) && !VersionUtil.isUniqueSnapshot( baseVersion ) )
+        String idSubStrFromVersion = id.substring( index );
+        if ( idSubStrFromVersion.startsWith( projectVersion ) && !VersionUtil.isUniqueSnapshot( projectVersion ) )
         {
             // non-snapshot versions, or non-timestamped snapshot versions
-            version = baseVersion;
+            version = projectVersion;
         }
-        else if ( VersionUtil.isGenericSnapshot( baseVersion ) )
+        else if ( VersionUtil.isGenericSnapshot( projectVersion ) )
         {
             // timestamped snapshots
             try
             {
-                version = parseTimestampedVersionFromId( artifactId, baseVersion, id );
+                int mainVersionLength = projectVersion.length() - 8; // 8 is length of "SNAPSHOT"
+                if ( mainVersionLength == 0 )
+                {
+                    throw new IllegalArgumentException(
+                        "Timestamped snapshots must contain the main version, filename was '" + id + "'" );
+                }
+
+                Matcher m = TIMESTAMP_PATTERN.matcher( idSubStrFromVersion.substring( mainVersionLength ) );
+                m.matches();
+                String timestamp = m.group( 1 );
+                String buildNumber = m.group( 2 );
+                version = idSubStrFromVersion.substring( 0, mainVersionLength ) + timestamp + "-" + buildNumber;
             }
             catch ( IllegalStateException e )
             {
                 throw new IllegalArgumentException(
                     "Not a valid artifact path in a Maven 2 repository, filename '" + id +
-                        "' doesn't contain a timestamped version matching snapshot '" + baseVersion + "'" );
+                        "' doesn't contain a timestamped version matching snapshot '" + projectVersion + "'" );
             }
         }
         else
@@ -203,7 +203,7 @@ public class Maven2RepositoryPathTranslator
             // invalid
             throw new IllegalArgumentException(
                 "Not a valid artifact path in a Maven 2 repository, filename '" + id + "' doesn't contain version '" +
-                    baseVersion + "'" );
+                    projectVersion + "'" );
         }
 
         String classifier;
@@ -249,11 +249,16 @@ public class Maven2RepositoryPathTranslator
 
         ArtifactMetadata metadata = new ArtifactMetadata();
         metadata.setId( id );
-        metadata.setNamespace( groupId );
-        metadata.setProject( artifactId );
+        metadata.setNamespace( namespace );
+        metadata.setProject( projectId );
         metadata.setRepositoryId( repoId );
         metadata.setVersion( version );
-        // TODO: set classifier and extension on Maven facet
+
+        facet.setClassifier( classifier );
+        // TODO: migrate here from ArtifactExtensionMapping and make extensible
+//        facet.setType(  );
+        metadata.addFacet( facet );
+
         return metadata;
     }
 }

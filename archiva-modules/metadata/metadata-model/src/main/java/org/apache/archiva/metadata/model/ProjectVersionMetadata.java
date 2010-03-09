@@ -20,12 +20,10 @@ package org.apache.archiva.metadata.model;
  */
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ProjectVersionMetadata
+    extends FacetedMetadata
 {
     private String id;
 
@@ -44,8 +42,6 @@ public class ProjectVersionMetadata
     private CiManagement ciManagement;
 
     private List<License> licenses = new ArrayList<License>();
-
-    private Map<String, MetadataFacet> facets = new HashMap<String, MetadataFacet>();
 
     private List<MailingList> mailingLists = new ArrayList<MailingList>();
 
@@ -151,31 +147,6 @@ public class ProjectVersionMetadata
     public void addLicense( License license )
     {
         this.licenses.add( license );
-    }
-
-    public void addFacet( MetadataFacet metadataFacet )
-    {
-        this.facets.put( metadataFacet.getFacetId(), metadataFacet );
-    }
-
-    public MetadataFacet getFacet( String facetId )
-    {
-        return this.facets.get( facetId );
-    }
-
-    public Map<String, MetadataFacet> getFacets()
-    {
-        return facets;
-    }
-
-    public Collection<MetadataFacet> getFacetList()
-    {
-        return this.facets.values();
-    }
-
-    public Collection<String> getFacetIds()
-    {
-        return this.facets.keySet();
     }
 
     public void setMailingLists( List<MailingList> mailingLists )

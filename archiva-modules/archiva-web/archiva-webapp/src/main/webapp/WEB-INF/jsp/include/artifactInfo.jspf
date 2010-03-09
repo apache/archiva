@@ -43,7 +43,7 @@
   <blockquote>${model.description}</blockquote>
 </c:if>
 
-<c:set var="mavenFacet" value="${model.facets['org.apache.archiva.metadata.repository.storage.maven2']}" />
+<c:set var="mavenFacet" value="${model.facets['org.apache.archiva.metadata.repository.storage.maven2.project']}" />
 <table class="infoTable">
   <tr>
     <th>Repository</th>

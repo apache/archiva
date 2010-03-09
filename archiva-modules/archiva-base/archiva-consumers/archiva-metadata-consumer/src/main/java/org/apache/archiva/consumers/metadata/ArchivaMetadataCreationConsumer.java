@@ -19,12 +19,6 @@ package org.apache.archiva.consumers.metadata;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -50,6 +44,12 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Take an artifact off of disk and put it into the metadata repository.
@@ -185,6 +185,7 @@ public class ArchivaMetadataCreationConsumer
             createVersionMetadata = true;
         }
 
+        // TODO: merge with storage implementation, add Maven facet        
         ArtifactMetadata artifactMeta = new ArtifactMetadata();
         artifactMeta.setRepositoryId( repository.getId() );
         artifactMeta.setNamespace( artifact.getGroupId() );

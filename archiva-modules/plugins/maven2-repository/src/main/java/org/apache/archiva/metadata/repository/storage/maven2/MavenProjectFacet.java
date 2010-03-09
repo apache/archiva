@@ -19,10 +19,10 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.MetadataFacet;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.archiva.metadata.model.MetadataFacet;
 
 public class MavenProjectFacet
     implements MetadataFacet
@@ -35,7 +35,7 @@ public class MavenProjectFacet
 
     private String packaging;
 
-    public static final String FACET_ID = "org.apache.archiva.metadata.repository.storage.maven2";
+    public static final String FACET_ID = "org.apache.archiva.metadata.repository.storage.maven2.project";
 
     public String getGroupId()
     {

@@ -149,6 +149,7 @@ public class Maven2RepositoryMetadataResolver
             }
         }
 
+        // TODO: won't work well with some other layouts, might need to convert artifact parts to ID by path translator
         String id = projectId + "-" + artifactVersion + ".pom";
         File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion, id );
 
@@ -499,7 +500,8 @@ public class Maven2RepositoryMetadataResolver
     private ArtifactMetadata getArtifactFromFile( String repoId, String namespace, String projectId,
                                                   String projectVersion, File file )
     {
-        ArtifactMetadata metadata = pathTranslator.getArtifactFromId( repoId, namespace, projectId, projectVersion, file.getName() );
+        ArtifactMetadata metadata = pathTranslator.getArtifactFromId( repoId, namespace, projectId, projectVersion,
+                                                                      file.getName() );
 
         metadata.setWhenGathered( new Date() );
         metadata.setFileLastModified( file.lastModified() );

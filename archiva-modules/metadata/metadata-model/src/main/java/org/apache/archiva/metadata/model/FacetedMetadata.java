@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository.storage.maven2;
+package org.apache.archiva.metadata.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,22 +19,36 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.metadata.repository.storage.maven2.project"
- */
-public class MavenProjectFacetFactory
-    implements MetadataFacetFactory
+public class FacetedMetadata
 {
-    public MetadataFacet createMetadataFacet()
+    private Map<String, MetadataFacet> facets = new HashMap<String, MetadataFacet>();
+
+    public void addFacet( MetadataFacet metadataFacet )
     {
-        return new MavenProjectFacet();
+        this.facets.put( metadataFacet.getFacetId(), metadataFacet );
     }
 
-    public MetadataFacet createMetadataFacet( String repositoryId, String name )
+    public MetadataFacet getFacet( String facetId )
     {
-        throw new UnsupportedOperationException( "There is no valid name for project version facets" );
+        return this.facets.get( facetId );
+    }
+
+    public Map<String, MetadataFacet> getFacets()
+    {
+        return facets;
+    }
+
+    public Collection<MetadataFacet> getFacetList()
+    {
+        return this.facets.values();
+    }
+
+    public Collection<String> getFacetIds()
+    {
+        return this.facets.keySet();
     }
 }

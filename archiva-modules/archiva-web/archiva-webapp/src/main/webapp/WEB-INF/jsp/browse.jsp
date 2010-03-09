@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="archiva"   uri="/WEB-INF/taglib.tld" %>
+<%@ taglib prefix="archiva" uri="/WEB-INF/taglib.tld" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 
 <html>
@@ -98,7 +98,7 @@
   <c:if test="${not empty projectVersions}">
     <%-- show shared project information (MRM-1041) TODO - share JSP code with artifactInfo.jspf --%>
 
-    <c:set var="mavenFacet" value="${sharedModel.facets['org.apache.archiva.metadata.repository.storage.maven2']}" />
+    <c:set var="mavenFacet" value="${sharedModel.facets['org.apache.archiva.metadata.repository.storage.maven2.project']}" />
     <h2>Versions</h2>
     <div id="nameColumn" class="versions">  
       <a class="expand" href="#">Artifact Info</a>      

@@ -423,6 +423,7 @@ public class FileMetadataRepository
                 String id = tok.nextToken();
 
                 ArtifactMetadata artifact = artifacts.get( id );
+                // TODO: facets (&test)
                 if ( artifact == null )
                 {
                     artifact = new ArtifactMetadata();
