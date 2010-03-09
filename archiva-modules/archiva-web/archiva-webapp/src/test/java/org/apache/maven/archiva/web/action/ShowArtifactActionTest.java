@@ -19,11 +19,6 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
@@ -31,12 +26,18 @@ import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class ShowArtifactActionTest
     extends AbstractActionTestCase
@@ -53,9 +54,9 @@ public class ShowArtifactActionTest
 
     private ShowArtifactAction action;
 
-    private static final List<ArtifactMetadata> TEST_SNAPSHOT_ARTIFACTS =
-        Arrays.asList( createArtifact( TEST_TS_SNAPSHOT_VERSION ), createArtifact( "1.0-20091120.222222-2" ),
-                       createArtifact( "1.0-20091123.333333-3" ) );
+    private static final List<ArtifactMetadata> TEST_SNAPSHOT_ARTIFACTS = Arrays.asList( createArtifact(
+        TEST_TS_SNAPSHOT_VERSION ), createArtifact( "1.0-20091120.222222-2", "20091120.222222", 2 ), createArtifact(
+        "1.0-20091123.333333-3", "20091123.333333", 3 ) );
 
     private static final long TEST_SIZE = 12345L;
 
@@ -390,6 +391,11 @@ public class ShowArtifactActionTest
 
     private static ArtifactMetadata createArtifact( String version )
     {
+        return createArtifact( version, null, 0 );
+    }
+
+    private static ArtifactMetadata createArtifact( String version, String timestamp, int buildNumber )
+    {
         ArtifactMetadata metadata = new ArtifactMetadata();
         metadata.setProject( TEST_ARTIFACT_ID );
         metadata.setId( TEST_ARTIFACT_ID + "-" + version + ".jar" );
@@ -397,6 +403,13 @@ public class ShowArtifactActionTest
         metadata.setRepositoryId( TEST_REPO );
         metadata.setSize( TEST_SIZE );
         metadata.setVersion( version );
+
+        MavenArtifactFacet facet = new MavenArtifactFacet();
+        facet.setType( "jar" );
+        facet.setTimestamp( timestamp );
+        facet.setBuildNumber( buildNumber );
+        metadata.addFacet( facet );
+
         return metadata;
     }
 
