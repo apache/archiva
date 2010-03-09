@@ -86,8 +86,11 @@ public class ArtifactManagementTest
     @Test(groups = "requiresUpload")
 	public void testAddArtifactValidValues()
 	{
-		addArtifact( getGroupId() , "testAddArtifactValidValues", getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "Artifact 'test:testAddArtifactValidValues:1.0' was successfully deployed to repository 'internal'" );
+    	String groupId = getProperty( "VALIDARTIFACT_GROUPID" );
+    	String artifactId = getProperty( "VALIDARTIFACT_ARTIFACTID" );
+    	
+		addArtifact( groupId , artifactId, getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
+		assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion() + "' was successfully deployed to repository 'internal'" );
 	}
 		
 	//MRM-747

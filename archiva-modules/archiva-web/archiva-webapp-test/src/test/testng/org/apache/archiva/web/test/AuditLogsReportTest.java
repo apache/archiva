@@ -75,13 +75,14 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         
         selectValue( "repository", "internal" );
-        setFieldValue( "groupId", "test" );
+        setFieldValue( "groupId", getProperty( "VALIDARTIFACT_GROUPID" ) );
         submit();
                 
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) +
+                           "." + getProperty( "ARTIFACT_PACKAGING" ) );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -95,14 +96,15 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         
         selectValue( "repository", "internal" );
-        setFieldValue( "artifactId", "test" );
+        setFieldValue( "artifactId", getProperty( "AUDITLOGARTIFACT_ARTIFACTID" ) );
         submit();
                 
         assertAuditLogsReportPage();
         assertTextPresent( "If you specify an artifact ID, you must specify a group ID" );
         assertTextNotPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextNotPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextNotPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) +
+            "." + getProperty( "ARTIFACT_PACKAGING" ) );
         assertTextNotPresent( "Uploaded File" );
     }
     
@@ -119,7 +121,8 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) +
+            "." + getProperty( "ARTIFACT_PACKAGING" ) );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -151,7 +154,7 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "." + packaging );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -161,24 +164,25 @@ public class AuditLogsReportTest
         login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
     }
     
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    // MRM-1304
+    @Test( dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload" )
     public void testViewAuditLogsReportForGroupId()
     {
-        String groupId = getProperty("AUDITLOG_GROUPID");
-        String artifactId = getProperty("ARTIFACTID");
-        String version = getProperty("VERSION");
-        String packaging = getProperty("PACKAGING");
-        String repositoryId = getProperty("REPOSITORYID");
-        String expectedArtifact = getProperty("AUDITLOG_EXPECTED_ARTIFACT");
-    		
-        addArtifact( groupId, artifactId, version, packaging,  getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repositoryId );
-    			
+        String groupId = getProperty( "AUDITLOGARTIFACT_GROUPID" );
+        String artifactId = getProperty( "AUDITLOGARTIFACT_ARTIFACTID" );
+        String version = getProperty( "VERSION" );
+        String packaging = getProperty( "PACKAGING" );
+        String repositoryId = getProperty( "REPOSITORYID" );
+        String expectedArtifact = getProperty( "AUDITLOG_EXPECTED_ARTIFACT" );
+
+        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repositoryId );
+
         goToAuditLogReports();
-    			
+
         selectValue( "repository", repositoryId );
         setFieldValue( "groupId", groupId );
         submit();
-    	                
+
         assertAuditLogsReportPage();
         assertTextPresent( expectedArtifact );
         assertTextPresent( repositoryId );

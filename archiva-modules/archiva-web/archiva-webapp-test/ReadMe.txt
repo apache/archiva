@@ -19,3 +19,17 @@ can use *iexploreproxy.
 
 Run Selenium tests in src/test/it with Maven and JUnit
   - mvn clean install -f junit-pom.xml
+  
+
+IMPORTANT:
+
+When writing Selenium tests for artifact upload, please avoid using the "test" syllable/word for 
+the groupId or artifactId (ex. test.group:testAddArtifactValidValues:1.0) as this is used for the 
+search tests. The tests explicitly assert the returned number of hits for searching an artifact with 
+a groupId or artifactId containing the word "test", so if you upload or add a new artifact which has
+the term "test", the number of hits will be different and the search tests will fail.
+
+See org.apache.archiva.web.test.SearchTest.java or read the related thread discussion at
+http://old.nabble.com/Selenium-tests-failure-in-trunk-td27830786.html
+   
+

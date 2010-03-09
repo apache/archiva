@@ -36,6 +36,7 @@ public class SearchTest
 		assertTextPresent( "No results found" );
 	}
     
+	// TODO: make search tests more robust especially when comparing/asserting number of hits
 	public void testSearchExistingArtifact()
 	{
 		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
