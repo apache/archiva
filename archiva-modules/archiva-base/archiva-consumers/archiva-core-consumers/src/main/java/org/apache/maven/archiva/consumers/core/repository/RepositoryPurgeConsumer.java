@@ -19,11 +19,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -35,12 +31,16 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Consumer for removing old snapshots in the repository based on the criteria
@@ -94,7 +94,7 @@ public class RepositoryPurgeConsumer
 
     private boolean deleteReleasedSnapshots;
 
-    /** @plexus.requirement role="org.apache.maven.archiva.repository.events.RepositoryListener" */
+    /** @plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener" */
     private List<RepositoryListener> listeners = Collections.emptyList();
     
     public String getId()

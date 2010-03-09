@@ -55,7 +55,7 @@
     <constructor-arg ref="metadataRepository"/>
     <constructor-arg ref="archivaTaskScheduler#repository"/>
     <constructor-arg>
-      <bean class="org.apache.maven.archiva.repository.events.RepositoryListenerFactoryBean" />
+      <bean class="org.apache.archiva.web.spring.RepositoryListenerFactoryBean" />
     </constructor-arg>       
   </bean> 
 

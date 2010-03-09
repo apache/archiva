@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.events;
+package org.apache.archiva.repository.events;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

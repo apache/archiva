@@ -19,17 +19,17 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
-import org.apache.maven.archiva.repository.events.RepositoryListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all repository purge tasks.
@@ -67,6 +67,7 @@ public abstract class AbstractRepositoryPurge
             {   
                 File artifactFile = repository.toFile( reference );
 
+                // TODO: looks incomplete, might not delete related metadata?
                 for ( RepositoryListener listener : listeners )
                 {
                     listener.deleteArtifact( repository.getId(), reference.getGroupId(), reference.getArtifactId(),

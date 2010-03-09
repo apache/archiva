@@ -195,6 +195,19 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    public void testWindowsPathSeparator()
+        throws LayoutException
+    {
+        String groupId = "commons-lang";
+        String artifactId = "commons-lang";
+        String version = "2.1";
+        String classifier = null;
+        String type = "jar";
+        String path = "commons-lang\\commons-lang/2.1\\commons-lang-2.1.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
     /**
      * [MRM-486] Can not deploy artifact test.maven-arch:test-arch due to "No ArtifactID Detected"
      */

@@ -19,12 +19,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -38,10 +33,15 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * <p>
@@ -174,7 +174,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                     versionRef.setVersion( version );
                     repository.deleteVersion( versionRef );
                     
-                    // TODO: looks incomplete, might not delete related artifacts?
+                    // TODO: looks incomplete, might not delete related metadata?
                     for ( RepositoryListener listener : listeners )
                     {
                         listener.deleteArtifact( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),

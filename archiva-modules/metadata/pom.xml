@@ -29,5 +29,6 @@
   <modules>
     <module>metadata-model</module>
     <module>metadata-repository-api</module>
+    <module>test-repository</module>
   </modules>
 </project>

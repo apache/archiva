@@ -71,6 +71,16 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>maven2-repository</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.archiva</groupId>
+          <artifactId>problem-reports</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

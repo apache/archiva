@@ -19,17 +19,17 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import java.io.File;
-import java.util.Collections;
-
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
+
+import java.io.File;
+import java.util.Collections;
 
 
 /**

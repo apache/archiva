@@ -20,12 +20,12 @@ package org.apache.archiva.reports;
  */
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.maven.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.events.RepositoryListener;
 
 /**
  * Process repository management events and respond appropriately.
  *
- * @plexus.component role="org.apache.maven.archiva.repository.events.RepositoryListener" role-hint="problem-reports"
+ * @plexus.component role="org.apache.archiva.repository.events.RepositoryListener" role-hint="problem-reports"
  */
 public class RepositoryProblemEventListener
     implements RepositoryListener

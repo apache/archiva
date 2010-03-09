@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.events;
+package org.apache.archiva.web.spring;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,12 +19,13 @@ package org.apache.maven.archiva.repository.events;
  * under the License.
  */
 
-import java.util.List;
-
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.util.List;
 
 /**
  * @todo though we will eventually remove this altogether, an interim cleanup would be to genericise this

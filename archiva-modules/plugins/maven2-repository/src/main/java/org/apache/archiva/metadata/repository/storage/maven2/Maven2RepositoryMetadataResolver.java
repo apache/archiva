@@ -60,8 +60,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.storage.StorageMetadataResolver" role-hint="maven2"
@@ -114,6 +112,7 @@ public class Maven2RepositoryMetadataResolver
                                                      String projectVersion )
         throws MetadataResolutionException
     {
+        // Remove problems associated with this version, since we'll be re-adding any that still exist
         // TODO: an event mechanism would remove coupling to the problem reporting plugin
         // TODO: this removes all problems - do we need something that just removes the problems created by this resolver?
         String name = RepositoryProblemFacet.createName( namespace, projectId, projectVersion, null );
@@ -490,52 +489,40 @@ public class Maven2RepositoryMetadataResolver
         {
             for ( File file : files )
             {
-                ArtifactMetadata metadata = new ArtifactMetadata();
-                metadata.setId( file.getName() );
-                metadata.setProject( projectId );
-                metadata.setNamespace( namespace );
-                metadata.setRepositoryId( repoId );
-                metadata.setWhenGathered( new Date() );
-                metadata.setFileLastModified( file.lastModified() );
-                ChecksummedFile checksummedFile = new ChecksummedFile( file );
-                try
-                {
-                    metadata.setMd5( checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 ) );
-                }
-                catch ( IOException e )
-                {
-                    log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
-                }
-                try
-                {
-                    metadata.setSha1( checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 ) );
-                }
-                catch ( IOException e )
-                {
-                    log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
-                }
-                metadata.setSize( file.length() );
-
-                // TODO: very crude, migrate the functionality from the repository-layer here
-                if ( VersionUtil.isGenericSnapshot( projectVersion ) )
-                {
-                    String mainVersion = projectVersion.substring( 0, projectVersion.length() -
-                        8 ); // 8 is length of "SNAPSHOT"
-                    Matcher m = Pattern.compile(
-                        projectId + "-" + mainVersion + "([0-9]{8}.[0-9]{6}-[0-9]+).*" ).matcher( file.getName() );
-                    m.matches();
-                    String version = mainVersion + m.group( 1 );
-
-                    metadata.setVersion( version );
-                }
-                else
-                {
-                    metadata.setVersion( projectVersion );
-                }
+                ArtifactMetadata metadata = getArtifactFromFile( repoId, namespace, projectId, projectVersion, file );
                 artifacts.add( metadata );
             }
         }
         return artifacts;
+    }
+
+    private ArtifactMetadata getArtifactFromFile( String repoId, String namespace, String projectId,
+                                                  String projectVersion, File file )
+    {
+        ArtifactMetadata metadata = pathTranslator.getArtifactFromId( repoId, namespace, projectId, projectVersion, file.getName() );
+
+        metadata.setWhenGathered( new Date() );
+        metadata.setFileLastModified( file.lastModified() );
+        ChecksummedFile checksummedFile = new ChecksummedFile( file );
+        try
+        {
+            metadata.setMd5( checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 ) );
+        }
+        catch ( IOException e )
+        {
+            log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
+        }
+        try
+        {
+            metadata.setSha1( checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 ) );
+        }
+        catch ( IOException e )
+        {
+            log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
+        }
+        metadata.setSize( file.length() );
+
+        return metadata;
     }
 
     private boolean isProject( File dir, Filter<String> filter )

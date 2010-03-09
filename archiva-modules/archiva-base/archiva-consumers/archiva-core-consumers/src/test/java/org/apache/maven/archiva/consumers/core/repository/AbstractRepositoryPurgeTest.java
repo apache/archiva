@@ -19,16 +19,16 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.events.RepositoryListener;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  */

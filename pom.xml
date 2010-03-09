@@ -331,11 +331,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-artifact-reports</artifactId>
-        <version>1.4-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-checksum</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
@@ -361,11 +356,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-dependency-graph</artifactId>
-        <version>1.4-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-core-consumers</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
@@ -376,12 +366,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-database</artifactId>
-        <version>1.4-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-database-consumers</artifactId>
+        <artifactId>test-repository</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>

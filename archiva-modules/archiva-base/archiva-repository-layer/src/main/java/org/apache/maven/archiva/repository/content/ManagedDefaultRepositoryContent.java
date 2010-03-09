@@ -19,11 +19,6 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -35,6 +30,11 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ManagedDefaultRepositoryContent 
@@ -332,9 +332,9 @@ public class ManagedDefaultRepositoryContent
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        if ( ( path != null ) && path.startsWith( repository.getLocation() ) )
+        if ( ( path != null ) && path.startsWith( repository.getLocation() ) && repository.getLocation().length() > 0 )
         {
-            return super.toArtifactReference( path.substring( repository.getLocation().length() ) );
+            return super.toArtifactReference( path.substring( repository.getLocation().length() + 1 ) );
         }
 
         return super.toArtifactReference( path );
