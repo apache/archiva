@@ -20,12 +20,6 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
@@ -36,6 +30,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
@@ -44,6 +39,12 @@ import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * SearchServiceImplTest
@@ -548,6 +549,11 @@ public class SearchServiceImplTest
         artifactMetadata.setMd5( CHECKSUM );
         artifactMetadata.setWhenGathered( whenGathered );
         artifactMetadata.setRepositoryId( TEST_REPO );
+
+        MavenArtifactFacet facet = new MavenArtifactFacet();
+        facet.setType( "jar" );
+        artifactMetadata.addFacet( facet );
+
         return artifactMetadata;
     }
 }
