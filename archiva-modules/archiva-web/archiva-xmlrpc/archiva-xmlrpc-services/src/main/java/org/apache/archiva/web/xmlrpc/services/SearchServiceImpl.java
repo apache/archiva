@@ -19,26 +19,27 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.FacetedMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
-import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class SearchServiceImpl
     implements SearchService
@@ -84,7 +85,7 @@ public class SearchServiceImpl
                         // slight behaviour change to previous implementation: instead of allocating "jar" when not
                         // found in the database, we can rely on the metadata repository to create it on the fly. We
                         // just allocate the default packaging if the Maven facet is not found.
-                        ProjectVersionMetadata model =
+                        FacetedMetadata model =
                             metadataResolver.getProjectVersion( repoId, resultHit.getGroupId(),
                                                                 resultHit.getArtifactId(), version );
 
@@ -124,28 +125,11 @@ public class SearchServiceImpl
         {
             for ( ArtifactMetadata artifact : metadataRepository.getArtifactsByChecksum( repoId, checksum ) )
             {
-                // TODO: use a maven facet instead, for now just using the extension and classifier
-                String type = null;
-                String key = artifact.getProject() + "-" + artifact.getVersion();
-                String filename = artifact.getId();
-                int extIndex = filename.lastIndexOf( "." );
-                if ( filename.startsWith( key ) )
-                {
-                    int i = key.length();
-                    char nextToken = filename.charAt( i );
-                    if ( nextToken == '-' )
-                    {
-                        String classifier = filename.substring( i + 1, extIndex );
-                        String extension = filename.substring( extIndex + 1 );
-                        type = ArtifactExtensionMapping.mapExtensionAndClassifierToType( classifier, extension );
-                    }
-                    else if ( nextToken == '.' )
-                    {
-                        type = ArtifactExtensionMapping.mapExtensionToType( filename.substring( i + 1 ) );
-                    }
-                }
+                // TODO: customise XMLRPC to handle non-Maven artifacts
+                MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
+
                 results.add( new Artifact( artifact.getRepositoryId(), artifact.getNamespace(), artifact.getProject(),
-                                           artifact.getVersion(), type ) );
+                                           artifact.getVersion(), facet != null ? facet.getType() : null ) );
             }
         }
         return results;
