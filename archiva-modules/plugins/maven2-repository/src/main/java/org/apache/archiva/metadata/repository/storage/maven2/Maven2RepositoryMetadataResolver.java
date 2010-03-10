@@ -497,12 +497,28 @@ public class Maven2RepositoryMetadataResolver
         return artifacts;
     }
 
+    public ArtifactMetadata getArtifactForPath( String repoId, String path )
+    {
+        ArtifactMetadata metadata = pathTranslator.getArtifactForPath( repoId, path );
+
+        populateArtifactMetadataFromFile( metadata, new File( getRepositoryBasedir( repoId ), path ) );
+
+        return metadata;
+    }
+
     private ArtifactMetadata getArtifactFromFile( String repoId, String namespace, String projectId,
                                                   String projectVersion, File file )
     {
         ArtifactMetadata metadata = pathTranslator.getArtifactFromId( repoId, namespace, projectId, projectVersion,
                                                                       file.getName() );
 
+        populateArtifactMetadataFromFile( metadata, file );
+
+        return metadata;
+    }
+
+    private static void populateArtifactMetadataFromFile( ArtifactMetadata metadata, File file )
+    {
         metadata.setWhenGathered( new Date() );
         metadata.setFileLastModified( file.lastModified() );
         ChecksummedFile checksummedFile = new ChecksummedFile( file );
@@ -523,8 +539,6 @@ public class Maven2RepositoryMetadataResolver
             log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
         }
         metadata.setSize( file.length() );
-
-        return metadata;
     }
 
     private boolean isProject( File dir, Filter<String> filter )

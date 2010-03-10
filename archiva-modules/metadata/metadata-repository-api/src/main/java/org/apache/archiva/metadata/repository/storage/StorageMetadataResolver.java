@@ -19,11 +19,11 @@ package org.apache.archiva.metadata.repository.storage;
  * under the License.
  */
 
-import java.util.Collection;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.filter.Filter;
+
+import java.util.Collection;
 
 public interface StorageMetadataResolver
     extends MetadataResolver
@@ -38,4 +38,7 @@ public interface StorageMetadataResolver
 
     Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId, String projectVersion,
                                                Filter<String> filter );
+
+    // TODO: reconsider this API, do we want to expose storage format in the form of a path?
+    ArtifactMetadata getArtifactForPath( String repoId, String path );
 }
