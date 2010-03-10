@@ -19,6 +19,8 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -45,6 +47,8 @@ public abstract class AbstractDefaultRepositoryContent
     protected static final char GROUP_SEPARATOR = '.';
 
     protected static final char ARTIFACT_SEPARATOR = '-';
+
+    private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator();
 
     private PathParser defaultPathParser = new DefaultPathParser();
 
@@ -113,27 +117,33 @@ public abstract class AbstractDefaultRepositoryContent
     private String toPath( String groupId, String artifactId, String baseVersion, String version, String classifier,
                            String type )
     {
-        StringBuffer path = new StringBuffer();
-
-        path.append( formatAsDirectory( groupId ) ).append( PATH_SEPARATOR );
-        path.append( artifactId ).append( PATH_SEPARATOR );
-
         if ( baseVersion != null )
         {
-            path.append( baseVersion ).append( PATH_SEPARATOR );
-            if ( ( version != null ) && ( type != null ) )
-            {
-                path.append( artifactId ).append( ARTIFACT_SEPARATOR ).append( version );
-
-                if ( StringUtils.isNotBlank( classifier ) )
-                {
-                    path.append( ARTIFACT_SEPARATOR ).append( classifier );
-                }
-
-                path.append( GROUP_SEPARATOR ).append( ArtifactExtensionMapping.getExtension( type ) );
-            }
+            return pathTranslator.toPath( groupId, artifactId, baseVersion, constructId( artifactId, version,
+                                                                                         classifier, type ) );
         }
+        else
+        {
+            return pathTranslator.toPath( groupId, artifactId );
+        }
+    }
 
-        return path.toString();
+    // TODO: move into the Maven Artifact facet when refactoring away the caller - the caller will need to have access
+    //       to the facet or filename (for the original ID)
+    private String constructId( String artifactId, String version, String classifier, String type )
+    {
+        StringBuilder id = new StringBuilder();
+        if ( ( version != null ) && ( type != null ) )
+        {
+            id.append( artifactId ).append( ARTIFACT_SEPARATOR ).append( version );
+
+            if ( StringUtils.isNotBlank( classifier ) )
+            {
+                id.append( ARTIFACT_SEPARATOR ).append( classifier );
+            }
+
+            id.append( "." ).append( ArtifactExtensionMapping.getExtension( type ) );
+        }
+        return id.toString();
     }
 }
