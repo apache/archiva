@@ -42,7 +42,6 @@ public abstract class AbstractLegacyRepositoryContent
     {
         typeToDirectoryMap = new HashMap<String, String>();
         typeToDirectoryMap.put( "ejb-client", "ejb" );
-        typeToDirectoryMap.put( ArtifactExtensionMapping.MAVEN_PLUGIN, "maven-plugin" );
         typeToDirectoryMap.put( ArtifactExtensionMapping.MAVEN_ONE_PLUGIN, "plugin" );
         typeToDirectoryMap.put( "distribution-tgz", "distribution" );
         typeToDirectoryMap.put( "distribution-zip", "distribution" );
@@ -87,7 +86,7 @@ public abstract class AbstractLegacyRepositoryContent
         StringBuffer path = new StringBuffer();
 
         path.append( groupId ).append( PATH_SEPARATOR );
-        path.append( getDirectory( classifier, type ) ).append( PATH_SEPARATOR );
+        path.append( getDirectory( type ) ).append( PATH_SEPARATOR );
 
         if ( version != null )
         {
@@ -104,9 +103,9 @@ public abstract class AbstractLegacyRepositoryContent
         return path.toString();
     }
 
-    private String getDirectory( String classifier, String type )
+    private String getDirectory( String type )
     {
-        String dirname = (String) typeToDirectoryMap.get( type );
+        String dirname = typeToDirectoryMap.get( type );
 
         if ( dirname != null )
         {
