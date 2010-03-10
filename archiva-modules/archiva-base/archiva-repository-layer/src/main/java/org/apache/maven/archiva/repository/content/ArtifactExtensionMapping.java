@@ -24,7 +24,6 @@ import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMapp
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * ArtifactExtensionMapping
@@ -40,8 +39,6 @@ public class ArtifactExtensionMapping
 	public static final String MAVEN_ONE_PLUGIN = "maven-one-plugin";
 
     private static final Map<String, String> typeToExtensionMap;
-
-    private static final Pattern mavenPluginPattern = Pattern.compile( "^(maven-.*-plugin)|(.*-maven-plugin)$" );
 
     // TODO: won't support extensions - need to refactor away this class
     private static final ArtifactMappingProvider mapping = new DefaultArtifactMappingProvider();
@@ -77,17 +74,6 @@ public class ArtifactExtensionMapping
 
         // Return type
         return type;
-    }
-
-    /**
-     * Determine if a given artifact Id conforms to the naming scheme for a maven plugin.
-     *
-     * @param artifactId the artifactId to test.
-     * @return true if this artifactId conforms to the naming scheme for a maven plugin.
-     */
-    public static boolean isMavenPlugin( String artifactId )
-    {
-        return mavenPluginPattern.matcher( artifactId ).matches();
     }
 
     public static String mapExtensionAndClassifierToType( String classifier, String extension )

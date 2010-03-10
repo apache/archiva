@@ -28,11 +28,11 @@ import java.util.Map;
 public class DefaultArtifactMappingProvider
     implements ArtifactMappingProvider
 {
-    private final Map<String,String> classifierAndExtensionToTypeMap;
+    private final Map<String, String> classifierAndExtensionToTypeMap;
 
     public DefaultArtifactMappingProvider()
     {
-        classifierAndExtensionToTypeMap = new HashMap<String,String>();
+        classifierAndExtensionToTypeMap = new HashMap<String, String>();
 
         // Maven 2.2.1 supplied types (excluding defaults where extension == type and no classifier)
         classifierAndExtensionToTypeMap.put( "client:jar", "ejb-client" );
@@ -43,8 +43,14 @@ public class DefaultArtifactMappingProvider
 
     public String mapClassifierAndExtensionToType( String classifier, String ext )
     {
-        classifier = classifier != null ? classifier : "";
-        ext = ext != null ? ext : "";
+        if ( classifier == null )
+        {
+            classifier = "";
+        }
+        if ( ext == null )
+        {
+            ext = "";
+        }
         return classifierAndExtensionToTypeMap.get( classifier + ":" + ext );
     }
 }

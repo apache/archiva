@@ -280,10 +280,35 @@ public class Maven2RepositoryPathTranslator
             }
         }
 
+        // TODO: this is cheating! We should check the POM metadata instead
+        if ( type == null && "jar".equals( ext ) && isArtifactIdValidMavenPlugin( projectId ) )
+        {
+            type = "maven-plugin";
+        }
+
         // use extension as default
-        facet.setType( type != null ? type : ext );
+        if ( type == null )
+        {
+            type = ext;
+        }
+
+        // TODO: should we allow this instead?
+        if ( type == null )
+        {
+            throw new IllegalArgumentException(
+                "Not a valid artifact path in a Maven 2 repository, filename '" + id + "' does not have a type" );
+        }
+
+        facet.setType( type );
         metadata.addFacet( facet );
 
         return metadata;
+    }
+
+    private static final Pattern MAVEN_PLUGIN_PATTERN = Pattern.compile( "^(maven-.*-plugin)|(.*-maven-plugin)$" );
+
+    public boolean isArtifactIdValidMavenPlugin( String artifactId )
+    {
+        return MAVEN_PLUGIN_PATTERN.matcher( artifactId ).matches();
     }
 }

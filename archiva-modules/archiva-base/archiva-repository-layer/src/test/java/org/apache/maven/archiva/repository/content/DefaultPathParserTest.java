@@ -36,6 +36,7 @@ public class DefaultPathParserTest
 
     public void testBadPathMissingType()
     {
+        // TODO: should we allow this instead?
         assertBadPath( "invalid/invalid/1/invalid-1", "missing type" );
     }
 

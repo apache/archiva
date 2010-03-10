@@ -24,8 +24,8 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
@@ -71,80 +71,13 @@ public class DefaultPathParser implements PathParser
         artifact.setGroupId( metadata.getNamespace() );
         artifact.setArtifactId( metadata.getProject() );
         artifact.setVersion( metadata.getVersion() );
-
-        // TODO: use Maven facet instead
-        String filename = metadata.getId();
-        FilenameParser parser = new FilenameParser( filename );
-        artifact.setArtifactId( parser.expect( artifact.getArtifactId() ) );
-        if ( artifact.getArtifactId() == null )
+        MavenArtifactFacet facet = (MavenArtifactFacet) metadata.getFacet( MavenArtifactFacet.FACET_ID );
+        if ( facet != null )
         {
-            throw new LayoutException( INVALID_ARTIFACT_PATH + "filename format is invalid, "
-                + "should start with artifactId as stated in path." );
+            artifact.setClassifier( facet.getClassifier() );
+            artifact.setType( facet.getType() );
         }
-        String baseVersion = VersionUtil.getBaseVersion( metadata.getVersion() );
-        artifact.setVersion( parser.expect( baseVersion ) );
-        if ( artifact.getVersion() == null )
-        {
-            // We working with a snapshot?
-            if ( VersionUtil.isSnapshot( baseVersion ) )
-            {
-                artifact.setVersion( parser.nextVersion() );
-                if ( !VersionUtil.isUniqueSnapshot( artifact.getVersion() ) )
-                {
-                    throw new LayoutException( INVALID_ARTIFACT_PATH + "filename format is invalid,"
-                        + "expected timestamp format in filename." );
-                }
-            }
-            else
-            {
-                throw new LayoutException( INVALID_ARTIFACT_PATH + "filename format is invalid, "
-                    + "expected version as stated in path." );
-            }
-        }
-        switch(parser.seperator())
-        {
-            case '-':
-                // Definately a classifier.
-                artifact.setClassifier( parser.remaining() );
-
-                // Set the type.
-                artifact.setType( ArtifactExtensionMapping.mapExtensionAndClassifierToType( artifact.getClassifier(), parser.getExtension() ) );
-                break;
-            case '.':
-                // We have an dual extension possibility.
-                String extension = parser.remaining() + '.' + parser.getExtension();
-                artifact.setType( extension );
-                break;
-            case 0:
-                // End of the filename, only a simple extension left. - Set the type.
-                String type = ArtifactExtensionMapping.mapExtensionToType( parser.getExtension() );
-                if ( type == null )
-                {
-                    throw new LayoutException( "Invalid artifact: no type was specified" );
-                }
-                artifact.setType( type );
-                break;
-        }
-        if ( StringUtils.equals( "jar", artifact.getType() ) &&
-             ArtifactExtensionMapping.isMavenPlugin( artifact.getArtifactId() ) )
-        {
-            artifact.setType( ArtifactExtensionMapping.MAVEN_PLUGIN );
-        }
-
-        // Sanity Checks.
-
-        // Do we have a snapshot version?
-        if ( VersionUtil.isSnapshot( artifact.getVersion() ) )
-        {
-            // Rules are different for SNAPSHOTS
-            if ( !VersionUtil.isGenericSnapshot( baseVersion ) )
-            {
-                String filenameBaseVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
-                throw new LayoutException( "Invalid snapshot artifact location, version directory should be "
-                    + filenameBaseVersion );
-            }
-        }
-
+        
         return artifact;
     }
 

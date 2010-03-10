@@ -19,39 +19,57 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
+import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 
+import java.util.Collections;
+
 /**
- * ArtifactExtensionMappingTest 
+ * ArtifactExtensionMappingTest
  *
  * @version $Id$
  */
 public class ArtifactExtensionMappingTest
-extends AbstractRepositoryLayerTestCase
+    extends AbstractRepositoryLayerTestCase
 {
+    private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator(
+        Collections.<ArtifactMappingProvider>emptyList() );
+
     public void testIsMavenPlugin()
     {
-        assertMavenPlugin( "maven-test-plugin"  );
-        assertMavenPlugin( "maven-clean-plugin"  );
-        assertMavenPlugin( "cobertura-maven-plugin"  );
-        assertMavenPlugin( "maven-project-info-reports-plugin"  );
-        assertMavenPlugin( "silly-name-for-a-maven-plugin"  );
-        
-        assertNotMavenPlugin( "maven-plugin-api"  );
-        assertNotMavenPlugin( "foo-lib"  );
-        assertNotMavenPlugin( "another-maven-plugin-api"  );
-        assertNotMavenPlugin( "secret-maven-plugin-2"  );
+        assertMavenPlugin( "maven-test-plugin" );
+        assertMavenPlugin( "maven-clean-plugin" );
+        assertMavenPlugin( "cobertura-maven-plugin" );
+        assertMavenPlugin( "maven-project-info-reports-plugin" );
+        assertMavenPlugin( "silly-name-for-a-maven-plugin" );
+
+        assertNotMavenPlugin( "maven-plugin-api" );
+        assertNotMavenPlugin( "foo-lib" );
+        assertNotMavenPlugin( "another-maven-plugin-api" );
+        assertNotMavenPlugin( "secret-maven-plugin-2" );
     }
-    
+
     private void assertMavenPlugin( String artifactId )
     {
-        assertTrue( "Should be detected as maven plugin: <" + artifactId + ">", 
-                    ArtifactExtensionMapping.isMavenPlugin( artifactId ) );
+        assertEquals( "Should be detected as maven plugin: <" + artifactId + ">", "maven-plugin", getTypeFromArtifactId(
+            artifactId ) );
     }
-    
+
+    private String getTypeFromArtifactId( String artifactId )
+    {
+        ArtifactMetadata artifact = pathTranslator.getArtifactFromId( null, "groupId", artifactId, "1.0",
+                                                                      artifactId + "-1.0.jar" );
+        MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
+        return facet.getType();
+    }
+
     private void assertNotMavenPlugin( String artifactId )
     {
-        assertFalse( "Should NOT be detected as maven plugin: <" + artifactId + ">", 
-                    ArtifactExtensionMapping.isMavenPlugin( artifactId ) );
+        assertFalse( "Should NOT be detected as maven plugin: <" + artifactId + ">", "maven-plugin".equals(
+            getTypeFromArtifactId( artifactId ) ) );
     }
 }
