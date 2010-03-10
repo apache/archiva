@@ -19,11 +19,11 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import java.io.File;
-import java.util.Arrays;
-
 import org.apache.maven.archiva.xml.XMLException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+
+import java.io.File;
+import java.util.Arrays;
 
 /**
  * RepositoryMetadataReaderTest
@@ -33,10 +33,11 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 public class MavenRepositoryMetadataReaderTest
     extends PlexusInSpringTestCase
 {
+    private File defaultRepoDir;
+
     public void testGroupMetadata()
         throws XMLException
     {
-        File defaultRepoDir = new File( getBasedir(), "src/test/repositories/test" );
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/plugins/maven-metadata.xml" );
 
         MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
@@ -71,7 +72,6 @@ public class MavenRepositoryMetadataReaderTest
     public void testProjectMetadata()
         throws XMLException
     {
-        File defaultRepoDir = new File( getBasedir(), "src/test/repositories/test" );
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
         MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
@@ -89,7 +89,6 @@ public class MavenRepositoryMetadataReaderTest
     public void testProjectVersionMetadata()
         throws XMLException
     {
-        File defaultRepoDir = new File( getBasedir(), "src/test/repositories/test" );
         File metadataFile = new File( defaultRepoDir, "org/apache/apache/5-SNAPSHOT/maven-metadata.xml" );
 
         MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
@@ -104,5 +103,12 @@ public class MavenRepositoryMetadataReaderTest
         assertEquals( "20080801.151215", metadata.getSnapshotVersion().getTimestamp() );
         assertEquals( 1, metadata.getSnapshotVersion().getBuildNumber() );
         assertEquals( "20080801151215", metadata.getLastUpdated() );
+    }
+
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+        defaultRepoDir = new File( getBasedir(), "target/test-repository" );
     }
 }

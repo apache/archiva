@@ -70,7 +70,7 @@ public class Maven2RepositoryMetadataResolverTest
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( getTestPath( "src/test/repositories/test" ) );
+        testRepo.setLocation( getTestPath( "target/test-repository" ) );
         c.addManagedRepository( testRepo );
         configuration.save( c );
 
@@ -344,7 +344,8 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "com" ) );
         assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "com.example" ) );
         assertEquals( Arrays.asList( "incomplete-metadata", "invalid-pom", "malformed-metadata", "mislocated-pom",
-                                     "missing-metadata" ), resolver.getProjects( TEST_REPO_ID, "com.example.test" ) );
+                                     "missing-metadata", "test-artifact" ), resolver.getProjects( TEST_REPO_ID,
+                                                                                                  "com.example.test" ) );
 
         assertEquals( Collections.<String>emptyList(), resolver.getProjects( TEST_REPO_ID, "org" ) );
         assertEquals( Arrays.asList( "apache" ), resolver.getProjects( TEST_REPO_ID, "org.apache" ) );

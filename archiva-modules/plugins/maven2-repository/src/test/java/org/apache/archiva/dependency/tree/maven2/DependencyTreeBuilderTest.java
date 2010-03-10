@@ -19,8 +19,6 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
-import java.util.Collections;
-
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -32,6 +30,8 @@ import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+
+import java.util.Collections;
 
 public class DependencyTreeBuilderTest
     extends PlexusInSpringTestCase
@@ -59,7 +59,7 @@ public class DependencyTreeBuilderTest
         Configuration configuration = new Configuration();
         ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( TEST_REPO_ID );
-        repoConfig.setLocation( getTestPath( "src/test/repositories/test" ) );
+        repoConfig.setLocation( getTestPath( "target/test-repository" ) );
         configuration.addManagedRepository( repoConfig );
         config.save( configuration );
 
