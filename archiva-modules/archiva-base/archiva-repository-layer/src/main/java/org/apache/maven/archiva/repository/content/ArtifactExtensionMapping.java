@@ -19,6 +19,9 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
+import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -40,21 +43,28 @@ public class ArtifactExtensionMapping
 
     private static final Pattern mavenPluginPattern = Pattern.compile( "^(maven-.*-plugin)|(.*-maven-plugin)$" );
 
+    // TODO: won't support extensions - need to refactor away this class
+    private static final ArtifactMappingProvider mapping = new DefaultArtifactMappingProvider();
+
     static
     {
         typeToExtensionMap = new HashMap<String, String>();
         typeToExtensionMap.put( "ejb-client", "jar" );
         typeToExtensionMap.put( "ejb", "jar" );
+        typeToExtensionMap.put( "java-source", "jar" );
+        typeToExtensionMap.put( "javadoc", "jar" );
+        typeToExtensionMap.put( "test-jar", "jar" );
+        typeToExtensionMap.put( MAVEN_PLUGIN, "jar" );
+
+        typeToExtensionMap.put( MAVEN_ARCHETYPE, "jar" );
+
+        // TODO: move to maven 1 plugin
+        typeToExtensionMap.put( MAVEN_ONE_PLUGIN, "jar" );
+        typeToExtensionMap.put( "javadoc.jar", "jar" );
+        typeToExtensionMap.put( "uberjar", "jar" );
         typeToExtensionMap.put( "distribution-tgz", "tar.gz" );
         typeToExtensionMap.put( "distribution-zip", "zip" );
-        typeToExtensionMap.put( "java-source", "jar" );
-        typeToExtensionMap.put( "javadoc.jar", "jar" );
-        typeToExtensionMap.put( "javadoc", "jar" );
         typeToExtensionMap.put( "aspect", "jar" );
-        typeToExtensionMap.put( "uberjar", "jar" );
-        typeToExtensionMap.put( MAVEN_PLUGIN, "jar" );
-        typeToExtensionMap.put( MAVEN_ONE_PLUGIN, "jar" );
-        typeToExtensionMap.put( MAVEN_ARCHETYPE, "jar" );
     }
 
     public static String getExtension( String type )
@@ -62,7 +72,7 @@ public class ArtifactExtensionMapping
         // Try specialized types first.
         if ( typeToExtensionMap.containsKey( type ) )
         {
-            return (String) typeToExtensionMap.get( type );
+            return typeToExtensionMap.get( type );
         }
 
         // Return type
@@ -88,36 +98,37 @@ public class ArtifactExtensionMapping
     public static String mapExtensionAndClassifierToType( String classifier, String extension,
                                                            String defaultExtension )
     {
-        if ( "sources".equals( classifier ) )
+        String value = mapping.mapClassifierAndExtensionToType( classifier, extension );
+        if ( value == null )
         {
-            return "java-source";
+            value = mapToMaven1Type( extension );
         }
-        else if ( "javadoc".equals( classifier ) )
-        {
-            return "javadoc";
-        }
-        return mapExtensionToType( extension, defaultExtension );
+        return value != null ? value : defaultExtension;
     }
 
     public static String mapExtensionToType( String extension )
     {
-        return mapExtensionToType( extension, extension );
+        String value = mapToMaven1Type( extension );
+
+        return value != null ? value : extension;
     }
 
-    private static String mapExtensionToType( String extension, String defaultExtension )
+    private static String mapToMaven1Type( String extension )
     {
+        // TODO: Maven 1 plugin
+        String value = null;
         if ( "tar.gz".equals( extension ) )
         {
-            return "distribution-tgz";
+            value = "distribution-tgz";
         }
         else  if ( "tar.bz2".equals( extension ) )
         {
-            return "distribution-bzip";
+            value = "distribution-bzip";
         }
         else  if ( "zip".equals( extension ) )
         {
-            return "distribution-zip";
+            value = "distribution-zip";
         }
-        return defaultExtension;
+        return value;
     }
 }

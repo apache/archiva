@@ -1,13 +1,5 @@
 package org.apache.archiva.metadata.repository.storage.maven2;
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-
-import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -27,6 +19,15 @@ import java.util.regex.Pattern;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.maven.archiva.common.utils.VersionUtil;
+
+import java.io.File;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator" role-hint="maven2"
  */
@@ -38,6 +39,11 @@ public class Maven2RepositoryPathTranslator
     private static final char GROUP_SEPARATOR = '.';
 
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "([0-9]{8}.[0-9]{6})-([0-9]+).*" );
+
+    /**
+     * @plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
+     */
+    private List<ArtifactMappingProvider> artifactMappingProviders;
 
     public File toFile( File basedir, String namespace, String projectId, String projectVersion, String filename )
     {
@@ -180,6 +186,8 @@ public class Maven2RepositoryPathTranslator
                 m.matches();
                 String timestamp = m.group( 1 );
                 String buildNumber = m.group( 2 );
+                facet.setTimestamp( timestamp );
+                facet.setBuildNumber( Integer.valueOf( buildNumber ) );
                 version = idSubStrFromVersion.substring( 0, mainVersionLength ) + timestamp + "-" + buildNumber;
             }
             catch ( IllegalStateException e )
@@ -246,8 +254,25 @@ public class Maven2RepositoryPathTranslator
         metadata.setVersion( version );
 
         facet.setClassifier( classifier );
-        // TODO: migrate here from ArtifactExtensionMapping and make extensible
-//        facet.setType(  );
+
+        // we use our own provider here instead of directly accessing Maven's artifact handlers as it has no way
+        // to select the correct order to apply multiple extensions mappings to a preferred type
+        // TODO: this won't allow the user to decide order to apply them if there are conflicts or desired changes -
+        //       perhaps the plugins could register missing entries in configuration, then we just use configuration
+        //       here?
+
+        String type = null;
+        for ( ArtifactMappingProvider mapping : artifactMappingProviders )
+        {
+            type = mapping.mapClassifierAndExtensionToType( classifier, ext );
+            if ( type != null )
+            {
+                break;
+            }
+        }
+
+        // use extension as default
+        facet.setType( type != null ? type : ext );
         metadata.addFacet( facet );
 
         return metadata;

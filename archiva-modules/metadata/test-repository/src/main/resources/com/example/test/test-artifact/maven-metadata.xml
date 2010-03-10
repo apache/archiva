@@ -4,9 +4,10 @@
   <artifactId>test-artifact</artifactId>
   <version>1.0-SNAPSHOT</version>
   <versioning>
+    <release>1.0-SNAPSHOT</release>
     <versions>
       <version>1.0-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20100308230825</lastUpdated>
+    <lastUpdated>20100310014828</lastUpdated>
   </versioning>
 </metadata>

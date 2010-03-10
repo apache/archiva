@@ -133,7 +133,6 @@ public class Maven2RepositoryMetadataResolverTest
         assertDependency( dependencies.get( 9 ), "easymock", "easymockclassextension", "1.2", "test" );
     }
 
-    // TODO: test snapshot, rest of artifacts
     public void testGetArtifactMetadata()
         throws Exception
     {
@@ -156,8 +155,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( 0, facet.getBuildNumber() );
         assertNull( facet.getTimestamp() );
         assertEquals( "sources", facet.getClassifier() );
-        // TODO
-//        assertEquals( "java-source", facet.getType() );
+        assertEquals( "java-source", facet.getType() );
 
         artifactMetadata = artifacts.get( 1 );
         assertEquals( "plexus-spring-1.2.jar", artifactMetadata.getId() );
@@ -165,8 +163,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( 0, facet.getBuildNumber() );
         assertNull( facet.getTimestamp() );
         assertNull( facet.getClassifier() );
-        // TODO
-//        assertEquals( "jar", facet.getType() );
+        assertEquals( "jar", facet.getType() );
 
         artifactMetadata = artifacts.get( 2 );
         assertEquals( "plexus-spring-1.2.pom", artifactMetadata.getId() );
@@ -174,8 +171,72 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( 0, facet.getBuildNumber() );
         assertNull( facet.getTimestamp() );
         assertNull( facet.getClassifier() );
-        // TODO
-//        assertEquals( "pom", facet.getType() );
+        assertEquals( "pom", facet.getType() );
+    }
+
+    public void testGetArtifactMetadataSnapshots()
+        throws Exception
+    {
+        Collection<ArtifactMetadata> testArtifacts = resolver.getArtifacts( TEST_REPO_ID, "com.example.test",
+                                                                            "test-artifact", "1.0-SNAPSHOT" );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( testArtifacts );
+        Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
+        {
+            public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
+            {
+                return o1.getId().compareTo( o2.getId() );
+            }
+        } );
+
+        assertEquals( 6, artifacts.size() );
+
+        ArtifactMetadata artifactMetadata = artifacts.get( 0 );
+        assertEquals( "test-artifact-1.0-20100308.230825-1.jar", artifactMetadata.getId() );
+        MavenArtifactFacet facet = (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
+        assertEquals( 1, facet.getBuildNumber() );
+        assertEquals( "20100308.230825", facet.getTimestamp() );
+        assertNull( facet.getClassifier() );
+        assertEquals( "jar", facet.getType() );
+
+        artifactMetadata = artifacts.get( 1 );
+        assertEquals( "test-artifact-1.0-20100308.230825-1.pom", artifactMetadata.getId() );
+        facet = (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
+        assertEquals( 1, facet.getBuildNumber() );
+        assertEquals( "20100308.230825", facet.getTimestamp() );
+        assertNull( facet.getClassifier() );
+        assertEquals( "pom", facet.getType() );
+
+        artifactMetadata = artifacts.get( 2 );
+        assertEquals( "test-artifact-1.0-20100310.014828-2-javadoc.jar", artifactMetadata.getId() );
+        facet = (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
+        assertEquals( 2, facet.getBuildNumber() );
+        assertEquals( "20100310.014828", facet.getTimestamp() );
+        assertEquals( "javadoc", facet.getClassifier() );
+        assertEquals( "javadoc", facet.getType() );
+
+        artifactMetadata = artifacts.get( 3 );
+        assertEquals( "test-artifact-1.0-20100310.014828-2-sources.jar", artifactMetadata.getId() );
+        facet = (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
+        assertEquals( 2, facet.getBuildNumber() );
+        assertEquals( "20100310.014828", facet.getTimestamp() );
+        assertEquals( "sources", facet.getClassifier() );
+        assertEquals( "java-source", facet.getType() );
+
+        artifactMetadata = artifacts.get( 4 );
+        assertEquals( "test-artifact-1.0-20100310.014828-2.jar", artifactMetadata.getId() );
+        facet = (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
+        assertEquals( 2, facet.getBuildNumber() );
+        assertEquals( "20100310.014828", facet.getTimestamp() );
+        assertNull( facet.getClassifier() );
+        assertEquals( "jar", facet.getType() );
+
+        artifactMetadata = artifacts.get( 5 );
+        assertEquals( "test-artifact-1.0-20100310.014828-2.pom", artifactMetadata.getId() );
+        facet = (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
+        assertEquals( 2, facet.getBuildNumber() );
+        assertEquals( "20100310.014828", facet.getTimestamp() );
+        assertNull( facet.getClassifier() );
+        assertEquals( "pom", facet.getType() );
     }
 
     private void assertDependency( Dependency dependency, String groupId, String artifactId, String version )
