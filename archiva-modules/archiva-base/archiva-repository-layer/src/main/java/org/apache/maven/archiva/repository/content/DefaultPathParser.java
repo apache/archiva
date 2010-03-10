@@ -21,11 +21,15 @@ package org.apache.maven.archiva.repository.content;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
+import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+
+import java.util.Collections;
 
 /**
  * DefaultPathParser is a parser for maven 2 (default layout) paths to ArtifactReference.
@@ -38,7 +42,8 @@ public class DefaultPathParser implements PathParser
 {
     private static final String INVALID_ARTIFACT_PATH = "Invalid path to Artifact: ";
 
-    private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator();
+    private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator(
+        Collections.<ArtifactMappingProvider>singletonList( new DefaultArtifactMappingProvider() ) );
 
     /**
      * {@inheritDoc}

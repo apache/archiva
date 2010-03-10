@@ -45,6 +45,15 @@ public class Maven2RepositoryPathTranslator
      */
     private List<ArtifactMappingProvider> artifactMappingProviders;
 
+    public Maven2RepositoryPathTranslator()
+    {
+    }
+
+    public Maven2RepositoryPathTranslator( List<ArtifactMappingProvider> artifactMappingProviders )
+    {
+        this.artifactMappingProviders = artifactMappingProviders;
+    }
+
     public File toFile( File basedir, String namespace, String projectId, String projectVersion, String filename )
     {
         return new File( basedir, toPath( namespace, projectId, projectVersion, filename ) );
