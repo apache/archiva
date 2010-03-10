@@ -19,13 +19,12 @@ package org.apache.archiva.consumers.metadata;
  * under the License.
  */
 
-import org.apache.archiva.checksum.ChecksumAlgorithm;
-import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -46,8 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -185,34 +184,14 @@ public class ArchivaMetadataCreationConsumer
             createVersionMetadata = true;
         }
 
-        // TODO: merge with storage implementation, add Maven facet        
-        ArtifactMetadata artifactMeta = new ArtifactMetadata();
-        artifactMeta.setRepositoryId( repository.getId() );
-        artifactMeta.setNamespace( artifact.getGroupId() );
-        artifactMeta.setProject( artifact.getArtifactId() );
-        artifactMeta.setId( file.getName() );
-        artifactMeta.setFileLastModified( file.lastModified() );
-        artifactMeta.setSize( file.length() );
+        // A bit weird to reconstruct the file we already have, but don't want to expose getArtifactFromFile in the
+        // storage API
+        IncludesFilter<String> filter = new IncludesFilter<String>( Arrays.asList( file.getName() ) );
+        ArtifactMetadata artifactMeta = storageResolver.getArtifacts( repository.getId(), artifact.getGroupId(),
+                                                                      artifact.getArtifactId(), projectVersion,
+                                                                      filter ).iterator().next();
         artifactMeta.setVersion( artifact.getVersion() );
         artifactMeta.setWhenGathered( whenGathered );
-
-        ChecksummedFile checksummedFile = new ChecksummedFile( file );
-        try
-        {
-            artifactMeta.setMd5( checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 ) );
-        }
-        catch ( IOException e )
-        {
-            log.error( "Error attempting to get MD5 checksum for " + file + ": " + e.getMessage() );
-        }
-        try
-        {
-            artifactMeta.setSha1( checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 ) );
-        }
-        catch ( IOException e )
-        {
-            log.error( "Error attempting to get SHA-1 checksum for " + file + ": " + e.getMessage() );
-        }
 
         // TODO: transaction
         // read the metadata and update it if it is newer or doesn't exist
