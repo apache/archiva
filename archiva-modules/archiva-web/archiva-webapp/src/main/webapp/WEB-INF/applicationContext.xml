@@ -81,5 +81,10 @@
 
   <bean name="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
     <property name="session" ref="mailSession"/>
-  </bean>  
+  </bean>
+
+  <!-- This is used to prevent the old profile activator being loaded from the running instance of Maven in jetty:run -->
+  <bean name="profileActivator#jdk-prefix" class="org.apache.archiva.web.spring.DummyProfileActivator" />
+  <bean name="profileActivator#system-property" class="org.apache.archiva.web.spring.DummyProfileActivator" />
+  <bean name="profileActivator#always-on" class="org.apache.archiva.web.spring.DummyProfileActivator" />
 </beans>
