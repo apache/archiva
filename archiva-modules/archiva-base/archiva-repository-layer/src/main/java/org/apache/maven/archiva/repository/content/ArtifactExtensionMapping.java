@@ -22,9 +22,6 @@ package org.apache.maven.archiva.repository.content;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * ArtifactExtensionMapping
  *
@@ -32,48 +29,21 @@ import java.util.Map;
  */
 public class ArtifactExtensionMapping
 {
-    public static final String MAVEN_ARCHETYPE = "maven-archetype";
-
-    public static final String MAVEN_PLUGIN = "maven-plugin";
-	
-	public static final String MAVEN_ONE_PLUGIN = "maven-one-plugin";
-
-    private static final Map<String, String> typeToExtensionMap;
+    public static final String MAVEN_ONE_PLUGIN = "maven-one-plugin";
 
     // TODO: won't support extensions - need to refactor away this class
     private static final ArtifactMappingProvider mapping = new DefaultArtifactMappingProvider();
 
-    static
-    {
-        typeToExtensionMap = new HashMap<String, String>();
-        typeToExtensionMap.put( "ejb-client", "jar" );
-        typeToExtensionMap.put( "ejb", "jar" );
-        typeToExtensionMap.put( "java-source", "jar" );
-        typeToExtensionMap.put( "javadoc", "jar" );
-        typeToExtensionMap.put( "test-jar", "jar" );
-        typeToExtensionMap.put( MAVEN_PLUGIN, "jar" );
-
-        typeToExtensionMap.put( MAVEN_ARCHETYPE, "jar" );
-
-        // TODO: move to maven 1 plugin
-        typeToExtensionMap.put( MAVEN_ONE_PLUGIN, "jar" );
-        typeToExtensionMap.put( "javadoc.jar", "jar" );
-        typeToExtensionMap.put( "uberjar", "jar" );
-        typeToExtensionMap.put( "distribution-tgz", "tar.gz" );
-        typeToExtensionMap.put( "distribution-zip", "zip" );
-        typeToExtensionMap.put( "aspect", "jar" );
-    }
-
     public static String getExtension( String type )
     {
-        // Try specialized types first.
-        if ( typeToExtensionMap.containsKey( type ) )
+        String ext = mapping.mapTypeToExtension( type );
+
+        if ( ext == null )
         {
-            return typeToExtensionMap.get( type );
+            ext = type;
         }
 
-        // Return type
-        return type;
+        return ext;
     }
 
     public static String mapExtensionAndClassifierToType( String classifier, String extension )
@@ -87,34 +57,22 @@ public class ArtifactExtensionMapping
         String value = mapping.mapClassifierAndExtensionToType( classifier, extension );
         if ( value == null )
         {
-            value = mapToMaven1Type( extension );
+            // TODO: Maven 1 plugin
+            String value1 = null;
+            if ( "tar.gz".equals( extension ) )
+            {
+                value1 = "distribution-tgz";
+            }
+            else  if ( "tar.bz2".equals( extension ) )
+            {
+                value1 = "distribution-bzip";
+            }
+            else  if ( "zip".equals( extension ) )
+            {
+                value1 = "distribution-zip";
+            }
+            value = value1;
         }
         return value != null ? value : defaultExtension;
-    }
-
-    public static String mapExtensionToType( String extension )
-    {
-        String value = mapToMaven1Type( extension );
-
-        return value != null ? value : extension;
-    }
-
-    private static String mapToMaven1Type( String extension )
-    {
-        // TODO: Maven 1 plugin
-        String value = null;
-        if ( "tar.gz".equals( extension ) )
-        {
-            value = "distribution-tgz";
-        }
-        else  if ( "tar.bz2".equals( extension ) )
-        {
-            value = "distribution-bzip";
-        }
-        else  if ( "zip".equals( extension ) )
-        {
-            value = "distribution-zip";
-        }
-        return value;
     }
 }

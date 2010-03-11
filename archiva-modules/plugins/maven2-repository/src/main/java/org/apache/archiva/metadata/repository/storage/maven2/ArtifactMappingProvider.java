@@ -22,4 +22,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 public interface ArtifactMappingProvider
 {
     String mapClassifierAndExtensionToType( String classifier, String ext );
+
+    String mapTypeToExtension( String type );
 }

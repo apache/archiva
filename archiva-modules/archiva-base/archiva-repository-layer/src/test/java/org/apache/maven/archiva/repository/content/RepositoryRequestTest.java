@@ -330,6 +330,8 @@ public class RepositoryRequestTest
     {
         ManagedRepositoryContent repository = createManagedRepo( "default" );
 
+        // TODO: this is a good test case for maven 1 -> maven 2 link, since m2 doesn't support the distribution-zip type
+
         // Test (artifact) legacy to default - dual extension
         // NOTE: The detection of a dual extension is flawed.
         assertEquals( "org/project/example-presentation/3.2.xml/example-presentation-3.2.xml.zip", repoRequest

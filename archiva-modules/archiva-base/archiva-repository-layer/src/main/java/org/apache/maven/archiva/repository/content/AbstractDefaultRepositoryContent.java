@@ -20,6 +20,7 @@ package org.apache.maven.archiva.repository.content;
  */
 
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -30,6 +31,8 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * AbstractDefaultRepositoryContent - common methods for working with default (maven 2) layout.
@@ -51,6 +54,11 @@ public abstract class AbstractDefaultRepositoryContent
     private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator();
 
     private PathParser defaultPathParser = new DefaultPathParser();
+
+    /**
+     * @plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
+     */
+    protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
@@ -132,6 +140,20 @@ public abstract class AbstractDefaultRepositoryContent
     //       to the facet or filename (for the original ID)
     private String constructId( String artifactId, String version, String classifier, String type )
     {
+        String ext = null;
+        for ( ArtifactMappingProvider provider : artifactMappingProviders )
+        {
+            ext = provider.mapTypeToExtension( type );
+            if ( ext != null )
+            {
+                break;
+            }
+        }
+        if ( ext == null )
+        {
+            ext = type;
+        }
+
         StringBuilder id = new StringBuilder();
         if ( ( version != null ) && ( type != null ) )
         {
@@ -142,7 +164,7 @@ public abstract class AbstractDefaultRepositoryContent
                 id.append( ARTIFACT_SEPARATOR ).append( classifier );
             }
 
-            id.append( "." ).append( ArtifactExtensionMapping.getExtension( type ) );
+            id.append( "." ).append( ext );
         }
         return id.toString();
     }

@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -33,6 +34,7 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,8 +42,6 @@ import java.util.Set;
  * ManagedDefaultRepositoryContent 
  *
  * @version $Id$
- * 
- * @todo no need to be a component when filetypes is not
  * 
  * @plexus.component 
  *      role="org.apache.maven.archiva.repository.ManagedRepositoryContent"
@@ -58,6 +58,12 @@ public class ManagedDefaultRepositoryContent
     private FileTypes filetypes;
 
     private ManagedRepositoryConfiguration repository;
+
+    public ManagedDefaultRepositoryContent()
+    {
+        // default to use if there are none supplied as components
+        this.artifactMappingProviders = Collections.singletonList( new DefaultArtifactMappingProvider() );
+    }
 
     public void deleteVersion( VersionedReference reference )
         throws ContentNotFoundException

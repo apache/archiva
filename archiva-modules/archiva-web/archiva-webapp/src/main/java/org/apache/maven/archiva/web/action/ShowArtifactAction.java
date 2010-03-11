@@ -19,15 +19,6 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
@@ -36,13 +27,22 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Browse the repository.
@@ -381,7 +381,8 @@ public class ShowArtifactAction
         {
             repositoryId = artifact.getRepositoryId();
 
-            // TODO: use metadata resolver capability instead
+            // TODO: use metadata resolver capability instead - maybe the storage path could be stored in the metadata
+            //       though keep in mind the request may not necessarily need to reflect the storage
             ManagedRepositoryContent repo;
             try
             {
@@ -399,14 +400,15 @@ public class ShowArtifactAction
             path = repo.toPath( ref );
             path = path.substring( 0, path.lastIndexOf( "/" ) + 1 ) + artifact.getId();
 
-            try
+            // TODO: need to accommodate Maven 1 layout too. Non-maven repository formats will need to generate this
+            //       facet (perhaps on the fly) if wanting to display the Maven 2 elements on the Archiva pages
+            String type = null;
+            MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
+            if ( facet != null )
             {
-                type = repo.toArtifactReference( path ).getType();
+                type = facet.getType();
             }
-            catch ( LayoutException e )
-            {
-                throw new RuntimeException( e );
-            }
+            this.type = type;
 
             namespace = artifact.getNamespace();
             project = artifact.getProject();

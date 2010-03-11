@@ -30,6 +30,8 @@ public class DefaultArtifactMappingProvider
 {
     private final Map<String, String> classifierAndExtensionToTypeMap;
 
+    private final Map<String, String> typeToExtensionMap;
+
     public DefaultArtifactMappingProvider()
     {
         classifierAndExtensionToTypeMap = new HashMap<String, String>();
@@ -39,6 +41,27 @@ public class DefaultArtifactMappingProvider
         classifierAndExtensionToTypeMap.put( "sources:jar", "java-source" );
         classifierAndExtensionToTypeMap.put( "javadoc:jar", "javadoc" );
         classifierAndExtensionToTypeMap.put( "tests:jar", "test-jar" );
+
+        typeToExtensionMap = new HashMap<String, String>();
+
+        // Maven 2.2.1 supplied types (excluding defaults where extension == type and no classifier)
+        typeToExtensionMap.put( "ejb-client", "jar" );
+        typeToExtensionMap.put( "ejb", "jar" );
+        typeToExtensionMap.put( "java-source", "jar" );
+        typeToExtensionMap.put( "javadoc", "jar" );
+        typeToExtensionMap.put( "test-jar", "jar" );
+        typeToExtensionMap.put( "maven-plugin", "jar" );
+
+        // Additional type
+        typeToExtensionMap.put( "maven-archetype", "jar" );
+
+        // TODO: move to maven 1 plugin
+        typeToExtensionMap.put( "maven-one-plugin", "jar" );
+        typeToExtensionMap.put( "javadoc.jar", "jar" );
+        typeToExtensionMap.put( "uberjar", "jar" );
+        typeToExtensionMap.put( "distribution-tgz", "tar.gz" );
+        typeToExtensionMap.put( "distribution-zip", "zip" );
+        typeToExtensionMap.put( "aspect", "jar" );
     }
 
     public String mapClassifierAndExtensionToType( String classifier, String ext )
@@ -52,5 +75,10 @@ public class DefaultArtifactMappingProvider
             ext = "";
         }
         return classifierAndExtensionToTypeMap.get( classifier + ":" + ext );
+    }
+
+    public String mapTypeToExtension( String type )
+    {
+        return typeToExtensionMap.get( type );
     }
 }

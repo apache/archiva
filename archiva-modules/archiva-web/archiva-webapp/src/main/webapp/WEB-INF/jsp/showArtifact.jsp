@@ -40,7 +40,7 @@
 <body>
 
 <s:set name="model" value="model"/>
-<c:set var="mavenFacet" value="${model.facets['org.apache.archiva.metadata.repository.storage.maven2']}" />
+<c:set var="mavenFacet" value="${model.facets['org.apache.archiva.metadata.repository.storage.maven2.project']}" />
 
 <c:choose>
   <c:when test="${mavenFacet.packaging == 'maven-plugin'}">
@@ -126,7 +126,7 @@
         </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
-      <%-- POSTPONED to 1.0-alpha-2
+      <%-- TODO
       <redback:ifAnyAuthorized permissions="archiva-access-reports">
         <c:set var="url">
           <s:url action="showArtifactReports">
