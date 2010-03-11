@@ -92,7 +92,25 @@ public class ArtifactManagementTest
 		addArtifact( groupId , artifactId, getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
 		assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion() + "' was successfully deployed to repository 'internal'" );
 	}
-		
+
+    @Test( groups = "requiresUpload" )
+    public void testDotNetTypes()
+    {
+        addArtifact( getGroupId(), "testDotNetTypes", getVersion(), "library", getArtifactFilePath(),
+                     getRepositoryId() );
+        assertTextPresent( "Artifact 'test:testDotNetTypes:1.0' was successfully deployed to repository 'internal'" );
+        getSelenium().open( baseUrl + "/browse/" + getGroupId() + "/testDotNetTypes/" + getVersion() );
+        waitPage();
+
+        assertTextPresent( "<type>library</type>" );
+        String basePath =
+            "/archiva/repository/internal/" + getGroupId() + "/testDotNetTypes/" + getVersion() + "/testDotNetTypes-" +
+                getVersion();
+        assertLinkPresent( ".NET Library" );
+        assertElementPresent( "//a[@href='" + basePath + ".dll']" );
+        assertElementPresent( "//a[@href='" + basePath + ".pom']" );
+    }
+
 	//MRM-747
     @Test(groups = "requiresUpload")
 	public void testAddArtifactBlockRedeployments()

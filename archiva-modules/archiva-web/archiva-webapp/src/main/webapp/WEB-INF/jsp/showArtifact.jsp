@@ -178,6 +178,11 @@
                   <c:url var="imageUrl" value="/images/download-type-other.png"/>
                   <c:set var="packageName">JavaDoc Archive</c:set>
                 </c:when>
+                <c:when test="${a.type == 'library'}">
+                  <c:url var="imageUrl" value="/images/download-type-other.png"/>
+                  <c:set var="packageName">.NET Library</c:set>
+                </c:when>
+                <%-- TODO: other NPanday types, and move this code into the plugin somehow --%>
                 <%-- Must be last so that the above get picked up if possible --%>
                 <c:when test="${a.type == 'jar'}">
                   <c:url var="imageUrl" value="/images/download-type-jar.png"/>
