@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository.stats;
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.easymock.MockControl;
 
 import java.text.ParseException;
@@ -438,6 +439,11 @@ public class RepositoryStatisticsManagerTest
         metadata.setSize( 12345L );
         metadata.setVersion( projectVersion );
         metadata.setNamespace( namespace );
+
+        MavenArtifactFacet facet = new MavenArtifactFacet();
+        facet.setType( type );
+        metadata.addFacet( facet );
+
         return metadata;
     }
 
