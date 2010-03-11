@@ -31,7 +31,7 @@ public class ArtifactExtensionMapping
 {
     public static final String MAVEN_ONE_PLUGIN = "maven-one-plugin";
 
-    // TODO: won't support extensions - need to refactor away this class
+    // TODO: now only used in Maven 1, we should be using M1 specific mappings
     private static final ArtifactMappingProvider mapping = new DefaultArtifactMappingProvider();
 
     public static String getExtension( String type )

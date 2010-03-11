@@ -19,24 +19,22 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.HttpUnitOptions;
+import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
+import junit.framework.Assert;
 import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.webdav.RepositoryServlet;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-
-import junit.framework.Assert;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * AbstractRepositoryServletTestCase 
@@ -48,10 +46,14 @@ public abstract class AbstractRepositoryServletTestCase
 {
     protected static final String REPOID_INTERNAL = "internal";
 
+    protected static final String REPOID_LEGACY = "legacy";
+
     protected ServletUnitClient sc;
 
     protected File repoRootInternal;
-    
+
+    protected File repoRootLegacy;
+
     private ServletRunner sr;
 
     protected ArchivaConfiguration archivaConfiguration;
@@ -130,6 +132,14 @@ public abstract class AbstractRepositoryServletTestCase
         return repo;
     }
 
+    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location,
+                                                                      String layout, boolean blockRedeployments )
+    {
+        ManagedRepositoryConfiguration repo = createManagedRepository( id, name, location, blockRedeployments );
+        repo.setLayout( layout );
+        return repo;
+    }
+
     protected RemoteRepositoryConfiguration createRemoteRepository( String id, String name, String url )
     {
         RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
@@ -137,29 +147,6 @@ public abstract class AbstractRepositoryServletTestCase
         repo.setName( name );
         repo.setUrl( url );
         return repo;
-    }
-
-    protected void dumpResponse( WebResponse response )
-    {
-        System.out.println( "---(response)---" );
-        System.out.println( "" + response.getResponseCode() + " " + response.getResponseMessage() );
-    
-        String headerNames[] = response.getHeaderFieldNames();
-        for ( String headerName : headerNames )
-        {
-            System.out.println( "[header] " + headerName + ": " + response.getHeaderField( headerName ) );
-        }
-    
-        System.out.println( "---(text)---" );
-        try
-        {
-            System.out.println( response.getText() );
-        }
-        catch ( IOException e )
-        {
-            System.err.print( "[Exception] : " );
-            e.printStackTrace( System.err );
-        }
     }
 
     protected void saveConfiguration( ArchivaConfiguration archivaConfiguration )
@@ -182,9 +169,11 @@ public abstract class AbstractRepositoryServletTestCase
 
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
+        repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
         Configuration config = archivaConfiguration.getConfiguration();
 
         config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
+        config.addManagedRepository( createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
         saveConfiguration( archivaConfiguration );
 
         CacheManager.getInstance().removeCache( "url-failures-cache" );
@@ -215,12 +204,17 @@ public abstract class AbstractRepositoryServletTestCase
         {
             sr.shutDown();
         }
-        
-        if (repoRootInternal.exists())
+
+        if ( repoRootInternal.exists() )
         {
-            FileUtils.deleteDirectory(repoRootInternal);
+            FileUtils.deleteDirectory( repoRootInternal );
         }
-        
+
+        if ( repoRootLegacy.exists() )
+        {
+            FileUtils.deleteDirectory( repoRootLegacy );
+        }
+
         release( archivaConfiguration );
         
         super.tearDown();

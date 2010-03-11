@@ -55,7 +55,8 @@ public class DefaultArtifactMappingProvider
         // Additional type
         typeToExtensionMap.put( "maven-archetype", "jar" );
 
-        // TODO: move to maven 1 plugin
+        // TODO: move to maven 1 plugin - but note that it won't have the interface type and might need to reproduce the
+        //       same thing
         typeToExtensionMap.put( "maven-one-plugin", "jar" );
         typeToExtensionMap.put( "javadoc.jar", "jar" );
         typeToExtensionMap.put( "uberjar", "jar" );
