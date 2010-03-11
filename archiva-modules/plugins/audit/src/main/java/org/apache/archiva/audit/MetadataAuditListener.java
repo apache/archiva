@@ -20,7 +20,7 @@ package org.apache.archiva.audit;
  */
 
 /**
- * @plexus.component role="org.apache.maven.archiva.repository.audit.AuditListener" role-hint="metadata"
+ * @plexus.component role="org.apache.archiva.audit.AuditListener" role-hint="metadata"
  */
 public class MetadataAuditListener
     implements AuditListener

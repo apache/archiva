@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * AuditLog - Audit Log.
  * 
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.repository.audit.AuditListener" role-hint="logging"
+ * @plexus.component role="org.apache.archiva.audit.AuditListener" role-hint="logging"
  */
 public class AuditLog
     implements AuditListener
