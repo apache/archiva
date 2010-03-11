@@ -201,10 +201,7 @@ public class FileMetadataRepository
         facetIds.addAll( Arrays.asList( properties.getProperty( "facetIds", "" ).split( "," ) ) );
         properties.setProperty( "facetIds", join( facetIds ) );
 
-        for ( MetadataFacet facet : versionMetadata.getFacetList() )
-        {
-            properties.putAll( facet.toProperties() );
-        }
+        updateProjectVersionFacets( versionMetadata, properties );
 
         try
         {
@@ -214,6 +211,17 @@ public class FileMetadataRepository
         {
             // TODO
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    private void updateProjectVersionFacets( ProjectVersionMetadata versionMetadata, Properties properties )
+    {
+        for ( MetadataFacet facet : versionMetadata.getFacetList() )
+        {
+            for ( Map.Entry<String,String> entry : facet.toProperties().entrySet() )
+            {
+                properties.setProperty( facet.getFacetId() + ":" + entry.getKey(), entry.getValue() );
+            }
         }
     }
 
@@ -423,7 +431,6 @@ public class FileMetadataRepository
                 String id = tok.nextToken();
 
                 ArtifactMetadata artifact = artifacts.get( id );
-                // TODO: facets (&test)
                 if ( artifact == null )
                 {
                     artifact = new ArtifactMetadata();
@@ -460,9 +467,56 @@ public class FileMetadataRepository
                 {
                     artifact.setSha1( value );
                 }
+                else if ( "facetIds".equals( field ) )
+                {
+                    if ( value.length() > 0 )
+                    {
+                        String propertyPrefix = "artifact:facet:" + id + ":";
+                        for ( String facetId : value.split( "," ) )
+                        {
+                            MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
+                            if ( factory == null )
+                            {
+                                log.error( "Attempted to load unknown artifact metadata facet: " + facetId );
+                            }
+                            else
+                            {
+                                MetadataFacet facet = factory.createMetadataFacet();
+                                String prefix = propertyPrefix + facet.getFacetId();
+                                Map<String, String> map = new HashMap<String, String>();
+                                for ( Object key : new ArrayList( properties.keySet() ) )
+                                {
+                                    String property = (String) key;
+                                    if ( property.startsWith( prefix ) )
+                                    {
+                                        map.put( property.substring( prefix.length() + 1 ), properties.getProperty(
+                                            property ) );
+                                    }
+                                }
+                                facet.fromProperties( map );
+                                artifact.addFacet( facet );
+                            }
+                        }
+                    }
+
+                    updateArtifactFacets( artifact, properties );
+                }
             }
         }
         return artifacts.values();
+    }
+
+    private void updateArtifactFacets( ArtifactMetadata artifact, Properties properties )
+    {
+        String propertyPrefix = "artifact:facet:" + artifact.getId() + ":";
+        for ( MetadataFacet facet : artifact.getFacetList() )
+        {
+            for ( Map.Entry<String, String> e : facet.toProperties().entrySet() )
+            {
+                String key = propertyPrefix + facet.getFacetId() + ":" + e.getKey();
+                properties.setProperty( key, e.getValue() );
+            }
+        }
     }
 
     public Collection<String> getRepositories()
@@ -497,6 +551,17 @@ public class FileMetadataRepository
         properties.remove( "artifact:md5:" + id );
         properties.remove( "artifact:sha1:" + id );
         properties.remove( "artifact:version:" + id );
+        properties.remove( "artifact:facetIds:" + id );
+        
+        String prefix = "artifact:facet:" + id + ":";
+        for ( Object key : new ArrayList( properties.keySet() ) )
+        {
+            String property = (String) key;
+            if ( property.startsWith( prefix ) )
+            {
+                properties.remove( property );
+            }
+        }
 
         try
         {
@@ -580,20 +645,26 @@ public class FileMetadataRepository
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
-        properties.setProperty( "artifact:updated:" + artifact.getId(), Long.toString(
-            artifact.getFileLastModified().getTime() ) );
-        properties.setProperty( "artifact:whenGathered:" + artifact.getId(), Long.toString(
-            artifact.getWhenGathered().getTime() ) );
-        properties.setProperty( "artifact:size:" + artifact.getId(), Long.toString( artifact.getSize() ) );
+        String id = artifact.getId();
+        properties.setProperty( "artifact:updated:" + id, Long.toString( artifact.getFileLastModified().getTime() ) );
+        properties.setProperty( "artifact:whenGathered:" + id, Long.toString( artifact.getWhenGathered().getTime() ) );
+        properties.setProperty( "artifact:size:" + id, Long.toString( artifact.getSize() ) );
         if ( artifact.getMd5() != null )
         {
-            properties.setProperty( "artifact:md5:" + artifact.getId(), artifact.getMd5() );
+            properties.setProperty( "artifact:md5:" + id, artifact.getMd5() );
         }
         if ( artifact.getSha1() != null )
         {
-            properties.setProperty( "artifact:sha1:" + artifact.getId(), artifact.getSha1() );
+            properties.setProperty( "artifact:sha1:" + id, artifact.getSha1() );
         }
-        properties.setProperty( "artifact:version:" + artifact.getId(), artifact.getVersion() );
+        properties.setProperty( "artifact:version:" + id, artifact.getVersion() );
+
+        Set<String> facetIds = new LinkedHashSet<String>( artifact.getFacetIds() );
+        String property = "artifact:facetIds:" + id;
+        facetIds.addAll( Arrays.asList( properties.getProperty( property, "" ).split( "," ) ) );
+        properties.setProperty( property, join( facetIds ) );
+
+        updateArtifactFacets( artifact, properties );
 
         try
         {
@@ -790,7 +861,7 @@ public class FileMetadataRepository
                     MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
                     if ( factory == null )
                     {
-                        log.error( "Attempted to load unknown metadata facet: " + facetId );
+                        log.error( "Attempted to load unknown project version metadata facet: " + facetId );
                     }
                     else
                     {
@@ -801,7 +872,8 @@ public class FileMetadataRepository
                             String property = (String) key;
                             if ( property.startsWith( facet.getFacetId() ) )
                             {
-                                map.put( property, properties.getProperty( property ) );
+                                map.put( property.substring( facet.getFacetId().length() + 1 ), properties.getProperty(
+                                    property ) );
                             }
                         }
                         facet.fromProperties( map );
@@ -810,10 +882,7 @@ public class FileMetadataRepository
                 }
             }
 
-            for ( MetadataFacet facet : versionMetadata.getFacetList() )
-            {
-                properties.putAll( facet.toProperties() );
-            }
+            updateProjectVersionFacets( versionMetadata, properties );
         }
         return versionMetadata;
     }

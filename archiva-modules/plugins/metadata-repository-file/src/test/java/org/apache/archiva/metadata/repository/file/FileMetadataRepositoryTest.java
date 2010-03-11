@@ -19,18 +19,6 @@ package org.apache.archiva.metadata.repository.file;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.MetadataFacet;
@@ -43,6 +31,18 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @todo should this be a generic MetadataRepository implementation test?
@@ -195,6 +195,40 @@ public class FileMetadataRepositoryTest
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
+    }
+
+    public void testUpdateArtifactMetadataWithExistingFacets()
+    {
+        ArtifactMetadata metadata = createArtifact();
+        MetadataFacet facet = new TestMetadataFacet( "baz" );
+        metadata.addFacet( facet );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
+
+        metadata = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).iterator().next();
+        assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+
+        metadata = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
+
+        metadata = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).iterator().next();
+        assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+        TestMetadataFacet testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
+        assertEquals( "baz", testFacet.getValue() );
+    }
+
+    public void testUpdateArtifactMetadataWithNoExistingFacets()
+    {
+        ArtifactMetadata metadata = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
+
+        metadata = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).iterator().next();
+        assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
+
+        metadata = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
+
+        metadata = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).iterator().next();
         assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
     }
 
@@ -583,7 +617,7 @@ public class FileMetadataRepositoryTest
     {
         public final int compare ( ArtifactMetadata a, ArtifactMetadata b)
         {            
-            return ( (String) a.getProject() ).compareTo( (String) b.getProject() );
+            return a.getProject().compareTo( b.getProject() );
         } 
     }
     
@@ -620,7 +654,7 @@ public class FileMetadataRepositoryTest
         {
             if ( value != null )
             {
-                return Collections.singletonMap( testFacetId + ":foo", value );
+                return Collections.singletonMap( "foo", value );
             }
             else
             {
@@ -630,7 +664,7 @@ public class FileMetadataRepositoryTest
 
         public void fromProperties( Map<String, String> properties )
         {
-            String value = properties.get( testFacetId + ":foo" );
+            String value = properties.get( "foo" );
             if ( value != null )
             {
                 this.value = value;

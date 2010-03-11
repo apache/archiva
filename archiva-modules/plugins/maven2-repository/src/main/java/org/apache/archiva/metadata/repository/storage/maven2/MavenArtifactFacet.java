@@ -91,19 +91,28 @@ public class MavenArtifactFacet
     public Map<String, String> toProperties()
     {
         HashMap<String, String> properties = new HashMap<String, String>();
-        properties.put( FACET_ID + ":type", type );
-        properties.put( FACET_ID + ":classifier", classifier );
-        properties.put( FACET_ID + ":timestamp", timestamp );
-        properties.put( FACET_ID + ":buildNumber", Integer.toString( buildNumber ));
+        properties.put( "type", type );
+        if ( classifier != null )
+        {
+            properties.put( "classifier", classifier );
+        }
+        if ( timestamp != null )
+        {
+            properties.put( "timestamp", timestamp );
+        }
+        if ( buildNumber > 0 )
+        {
+            properties.put( "buildNumber", Integer.toString( buildNumber ) );
+        }
         return properties;
     }
 
     public void fromProperties( Map<String, String> properties )
     {
-        type = properties.get( FACET_ID + ":type" );
-        classifier = properties.get( FACET_ID + ":classifier" );
-        timestamp = properties.get( FACET_ID + ":timestamp" );
-        String buildNumber = properties.get( FACET_ID + ":buildNumber" );
+        type = properties.get( "type" );
+        classifier = properties.get( "classifier" );
+        timestamp = properties.get( "timestamp" );
+        String buildNumber = properties.get( "buildNumber" );
         if ( buildNumber != null )
         {
             this.buildNumber = Integer.valueOf( buildNumber );

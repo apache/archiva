@@ -241,7 +241,8 @@ public class Maven2RepositoryMetadataResolver
     private void addProblemReport( String repoId, String namespace, String projectId, String projectVersion,
                                    String problemId, String message )
     {
-        // TODO: an event mechanism would remove coupling to the problem reporting plugin
+        // TODO: an event mechanism would remove coupling to the problem reporting plugin and allow other plugins to
+        //       generate metadata on the fly if appropriately checked for missing facets in the resolver
         RepositoryProblemFacet problem = new RepositoryProblemFacet();
         problem.setProblem( problemId );
         problem.setMessage( message );

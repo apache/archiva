@@ -91,30 +91,30 @@ public class MavenProjectFacet
     public Map<String, String> toProperties()
     {
         HashMap<String, String> properties = new HashMap<String, String>();
-        properties.put( FACET_ID + ":groupId", groupId );
-        properties.put( FACET_ID + ":artifactId", artifactId );
-        properties.put( FACET_ID + ":packaging", packaging );
+        properties.put( "groupId", groupId );
+        properties.put( "artifactId", artifactId );
+        properties.put( "packaging", packaging );
         if ( parent != null )
         {
-            properties.put( FACET_ID + ":parent.groupId", parent.getGroupId() );
-            properties.put( FACET_ID + ":parent.artifactId", parent.getArtifactId() );
-            properties.put( FACET_ID + ":parent.version", parent.getVersion() );
+            properties.put( "parent.groupId", parent.getGroupId() );
+            properties.put( "parent.artifactId", parent.getArtifactId() );
+            properties.put( "parent.version", parent.getVersion() );
         }
         return properties;
     }
 
     public void fromProperties( Map<String, String> properties )
     {
-        groupId = properties.get( FACET_ID + ":groupId" );
-        artifactId = properties.get( FACET_ID + ":artifactId" );
-        packaging = properties.get( FACET_ID + ":packaging" );
-        String parentArtifactId = properties.get( FACET_ID + ":parent.artifactId" );
+        groupId = properties.get( "groupId" );
+        artifactId = properties.get( "artifactId" );
+        packaging = properties.get( "packaging" );
+        String parentArtifactId = properties.get( "parent.artifactId" );
         if ( parentArtifactId != null )
         {
             MavenProjectParent parent = new MavenProjectParent();
-            parent.setGroupId( properties.get( FACET_ID + ":parent.groupId" ) );
+            parent.setGroupId( properties.get( "parent.groupId" ) );
             parent.setArtifactId( parentArtifactId );
-            parent.setVersion( properties.get( FACET_ID + ":parent.version" ) );
+            parent.setVersion( properties.get( "parent.version" ) );
             this.parent = parent;
         }
     }
