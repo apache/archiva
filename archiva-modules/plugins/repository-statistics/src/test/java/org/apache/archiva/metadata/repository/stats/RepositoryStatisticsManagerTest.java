@@ -19,6 +19,11 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.easymock.MockControl;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,15 +34,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
-import junit.framework.TestCase;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
 
 public class RepositoryStatisticsManagerTest
     extends TestCase
@@ -76,18 +72,6 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
         repositoryStatisticsManager.setMetadataRepository( metadataRepository );
-
-        ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
-        repository.setId( TEST_REPO_ID );
-        repository.setLocation( "" );
-        ManagedDefaultRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( repository );
-        MockControl control = MockClassControl.createControl( RepositoryContentFactory.class );
-        RepositoryContentFactory contentFactory = (RepositoryContentFactory) control.getMock();
-        contentFactory.getManagedRepositoryContent( TEST_REPO_ID );
-        control.setDefaultReturnValue( content );
-        control.replay();
-        repositoryStatisticsManager.setRepositoryContentFactory( contentFactory );
     }
 
     public void testGetLatestStats()
