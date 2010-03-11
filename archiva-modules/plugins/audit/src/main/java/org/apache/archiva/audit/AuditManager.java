@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.maven.archiva.repository.audit.AuditEvent;
-
 public interface AuditManager
 {
     List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds );

@@ -19,19 +19,11 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
@@ -41,6 +33,14 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="viewAuditLogReport"

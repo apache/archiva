@@ -9,7 +9,7 @@ package org.apache.archiva.audit;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -20,22 +20,28 @@ package org.apache.archiva.audit;
  */
 
 /**
- * @plexus.component role="org.apache.maven.archiva.repository.audit.AuditListener" role-hint="metadata"
+ * Auditable 
+ *
+ * @version $Id$
  */
-public class MetadataAuditListener
-    implements AuditListener
+public interface Auditable
 {
     /**
-     * @plexus.requirement
+     * Add an AuditListener.
+     * 
+     * @param the listener to add.
      */
-    private AuditManager auditManager;
+    public void addAuditListener( AuditListener auditListener );
 
-    public void auditEvent( AuditEvent event )
-    {
-        // for now we only log upload events, some of the others are quite noisy
-        if ( event.getAction().equals( AuditEvent.CREATE_FILE ) || event.getAction().equals( AuditEvent.UPLOAD_FILE ) )
-        {
-            auditManager.addAuditEvent( event );
-        }
-    }
+    /**
+     * Remove an AuditListener.
+     * 
+     * @param the listener to remove.
+     */
+    public void removeAuditListener( AuditListener auditListener );
+
+    /**
+     * Remove all registered {@link AuditListener} objects.
+     */
+    public void clearAuditListeners();
 }

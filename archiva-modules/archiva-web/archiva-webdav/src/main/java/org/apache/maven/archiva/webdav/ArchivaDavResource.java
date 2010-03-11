@@ -19,6 +19,8 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
@@ -48,8 +50,6 @@ import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
-import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.webdav.util.IndexWriter;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.taskqueue.TaskQueueException;

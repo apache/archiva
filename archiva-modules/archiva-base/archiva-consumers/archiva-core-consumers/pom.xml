@@ -31,6 +31,11 @@
   <name>Archiva Consumers :: Core Consumers</name>
 
   <dependencies>
+    <!-- TODO: remove this hard dependency by using an event mechanism -->
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>audit</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>

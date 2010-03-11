@@ -19,10 +19,10 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.util.Arrays;
-
-import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.archiva.audit.AuditEvent;
 import org.easymock.ArgumentsMatcher;
+
+import java.util.Arrays;
 
 public class AuditEventArgumentsMatcher
     implements ArgumentsMatcher

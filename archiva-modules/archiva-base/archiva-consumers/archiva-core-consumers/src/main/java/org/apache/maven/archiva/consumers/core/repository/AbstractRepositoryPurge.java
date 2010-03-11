@@ -19,10 +19,10 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

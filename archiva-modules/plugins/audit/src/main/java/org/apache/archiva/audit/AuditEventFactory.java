@@ -21,7 +21,6 @@ package org.apache.archiva.audit;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.audit"

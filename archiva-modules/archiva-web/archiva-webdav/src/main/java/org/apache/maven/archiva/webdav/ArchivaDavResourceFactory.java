@@ -19,6 +19,9 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -43,9 +46,6 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
-import org.apache.maven.archiva.repository.audit.AuditListener;
-import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
@@ -99,7 +99,7 @@ public class ArchivaDavResourceFactory
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.repository.audit.AuditListener"
+     * @plexus.requirement role="org.apache.archiva.audit.AuditListener"
      */
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 

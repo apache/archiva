@@ -19,22 +19,21 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.HttpUnitOptions;
+import com.meterware.httpunit.PutMethodWebRequest;
+import com.meterware.httpunit.WebRequest;
+import com.meterware.httpunit.WebResponse;
+import com.meterware.servletunit.InvocationContext;
+import com.meterware.servletunit.ServletRunner;
+import com.meterware.servletunit.ServletUnitClient;
 import net.sf.ehcache.CacheManager;
-
 import org.apache.archiva.repository.audit.TestAuditListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.repository.audit.AuditListener;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ServletAuthenticator;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -50,14 +49,10 @@ import org.codehaus.redback.integration.filter.authentication.basic.HttpBasicAut
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.PutMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
-import com.meterware.servletunit.InvocationContext;
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * RepositoryServletSecurityTest Test the flow of the authentication and authorization checks. This does not necessarily

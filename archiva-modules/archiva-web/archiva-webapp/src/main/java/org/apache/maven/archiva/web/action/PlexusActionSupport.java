@@ -19,21 +19,21 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
-import org.apache.maven.archiva.repository.audit.AuditListener;
-import org.apache.maven.archiva.repository.audit.Auditable;
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.audit.Auditable;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * LogEnabled and SessionAware ActionSupport
@@ -47,7 +47,7 @@ public abstract class PlexusActionSupport
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.repository.audit.AuditListener"
+     * @plexus.requirement role="org.apache.archiva.audit.AuditListener"
      */
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 

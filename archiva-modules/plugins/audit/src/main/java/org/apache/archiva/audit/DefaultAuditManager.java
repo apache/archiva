@@ -19,6 +19,10 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,11 +32,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.maven.archiva.repository.audit.AuditEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @plexus.component role="org.apache.archiva.audit.AuditManager"
