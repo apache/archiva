@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Maven 1.x request type to classifier mapping for translating to a Maven 2.x storage
+ *
+ * @todo reuse mappings for other repositories
+ *
  * @since 1.1
  */
 public class ArtifactClassifierMapping
@@ -31,6 +35,7 @@ public class ArtifactClassifierMapping
 
     static
     {
+        // note additional 's' on type as these are maven 1.x directory components
         typeToClassifierMap = new HashMap<String, String>();
         typeToClassifierMap.put( "java-sources", "sources" );
         typeToClassifierMap.put( "javadoc.jars", "javadoc" );
