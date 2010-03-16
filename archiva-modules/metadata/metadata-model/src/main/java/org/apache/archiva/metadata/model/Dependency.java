@@ -20,24 +20,51 @@ package org.apache.archiva.metadata.model;
  */
 
 /**
- * TODO: review what is appropriate for the base here - rest should be in a maven dependency facet
+ * Information about a dependency that this project has on another project or artifact.
+ *
+ * @todo will be reviewing what is appropriate for the base here - rest should be in a maven dependency facet - avoid details on it externally
  */
 public class Dependency
 {
+    /**
+     * The Maven classifier of the dependency.
+     */
     private String classifier;
 
+    /**
+     * Whether the dependency is optional or required.
+     */
     private boolean optional;
 
+    /**
+     * The Maven scope of the dependency - <tt>compile</tt> (default), <tt>runtime</tt>, etc.
+     */
     private String scope;
 
+    /**
+     * The system path of the file of the dependency artifact to use.
+     */
     private String systemPath;
 
+    /**
+     * The Maven type of the dependency.
+     */
     private String type;
 
+    /**
+     * The Maven artifact ID of the dependency.
+     */
     private String artifactId;
 
+    /**
+     * The Maven group ID of the dependency.
+     */
     private String groupId;
 
+    /**
+     * The version of the artifact to depend on. If this refers to a project version then the repository implementation
+     * may choose the most appropriate artifact version to use.
+     */
     private String version;
 
     public void setClassifier( String classifier )

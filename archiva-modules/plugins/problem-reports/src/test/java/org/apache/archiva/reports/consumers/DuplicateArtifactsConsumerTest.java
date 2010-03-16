@@ -208,6 +208,7 @@ public class DuplicateArtifactsConsumerTest
         artifact.setId( TEST_PROJECT + "-" + version + ".jar" );
         artifact.setNamespace( TEST_NAMESPACE );
         artifact.setProject( TEST_PROJECT );
+        artifact.setProjectVersion( version );
         artifact.setVersion( version );
         artifact.setRepositoryId( TEST_REPO );
         return artifact;

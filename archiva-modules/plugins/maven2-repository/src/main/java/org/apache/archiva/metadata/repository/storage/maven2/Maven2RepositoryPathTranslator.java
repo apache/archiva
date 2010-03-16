@@ -260,6 +260,7 @@ public class Maven2RepositoryPathTranslator
         metadata.setNamespace( namespace );
         metadata.setProject( projectId );
         metadata.setRepositoryId( repoId );
+        metadata.setProjectVersion( projectVersion );
         metadata.setVersion( version );
 
         facet.setClassifier( classifier );

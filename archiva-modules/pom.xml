@@ -142,6 +142,8 @@
             <link>http://jakarta.apache.org/regexp/apidocs/</link>
             <link>http://velocity.apache.org/engine/releases/velocity-1.5/apidocs/</link>
           </links>
+          <linksource>true</linksource>
+          <show>private</show>
           <tags>
             <tag>
               <name>plexus.component</name>

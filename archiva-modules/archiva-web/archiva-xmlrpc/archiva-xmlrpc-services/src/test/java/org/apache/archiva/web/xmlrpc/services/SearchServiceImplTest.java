@@ -543,6 +543,7 @@ public class SearchServiceImplTest
         String version = "1.0";
         ArtifactMetadata artifactMetadata = new ArtifactMetadata();
         artifactMetadata.setVersion( version );
+        artifactMetadata.setProjectVersion( version );
         artifactMetadata.setId( ARCHIVA_TEST_ARTIFACT_ID + "-" + version + ".jar" );
         artifactMetadata.setProject( ARCHIVA_TEST_ARTIFACT_ID );
         artifactMetadata.setNamespace( ARCHIVA_TEST_GROUP_ID );

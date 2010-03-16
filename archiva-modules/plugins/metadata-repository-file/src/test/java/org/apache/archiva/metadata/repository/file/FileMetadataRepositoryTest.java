@@ -608,6 +608,7 @@ public class FileMetadataRepositoryTest
         artifact.setRepositoryId( TEST_REPO_ID );
         artifact.setFileLastModified( System.currentTimeMillis() );
         artifact.setVersion( TEST_PROJECT_VERSION );
+        artifact.setProjectVersion( TEST_PROJECT_VERSION );
         artifact.setMd5( TEST_MD5 );
         artifact.setSha1( TEST_SHA1 );
         return artifact;

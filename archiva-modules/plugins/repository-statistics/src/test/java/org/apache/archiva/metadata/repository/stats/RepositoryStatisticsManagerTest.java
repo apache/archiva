@@ -437,6 +437,7 @@ public class RepositoryStatisticsManagerTest
         metadata.setId( projectId + "-" + projectVersion + "." + type );
         metadata.setProject( projectId );
         metadata.setSize( 12345L );
+        metadata.setProjectVersion( projectVersion );
         metadata.setVersion( projectVersion );
         metadata.setNamespace( namespace );
 

@@ -19,18 +19,18 @@ package org.apache.archiva.metadata.repository.memory;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class TestMetadataRepository
     implements MetadataRepository
@@ -62,6 +62,7 @@ public class TestMetadataRepository
         ArtifactMetadata artifact = new ArtifactMetadata();
         artifact.setFileLastModified( System.currentTimeMillis() );
         artifact.setNamespace( TEST_NAMESPACE );
+        artifact.setProjectVersion( projectVersion );
         artifact.setVersion( projectVersion );
         artifact.setId( projectId + "-" + projectVersion + ".jar" );
         artifact.setProject( projectId );

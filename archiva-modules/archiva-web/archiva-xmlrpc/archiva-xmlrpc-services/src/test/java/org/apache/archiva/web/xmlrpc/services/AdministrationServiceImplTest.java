@@ -719,6 +719,7 @@ public class AdministrationServiceImplTest
         artifact.setId( "archiva-test-1.0.jar" );
         artifact.setProject( "archiva-test" );
         artifact.setVersion( "1.0" );
+        artifact.setProjectVersion( "1.0" );
         artifact.setNamespace( "org.apache.archiva" );
         artifact.setRepositoryId( "internal" );
         artifacts.add( artifact );

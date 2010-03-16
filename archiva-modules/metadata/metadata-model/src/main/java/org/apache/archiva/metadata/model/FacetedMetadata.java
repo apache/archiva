@@ -23,30 +23,52 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FacetedMetadata
+/**
+ * Base class for metadata that is contains facets for storing extensions by various plugins.
+ */
+public abstract class FacetedMetadata
 {
+    /**
+     * The facets to store, keyed by the {@linkplain MetadataFacet#getFacetId() Facet ID} of the metadata.
+     */
     private Map<String, MetadataFacet> facets = new HashMap<String, MetadataFacet>();
 
+    /**
+     * Add a new facet to the metadata. If it already exists, it will be replaced.
+     *
+     * @param metadataFacet the facet to add
+     */
     public void addFacet( MetadataFacet metadataFacet )
     {
         this.facets.put( metadataFacet.getFacetId(), metadataFacet );
     }
 
+    /**
+     * Get a particular facet of metadata.
+     *
+     * @param facetId the facet ID
+     * @return the facet of the metadata.
+     */
     public MetadataFacet getFacet( String facetId )
     {
         return this.facets.get( facetId );
     }
 
-    public Map<String, MetadataFacet> getFacets()
-    {
-        return facets;
-    }
-
+    /**
+     * Get all the facets available on this metadata.
+     *
+     * @return the facets of the metadata
+     */
     public Collection<MetadataFacet> getFacetList()
     {
         return this.facets.values();
     }
 
+    /**
+     * Get all the keys of the facets available on this metadata.
+     *
+     * @return the collection of facet IDs.
+     */
     public Collection<String> getFacetIds()
     {
         return this.facets.keySet();

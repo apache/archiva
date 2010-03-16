@@ -27,6 +27,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
@@ -402,6 +403,7 @@ public class ShowArtifactActionTest
         metadata.setNamespace( TEST_GROUP_ID );
         metadata.setRepositoryId( TEST_REPO );
         metadata.setSize( TEST_SIZE );
+        metadata.setProjectVersion( VersionUtil.getBaseVersion( version ) );
         metadata.setVersion( version );
 
         MavenArtifactFacet facet = new MavenArtifactFacet();

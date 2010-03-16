@@ -19,10 +19,21 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+/**
+ * Information about the issue management system used by the project.
+ *
+ * @todo considering moving this to a facet - avoid referring to it externally
+ */
 public class IssueManagement
 {
+    /**
+     * A simple identifier for the type of issue management server used, eg <tt>jira</tt>, <tt>bugzilla</tt>, etc.
+     */
     private String system;
 
+    /**
+     * The base URL of the issue management system.
+     */
     private String url;
 
     public String getUrl()

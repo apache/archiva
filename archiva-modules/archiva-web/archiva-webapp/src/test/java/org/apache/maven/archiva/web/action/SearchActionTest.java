@@ -19,11 +19,6 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -37,6 +32,11 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -504,6 +504,7 @@ public class SearchActionTest
         ArtifactMetadata metadata = new ArtifactMetadata();
         metadata.setNamespace( "org.apache.archiva" );
         metadata.setProject( project );
+        metadata.setProjectVersion( version );
         metadata.setVersion( version );
         metadata.setRepositoryId( TEST_REPO );
         metadata.setId( project + "-" + version + ".jar" );

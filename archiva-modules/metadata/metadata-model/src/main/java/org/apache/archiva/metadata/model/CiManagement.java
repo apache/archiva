@@ -19,10 +19,21 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+/**
+ * Information about the CI system used by the project.
+ *
+ * @todo considering moving this to a facet - avoid referring to it externally
+ */
 public class CiManagement
 {
+    /**
+     * A simple identifier for the type of CI server used, eg <tt>continuum</tt>, <tt>bamboo</tt>, <tt>hudson</tt>, etc.
+     */
     private String system;
 
+    /**
+     * The base URL of the CI system.
+     */
     private String url;
 
     public String getUrl()

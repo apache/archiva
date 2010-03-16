@@ -19,13 +19,6 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -33,6 +26,13 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NewVersionsOfArtifactRssFeedProcessorTest
     extends PlexusInSpringTestCase
@@ -124,6 +124,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         ArtifactMetadata artifact = new ArtifactMetadata();
         artifact.setNamespace( GROUP_ID );
         artifact.setProject( ARTIFACT_ID );
+        artifact.setProjectVersion( version );
         artifact.setVersion( version );
         artifact.setRepositoryId( TEST_REPO );
         artifact.setId( ARTIFACT_ID + "-" + version + ".jar" );

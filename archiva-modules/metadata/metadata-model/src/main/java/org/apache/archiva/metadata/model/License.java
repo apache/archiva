@@ -19,10 +19,19 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+/**
+ * A description of a particular license used by a project.
+ */
 public class License
 {
+    /**
+     * The name of the license.
+     */
     private String name;
 
+    /**
+     * The URL of the license text.
+     */
     private String url;
 
     public License( String name, String url )

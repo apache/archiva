@@ -21,28 +21,80 @@ package org.apache.archiva.metadata.model;
 
 import java.util.Date;
 
+/**
+ * Metadata stored in the content repository for a particular artifact. Information that is shared between different
+ * artifacts of a given project version can be found in the
+ * {@link org.apache.archiva.metadata.model.ProjectVersionMetadata} class. The metadata is faceted to store information
+ * about particular types of artifacts, for example Maven 2.x artifact specific information.
+ * For more information, see the
+ * <a href="{@docRoot}/../metadata-content-model.html" target="_top">Metadata Content Model</a>.
+ */
 public class ArtifactMetadata
     extends FacetedMetadata
 {
+    /**
+     * The artifact ID uniquely identifies an artifact within a given namespace, project and project version. For
+     * example, <tt>archiva-1.4-20100201.345612-2.jar</tt>
+     */
     private String id;
-    
-    private long size;
 
-    private String version;
+    /**
+     * The repository that the artifact is stored in within the content repository.
+     */
+    private String repositoryId;
 
-    private Date fileLastModified;
-
-    private Date whenGathered;
-
-    private String md5;
-
-    private String sha1;
-
+    /**
+     * The namespace of the project within the repository.
+     *
+     * @see org.apache.archiva.metadata.model.ProjectMetadata#namespace
+     */
     private String namespace;
 
+    /**
+     * The identifier of the project within the repository and namespace.
+     *
+     * @see org.apache.archiva.metadata.model.ProjectMetadata#id
+     */
     private String project;
 
-    private String repositoryId;
+    /**
+     * The version of the project. This may be more generalised than @{link #version}.
+     *
+     * @see org.apache.archiva.metadata.model.ProjectVersionMetadata#id
+     */
+    private String projectVersion;
+
+    /**
+     * The artifact version, if different from the project version. Note that the metadata does not do any calculation
+     * of this based on the project version - the calling code must be sure to set and check it appropriately if
+     * <tt>null</tt>.
+     */
+    private String version;
+
+    /**
+     * The last modified date of the artifact file, if known.
+     */
+    private Date fileLastModified;
+
+    /**
+     * The file size of the artifact, if known.
+     */
+    private long size;
+
+    /**
+     * The MD5 checksum of the artifact, if calculated.
+     */
+    private String md5;
+
+    /**
+     * The SHA-1 checksum of the artifact, if calculated.
+     */
+    private String sha1;
+
+    /**
+     * When the artifact was found in the repository storage and added to the metadata content repository.
+     */
+    private Date whenGathered;
 
     public String getId()
     {
@@ -72,6 +124,16 @@ public class ArtifactMetadata
     public void setVersion( String version )
     {
         this.version = version;
+    }
+
+    public String getProjectVersion()
+    {
+        return projectVersion;
+    }
+
+    public void setProjectVersion( String projectVersion )
+    {
+        this.projectVersion = projectVersion;
     }
 
     public void setFileLastModified( long fileLastModified )
@@ -163,7 +225,9 @@ public class ArtifactMetadata
         {
             return false;
         }
-        if ( !fileLastModified.equals( that.fileLastModified ) )
+        if ( fileLastModified != null
+            ? !fileLastModified.equals( that.fileLastModified )
+            : that.fileLastModified != null )
         {
             return false;
         }
@@ -183,7 +247,11 @@ public class ArtifactMetadata
         {
             return false;
         }
-        if ( repositoryId != null ? !repositoryId.equals( that.repositoryId ) : that.repositoryId != null )
+        if ( projectVersion != null ? !projectVersion.equals( that.projectVersion ) : that.projectVersion != null )
+        {
+            return false;
+        }
+        if ( !repositoryId.equals( that.repositoryId ) )
         {
             return false;
         }
@@ -191,11 +259,11 @@ public class ArtifactMetadata
         {
             return false;
         }
-        if ( !version.equals( that.version ) )
+        if ( version != null ? !version.equals( that.version ) : that.version != null )
         {
             return false;
         }
-        if ( !whenGathered.equals( that.whenGathered ) )
+        if ( whenGathered != null ? !whenGathered.equals( that.whenGathered ) : that.whenGathered != null )
         {
             return false;
         }
@@ -209,6 +277,6 @@ public class ArtifactMetadata
         return "ArtifactMetadata{" + "id='" + id + '\'' + ", size=" + size + ", version='" + version + '\'' +
             ", fileLastModified=" + fileLastModified + ", whenGathered=" + whenGathered + ", md5='" + md5 + '\'' +
             ", sha1='" + sha1 + '\'' + ", namespace='" + namespace + '\'' + ", project='" + project + '\'' +
-            ", repositoryId='" + repositoryId + '\'' + '}';
+            ", projectVersion='" + projectVersion + '\'' + ", repositoryId='" + repositoryId + '\'' + '}';
     }
 }

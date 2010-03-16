@@ -21,18 +21,41 @@ import java.util.List;
  * under the License.
  */
 
+/**
+ * Information about the available mailing lists for communicating with the project.
+ *
+ * @todo considering moving this to a facet - avoid referring to it externally
+ */
 public class MailingList
 {
+    /**
+     * The primary archive URL for this mailing list.
+     */
     private String mainArchiveUrl;
 
+    /**
+     * A list of other URLs to archives of the mailing list.
+     */
     private List<String> otherArchives;
 
+    /**
+     * The name of the mailing list, eg. <i>Archiva Developers List</i>.
+     */
     private String name;
 
+    /**
+     * The email address to post a new message to the mailing list, if applicable.
+     */
     private String postAddress;
 
+    /**
+     * The email address to send a message to to subscribe to the mailing list, if applicable.
+     */
     private String subscribeAddress;
 
+    /**
+     * The email address to send a message to to unsubscribe from the mailing list, if applicable.
+     */
     private String unsubscribeAddress;
 
     public void setMainArchiveUrl( String mainArchiveUrl )

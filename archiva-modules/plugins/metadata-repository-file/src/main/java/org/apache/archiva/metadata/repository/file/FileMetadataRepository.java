@@ -437,6 +437,7 @@ public class FileMetadataRepository
                     artifact.setRepositoryId( repoId );
                     artifact.setNamespace( namespace );
                     artifact.setProject( projectId );
+                    artifact.setProjectVersion( projectVersion );
                     artifact.setVersion( projectVersion );
                     artifact.setId( id );
                     artifacts.put( id, artifact );
