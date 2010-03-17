@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.model;
  */
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,5 +73,16 @@ public abstract class FacetedMetadata
     public Collection<String> getFacetIds()
     {
         return this.facets.keySet();
+    }
+
+    /**
+     * Get all available facets as a Map (typically used by bean rendering, such as in Archiva's JSPs).
+
+     * @return the map of facets
+     * @see #facets
+     */
+    public Map<String, MetadataFacet> getFacets()
+    {
+        return Collections.unmodifiableMap( facets );
     }
 }
