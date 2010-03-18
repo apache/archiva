@@ -19,15 +19,15 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public interface MetadataRepository
     extends MetadataResolver
@@ -35,23 +35,23 @@ public interface MetadataRepository
     /**
      * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
      *
-     * @param repoId  the repository the project is in
+     * @param repositoryId  the repository the project is in
      * @param project the project metadata to create or update
      */
-    void updateProject( String repoId, ProjectMetadata project );
+    void updateProject( String repositoryId, ProjectMetadata project );
 
-    void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
+    void updateArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                          ArtifactMetadata artifactMeta );
 
-    void updateProjectVersion( String repoId, String namespace, String projectId,
+    void updateProjectVersion( String repositoryId, String namespace, String projectId,
                                ProjectVersionMetadata versionMetadata );
 
-    void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
+    void updateProjectReference( String repositoryId, String namespace, String projectId, String projectVersion,
                                  ProjectVersionReference reference );
 
-    void updateNamespace( String repoId, String namespace );
+    void updateNamespace( String repositoryId, String namespace );
 
-    List<String> getMetadataFacets( String repoId, String facetId );
+    List<String> getMetadataFacets( String repositoryId, String facetId );
 
     MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name );
 
@@ -59,20 +59,20 @@ public interface MetadataRepository
 
     void removeMetadataFacets( String repositoryId, String facetId );
 
-    void removeMetadataFacet( String repoId, String facetId, String name );
+    void removeMetadataFacet( String repositoryId, String facetId, String name );
 
-    List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime );
+    List<ArtifactMetadata> getArtifactsByDateRange( String repositoryId, Date startTime, Date endTime );
 
     // TODO: remove from API, just use configuration
     Collection<String> getRepositories();
 
-    List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum );
+    List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum );
 
     void deleteArtifact( String repositoryId, String namespace, String project, String version, String id );
 
     /**
      * Delete a repository's metadata. This includes all associated metadata facets.
-     * @param repoId the repository to delete
+     * @param repositoryId the repository to delete
      */
-    void deleteRepository( String repoId );
+    void deleteRepository( String repositoryId );
 }
