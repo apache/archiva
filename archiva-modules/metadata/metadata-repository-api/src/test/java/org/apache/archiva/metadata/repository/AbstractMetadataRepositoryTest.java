@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -348,8 +347,11 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
 
-        assertEquals( new HashSet<String>( Arrays.asList( version2, version1 ) ), repository.getArtifactVersions(
-            TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) );
+        List<String> versions = new ArrayList<String>( repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE,
+                                                                                       TEST_PROJECT,
+                                                                                       TEST_PROJECT_VERSION ) );
+        Collections.sort( versions );
+        assertEquals( Arrays.asList( version1, version2 ), versions );
     }
 
     public void testGetArtifactVersionsMultipleArtifactsSingleVersion()
@@ -499,8 +501,10 @@ public abstract class AbstractMetadataRepositoryTest
         artifact2.setProject( newProjectId );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, newProjectId, TEST_PROJECT_VERSION, artifact2 );
 
-        assertEquals( Arrays.asList( artifact2, artifact1 ), repository.getArtifactsByChecksum( TEST_REPO_ID,
-                                                                                                TEST_SHA1 ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum(
+            TEST_REPO_ID, TEST_SHA1 ) );
+        Collections.sort( artifacts, new ArtifactMetadataComparator() );
+        assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
     }
 
     public void testGetArtifactsByChecksumNoResult()
