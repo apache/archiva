@@ -296,6 +296,12 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>metadata-repository-api</artifactId>
+        <version>1.4-SNAPSHOT</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>metadata-repository-file</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
