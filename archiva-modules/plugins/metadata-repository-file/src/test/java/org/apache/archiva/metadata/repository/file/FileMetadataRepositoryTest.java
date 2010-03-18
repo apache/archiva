@@ -25,12 +25,13 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.easymock.MockControl;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,13 +45,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * @todo should this be a generic MetadataRepository implementation test?
  */
 public class FileMetadataRepositoryTest
     extends PlexusInSpringTestCase
 {
-    private FileMetadataRepository repository;
+    private MetadataRepository repository;
 
     private static final String TEST_REPO_ID = "test";
 
@@ -81,17 +85,15 @@ public class FileMetadataRepositoryTest
     {
         super.setUp();
 
-        repository = new FileMetadataRepository();
+        FileMetadataRepository repository = new FileMetadataRepository();
         File directory = getTestFile( "target/test-repositories" );
         FileUtils.deleteDirectory( directory );
 
-        MockControl control = MockControl.createControl( ArchivaConfiguration.class );
-        ArchivaConfiguration config = (ArchivaConfiguration) control.getMock();
+        ArchivaConfiguration config = mock( ArchivaConfiguration.class );
         Configuration configData = new Configuration();
         configData.addManagedRepository( createManagedRepository( TEST_REPO_ID, directory ) );
         configData.addManagedRepository( createManagedRepository( OTHER_REPO, directory ) );
-        control.expectAndDefaultReturn( config.getConfiguration(), configData );
-        control.replay();
+        when( config.getConfiguration() ).thenReturn( configData );
         repository.setConfiguration( config );
 
         Map<String, MetadataFacetFactory> factories = new HashMap<String, MetadataFacetFactory>();
@@ -122,6 +124,8 @@ public class FileMetadataRepositoryTest
             }
         } );
         repository.setMetadataFacetFactories( factories );
+
+        this.repository = repository;
     }
 
     private static ManagedRepositoryConfiguration createManagedRepository( String repoId, File directory )
@@ -150,6 +154,7 @@ public class FileMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataIncomplete()
+        throws MetadataResolutionException
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -161,6 +166,7 @@ public class FileMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataWithExistingFacets()
+        throws MetadataResolutionException
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -182,6 +188,7 @@ public class FileMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataWithNoExistingFacets()
+        throws MetadataResolutionException
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
