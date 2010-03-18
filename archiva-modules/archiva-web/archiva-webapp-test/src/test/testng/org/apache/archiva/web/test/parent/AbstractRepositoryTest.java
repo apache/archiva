@@ -67,7 +67,8 @@ public abstract class AbstractRepositoryTest
 		assertPage( "Apache Archiva \\ Admin: Delete Repository Group" );
 		assertTextPresent( "WARNING: This operation can not be undone." );
 		assertTextPresent( "Are you sure you want to delete the following repository group?" );
-		assertTextPresent( "ID: " + repositoryName );
+		assertTextPresent( "ID:" );
+		assertTextPresent( repositoryName );
 		assertButtonWithValuePresent( "Confirm" );
 		assertButtonWithValuePresent( "Cancel" );
 	}

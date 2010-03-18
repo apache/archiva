@@ -96,15 +96,15 @@ public class ArtifactManagementTest
     @Test( groups = "requiresUpload" )
     public void testDotNetTypes()
     {
-        addArtifact( getGroupId(), "testDotNetTypes", getVersion(), "library", getArtifactFilePath(),
+        addArtifact( "dotNetTypes", "dotNetTypes", getVersion(), "library", getArtifactFilePath(),
                      getRepositoryId() );
-        assertTextPresent( "Artifact 'test:testDotNetTypes:1.0' was successfully deployed to repository 'internal'" );
-        getSelenium().open( baseUrl + "/browse/" + getGroupId() + "/testDotNetTypes/" + getVersion() );
+        assertTextPresent( "Artifact 'dotNetTypes:dotNetTypes:1.0' was successfully deployed to repository 'internal'" );
+        getSelenium().open( baseUrl + "/browse/" + "dotNetTypes" + "/dotNetTypes/" + getVersion() );
         waitPage();
 
         assertTextPresent( "<type>library</type>" );
         String basePath =
-            "/archiva/repository/internal/" + getGroupId() + "/testDotNetTypes/" + getVersion() + "/testDotNetTypes-" +
+            "/archiva/repository/internal/" + "dotNetTypes" + "/dotNetTypes/" + getVersion() + "/dotNetTypes-" +
                 getVersion();
         assertLinkPresent( ".NET Library" );
         assertElementPresent( "//a[@href='" + basePath + ".dll']" );

@@ -29,7 +29,7 @@ public class RepositoryTest
 	public void testAddManagedRepoValidValues()
 	{
 		goToRepositoriesPage();
-		clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRepository.action']" );
+		clickLinkWithText( "Add" );
 		addManagedRepository( "managedrepo1", "Managed Repository Sample 1" , getRepositoryDir() + "repository/" , "", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
 		clickButtonWithValue( "Save" );
 		assertTextPresent( "Managed Repository Sample 1" );		
@@ -40,7 +40,7 @@ public class RepositoryTest
 	public void testAddManagedRepoInvalidValues()
 	{				
 		goToRepositoriesPage();
-	    clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRepository.action']" );	
+	    clickLinkWithText( "Add" );
 		addManagedRepository( "", "" , "" , "", "Maven 2.x Repository", "", "", "" );
 		assertTextPresent( "You must enter a repository identifier." );
 		assertTextPresent( "You must enter a repository name." );
@@ -105,7 +105,7 @@ public class RepositoryTest
 	@Test(dependsOnMethods = { "testAddRemoteRepoValidValues" } )
 	public void testAddRemoteRepoNullValues()
 	{		
-	    clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRemoteRepository.action']" );
+	    getSelenium().open( "/archiva/admin/addRemoteRepository.action" );
 		addRemoteRepository( "" , "" , "" , "" , "" , "" , "Maven 2.x Repository" );
 		assertTextPresent( "You must enter a repository identifier." );
 		assertTextPresent( "You must enter a repository name." );
@@ -136,7 +136,7 @@ public class RepositoryTest
 	@Test(dependsOnMethods = { "testDeleteManageRepo" } )
 	public void testAddRemoteRepoValidValues()
 	{		
-		clickLinkWithLocator( "//div[@id='contentArea']/div/div/a[@href='/archiva/admin/addRemoteRepository.action']" );
+		getSelenium().open( "/archiva/admin/addRemoteRepository.action" );
 		addRemoteRepository( "remoterepo" , "Remote Repository Sample" , "http://repository.codehaus.org/org/codehaus/mojo/" , "" , "" , "" , "Maven 2.x Repository" );
 		assertTextPresent( "Remote Repository Sample" );
 	}

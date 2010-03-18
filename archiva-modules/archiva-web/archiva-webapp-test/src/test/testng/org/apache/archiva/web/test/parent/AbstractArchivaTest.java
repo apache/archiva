@@ -513,7 +513,7 @@ public abstract class AbstractArchivaTest
         }
 
         setFieldValue( "artifact", path );
-        setFieldValue( "repositoryId", repositoryId );
+        selectValue( "repositoryId", repositoryId );
 
         clickButtonWithValue( "Submit" );
     }
