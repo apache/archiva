@@ -96,15 +96,19 @@ public class ArtifactManagementTest
     @Test( groups = "requiresUpload" )
     public void testDotNetTypes()
     {
-        addArtifact( "dotNetTypes", "dotNetTypes", getVersion(), "library", getArtifactFilePath(),
+		String groupId = getProperty( "GROUPID_DOTNETARTIFACT" );
+		String artifactId = getProperty( "ARTIFACTID_DOTNETARTIFACT" );
+		String packaging = getProperty ( "PACKAGING_DOTNETARTIFACT" );
+		
+        addArtifact( groupId, artifactId, getVersion(), packaging, getArtifactFilePath(),
                      getRepositoryId() );
-        assertTextPresent( "Artifact 'dotNetTypes:dotNetTypes:1.0' was successfully deployed to repository 'internal'" );
-        getSelenium().open( baseUrl + "/browse/" + "dotNetTypes" + "/dotNetTypes/" + getVersion() );
+        assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion() + "' was successfully deployed to repository 'internal'" );
+        getSelenium().open( baseUrl + "/browse/" + groupId + "/" + artifactId + "/" + getVersion() );
         waitPage();
 
         assertTextPresent( "<type>library</type>" );
         String basePath =
-            "/archiva/repository/internal/" + "dotNetTypes" + "/dotNetTypes/" + getVersion() + "/dotNetTypes-" +
+            "/archiva/repository/internal/" + groupId + "/" + artifactId + "/" + getVersion() + "/dotNetTypes-" +
                 getVersion();
         assertLinkPresent( ".NET Library" );
         assertElementPresent( "//a[@href='" + basePath + ".dll']" );
