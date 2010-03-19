@@ -108,7 +108,7 @@ public class ArtifactManagementTest
 
         assertTextPresent( "<type>library</type>" );
         String basePath =
-            "/archiva/repository/internal/" + groupId + "/" + artifactId + "/" + getVersion() + "/dotNetTypes-" +
+            "/archiva/repository/internal/" + groupId + "/" + artifactId + "/" + getVersion() + "/" + artifactId + "-" +
                 getVersion();
         assertLinkPresent( ".NET Library" );
         assertElementPresent( "//a[@href='" + basePath + ".dll']" );
