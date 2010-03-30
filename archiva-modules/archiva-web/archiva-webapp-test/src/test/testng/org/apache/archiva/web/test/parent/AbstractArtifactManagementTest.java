@@ -30,7 +30,7 @@ public abstract class AbstractArtifactManagementTest
 	
 	public String getArtifactFilePath()
 	{
-		return "src/test/it-resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
+		return "src/test/resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
 	}
 	
 	public String getRepositoryId()
