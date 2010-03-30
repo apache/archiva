@@ -247,22 +247,22 @@
                 <configuration>
                   <tasks>
                     <copy todir="${project.build.directory}/appserver-base">
-                      <fileset dir="src/test/it-resources/appserver-base" />
+                      <fileset dir="src/test/resources/appserver-base" />
                     </copy>
                     <copy todir="${project.build.directory}/repository">
-                      <fileset dir="src/test/it-resources/repository" />
+                      <fileset dir="src/test/resources/repository" />
                     </copy>
                     <copy todir="${project.build.directory}/index">
-                      <fileset dir="src/test/it-resources/index" />
+                      <fileset dir="src/test/resources/index" />
                     </copy>
                     <copy todir="${project.build.directory}/snapshots">
-                      <fileset dir="src/test/it-resources/snapshots" />
+                      <fileset dir="src/test/resources/snapshots" />
                     </copy>
                     <copy todir="${project.build.directory}/projects">
-                      <fileset dir="src/test/it-resources/projects" />
+                      <fileset dir="src/test/resources/projects" />
                     </copy>
                     <copy todir="${project.build.directory}/local-repo">
-                      <fileset dir="src/test/it-resources/local-repo" />
+                      <fileset dir="src/test/resources/local-repo" />
                     </copy>
                   </tasks>
                 </configuration>
