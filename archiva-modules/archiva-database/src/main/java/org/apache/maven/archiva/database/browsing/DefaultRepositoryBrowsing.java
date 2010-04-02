@@ -343,7 +343,6 @@ public class DefaultRepositoryBrowsing
         {
             final List<String> versions = (List<String>) dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
             Collections.sort( versions );
-            Collections.reverse( versions );
 
             for ( String uniqueVersion : versions )
             {

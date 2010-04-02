@@ -189,7 +189,7 @@ public class RepositoryBrowsingTest
         assertNotNull( "Artifact should not be null.", artifact );
         assertEquals( "org.apache.archiva", artifact.getGroupId() );
         assertEquals( "archiva-indexer", artifact.getArtifactId() );
-        assertEquals( "1.0-20070522.143249-1", artifact.getVersion() );       
+        assertEquals( "1.0-20070522.153141-2", artifact.getVersion() );       
         assertEquals( "jar", artifact.getPackaging() );
         
         String repoId = browser.getRepositoryId( USER_GUEST, GUEST_REPO_IDS, "org.apache.archiva", "archiva-indexer", "1.0-SNAPSHOT" );
