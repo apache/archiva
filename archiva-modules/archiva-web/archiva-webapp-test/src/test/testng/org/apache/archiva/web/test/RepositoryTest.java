@@ -29,7 +29,7 @@ public class RepositoryTest
 	public void testAddManagedRepoValidValues()
 	{
 		goToRepositoriesPage();
-		clickLinkWithText( "Add" );
+		getSelenium().open( "/archiva/admin/addRepository.action" );
 		addManagedRepository( "managedrepo1", "Managed Repository Sample 1" , getRepositoryDir() + "repository/" , "", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
 		clickButtonWithValue( "Save" );
 		assertTextPresent( "Managed Repository Sample 1" );		
@@ -40,7 +40,7 @@ public class RepositoryTest
 	public void testAddManagedRepoInvalidValues()
 	{				
 		goToRepositoriesPage();
-	    clickLinkWithText( "Add" );
+	    	getSelenium().open( "/archiva/admin/addRepository.action" );
 		addManagedRepository( "", "" , "" , "", "Maven 2.x Repository", "", "", "" );
 		assertTextPresent( "You must enter a repository identifier." );
 		assertTextPresent( "You must enter a repository name." );
@@ -80,7 +80,7 @@ public class RepositoryTest
 	public void testAddManagedRepoForEdit()
 	{
 		goToRepositoriesPage();
-		clickLinkWithText( "Add" );
+		getSelenium().open( "/archiva/admin/addRepository.action" );
 		addManagedRepository( "managedrepo", "Managed Repository Sample" , getRepositoryDir() + "local-repo/", "", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
 		clickButtonWithValue( "Save" );
 		assertTextPresent( "Managed Repository Sample" );
