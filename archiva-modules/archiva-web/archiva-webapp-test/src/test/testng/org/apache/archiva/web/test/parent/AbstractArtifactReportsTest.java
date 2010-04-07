@@ -19,62 +19,62 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
-public abstract class AbstractArtifactReportsTest 
-	extends AbstractArchivaTest
+public abstract class AbstractArtifactReportsTest
+    extends AbstractArchivaTest
 {
-	
-	//Reports
-	public void goToReportsPage()
-	{
-		clickLinkWithText( "Reports" );
-		assertReportsPage();
-	}
-	
-	public void assertReportsPage()
-	{
-		assertPage( "Apache Archiva \\ Reports" );
-		assertTextPresent( "Reports" );
-		assertTextPresent( "Repository Statistics" );
-		assertTextPresent( "Repositories To Be Compared" );
-		assertElementPresent( "availableRepositories" );
-		assertButtonWithValuePresent( "v" );
-		assertButtonWithValuePresent( "^" );
-		assertButtonWithValuePresent( "<-" );
-		assertButtonWithValuePresent( "->" );
-		assertButtonWithValuePresent( "<<--" );
-		assertButtonWithValuePresent( "-->>" );
-		assertButtonWithValuePresent( "<*>" );
-		assertElementPresent( "selectedRepositories" );
-		assertButtonWithValuePresent( "v" );
-		assertButtonWithValuePresent( "^" );
-		assertTextPresent( "Row Count" );
-		assertElementPresent( "rowCount" );
-		assertTextPresent( "Start Date" );
-		assertElementPresent( "startDate" );
-		assertTextPresent( "End Date" );
-		assertElementPresent( "endDate" );
-		assertButtonWithValuePresent( "View Statistics" );
-		assertTextPresent( "Repository Health" );
-		assertTextPresent( "Row Count" );
-		assertElementPresent( "rowCount" );
-		assertTextPresent( "Group ID" );
-		assertElementPresent( "groupId" );
-		assertTextPresent( "Repository ID" );
-		assertElementPresent( "repositoryId" );
-		assertButtonWithValuePresent( "Show Report" );
-	}
-	
-	public void compareRepositories( String labelSelected, String startDate, String endDate )
-	{
-		goToReportsPage();
-		getSelenium().removeSelection( "generateStatisticsReport_availableRepositories" , labelSelected );
-		clickButtonWithValue( "->" , false );
-		getSelenium().type( "startDate", startDate );
-		//clickLinkWithLocator( "1" , false );
-		//getSelenium().click( "endDate" );
-		getSelenium().type( "endDate", endDate );
-		//clickLinkWithLocator( "30" , false );
-		clickButtonWithValue( "View Statistics" );
-	}
+
+    // Reports
+    public void goToReportsPage()
+    {
+        clickLinkWithText( "Reports" );
+        assertReportsPage();
+    }
+
+    public void assertReportsPage()
+    {
+        assertPage( "Apache Archiva \\ Reports" );
+        assertTextPresent( "Reports" );
+        assertTextPresent( "Repository Statistics" );
+        assertTextPresent( "Repositories To Be Compared" );
+        assertElementPresent( "availableRepositories" );
+        assertButtonWithValuePresent( "v" );
+        assertButtonWithValuePresent( "^" );
+        assertButtonWithValuePresent( "<-" );
+        assertButtonWithValuePresent( "->" );
+        assertButtonWithValuePresent( "<<--" );
+        assertButtonWithValuePresent( "-->>" );
+        assertButtonWithValuePresent( "<*>" );
+        assertElementPresent( "selectedRepositories" );
+        assertButtonWithValuePresent( "v" );
+        assertButtonWithValuePresent( "^" );
+        assertTextPresent( "Row Count" );
+        assertElementPresent( "rowCount" );
+        assertTextPresent( "Start Date" );
+        assertElementPresent( "startDate" );
+        assertTextPresent( "End Date" );
+        assertElementPresent( "endDate" );
+        assertButtonWithValuePresent( "View Statistics" );
+        assertTextPresent( "Repository Health" );
+        assertTextPresent( "Row Count" );
+        assertElementPresent( "rowCount" );
+        assertTextPresent( "Group ID" );
+        assertElementPresent( "groupId" );
+        assertTextPresent( "Repository ID" );
+        assertElementPresent( "repositoryId" );
+        assertButtonWithValuePresent( "Show Report" );
+    }
+
+    public void compareRepositories( String labelSelected, String startDate, String endDate )
+    {
+        goToReportsPage();
+        getSelenium().removeSelection( "generateStatisticsReport_availableRepositories", labelSelected );
+        clickButtonWithValue( "->", false );
+        getSelenium().type( "startDate", startDate );
+        // clickLinkWithLocator( "1" , false );
+        // getSelenium().click( "endDate" );
+        getSelenium().type( "endDate", endDate );
+        // clickLinkWithLocator( "30" , false );
+        clickButtonWithValue( "View Statistics" );
+    }
 
 }

@@ -62,7 +62,7 @@ public class XPathExpressionUtil
             xpathExpression += LIST;
             xpathExpression += START_NODE_TEST;
 
-            for (int nIndex = 0; nIndex < values.length; nIndex++ )
+            for ( int nIndex = 0; nIndex < values.length; nIndex++ )
             {
                 xpathExpression += ( ( nIndex > 0 ) ? AND : "" );
                 xpathExpression += contains( LINE + position( nIndex + 1 ), values[nIndex] );
@@ -76,8 +76,8 @@ public class XPathExpressionUtil
 
     /**
      * expression for acquiring an element in one of the table columns
-     *
-     * @param element      the node element
+     * 
+     * @param element the node element
      * @param elementIndex column index of the element, used for skipping
      * @param columnValues the values to be matched in each column, element column is included
      * @return
@@ -89,38 +89,36 @@ public class XPathExpressionUtil
 
     /**
      * expression for acquiring an element in one of the table columns
-     *
-     * @param element      the node element
+     * 
+     * @param element the node element
      * @param elementIndex column index of the element, used for skipping
      * @param elementValue the matched element value
      * @param columnValues the values to be matched in each column, element column is included
      * @return
      */
-    public static String getColumnElement( String element, int elementIndex, String elementValue,
-                                           String[] columnValues )
+    public static String getColumnElement( String element, int elementIndex, String elementValue, String[] columnValues )
     {
         return getColumnElement( element, elementIndex, elementValue, "TEXT", columnValues );
     }
 
     /**
      * expression for acquiring an element in one of the table columns
-     *
-     * @param element      the node element
+     * 
+     * @param element the node element
      * @param elementIndex column index of the element, used for skipping
      * @param imageName the matched image name
      * @param columnValues the values to be matched in each column, element column is included
      * @return
      */
-    public static String getImgColumnElement( String element, int elementIndex, String imageName,
-                                           String[] columnValues )
+    public static String getImgColumnElement( String element, int elementIndex, String imageName, String[] columnValues )
     {
         return getColumnElement( element, elementIndex, imageName, IMG, columnValues );
     }
 
     /**
      * expression for acquiring an element in one of the table columns
-     *
-     * @param element      the node element
+     * 
+     * @param element the node element
      * @param elementIndex column index of the element, used for skipping
      * @param imageName the matched image name
      * @param columnValues the values to be matched in each column, element column is included
@@ -160,9 +158,8 @@ public class XPathExpressionUtil
     }
 
     /**
-     * expression for acquiring the table row that matches all column values with the same order
-     * as the list
-     *
+     * expression for acquiring the table row that matches all column values with the same order as the list
+     * 
      * @param columnValues the matched list of columnValues
      * @return
      */

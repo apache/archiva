@@ -25,46 +25,48 @@ import org.apache.archiva.web.test.parent.AbstractBrowseTest;
 import org.testng.annotations.Test;
 
 @Test( groups = { "browse" }, dependsOnMethods = { "testAddArtifactNullValues" } )
-public class BrowseTest 
-	extends AbstractBrowseTest
+public class BrowseTest
+    extends AbstractBrowseTest
 {
-	
-	public void testBrowseArtifact()
-	{
-		goToBrowsePage();
-		assertBrowsePage();
-	}
-	
-	public void testClickArtifactFromBrowse()
-	{
-		goToBrowsePage();
-		assertBrowsePage();
-		clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
-		assertPage( "Apache Archiva \\ Browse Repository" );
-		assertTextPresent( "Artifacts" );
-	}
+
+    public void testBrowseArtifact()
+    {
+        goToBrowsePage();
+        assertBrowsePage();
+    }
+
+    public void testClickArtifactFromBrowse()
+    {
+        goToBrowsePage();
+        assertBrowsePage();
+        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
+        assertPage( "Apache Archiva \\ Browse Repository" );
+        assertTextPresent( "Artifacts" );
+    }
 
     // MRM-1278
-    @Test(groups = {"requiresUpload"})
+    @Test( groups = { "requiresUpload" } )
     public void testCorrectRepositoryInBrowse()
     {
         String releasesRepo = getProperty( "RELEASES_REPOSITORY" );
-        
+
         // create releases repository first
         goToRepositoriesPage();
         clickLinkWithText( "Add" );
         addManagedRepository( getProperty( "RELEASES_REPOSITORY" ), "Releases Repository",
-                              new File( getBasedir(), "target/repository/releases" ).getPath(), "", "Maven 2.x Repository",
-                              "0 0 * * * ?", "", "" );        
+                              new File( getBasedir(), "target/repository/releases" ).getPath(), "",
+                              "Maven 2.x Repository", "0 0 * * * ?", "", "" );
         assertTextPresent( "Releases Repository" );
-        
+
         String snapshotsRepo = getProperty( "SNAPSHOTS_REPOSITORY" );
 
-        String path = "src/test/resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
+        String path =
+            "src/test/resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
         // TODO: do this differently as uploading doesn't work on browsers other than *chrome (below as well)
-        // upload a snapshot artifact to repository 'releases'        
+        // upload a snapshot artifact to repository 'releases'
         addArtifact( "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar", path, releasesRepo );
-        assertTextPresent( "Artifact 'archiva:archiva-webapp:1.0-SNAPSHOT' was successfully deployed to repository '" + releasesRepo + "'" );
+        assertTextPresent( "Artifact 'archiva:archiva-webapp:1.0-SNAPSHOT' was successfully deployed to repository '"
+            + releasesRepo + "'" );
 
         goToBrowsePage();
         assertBrowsePage();
@@ -72,9 +74,10 @@ public class BrowseTest
         assertArtifactsPage( "archiva-webapp/" );
         assertArtifactInfoPage( "1.0-SNAPSHOT/", releasesRepo, "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar" );
 
-        // upload a snapshot artifact to repository 'snapshots'        
+        // upload a snapshot artifact to repository 'snapshots'
         addArtifact( "continuum", "continuum-core", "1.0-SNAPSHOT", "jar", path, snapshotsRepo );
-        assertTextPresent( "Artifact 'continuum:continuum-core:1.0-SNAPSHOT' was successfully deployed to repository '" + snapshotsRepo + "'" );
+        assertTextPresent( "Artifact 'continuum:continuum-core:1.0-SNAPSHOT' was successfully deployed to repository '"
+            + snapshotsRepo + "'" );
 
         goToBrowsePage();
         assertBrowsePage();
@@ -84,7 +87,8 @@ public class BrowseTest
     }
 
     private void assertArtifactInfoPage( String version, String artifactInfoRepositoryId, String artifactInfoGroupId,
-                                         String artifactInfoArtifactId, String artifactInfoVersion, String artifactInfoPackaging )
+                                         String artifactInfoArtifactId, String artifactInfoVersion,
+                                         String artifactInfoPackaging )
     {
         clickLinkWithText( version );
         assertPage( "Apache Archiva \\ Browse Repository" );

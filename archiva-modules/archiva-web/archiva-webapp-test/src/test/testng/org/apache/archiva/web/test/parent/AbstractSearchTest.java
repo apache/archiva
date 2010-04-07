@@ -19,12 +19,12 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
-public abstract class AbstractSearchTest 
-	extends AbstractArchivaTest
-{	
-	//Search
-	public void goToSearchPage()
-	{
+public abstract class AbstractSearchTest
+    extends AbstractArchivaTest
+{
+    // Search
+    public void goToSearchPage()
+    {
         if ( !"Apache Archiva \\ Quick Search".equals( getTitle() ) )
         {
             clickLinkWithText( "Search" );
@@ -32,20 +32,20 @@ public abstract class AbstractSearchTest
 
             assertPage( "Apache Archiva \\ Quick Search" );
         }
-	}
-	
-	public void assertSearchPage()
-	{
-		assertPage( "Apache Archiva \\ Quick Search" );
-		assertTextPresent( "Search for" );
-		assertElementPresent( "quickSearch_q" );
-		assertButtonWithValuePresent( "Search" );
-		//assertLinkPresent( "Advanced Search" );
-		assertTextPresent( "Enter your search terms. A variety of data will be searched for your keywords." );
-		//assertButtonWithDivIdPresent( "searchHint" );
-	}
-	
-	public void searchForArtifact( String artifactId )
+    }
+
+    public void assertSearchPage()
+    {
+        assertPage( "Apache Archiva \\ Quick Search" );
+        assertTextPresent( "Search for" );
+        assertElementPresent( "quickSearch_q" );
+        assertButtonWithValuePresent( "Search" );
+        // assertLinkPresent( "Advanced Search" );
+        assertTextPresent( "Enter your search terms. A variety of data will be searched for your keywords." );
+        // assertButtonWithDivIdPresent( "searchHint" );
+    }
+
+    public void searchForArtifact( String artifactId )
     {
         goToSearchPage();
 
@@ -53,8 +53,8 @@ public abstract class AbstractSearchTest
         clickButtonWithValue( "Search" );
     }
 
-    public void searchForArtifactAdvancedSearch( String groupId, String artifactId, String version, String repositoryId,
-                                                 String className, String rowCount )
+    public void searchForArtifactAdvancedSearch( String groupId, String artifactId, String version,
+                                                 String repositoryId, String className, String rowCount )
     {
         goToSearchPage();
 

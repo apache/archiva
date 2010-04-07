@@ -23,79 +23,61 @@ import org.apache.archiva.web.test.parent.AbstractArtifactReportsTest;
 import org.testng.annotations.Test;
 
 @Test( groups = { "reports" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
-public class ReportsTest 
-	extends AbstractArtifactReportsTest
+public class ReportsTest
+    extends AbstractArtifactReportsTest
 {
-	//TODO Tests for repository with defects
-	
-	public void testRepoStatisticsWithoutRepoCompared()
-	{
-		goToReportsPage();
-		clickButtonWithValue( "View Statistics" );
-		assertTextPresent( "Please select a repository (or repositories) from the list." );
-	}
-	
-	@Test(dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
-	public void testRepositoryStatisticsWithoutDate()
-	{
-		String repositoryName = getProperty( "REPOSITORY_NAME" ) ;
-		compareRepositories( "label=" + repositoryName, "", "" );
-		//TODO
-		//assertTextPresent( "Statistics Report" );
-	}
-	
-	@Test(dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
-	public void testRepositoryStatisticsEndEarlierThanStart()
-	{
-		String repositoryName = getProperty( "REPOSITORY_NAME" ) ;
-		String startDate = getProperty( "END_DATE" );
-		String endDate = getProperty( "START_DATE" );
-		compareRepositories( "label=" + repositoryName, startDate, endDate );
-		//assertTextPresent( "Statistics for Repository '" + repositoryName + "'" );
-		assertPage( "Apache Archiva \\ Reports" );
-		assertTextPresent( "Start Date must be earlier than the End Date" );
-	}
-		
-	public void testRepositoryStatistics()
-	{
-		String repositoryName = getProperty( "REPOSITORY_NAME" ) ;
-		String startDate = getProperty( "START_DATE" );
-		String endDate = getProperty( "END_DATE" );
-		compareRepositories( "label=" + repositoryName, startDate, endDate );
-		//assertTextPresent( "Statistics for Repository '" + repositoryName + "'" );
-		//assertPage( "Apache Archiva \\ Reports" );
-		//assertTextPresent( "Statistics Report" );
-	}
-	
-	/* @Test( dependsOnMethods = { "testRepositoryStatistics" } )
-	public void testRepositoriesStatisticComparisonReport()
-	{
-		//goToReportsPage();
-		clickButtonWithValue( "-->>" , false );
-		clickButtonWithValue( "View Statistics" );
-		assertTextPresent( "Statistics Report" );
-	}
-	
-	public void testRepositoryHealthWithoutDefect()
-	{
-		goToReportsPage();
-		String groupId = getProperty( "ARTIFACT_GROUPID" );
-		getSelenium().type( "generateReport_groupId" , groupId );
-		clickButtonWithValue( "Show Report" );
-		assertPage( "Apache Archiva \\ Reports" );
-		assertTextPresent( "The operation generated an empty report." );
-	}
-	
-	public void testRepositoryHealthWithoutGroupId()
-	{
-		goToReportsPage();
-		clickButtonWithValue( "Show Report" );
-		assertPage( "Apache Archiva \\ Reports" );
-		assertTextPresent( "The operation generated an empty report." );
-		
-		//TODO As of the creation of the tests, GroupId is not a required field in showing the reports of repository health. GroupId should be required I think.
-	}*/
-	
-	
-	
+    // TODO Tests for repository with defects
+
+    public void testRepoStatisticsWithoutRepoCompared()
+    {
+        goToReportsPage();
+        clickButtonWithValue( "View Statistics" );
+        assertTextPresent( "Please select a repository (or repositories) from the list." );
+    }
+
+    @Test( dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
+    public void testRepositoryStatisticsWithoutDate()
+    {
+        String repositoryName = getProperty( "REPOSITORY_NAME" );
+        compareRepositories( "label=" + repositoryName, "", "" );
+        // TODO
+        // assertTextPresent( "Statistics Report" );
+    }
+
+    @Test( dependsOnMethods = { "testRepoStatisticsWithoutRepoCompared" } )
+    public void testRepositoryStatisticsEndEarlierThanStart()
+    {
+        String repositoryName = getProperty( "REPOSITORY_NAME" );
+        String startDate = getProperty( "END_DATE" );
+        String endDate = getProperty( "START_DATE" );
+        compareRepositories( "label=" + repositoryName, startDate, endDate );
+        // assertTextPresent( "Statistics for Repository '" + repositoryName + "'" );
+        assertPage( "Apache Archiva \\ Reports" );
+        assertTextPresent( "Start Date must be earlier than the End Date" );
+    }
+
+    public void testRepositoryStatistics()
+    {
+        String repositoryName = getProperty( "REPOSITORY_NAME" );
+        String startDate = getProperty( "START_DATE" );
+        String endDate = getProperty( "END_DATE" );
+        compareRepositories( "label=" + repositoryName, startDate, endDate );
+        // assertTextPresent( "Statistics for Repository '" + repositoryName + "'" );
+        // assertPage( "Apache Archiva \\ Reports" );
+        // assertTextPresent( "Statistics Report" );
+    }
+
+    /*
+     * @Test( dependsOnMethods = { "testRepositoryStatistics" } ) public void
+     * testRepositoriesStatisticComparisonReport() { //goToReportsPage(); clickButtonWithValue( "-->>" , false );
+     * clickButtonWithValue( "View Statistics" ); assertTextPresent( "Statistics Report" ); } public void
+     * testRepositoryHealthWithoutDefect() { goToReportsPage(); String groupId = getProperty( "ARTIFACT_GROUPID" );
+     * getSelenium().type( "generateReport_groupId" , groupId ); clickButtonWithValue( "Show Report" ); assertPage(
+     * "Apache Archiva \\ Reports" ); assertTextPresent( "The operation generated an empty report." ); } public void
+     * testRepositoryHealthWithoutGroupId() { goToReportsPage(); clickButtonWithValue( "Show Report" ); assertPage(
+     * "Apache Archiva \\ Reports" ); assertTextPresent( "The operation generated an empty report." ); //TODO As of the
+     * creation of the tests, GroupId is not a required field in showing the reports of repository health. GroupId
+     * should be required I think. }
+     */
+
 }

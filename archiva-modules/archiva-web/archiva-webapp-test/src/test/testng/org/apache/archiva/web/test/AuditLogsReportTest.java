@@ -28,14 +28,14 @@ public class AuditLogsReportTest
 {
     private void goToAuditLogReports()
     {
-        clickLinkWithText( "Audit Log Report" );        
+        clickLinkWithText( "Audit Log Report" );
     }
-    
+
     private void assertAuditLogsReportPage()
-    {   
+    {
         assertPage( "Apache Archiva \\ Audit Log Report" );
         assertTextPresent( "Audit Log Report" );
-        
+
         assertElementPresent( "repository" );
         assertElementPresent( "groupId" );
         assertElementPresent( "artifactId" );
@@ -44,91 +44,91 @@ public class AuditLogsReportTest
         assertElementPresent( "rowCount" );
         assertButtonWithValuePresent( "View Audit Log" );
     }
-    
-    @Test(dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+
+    @Test( dependsOnMethods = { "testWithCorrectUsernamePassword" } )
     public void testAuditLogsReport()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
         assertTextPresent( "Latest Events" );
     }
-    
-    @Test(dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+
+    @Test( dependsOnMethods = { "testWithCorrectUsernamePassword" } )
     public void testViewAuditLogsNoDataFound()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         setFieldValue( "groupId", "non.existing" );
         submit();
-        
-        assertPage( "Apache Archiva \\ Audit Log Report" );   
+
+        assertPage( "Apache Archiva \\ Audit Log Report" );
         assertTextPresent( "Results" );
         assertTextPresent( "No audit logs found." );
-    }    
-    
+    }
+
     // TODO: add test for adding via WebDAV
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    @Test( dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload" )
     public void testViewAuditLogsDataFound()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         selectValue( "repository", "internal" );
         setFieldValue( "groupId", getProperty( "VALIDARTIFACT_GROUPID" ) );
         submit();
-                
+
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) +
-                           "." + getProperty( "ARTIFACT_PACKAGING" ) );
+        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "."
+            + getProperty( "ARTIFACT_PACKAGING" ) );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
-    
+
     // TODO: add test for adding via WebDAV
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    @Test( dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload" )
     public void testViewAuditLogsOnlyArtifactIdIsSpecified()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         selectValue( "repository", "internal" );
         setFieldValue( "artifactId", getProperty( "AUDITLOGARTIFACT_ARTIFACTID" ) );
         submit();
-                
+
         assertAuditLogsReportPage();
         assertTextPresent( "If you specify an artifact ID, you must specify a group ID" );
         assertTextNotPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextNotPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) +
-            "." + getProperty( "ARTIFACT_PACKAGING" ) );
+        assertTextNotPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "."
+            + getProperty( "ARTIFACT_PACKAGING" ) );
         assertTextNotPresent( "Uploaded File" );
     }
-    
+
     // TODO: add test for adding via WebDAV
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    @Test( dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload" )
     public void testViewAuditLogsForAllRepositories()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         selectValue( "repository", "all" );
         submit();
-        
+
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) +
-            "." + getProperty( "ARTIFACT_PACKAGING" ) );
+        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "."
+            + getProperty( "ARTIFACT_PACKAGING" ) );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
-    
-    @Test (dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, groups = "requiresUpload")
+
+    @Test( dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, groups = "requiresUpload" )
     public void testViewAuditLogsViewAuditEventsForManageableRepositoriesOnly()
     {
         String groupId = getProperty( "SNAPSHOT_GROUPID" );
@@ -136,13 +136,13 @@ public class AuditLogsReportTest
         String version = getProperty( "SNAPSHOT_VERSION" );
         String repo = getProperty( "SNAPSHOT_REPOSITORYID" );
         String packaging = getProperty( "SNAPSHOT_PACKAGING" );
-        
-        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repo );        
-        assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + version +
-            "' was successfully deployed to repository '" + repo + "'" );
-        
+
+        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repo );
+        assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + version
+            + "' was successfully deployed to repository '" + repo + "'" );
+
         clickLinkWithText( "Logout" );
-                
+
         login( getProperty( "REPOMANAGER_INTERNAL_USERNAME" ), getUserRoleNewPassword() );
 
         goToAuditLogReports();
@@ -154,7 +154,8 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "." + packaging );
+        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "."
+            + packaging );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -163,7 +164,7 @@ public class AuditLogsReportTest
         clickLinkWithText( "Logout" );
         login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
     }
-    
+
     // MRM-1304
     @Test( dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload" )
     public void testViewAuditLogsReportForGroupId()

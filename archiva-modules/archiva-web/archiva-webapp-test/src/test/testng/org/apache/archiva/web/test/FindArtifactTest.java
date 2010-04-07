@@ -24,22 +24,22 @@ import org.testng.annotations.Test;
 
 @Test( groups = { "findartifact" }, sequential = true )
 public class FindArtifactTest
-	extends AbstractArchivaTest
+    extends AbstractArchivaTest
 {
-	public void testFindArtifactNullValues()
-	{
-		goToFindArtifactPage();
-		clickButtonWithValue( "Search" );
-		assertTextPresent( "You must select a file, or enter the checksum. If the file was given and you receive this message, there may have been an error generating the checksum." );
-	}
-	
-	public void testFindArtifactUsingChecksum()
-	{
-		goToFindArtifactPage();
-		setFieldValue( "checksumSearch_q" , "8e896baea663a45d7bd2737f8e464481" );
-		clickButtonWithValue( "Search" );
-		assertTextPresent( "No results found" );
-	}
+    public void testFindArtifactNullValues()
+    {
+        goToFindArtifactPage();
+        clickButtonWithValue( "Search" );
+        assertTextPresent( "You must select a file, or enter the checksum. If the file was given and you receive this message, there may have been an error generating the checksum." );
+    }
+
+    public void testFindArtifactUsingChecksum()
+    {
+        goToFindArtifactPage();
+        setFieldValue( "checksumSearch_q", "8e896baea663a45d7bd2737f8e464481" );
+        clickButtonWithValue( "Search" );
+        assertTextPresent( "No results found" );
+    }
 
     // TODO: test using file upload on Firefox versions that support getAsBinary (ie, no applet)
 }

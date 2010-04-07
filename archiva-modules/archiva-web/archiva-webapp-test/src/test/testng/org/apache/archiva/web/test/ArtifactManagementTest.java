@@ -24,144 +24,145 @@ import org.testng.annotations.Test;
 
 @Test( groups = { "artifactmanagement" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
 public class ArtifactManagementTest
-	extends AbstractArtifactManagementTest
+    extends AbstractArtifactManagementTest
 {
 
-	
-	public void testAddArtifactNullValues()
-	{
-		goToAddArtifactPage();
-		clickButtonWithValue( "Submit" );
-		assertTextPresent( "Please add a file to upload." );
-		assertTextPresent( "Invalid version." );
-		assertTextPresent( "You must enter a groupId." );
-		assertTextPresent( "You must enter an artifactId." );
-		assertTextPresent( "You must enter a version" );
-		assertTextPresent( "You must enter a packaging" );
-	}
-	
-	@Test(dependsOnMethods = { "testAddArtifactNullValues" } )
-	public void testAddArtifactNoGroupId()
-	{
-		addArtifact( " " , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "You must enter a groupId." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddArtifactNoGroupId" } )
-	public void testAddArtifactNoArtifactId()
-	{
-		
-		addArtifact( getGroupId() , " ", getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "You must enter an artifactId." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddArtifactNoGroupId" } )
-	public void testAddArtifactNoVersion()
-	{
-		addArtifact( getGroupId() , getArtifactId(), " ", getPackaging() , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "You must enter a version." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddArtifactNoGroupId" } )
-	public void testAddArtifactInvalidVersion()
-	{
-		addArtifact( getGroupId() , getArtifactId(), "asdf", getPackaging() , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "Invalid version." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddArtifactNoGroupId" } )
-	public void testAddArtifactNoPackaging()
-	{
-		addArtifact( getGroupId() , getArtifactId(), getVersion(), " " , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "You must enter a packaging." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddArtifactNoGroupId" } )
-	public void testAddArtifactNoFilePath()
-	{
-		addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , " ", getRepositoryId() );
-		assertTextPresent( "Please add a file to upload." );
-	}
-	
-    @Test(groups = "requiresUpload")
-	public void testAddArtifactValidValues()
-	{
-    	String groupId = getProperty( "VALIDARTIFACT_GROUPID" );
-    	String artifactId = getProperty( "VALIDARTIFACT_ARTIFACTID" );
-    	
-		addArtifact( groupId , artifactId, getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-		assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion() + "' was successfully deployed to repository 'internal'" );
-	}
+    public void testAddArtifactNullValues()
+    {
+        goToAddArtifactPage();
+        clickButtonWithValue( "Submit" );
+        assertTextPresent( "Please add a file to upload." );
+        assertTextPresent( "Invalid version." );
+        assertTextPresent( "You must enter a groupId." );
+        assertTextPresent( "You must enter an artifactId." );
+        assertTextPresent( "You must enter a version" );
+        assertTextPresent( "You must enter a packaging" );
+    }
+
+    @Test( dependsOnMethods = { "testAddArtifactNullValues" } )
+    public void testAddArtifactNoGroupId()
+    {
+        addArtifact( " ", getArtifactId(), getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        assertTextPresent( "You must enter a groupId." );
+    }
+
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    public void testAddArtifactNoArtifactId()
+    {
+
+        addArtifact( getGroupId(), " ", getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        assertTextPresent( "You must enter an artifactId." );
+    }
+
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    public void testAddArtifactNoVersion()
+    {
+        addArtifact( getGroupId(), getArtifactId(), " ", getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        assertTextPresent( "You must enter a version." );
+    }
+
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    public void testAddArtifactInvalidVersion()
+    {
+        addArtifact( getGroupId(), getArtifactId(), "asdf", getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        assertTextPresent( "Invalid version." );
+    }
+
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    public void testAddArtifactNoPackaging()
+    {
+        addArtifact( getGroupId(), getArtifactId(), getVersion(), " ", getArtifactFilePath(), getRepositoryId() );
+        assertTextPresent( "You must enter a packaging." );
+    }
+
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    public void testAddArtifactNoFilePath()
+    {
+        addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), " ", getRepositoryId() );
+        assertTextPresent( "Please add a file to upload." );
+    }
+
+    @Test( groups = "requiresUpload" )
+    public void testAddArtifactValidValues()
+    {
+        String groupId = getProperty( "VALIDARTIFACT_GROUPID" );
+        String artifactId = getProperty( "VALIDARTIFACT_ARTIFACTID" );
+
+        addArtifact( groupId, artifactId, getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion()
+            + "' was successfully deployed to repository 'internal'" );
+    }
 
     @Test( groups = "requiresUpload" )
     public void testDotNetTypes()
     {
-		String groupId = getProperty( "GROUPID_DOTNETARTIFACT" );
-		String artifactId = getProperty( "ARTIFACTID_DOTNETARTIFACT" );
-		String packaging = getProperty ( "PACKAGING_DOTNETARTIFACT" );
-		
-        addArtifact( groupId, artifactId, getVersion(), packaging, getArtifactFilePath(),
-                     getRepositoryId() );
-        assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion() + "' was successfully deployed to repository 'internal'" );
+        String groupId = getProperty( "GROUPID_DOTNETARTIFACT" );
+        String artifactId = getProperty( "ARTIFACTID_DOTNETARTIFACT" );
+        String packaging = getProperty( "PACKAGING_DOTNETARTIFACT" );
+
+        addArtifact( groupId, artifactId, getVersion(), packaging, getArtifactFilePath(), getRepositoryId() );
+        assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion()
+            + "' was successfully deployed to repository 'internal'" );
         getSelenium().open( baseUrl + "/browse/" + groupId + "/" + artifactId + "/" + getVersion() );
         waitPage();
 
         assertTextPresent( "<type>library</type>" );
         String basePath =
-            "/archiva/repository/internal/" + groupId + "/" + artifactId + "/" + getVersion() + "/" + artifactId + "-" +
-                getVersion();
+            "/archiva/repository/internal/" + groupId + "/" + artifactId + "/" + getVersion() + "/" + artifactId + "-"
+                + getVersion();
         assertLinkPresent( ".NET Library" );
         assertElementPresent( "//a[@href='" + basePath + ".dll']" );
         assertElementPresent( "//a[@href='" + basePath + ".pom']" );
     }
 
-	//MRM-747
-    @Test(groups = "requiresUpload")
-	public void testAddArtifactBlockRedeployments()
-	{
-            addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
-            assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
-	}
-	
-    @Test(groups = "requiresUpload")
-	public void testDeleteArtifact()
-	{
-		//prep
-		String groupId = getProperty( "GROUPID1" );
-		String artifactId = getProperty( "ARTIFACTID1" );
-		String version = getProperty( "VERSION1" );
-		String packaging = getProperty( "PACKAGING1" );
-		String repositoryId = getProperty( "REPOSITORYID1" );
-		// TODO: do this differently as it only works in Firefox's chrome mode
-		addArtifact( groupId , artifactId, version, packaging , getArtifactFilePath(), repositoryId );
-		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deployed to repository 'internal'" );
+    // MRM-747
+    @Test( groups = "requiresUpload" )
+    public void testAddArtifactBlockRedeployments()
+    {
+        addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), getArtifactFilePath(),
+                     getRepositoryId() );
+        assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
+    }
 
-		deleteArtifact( "delete", "delete", "1.0", "internal");
-		assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deleted from repository 'internal'" );
-	}
-	
-	public void testDeleteArtifactNoGroupId()
-	{
-		deleteArtifact( " ", "delete", "1.0", "internal");
-		assertTextPresent( "You must enter a groupId." );
-	}
-	
-	public void testDeleteArtifactNoArtifactId()
-	{
-		deleteArtifact( "delete", " ", "1.0", "internal");
-		assertTextPresent( "You must enter an artifactId." );
-	}
-	
-	public void testDeleteArtifactNoVersion()
-	{
-		deleteArtifact( "delete", "delete", " ", "internal");
-		assertTextPresent( "Invalid version." );
-		assertTextPresent( "You must enter a version." );
-	}
-	
-	public void testDeleteArtifactInvalidVersion()
-	{
-		deleteArtifact( "delete", "delete", "asdf", "internal");
-		assertTextPresent( "Invalid version." );
-	}
+    @Test( groups = "requiresUpload" )
+    public void testDeleteArtifact()
+    {
+        // prep
+        String groupId = getProperty( "GROUPID1" );
+        String artifactId = getProperty( "ARTIFACTID1" );
+        String version = getProperty( "VERSION1" );
+        String packaging = getProperty( "PACKAGING1" );
+        String repositoryId = getProperty( "REPOSITORYID1" );
+        // TODO: do this differently as it only works in Firefox's chrome mode
+        addArtifact( groupId, artifactId, version, packaging, getArtifactFilePath(), repositoryId );
+        assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deployed to repository 'internal'" );
+
+        deleteArtifact( "delete", "delete", "1.0", "internal" );
+        assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deleted from repository 'internal'" );
+    }
+
+    public void testDeleteArtifactNoGroupId()
+    {
+        deleteArtifact( " ", "delete", "1.0", "internal" );
+        assertTextPresent( "You must enter a groupId." );
+    }
+
+    public void testDeleteArtifactNoArtifactId()
+    {
+        deleteArtifact( "delete", " ", "1.0", "internal" );
+        assertTextPresent( "You must enter an artifactId." );
+    }
+
+    public void testDeleteArtifactNoVersion()
+    {
+        deleteArtifact( "delete", "delete", " ", "internal" );
+        assertTextPresent( "Invalid version." );
+        assertTextPresent( "You must enter a version." );
+    }
+
+    public void testDeleteArtifactInvalidVersion()
+    {
+        deleteArtifact( "delete", "delete", "asdf", "internal" );
+        assertTextPresent( "Invalid version." );
+    }
 }

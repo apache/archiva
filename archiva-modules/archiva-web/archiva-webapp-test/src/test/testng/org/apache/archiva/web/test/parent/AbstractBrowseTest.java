@@ -19,22 +19,22 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
-public abstract class AbstractBrowseTest 
-	extends AbstractArchivaTest
+public abstract class AbstractBrowseTest
+    extends AbstractArchivaTest
 {
-	
-	//Browse
-	public void goToBrowsePage()
-	{
-		clickLinkWithText( "Browse" );
-		assertBrowsePage();
-	}
 
-	public void assertBrowsePage()
-	{
-		assertPage( "Apache Archiva \\ Browse Repository" );
-		assertTextPresent( "Browse Repository" );
-		assertTextPresent( "Groups" );
-	}
+    // Browse
+    public void goToBrowsePage()
+    {
+        clickLinkWithText( "Browse" );
+        assertBrowsePage();
+    }
+
+    public void assertBrowsePage()
+    {
+        assertPage( "Apache Archiva \\ Browse Repository" );
+        assertTextPresent( "Browse Repository" );
+        assertTextPresent( "Groups" );
+    }
 
 }

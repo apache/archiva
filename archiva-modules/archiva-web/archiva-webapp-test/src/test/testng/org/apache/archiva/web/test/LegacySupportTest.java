@@ -23,53 +23,53 @@ import org.apache.archiva.web.test.parent.AbstractArtifactManagementTest;
 import org.testng.annotations.Test;
 
 @Test( groups = { "legacysupport" }, dependsOnMethods = { "testWithCorrectUsernamePassword" }, sequential = true )
-public class LegacySupportTest 
-	extends AbstractArtifactManagementTest
+public class LegacySupportTest
+    extends AbstractArtifactManagementTest
 {
-	public void testAddLegacyArtifact_NullValues()
-	{
-		goToLegacySupportPage();
-		clickLinkWithText( "Add" );
-		addLegacyArtifactPath( "" , "" , "" , "" , "" , "");
-		assertTextPresent( "You must enter a legacy path." );
-		assertTextPresent( "You must enter a groupId." );
-		assertTextPresent( "You must enter an artifactId." );
-		assertTextPresent( "You must enter a version." );
-		assertTextPresent( "You must enter a type." );
-	}
-	
-	@Test( dependsOnMethods = { "testAddLegacyArtifact_NullValues" })
-	public void testAddLegacyArtifact_NullLegacyPath()
-	{
-		addLegacyArtifactPath( "" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "jar");
-		assertTextPresent( "You must enter a legacy path." );
-	}
-	
-	@Test( dependsOnMethods = { "testAddLegacyArtifact_NullLegacyPath" })
-	public void testAddLegacyArtifact_NullGroupId()
-	{
-		addLegacyArtifactPath( "test" , "" , "test" , "1.0-SNAPSHOT" , "testing" , "jar");
-		assertTextPresent( "You must enter a groupId." );
-	}
-	
-	@Test( dependsOnMethods = { "testAddLegacyArtifact_NullGroupId" })
-	public void testAddLegacyArtifact_NullArtifactId()
-	{
-		addLegacyArtifactPath( "test" , "test" , "" , "1.0-SNAPSHOT" , "testing" , "jar");
-		assertTextPresent( "You must enter an artifactId." );
-	}
-	
-	@Test( dependsOnMethods = { "testAddLegacyArtifact_NullArtifactId" })
-	public void testAddLegacyArtifact_NullVersion()
-	{
-		addLegacyArtifactPath( "test" , "test" , "test" , "" , "testing" , "jar");
-		assertTextPresent( "You must enter a version." );
-	}
-	
-	@Test( dependsOnMethods = { "testAddLegacyArtifact_NullVersion" })
-	public void testAddLegacyArtifact_NullType()
-	{
-		addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "");
-		assertTextPresent( "You must enter a type." );
-	}
+    public void testAddLegacyArtifact_NullValues()
+    {
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+        addLegacyArtifactPath( "", "", "", "", "", "" );
+        assertTextPresent( "You must enter a legacy path." );
+        assertTextPresent( "You must enter a groupId." );
+        assertTextPresent( "You must enter an artifactId." );
+        assertTextPresent( "You must enter a version." );
+        assertTextPresent( "You must enter a type." );
+    }
+
+    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullValues" } )
+    public void testAddLegacyArtifact_NullLegacyPath()
+    {
+        addLegacyArtifactPath( "", "test", "test", "1.0-SNAPSHOT", "testing", "jar" );
+        assertTextPresent( "You must enter a legacy path." );
+    }
+
+    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullLegacyPath" } )
+    public void testAddLegacyArtifact_NullGroupId()
+    {
+        addLegacyArtifactPath( "test", "", "test", "1.0-SNAPSHOT", "testing", "jar" );
+        assertTextPresent( "You must enter a groupId." );
+    }
+
+    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullGroupId" } )
+    public void testAddLegacyArtifact_NullArtifactId()
+    {
+        addLegacyArtifactPath( "test", "test", "", "1.0-SNAPSHOT", "testing", "jar" );
+        assertTextPresent( "You must enter an artifactId." );
+    }
+
+    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullArtifactId" } )
+    public void testAddLegacyArtifact_NullVersion()
+    {
+        addLegacyArtifactPath( "test", "test", "test", "", "testing", "jar" );
+        assertTextPresent( "You must enter a version." );
+    }
+
+    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullVersion" } )
+    public void testAddLegacyArtifact_NullType()
+    {
+        addLegacyArtifactPath( "test", "test", "test", "1.0-SNAPSHOT", "testing", "" );
+        assertTextPresent( "You must enter a type." );
+    }
 }

@@ -36,11 +36,11 @@ import org.testng.annotations.Test;
  * @version $Id$
  */
 
-@Test ( groups = { "login" } )
-public class LoginTest 
-	extends AbstractArchivaTest
+@Test( groups = { "login" } )
+public class LoginTest
+    extends AbstractArchivaTest
 {
-	public void testWithBadUsername()
+    public void testWithBadUsername()
     {
         goToLoginPage();
         getSelenium().type( "loginForm_username", "badUsername" );
@@ -92,8 +92,8 @@ public class LoginTest
         assertTextPresent( "Logout" );
         assertTextPresent( getProperty( "ADMIN_USERNAME" ) );
     }
-	
-	@BeforeTest
+
+    @BeforeTest
     public void open()
         throws Exception
     {

@@ -28,8 +28,8 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 @Test( groups = { "about" }, alwaysRun = true )
-public class ArchivaAdminTest 
-	extends AbstractArchivaTest
+public class ArchivaAdminTest
+    extends AbstractArchivaTest
 {
 
     @Override
@@ -47,10 +47,12 @@ public class ArchivaAdminTest
     {
         super.open();
     }
-	
+
     @BeforeTest
     @Parameters( { "baseUrl", "browser", "seleniumHost", "seleniumPort" } )
-    public void initializeArchiva( String baseUrl, String browser, @Optional( "localhost" ) String seleniumHost, @Optional( "4444" ) int seleniumPort ) throws Exception
+    public void initializeArchiva( String baseUrl, String browser, @Optional( "localhost" ) String seleniumHost,
+                                   @Optional( "4444" ) int seleniumPort )
+        throws Exception
     {
         super.open( baseUrl, browser, seleniumHost, seleniumPort );
         getSelenium().open( baseUrl );
@@ -66,7 +68,7 @@ public class ArchivaAdminTest
             assertUserLoggedIn( username );
             submit();
             clickLinkWithText( "Logout" );
-       }
+        }
     }
 
 }

@@ -24,137 +24,142 @@ import org.testng.annotations.Test;
 
 @Test( groups = { "repository" }, dependsOnMethods = { "testWithCorrectUsernamePassword" }, sequential = true )
 public class RepositoryTest
-	extends AbstractRepositoryTest
+    extends AbstractRepositoryTest
 {
-	public void testAddManagedRepoValidValues()
-	{
-		goToRepositoriesPage();
-		getSelenium().open( "/archiva/admin/addRepository.action" );
-		addManagedRepository( "managedrepo1", "Managed Repository Sample 1" , getRepositoryDir() + "repository/" , "", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
-		clickButtonWithValue( "Save" );
-		assertTextPresent( "Managed Repository Sample 1" );		
-		assertRepositoriesPage();
-	}
-	
-	 @Test(dependsOnMethods = { "testAddManagedRepoValidValues" } )
-	public void testAddManagedRepoInvalidValues()
-	{				
-		goToRepositoriesPage();
-	    	getSelenium().open( "/archiva/admin/addRepository.action" );
-		addManagedRepository( "", "" , "" , "", "Maven 2.x Repository", "", "", "" );
-		assertTextPresent( "You must enter a repository identifier." );
-		assertTextPresent( "You must enter a repository name." );
-		assertTextPresent( "You must enter a directory." );
-		assertTextPresent( "Invalid cron expression." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddManagedRepoInvalidValues" } )
-	public void testAddManagedRepoNoIdentifier()
-	{		
-		addManagedRepository( "", "name" , "/home" , "/.index", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
-		assertTextPresent( "You must enter a repository identifier." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddManagedRepoNoIdentifier" } )
-	public void testAddManagedRepoNoRepoName()
-	{
-		addManagedRepository( "identifier", "" , "/home" , "/.index", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
-		assertTextPresent( "You must enter a repository name." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddManagedRepoNoRepoName" } )
-	public void testAddManagedRepoNoDirectory()
-	{
-		addManagedRepository( "identifier", "name" , "" , "/.index", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
-		assertTextPresent( "You must enter a directory." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddManagedRepoNoDirectory" } )
-	public void testAddManagedRepoNoCron()
-	{
-		addManagedRepository( "identifier", "name" , "/home" , "/.index", "Maven 2.x Repository", "", "", "" );
-		assertTextPresent( "Invalid cron expression." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddManagedRepoNoCron" } )
-	public void testAddManagedRepoForEdit()
-	{
-		goToRepositoriesPage();
-		getSelenium().open( "/archiva/admin/addRepository.action" );
-		addManagedRepository( "managedrepo", "Managed Repository Sample" , getRepositoryDir() + "local-repo/", "", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
-		clickButtonWithValue( "Save" );
-		assertTextPresent( "Managed Repository Sample" );
-	}
+    public void testAddManagedRepoValidValues()
+    {
+        goToRepositoriesPage();
+        getSelenium().open( "/archiva/admin/addRepository.action" );
+        addManagedRepository( "managedrepo1", "Managed Repository Sample 1", getRepositoryDir() + "repository/", "",
+                              "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+        clickButtonWithValue( "Save" );
+        assertTextPresent( "Managed Repository Sample 1" );
+        assertRepositoriesPage();
+    }
 
-	//TODO
-	@Test(dependsOnMethods = { "testAddManagedRepoForEdit" } )
-	public void testEditManagedRepo()
-	{
-		editManagedRepository( "repository.name" , "Managed Repo" );
-		assertTextPresent( "Managed Repository Sample" );
-	}
-	
-	//TODO
-	@Test(dependsOnMethods = { "testEditManagedRepo" } )
-	public void testDeleteManageRepo()
-	{
-		deleteManagedRepository();
-		//assertTextNotPresent( "managedrepo" );
-	}
-	
-	@Test(dependsOnMethods = { "testAddRemoteRepoValidValues" } )
-	public void testAddRemoteRepoNullValues()
-	{		
-	    getSelenium().open( "/archiva/admin/addRemoteRepository.action" );
-		addRemoteRepository( "" , "" , "" , "" , "" , "" , "Maven 2.x Repository" );
-		assertTextPresent( "You must enter a repository identifier." );
-		assertTextPresent( "You must enter a repository name." );
-		assertTextPresent( "You must enter a url." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddRemoteRepoNullValues" } )
-	public void testAddRemoteRepositoryNullIdentifier()
-	{
-		addRemoteRepository( "" , "Remote Repository Sample" , "http://repository.codehaus.org/org/codehaus/mojo/" , "" , "" , "" , "Maven 2.x Repository" );
-		assertTextPresent( "You must enter a repository identifier." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddRemoteRepositoryNullIdentifier" } )
-	public void testAddRemoteRepoNullName()
-	{
-		addRemoteRepository( "remoterepo" , "" , "http://repository.codehaus.org/org/codehaus/mojo/" , "" , "" , "" , "Maven 2.x Repository" );
-		assertTextPresent( "You must enter a repository name." );
-	}
-	
-	@Test(dependsOnMethods = { "testAddRemoteRepoNullName" } )
-	public void testAddRemoteRepoNullURL()
-	{
-		addRemoteRepository( "remoterepo" , "Remote Repository Sample" , "" , "" , "" , "" , "Maven 2.x Repository" );
-		assertTextPresent( "You must enter a url." );
-	}
+    @Test( dependsOnMethods = { "testAddManagedRepoValidValues" } )
+    public void testAddManagedRepoInvalidValues()
+    {
+        goToRepositoriesPage();
+        getSelenium().open( "/archiva/admin/addRepository.action" );
+        addManagedRepository( "", "", "", "", "Maven 2.x Repository", "", "", "" );
+        assertTextPresent( "You must enter a repository identifier." );
+        assertTextPresent( "You must enter a repository name." );
+        assertTextPresent( "You must enter a directory." );
+        assertTextPresent( "Invalid cron expression." );
+    }
 
-	@Test(dependsOnMethods = { "testDeleteManageRepo" } )
-	public void testAddRemoteRepoValidValues()
-	{		
-		getSelenium().open( "/archiva/admin/addRemoteRepository.action" );
-		addRemoteRepository( "remoterepo" , "Remote Repository Sample" , "http://repository.codehaus.org/org/codehaus/mojo/" , "" , "" , "" , "Maven 2.x Repository" );
-		assertTextPresent( "Remote Repository Sample" );
-	}
-    
+    @Test( dependsOnMethods = { "testAddManagedRepoInvalidValues" } )
+    public void testAddManagedRepoNoIdentifier()
+    {
+        addManagedRepository( "", "name", "/home", "/.index", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+        assertTextPresent( "You must enter a repository identifier." );
+    }
+
+    @Test( dependsOnMethods = { "testAddManagedRepoNoIdentifier" } )
+    public void testAddManagedRepoNoRepoName()
+    {
+        addManagedRepository( "identifier", "", "/home", "/.index", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+        assertTextPresent( "You must enter a repository name." );
+    }
+
+    @Test( dependsOnMethods = { "testAddManagedRepoNoRepoName" } )
+    public void testAddManagedRepoNoDirectory()
+    {
+        addManagedRepository( "identifier", "name", "", "/.index", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+        assertTextPresent( "You must enter a directory." );
+    }
+
+    @Test( dependsOnMethods = { "testAddManagedRepoNoDirectory" } )
+    public void testAddManagedRepoNoCron()
+    {
+        addManagedRepository( "identifier", "name", "/home", "/.index", "Maven 2.x Repository", "", "", "" );
+        assertTextPresent( "Invalid cron expression." );
+    }
+
+    @Test( dependsOnMethods = { "testAddManagedRepoNoCron" } )
+    public void testAddManagedRepoForEdit()
+    {
+        goToRepositoriesPage();
+        getSelenium().open( "/archiva/admin/addRepository.action" );
+        addManagedRepository( "managedrepo", "Managed Repository Sample", getRepositoryDir() + "local-repo/", "",
+                              "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+        clickButtonWithValue( "Save" );
+        assertTextPresent( "Managed Repository Sample" );
+    }
+
+    // TODO
+    @Test( dependsOnMethods = { "testAddManagedRepoForEdit" } )
+    public void testEditManagedRepo()
+    {
+        editManagedRepository( "repository.name", "Managed Repo" );
+        assertTextPresent( "Managed Repository Sample" );
+    }
+
+    // TODO
+    @Test( dependsOnMethods = { "testEditManagedRepo" } )
+    public void testDeleteManageRepo()
+    {
+        deleteManagedRepository();
+        // assertTextNotPresent( "managedrepo" );
+    }
+
+    @Test( dependsOnMethods = { "testAddRemoteRepoValidValues" } )
+    public void testAddRemoteRepoNullValues()
+    {
+        getSelenium().open( "/archiva/admin/addRemoteRepository.action" );
+        addRemoteRepository( "", "", "", "", "", "", "Maven 2.x Repository" );
+        assertTextPresent( "You must enter a repository identifier." );
+        assertTextPresent( "You must enter a repository name." );
+        assertTextPresent( "You must enter a url." );
+    }
+
+    @Test( dependsOnMethods = { "testAddRemoteRepoNullValues" } )
+    public void testAddRemoteRepositoryNullIdentifier()
+    {
+        addRemoteRepository( "", "Remote Repository Sample", "http://repository.codehaus.org/org/codehaus/mojo/", "",
+                             "", "", "Maven 2.x Repository" );
+        assertTextPresent( "You must enter a repository identifier." );
+    }
+
+    @Test( dependsOnMethods = { "testAddRemoteRepositoryNullIdentifier" } )
+    public void testAddRemoteRepoNullName()
+    {
+        addRemoteRepository( "remoterepo", "", "http://repository.codehaus.org/org/codehaus/mojo/", "", "", "",
+                             "Maven 2.x Repository" );
+        assertTextPresent( "You must enter a repository name." );
+    }
+
+    @Test( dependsOnMethods = { "testAddRemoteRepoNullName" } )
+    public void testAddRemoteRepoNullURL()
+    {
+        addRemoteRepository( "remoterepo", "Remote Repository Sample", "", "", "", "", "Maven 2.x Repository" );
+        assertTextPresent( "You must enter a url." );
+    }
+
+    @Test( dependsOnMethods = { "testDeleteManageRepo" } )
+    public void testAddRemoteRepoValidValues()
+    {
+        getSelenium().open( "/archiva/admin/addRemoteRepository.action" );
+        addRemoteRepository( "remoterepo", "Remote Repository Sample",
+                             "http://repository.codehaus.org/org/codehaus/mojo/", "", "", "", "Maven 2.x Repository" );
+        assertTextPresent( "Remote Repository Sample" );
+    }
+
     // *** BUNDLED REPOSITORY TEST ***
-    
-    @Test ( dependsOnMethods = { "testWithCorrectUsernamePassword" }, alwaysRun = true )
+
+    @Test( dependsOnMethods = { "testWithCorrectUsernamePassword" }, alwaysRun = true )
     public void testBundledRepository()
     {
         String repo1 = baseUrl + "repository/internal/";
         String repo2 = baseUrl + "repository/snapshots/";
-        
+
         assertRepositoryAccess( repo1 );
         assertRepositoryAccess( repo2 );
-        
+
         getSelenium().open( "/archiva" );
     }
-    
+
     private void assertRepositoryAccess( String repo )
     {
         getSelenium().open( "/archiva" );

@@ -23,29 +23,32 @@ import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.testng.annotations.Test;
 
 @Test( groups = { "appearance" }, dependsOnMethods = { "testWithCorrectUsernamePassword" }, sequential = true )
-public class AppearanceTest extends AbstractArchivaTest
+public class AppearanceTest
+    extends AbstractArchivaTest
 {
-	public void testAddAppearanceNullValues()
-	{
-		goToAppearancePage();
-		clickLinkWithText( "Edit" );
-		addEditAppearance( "", "", "" );
-		assertTextPresent( "You must enter a name" );
-	}
-	
-	@Test( dependsOnMethods = { "testAddAppearanceNullValues" })
-	public void testAddAppearanceValidValues()
-	{
-		addEditAppearance( "The Apache Software Foundation" , "http://www.apache.org/" , "http://www.apache.org/images/asf_logo_wide.gifs" );
-		assertTextPresent( "The Apache Software Foundation" );
-	}
-	
-	@Test( dependsOnMethods = { "testAddAppearanceValidValues" })
-	public void testEditAppearance()
-	{
-		clickLinkWithText( "Edit" );
-		addEditAppearance( "Apache Software Foundation" , "http://www.apache.org/" , "http://www.apache.org/images/asf_logo_wide.gifs" );
-		assertTextPresent( "Apache Software Foundation" );
-	}
-	
+    public void testAddAppearanceNullValues()
+    {
+        goToAppearancePage();
+        clickLinkWithText( "Edit" );
+        addEditAppearance( "", "", "" );
+        assertTextPresent( "You must enter a name" );
+    }
+
+    @Test( dependsOnMethods = { "testAddAppearanceNullValues" } )
+    public void testAddAppearanceValidValues()
+    {
+        addEditAppearance( "The Apache Software Foundation", "http://www.apache.org/",
+                           "http://www.apache.org/images/asf_logo_wide.gifs" );
+        assertTextPresent( "The Apache Software Foundation" );
+    }
+
+    @Test( dependsOnMethods = { "testAddAppearanceValidValues" } )
+    public void testEditAppearance()
+    {
+        clickLinkWithText( "Edit" );
+        addEditAppearance( "Apache Software Foundation", "http://www.apache.org/",
+                           "http://www.apache.org/images/asf_logo_wide.gifs" );
+        assertTextPresent( "Apache Software Foundation" );
+    }
+
 }
