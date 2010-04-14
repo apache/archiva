@@ -53,13 +53,7 @@ public class UserRolesTest
         logout();
         login( username, getUserRolePassword() );
         changePassword( getUserRolePassword(), getUserRoleNewPassword() );
-
-        // this section will be removed if issue from redback after changing password will be fixed.
-        getSelenium().goBack();
-        logout();
-        // assertTextPresent("You are already logged in.");
-
-        login( username, getUserRoleNewPassword() );
+        assertTextPresent( "Password successfully changed" );
         assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername(), getAdminPassword() );
@@ -80,13 +74,7 @@ public class UserRolesTest
         logout();
         login( username, getUserRolePassword() );
         changePassword( getUserRolePassword(), getUserRoleNewPassword() );
-
-        // this section will be removed if issue from redback after changing password will be fixed.
-        getSelenium().goBack();
-        logout();
-        // assertTextPresent("You are already logged in.");
-
-        login( username, getUserRoleNewPassword() );
+        assertTextPresent( "Password successfully changed" );
         assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername(), getAdminPassword() );
@@ -107,13 +95,7 @@ public class UserRolesTest
         logout();
         login( username, getUserRolePassword() );
         changePassword( getUserRolePassword(), getUserRoleNewPassword() );
-
-        // this section will be removed if issue from redback after changing password will be fixed.
-        getSelenium().goBack();
-        logout();
-        // assertTextPresent("You are already logged in.");
-
-        login( username, getUserRoleNewPassword() );
+        assertTextPresent( "Password successfully changed" );
         assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername(), getAdminPassword() );
@@ -134,13 +116,7 @@ public class UserRolesTest
         logout();
         login( username, getUserRolePassword() );
         changePassword( getUserRolePassword(), getUserRoleNewPassword() );
-
-        // this section will be removed if issue from redback after changing password will be fixed.
-        getSelenium().goBack();
-        logout();
-        // assertTextPresent("You are already logged in.");
-
-        login( username, getUserRoleNewPassword() );
+        assertTextPresent( "Password successfully changed" );
         assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername(), getAdminPassword() );
@@ -161,13 +137,7 @@ public class UserRolesTest
         logout();
         login( username, getUserRolePassword() );
         changePassword( getUserRolePassword(), getUserRoleNewPassword() );
-
-        // this section will be removed if issue from redback after changing password will be fixed.
-        getSelenium().goBack();
-        logout();
-        // assertTextPresent("You are already logged in.");
-
-        login( username, getUserRoleNewPassword() );
+        assertTextPresent( "Password successfully changed" );
         assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername(), getAdminPassword() );
@@ -188,13 +158,7 @@ public class UserRolesTest
         logout();
         login( username, getUserRolePassword() );
         changePassword( getUserRolePassword(), getUserRoleNewPassword() );
-
-        // this section will be removed if issue from redback after changing password will be fixed.
-        getSelenium().goBack();
-        logout();
-        // assertTextPresent("You are already logged in.");
-
-        login( username, getUserRoleNewPassword() );
+        assertTextPresent( "Password successfully changed" );
         assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername(), getAdminPassword() );
@@ -215,13 +179,7 @@ public class UserRolesTest
         logout();
         login( username, getUserRolePassword() );
         changePassword( getUserRolePassword(), getUserRoleNewPassword() );
-
-        // this section will be removed if issue from redback after changing password will be fixed.
-        getSelenium().goBack();
-        logout();
-        // assertTextPresent("You are already logged in.");
-
-        login( username, getUserRoleNewPassword() );
+        assertTextPresent( "Password successfully changed" );
         assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername(), getAdminPassword() );

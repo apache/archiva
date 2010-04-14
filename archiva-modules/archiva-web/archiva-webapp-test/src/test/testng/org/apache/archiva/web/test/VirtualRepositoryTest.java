@@ -37,7 +37,6 @@ public class VirtualRepositoryTest
     public void testAddRepositoryGroupValidValue()
     {
         addRepositoryGroup( "testing" );
-        // assertAddedRepositoryLink( "testing" );
         Assert.assertEquals( getSelenium().getText( "//div[@id='contentArea']/div[2]/div/div[1]/p[1]" ), "testing" );
     }
 
@@ -47,8 +46,6 @@ public class VirtualRepositoryTest
         addRepositoryToRepositoryGroup( "testing", "internal" );
         Assert.assertEquals( getSelenium().getText( "//div[@id='contentArea']/div[2]/div/div[3]/div[2]/p[1]" ),
                              "internal" );
-        // clickLinkWithXPath( "/html/body/div[4]/div/div/div[2]/div/div/p[2]/a" );
-        // getSelenium().goBack();
     }
 
     @Test( dependsOnMethods = { "testAddRepositoryToRepositoryGroup" } )
@@ -68,8 +65,4 @@ public class VirtualRepositoryTest
         assertTextPresent( "No Repository Groups Defined." );
     }
 
-    /*
-     * @Test(dependsOnMethods = { "testAddRepositoryToRepositoryGroup" } ) public void testCheckRepositoryGroup() {
-     * clickLinkWithXPath( "/html/body/div[4]/div/div/div[2]/div/div/p[2]/a" ); getSelenium().goBack(); }
-     */
 }

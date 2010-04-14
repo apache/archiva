@@ -43,8 +43,8 @@ public class LoginTest
     public void testWithBadUsername()
     {
         goToLoginPage();
-        getSelenium().type( "loginForm_username", "badUsername" );
-        getSelenium().click( "loginForm__login" );
+        setFieldValue( "loginForm_username", "badUsername" );
+        clickButtonWithValue( "Login" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         assertTextPresent( "You have entered an incorrect username and/or password" );
     }
@@ -53,8 +53,8 @@ public class LoginTest
     public void testWithBadPassword()
     {
         goToLoginPage();
-        getSelenium().type( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        getSelenium().type( "loginForm_password", "badPassword" );
+        setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
+        setFieldValue( "loginForm_password", "badPassword" );
         getSelenium().click( "loginForm__login" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         assertTextPresent( "You have entered an incorrect username and/or password" );
@@ -64,8 +64,8 @@ public class LoginTest
     public void testWithEmptyUsername()
     {
         goToLoginPage();
-        getSelenium().type( "loginForm_password", "password" );
-        getSelenium().click( "loginForm__login" );
+        setFieldValue( "loginForm_password", "password" );
+        clickButtonWithValue( "Login" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         assertTextPresent( "User Name is required" );
     }
@@ -74,8 +74,8 @@ public class LoginTest
     public void testWithEmptyPassword()
     {
         goToLoginPage();
-        getSelenium().type( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        getSelenium().click( "loginForm__login" );
+        setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
+        clickButtonWithValue( "Login" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         assertTextPresent( "You have entered an incorrect username and/or password" );
     }
@@ -84,9 +84,9 @@ public class LoginTest
     public void testWithCorrectUsernamePassword()
     {
         goToLoginPage();
-        getSelenium().type( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        getSelenium().type( "loginForm_password", getProperty( "ADMIN_PASSWORD" ) );
-        getSelenium().click( "loginForm__login" );
+        setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
+        setFieldValue( "loginForm_password", getProperty( "ADMIN_PASSWORD" ) );
+        clickButtonWithValue( "Login" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         assertTextPresent( "Edit Details" );
         assertTextPresent( "Logout" );
