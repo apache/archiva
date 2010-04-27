@@ -25,11 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+import org.sonatype.nexus.artifact.IllegalArtifactCoordinateException;
 import org.sonatype.nexus.index.ArtifactContext;
 import org.sonatype.nexus.index.ArtifactContextProducer;
 import org.sonatype.nexus.index.NexusIndexer;
@@ -85,7 +87,7 @@ public class NexusRepositorySearchTest
     }
 
     private void createIndexForQuickSearch()
-        throws IOException, UnsupportedExistingLuceneIndexException
+        throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
         List<File> files = new ArrayList<File>();
         files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
@@ -126,11 +128,11 @@ public class NexusRepositorySearchTest
     }
 
     private void createIndex( String repository, List<File> filesToBeIndexed )
-        throws IOException, UnsupportedExistingLuceneIndexException
+        throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
         context = new DefaultIndexingContext( repository, repository, new File( getBasedir(), "/target/test-classes/" +
                     repository ), new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ), null, null,
-                    NexusIndexer.FULL_INDEX, false );
+                    ArchivaNexusIndexerUtil.FULL_INDEX, false );
             //indexer.addIndexingContext( repository, repository, new File( getBasedir(), "/target/test-classes/" +
             //    repository ), new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ), null, null,
             //                            NexusIndexer.FULL_INDEX );

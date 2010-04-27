@@ -22,9 +22,9 @@ package org.apache.archiva.scheduler.indexing;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.taskqueue.Task;
-import org.sonatype.nexus.index.NexusIndexer;
 import org.sonatype.nexus.index.context.DefaultIndexingContext;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
@@ -139,7 +139,7 @@ public class ArtifactIndexingTask
 
         IndexingContext context =
             new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
-                                        null, null, NexusIndexer.FULL_INDEX, false );
+                                        null, null, ArchivaNexusIndexerUtil.FULL_INDEX, false );
         context.setSearchable( repository.isScanned() );
         return context;
     }

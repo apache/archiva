@@ -251,7 +251,7 @@
       <dependency>
         <groupId>org.sonatype.nexus</groupId>
         <artifactId>nexus-indexer</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.5</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
@@ -688,7 +688,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>1.4.5</version>
+        <version>1.5.5</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.cache</groupId>

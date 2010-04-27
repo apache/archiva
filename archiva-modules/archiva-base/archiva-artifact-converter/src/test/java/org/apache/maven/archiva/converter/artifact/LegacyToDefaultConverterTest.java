@@ -933,7 +933,7 @@ public class LegacyToDefaultConverterTest
 
     private static String normalizeString( String path )
     {
-        return path.trim().replaceAll( "\r\n", "\n" ).replace( '\r', '\n' ).replaceAll( "<\\?xml .+\\?>", "" );
+        return path.trim().replaceAll( "\r\n", "\n" ).replace( '\r', '\n' ).replaceAll( "<\\?xml .+\\?>", "" ).replaceAll("^\\s+", "");
     }
 
     private void checkSuccess( ArtifactConverter converter )

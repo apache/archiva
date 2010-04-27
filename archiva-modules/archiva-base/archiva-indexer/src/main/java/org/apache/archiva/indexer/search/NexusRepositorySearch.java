@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -216,7 +217,7 @@ public class NexusRepositorySearch
                     
                     IndexingContext context =
                         indexer.addIndexingContext( repoConfig.getId(), repoConfig.getId(), new File( repoConfig.getLocation() ),
-                                                    indexDirectory, null, null, NexusIndexer.FULL_INDEX );
+                                                    indexDirectory, null, null, ArchivaNexusIndexerUtil.FULL_INDEX );
                     context.setSearchable( repoConfig.isScanned() );
                 }
                 else

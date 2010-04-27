@@ -32,6 +32,7 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.nexus.artifact.IllegalArtifactCoordinateException;
 import org.sonatype.nexus.index.ArtifactContext;
 import org.sonatype.nexus.index.ArtifactContextProducer;
 import org.sonatype.nexus.index.ArtifactInfo;
@@ -169,6 +170,11 @@ public class ArchivaIndexingTaskExecutor
                     log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
                     throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
                         + "'", e );
+                }
+                catch ( IllegalArtifactCoordinateException e )
+                {
+                    log.error( "Error occurred while getting artifact context: " + e.getMessage() );
+                    throw new TaskExecutionException( "Error occurred while getting artifact context.", e );
                 }
             }
         }

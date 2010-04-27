@@ -66,6 +66,10 @@
       <version>1.6.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.sonatype.nexus</groupId>
+      <artifactId>nexus-indexer</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

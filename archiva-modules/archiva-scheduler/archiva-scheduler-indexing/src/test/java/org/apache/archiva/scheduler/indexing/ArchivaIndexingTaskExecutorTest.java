@@ -35,6 +35,7 @@ import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TopDocs;
+import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -134,7 +135,7 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
                                         new File( repositoryConfig.getLocation() ),
                                         new File( repositoryConfig.getLocation(), ".indexer" ), null, null,
-                                        NexusIndexer.FULL_INDEX );
+                                        ArchivaNexusIndexerUtil.FULL_INDEX );
         context.setSearchable( true );
 
         FlatSearchRequest request = new FlatSearchRequest( q );
@@ -270,7 +271,7 @@ public class ArchivaIndexingTaskExecutorTest
         IndexingContext context =
             indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
                                         new File( repositoryConfig.getLocation() ), destDir, null, null,
-                                        NexusIndexer.FULL_INDEX );
+                                        ArchivaNexusIndexerUtil.FULL_INDEX );
         context.setSearchable( true );
 
         FlatSearchRequest request = new FlatSearchRequest( q );
