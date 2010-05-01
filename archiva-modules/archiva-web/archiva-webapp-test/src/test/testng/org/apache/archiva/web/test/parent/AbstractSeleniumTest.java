@@ -152,6 +152,11 @@ public abstract class AbstractSeleniumTest {
 	{
 	    return getSelenium().getHtmlSource();
 	}
+
+    public String getText( String locator )
+    {
+        return getSelenium().getText( locator );
+    }
 	
 	public void assertTextPresent( String text )
 	{
