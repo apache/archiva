@@ -74,6 +74,7 @@ import java.util.TimeZone;
  *
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="uploadAction" instantiation-strategy="per-lookup"
  */
+@SuppressWarnings( "serial" )
 public class UploadAction
     extends PlexusActionSupport
     implements Validateable, Preparable, Auditable
@@ -312,8 +313,8 @@ public class UploadAction
             int newBuildNumber = -1;
             String timestamp = null;
 
-            File metadataFile = getMetadata( targetPath.getAbsolutePath() );
-            ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
+            File versionMetadataFile = getMetadata( targetPath.getAbsolutePath() );
+            ArchivaRepositoryMetadata versionMetadata = getMetadata( versionMetadataFile );
 
             if ( VersionUtil.isSnapshot( version ) )
             {
@@ -321,13 +322,12 @@ public class UploadAction
                 DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
                 fmt.setTimeZone( timezone );
                 timestamp = fmt.format( lastUpdatedTimestamp );
-                if ( metadata.getSnapshotVersion() != null )
+                if ( versionMetadata.getSnapshotVersion() != null )
                 {
-                    newBuildNumber = metadata.getSnapshotVersion().getBuildNumber() + 1;
+                    newBuildNumber = versionMetadata.getSnapshotVersion().getBuildNumber() + 1;
                 }
                 else
                 {
-                    metadata.setSnapshotVersion( new SnapshotVersion() );
                     newBuildNumber = 1;
                 }
             }
@@ -410,10 +410,17 @@ public class UploadAction
 
             }
 
-            // explicitly update only if metadata-updater consumer is not enabled!
-            if ( !config.getRepositoryScanning().getKnownContentConsumers().contains( "metadata-updater" ) )
+            // explicitly update only if versionMetadata-updater consumer is not enabled!
+            if ( !config.getRepositoryScanning().getKnownContentConsumers().contains( "versionMetadata-updater" ) )
             {
-                updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, timestamp, newBuildNumber, fixChecksums );
+                updateProjectMetadata( targetPath.getAbsolutePath(), lastUpdatedTimestamp, timestamp, newBuildNumber,
+                                          fixChecksums );
+   
+               if ( VersionUtil.isSnapshot( version ) )
+               {
+                   updateVersionMetadata( versionMetadata, versionMetadataFile, lastUpdatedTimestamp, timestamp,
+                                          newBuildNumber, fixChecksums );
+               }
             }
 
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
@@ -496,9 +503,7 @@ public class UploadAction
 
     private File getMetadata( String targetPath )
     {
-        String artifactPath = targetPath.substring( 0, targetPath.lastIndexOf( File.separatorChar ) );
-
-        return new File( artifactPath, MetadataTools.MAVEN_METADATA );
+        return new File( targetPath, MetadataTools.MAVEN_METADATA );
     }
 
     private ArchivaRepositoryMetadata getMetadata( File metadataFile )
@@ -511,21 +516,58 @@ public class UploadAction
         }
         return metadata;
     }
+    
+        
+    /**
+     * Update version level metadata for snapshot artifacts. If it does not exist, create the metadata and fix checksums
+     * if necessary.
+     */
+    private void updateVersionMetadata( ArchivaRepositoryMetadata metadata, File metadataFile,
+                                        Date lastUpdatedTimestamp, String timestamp, int buildNumber,
+                                        boolean fixChecksums )
+        throws RepositoryMetadataException
+    {
+        if ( !metadataFile.exists() )
+        {
+            metadata.setGroupId( groupId );
+            metadata.setArtifactId( artifactId );
+            metadata.setVersion( version );
+        }
+
+        if ( metadata.getSnapshotVersion() == null )
+        {
+            metadata.setSnapshotVersion( new SnapshotVersion() );
+        }
+
+        metadata.getSnapshotVersion().setBuildNumber( buildNumber );
+        metadata.getSnapshotVersion().setTimestamp( timestamp );
+        metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
+
+        RepositoryMetadataWriter.write( metadata, metadataFile );
+
+        if ( fixChecksums )
+        {
+            fixChecksums( metadataFile );
+        }
+    }
 
     /**
-     * Update artifact level metadata. If it does not exist, create the metadata and
-     * fix checksums if necessary.
+     * Update artifact level metadata. If it does not exist, create the metadata and fix checksums if necessary.
      */
-    private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp,
-                                 String timestamp, int buildNumber, boolean fixChecksums )
+    private void updateProjectMetadata( String targetPath, Date lastUpdatedTimestamp, String timestamp,
+                                        int buildNumber, boolean fixChecksums )
         throws RepositoryMetadataException
     {
         List<String> availableVersions = new ArrayList<String>();
         String latestVersion = version;
 
-        if ( metadataFile.exists() )
+        String projectPath = targetPath.substring( 0, targetPath.lastIndexOf( File.separatorChar ) );
+        File projectMetadataFile = getMetadata( projectPath );
+        ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetadataFile );
+
+        if ( projectMetadataFile.exists() )
         {
-            availableVersions = metadata.getAvailableVersions();
+            availableVersions = projectMetadata.getAvailableVersions();
 
             Collections.sort( availableVersions, VersionComparator.getInstance() );
 
@@ -540,39 +582,34 @@ public class UploadAction
         {
             availableVersions.add( version );
 
-            metadata.setGroupId( groupId );
-            metadata.setArtifactId( artifactId );
+            projectMetadata.setGroupId( groupId );
+            projectMetadata.setArtifactId( artifactId );
         }
 
-        if ( metadata.getGroupId() == null )
+        if ( projectMetadata.getGroupId() == null )
         {
-            metadata.setGroupId( groupId );
+            projectMetadata.setGroupId( groupId );
         }
-        if ( metadata.getArtifactId() == null )
+        
+        if ( projectMetadata.getArtifactId() == null )
         {
-            metadata.setArtifactId( artifactId );
+            projectMetadata.setArtifactId( artifactId );
         }
 
-        metadata.setLatestVersion( latestVersion );
-        metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
-        metadata.setAvailableVersions( availableVersions );
+        projectMetadata.setLatestVersion( latestVersion );
+        projectMetadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
+        projectMetadata.setAvailableVersions( availableVersions );
 
         if ( !VersionUtil.isSnapshot( version ) )
         {
-            metadata.setReleasedVersion( latestVersion );
-        }
-        else
-        {
-            metadata.getSnapshotVersion().setBuildNumber( buildNumber );
-
-            metadata.getSnapshotVersion().setTimestamp( timestamp );
+            projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( metadata, metadataFile );
+        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile );
 
         if ( fixChecksums )
         {
-            fixChecksums( metadataFile );
+            fixChecksums( projectMetadataFile );
         }
     }
 

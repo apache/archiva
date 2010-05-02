@@ -22,6 +22,7 @@ package org.apache.archiva.web.test;
 import java.io.File;
 
 import org.apache.archiva.web.test.parent.AbstractBrowseTest;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @Test( groups = { "browse" }, dependsOnMethods = { "testAddArtifactNullValues" } )
@@ -84,6 +85,44 @@ public class BrowseTest
         assertGroupsPage( "continuum/" );
         assertArtifactsPage( "continuum-core/" );
         assertArtifactInfoPage( "1.0-SNAPSHOT/", snapshotsRepo, "continuum", "continuum-core", "1.0-SNAPSHOT", "jar" );
+    }
+
+    // MRM-1353
+    @Test( groups = { "requiresUpload" } )
+    public void testBuildNumberOfSnapshotArtifact()
+    {
+        String snapshotsRepo = getProperty( "SNAPSHOTS_REPOSITORY" );
+
+        String path =
+            "src/test/resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
+        // TODO: do this differently as uploading doesn't work on browsers other than *chrome (below as well)
+        // upload a snapshot artifact to repository 'releases'
+        addArtifact( "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar", path, snapshotsRepo );
+        assertTextPresent( "Artifact 'archiva:archiva-multiple-artifacts:1.0-SNAPSHOT' was successfully deployed to repository '"
+            + snapshotsRepo + "'" );
+
+        goToBrowsePage();
+        assertBrowsePage();
+        assertGroupsPage( "archiva/" );
+        assertArtifactsPage( "archiva-multiple-artifacts/" );
+        assertArtifactInfoPage( "1.0-SNAPSHOT/", snapshotsRepo, "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar" );
+
+
+        addArtifact( "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar", path, snapshotsRepo );
+        assertTextPresent( "Artifact 'archiva:archiva-multiple-artifacts:1.0-SNAPSHOT' was successfully deployed to repository '"
+            + snapshotsRepo + "'" );
+
+        goToBrowsePage();
+        assertBrowsePage();
+        assertGroupsPage( "archiva/" );
+        assertArtifactsPage( "archiva-multiple-artifacts/" );
+        assertArtifactInfoPage( "1.0-SNAPSHOT/", snapshotsRepo, "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar" );
+
+        String firstSnapshotVersion = getText( "//div[@id='download']/div[@id='accordion']/p[2]/a/" );
+        Assert.assertTrue( firstSnapshotVersion.endsWith( "-1" ) );
+
+        String secondSnapshotVersion = getText( "//div[@id='download']/div[@id='accordion']/p[1]/a/" );
+        Assert.assertTrue( secondSnapshotVersion.endsWith( "-2" ) );
     }
 
     private void assertArtifactInfoPage( String version, String artifactInfoRepositoryId, String artifactInfoGroupId,

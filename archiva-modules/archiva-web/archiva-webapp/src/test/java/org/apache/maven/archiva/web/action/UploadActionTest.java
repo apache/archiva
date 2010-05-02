@@ -31,11 +31,14 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
@@ -134,76 +137,156 @@ public class UploadActionTest
         uploadAction.setGeneratePom( generatePom );
     }
 
-    private void assertAllArtifactsIncludingSupportArtifactsArePresent( String repoLocation )
+    private void assertAllArtifactsIncludingSupportArtifactsArePresent( String repoLocation, String artifact,
+                                                                        String version )
     {
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar" ).exists() );
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar.sha1" ).exists() );
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar.md5" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/" + artifact + ".jar" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/" + artifact
+            + ".jar.sha1" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/" + artifact
+            + ".jar.md5" ).exists() );
 
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom" ).exists() );
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.sha1" ).exists() );
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.md5" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/" + artifact + ".pom" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/" + artifact
+            + ".pom.sha1" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/" + artifact
+            + ".pom.md5" ).exists() );
 
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ).exists() );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA +
-            ".sha1" ).exists() );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA +
-            ".md5" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA
+            + ".sha1" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA
+            + ".md5" ).exists() );
     }
 
-    private void verifyChecksums( String repoLocation )
+    private void verifyVersionMetadataChecksums( String repoLocation, String version )
         throws IOException
     {
-        // verify checksums of jar file
-        ChecksummedFile checksum = new ChecksummedFile(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar" ) );
+        ChecksummedFile checksum =
+            new ChecksummedFile( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + MetadataTools.MAVEN_METADATA ) );
         String sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
         String md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
 
-        String contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar.sha1" ) );
+        String contents =
+            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + MetadataTools.MAVEN_METADATA + ".sha1" ) );
         assertTrue( StringUtils.contains( contents, sha1 ) );
 
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar.md5" ) );
-        assertTrue( StringUtils.contains( contents, md5 ) );
-
-        // verify checksums of pom file
-        checksum = new ChecksummedFile(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom" ) );
-        sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.sha1" ) );
-        assertTrue( StringUtils.contains( contents, sha1 ) );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.md5" ) );
-        assertTrue( StringUtils.contains( contents, md5 ) );
-
-        // verify checksums of metadata file
-        checksum = new ChecksummedFile(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ) );
-        sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA + ".sha1" ) );
-        assertTrue( StringUtils.contains( contents, sha1 ) );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA + ".md5" ) );
+        contents =
+            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + MetadataTools.MAVEN_METADATA + ".md5" ) );
         assertTrue( StringUtils.contains( contents, md5 ) );
     }
 
+    private void verifyProjectMetadataChecksums( String repoLocation )
+        throws IOException
+    {
+        ChecksummedFile checksum =
+            new ChecksummedFile( new File( repoLocation, "/org/apache/archiva/artifact-upload/"
+                + MetadataTools.MAVEN_METADATA ) );
+        String sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
+        String md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
+
+        String contents =
+            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/"
+                + MetadataTools.MAVEN_METADATA + ".sha1" ) );
+        assertTrue( StringUtils.contains( contents, sha1 ) );
+
+        contents =
+            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/"
+                + MetadataTools.MAVEN_METADATA + ".md5" ) );
+        assertTrue( StringUtils.contains( contents, md5 ) );
+    }
+
+    private void verifyPomChecksums( String repoLocation, String artifact, String version )
+        throws IOException
+    {
+        ChecksummedFile checksum;
+        String sha1;
+        String md5;
+        String contents;
+        checksum =
+            new ChecksummedFile( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + artifact + ".pom" ) );
+        sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
+        md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
+
+        contents =
+            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + artifact + ".pom.sha1" ) );
+        assertTrue( StringUtils.contains( contents, sha1 ) );
+
+        contents =
+            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + artifact + ".pom.md5" ) );
+        assertTrue( StringUtils.contains( contents, md5 ) );
+    }
+
+    private void verifyArtifactChecksums( String repoLocation, String artifact, String version )
+        throws IOException
+    {
+        ChecksummedFile checksum =
+            new ChecksummedFile( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + artifact + ".jar" ) );
+        String sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
+        String md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
+
+        String contents =
+            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + artifact + ".jar.sha1" ) );
+        assertTrue( StringUtils.contains( contents, sha1 ) );
+
+        contents =
+            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + version + "/"
+                + artifact + ".jar.md5" ) );
+        assertTrue( StringUtils.contains( contents, md5 ) );
+    }
+
+    private String getTimestamp( String[] artifactsList, int startIndex, int index )
+    {
+        int endIndex = -1;
+        String timestamp;
+
+        if ( artifactsList[index].contains( "jar" ) )
+        {
+            endIndex = artifactsList[index].indexOf( ".jar" );
+        }
+        else
+        {
+            endIndex = artifactsList[index].indexOf( ".pom" );
+        }
+        
+        timestamp = artifactsList[index].substring( startIndex, endIndex );
+
+        return timestamp;
+    }
+    
+    private MockControl mockAuditLogs( List<String> resources )
+    {
+        return mockAuditLogs( AuditEvent.UPLOAD_FILE, resources );
+    }
+
+    private MockControl mockAuditLogs( String action, List<String> resources )
+    {
+        MockControl control = MockControl.createControl( AuditListener.class );
+        AuditListener listener = (AuditListener) control.getMock();
+        boolean matcherSet = false;
+        for ( String resource : resources )
+        {
+            listener.auditEvent( new AuditEvent( REPOSITORY_ID, "guest", resource, action ) );
+            if ( !matcherSet )
+            {
+                control.setMatcher( new AuditEventArgumentsMatcher() );
+                matcherSet = true;
+            }
+        }
+        control.replay();
+
+        uploadAction.setAuditListeners( Collections.singletonList( listener ) );
+        return control;
+    }
+    
     public void testArtifactUploadWithPomSuccessful()
         throws Exception
     {
@@ -232,34 +315,11 @@ public class UploadActionTest
         control.verify();
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
-        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
-        verifyChecksums( repoLocation );
-    }
-
-    private MockControl mockAuditLogs( List<String> resources )
-    {
-        return mockAuditLogs( AuditEvent.UPLOAD_FILE, resources );
-    }
-
-    private MockControl mockAuditLogs( String action, List<String> resources )
-    {
-        MockControl control = MockControl.createControl( AuditListener.class );
-        AuditListener listener = (AuditListener) control.getMock();
-        boolean matcherSet = false;
-        for ( String resource : resources )
-        {
-            listener.auditEvent( new AuditEvent( REPOSITORY_ID, "guest", resource, action ) );
-            if ( !matcherSet )
-            {
-                control.setMatcher( new AuditEventArgumentsMatcher() );
-                matcherSet = true;
-            }
-        }
-        control.replay();
-
-        uploadAction.setAuditListeners( Collections.singletonList( listener ) );
-        return control;
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyPomChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyProjectMetadataChecksums( repoLocation );
     }
 
     public void testArtifactUploadWithClassifier()
@@ -290,68 +350,23 @@ public class UploadActionTest
         control.verify();
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
-        assertTrue( new File( repoLocation,
-                              "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar" ).exists() );
         assertTrue( new File( repoLocation,
                               "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar.sha1" ).exists() );
-        assertTrue( new File( repoLocation,
-                              "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar.md5" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar.md5" ).exists() );
 
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom" ).exists() );
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.sha1" ).exists() );
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.md5" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.sha1" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.md5" ).exists() );
 
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ).exists() );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA +
-            ".sha1" ).exists() );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA +
-            ".md5" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA
+            + ".sha1" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA
+            + ".md5" ).exists() );
 
-        // verify checksums of jar file
-        ChecksummedFile checksum = new ChecksummedFile(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar" ) );
-        String sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        String md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
-
-        String contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar.sha1" ) );
-        assertTrue( StringUtils.contains( contents, sha1 ) );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar.md5" ) );
-        assertTrue( StringUtils.contains( contents, md5 ) );
-
-        // verify checksums of jar file
-        checksum = new ChecksummedFile(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom" ) );
-        sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.sha1" ) );
-        assertTrue( StringUtils.contains( contents, sha1 ) );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom.md5" ) );
-        assertTrue( StringUtils.contains( contents, md5 ) );
-
-        // verify checksums of metadata file
-        checksum = new ChecksummedFile(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ) );
-        sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA + ".sha1" ) );
-        assertTrue( StringUtils.contains( contents, sha1 ) );
-
-        contents = FileUtils.readFileToString(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA + ".md5" ) );
-        assertTrue( StringUtils.contains( contents, md5 ) );
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0-tests", "1.0" );
+        verifyProjectMetadataChecksums( repoLocation );
     }
 
     public void testArtifactUploadGeneratePomSuccessful()
@@ -382,9 +397,11 @@ public class UploadActionTest
         control.verify();
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
-        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
-        verifyChecksums( repoLocation );
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyPomChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyProjectMetadataChecksums( repoLocation );
     }
 
     public void testArtifactUploadNoPomSuccessful()
@@ -485,14 +502,11 @@ public class UploadActionTest
         repoFactoryControl.verify();
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
-        assertFalse(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar" ).exists() );
+        assertFalse( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar" ).exists() );
 
-        assertFalse(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom" ).exists() );
+        assertFalse( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.pom" ).exists() );
 
-        assertFalse(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ).exists() );
+        assertFalse( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ).exists() );
     }
 
     public void testArtifactUploadSnapshots()
@@ -527,88 +541,101 @@ public class UploadActionTest
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
         String[] artifactsList = new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/" ).list();
-        
-        assertEquals( 6, artifactsList.length );
+        Arrays.sort( artifactsList );
 
-        assertTrue(
-            new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ).exists() );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA +
-            ".sha1" ).exists() );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA +
-            ".md5" ).exists() );
-        
+        assertEquals( 9, artifactsList.length );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/"
+            + MetadataTools.MAVEN_METADATA ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/"
+            + MetadataTools.MAVEN_METADATA + ".sha1" ).exists() );
+        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/"
+            + MetadataTools.MAVEN_METADATA + ".md5" ).exists() );
+
         int startIndex = "artifact-upload-1.0-".length();
-        int endIndex = -1; 
+        String timestampPath = getTimestamp( artifactsList, startIndex, 0 );
 
-        if ( artifactsList[0].contains( "jar" ) )
-        {
-            endIndex = artifactsList[0].indexOf( ".jar" );
-        }
-        else
-        {
-            endIndex = artifactsList[0].indexOf( ".pom" );
-        }
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0-" + timestampPath,
+                                                               "1.0-SNAPSHOT" );
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0-" + timestampPath, "1.0-SNAPSHOT" );
+        verifyPomChecksums( repoLocation, "artifact-upload-1.0-" + timestampPath, "1.0-SNAPSHOT" );
+        verifyProjectMetadataChecksums( repoLocation );
+        verifyVersionMetadataChecksums( repoLocation, "1.0-SNAPSHOT" );
 
-        String actualTimestamp = artifactsList[0].substring( startIndex, endIndex );
+        // verify build number
+        File metadataFile =
+            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/" + MetadataTools.MAVEN_METADATA );
+        ArchivaRepositoryMetadata artifactMetadata = RepositoryMetadataReader.read( metadataFile );
 
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".jar" ).exists()  );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".jar.md5" ).exists()  );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".jar.sha1" ).exists()  );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".pom" ).exists()  );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".pom.md5" ).exists()  );
-        assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".pom.sha1" ).exists()  );
+        SnapshotVersion snapshotVersion = artifactMetadata.getSnapshotVersion();
+        assertEquals( "Incorrect build number set in artifact metadata.", 1, snapshotVersion.getBuildNumber() );
 
-        // verify checksums of jar file
-        ChecksummedFile checksum =
-            new ChecksummedFile( new File( repoLocation,
-                                           "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".jar" ) );
-        String sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        String md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
+        String timestampPart = StringUtils.substringBeforeLast( timestampPath, "-" );
+        assertEquals( "Incorrect timestamp set in artifact metadata.", timestampPart, snapshotVersion.getTimestamp() );
 
-        String contents =
-            FileUtils.readFileToString( new File( repoLocation,
-                                                  "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".jar.sha1" ) );
-        assertTrue( StringUtils.contains( contents, sha1 ) );
+        String buildnumber = StringUtils.substringAfterLast( timestampPath, "-" );
+        assertEquals( "Incorrect build number in filename.", "1", buildnumber );
 
-        contents =
-            FileUtils.readFileToString( new File( repoLocation,
-                                                  "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".jar.md5" ) );
-        assertTrue( StringUtils.contains( contents, md5 ) );
+        archivaConfigControl.reset();
+        repoFactoryControl.reset();
+        control.reset();
 
-        // verify checksums of pom file
-        checksum =
-            new ChecksummedFile( new File( repoLocation,
-                                           "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".pom" ) );
-        sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
+        control.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
 
-        contents =
-            FileUtils.readFileToString( new File( repoLocation,
-                                                  "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".pom.sha1" ) );
-        assertTrue( StringUtils.contains( contents, sha1 ) );
+        // MRM-1353
+        // upload snapshot artifact again and check if build number was incremented
+        setUploadParameters( "1.0-SNAPSHOT", null,
+                             new File( getBasedir(),
+                                       "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ), null,
+                             true );
 
-        contents =
-            FileUtils.readFileToString( new File( repoLocation,
-                                                  "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + actualTimestamp + ".pom.md5" ) );
-        assertTrue( StringUtils.contains( contents, md5 ) );
-
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
         
-        // verify checksums of metadata file
-        checksum =
-            new ChecksummedFile( new File( repoLocation, "/org/apache/archiva/artifact-upload/" +
-                MetadataTools.MAVEN_METADATA ) );
-        sha1 = checksum.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        md5 = checksum.calculateChecksum( ChecksumAlgorithm.MD5 );
+        archivaConfigControl.replay();
+        repoFactoryControl.replay();
+        
+        fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
+        fmt.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+        timestamp = fmt.format( new Date() );
+        
+        control = mockAuditLogs( Arrays.asList(
+                       "org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + timestamp + "-2.jar",
+                       "org/apache/archiva/artifact-upload/1.0-SNAPSHOT/artifact-upload-1.0-" + timestamp + "-2.pom" ) );
+        
+        returnString = uploadAction.doUpload();
+        assertEquals( Action.SUCCESS, returnString );
 
-        contents =
-            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/" +
-                MetadataTools.MAVEN_METADATA + ".sha1" ) );
-        assertTrue( StringUtils.contains( contents, sha1 ) );
+        archivaConfigControl.verify();
+        repoFactoryControl.verify();
+        control.verify();
+        
+        artifactsList = new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/" ).list();
+        Arrays.sort( artifactsList );
+        
+        assertEquals( 15, artifactsList.length );
 
-        contents =
-            FileUtils.readFileToString( new File( repoLocation, "/org/apache/archiva/artifact-upload/" +
-                MetadataTools.MAVEN_METADATA + ".md5" ) );
-        assertTrue( StringUtils.contains( contents, md5 ) );
+        timestampPath = getTimestamp( artifactsList, startIndex, 6 );
+
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0-" + timestampPath,
+                                                               "1.0-SNAPSHOT" );
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0-" + timestampPath, "1.0-SNAPSHOT" );
+        verifyPomChecksums( repoLocation, "artifact-upload-1.0-" + timestampPath, "1.0-SNAPSHOT" );
+        verifyProjectMetadataChecksums( repoLocation );
+        verifyVersionMetadataChecksums( repoLocation, "1.0-SNAPSHOT" );
+
+        // verify build number set in metadata and in filename
+        metadataFile =
+            new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/" + MetadataTools.MAVEN_METADATA );
+        artifactMetadata = RepositoryMetadataReader.read( metadataFile );
+
+        snapshotVersion = artifactMetadata.getSnapshotVersion();
+        assertEquals( "Incorrect build number set in artifact metadata.", 2, snapshotVersion.getBuildNumber() );
+
+        timestampPart = StringUtils.substringBeforeLast( timestampPath, "-" );
+        assertEquals( "Incorrect timestamp set in artifact metadata.", timestampPart, snapshotVersion.getTimestamp() );
+
+        buildnumber = StringUtils.substringAfterLast( timestampPath, "-" );
+        assertEquals( "Incorrect build number in filename.", "2", buildnumber );
     }
 
     public void testChecksumIsCorrectWhenArtifactIsReUploaded()
@@ -639,9 +666,11 @@ public class UploadActionTest
         repoFactoryControl.reset();
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
-        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
-        verifyChecksums( repoLocation );
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyPomChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyProjectMetadataChecksums( repoLocation );
 
         // RE-upload artifact
         setUploadParameters( "1.0", null, new File( getBasedir(),
@@ -668,9 +697,11 @@ public class UploadActionTest
         control.verify();
 
         repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
-        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
-        verifyChecksums( repoLocation );
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyPomChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyProjectMetadataChecksums( repoLocation );
     }
 
     public void testUploadArtifactAlreadyExistingRedeploymentsBlocked()
@@ -706,9 +737,11 @@ public class UploadActionTest
         control.verify();
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
-        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
-        verifyChecksums( repoLocation );
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyPomChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyProjectMetadataChecksums( repoLocation );
     }
 
     public void testUploadArtifactAlreadyExistingRedeploymentsAllowed()
@@ -750,9 +783,10 @@ public class UploadActionTest
         control.verify();
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
-        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation );
+        assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
-        verifyChecksums( repoLocation );
+        verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyPomChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
+        verifyProjectMetadataChecksums( repoLocation );
     }
-
 }
