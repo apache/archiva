@@ -313,7 +313,7 @@ public class UploadAction
             int newBuildNumber = -1;
             String timestamp = null;
 
-            File versionMetadataFile = getMetadata( targetPath.getAbsolutePath() );
+            File versionMetadataFile = new File( targetPath, MetadataTools.MAVEN_METADATA );
             ArchivaRepositoryMetadata versionMetadata = getMetadata( versionMetadataFile );
 
             if ( VersionUtil.isSnapshot( version ) )
@@ -501,11 +501,6 @@ public class UploadAction
         return pomFile;
     }
 
-    private File getMetadata( String targetPath )
-    {
-        return new File( targetPath, MetadataTools.MAVEN_METADATA );
-    }
-
     private ArchivaRepositoryMetadata getMetadata( File metadataFile )
         throws RepositoryMetadataException
     {
@@ -561,8 +556,9 @@ public class UploadAction
         List<String> availableVersions = new ArrayList<String>();
         String latestVersion = version;
 
-        String projectPath = targetPath.substring( 0, targetPath.lastIndexOf( File.separatorChar ) );
-        File projectMetadataFile = getMetadata( projectPath );
+        File projectDir = new File( targetPath ).getParentFile();
+        File projectMetadataFile =  new File( projectDir, MetadataTools.MAVEN_METADATA );
+
         ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetadataFile );
 
         if ( projectMetadataFile.exists() )
