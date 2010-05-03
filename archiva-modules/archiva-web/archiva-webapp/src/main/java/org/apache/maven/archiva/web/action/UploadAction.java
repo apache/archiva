@@ -410,8 +410,8 @@ public class UploadAction
 
             }
 
-            // explicitly update only if versionMetadata-updater consumer is not enabled!
-            if ( !config.getRepositoryScanning().getKnownContentConsumers().contains( "versionMetadata-updater" ) )
+            // explicitly update only if metadata-updater consumer is not enabled!
+            if ( !config.getRepositoryScanning().getKnownContentConsumers().contains( "metadata-updater" ) )
             {
                 updateProjectMetadata( targetPath.getAbsolutePath(), lastUpdatedTimestamp, timestamp, newBuildNumber,
                                           fixChecksums );
