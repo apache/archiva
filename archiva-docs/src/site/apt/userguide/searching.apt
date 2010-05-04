@@ -76,10 +76,10 @@ Searching
   For example you typed in 'ant', the search result would contain the list of artifacts that use or
   reference 'ant'.
   
-  For query strings that are separated by whitespaces, Archiva searches for the exact query string.
-  So if you typed in 'commons logging', the search result would contain the list of artifacts that use or
-  reference 'commons logging' and not artifacts that only contain both 'commons' and 'logging'
-  such as 'commons-logging'.
+  For query strings containing whitespaces, Archiva searches for the query string including the whitespaces.
+  So if you typed in 'commons logging', the search result would contain the list of artifacts that
+  reference 'commons logging' which is still separated by whitespace.
+  In this case, 'commons-logging' (hyphen separated) is not included in the search results.
 
   Archiva can also search the index for java classes, packages, and methods and return a list of artifacts containing the
   query string. In the previous versions, we need to append the keyword 'bytecode:' before the query string in the search box
