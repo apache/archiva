@@ -368,6 +368,41 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    public void testGetProjectMetadata()
+    {
+        ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
+        Dependency dependency1 = createDependencyBasic( "artifactId1" );
+        Dependency dependency2 = createDependencyExtended( "artifactId2" );
+        versionMetadata.setDependencies( Arrays.asList( dependency1, dependency2 ) );
+
+        MailingList ml1 = createMailingList( "Users List", "users" );
+        MailingList ml2 = createMailingList( "Developers List", "dev" );
+        versionMetadata.setMailingLists( Arrays.asList( ml1, ml2 ) );
+
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
+
+        setActionParameters();
+
+        String result = action.projectMetadata();
+
+        assertActionSuccess( action, result );
+
+        assertActionParameters( action );
+        ProjectVersionMetadata projectMetadata = action.getProjectMetadata();
+        assertDefaultModel( projectMetadata );
+
+        assertNotNull( projectMetadata.getDependencies() );
+        assertDependencyBasic( projectMetadata.getDependencies().get( 0 ), "artifactId1" );
+        assertDependencyExtended( projectMetadata.getDependencies().get( 1 ), "artifactId2" );
+
+        assertEquals( TEST_REPO, action.getRepositoryId() );
+        assertNull( action.getModel() );
+        assertNull( action.getDependees() );
+        assertNull( action.getDependencies() );
+        assertNull( action.getMailingLists() );
+        assertTrue( action.getArtifacts().isEmpty() );
+    }
+
     private void assertArtifacts( List<ArtifactMetadata> expectedArtifacts,
                                   Map<String, List<ShowArtifactAction.ArtifactDownloadInfo>> artifactMap )
     {

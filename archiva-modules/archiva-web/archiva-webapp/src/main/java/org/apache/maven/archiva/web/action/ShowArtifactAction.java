@@ -25,6 +25,7 @@ import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
@@ -67,6 +68,11 @@ public class ShowArtifactAction
      */
     private RepositoryContentFactory repositoryFactory;
 
+    /**
+     * @plexus.requirement
+     */
+    private MetadataRepository metadataRepository;
+
     /* .\ Exposed Output Objects \.__________________________________ */
 
     private String groupId;
@@ -95,6 +101,8 @@ public class ShowArtifactAction
 
     private boolean dependencyTree = false;
 
+    private ProjectVersionMetadata projectMetadata;
+   
     /**
      * Show the versioned project information tab.
      * TODO: Change name to 'project' - we are showing project versions here, not specific artifact information (though
@@ -102,13 +110,35 @@ public class ShowArtifactAction
      */
     public String artifact()
     {
+
+        // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
+        // simple resource requests here and letting the resolver take care of it
+        String errorMsg = null;
+        ProjectVersionMetadata versionMetadata = getProjectVersionMetadata();
+
+        if ( versionMetadata == null )
+        {
+            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
+            return ERROR;
+        }
+
+        if ( versionMetadata.isIncomplete() )
+        {
+            addIncompleteModelWarning();
+        }
+
+        model = versionMetadata;
+
+        return SUCCESS;
+    }
+
+    private ProjectVersionMetadata getProjectVersionMetadata()
+    {
         ProjectVersionMetadata versionMetadata = null;
         artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
 
         List<String> repos = getObservableRepos();
-        // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
-        // simple resource requests here and letting the resolver take care of it
-        String errorMsg = null;
+
         for ( String repoId : repos )
         {
             if ( versionMetadata == null )
@@ -122,7 +152,7 @@ public class ShowArtifactAction
                 catch ( MetadataResolutionException e )
                 {
                     addIncompleteModelWarning();
-                    
+
                     // TODO: need a consistent way to construct this - same in ArchivaMetadataCreationConsumer
                     versionMetadata = new ProjectVersionMetadata();
                     versionMetadata.setId( version );
@@ -138,7 +168,7 @@ public class ShowArtifactAction
                         public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
                         {
                             // sort by version (reverse), then ID
-                            // TODO: move version sorting into repository handling (maven2 specific), and perhaps add a 
+                            // TODO: move version sorting into repository handling (maven2 specific), and perhaps add a
                             //       way to get latest instead
                             int result = new DefaultArtifactVersion( o2.getVersion() ).compareTo(
                                 new DefaultArtifactVersion( o1.getVersion() ) );
@@ -160,20 +190,7 @@ public class ShowArtifactAction
             }
         }
 
-        if ( versionMetadata == null )
-        {
-            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
-            return ERROR;
-        }
-
-        if ( versionMetadata.isIncomplete() )
-        {
-            addIncompleteModelWarning();
-        }
-
-        model = versionMetadata;
-
-        return SUCCESS;
+        return versionMetadata;
     }
 
     private void addIncompleteModelWarning()
@@ -251,6 +268,32 @@ public class ShowArtifactAction
         this.dependencyTree = true;
 
         return artifact();
+    }
+
+    public String projectMetadata()
+    {
+        projectMetadata = getProjectVersionMetadata();
+        String errorMsg = null;
+
+        if ( projectMetadata == null )
+        {
+            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
+            return ERROR;
+        }
+
+        if ( projectMetadata.isIncomplete() )
+        {
+            addIncompleteModelWarning();
+        }
+
+        return SUCCESS;
+    }
+
+    public String updateProjectMetadata()
+    {
+        metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );
+
+        return SUCCESS;
     }
 
     @Override
@@ -355,6 +398,16 @@ public class ShowArtifactAction
     public boolean isDependencyTree()
     {
         return dependencyTree;
+    }
+
+    public ProjectVersionMetadata getProjectMetadata()
+    {
+        return projectMetadata;
+    }
+
+    public void setProjectMetadata( ProjectVersionMetadata projectMetadata )
+    {
+        this.projectMetadata = projectMetadata;
     }
 
     // TODO: move this into the artifact metadata itself via facets where necessary
@@ -478,5 +531,7 @@ public class ShowArtifactAction
         {
             return path;
         }
+
+
     }
 }

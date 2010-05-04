@@ -126,6 +126,14 @@
         </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
+      <c:set var="url">
+        <s:url action="showProjectMetadata">
+          <s:param name="groupId" value="%{groupId}"/>
+          <s:param name="artifactId" value="%{artifactId}"/>
+          <s:param name="version" value="%{version}"/>
+        </s:url>
+      </c:set>
+      <my:currentWWUrl url="${url}">Metadata</my:currentWWUrl>
       <%-- TODO
       <redback:ifAnyAuthorized permissions="archiva-access-reports">
         <c:set var="url">
@@ -211,6 +219,9 @@
   <%-- TODO: panels? this is ugly as is --%>
   <div id="tabArea">
     <c:choose>
+      <c:when test="${projectMetadata != null}">
+        <%@ include file="/WEB-INF/jsp/include/projectMetadata.jspf" %>
+      </c:when>
       <c:when test="${dependencies != null}">
         <%@ include file="/WEB-INF/jsp/include/artifactDependencies.jspf" %>
       </c:when>
@@ -229,6 +240,7 @@
       <c:otherwise>
         <%@ include file="/WEB-INF/jsp/include/artifactInfo.jspf" %>
       </c:otherwise>
+
     </c:choose>
 
     <s:if test="hasActionMessages()">

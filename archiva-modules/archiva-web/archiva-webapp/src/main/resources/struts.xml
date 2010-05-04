@@ -218,6 +218,10 @@
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
+    <action name="showProjectMetadata" class="showArtifactAction" method="projectMetadata">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
   </package>
 
   <package name="components" namespace="/components" extends="struts-default">
