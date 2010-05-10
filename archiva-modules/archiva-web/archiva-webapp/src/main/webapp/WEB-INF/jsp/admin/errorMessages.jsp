@@ -17,6 +17,9 @@
   ~ under the License.
   --%>
 
+<%@ page contentType="text/html; charset=UTF-8" %>
+
+
 <p>
   <s:if test="hasActionErrors()">
     <b style="color: red;">Errors:</b>
