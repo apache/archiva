@@ -19,6 +19,7 @@
   ~ under the License.
   --%>
 
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -39,7 +40,7 @@
   <link rel="stylesheet" href="<c:url value="/css/site.css"/>" type="text/css" media="all"/>
   <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
   <link rel="shortcut icon" href="<c:url value="/favicon.ico" />"/>
-  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <decorator:head />
 </head>
 

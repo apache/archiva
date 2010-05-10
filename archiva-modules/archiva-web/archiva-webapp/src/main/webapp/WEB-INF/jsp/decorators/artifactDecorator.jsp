@@ -17,6 +17,7 @@
   ~ under the License.
   --%>
 
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
 <%@ taglib prefix="page"      uri="http://www.opensymphony.com/sitemesh/page" %>
 <%@ taglib prefix="s"         uri="/struts-tags" %>
@@ -25,7 +26,7 @@
 <%@ taglib prefix="my"        tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="archiva"   uri="/WEB-INF/taglib.tld" %>
 
-<page:applyDecorator name="default">
+<page:applyDecorator name="default" encoding="UTF-8">
 
 <html>
 <head>

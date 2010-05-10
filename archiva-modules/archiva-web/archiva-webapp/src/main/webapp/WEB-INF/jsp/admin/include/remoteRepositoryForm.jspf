@@ -17,6 +17,7 @@
   ~ under the License.
   --%>
 
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
 <s:textfield name="repository.name" label="Name" size="50" required="true"/>
