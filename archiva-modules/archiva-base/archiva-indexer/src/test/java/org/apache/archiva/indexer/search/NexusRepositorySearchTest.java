@@ -86,7 +86,7 @@ public class NexusRepositorySearchTest
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
     }
 
-    private void createIndexForQuickSearch()
+    private void createSimpleIndex()
         throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
         List<File> files = new ArrayList<File>();
@@ -97,6 +97,28 @@ public class NexusRepositorySearchTest
         files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
             "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
 
+        createIndex( TEST_REPO_1, files );
+    }
+    
+    private void createIndexContainingMoreArtifacts()
+        throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
+    {
+        List<File> files = new ArrayList<File>();
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+        "/org/apache/archiva/archiva-webapp/1.0/archiva-webapp-1.0.war" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/com/classname-search/1.0/classname-search-1.0.jar" ) );
+        
         createIndex( TEST_REPO_1, files );
     }
 
@@ -156,7 +178,7 @@ public class NexusRepositorySearchTest
     public void testQuickSearch()
         throws Exception
     {   
-        createIndexForQuickSearch();
+        createSimpleIndex();
         
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -199,7 +221,7 @@ public class NexusRepositorySearchTest
     public void testQuickSearchWithMultipleKeywords()
         throws Exception
     {   
-        createIndexForQuickSearch();
+        createSimpleIndex();
         
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -218,7 +240,7 @@ public class NexusRepositorySearchTest
     public void testQuickSearchWithPagination()
         throws Exception
     {   
-        createIndexForQuickSearch();
+        createSimpleIndex();
         
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -263,7 +285,7 @@ public class NexusRepositorySearchTest
     public void testArtifactFoundInMultipleRepositories()
         throws Exception
     {
-        createIndexForQuickSearch();
+        createSimpleIndex();
         
         List<File> files = new ArrayList<File>();
         files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 +
@@ -304,7 +326,7 @@ public class NexusRepositorySearchTest
     public void testNoMatchFound()
         throws Exception
     {
-        createIndexForQuickSearch();
+        createSimpleIndex();
         
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -358,7 +380,7 @@ public class NexusRepositorySearchTest
     public void testSearchWithinSearchResults()
         throws Exception
     {
-        createIndexForQuickSearch();
+        createSimpleIndex();
         
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -424,23 +446,7 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearchWithPagination()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-webapp/1.0/archiva-webapp-1.0.war" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/classname-search/1.0/classname-search-1.0.jar" ) );
-        
-        createIndex( TEST_REPO_1, files );
+        createIndexContainingMoreArtifacts();
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -596,15 +602,7 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearchAllSearchCriteriaSpecified()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
-
-        createIndex( TEST_REPO_1, files );
+        createSimpleIndex();
         
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -638,23 +636,7 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearchJarArtifacts()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-        "/org/apache/archiva/archiva-webapp/1.0/archiva-webapp-1.0.war" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/classname-search/1.0/classname-search-1.0.jar" ) );
-        
-        createIndex( TEST_REPO_1, files );
+        createIndexContainingMoreArtifacts();
     
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -678,15 +660,7 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearchWithIncorrectPackaging()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
-    
-        createIndex( TEST_REPO_1, files );
+        createSimpleIndex();
         
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -712,23 +686,7 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearchClassname()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-        "/org/apache/archiva/archiva-webapp/1.0/archiva-webapp-1.0.war" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
-            "/com/classname-search/1.0/classname-search-1.0.jar" ) );
-        
-        createIndex( TEST_REPO_1, files );
+        createIndexContainingMoreArtifacts();
     
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
