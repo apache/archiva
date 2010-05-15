@@ -195,6 +195,26 @@ public class NexusRepositorySearchTest
         //TODO: search for class & package names
     }
     
+    // search for existing artifact using multiple keywords
+    public void testQuickSearchWithMultipleKeywords()
+        throws Exception
+    {   
+        createIndexForQuickSearch();
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        archivaConfigControl.replay();
+        
+        SearchResults results = search.search( "user", selectedRepos, "archiva search", null, null );
+        
+        archivaConfigControl.verify();
+        
+        assertNotNull( results );
+        assertEquals( 0, results.getTotalHits() );
+    }
+    
     public void testQuickSearchWithPagination()
         throws Exception
     {   
@@ -573,6 +593,48 @@ public class NexusRepositorySearchTest
         }
     }
     
+    public void testAdvancedSearchAllSearchCriteriaSpecified()
+        throws Exception
+    {
+        List<File> files = new ArrayList<File>();
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
+
+        createIndex( TEST_REPO_1, files );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+        
+        SearchFields searchFields = new SearchFields();
+        searchFields.setGroupId( "org.apache.archiva" );
+        searchFields.setArtifactId( "archiva-test" );
+        searchFields.setVersion( "2.0" );
+        searchFields.setPackaging( "jar" );
+        searchFields.setClassName( "org.apache.archiva.test.App" );
+        searchFields.setRepositories( selectedRepos );
+        
+        archivaConfigControl.expectAndDefaultReturn( archivaConfig.getConfiguration(), config );
+        
+        archivaConfigControl.replay();
+        
+        SearchResults results = search.search( "user", searchFields, null );
+        
+        archivaConfigControl.verify();
+        
+        assertNotNull( results );
+        
+        assertEquals( 1, results.getTotalHits() );
+        
+        SearchResultHit hit = results.getHits().get( 0 );
+        assertEquals( "org.apache.archiva", hit.getGroupId() );
+        assertEquals( "archiva-test", hit.getArtifactId() );
+        assertEquals( "2.0", hit.getVersions().get( 0 ) );
+    }
+    
     public void testAdvancedSearchJarArtifacts()
         throws Exception
     {
@@ -611,6 +673,40 @@ public class NexusRepositorySearchTest
     
         assertNotNull( results );
         assertEquals( 5, results.getTotalHits() );        
+    }
+    
+    public void testAdvancedSearchWithIncorrectPackaging()
+        throws Exception
+    {
+        List<File> files = new ArrayList<File>();
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
+        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
+    
+        createIndex( TEST_REPO_1, files );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+        
+        SearchFields searchFields = new SearchFields();
+        searchFields.setGroupId( "org.apache.archiva" );
+        searchFields.setArtifactId( "archiva-test" );
+        searchFields.setVersion( "2.0" );
+        searchFields.setPackaging( "war" );
+        searchFields.setRepositories( selectedRepos );
+        
+        archivaConfigControl.expectAndDefaultReturn( archivaConfig.getConfiguration(), config );
+        archivaConfigControl.replay();
+        
+        SearchResults results = search.search( "user", searchFields, null );
+        
+        archivaConfigControl.verify();
+        
+        assertNotNull( results );
+        assertEquals( 0, results.getTotalHits() );
     }
     
     public void testAdvancedSearchClassname()

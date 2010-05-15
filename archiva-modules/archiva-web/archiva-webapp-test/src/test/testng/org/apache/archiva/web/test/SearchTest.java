@@ -54,6 +54,30 @@ public class SearchTest
         clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
         assertPage( "Apache Archiva \\ Browse Repository" );
     }
+    
+    public void testSearchWithMultipleKeywords()
+    {
+        String groupId = getProperty( "ADD_REMOVE_GROUPID" );
+        String version = getProperty( "SNAPSHOT_VERSION" );
+        String packaging = getProperty( "SNAPSHOT_PACKAGING" );
+        String filePath = getProperty( "SNAPSHOT_ARTIFACTFILEPATH" );
+        String repoId = getProperty( "SNAPSHOT_REPOSITORYID" );
+        
+        String existingArtifactId = getProperty( "ADD_REMOVE_ARTIFACTID" );
+        String multiKeywords = existingArtifactId.replace( "-", " " );
+        
+        addArtifact( groupId, existingArtifactId, version, packaging, filePath, repoId );
+        
+        // verify artifact is existing
+        searchForArtifact( existingArtifactId );
+        assertTextPresent( "Results" );
+        assertTextPresent( "Hits: 1 to 1 of 1" );
+        assertLinkPresent( existingArtifactId );
+        
+        // search for existing artifact using multiple keywords
+        searchForArtifact( multiKeywords );
+        assertTextPresent( "No results found" );
+    }
 
     public void testSearchNonExistingArtifactInAdvancedSearch()
     {
@@ -80,6 +104,15 @@ public class SearchTest
     {
         searchForArtifactAdvancedSearch( getProperty( "GROUPID" ), null, null, getProperty( "REPOSITORYID" ), null,
                                          null );
+        assertTextPresent( "Results" );
+        assertTextPresent( "Hits: 1 to 1 of 1" );
+        assertLinkPresent( "test" );
+    }
+
+    public void testSearchExistingArtifactAllCriteriaSpecifiedInAdvancedSearch()
+    {
+        searchForArtifactAdvancedSearch( getProperty( "GROUPID" ), getProperty( "ARTIFACT_ARTIFACTID" ) , getProperty( "ARTIFACT_VERSION" ), 
+                                         getProperty( "REPOSITORYID" ), getProperty( "ARTIFACT_CLASSNAME" ), null );
         assertTextPresent( "Results" );
         assertTextPresent( "Hits: 1 to 1 of 1" );
         assertLinkPresent( "test" );
