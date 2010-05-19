@@ -62,6 +62,7 @@
     <th>Description</th>
     <td>${projectMetadata.description}</td>
   </tr>
+</table>
 
 <c:if test="${projectMetadata.organization != null || !empty (projectMetadata.licenses)
     || projectMetadata.issueManagement != null || projectMetadata.ciManagement != null }">
