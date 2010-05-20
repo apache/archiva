@@ -19,17 +19,26 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
+import java.lang.reflect.Field;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
+import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
+import org.codehaus.plexus.scheduler.DefaultScheduler;
 import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.codehaus.plexus.spring.PlexusWebApplicationContext;
+import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
-import org.springframework.context.ApplicationContext;
+import org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
 
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order.
@@ -39,6 +48,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ArchivaStartup
     implements ServletContextListener
 {
+    private ThreadedTaskQueueExecutor tqeDbScanning;
+
+    private ThreadedTaskQueueExecutor tqeRepoScanning;
+
+    private ThreadedTaskQueueExecutor tqeIndexing;
+
+    private ArchivaTaskScheduler taskScheduler;
+    
     public void contextInitialized( ServletContextEvent contextEvent )
     {
         WebApplicationContext wac =
@@ -48,11 +65,19 @@ public class ArchivaStartup
             (SecuritySynchronization) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySynchronization.class ) );
         ResolverFactoryInit resolverFactory =
             (ResolverFactoryInit) wac.getBean( PlexusToSpringUtils.buildSpringId( ResolverFactoryInit.class ) );
-        ArchivaTaskScheduler taskScheduler =
+
+        taskScheduler =
             (ArchivaTaskScheduler) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaTaskScheduler.class ) );
-        wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class, "database-update" ) );
-        wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class, "repository-scanning" ) );
-        wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class, "indexing" ) );
+
+        tqeDbScanning =
+            (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class,
+                                                                                        "database-update" ) );
+        tqeRepoScanning =
+            (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class,
+                                                                                        "repository-scanning" ) );
+        tqeIndexing =
+            (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class,
+                                                                                        "indexing" ) );
 
         try
         {
@@ -69,11 +94,91 @@ public class ArchivaStartup
 
     public void contextDestroyed( ServletContextEvent contextEvent )
     {
-        ApplicationContext applicationContext =
+        WebApplicationContext applicationContext =
             WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
         if ( applicationContext != null && applicationContext instanceof ClassPathXmlApplicationContext )
         {
             ( (ClassPathXmlApplicationContext) applicationContext ).close();
         }
+
+        if ( applicationContext != null && applicationContext instanceof PlexusWebApplicationContext )
+        {
+            // stop task queue executors
+            stopTaskQueueExecutor( tqeDbScanning );
+            stopTaskQueueExecutor( tqeRepoScanning );
+            stopTaskQueueExecutor( tqeIndexing );
+
+            // stop the DefaultArchivaTaskScheduler and its scheduler
+            if ( taskScheduler != null && taskScheduler instanceof DefaultArchivaTaskScheduler )
+            {
+                try
+                {
+                    ( (DefaultArchivaTaskScheduler) taskScheduler ).stop();
+                }
+                catch ( StoppingException e )
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            try
+            {
+                // shutdown the scheduler, otherwise Quartz scheduler and Threads still exists
+                Field schedulerField = taskScheduler.getClass().getDeclaredField( "scheduler" );
+                schedulerField.setAccessible( true );
+
+                DefaultScheduler scheduler = (DefaultScheduler) schedulerField.get( taskScheduler );
+                scheduler.stop();
+            }
+            catch ( Exception e )
+            {   
+                e.printStackTrace();
+            }
+
+            // close the application context
+            ( (PlexusWebApplicationContext) applicationContext ).close();
+        }
+    }
+
+    private void stopTaskQueueExecutor( ThreadedTaskQueueExecutor taskQueueExecutor )
+    {
+        if ( taskQueueExecutor != null )
+        {
+            Task currentTask = taskQueueExecutor.getCurrentTask();
+            if ( currentTask != null )
+            {
+                taskQueueExecutor.cancelTask( currentTask );
+            }
+
+            try
+            {
+                taskQueueExecutor.stop();
+                ExecutorService service = getExecutorServiceForTTQE( taskQueueExecutor );
+                if ( service != null )
+                {
+                    service.shutdown();
+                }
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private ExecutorService getExecutorServiceForTTQE( ThreadedTaskQueueExecutor ttqe )
+    {
+        ExecutorService service = null;
+        try
+        {
+            Field executorServiceField = ttqe.getClass().getDeclaredField( "executorService" );
+            executorServiceField.setAccessible( true );
+            service = (ExecutorService) executorServiceField.get( ttqe );
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+        }
+        return service;
     }
 }
