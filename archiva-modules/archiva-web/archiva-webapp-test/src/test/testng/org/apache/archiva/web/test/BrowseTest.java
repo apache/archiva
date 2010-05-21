@@ -29,6 +29,20 @@ import org.testng.annotations.Test;
 public class BrowseTest
     extends AbstractBrowseTest
 {
+    public void testBrowseArtifactPageTabs()
+    {
+        goToBrowsePage();
+        clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
+        
+        assertTextPresent( "Info" );
+        assertTextPresent( "Dependencies" );
+        assertTextPresent( "Dependency Tree" );
+        assertTextPresent( "Used By" );
+        assertTextPresent( "Mailing Lists" );
+        assertTextPresent( "Metadata" );
+    }
 
     public void testBrowseArtifact()
     {
