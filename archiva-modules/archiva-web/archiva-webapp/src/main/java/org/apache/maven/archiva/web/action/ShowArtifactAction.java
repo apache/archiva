@@ -29,7 +29,6 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
-import org.apache.maven.archiva.web.util.ProjectMetadataDisplayUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -290,13 +289,6 @@ public class ShowArtifactAction
         return SUCCESS;
     }
     
-    public String getMetadataOutput()
-    {
-        ProjectMetadataDisplayUtil metadataDisplayUtil = new ProjectMetadataDisplayUtil();
-        
-        return metadataDisplayUtil.formatProjectMetadata( projectMetadata );
-    }
-
     public String updateProjectMetadata()
     {
         metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );

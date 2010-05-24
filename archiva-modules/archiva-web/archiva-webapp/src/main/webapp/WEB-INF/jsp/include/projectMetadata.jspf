@@ -36,5 +36,5 @@
 </p>
 
 <div>
-  ${metadataOutput}
+  <archiva:project-metadata object="${projectMetadata}" />
 </div>
