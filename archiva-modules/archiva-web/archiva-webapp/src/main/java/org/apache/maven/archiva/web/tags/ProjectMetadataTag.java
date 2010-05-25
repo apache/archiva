@@ -109,8 +109,8 @@ public class ProjectMetadataTag
             addListItem( "organization.name=", projectMetadata.getOrganization().getName(), metadataEntries );
             addListItem( "organization.url=", projectMetadata.getOrganization().getUrl(), metadataEntries );
             endList( metadataEntries );
+            endListItem( metadataEntries );
         }
-        endListItem( metadataEntries );
         
         if ( projectMetadata.getIssueManagement() != null )
         {
@@ -119,8 +119,8 @@ public class ProjectMetadataTag
             addListItem( "issueManagement.system=", projectMetadata.getIssueManagement().getSystem(), metadataEntries );
             addListItem( "issueManagement.url=", projectMetadata.getIssueManagement().getUrl(), metadataEntries );
             endList( metadataEntries );
+            endListItem( metadataEntries );
         }
-        endListItem( metadataEntries );
         
         if ( projectMetadata.getScm() != null )
         {
@@ -131,8 +131,8 @@ public class ProjectMetadataTag
             addListItem( "scm.developer.connection=", projectMetadata.getScm().getDeveloperConnection(),
                          metadataEntries );
             endList( metadataEntries );
+            endListItem( metadataEntries );
         }
-        endListItem( metadataEntries );
         
         if ( projectMetadata.getCiManagement() != null )
         {
@@ -141,8 +141,8 @@ public class ProjectMetadataTag
             addListItem( "ciManagement.system=", projectMetadata.getCiManagement().getSystem(), metadataEntries );
             addListItem( "ciManagement.url=", projectMetadata.getCiManagement().getUrl(), metadataEntries );
             endList( metadataEntries );
+            endListItem( metadataEntries );
         }
-        endListItem( metadataEntries );
         
         if ( projectMetadata.getLicenses() != null && !projectMetadata.getLicenses().isEmpty() )
         {
@@ -157,8 +157,8 @@ public class ProjectMetadataTag
                 ctr++;
             }
             endList( metadataEntries );
+            endListItem( metadataEntries );
         }
-        endListItem( metadataEntries );
         
         if ( projectMetadata.getMailingLists() != null && !projectMetadata.getMailingLists().isEmpty() )
         {
@@ -197,8 +197,8 @@ public class ProjectMetadataTag
                 ctr++;
             }
             endList( metadataEntries );
+            endListItem( metadataEntries );
         }
-        endListItem( metadataEntries );
         
         if ( projectMetadata.getDependencies() != null && !projectMetadata.getDependencies().isEmpty() )
         {
@@ -219,8 +219,8 @@ public class ProjectMetadataTag
                 ctr++;
             }
             endList( metadataEntries );
+            endListItem( metadataEntries );
         }
-        endListItem( metadataEntries );
 
         endList( metadataEntries );
     }
