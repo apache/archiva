@@ -222,6 +222,13 @@
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
+    <action name="deleteMetadataEntry" class="showArtifactAction" method="deleteMetadataEntry">
+      <result name="success" type="redirect-action">
+        <param name="actionName">showProjectMetadata</param>
+        <param name="namespace">/</param>
+      </result>
+    </action>
+
   </package>
 
   <package name="components" namespace="/components" extends="struts-default">

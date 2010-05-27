@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
+import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
@@ -102,6 +103,10 @@ public class ShowArtifactAction
     private boolean dependencyTree = false;
 
     private ProjectVersionMetadata projectMetadata;
+    
+    private String deleteItem;
+    
+    private String itemValue;
    
     /**
      * Show the versioned project information tab.
@@ -295,7 +300,90 @@ public class ShowArtifactAction
 
         return SUCCESS;
     }
-
+    
+    public String deleteMetadataEntry()
+    {   
+        projectMetadata = getProjectVersionMetadata();
+        
+        if ( !StringUtils.isEmpty( deleteItem ) && !StringUtils.isEmpty( itemValue ) )
+        {
+            if ( "dependency".equals( deleteItem ) )
+            {
+                removeDependency();
+            }
+            else if ( "mailingList".equals( deleteItem ) )
+            {
+                removeMailingList();
+            }
+            else if ( "license".equals( deleteItem ) )
+            {
+                removeLicense();
+            }
+            
+            deleteItem = "";
+            itemValue = "";
+        }
+        
+        return updateProjectMetadata();
+    }
+    
+    private void removeDependency()
+    {
+        List<Dependency> dependencies = projectMetadata.getDependencies();
+        List<Dependency> newDependencies = new ArrayList<Dependency>();
+        
+        if ( dependencies != null )
+        {
+            for ( Dependency dependency : dependencies )
+            {
+                if ( !StringUtils.equals( itemValue, dependency.getArtifactId() ) )
+                {
+                    newDependencies.add( dependency );
+                }
+            }
+        }
+        
+        projectMetadata.setDependencies( newDependencies );
+    }
+    
+    private void removeMailingList()
+    {
+        List<MailingList> mailingLists = projectMetadata.getMailingLists();
+        List<MailingList> newMailingLists = new ArrayList<MailingList>();
+        
+        if ( mailingLists != null )
+        {
+            for ( MailingList mailingList : mailingLists )
+            {
+                if ( !StringUtils.equals( itemValue, mailingList.getName() ) )
+                {
+                    newMailingLists.add( mailingList );
+                }
+            }
+        }
+        
+        projectMetadata.setMailingLists( newMailingLists );
+    }
+    
+    private void removeLicense()
+    {
+        List<License> licenses = projectMetadata.getLicenses();
+        List<License> newLicenses = new ArrayList<License>();
+        
+        if ( licenses != null )
+        {
+            for ( License license : licenses )
+            {
+                if ( !StringUtils.equals( itemValue, license.getName() ) )
+                {
+                    newLicenses.add( license );
+                }
+            }
+        }
+        
+        projectMetadata.setLicenses( newLicenses );
+    }
+    
     @Override
     public void validate()
     {
@@ -408,6 +496,16 @@ public class ShowArtifactAction
     public void setProjectMetadata( ProjectVersionMetadata projectMetadata )
     {
         this.projectMetadata = projectMetadata;
+    }
+
+    public void setDeleteItem( String deleteItem )
+    {
+        this.deleteItem = deleteItem; 
+    }
+    
+    public void setItemValue( String itemValue )
+    {
+        this.itemValue = itemValue;
     }
 
     // TODO: move this into the artifact metadata itself via facets where necessary

@@ -36,5 +36,5 @@
 </p>
 
 <div>
-  <archiva:project-metadata object="${projectMetadata}" />
+  <archiva:project-metadata object="${projectMetadata}" groupId="${groupId}" artifactId="${artifactId}" version="${version}" />
 </div>

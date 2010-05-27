@@ -45,6 +45,12 @@ public class ProjectMetadataTag
     private Logger log = LoggerFactory.getLogger( ProjectMetadataTag.class );
 
     private Object object;
+    
+    private String groupId;
+
+    private String artifactId;
+
+    private String version;
 
     @Override
     public void release()
@@ -152,8 +158,12 @@ public class ProjectMetadataTag
             startList( metadataEntries );
             for ( License license : licenses )
             {
+                createDeleteLink( "license", license.getName(), metadataEntries );
+                startList( metadataEntries );
                 addListItem( "licenses." + ctr + ".name=", license.getName(), metadataEntries );
                 addListItem( "licenses." + ctr + ".url=", license.getUrl(), metadataEntries );
+                endList( metadataEntries );
+                endListItem( metadataEntries );
                 ctr++;
             }
             endList( metadataEntries );
@@ -171,6 +181,8 @@ public class ProjectMetadataTag
             startList( metadataEntries );
             for ( MailingList list : lists )
             {
+                createDeleteLink( "mailingList", list.getName(), metadataEntries );
+                startList( metadataEntries );
                 addListItem( "mailingLists." + ctr + ".name=", list.getName(), metadataEntries );
                 addListItem( "mailingLists." + ctr + ".archive.url=", list.getMainArchiveUrl(), metadataEntries );
                 addListItem( "mailingLists." + ctr + ".post=", list.getPostAddress(), metadataEntries );
@@ -194,6 +206,8 @@ public class ProjectMetadataTag
                     endList( metadataEntries );
                 }
                 endListItem( metadataEntries );
+                endList( metadataEntries );
+                endListItem( metadataEntries );
                 ctr++;
             }
             endList( metadataEntries );
@@ -207,8 +221,11 @@ public class ProjectMetadataTag
             int ctr = 0;
 
             startList( metadataEntries );
+            
             for ( Dependency dependency : dependencies )
             {
+                createDeleteLink( "dependency", dependency.getArtifactId(), metadataEntries );
+                startList( metadataEntries );
                 addListItem( "dependency." + ctr + ".group.id=", dependency.getGroupId(), metadataEntries );
                 addListItem( "dependency." + ctr + ".artifact.id=", dependency.getArtifactId(), metadataEntries );
                 addListItem( "dependency." + ctr + ".version=", dependency.getVersion(), metadataEntries );
@@ -216,9 +233,12 @@ public class ProjectMetadataTag
                 addListItem( "dependency." + ctr + ".type=", dependency.getType(), metadataEntries );
                 addListItem( "dependency." + ctr + ".scope=", dependency.getScope(), metadataEntries );
                 addListItem( "dependency." + ctr + ".system.path=", dependency.getSystemPath(), metadataEntries );
+                endList( metadataEntries );
+                endListItem( metadataEntries );
                 ctr++;
             }
             endList( metadataEntries );
+            
             endListItem( metadataEntries );
         }
 
@@ -250,9 +270,36 @@ public class ProjectMetadataTag
     {
         metadataEntries.append( "\n</li>" );
     }
+    
+    private void createDeleteLink( String name, String value, StringBuffer metadataEntries )
+    {
+        metadataEntries.append( "\n<li>" ).append( value )
+                       .append( "\n<a href=\"showProjectMetadata!deleteMetadataEntry.action?" )
+                       .append( "groupId=" ).append( groupId )
+                       .append( "&artifactId=" ).append( artifactId )
+                       .append( "&version=" ).append( version )
+                       .append( "&deleteItem=" ).append( name )
+                       .append( "&itemValue=").append( value ).append( "\" >" )
+                       .append( "<img src=\"images/icons/delete.gif\"/>" ).append( "</a>" );
+    }
 
     public void setObject( Object object )
     {
         this.object = object;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
+    public void setArtifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+    }
+
+    public void setVersion( String version )
+    {
+        this.version = version;
     }
 }

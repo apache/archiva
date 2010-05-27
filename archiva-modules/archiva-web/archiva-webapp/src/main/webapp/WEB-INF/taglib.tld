@@ -124,6 +124,30 @@
         
         <description><![CDATA[The Object to Render]]></description>
       </attribute>
+
+      <attribute>
+        <name>groupId</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The groupId]]></description>
+      </attribute>
+      
+      <attribute>
+        <name>artifactId</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The artifactId]]></description>
+      </attribute>
+
+      <attribute>
+        <name>version</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The version]]></description>
+      </attribute>
    
    </tag>
    
