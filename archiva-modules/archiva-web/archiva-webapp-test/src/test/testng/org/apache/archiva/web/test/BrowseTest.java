@@ -138,6 +138,86 @@ public class BrowseTest
         String secondSnapshotVersion = getText( "//div[@id='download']/div[@id='accordion']/p[1]/a/" );
         Assert.assertTrue( secondSnapshotVersion.endsWith( "-2" ) );
     }
+    
+    public void testMetadataPageDisplay()
+    {
+        goToBrowsePage();
+        clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
+        clickLinkWithText( "Metadata" );
+        
+        assertMinimalMetadataDisplay();
+    }
+    
+    public void testDeleteMetadataDependency()
+    {
+        String depArtifactId = "testArtifactId";
+        
+        goToBrowsePage();
+        clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
+        clickLinkWithText( "Metadata" );
+        
+        assertMinimalMetadataDisplay();
+        assertTextPresent( "dependencies" );
+        assertTextPresent( depArtifactId );
+        
+        String xPath = "//li[contains(text(),'" + depArtifactId + "')]/a/img[contains(@src,'delete.gif')]";
+        clickLinkWithXPath( xPath );
+        
+        assertTextNotPresent( depArtifactId );
+    }
+    
+    public void testDeleteMetadataMailingList()
+    {
+        String listName = "test user list";
+        
+        goToBrowsePage();
+        clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
+        clickLinkWithText( "Metadata" );
+        
+        assertMinimalMetadataDisplay();
+        assertTextPresent( "mailingLists" );
+        assertTextPresent( listName );
+        
+        String xPath = "//li[contains(text(),'" + listName + "')]/a/img[contains(@src,'delete.gif')]";
+        clickLinkWithXPath( xPath );
+        
+        assertTextNotPresent( listName );
+    }
+    
+    public void testDeleteMetadataLicense()
+    {
+        String licenseName = "Test License";
+        
+        goToBrowsePage();
+        clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
+        clickLinkWithText( "Metadata" );
+        
+        assertMinimalMetadataDisplay();
+        assertTextPresent( "licenses" );
+        assertTextPresent( licenseName );
+        
+        String xPath = "//li[contains(text(),'" + licenseName + "')]/a/img[contains(@src,'delete.gif')]";
+        clickLinkWithXPath( xPath );
+        
+        assertTextNotPresent( licenseName );
+        assertTextNotPresent( "licenses" );
+    }
+    
+    private void assertMinimalMetadataDisplay()
+    {
+        assertTextPresent( "project.metadata.id=" );
+        assertTextPresent( "project.url=" );
+        assertTextPresent( "project.name=" );
+        assertTextPresent( "project.description=" );
+    }
 
     private void assertArtifactInfoPage( String version, String artifactInfoRepositoryId, String artifactInfoGroupId,
                                          String artifactInfoArtifactId, String artifactInfoVersion,

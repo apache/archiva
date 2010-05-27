@@ -7,7 +7,35 @@
   <version>1.0</version>
   <name>test</name>
   <url>http://maven.apache.org</url>
+  
+  <licenses>
+    <license>
+      <name>Test License</name>
+      <url>http://www.test.org/test.html</url>
+    </license>
+  </licenses>
+  
+  <mailingLists>
+    <mailingList>
+      <name>test user list</name>
+      <subscribe>http://test.net/lists/listinfo/test-user</subscribe>
+      <unsubscribe>http://test.net/lists/listinfo/test-user</unsubscribe>
+      <archive>http://www.test-archive.com/test-user%40lists.test.net/</archive>
+    </mailingList>
+    <mailingList>
+      <name>test developer list</name>
+      <subscribe>http://test.net/lists/listinfo/test-dev</subscribe>
+      <unsubscribe>http://test.net/lists/listinfo/test-dev</unsubscribe>
+      <archive>http://www.test-archive.com/test-dev%40lists.test.net/</archive>
+    </mailingList>
+  </mailingLists>
+  
   <dependencies>
+    <dependency>
+      <groupId>test.group.id</groupId>
+      <artifactId>testArtifactId</artifactId>
+      <version>1.0</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -15,6 +43,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
 <distributionManagement>
 <repository>
   <id>test</id>
@@ -22,3 +51,4 @@
 </repository>
 </distributionManagement>
 </project>
+
