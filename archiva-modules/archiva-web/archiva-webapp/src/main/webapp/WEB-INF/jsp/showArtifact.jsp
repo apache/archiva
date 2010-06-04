@@ -220,7 +220,7 @@
   <%-- TODO: panels? this is ugly as is --%>
   <div id="tabArea">
     <c:choose>
-      <c:when test="${projectMetadata != null}">
+      <c:when test="${genericMetadata != null}">
         <%@ include file="/WEB-INF/jsp/include/projectMetadata.jspf" %>
       </c:when>
       <c:when test="${dependencies != null}">
@@ -251,6 +251,5 @@
     </s:if>
   </div>
 </div>
-
 </body>
 </html>

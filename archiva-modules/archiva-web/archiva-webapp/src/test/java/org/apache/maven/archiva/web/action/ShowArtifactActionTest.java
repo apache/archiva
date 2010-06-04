@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork2.Action;
+
+import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;
@@ -371,14 +373,7 @@ public class ShowArtifactActionTest
     public void testGetProjectMetadata()
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
-        Dependency dependency1 = createDependencyBasic( "artifactId1" );
-        Dependency dependency2 = createDependencyExtended( "artifactId2" );
-        versionMetadata.setDependencies( Arrays.asList( dependency1, dependency2 ) );
-
-        MailingList ml1 = createMailingList( "Users List", "users" );
-        MailingList ml2 = createMailingList( "Developers List", "dev" );
-        versionMetadata.setMailingLists( Arrays.asList( ml1, ml2 ) );
-
+        
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
 
         setActionParameters();
@@ -388,15 +383,13 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        ProjectVersionMetadata projectMetadata = action.getProjectMetadata();
-        assertDefaultModel( projectMetadata );
-
-        assertNotNull( projectMetadata.getDependencies() );
-        assertDependencyBasic( projectMetadata.getDependencies().get( 0 ), "artifactId1" );
-        assertDependencyExtended( projectMetadata.getDependencies().get( 1 ), "artifactId2" );
-
+        
+        Map<String, String> genericMetadata = action.getGenericMetadata();
+        assertNotNull( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ) );
+        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ), TEST_GENERIC_METADATA_PROPERTY_VALUE );
+        
         assertEquals( TEST_REPO, action.getRepositoryId() );
-        assertNull( action.getModel() );
+        assertNotNull( action.getModel() );
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );

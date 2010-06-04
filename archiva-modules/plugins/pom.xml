@@ -35,5 +35,6 @@
     <!-- TODO: eventually not a core plugin, needs to be moved to a separate tree, with it's own Selenium tests -->
     <module>npanday-support</module>
     <module>maven1-repository</module>
+    <module>generic-metadata-support</module>
   </modules>
 </project>

@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork2.Validateable;
+
+import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.License;
@@ -42,9 +44,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Browse the repository.
@@ -107,7 +111,14 @@ public class ShowArtifactAction
     private String deleteItem;
     
     private String itemValue;
+    
+    private Map<String, String> genericMetadata;
+    
+    private String propertyName;
+
+    private String propertyValue;
    
+    
     /**
      * Show the versioned project information tab.
      * TODO: Change name to 'project' - we are showing project versions here, not specific artifact information (though
@@ -141,7 +152,7 @@ public class ShowArtifactAction
     {
         ProjectVersionMetadata versionMetadata = null;
         artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
-
+        
         List<String> repos = getObservableRepos();
 
         for ( String repoId : repos )
@@ -277,20 +288,60 @@ public class ShowArtifactAction
 
     public String projectMetadata()
     {
-        projectMetadata = getProjectVersionMetadata();
-        String errorMsg = null;
+        String result = artifact();
+        
+        if( model.getFacet( GenericMetadataFacet.FACET_ID ) != null )
+        {
+            genericMetadata = model.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+        }
+        
+        if( genericMetadata == null )
+        {
+            genericMetadata = new HashMap<String, String>();
+        }
 
-        if ( projectMetadata == null )
+        return result;
+    }
+    
+    public String addMetadataProperty()
+    {
+        ProjectVersionMetadata projectMetadata = getProjectVersionMetadata();
+        String errorMsg = null;      
+        
+        if( projectMetadata == null )
         {
             addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
             return ERROR;
         }
-
-        if ( projectMetadata.isIncomplete() )
+        
+        if( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) == null )
         {
-            addIncompleteModelWarning();
+            genericMetadata = new HashMap<String, String>();
         }
-
+        else
+        {
+            genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+        }
+        
+        genericMetadata.put( propertyName, propertyValue );
+        
+        GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
+        genericMetadataFacet.fromProperties( genericMetadata );
+                
+        // add updated facet
+        projectMetadata.addFacet( genericMetadataFacet );
+                
+        metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );
+         
+        projectMetadata = getProjectVersionMetadata();
+        
+        genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+        
+        model = projectMetadata;
+        
+        propertyName = "";
+        propertyValue = "";
+        
         return SUCCESS;
     }
     
@@ -507,6 +558,36 @@ public class ShowArtifactAction
     {
         this.itemValue = itemValue;
     }
+    
+    public Map<String, String> getGenericMetadata()
+    {
+        return genericMetadata;
+    }
+
+    public void setGenericMetadata( Map<String, String> genericMetadata )
+    {
+        this.genericMetadata = genericMetadata;
+    }
+    
+    public String getPropertyName()
+    {
+        return propertyName;
+    }
+
+    public void setPropertyName( String propertyName )
+    {
+        this.propertyName = propertyName;
+    }
+
+    public String getPropertyValue()
+    {
+        return propertyValue;
+    }
+
+    public void setPropertyValue( String propertyValue )
+    {
+        this.propertyValue = propertyValue;
+    }
 
     // TODO: move this into the artifact metadata itself via facets where necessary
 
@@ -629,7 +710,5 @@ public class ShowArtifactAction
         {
             return path;
         }
-
-
     }
 }

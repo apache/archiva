@@ -19,8 +19,11 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
@@ -84,7 +87,11 @@ public abstract class AbstractActionTestCase
     protected static final String TEST_SCM_DEV_CONNECTION = "scmDevConnection";
 
     protected static final String TEST_SCM_URL = "scmUrl";
-
+    
+    protected static final String TEST_GENERIC_METADATA_PROPERTY_NAME = "rating";
+    
+    protected static final String TEST_GENERIC_METADATA_PROPERTY_VALUE = "5 stars";
+    
     protected void setObservableRepos( List<String> repoIds )
     {
         UserRepositoriesStub repos = (UserRepositoriesStub) lookup( UserRepositories.class );
@@ -176,6 +183,13 @@ public abstract class AbstractActionTestCase
         parent.setVersion( TEST_PARENT_VERSION );
         mavenProjectFacet.setParent( parent );
         model.addFacet( mavenProjectFacet );
+        
+        GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
+        Map<String, String> props = new HashMap<String,String>();
+        props.put( TEST_GENERIC_METADATA_PROPERTY_NAME, TEST_GENERIC_METADATA_PROPERTY_VALUE );        
+        genericMetadataFacet.setAdditionalProperties( props );
+        model.addFacet( genericMetadataFacet );
+        
         return model;
     }
 }

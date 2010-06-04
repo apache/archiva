@@ -618,7 +618,7 @@ public class FileMetadataRepository
 
     private String join( Collection<String> ids )
     {
-        if ( !ids.isEmpty() )
+        if ( ids != null && !ids.isEmpty() )
         {
             StringBuilder s = new StringBuilder();
             for ( String id : ids )
