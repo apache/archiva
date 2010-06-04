@@ -48,14 +48,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
- * Browse the repository.
- *
+ * Browse the repository. 
+ * 
  * TODO change name to ShowVersionedAction to conform to terminology.
- *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction" instantiation-strategy="per-lookup"
+ * 
+ * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
+ *                   instantiation-strategy="per-lookup"
  */
 public class ShowArtifactAction
     extends AbstractRepositoryBasedAction
@@ -107,22 +107,20 @@ public class ShowArtifactAction
     private boolean dependencyTree = false;
 
     private ProjectVersionMetadata projectMetadata;
-    
+
     private String deleteItem;
-    
+
     private String itemValue;
-    
+
     private Map<String, String> genericMetadata;
-    
+
     private String propertyName;
 
     private String propertyValue;
-   
-    
+
     /**
-     * Show the versioned project information tab.
-     * TODO: Change name to 'project' - we are showing project versions here, not specific artifact information (though
-     * that is rendered in the download box).
+     * Show the versioned project information tab. TODO: Change name to 'project' - we are showing project versions
+     * here, not specific artifact information (though that is rendered in the download box).
      */
     public String artifact()
     {
@@ -152,7 +150,7 @@ public class ShowArtifactAction
     {
         ProjectVersionMetadata versionMetadata = null;
         artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
-        
+
         List<String> repos = getObservableRepos();
 
         for ( String repoId : repos )
@@ -177,17 +175,19 @@ public class ShowArtifactAction
                 {
                     repositoryId = repoId;
 
-                    List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
-                        metadataResolver.getArtifacts( repoId, groupId, artifactId, version ) );
+                    List<ArtifactMetadata> artifacts =
+                        new ArrayList<ArtifactMetadata>( metadataResolver.getArtifacts( repoId, groupId, artifactId,
+                                                                                        version ) );
                     Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
                     {
                         public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
                         {
                             // sort by version (reverse), then ID
                             // TODO: move version sorting into repository handling (maven2 specific), and perhaps add a
-                            //       way to get latest instead
-                            int result = new DefaultArtifactVersion( o2.getVersion() ).compareTo(
-                                new DefaultArtifactVersion( o1.getVersion() ) );
+                            // way to get latest instead
+                            int result =
+                                new DefaultArtifactVersion( o2.getVersion() ).compareTo( new DefaultArtifactVersion(
+                                                                                                                     o1.getVersion() ) );
                             return result != 0 ? result : o1.getId().compareTo( o2.getId() );
                         }
                     } );
@@ -263,7 +263,8 @@ public class ShowArtifactAction
 
         this.dependees = references;
 
-        // TODO: may need to note on the page that references will be incomplete if the other artifacts are not yet stored in the content repository
+        // TODO: may need to note on the page that references will be incomplete if the other artifacts are not yet
+        // stored in the content repository
         // (especially in the case of pre-population import)
 
         return artifact();
@@ -277,7 +278,8 @@ public class ShowArtifactAction
         // temporarily use this as we only need the model for the tag to perform, but we should be resolving the
         // graph here instead
 
-        // TODO: may need to note on the page that tree will be incomplete if the other artifacts are not yet stored in the content repository
+        // TODO: may need to note on the page that tree will be incomplete if the other artifacts are not yet stored in
+        // the content repository
         // (especially in the case of pre-population import)
 
         // TODO: a bit ugly, should really be mapping all these results differently now
@@ -289,32 +291,32 @@ public class ShowArtifactAction
     public String projectMetadata()
     {
         String result = artifact();
-        
-        if( model.getFacet( GenericMetadataFacet.FACET_ID ) != null )
+
+        if ( model.getFacet( GenericMetadataFacet.FACET_ID ) != null )
         {
             genericMetadata = model.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
         }
-        
-        if( genericMetadata == null )
+
+        if ( genericMetadata == null )
         {
             genericMetadata = new HashMap<String, String>();
         }
 
         return result;
     }
-    
+
     public String addMetadataProperty()
     {
         String errorMsg = null;
-        
+
         ProjectVersionMetadata projectMetadata = getProjectVersionMetadata();
-        if( projectMetadata == null )
+        if ( projectMetadata == null )
         {
             addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
             return ERROR;
         }
-        
-        if( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) == null )
+
+        if ( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) == null )
         {
             genericMetadata = new HashMap<String, String>();
         }
@@ -322,47 +324,48 @@ public class ShowArtifactAction
         {
             genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
         }
-        
-        if( propertyName == null || "".equals( propertyName.trim() ) || propertyValue == null || "".equals( propertyValue.trim() ) )
+
+        if ( propertyName == null || "".equals( propertyName.trim() ) || propertyValue == null ||
+            "".equals( propertyValue.trim() ) )
         {
-            model = projectMetadata;            
+            model = projectMetadata;
             addActionError( errorMsg != null ? errorMsg : "Property Name and Property Value are required." );
             return INPUT;
         }
-        
+
         genericMetadata.put( propertyName, propertyValue );
-        
+
         GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
         genericMetadataFacet.fromProperties( genericMetadata );
-                
+
         // add updated facet
         projectMetadata.addFacet( genericMetadataFacet );
-                
+
         metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );
-         
+
         projectMetadata = getProjectVersionMetadata();
-        
+
         genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
-        
+
         model = projectMetadata;
-        
+
         propertyName = "";
         propertyValue = "";
-        
+
         return SUCCESS;
     }
-    
+
     public String updateProjectMetadata()
     {
         metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );
 
         return SUCCESS;
     }
-    
+
     public String deleteMetadataEntry()
-    {   
+    {
         projectMetadata = getProjectVersionMetadata();
-        
+
         if ( !StringUtils.isEmpty( deleteItem ) && !StringUtils.isEmpty( itemValue ) )
         {
             if ( "dependency".equals( deleteItem ) )
@@ -377,19 +380,19 @@ public class ShowArtifactAction
             {
                 removeLicense();
             }
-            
+
             deleteItem = "";
             itemValue = "";
         }
-        
+
         return updateProjectMetadata();
     }
-    
+
     private void removeDependency()
     {
         List<Dependency> dependencies = projectMetadata.getDependencies();
         List<Dependency> newDependencies = new ArrayList<Dependency>();
-        
+
         if ( dependencies != null )
         {
             for ( Dependency dependency : dependencies )
@@ -400,15 +403,15 @@ public class ShowArtifactAction
                 }
             }
         }
-        
+
         projectMetadata.setDependencies( newDependencies );
     }
-    
+
     private void removeMailingList()
     {
         List<MailingList> mailingLists = projectMetadata.getMailingLists();
         List<MailingList> newMailingLists = new ArrayList<MailingList>();
-        
+
         if ( mailingLists != null )
         {
             for ( MailingList mailingList : mailingLists )
@@ -419,15 +422,15 @@ public class ShowArtifactAction
                 }
             }
         }
-        
+
         projectMetadata.setMailingLists( newMailingLists );
     }
-    
+
     private void removeLicense()
     {
         List<License> licenses = projectMetadata.getLicenses();
         List<License> newLicenses = new ArrayList<License>();
-        
+
         if ( licenses != null )
         {
             for ( License license : licenses )
@@ -438,10 +441,10 @@ public class ShowArtifactAction
                 }
             }
         }
-        
+
         projectMetadata.setLicenses( newLicenses );
     }
-    
+
     @Override
     public void validate()
     {
@@ -558,14 +561,14 @@ public class ShowArtifactAction
 
     public void setDeleteItem( String deleteItem )
     {
-        this.deleteItem = deleteItem; 
+        this.deleteItem = deleteItem;
     }
-    
+
     public void setItemValue( String itemValue )
     {
         this.itemValue = itemValue;
     }
-    
+
     public Map<String, String> getGenericMetadata()
     {
         return genericMetadata;
@@ -575,7 +578,7 @@ public class ShowArtifactAction
     {
         this.genericMetadata = genericMetadata;
     }
-    
+
     public String getPropertyName()
     {
         return propertyName;
@@ -621,7 +624,7 @@ public class ShowArtifactAction
             repositoryId = artifact.getRepositoryId();
 
             // TODO: use metadata resolver capability instead - maybe the storage path could be stored in the metadata
-            //       though keep in mind the request may not necessarily need to reflect the storage
+            // though keep in mind the request may not necessarily need to reflect the storage
             ManagedRepositoryContent repo;
             try
             {
@@ -640,7 +643,7 @@ public class ShowArtifactAction
             path = path.substring( 0, path.lastIndexOf( "/" ) + 1 ) + artifact.getId();
 
             // TODO: need to accommodate Maven 1 layout too. Non-maven repository formats will need to generate this
-            //       facet (perhaps on the fly) if wanting to display the Maven 2 elements on the Archiva pages
+            // facet (perhaps on the fly) if wanting to display the Maven 2 elements on the Archiva pages
             String type = null;
             MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
             if ( facet != null )
