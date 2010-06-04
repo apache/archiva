@@ -410,7 +410,7 @@ public class GenerateReportAction
 
     private List<String> parseSelectedRepositories()
     {
-        List<String> pasedSelectedRepos = new ArrayList<String>();
+        List<String> parsedSelectedRepos = new ArrayList<String>();
 
         for ( String repo : selectedRepositories )
         {
@@ -419,15 +419,15 @@ public class GenerateReportAction
             {
                 for ( String token : tokens )
                 {
-                    pasedSelectedRepos.add( StringUtils.remove( StringUtils.remove( token, '[' ), ']' ).trim() );
+                    parsedSelectedRepos.add( StringUtils.remove( StringUtils.remove( token, '[' ), ']' ).trim() );
                 }
             }
             else
             {
-                pasedSelectedRepos.add( StringUtils.remove( StringUtils.remove( repo, '[' ), ']' ).trim() );
+                parsedSelectedRepos.add( StringUtils.remove( StringUtils.remove( repo, '[' ), ']' ).trim() );
             }
         }
-        return pasedSelectedRepos;
+        return parsedSelectedRepos;
     }
 
     private Date getStartDateInDateFormat()
