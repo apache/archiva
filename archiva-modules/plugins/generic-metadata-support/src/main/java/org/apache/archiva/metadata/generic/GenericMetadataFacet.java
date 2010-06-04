@@ -27,11 +27,11 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 
 public class GenericMetadataFacet
     implements MetadataFacet
-{   
+{
     private Map<String, String> additionalProperties;
-    
+
     public static final String FACET_ID = "org.apache.archiva.metadata.generic";
-    
+
     public String getFacetId()
     {
         return FACET_ID;
@@ -43,13 +43,13 @@ public class GenericMetadataFacet
     }
 
     public void fromProperties( Map<String, String> properties )
-    {           
-        if( additionalProperties == null )
+    {
+        if ( additionalProperties == null )
         {
-            additionalProperties = new TreeMap<String, String>();            
+            additionalProperties = new TreeMap<String, String>();
         }
-        
-        for( String key : properties.keySet() )
+
+        for ( String key : properties.keySet() )
         {
             additionalProperties.put( key, properties.get( key ) );
         }
@@ -58,18 +58,18 @@ public class GenericMetadataFacet
     public Map<String, String> toProperties()
     {
         Map<String, String> properties = new TreeMap<String, String>();
-                
-        if( additionalProperties != null )
+
+        if ( additionalProperties != null )
         {
-            for( String key : additionalProperties.keySet() )
+            for ( String key : additionalProperties.keySet() )
             {
                 properties.put( key, additionalProperties.get( key ) );
             }
         }
-        
+
         return properties;
     }
-        
+
     public Map<String, String> getAdditionalProperties()
     {
         return additionalProperties;

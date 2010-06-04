@@ -23,7 +23,8 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.metadata.generic"
+ * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory"
+ *                   role-hint="org.apache.archiva.metadata.generic"
  */
 public class GenericMetadataFacetFactory
     implements MetadataFacetFactory
