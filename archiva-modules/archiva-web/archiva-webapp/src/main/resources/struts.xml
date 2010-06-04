@@ -223,7 +223,8 @@
     </action>
 
     <action name="addMetadataProperty" class="showArtifactAction" method="addMetadataProperty">      
-      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+      <result name="input">/WEB-INF/jsp/showArtifact.jsp</result>
+      <result name="success">/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
     <action name="deleteMetadataEntry" class="showArtifactAction" method="deleteMetadataEntry">

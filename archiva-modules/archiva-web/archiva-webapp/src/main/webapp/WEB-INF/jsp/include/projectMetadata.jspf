@@ -23,7 +23,7 @@
 <%@ taglib prefix="archiva"   uri="/WEB-INF/taglib.tld" %>
 
 <div> 
-
+ 
   <div>
     <s:form action="addMetadataProperty" namespace="/" method="post" validate="true" theme="simple">    
       <s:hidden name="groupId" value="%{groupId}" />
@@ -66,6 +66,20 @@
       </ul>
     </c:if>  
   </div>
+  
+  
+  <p>
+    <s:if test="hasActionMessages()">
+      <div id="messages">
+        <s:actionmessage/>
+      </div>
+    </s:if>
+    <s:if test="hasActionErrors()">
+      <div id="messages">
+        <s:actionerror/>
+      </div>
+    </s:if>
+  </p>
   
   <%-- <archiva:project-metadata object="${projectMetadata}" groupId="${groupId}" artifactId="${artifactId}" version="${version}" /> --%>
 </div>

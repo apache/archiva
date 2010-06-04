@@ -305,9 +305,9 @@ public class ShowArtifactAction
     
     public String addMetadataProperty()
     {
-        ProjectVersionMetadata projectMetadata = getProjectVersionMetadata();
-        String errorMsg = null;      
+        String errorMsg = null;
         
+        ProjectVersionMetadata projectMetadata = getProjectVersionMetadata();
         if( projectMetadata == null )
         {
             addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
@@ -321,6 +321,13 @@ public class ShowArtifactAction
         else
         {
             genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+        }
+        
+        if( propertyName == null || "".equals( propertyName.trim() ) || propertyValue == null || "".equals( propertyValue.trim() ) )
+        {
+            model = projectMetadata;            
+            addActionError( errorMsg != null ? errorMsg : "Property Name and Property Value are required." );
+            return INPUT;
         }
         
         genericMetadata.put( propertyName, propertyValue );
