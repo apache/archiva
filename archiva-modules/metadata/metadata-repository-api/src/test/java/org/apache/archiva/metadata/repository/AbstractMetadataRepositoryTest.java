@@ -170,27 +170,27 @@ public abstract class AbstractMetadataRepositoryTest
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
-        
-        Map<String, String> additionalProps = new HashMap<String,String>();
+
+        Map<String, String> additionalProps = new HashMap<String, String>();
         additionalProps.put( "deleteKey", "deleteValue" );
-        
+
         MetadataFacet facet = new TestMetadataFacet( TEST_FACET_ID, "baz", additionalProps );
         metadata.addFacet( facet );
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
-        
+
         TestMetadataFacet testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
         Map<String, String> facetProperties = testFacet.toProperties();
-        
+
         assertEquals( "deleteValue", facetProperties.get( "deleteKey" ) );
-        
+
         facetProperties.remove( "deleteKey" );
-        
-        TestMetadataFacet newTestFacet = new TestMetadataFacet( TEST_FACET_ID, testFacet.getValue(), facetProperties );        
+
+        TestMetadataFacet newTestFacet = new TestMetadataFacet( TEST_FACET_ID, testFacet.getValue(), facetProperties );
         metadata.addFacet( newTestFacet );
-        
+
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );

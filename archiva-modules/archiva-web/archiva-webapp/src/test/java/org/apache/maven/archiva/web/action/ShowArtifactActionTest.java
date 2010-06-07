@@ -404,7 +404,7 @@ public class ShowArtifactActionTest
     public void testAddAndDeleteMetadataProperty()
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
-        
+
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
 
         setActionParameters();
@@ -416,38 +416,38 @@ public class ShowArtifactActionTest
 
         assertActionSuccess( action, result );
         assertActionParameters( action );
-        
+
         Map<String, String> genericMetadata = action.getGenericMetadata();
         assertNotNull( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ) );
         assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ), TEST_GENERIC_METADATA_PROPERTY_VALUE );
-        
+
         assertNotNull( genericMetadata.get( "foo" ) );
         assertEquals( "bar", genericMetadata.get( "foo" ) );
-        
+
         assertEquals( TEST_REPO, action.getRepositoryId() );
         assertNotNull( action.getModel() );
         assertNull( action.getDependees() );
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
-        assertTrue( action.getArtifacts().isEmpty() );  
-        
+        assertTrue( action.getArtifacts().isEmpty() );
+
         // test delete property
         setActionParameters();
         action.setDeleteItem( "foo" );
-        
+
         result = action.deleteMetadataEntry();
-        
+
         assertEquals( Action.SUCCESS, result );
         assertActionParameters( action );
         assertTrue( !action.getActionMessages().isEmpty() );
         assertTrue( action.getActionMessages().contains( "Property successfully deleted." ) );
-        
+
         genericMetadata = action.getGenericMetadata();
         assertNotNull( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ) );
         assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ), TEST_GENERIC_METADATA_PROPERTY_VALUE );
-        
+
         assertNull( genericMetadata.get( "foo" ) );
-        
+
         assertEquals( TEST_REPO, action.getRepositoryId() );
         assertNotNull( action.getModel() );
         assertNull( action.getDependees() );
@@ -455,7 +455,7 @@ public class ShowArtifactActionTest
         assertNull( action.getMailingLists() );
         assertTrue( action.getArtifacts().isEmpty() );
     }
-    
+
     private void assertArtifacts( List<ArtifactMetadata> expectedArtifacts,
                                   Map<String, List<ShowArtifactAction.ArtifactDownloadInfo>> artifactMap )
     {
