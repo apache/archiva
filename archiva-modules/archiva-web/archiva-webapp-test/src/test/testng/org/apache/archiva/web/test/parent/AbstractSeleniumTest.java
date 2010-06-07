@@ -201,6 +201,11 @@ public abstract class AbstractSeleniumTest
 
         assertElementPresent( locator );
     }
+    
+    public void assertImgWithAltNotPresent( String alt )
+    {
+        assertElementNotPresent( "/¯img[@alt='" + alt + "']" );
+    }
 
     public void assertCellValueFromTable( String expected, String tableElement, int row, int column )
     {

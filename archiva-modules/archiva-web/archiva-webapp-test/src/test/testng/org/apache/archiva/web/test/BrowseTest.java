@@ -139,84 +139,67 @@ public class BrowseTest
         Assert.assertTrue( secondSnapshotVersion.endsWith( "-2" ) );
     }
     
-    public void testMetadataPageDisplay()
+    public void testAddMetadataPropertyEmpty()
     {
         goToBrowsePage();
         clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
         clickLinkWithText( "Metadata" );
-        
-        assertMinimalMetadataDisplay();
+
+        assertTextPresent( "No metadata content." );
+        assertButtonWithValuePresent( "Add" );
+
+        clickButtonWithValue( "Add" );
+
+        waitPage();
+
+        assertTextPresent( "Property Name and Property Value are required." );
     }
-    
-    public void testDeleteMetadataDependency()
+
+    @Test( dependsOnMethods = { "testAddMetadataPropertyEmpty" } )
+    public void testAddMetadataProperty()
     {
-        String depArtifactId = "testArtifactId";
-        
         goToBrowsePage();
         clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
         clickLinkWithText( "Metadata" );
-        
-        assertMinimalMetadataDisplay();
-        assertTextPresent( "dependencies" );
-        assertTextPresent( depArtifactId );
-        
-        String xPath = "//li[contains(text(),'" + depArtifactId + "')]/a/img[contains(@src,'delete.gif')]";
-        clickLinkWithXPath( xPath );
-        
-        assertTextNotPresent( depArtifactId );
+
+        assertTextPresent( "No metadata content." );
+        assertButtonWithValuePresent( "Add" );
+
+        setFieldValue( "propertyName", "foo" );
+        setFieldValue( "propertyValue", "bar" );
+
+        clickButtonWithValue( "Add" );
+
+        waitPage();
+
+        assertTextNotPresent( "No metadata content." );
+        assertTextPresent( "foo=bar" );
     }
-    
-    public void testDeleteMetadataMailingList()
+
+    @Test( dependsOnMethods = { "testAddMetadataProperty" } )
+    public void testDeleteMetadataProperty()
     {
-        String listName = "test user list";
-        
         goToBrowsePage();
         clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
         clickLinkWithText( "Metadata" );
-        
-        assertMinimalMetadataDisplay();
-        assertTextPresent( "mailingLists" );
-        assertTextPresent( listName );
-        
-        String xPath = "//li[contains(text(),'" + listName + "')]/a/img[contains(@src,'delete.gif')]";
-        clickLinkWithXPath( xPath );
-        
-        assertTextNotPresent( listName );
-    }
-    
-    public void testDeleteMetadataLicense()
-    {
-        String licenseName = "Test License";
-        
-        goToBrowsePage();
-        clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
-        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
-        clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
-        clickLinkWithText( "Metadata" );
-        
-        assertMinimalMetadataDisplay();
-        assertTextPresent( "licenses" );
-        assertTextPresent( licenseName );
-        
-        String xPath = "//li[contains(text(),'" + licenseName + "')]/a/img[contains(@src,'delete.gif')]";
-        clickLinkWithXPath( xPath );
-        
-        assertTextNotPresent( licenseName );
-        assertTextNotPresent( "licenses" );
-    }
-    
-    private void assertMinimalMetadataDisplay()
-    {
-        assertTextPresent( "project.metadata.id=" );
-        assertTextPresent( "project.url=" );
-        assertTextPresent( "project.name=" );
-        assertTextPresent( "project.description=" );
+
+        assertTextPresent( "foo=bar" );
+        assertButtonWithValuePresent( "Add" );
+
+        clickImgWithAlt( "Delete" );
+
+        waitPage();
+
+        assertTextNotPresent( "foo=bar" );
+        assertTextPresent( "Property successfully deleted." );
+        assertImgWithAltNotPresent( "Delete" );
+        assertTextPresent( "No metadata content." );
     }
 
     private void assertArtifactInfoPage( String version, String artifactInfoRepositoryId, String artifactInfoGroupId,
