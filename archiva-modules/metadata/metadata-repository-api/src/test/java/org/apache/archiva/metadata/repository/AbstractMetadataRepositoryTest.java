@@ -164,7 +164,41 @@ public abstract class AbstractMetadataRepositoryTest
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
     }
+    
+    public void testUpdateProjectVersionMetadataWithExistingFacetsFacetPropertyWasRemoved()
+        throws MetadataResolutionException
+    {
+        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+        metadata.setId( TEST_PROJECT_VERSION );
+        
+        Map<String, String> additionalProps = new HashMap<String,String>();
+        additionalProps.put( "deleteKey", "deleteValue" );
+        
+        MetadataFacet facet = new TestMetadataFacet( TEST_FACET_ID, "baz", additionalProps );
+        metadata.addFacet( facet );
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
+        metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+        
+        TestMetadataFacet testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
+        Map<String, String> facetProperties = testFacet.toProperties();
+        
+        assertEquals( "deleteValue", facetProperties.get( "deleteKey" ) );
+        
+        facetProperties.remove( "deleteKey" );
+        
+        TestMetadataFacet newTestFacet = new TestMetadataFacet( TEST_FACET_ID, testFacet.getValue(), facetProperties );        
+        metadata.addFacet( newTestFacet );
+        
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+
+        metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+        testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
+        assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
+    }
+    
     public void testUpdateArtifactMetadataWithExistingFacets()
     {
         ArtifactMetadata metadata = createArtifact();
@@ -313,7 +347,7 @@ public abstract class AbstractMetadataRepositoryTest
     {
         repository.removeMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME );
     }
-
+        
     public void testGetArtifacts()
     {
         ArtifactMetadata artifact1 = createArtifact();
@@ -613,6 +647,10 @@ public abstract class AbstractMetadataRepositoryTest
         implements MetadataFacet
     {
         private String testFacetId;
+        
+        private Map<String, String> additionalProps;        
+
+        private String value;
 
         private TestMetadataFacet( String value )
         {
@@ -625,8 +663,12 @@ public abstract class AbstractMetadataRepositoryTest
             this.value = value;
             testFacetId = facetId;
         }
-
-        private String value;
+        
+        private TestMetadataFacet( String facetId, String value, Map<String, String> additionalProps )
+        {
+            this( facetId, value );
+            this.additionalProps = additionalProps;            
+        }
 
         public String getFacetId()
         {
@@ -639,10 +681,24 @@ public abstract class AbstractMetadataRepositoryTest
         }
 
         public Map<String, String> toProperties()
-        {
+        {            
             if ( value != null )
             {
-                return Collections.singletonMap( "foo", value );
+                if( additionalProps == null )
+                {
+                    return Collections.singletonMap( "foo", value );
+                }
+                else
+                {
+                    Map<String, String> props = new HashMap<String, String>();
+                    props.put( "foo", value );
+                    
+                    for( String key : additionalProps.keySet() )
+                    {
+                        props.put( key, additionalProps.get( key ) );
+                    }
+                    return props;
+                }
             }
             else
             {
@@ -657,13 +713,25 @@ public abstract class AbstractMetadataRepositoryTest
             {
                 this.value = value;
             }
+               
+            properties.remove( "foo" );
+            
+            if( additionalProps == null )
+            {
+                additionalProps = new HashMap<String, String>();
+            }
+            
+            for( String key: properties.keySet() )
+            {
+                additionalProps.put( key, properties.get( key ) );
+            }
         }
 
         public String getValue()
         {
             return value;
         }
-
+        
         @Override
         public String toString()
         {

@@ -140,6 +140,9 @@ public class FileMetadataRepository
             {
                 properties.remove( name );
             }
+            
+            // clear the facet contents so old properties are no longer written
+            clearMetadataFacetProperties( versionMetadata, properties );
         }
         properties.setProperty( "id", versionMetadata.getId() );
         setProperty( properties, "name", versionMetadata.getName() );
@@ -222,6 +225,27 @@ public class FileMetadataRepository
             {
                 properties.setProperty( facet.getFacetId() + ":" + entry.getKey(), entry.getValue() );
             }
+        }
+    }
+    
+    private void clearMetadataFacetProperties( ProjectVersionMetadata versionMetadata, Properties properties )
+    {
+        List<Object> propsToRemove = new ArrayList<Object>();
+        for ( MetadataFacet facet : versionMetadata.getFacetList() )
+        {
+            for ( Object key : properties.keySet() )
+            {
+                String keyString = ( String ) key;
+                if( keyString.startsWith( facet.getFacetId() + ":" ) )
+                {
+                    propsToRemove.add( key );
+                }
+            }
+        }
+        
+        for( Object key : propsToRemove )
+        {
+            properties.remove( key );
         }
     }
 

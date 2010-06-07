@@ -110,45 +110,4 @@
 
    </tag>
    
-   <tag>
-
-      <name>project-metadata</name>
-      <tag-class>org.apache.maven.archiva.web.tags.ProjectMetadataTag</tag-class>
-      <body-content>empty</body-content>
-      <description><![CDATA[Render the project metadata tree from the provided ProjectMetadataVersion object]]></description>
-
-      <attribute>
-        <name>object</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-        
-        <description><![CDATA[The Object to Render]]></description>
-      </attribute>
-
-      <attribute>
-        <name>groupId</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-        
-        <description><![CDATA[The groupId]]></description>
-      </attribute>
-      
-      <attribute>
-        <name>artifactId</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-        
-        <description><![CDATA[The artifactId]]></description>
-      </attribute>
-
-      <attribute>
-        <name>version</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-        
-        <description><![CDATA[The version]]></description>
-      </attribute>
-   
-   </tag>
-   
 </taglib>

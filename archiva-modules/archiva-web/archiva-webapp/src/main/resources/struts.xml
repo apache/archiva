@@ -228,10 +228,8 @@
     </action>
 
     <action name="deleteMetadataEntry" class="showArtifactAction" method="deleteMetadataEntry">
-      <result name="success" type="redirect-action">
-        <param name="actionName">showProjectMetadata</param>
-        <param name="namespace">/</param>
-      </result>
+      <result name="input">/WEB-INF/jsp/showArtifact.jsp</result>
+      <result name="success">/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
   </package>

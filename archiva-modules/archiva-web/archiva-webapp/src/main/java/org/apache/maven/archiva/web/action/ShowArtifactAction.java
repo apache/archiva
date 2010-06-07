@@ -24,7 +24,6 @@ import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
-import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
@@ -57,6 +56,7 @@ import java.util.Map;
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
  *                   instantiation-strategy="per-lookup"
  */
+@SuppressWarnings( "serial" )
 public class ShowArtifactAction
     extends AbstractRepositoryBasedAction
     implements Validateable
@@ -105,12 +105,8 @@ public class ShowArtifactAction
     private Map<String, List<ArtifactDownloadInfo>> artifacts;
 
     private boolean dependencyTree = false;
-
-    private ProjectVersionMetadata projectMetadata;
-
+    
     private String deleteItem;
-
-    private String itemValue;
 
     private Map<String, String> genericMetadata;
 
@@ -335,114 +331,69 @@ public class ShowArtifactAction
 
         genericMetadata.put( propertyName, propertyValue );
 
-        GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
-        genericMetadataFacet.fromProperties( genericMetadata );
-
-        // add updated facet
-        projectMetadata.addFacet( genericMetadataFacet );
-
-        metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );
+        updateProjectMetadata( projectMetadata );
 
         projectMetadata = getProjectVersionMetadata();
 
         genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
 
         model = projectMetadata;
-
+        
         propertyName = "";
         propertyValue = "";
 
         return SUCCESS;
     }
 
-    public String updateProjectMetadata()
+    public String deleteMetadataEntry()
     {
-        metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );
+        ProjectVersionMetadata projectMetadata = getProjectVersionMetadata();
+        String errorMsg = null;
+       
+        if ( projectMetadata == null )
+        {
+            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
+            return ERROR;
+        }
+
+        if ( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) != null )
+        {         
+            genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+            
+            if ( !StringUtils.isEmpty( deleteItem ) )
+            {
+                genericMetadata.remove( deleteItem );
+                
+                updateProjectMetadata( projectMetadata );
+                
+                projectMetadata = getProjectVersionMetadata();
+
+                genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+
+                model = projectMetadata;
+
+                addActionMessage( "Property successfully deleted." );                
+            }
+            
+            deleteItem = "";           
+        }
+        else
+        {
+            addActionError( errorMsg != null ? errorMsg : "No generic metadata facet for this artifact." );
+            return ERROR;
+        }
 
         return SUCCESS;
     }
 
-    public String deleteMetadataEntry()
+    private void updateProjectMetadata( ProjectVersionMetadata projectMetadata )
     {
-        projectMetadata = getProjectVersionMetadata();
-
-        if ( !StringUtils.isEmpty( deleteItem ) && !StringUtils.isEmpty( itemValue ) )
-        {
-            if ( "dependency".equals( deleteItem ) )
-            {
-                removeDependency();
-            }
-            else if ( "mailingList".equals( deleteItem ) )
-            {
-                removeMailingList();
-            }
-            else if ( "license".equals( deleteItem ) )
-            {
-                removeLicense();
-            }
-
-            deleteItem = "";
-            itemValue = "";
-        }
-
-        return updateProjectMetadata();
-    }
-
-    private void removeDependency()
-    {
-        List<Dependency> dependencies = projectMetadata.getDependencies();
-        List<Dependency> newDependencies = new ArrayList<Dependency>();
-
-        if ( dependencies != null )
-        {
-            for ( Dependency dependency : dependencies )
-            {
-                if ( !StringUtils.equals( itemValue, dependency.getArtifactId() ) )
-                {
-                    newDependencies.add( dependency );
-                }
-            }
-        }
-
-        projectMetadata.setDependencies( newDependencies );
-    }
-
-    private void removeMailingList()
-    {
-        List<MailingList> mailingLists = projectMetadata.getMailingLists();
-        List<MailingList> newMailingLists = new ArrayList<MailingList>();
-
-        if ( mailingLists != null )
-        {
-            for ( MailingList mailingList : mailingLists )
-            {
-                if ( !StringUtils.equals( itemValue, mailingList.getName() ) )
-                {
-                    newMailingLists.add( mailingList );
-                }
-            }
-        }
-
-        projectMetadata.setMailingLists( newMailingLists );
-    }
-
-    private void removeLicense()
-    {
-        List<License> licenses = projectMetadata.getLicenses();
-        List<License> newLicenses = new ArrayList<License>();
-
-        if ( licenses != null )
-        {
-            for ( License license : licenses )
-            {
-                if ( !StringUtils.equals( itemValue, license.getName() ) )
-                {
-                    newLicenses.add( license );
-                }
-            }
-        }
-
-        projectMetadata.setLicenses( newLicenses );
+        GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
+        genericMetadataFacet.fromProperties( genericMetadata );
+        
+        projectMetadata.addFacet( genericMetadataFacet );
+        
+        metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );        
     }
 
     @Override
@@ -538,35 +489,15 @@ public class ShowArtifactAction
     {
         return artifacts.keySet();
     }
-
-    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
-    {
-        this.repositoryFactory = repositoryFactory;
-    }
-
+    
     public boolean isDependencyTree()
     {
         return dependencyTree;
     }
 
-    public ProjectVersionMetadata getProjectMetadata()
-    {
-        return projectMetadata;
-    }
-
-    public void setProjectMetadata( ProjectVersionMetadata projectMetadata )
-    {
-        this.projectMetadata = projectMetadata;
-    }
-
     public void setDeleteItem( String deleteItem )
     {
         this.deleteItem = deleteItem;
-    }
-
-    public void setItemValue( String itemValue )
-    {
-        this.itemValue = itemValue;
     }
 
     public Map<String, String> getGenericMetadata()
@@ -597,6 +528,16 @@ public class ShowArtifactAction
     public void setPropertyValue( String propertyValue )
     {
         this.propertyValue = propertyValue;
+    }
+    
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    public void setMetadataRepository( MetadataRepository metadataRepository )
+    {
+        this.metadataRepository = metadataRepository;
     }
 
     // TODO: move this into the artifact metadata itself via facets where necessary

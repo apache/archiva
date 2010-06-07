@@ -42,7 +42,7 @@
           </td>
           <td>
             <s:textfield name="propertyValue" size="30" required="true"/>
-          </td>
+          </td>          
           <td align="right">
             <s:submit value="Add"/>
           </td>
@@ -60,26 +60,21 @@
   
     <c:if test="${!empty genericMetadata}">
       <ul>
-        <c:forEach var="prop" items="${genericMetadata}">
-    	  <li>${prop.key}=${prop.value}</li> 
+        <c:forEach var="prop" items="${genericMetadata}">          
+    	  <c:url var="deletePropertyUrl" value="showProjectMetadata!deleteMetadataEntry.action">
+      	    <c:param name="groupId" value="${groupId}"/>
+      	    <c:param name="artifactId" value="${artifactId}"/>
+      	    <c:param name="version" value="${version}"/>
+      	    <c:param name="deleteItem" value="${prop.key}"/>
+          </c:url>
+    	  <li>${prop.key}=${prop.value} 
+    	    <a href="${deletePropertyUrl}">
+              <img src="<c:url value="/images/icons/delete.gif" />" alt="Delete" width="12" length="12"/>
+            </a>
+          </li>
         </c:forEach> 
       </ul>
     </c:if>  
-  </div>
-  
-  
-  <p>
-    <s:if test="hasActionMessages()">
-      <div id="messages">
-        <s:actionmessage/>
-      </div>
-    </s:if>
-    <s:if test="hasActionErrors()">
-      <div id="messages">
-        <s:actionerror/>
-      </div>
-    </s:if>
-  </p>
-  
-  <%-- <archiva:project-metadata object="${projectMetadata}" groupId="${groupId}" artifactId="${artifactId}" version="${version}" /> --%>
+  </div>  
+   
 </div>

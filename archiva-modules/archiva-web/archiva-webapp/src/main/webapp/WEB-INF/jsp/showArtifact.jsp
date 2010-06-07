@@ -249,6 +249,11 @@
         <s:actionmessage />
       </div>
     </s:if>
+    <s:if test="hasActionErrors()">
+      <div id="messages">
+        <s:actionerror/>
+      </div>
+    </s:if>
   </div>
 </div>
 </body>

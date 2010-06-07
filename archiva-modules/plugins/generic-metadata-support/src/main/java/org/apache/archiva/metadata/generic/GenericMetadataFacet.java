@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.generic;
  * under the License.
  */
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 

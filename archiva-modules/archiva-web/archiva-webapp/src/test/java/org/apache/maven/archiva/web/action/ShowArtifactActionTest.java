@@ -27,9 +27,14 @@ import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.file.FileMetadataRepository;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.DefaultArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
@@ -395,7 +400,62 @@ public class ShowArtifactActionTest
         assertNull( action.getMailingLists() );
         assertTrue( action.getArtifacts().isEmpty() );
     }
+    
+    public void testAddAndDeleteMetadataProperty()
+    {
+        ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
+        
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
 
+        setActionParameters();
+        action.setPropertyName( "foo" );
+        action.setPropertyValue( "bar" );
+        action.setRepositoryId( TEST_REPO );
+
+        String result = action.addMetadataProperty();
+
+        assertActionSuccess( action, result );
+        assertActionParameters( action );
+        
+        Map<String, String> genericMetadata = action.getGenericMetadata();
+        assertNotNull( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ) );
+        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ), TEST_GENERIC_METADATA_PROPERTY_VALUE );
+        
+        assertNotNull( genericMetadata.get( "foo" ) );
+        assertEquals( "bar", genericMetadata.get( "foo" ) );
+        
+        assertEquals( TEST_REPO, action.getRepositoryId() );
+        assertNotNull( action.getModel() );
+        assertNull( action.getDependees() );
+        assertNull( action.getDependencies() );
+        assertNull( action.getMailingLists() );
+        assertTrue( action.getArtifacts().isEmpty() );  
+        
+        // test delete property
+        setActionParameters();
+        action.setDeleteItem( "foo" );
+        
+        result = action.deleteMetadataEntry();
+        
+        assertEquals( Action.SUCCESS, result );
+        assertActionParameters( action );
+        assertTrue( !action.getActionMessages().isEmpty() );
+        assertTrue( action.getActionMessages().contains( "Property successfully deleted." ) );
+        
+        genericMetadata = action.getGenericMetadata();
+        assertNotNull( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ) );
+        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ), TEST_GENERIC_METADATA_PROPERTY_VALUE );
+        
+        assertNull( genericMetadata.get( "foo" ) );
+        
+        assertEquals( TEST_REPO, action.getRepositoryId() );
+        assertNotNull( action.getModel() );
+        assertNull( action.getDependees() );
+        assertNull( action.getDependencies() );
+        assertNull( action.getMailingLists() );
+        assertTrue( action.getArtifacts().isEmpty() );
+    }
+    
     private void assertArtifacts( List<ArtifactMetadata> expectedArtifacts,
                                   Map<String, List<ShowArtifactAction.ArtifactDownloadInfo>> artifactMap )
     {
@@ -575,10 +635,25 @@ public class ShowArtifactActionTest
         ManagedRepositoryConfiguration config = new ManagedRepositoryConfiguration();
         config.setId( TEST_REPO );
         config.setLocation( getTestFile( "target/test-repo" ).getAbsolutePath() );
+        
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
         content.setRepository( config );
         factory.getManagedRepositoryContent( TEST_REPO );
+        
+        FileMetadataRepository metadataRepo = ( FileMetadataRepository ) lookup( MetadataRepository.class );
+        MockControl archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
+        ArchivaConfiguration archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
+        
+        Configuration configuration = new Configuration();
+        configuration.addManagedRepository( config );
+        metadataRepo.setConfiguration( archivaConfig );
+        archivaConfig.getConfiguration();
+        
+        action.setMetadataRepository( metadataRepo );
+        
+        archivaConfigControl.setDefaultReturnValue( configuration );        
         control.setDefaultReturnValue( content );
         control.replay();
+        archivaConfigControl.replay();
     }
 }
