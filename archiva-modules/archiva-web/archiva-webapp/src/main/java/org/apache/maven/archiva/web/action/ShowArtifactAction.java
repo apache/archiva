@@ -105,7 +105,7 @@ public class ShowArtifactAction
     private Map<String, List<ArtifactDownloadInfo>> artifacts;
 
     private boolean dependencyTree = false;
-    
+
     private String deleteItem;
 
     private Map<String, String> genericMetadata;
@@ -338,7 +338,7 @@ public class ShowArtifactAction
         genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
 
         model = projectMetadata;
-        
+
         propertyName = "";
         propertyValue = "";
 
@@ -349,7 +349,7 @@ public class ShowArtifactAction
     {
         ProjectVersionMetadata projectMetadata = getProjectVersionMetadata();
         String errorMsg = null;
-       
+
         if ( projectMetadata == null )
         {
             addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
@@ -357,25 +357,25 @@ public class ShowArtifactAction
         }
 
         if ( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) != null )
-        {         
+        {
             genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
-            
+
             if ( !StringUtils.isEmpty( deleteItem ) )
             {
                 genericMetadata.remove( deleteItem );
-                
+
                 updateProjectMetadata( projectMetadata );
-                
+
                 projectMetadata = getProjectVersionMetadata();
 
                 genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
 
                 model = projectMetadata;
 
-                addActionMessage( "Property successfully deleted." );                
+                addActionMessage( "Property successfully deleted." );
             }
-            
-            deleteItem = "";           
+
+            deleteItem = "";
         }
         else
         {
@@ -390,10 +390,10 @@ public class ShowArtifactAction
     {
         GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
         genericMetadataFacet.fromProperties( genericMetadata );
-        
+
         projectMetadata.addFacet( genericMetadataFacet );
-        
-        metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );        
+
+        metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectMetadata );
     }
 
     @Override
@@ -489,7 +489,7 @@ public class ShowArtifactAction
     {
         return artifacts.keySet();
     }
-    
+
     public boolean isDependencyTree()
     {
         return dependencyTree;
@@ -529,7 +529,7 @@ public class ShowArtifactAction
     {
         this.propertyValue = propertyValue;
     }
-    
+
     public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
     {
         this.repositoryFactory = repositoryFactory;
