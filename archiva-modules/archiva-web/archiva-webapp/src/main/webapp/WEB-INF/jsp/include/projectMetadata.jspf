@@ -25,30 +25,32 @@
 <div> 
  
   <div>
-    <s:form action="addMetadataProperty" namespace="/" method="post" validate="true" theme="simple">    
-      <s:hidden name="groupId" value="%{groupId}" />
-      <s:hidden name="artifactId" value="%{artifactId}" />
-      <s:hidden name="version" value="%{version}" />
-      <s:hidden name="repositoryId" value="%{repositoryId}" />
-      <table>
-        <tr>
-          <td align="center"><strong>Property Name</strong></td>
-          <td align="center"><strong>Property Value</strong></td>
-          <td/>
-        </tr>
-        <tr>
-          <td>
-            <s:textfield name="propertyName" size="30" required="true"/>
-          </td>
-          <td>
-            <s:textfield name="propertyValue" size="30" required="true"/>
-          </td>          
-          <td align="right">
-            <s:submit value="Add"/>
-          </td>
-        </tr>
-      </table>
-    </s:form>  
+    <redback:ifAuthorized permission="archiva-add-metadata" resource="${repositoryId}">
+      <s:form action="addMetadataProperty" namespace="/" method="post" validate="true" theme="simple">    
+        <s:hidden name="groupId" value="%{groupId}" />
+        <s:hidden name="artifactId" value="%{artifactId}" />
+        <s:hidden name="version" value="%{version}" />
+        <s:hidden name="repositoryId" value="%{repositoryId}" />
+        <table>
+          <tr>
+            <td align="center"><strong>Property Name</strong></td>
+            <td align="center"><strong>Property Value</strong></td>
+            <td/>
+          </tr>
+          <tr>
+            <td>
+              <s:textfield name="propertyName" size="30" required="true"/>
+            </td>
+            <td>
+              <s:textfield name="propertyValue" size="30" required="true"/>
+            </td>          
+            <td align="right">
+              <s:submit value="Add"/>
+            </td>
+          </tr>
+        </table>
+      </s:form>  
+    </redback:ifAuthorized>
   </div>
    
   <div>
@@ -68,9 +70,11 @@
       	    <c:param name="deleteItem" value="${prop.key}"/>
           </c:url>
     	  <li>${prop.key}=${prop.value} 
-    	    <a href="${deletePropertyUrl}">
-              <img src="<c:url value="/images/icons/delete.gif" />" alt="Delete" width="12" length="12"/>
-            </a>
+    	    <redback:ifAuthorized permission="archiva-delete-metadata" resource="${repositoryId}">
+    	      <a href="${deletePropertyUrl}">
+                <img src="<c:url value="/images/icons/delete.gif" />" alt="Delete" width="12" length="12"/>
+              </a>
+            </redback:ifAuthorized>
           </li>
         </c:forEach> 
       </ul>

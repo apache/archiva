@@ -66,6 +66,16 @@
           <description>Access Archiva Repository</description>
         </operation>
         <operation>
+          <id>archiva-add-metadata</id>
+          <name>archiva-add-metadata</name>
+          <description>Add Repository Metadata</description>
+        </operation>
+        <operation>
+          <id>archiva-delete-metadata</id>
+          <name>archiva-delete-metadata</name>
+          <description>Delete Repository Metadata</description>
+        </operation>
+        <operation>
           <id>archiva-view-audit-logs</id>
           <name>archiva-view-audit-logs</name>
           <description>View Archiva Audit Logs</description>
@@ -228,6 +238,18 @@
               <id>archiva-view-audit-logs</id>
               <name>Archiva View Audit Logs</name>
               <operation>archiva-view-audit-logs</operation>
+              <resource>${resource}</resource>
+            </permission>
+            <permission>
+              <id>archiva-add-metadata</id>
+              <name>Archiva Add Repository Metadata</name>
+              <operation>archiva-add-metadata</operation>
+              <resource>${resource}</resource>
+            </permission>
+            <permission>
+              <id>archiva-delete-metadata</id>
+              <name>Archiva Delete Repository Metadata</name>
+              <operation>archiva-delete-metadata</operation>
               <resource>${resource}</resource>
             </permission>
           </permissions>
