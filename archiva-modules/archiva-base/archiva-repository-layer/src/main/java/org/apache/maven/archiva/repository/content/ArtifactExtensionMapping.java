@@ -55,6 +55,20 @@ public class ArtifactExtensionMapping
         typeToExtensionMap.put( MAVEN_PLUGIN, "jar" );
         typeToExtensionMap.put( MAVEN_ONE_PLUGIN, "jar" );
         typeToExtensionMap.put( MAVEN_ARCHETYPE, "jar" );
+
+        // NPanday types
+        typeToExtensionMap.put( "library", "dll" );
+        typeToExtensionMap.put( "asp", "dll" );
+        typeToExtensionMap.put( "gac", "dll" );
+        typeToExtensionMap.put( "gac_generic", "dll" );
+        typeToExtensionMap.put( "gac_msil", "dll" );
+        typeToExtensionMap.put( "gac_32", "dll" );
+        typeToExtensionMap.put( "netplugin", "dll" );
+        typeToExtensionMap.put( "visual-studio-addin", "dll" );
+        typeToExtensionMap.put( "module", "netmodule" );
+        typeToExtensionMap.put( "exe.config", "exe.config" );
+        typeToExtensionMap.put( "winexe", "exe" );
+        typeToExtensionMap.put( "nar", "nar" );
     }
 
     public static String getExtension( String type )
@@ -62,7 +76,7 @@ public class ArtifactExtensionMapping
         // Try specialized types first.
         if ( typeToExtensionMap.containsKey( type ) )
         {
-            return (String) typeToExtensionMap.get( type );
+            return typeToExtensionMap.get( type );
         }
 
         // Return type
@@ -117,6 +131,26 @@ public class ArtifactExtensionMapping
         else  if ( "zip".equals( extension ) )
         {
             return "distribution-zip";
+        }
+        else if ( "dll".equals( extension ) )
+        {
+            return "library";
+        }
+        else if ( "netmodule".equals( extension ) )
+        {
+            return "module";
+        }
+        else if ( "exe.config".equals( extension ) )
+        {
+            return "exe.config";
+        }
+        else if ( "exe".equals( extension ) )
+        {
+            return "winexe";
+        }
+        else if ( "nar".equals( extension ) )
+        {
+            return "nar";
         }
         return defaultExtension;
     }
