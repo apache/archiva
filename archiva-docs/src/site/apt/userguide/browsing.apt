@@ -67,8 +67,24 @@ Browsing
   associated with the artifact are available in the download box. The size of the files in bytes are displayed 
   at the right section of the download box. 
 
-  Note: Upon downloading the artifact, you will be asked to enter your username and password for the repository where the artifact    	will be downloaded from. Only users with Global Repository Manager, Repository Manager, or Repository Observer roles for that repository can download the artifact.
+  Note: Upon downloading the artifact, you will be asked to enter your username and password for the repository where the artifact will be downloaded from. 
+  Only users with Global Repository Manager, Repository Manager, or Repository Observer roles for that repository can download the artifact.
 
+* Metadata
+
+  In 1.4, the new repository API or "metadata repository" was introduced. One of the essential features of the metadata repository is to be able to add generic information
+  (such as ratings, comments, etc.) about a project through facets. These facets are stored in the project properties file in the metadata repository. 
   
+  Only users with <<<Repository Manager>>> roles for the repository where the artifact is located can add or delete properties in the metadata via the <<<Metadata>>> tab
+  in <<<Artifact Browse>>>.  
   
+  To add a property in the metadata, just specify a <<<Property Name>>> and a <<<Property Value>>> in the respective text fields then click <<<Add>>>.
+  
+[../images/add-metadata.png] Add Metadata Property  
+  
+  To delete a property, just click the corresponding delete icon (X) of the specific property you want to delete. A <<<"Property successfully deleted.">>> message should
+  be displayed after a successful delete.  
+  
+[../images/delete-metadata.png] Delete Metadata Property 
+
    
