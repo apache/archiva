@@ -24,7 +24,8 @@
 
 <div> 
  
-  <div>
+  <div id="effect" class="ui-widget-content ui-corner-all">
+    <h3 class="ui-widget-header ui-corner-all">Add Property</h3>
     <redback:ifAuthorized permission="archiva-add-metadata" resource="${repositoryId}">
       <s:form action="addMetadataProperty" namespace="/" method="post" validate="true" theme="simple">    
         <s:hidden name="groupId" value="%{groupId}" />
