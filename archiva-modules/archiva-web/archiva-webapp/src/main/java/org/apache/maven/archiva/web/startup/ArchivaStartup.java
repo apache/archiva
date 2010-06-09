@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.startup;
  */
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -34,6 +36,8 @@ import org.codehaus.plexus.spring.PlexusWebApplicationContext;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
 import org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -48,13 +52,11 @@ import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
 public class ArchivaStartup
     implements ServletContextListener
 {
-    private ThreadedTaskQueueExecutor tqeDbScanning;
-
-    private ThreadedTaskQueueExecutor tqeRepoScanning;
-
-    private ThreadedTaskQueueExecutor tqeIndexing;
-
+    private List<ThreadedTaskQueueExecutor> executors;
+    
     private ArchivaTaskScheduler taskScheduler;
+    
+    private Logger log = LoggerFactory.getLogger( ArchivaStartup.class );
     
     public void contextInitialized( ServletContextEvent contextEvent )
     {
@@ -68,17 +70,18 @@ public class ArchivaStartup
 
         taskScheduler =
             (ArchivaTaskScheduler) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaTaskScheduler.class ) );
-
-        tqeDbScanning =
-            (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class,
-                                                                                        "database-update" ) );
-        tqeRepoScanning =
-            (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class,
-                                                                                        "repository-scanning" ) );
-        tqeIndexing =
-            (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class,
-                                                                                        "indexing" ) );
-
+        
+        executors = new ArrayList<ThreadedTaskQueueExecutor>();
+        executors.add( (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId(
+                                                                                                   TaskQueueExecutor.class,
+                                                                                                   "database-update" ) ) );
+        executors.add( (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId(
+                                                                                                   TaskQueueExecutor.class,
+                                                                                                   "repository-scanning" ) ) );
+        executors.add( (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId(
+                                                                                                   TaskQueueExecutor.class,
+                                                                                                   "indexing" ) ) );
+        
         try
         {
             securitySync.startup();
@@ -104,9 +107,10 @@ public class ArchivaStartup
         if ( applicationContext != null && applicationContext instanceof PlexusWebApplicationContext )
         {
             // stop task queue executors
-            stopTaskQueueExecutor( tqeDbScanning );
-            stopTaskQueueExecutor( tqeRepoScanning );
-            stopTaskQueueExecutor( tqeIndexing );
+            for( ThreadedTaskQueueExecutor executor : executors )
+            {
+                stopTaskQueueExecutor( executor );
+            }
 
             // stop the DefaultArchivaTaskScheduler and its scheduler
             if ( taskScheduler != null && taskScheduler instanceof DefaultArchivaTaskScheduler )
@@ -117,10 +121,10 @@ public class ArchivaStartup
                 }
                 catch ( StoppingException e )
                 {
-                    e.printStackTrace();
+                    log.error( "Unable to stop Archiva task scheduler.", e );
                 }
             }
-
+            
             try
             {
                 // shutdown the scheduler, otherwise Quartz scheduler and Threads still exists
@@ -132,7 +136,7 @@ public class ArchivaStartup
             }
             catch ( Exception e )
             {   
-                e.printStackTrace();
+                log.error( "Error occurred while stopping scheduler.", e );
             }
 
             // close the application context
@@ -159,9 +163,9 @@ public class ArchivaStartup
                     service.shutdown();
                 }
             }
-            catch ( Exception e )
+            catch ( StoppingException e )
             {
-                e.printStackTrace();
+                log.error( "Unable to stop task queue executor.", e );
             }
         }
     }
@@ -177,7 +181,7 @@ public class ArchivaStartup
         }
         catch ( Exception e )
         {
-            e.printStackTrace();
+            log.error( "Error occurred while retrievin executor service.", e );
         }
         return service;
     }
