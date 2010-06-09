@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
@@ -503,6 +504,7 @@ public class UploadActionTest
         auditLogsDaoControl.verify();
 
         artifactsList = new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/" ).list();
+        Arrays.sort( artifactsList );
 
         assertEquals( 15, artifactsList.length );
 
