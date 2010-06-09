@@ -442,6 +442,7 @@ public class UploadActionTest
 
         String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
         String[] artifactsList = new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/" ).list();
+        Arrays.sort( artifactsList );
 
         assertEquals( 9, artifactsList.length );
         assertTrue( new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/"
