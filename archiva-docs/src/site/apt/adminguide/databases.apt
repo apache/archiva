@@ -32,6 +32,9 @@ Apache Archiva Databases
   By default the archiva and users databases are stored in the <<<databases>>> directory where Archiva is installed. To change the
   path, just edit all instances of the "DatabaseName" property in <<<conf/jetty.xml>>> (see below). 
 
+  <<Note:>> If you are using MySQL as your database, Archiva fails when the users database created is initially set to UTF-8 for the character encoding. 
+  As a workaround, set the database to UTF-8 encoding after it has been populated. See {{{http://jira.codehaus.org/browse/MRM-1373} MRM-1373}} for more details.
+
 +------+
 ...
 <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
