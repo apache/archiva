@@ -24,9 +24,10 @@
 
 <div> 
  
-  <div id="effect" class="ui-widget-content ui-corner-all">
-    <h3 class="ui-widget-header ui-corner-all">Add Property</h3>
-    <redback:ifAuthorized permission="archiva-add-metadata" resource="${repositoryId}">
+  <redback:ifAuthorized permission="archiva-add-metadata" resource="${repositoryId}">
+    <div id="effect" class="ui-widget-content ui-corner-all">
+      <h3 class="ui-widget-header ui-corner-all">Add Property</h3>
+    
       <s:form action="addMetadataProperty" namespace="/" method="post" validate="true" theme="simple">    
         <s:hidden name="groupId" value="%{groupId}" />
         <s:hidden name="artifactId" value="%{artifactId}" />
@@ -50,9 +51,9 @@
             </td>
           </tr>
         </table>
-      </s:form>  
-    </redback:ifAuthorized>
-  </div>
+      </s:form>
+    </div>
+  </redback:ifAuthorized>
    
   <div>
     <c:if test="${empty genericMetadata}">

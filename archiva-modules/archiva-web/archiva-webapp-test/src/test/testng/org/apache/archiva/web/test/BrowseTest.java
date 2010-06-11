@@ -160,6 +160,42 @@ public class BrowseTest
     @Test( dependsOnMethods = { "testAddMetadataPropertyEmpty" } )
     public void testAddMetadataProperty()
     {
+        addMetadataProperty();
+    }
+    
+    @Test( dependsOnMethods = { "testAddMetadataProperty" } )
+    public void testDeleteMetadataProperty()
+    {
+        deleteMetadataProperty();
+    }
+    
+    @Test( dependsOnMethods = { "testDeleteMetadataProperty" })
+    public void testMetadataAccessWithRepositoryObserverRole()
+    {   
+        addMetadataProperty();
+        
+        logout();
+        
+        goToBrowsePage();
+        clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
+        clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
+        clickLinkWithText( "Metadata" );
+
+        waitPage();
+        
+        assertTextNotPresent( "No metadata content." );
+        assertButtonWithValueNotPresent( "Add" );
+        assertTextNotPresent( "Add Property" );
+        assertImgWithAltNotPresent( "Delete" );
+        
+        login( getAdminUsername(), getAdminPassword() );
+        
+        deleteMetadataProperty();
+    }    
+    
+    private void addMetadataProperty()
+    {
         goToBrowsePage();
         clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
@@ -168,6 +204,7 @@ public class BrowseTest
 
         assertTextPresent( "No metadata content." );
         assertButtonWithValuePresent( "Add" );
+        assertTextPresent( "Add Property" );
 
         setFieldValue( "propertyName", "foo" );
         setFieldValue( "propertyValue", "bar" );
@@ -179,9 +216,8 @@ public class BrowseTest
         assertTextNotPresent( "No metadata content." );
         assertTextPresent( "foo=bar" );
     }
-
-    @Test( dependsOnMethods = { "testAddMetadataProperty" } )
-    public void testDeleteMetadataProperty()
+    
+    private void deleteMetadataProperty()
     {
         goToBrowsePage();
         clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
@@ -191,6 +227,7 @@ public class BrowseTest
 
         assertTextPresent( "foo=bar" );
         assertButtonWithValuePresent( "Add" );
+        assertTextPresent( "Add Property" );
 
         clickImgWithAlt( "Delete" );
 
@@ -200,7 +237,7 @@ public class BrowseTest
         assertTextPresent( "Property successfully deleted." );
         assertImgWithAltNotPresent( "Delete" );
         assertTextPresent( "No metadata content." );
-    }
+    }    
 
     private void assertArtifactInfoPage( String version, String artifactInfoRepositoryId, String artifactInfoGroupId,
                                          String artifactInfoArtifactId, String artifactInfoVersion,
