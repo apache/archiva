@@ -245,7 +245,7 @@
     </c:choose>
 
     <s:if test="hasActionMessages()">
-      <div id="messages">
+      <div id="messagesinfo">
         <s:actionmessage />
       </div>
     </s:if>

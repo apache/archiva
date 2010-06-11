@@ -350,6 +350,16 @@ div.versions a.expand {
     list-style-image: url(../images/icon_warning_sml.gif)
 }
 
+#messagesinfo {
+    background-color: yellow;
+    border: 1px solid orange;
+    margin-top: 2em;
+}
+
+#messagesinfo ul {
+    list-style-image: url(../images/icon_success_sml.gif)
+}
+
 table.auditlogs {
 	text-align: center;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif ;
