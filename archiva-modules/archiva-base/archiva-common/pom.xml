@@ -70,6 +70,10 @@
       <groupId>org.sonatype.nexus</groupId>
       <artifactId>nexus-indexer</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
