@@ -3,7 +3,7 @@
  -----
  Henri Yandell
  -----
- 1 October 2006
+ 2010-06-11
  -----
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -36,7 +36,7 @@ Installing Archiva
 
 ----
 ./bin/archiva console (Linux, Mac, Solaris)
-.\bin\archiva console (Windows)
+.\bin\archiva.bat console (Windows)
 ----
 
   You will need to choose a different start command based on your platform. The <<<console>>> argument

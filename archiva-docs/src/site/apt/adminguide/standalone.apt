@@ -13,7 +13,7 @@ Installing Standalone Distribution of Apache Archiva
 
   Archiva can be run by executing:
 
-    * <<<bin/archiva>>>, or <<<bin\archiva.bat>>> for windows (select the one for your environment). The argument can be <<<console>>> to run
+    * <<<bin/archiva>>>, or <<<bin\archiva.bat>>> for Windows (select the one for your environment). The argument can be <<<console>>> to run
       interactively, or <<<start>>> to run in the background (in this case, run the script with <<<stop>>> to later stop the server). The logs
       are available in the <<<logs>>> directory where Archiva is installed.
 
@@ -24,7 +24,7 @@ Installing Standalone Distribution of Apache Archiva
   On Windows, to use the <<<start>>> and <<<stop>>> commands you must first install it as a service. This is done by running:
 
 ----
-.\bin\archiva install
+.\bin\archiva.bat install
 ----
 
   You can then use the <<<start>>> and <<<stop>>> commands as well as the traditional Windows service management console to manage the Archiva
@@ -36,7 +36,7 @@ Installing Standalone Distribution of Apache Archiva
   You can later remove the service with:
 
 ----
-.\bin\archiva remove
+.\bin\archiva.bat remove
 ----
 
 * Separating the base from the installation
