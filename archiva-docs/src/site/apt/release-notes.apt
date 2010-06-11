@@ -1,10 +1,10 @@
  -----
- Release Notes for Archiva 1.3
+ Release Notes for Archiva 1.3.1
  -----
 
-Release Notes for Archiva 1.3
+Release Notes for Archiva 1.3.1
 
-  The Apache Archiva team would like to announce the release of Archiva 1.3.  Archiva is {{{http://archiva.apache.org/download.html}
+  The Apache Archiva team would like to announce the release of Archiva 1.3.1.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -43,11 +43,55 @@ Release Notes for Archiva 1.3
 
 * Release Notes
 
-  The Archiva 1.3 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.3.1 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  
+* Changes in Archiva 1.3.1
+
+  Released: <<11 June 2010>>
+
+** Bug
+
+  * [MRM-1066] - Shutdown of Tomcat causes Exception when running Archiva Project
+
+  * [MRM-1302] - java.util.ConcurrentModificationException while running Archiva 1.2.2
+
+  * [MRM-1304] - Query using Group ID field in audit log report uses '/' as a separator instead of '.'
+
+  * [MRM-1206] - HTTP ERROR: 500 when adding/deleting artifact, adding repository/legacy support/network proxies with null values
+
+  * [MRM-1312] - mda5 and sha are not generated for snapshot jars
+
+  * [MRM-1314] - Logo still links to incorrect location
+
+  * [MRM-1316] - audit log report does not restrict events to repositories that you are a manager of
+
+  * [MRM-1320] - Incorrect Archiva version specified for the "Process All Artifacts" feature in upgrade docs
+
+  * [MRM-1321] - Snapshot is linking to oldest version in Archiva GUI
+
+  * [MRM-1353] - Build number is always 1 for SNAPSHOT artifacts uploaded via web upload form
+
+  * [MRM-1355] - Audit log reports user as 'guest' when deployed via WebDAV
+
+  * [MRM-1356] - Content Lenght differs : Chunked request
+
+  * [MRM-1373] - Archiva fails when default charset in database is UTF 8
+
+  * [MRM-1386] - Start Date and End Date calendar pop-up in Audit Log Report page is broken
+
+** Improvement
+
+  * [MRM-621] - Use UTF-8 for better i18n support for page dispaly
+
+  * [MRM-1310] - Include Audit Log report in feature tour
+  
+** New Feature
+
+  * [MRM-1389] - Add support for NPanday artifact types
 
 * Changes in Archiva 1.3
 
-  Released: *13 Jan 2010*
+  Released: <<13 January 2010>>
 
 ** Bug
 
@@ -152,7 +196,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.2.2
 
-  Released: *27 Aug 2009*
+  Released: <<27 August 2009>>
 
 ** Bug
 
@@ -222,7 +266,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.2.1
 
-  Released: *24 May 2009*
+  Released: <<24 May 2009>>
 
 ** Bug
 
@@ -250,7 +294,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.2
 
-  Released: *22 March 2009*
+  Released: <<22 March 2009>>
 
 ** Sub-task
 
@@ -436,7 +480,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.2-M1
 
-  Released: *14 November 2008*
+  Released: <<14 November 2008>>
 
 ** Bug
 
@@ -502,7 +546,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.1.3
 
-  Released: *9 October 2008*
+  Released: <<9 October 2008>>
 
 ** Bug
 
@@ -516,7 +560,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.1.2
 
-  *11 September 2008*
+  Released: <<11 September 2008>>
 
 ** Bug
 
@@ -566,7 +610,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.1.1
 
-  Released: *11 August 2008*
+  Released: <<11 August 2008>>
 
 ** Bug
 
@@ -600,7 +644,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.1
 
-  Released: *20 July 2008*
+  Released: <<20 July 2008>>
 
 ** Sub-task
 
@@ -796,7 +840,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.0.2
 
-  Released: *8 April 2008*
+  Released: <<8 April 2008>>
 
 ** Bug
 
@@ -888,7 +932,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.0.1
 
-  Released: *4 February 2008*
+  Released: <<4 February 2008>>
 
 ** Bug
 
@@ -918,7 +962,7 @@ Release Notes for Archiva 1.3
 
 * Archiva 1.0
 
-  Released: *23 November 2007*
+  Released: <<23 November 2007>>
 
   First production release.
 
