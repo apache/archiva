@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4-MRM-980-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-xmlrpc</artifactId>
   <name>Archiva Web :: XML-RPC</name>

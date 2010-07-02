@@ -6,7 +6,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4-MRM-980-SNAPSHOT</version>
   </parent>
   <groupId>org.apache.archiva</groupId>
   <artifactId>stage-repository-merge</artifactId>
@@ -27,22 +27,22 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.4-MRM-980-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.4-MRM-980-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>maven2-repository</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.4-MRM-980-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-model</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>1.4-MRM-980-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>

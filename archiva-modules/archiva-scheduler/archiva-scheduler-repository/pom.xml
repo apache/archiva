@@ -5,7 +5,7 @@
   <parent>
     <artifactId>archiva-scheduler</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4-MRM-980-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-scheduler-repository</artifactId>
   <name>Archiva Base :: Scheduled Tasks :: Repository Scanning</name>

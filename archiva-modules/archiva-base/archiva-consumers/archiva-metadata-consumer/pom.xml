@@ -24,7 +24,7 @@
   <parent>
     <artifactId>archiva-consumers</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4-MRM-980-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-metadata-consumer</artifactId>
   <name>Archiva Metadata Consumer</name>

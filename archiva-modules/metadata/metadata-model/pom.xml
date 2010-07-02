@@ -21,7 +21,7 @@
   <parent>
     <artifactId>metadata</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4-MRM-980-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-model</artifactId>
   <name>Archiva Metadata Model</name>

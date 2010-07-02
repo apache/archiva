@@ -23,7 +23,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4-MRM-980-SNAPSHOT</version>
   </parent>
   <!-- TODO: Rename to metadata-store-file -->
   <artifactId>metadata-repository-file</artifactId>
