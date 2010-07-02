@@ -34,6 +34,7 @@ import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
@@ -45,6 +46,7 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.slf4j.Logger;
 
 /**
  * SearchServiceImplTest
@@ -76,6 +78,10 @@ public class SearchServiceImplTest
     
     private RepositoryBrowsing repoBrowsing;
 
+    private MockControl loggerControl;
+
+    private Logger logger;
+
     private static final String ARCHIVA_TEST_ARTIFACT_ID = "archiva-xmlrpc-test";
 
     private static final String ARCHIVA_TEST_GROUP_ID = "org.apache.archiva";
@@ -102,6 +108,10 @@ public class SearchServiceImplTest
         
         artifactDAOControl = MockControl.createControl( ArtifactDAO.class );        
         artifactDAO = ( ArtifactDAO ) artifactDAOControl.getMock();
+
+        loggerControl = MockControl.createControl( Logger.class );
+        logger = ( Logger ) loggerControl.getMock();
+
     }
     
     // MRM-1230
@@ -223,6 +233,110 @@ public class SearchServiceImplTest
         assertEquals( "1.0", artifact.getVersion() );
         assertEquals( "jar", artifact.getType() );
         assertNull( "Repository should be null since the model was not found in the database!", artifact.getRepositoryId() );
+    }
+
+    public void testQuickSearchArtifactObjectNotFoundException()
+    	throws Exception
+    {
+    	List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+        
+        SearchResults results = new SearchResults();        
+        List<String> versions = new ArrayList<String>();
+        versions.add( "1.0" );
+        
+        SearchResultHit resultHit = new SearchResultHit();
+        resultHit.setRepositoryId( "repo1.mirror" );
+        resultHit.setGroupId( "org.apache.archiva" );
+        resultHit.setArtifactId( "archiva-test" );
+        resultHit.setVersions( versions );
+
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-test" ), resultHit );
+        
+        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
+        
+        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ), results );
+
+        archivaDAOControl.expectAndReturn( archivaDAO.query( new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(),
+                                                                                          resultHit.getArtifactId() ) ), null );
+
+        ObjectNotFoundException exception = new ObjectNotFoundException( "org.apache.archiva.archiva-test:1.0" );
+
+        repoBrowsingControl.expectAndThrow( repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), exception );
+
+        logger.debug( "Unable to find pom artifact : " + exception.getMessage() );
+        loggerControl.setDefaultVoidCallable();
+
+        userReposControl.replay();
+        searchControl.replay();
+        repoBrowsingControl.replay();
+        archivaDAOControl.replay();
+        loggerControl.replay();
+        
+        List<Artifact> artifacts = searchService.quickSearch( "archiva" );
+        
+        userReposControl.verify();
+        searchControl.verify();
+        repoBrowsingControl.verify();
+        archivaDAOControl.verify();
+	    loggerControl.verify();
+        
+        assertNotNull( artifacts );
+        assertEquals( 0, artifacts.size() );
+    }
+
+    public void testQuickSearchArtifactArchivaDatabaseException()
+		throws Exception
+    {
+    	List<String> observableRepoIds = new ArrayList<String>();
+        observableRepoIds.add( "repo1.mirror" );
+
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
+        
+        SearchResults results = new SearchResults();        
+        List<String> versions = new ArrayList<String>();
+        versions.add( "1.0" );
+        
+        SearchResultHit resultHit = new SearchResultHit();
+        resultHit.setRepositoryId( "repo1.mirror" );
+        resultHit.setGroupId( "org.apache.archiva" );
+        resultHit.setArtifactId( "archiva-test" );
+        resultHit.setVersions( versions );
+
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-test" ), resultHit );
+        
+        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
+        
+        searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ), results );
+
+        archivaDAOControl.expectAndReturn( archivaDAO.query( new UniqueVersionConstraint( observableRepoIds, resultHit.getGroupId(),
+                                                                                          resultHit.getArtifactId() ) ), null );
+
+        ArchivaDatabaseException exception = new ArchivaDatabaseException( "org.apache.archiva.archiva-test:1.0" );
+
+        repoBrowsingControl.expectAndThrow( repoBrowsing.selectVersion( "", observableRepoIds, "org.apache.archiva", "archiva-test", "1.0" ), exception );
+
+        logger.debug( "Error occurred while getting pom artifact from database : " + exception.getMessage() );
+        loggerControl.setDefaultVoidCallable();
+
+        userReposControl.replay();
+        searchControl.replay();
+        repoBrowsingControl.replay();
+        archivaDAOControl.replay();
+        loggerControl.replay();
+        
+        List<Artifact> artifacts = searchService.quickSearch( "archiva" );
+        
+        userReposControl.verify();
+        searchControl.verify();
+        repoBrowsingControl.verify();
+        archivaDAOControl.verify();
+        loggerControl.verify();
+        
+        assertNotNull( artifacts );
+        assertEquals( 0, artifacts.size() );
     }
     
     /*
