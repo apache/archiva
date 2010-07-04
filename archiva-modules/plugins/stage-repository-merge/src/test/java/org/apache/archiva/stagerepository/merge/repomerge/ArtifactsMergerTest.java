@@ -120,13 +120,13 @@ public class ArtifactsMergerTest
         verify( repositoryFactory ).getManagedRepositoryContent( SOURCE_REPOSITORY_ID );
         verify( repositoryFactory ).getManagedRepositoryContent( TARGET_REPOSITORY_ID );
         verify( sourceArtifacts ).getSourceArtifactList();
-        verify( metadataResolver ).getArtifacts( TARGET_REPOSITORY_ID, "org.apache.archiva", "archiva", "1.2.1" );
+        verify( metadataResolver ).getArtifacts( TARGET_REPOSITORY_ID, "org.apache.archiva", "archiva", "1.2.2" );
     }
 
     public Collection<ArchivaArtifact> getArtifacts()
     {
         ArchivaArtifact a1 =
-            new ArchivaArtifact( "org.apache.archiva", "archiva", "1.2.1", "", "jar", SOURCE_REPOSITORY_ID );
+            new ArchivaArtifact( "org.apache.archiva", "archiva", "1.2.2", "", "jar", SOURCE_REPOSITORY_ID );
         ArchivaArtifact a2 =
             new ArchivaArtifact( "org.apache.archiva", "archiva", "1.5", "", "jar", SOURCE_REPOSITORY_ID );
         ArrayList<ArchivaArtifact> list = new ArrayList<ArchivaArtifact>();
@@ -140,7 +140,7 @@ public class ArtifactsMergerTest
         ArtifactMetadata m1 = new ArtifactMetadata();
         m1.setNamespace( "org.apache.archiva" );
         m1.setProject( "archiva" );
-        m1.setVersion( "1.2.1" );
+        m1.setVersion( "1.2.2" );
         ArrayList<ArtifactMetadata> list = new ArrayList<ArtifactMetadata>();
         list.add( m1 );
         return list;
@@ -148,7 +148,7 @@ public class ArtifactsMergerTest
 
     public void setRepositoryConfigurations()
     {
-        File sourceRepoFile = new File( getBasedir(), "src/test/resources/test-repository" );
+        File sourceRepoFile = new File( getBasedir(), "target/test-repository" );
         File targetRepoFile = new File( getBasedir(), "src/test/resources/target-repo" );
         // sourceRepoFile.mkdirs();
         // targetRepoFile.mkdirs();

@@ -3,8 +3,7 @@
 <metadata>
   <groupId>org.apache.archiva</groupId>
   <artifactId>archiva</artifactId>
-  <version>1.2.1</version>
-  <versioning>
-    <lastUpdated>20100702152308</lastUpdated>
-  </versioning>
+  <version>1.2.2</version>
 </metadata>
+
+

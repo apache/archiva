@@ -433,7 +433,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( Arrays.asList( "4", "5-SNAPSHOT" ), resolver.getProjectVersions( TEST_REPO_ID, "org.apache",
                                                                                        "apache" ) );
 
-        assertEquals( Arrays.asList( "1.2.1" ), resolver.getProjectVersions( TEST_REPO_ID, "org.apache.archiva",
+        assertEquals( Arrays.asList( "1.2.1", "1.2.2" ), resolver.getProjectVersions( TEST_REPO_ID, "org.apache.archiva",
                                                                              "archiva" ) );
         assertEquals( Arrays.asList( "1.2.1" ), resolver.getProjectVersions( TEST_REPO_ID, "org.apache.archiva",
                                                                              "archiva-base" ) );
