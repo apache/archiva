@@ -26,7 +26,7 @@ public abstract class AbstractArtifactReportsTest
     // Reports
     public void goToReportsPage()
     {
-        clickLinkWithText( "Reports" );
+        getSelenium().open( "/archiva/report/pickReport.action" );
         assertReportsPage();
     }
 

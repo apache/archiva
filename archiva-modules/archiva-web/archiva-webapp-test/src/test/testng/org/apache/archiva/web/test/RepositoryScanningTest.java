@@ -30,7 +30,7 @@ public class RepositoryScanningTest
     public void testAddArtifactFileType_NullValue()
     {
         goToRepositoryScanningPage();
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[1]/table/tbody/tr[14]/td[2]/a/img" );
+        clickAddIcon( "newpattern_0" );
         assertTextPresent( "Unable to process blank pattern." );
     }
 
@@ -38,7 +38,7 @@ public class RepositoryScanningTest
     public void testAddArtifactFileType()
     {
         setFieldValue( "newpattern_0", "**/*.dll" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[1]/table/tbody/tr[14]/td[2]/a/img" );
+        clickAddIcon( "newpattern_0" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[1]/table.13.0" ), "**/*.dll" );
     }
 
@@ -46,7 +46,7 @@ public class RepositoryScanningTest
     public void testAddArtifactFileType_ExistingValue()
     {
         setFieldValue( "newpattern_0", "**/*.zip" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[1]/table/tbody/tr[15]/td[2]/a/img" );
+        clickAddIcon( "newpattern_0" );
         Assert.assertEquals( getSelenium().getText( "//span[@class='errorMessage']" ),
                              "Not adding pattern \"**/*.zip\" to filetype artifacts as it already exists." );
     }
@@ -55,7 +55,7 @@ public class RepositoryScanningTest
     public void testDeleteArtifactFileType()
     {
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[1]/table.13.0" ), "**/*.dll" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[1]/table/tbody/tr[14]/td[2]/a/img" );
+        clickDeleteIcon( "**/*.dll" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[1]/table.13.0" ), "" );
     }
 
@@ -63,7 +63,7 @@ public class RepositoryScanningTest
     public void testAddAutoRemove_NullValue()
     {
         setFieldValue( "newpattern_1", "" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[2]/table/tbody/tr[4]/td[2]/a/img" );
+        clickAddIcon( "newpattern_1" );
         assertTextPresent( "Unable to process blank pattern." );
     }
 
@@ -71,7 +71,7 @@ public class RepositoryScanningTest
     public void testAddAutoRemove_ExistingValue()
     {
         setFieldValue( "newpattern_1", "**/*-" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[2]/table/tbody/tr[4]/td[2]/a/img" );
+        clickAddIcon( "newpattern_1" );
         Assert.assertEquals( getSelenium().getText( "//span[@class='errorMessage']" ),
                              "Not adding pattern \"**/*-\" to filetype auto-remove as it already exists." );
     }
@@ -80,7 +80,7 @@ public class RepositoryScanningTest
     public void testAddAutoRemove()
     {
         setFieldValue( "newpattern_1", "**/*.test" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[2]/table/tbody/tr[4]/td[2]/a/img" );
+        clickAddIcon( "newpattern_1" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[2]/table.3.0" ), "**/*.test" );
     }
 
@@ -88,7 +88,7 @@ public class RepositoryScanningTest
     public void testDeleteAutoRemove()
     {
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[2]/table.3.0" ), "**/*.test" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[2]/table/tbody/tr[4]/td[2]/a/img" );
+        clickDeleteIcon( "**/*.test" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[2]/table.3.0" ), "" );
     }
 
@@ -96,7 +96,7 @@ public class RepositoryScanningTest
     public void testAddIgnoredArtifacts_NullValue()
     {
         setFieldValue( "newpattern_2", "" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[3]/table/tbody/tr[7]/td[2]/a/img" );
+        clickAddIcon( "newpattern_2" );
         Assert.assertEquals( getSelenium().getText( "//span[@class='errorMessage']" ),
                              "Unable to process blank pattern." );
     }
@@ -105,7 +105,7 @@ public class RepositoryScanningTest
     public void testAddIgnoredArtifacts_ExistingValue()
     {
         setFieldValue( "newpattern_2", "**/*.sh" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[3]/table/tbody/tr[7]/td[2]/a/img" );
+        clickAddIcon( "newpattern_2" );
         Assert.assertEquals( getSelenium().getText( "//span[@class='errorMessage']" ),
                              "Not adding pattern \"**/*.sh\" to filetype ignored as it already exists." );
     }
@@ -114,7 +114,7 @@ public class RepositoryScanningTest
     public void testAddIgnoredArtifacts()
     {
         setFieldValue( "newpattern_2", "**/*.log" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[3]/table/tbody/tr[7]/td[2]/a/img" );
+        clickAddIcon( "newpattern_2" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[3]/table.6.0" ), "**/*.log" );
     }
 
@@ -122,7 +122,7 @@ public class RepositoryScanningTest
     public void testDeleteIgnoredArtifacts()
     {
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[3]/table.6.0" ), "**/*.log" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[3]/table/tbody/tr[7]/td[2]/a/img" );
+        clickDeleteIcon( "**/*.log" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[3]/table.6.0" ), "" );
     }
 
@@ -131,7 +131,7 @@ public class RepositoryScanningTest
     public void testAddIndexableContent_NullValue()
     {
         setFieldValue( "newpattern_3", "" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[4]/table/tbody/tr[10]/td[2]/a/img" );
+        clickAddIcon( "newpattern_3" );
         Assert.assertEquals( getSelenium().getText( "//span[@class='errorMessage']" ),
                              "Unable to process blank pattern." );
     }
@@ -140,7 +140,7 @@ public class RepositoryScanningTest
     public void testAddIndexableContent_ExistingValue()
     {
         setFieldValue( "newpattern_3", "**/*.xml" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[4]/table/tbody/tr[10]/td[2]/a/img" );
+        clickAddIcon( "newpattern_3" );
         Assert.assertEquals( getSelenium().getText( "//span[@class='errorMessage']" ),
                              "Not adding pattern \"**/*.xml\" to filetype indexable-content as it already exists." );
     }
@@ -149,7 +149,7 @@ public class RepositoryScanningTest
     public void testAddIndexableContent()
     {
         setFieldValue( "newpattern_3", "**/*.html" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[4]/table/tbody/tr[10]/td[2]/a/img" );
+        clickAddIcon( "newpattern_3" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[4]/table.9.0" ), "**/*.html" );
     }
 
@@ -157,7 +157,7 @@ public class RepositoryScanningTest
     public void testDeleteIndexableContent()
     {
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[4]/table.9.0" ), "**/*.html" );
-        clickLinkWithXPath( "//div[@id='contentArea']/div/div[4]/table/tbody/tr[10]/td[2]/a/img" );
+        clickDeleteIcon( "**/*.html" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[4]/table.9.0" ), "" );
     }
 
@@ -183,6 +183,18 @@ public class RepositoryScanningTest
         clickButtonWithValue( "Update Consumers" );
 
         assertPage( "Apache Archiva \\ Administration - Repository Scanning" );
+    }
+    
+    private void clickAddIcon( String fieldId )
+    {
+        String xPath = "//preceding::td/input[@id='" + fieldId + "']//following::td/a/img";
+        clickLinkWithLocator( xPath );
+    }
+
+    private void clickDeleteIcon( String pattern )
+    {
+        String xPath = "//preceding::td/code[contains(text(),'" + pattern + "')]//following::td/a/img";
+        clickLinkWithLocator( xPath );
     }
 
 }

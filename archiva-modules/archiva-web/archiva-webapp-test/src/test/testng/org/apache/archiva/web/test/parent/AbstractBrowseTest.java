@@ -26,7 +26,7 @@ public abstract class AbstractBrowseTest
     // Browse
     public void goToBrowsePage()
     {
-        clickLinkWithText( "Browse" );
+        getSelenium().open( "/archiva/browse" );
         assertBrowsePage();
     }
 
