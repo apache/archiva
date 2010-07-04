@@ -28,7 +28,7 @@ public class AuditLogsReportTest
 {
     private void goToAuditLogReports()
     {
-        clickLinkWithText( "Audit Log Report" );        
+        getSelenium().open( "/archiva/report/queryAuditLogReport.action" );
     }
     
     private void assertAuditLogsReportPage()

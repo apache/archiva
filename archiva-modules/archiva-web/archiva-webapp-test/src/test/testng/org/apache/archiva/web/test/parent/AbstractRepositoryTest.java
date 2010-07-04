@@ -30,7 +30,7 @@ public abstract class AbstractRepositoryTest
 	{
 	    if( !getTitle().equals( "Apache Archiva \\ Administration - Repository Groups" ) )
 	    {
-	        clickLinkWithText( "Repository Groups" );
+	        getSelenium().open( "/archiva/admin/repositoryGroups.action" );
 	    }
 		assertRepositoryGroupsPage();
 	}
@@ -67,7 +67,7 @@ public abstract class AbstractRepositoryTest
 		assertPage( "Apache Archiva \\ Admin: Delete Repository Group" );
 		assertTextPresent( "WARNING: This operation can not be undone." );
 		assertTextPresent( "Are you sure you want to delete the following repository group?" );
-		assertTextPresent( "ID: " + repositoryName );
+		assertElementPresent( "//preceding::td[text()='ID:']//following::td/code[text()='" + repositoryName + "']" );
 		assertButtonWithValuePresent( "Confirm" );
 		assertButtonWithValuePresent( "Cancel" );
 	}

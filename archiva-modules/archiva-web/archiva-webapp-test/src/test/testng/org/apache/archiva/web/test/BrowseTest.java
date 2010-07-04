@@ -36,6 +36,7 @@ public class BrowseTest
 		assertBrowsePage();
 	}
 	
+	@Test( dependsOnMethods = { "testAddArtifactValidValues" } )
 	public void testClickArtifactFromBrowse()
 	{
 		goToBrowsePage();

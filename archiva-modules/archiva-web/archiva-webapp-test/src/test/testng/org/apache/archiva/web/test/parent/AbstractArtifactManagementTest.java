@@ -42,7 +42,7 @@ public abstract class AbstractArtifactManagementTest
 	public void goToDeleteArtifactPage()
 	{
         login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
-		clickLinkWithText( "Delete Artifact" );
+		getSelenium().open( "/archiva/deleteArtifact.action" );
 		assertDeleteArtifactPage();
 	}
 		
@@ -74,7 +74,7 @@ public abstract class AbstractArtifactManagementTest
 	// Legacy Support
 	public void goToLegacySupportPage()
 	{
-		clickLinkWithText( "Legacy Support" );
+		getSelenium().open( "/archiva/admin/legacyArtifactPath.action" );
 		assertLegacySupportPage();
 	}
 	

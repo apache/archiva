@@ -146,7 +146,7 @@ public abstract class AbstractArchivaTest
     //User Management
 	public void goToUserManagementPage()
 	{
-		clickLinkWithText( "User Management" );
+		getSelenium().open( "/archiva/security/userlist.action" );
 		assertUserManagementPage();
 	}
 	
@@ -216,7 +216,7 @@ public abstract class AbstractArchivaTest
 	private void createUser( String userName, String fullName, String emailAd, String password, String confirmPassword, boolean valid ) 
 	{
 		//login( getAdminUsername() , getAdminPassword() );
-		clickLinkWithText( "User Management" );
+		getSelenium().open( "/archiva/security/userlist.action" );
 		clickButtonWithValue( "Create New User" );
 		assertCreateUserPage();
         setFieldValue( "user.username", userName );
@@ -409,7 +409,7 @@ public abstract class AbstractArchivaTest
 	//Find Artifact
 	public void goToFindArtifactPage()
 	{
-		clickLinkWithText( "Find Artifact" );
+		getSelenium().open( "/archiva/findArtifact.action" );
 		assertFindArtifactPage();
 	}
 	
@@ -426,7 +426,7 @@ public abstract class AbstractArchivaTest
 	//Appearance
 	public void goToAppearancePage()
 	{
-		clickLinkWithText( "Appearance" );
+		getSelenium().open( "/archiva/admin/configureAppearance.action" );
 		assertAppearancePage();
 	}
 	
@@ -452,7 +452,7 @@ public abstract class AbstractArchivaTest
 	// Upload Artifact
     public void goToAddArtifactPage()
     {
-        clickLinkWithText( "Upload Artifact" );
+        getSelenium().open( "/archiva/upload.action" );
         assertAddArtifactPage();
     }
 
@@ -522,7 +522,7 @@ public abstract class AbstractArchivaTest
     {
         if( !getTitle().equals( "Apache Archiva \\ Administration - Repositories" ) )
         {
-            clickLinkWithText( "Repositories" );
+            getSelenium().open( "/archiva/admin/repositories.action" );
         }
     	assertRepositoriesPage();
     }
