@@ -30,7 +30,7 @@ public abstract class AbstractRepositoryTest
     {
         if ( !getTitle().equals( "Apache Archiva \\ Administration - Repository Groups" ) )
         {
-            clickLinkWithText( "Repository Groups" );
+            getSelenium().open( "/archiva/admin/repositoryGroups.action" );
         }
         assertRepositoryGroupsPage();
     }

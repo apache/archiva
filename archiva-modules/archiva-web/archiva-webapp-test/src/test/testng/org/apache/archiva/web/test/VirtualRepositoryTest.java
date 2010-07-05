@@ -51,6 +51,7 @@ public class VirtualRepositoryTest
     @Test( dependsOnMethods = { "testAddRepositoryToRepositoryGroup" } )
     public void testDeleteRepositoryOfRepositoryGroup()
     {
+        goToRepositoryGroupsPage();
         deleteRepositoryInRepositoryGroups();
         assertTextPresent( "Repository Groups" );
         assertTextNotPresent( "No Repository Groups Defined." );
