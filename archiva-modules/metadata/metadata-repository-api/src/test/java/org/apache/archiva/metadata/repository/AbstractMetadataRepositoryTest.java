@@ -486,6 +486,17 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( repository.getArtifactsByDateRange( TEST_REPO_ID, null, upper ).isEmpty() );
     }
 
+     public void testGetArtifactsByRepoId()
+    {
+        repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+        repository.updateProject( TEST_REPO_ID, createProject() );
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+        assertFalse( repository.getArtifacts(TEST_REPO_ID).isEmpty());
+
+
+    }
+
     public void testGetNamespacesWithSparseDepth()
     {
         repository.updateNamespace( TEST_REPO_ID, "org.apache.maven.shared" );
