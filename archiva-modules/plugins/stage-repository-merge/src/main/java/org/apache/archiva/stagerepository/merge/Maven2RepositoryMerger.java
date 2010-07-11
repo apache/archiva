@@ -81,6 +81,11 @@ public class Maven2RepositoryMerger
         this.configuration = configuration;
     }
 
+     public void setMetadataRepository( MetadataRepository metadataRepository )
+    {
+        this.metadataRepository = metadataRepository;
+    }
+
     public void merge( String sourceRepoId, String targetRepoId )
         throws Exception
     {
@@ -144,11 +149,25 @@ public class Maven2RepositoryMerger
         // pom file copying
         String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
 
-        File sourcePomFile =
-            pathTranslator.toFile( new File( sourceRepoPath ), artifactMetadata.getId(), artifactMetadata.getProject(),
-                                   artifactMetadata.getVersion(), fileName );
-        String relativePathToPomFile = sourcePomFile.getAbsolutePath().split( sourceRepoPath )[1];
-        File targetPomFile = new File( targetRepoPath, relativePathToPomFile );
+         // pom file copying
+        // TODO need to use path translator to get the pom file path
+//        String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
+//
+//        File sourcePomFile =
+//            pathTranslator.toFile( new File( sourceRepoPath ), artifactMetadata.getId(), artifactMetadata.getProject(),
+//                                   artifactMetadata.getVersion(), fileName );
+//
+//        String relativePathToPomFile = sourcePomFile.getAbsolutePath().split( sourceRepoPath )[1];
+//        File targetPomFile = new File( targetRepoPath, relativePathToPomFile );
+
+        //pom file copying  (file path is taken with out using path translator)
+
+        String index = artifactPath.substring( lastIndex + 1 );
+        int last = index.lastIndexOf( '.' );
+        File sourcePomFile = new File( sourceRepoPath, artifactPath.substring( 0, lastIndex ) + "/" +
+            artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
+        File targetPomFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) + "/" +
+            artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
 
         if ( !targetPomFile.exists() )
         {

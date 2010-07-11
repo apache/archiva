@@ -23,23 +23,26 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.mockito.MockitoAnnotations;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import org.junit.Before;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Maven2RepositoryMergerTest
     extends PlexusInSpringTestCase
 {
 
-    private static final String SOURCE_REPOSITORY_ID = "test-repository";
-
-    private static final String TARGET_REPOSITORY_ID = "target-repo";
-
     private static final String TEST_REPO_ID = "test";
 
-    // private static final String TARGET_REPOSITORY_ID = "target-repo";
+    private static final String TARGET_REPOSITORY_ID = "target-repo";
 
     private Configuration config;
 
@@ -59,31 +62,51 @@ public class Maven2RepositoryMergerTest
         throws Exception
     {
         super.setUp();
+        MockitoAnnotations.initMocks( this );
+        metadataRepository = mock( MetadataRepository.class );
+
         ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
         testRepo.setLocation( getTestPath( "target/test-repository" ) );
-        // testRepo.setLocation( "/boot/gsoc/apps/apache-archiva-1.4-SNAPSHOT/data/repositories/internal" );
+
+        RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
+        List<String> knownContentConsumers = new ArrayList<String>();
+        knownContentConsumers.add( "metadata-updater12" );
+        repoScanConfig.setKnownContentConsumers( knownContentConsumers );
+        c.setRepositoryScanning( repoScanConfig );
 
         ManagedRepositoryConfiguration targetRepo = new ManagedRepositoryConfiguration();
         targetRepo.setId( "target-rep" );
-        targetRepo.setLocation( getTestPath( "src/test/resources/target-repo" ) );
+        targetRepo.setLocation( getTestPath( "target" ) );
         c.addManagedRepository( testRepo );
         c.addManagedRepository( targetRepo );
         configuration.save( c );
 
         repositoryMerger = (Maven2RepositoryMerger) lookup( RepositoryMerger.class, "maven2" );
+        repositoryMerger.setMetadataRepository( metadataRepository );
+    }
 
-        metadataRepository = (MetadataRepository) lookup( MetadataRepository.class );
+    private List<ArtifactMetadata> getArtifacts()
+    {
+        List<ArtifactMetadata> metadata = new ArrayList<ArtifactMetadata>();
+        ArtifactMetadata artifact1 = new ArtifactMetadata();
+        artifact1.setNamespace( "com.example.test" );
+        artifact1.setProject( "test-artifact" );
+        artifact1.setVersion( "1.0-SNAPSHOT" );
+        artifact1.setProjectVersion( "1.0-SNAPSHOT" );
+        artifact1.setId( "test-artifact-1.0-20100308.230825-1.jar" );
 
+        metadata.add( artifact1 );
+        return metadata;
     }
 
     public void testMerge()
         throws Exception
     {
+        when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( getArtifacts() );
         repositoryMerger.merge( TEST_REPO_ID, "target-rep" );
-        // assert( true , (metadataRepository.getArtifacts( TEST_REPO_ID ).size() > 0 ) );
-
+        verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
     }
 }
