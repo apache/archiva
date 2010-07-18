@@ -17,36 +17,26 @@
   ~ under the License.
   --%>
 
+<%-- http://www.opensymphony.com/webwork/wikidocs/File%20Upload%20Interceptor.html --%>
+
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
-  <title>Admin: Edit Managed Repository</title>
+  <title>Merge Repositories</title>
   <s:head/>
 </head>
 
 <body>
-
-<h1>Admin: Edit Managed Repository</h1>
-
-<s:actionerror/>
+<h1>Merge Repositories</h1>
 
 <div id="contentArea">
 
+  <s:actionerror/>
   <s:actionmessage/>
-  <s:form method="post" action="editRepository!commit" namespace="/admin" validate="false">
-    <s:hidden name="repository.id"/>
-    <s:label label="ID" name="repository.id" />
-    <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
-    <s:checkbox name="stageNeeded" value="stageNeeded" label="Create stage repository"/>
-    <s:submit value="Update Repository"/>
-  </s:form>
-
-  <script type="text/javascript">
-    document.getElementById("editRepository_repository_name").focus();
-  </script>
-
+  <h1>successfully done the merging</h1>
 </div>
 
 </body>

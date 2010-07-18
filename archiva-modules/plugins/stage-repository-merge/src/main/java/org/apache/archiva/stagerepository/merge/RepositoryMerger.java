@@ -27,5 +27,5 @@ public interface RepositoryMerger
     void merge( String sourceRepoId, String targetRepoId )
         throws Exception;
 
-    void merge( String sourceRepoId, String targetRepoId, Filter<ArtifactMetadata> filter );
+    void merge( String sourceRepoId, String targetRepoId, Filter<ArtifactMetadata> filter ) throws Exception;
 }

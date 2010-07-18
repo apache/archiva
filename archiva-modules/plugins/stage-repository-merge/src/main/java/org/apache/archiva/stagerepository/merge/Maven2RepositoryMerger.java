@@ -24,9 +24,6 @@ import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
@@ -34,7 +31,6 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -81,7 +77,7 @@ public class Maven2RepositoryMerger
         this.configuration = configuration;
     }
 
-     public void setMetadataRepository( MetadataRepository metadataRepository )
+    public void setMetadataRepository( MetadataRepository metadataRepository )
     {
         this.metadataRepository = metadataRepository;
     }
@@ -99,8 +95,16 @@ public class Maven2RepositoryMerger
 
     // TODO when UI needs a subset to merge
     public void merge( String sourceRepoId, String targetRepoId, Filter<ArtifactMetadata> filter )
+        throws Exception
     {
-
+        List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
+        for ( ArtifactMetadata metadata : sourceArtifacts )
+        {
+            if ( filter.accept( metadata ) )
+            {
+                createFolderStructure( sourceRepoId, targetRepoId, metadata );
+            }
+        }
     }
 
     private void createFolderStructure( String sourceRepoId, String targetRepoId, ArtifactMetadata artifactMetadata )
@@ -126,9 +130,8 @@ public class Maven2RepositoryMerger
 
         String sourceRepoPath = sourceRepoConfig.getLocation();
 
-        String artifactPath =
-            pathTranslator.toPath( artifactMetadata.getNamespace(), artifactMetadata.getProject(),
-                                   artifactMetadata.getProjectVersion(), artifactMetadata.getId() );
+        String artifactPath = pathTranslator.toPath( artifactMetadata.getNamespace(), artifactMetadata.getProject(),
+                                                     artifactMetadata.getProjectVersion(), artifactMetadata.getId() );
 
         File sourceArtifactFile = new File( sourceRepoPath, artifactPath );
 
@@ -149,7 +152,7 @@ public class Maven2RepositoryMerger
         // pom file copying
         String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
 
-         // pom file copying
+        // pom file copying
         // TODO need to use path translator to get the pom file path
 //        String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
 //
@@ -181,7 +184,8 @@ public class Maven2RepositoryMerger
             // updating version metadata files
             File versionMetaDataFileInSourceRepo =
                 pathTranslator.toFile( new File( sourceRepoPath ), artifactMetadata.getNamespace(),
-                                       artifactMetadata.getProject(), artifactMetadata.getVersion(), METADATA_FILENAME );
+                                       artifactMetadata.getProject(), artifactMetadata.getVersion(),
+                                       METADATA_FILENAME );
             String relativePathToVersionMetadataFile =
                 versionMetaDataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
             File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
@@ -319,5 +323,58 @@ public class Maven2RepositoryMerger
             metadata = RepositoryMetadataReader.read( metadataFile );
         }
         return metadata;
+    }
+
+    public List<ArtifactMetadata> mergeWithOutConflictArtifacts( String sourceRepo, String targetRepo )
+        throws Exception
+    {
+
+        List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
+        List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
+        List<ArtifactMetadata> conflictsArtifacts = new ArrayList<ArtifactMetadata>();
+
+        for ( ArtifactMetadata targerArtifact : targetArtifacts )
+        {
+
+            for ( ArtifactMetadata sourceArtifact : sourceArtifacts )
+            {
+
+                if ( isEquals( targerArtifact, sourceArtifact ) )
+                {
+                    if ( !conflictsArtifacts.contains( sourceArtifact ) )
+                    {
+                        conflictsArtifacts.add( sourceArtifact );
+
+                    }
+
+                }
+
+            }
+        }
+
+        sourceArtifacts.removeAll( conflictsArtifacts );
+        Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+        merge( sourceRepo, targetRepo, artifactsWithOutConflicts );
+        return conflictsArtifacts;
+    }
+
+    private boolean isEquals( ArtifactMetadata sourceArtifact, ArtifactMetadata targetArtifact )
+    {
+        boolean isSame = false;
+
+        if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) ) &&
+            ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) ) &&
+            ( sourceArtifact.getVersion().equals( targetArtifact.getVersion() ) ) &&
+            ( sourceArtifact.getId().equals( targetArtifact.getId() ) ) &&
+            ( sourceArtifact.getProjectVersion().equals( targetArtifact.getProjectVersion() ) ) )
+
+        {
+            if ( sourceArtifact.getId().equals( targetArtifact.getId() ) )
+            {
+                isSame = true;
+            }
+        }
+
+        return isSame;
     }
 }

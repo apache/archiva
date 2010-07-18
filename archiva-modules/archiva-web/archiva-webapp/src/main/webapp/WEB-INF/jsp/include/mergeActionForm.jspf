@@ -16,9 +16,15 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
+
+<%-- http://www.opensymphony.com/webwork/wikidocs/File%20Upload%20Interceptor.html --%>
+
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<s:hidden name="repository.id"/>
+    <s:label label="ID" name="repository.id" />
 
 <s:textfield name="repository.name" label="Name" size="50" required="true"/>
 <s:textfield name="repository.location" label="Directory" size="50" required="true"/>

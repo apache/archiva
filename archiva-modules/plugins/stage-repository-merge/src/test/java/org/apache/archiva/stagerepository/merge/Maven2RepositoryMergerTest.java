@@ -35,6 +35,7 @@ import org.junit.Before;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
 
 public class Maven2RepositoryMergerTest
     extends PlexusInSpringTestCase
@@ -64,26 +65,6 @@ public class Maven2RepositoryMergerTest
         super.setUp();
         MockitoAnnotations.initMocks( this );
         metadataRepository = mock( MetadataRepository.class );
-
-        ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
-        Configuration c = new Configuration();
-        ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
-        testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( getTestPath( "target/test-repository" ) );
-
-        RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
-        List<String> knownContentConsumers = new ArrayList<String>();
-        knownContentConsumers.add( "metadata-updater12" );
-        repoScanConfig.setKnownContentConsumers( knownContentConsumers );
-        c.setRepositoryScanning( repoScanConfig );
-
-        ManagedRepositoryConfiguration targetRepo = new ManagedRepositoryConfiguration();
-        targetRepo.setId( "target-rep" );
-        targetRepo.setLocation( getTestPath( "target" ) );
-        c.addManagedRepository( testRepo );
-        c.addManagedRepository( targetRepo );
-        configuration.save( c );
-
         repositoryMerger = (Maven2RepositoryMerger) lookup( RepositoryMerger.class, "maven2" );
         repositoryMerger.setMetadataRepository( metadataRepository );
     }
@@ -105,8 +86,76 @@ public class Maven2RepositoryMergerTest
     public void testMerge()
         throws Exception
     {
+        ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        Configuration c = new Configuration();
+        ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
+        testRepo.setId( TEST_REPO_ID );
+        testRepo.setLocation( getTestPath( "target/test-repository" ) );
+
+        RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
+        List<String> knownContentConsumers = new ArrayList<String>();
+        knownContentConsumers.add( "metadata-updater12" );
+        repoScanConfig.setKnownContentConsumers( knownContentConsumers );
+        c.setRepositoryScanning( repoScanConfig );
+
+        ManagedRepositoryConfiguration targetRepo = new ManagedRepositoryConfiguration();
+        targetRepo.setId( "target-rep" );
+        targetRepo.setLocation( getTestPath( "target" ) );
+        c.addManagedRepository( testRepo );
+        c.addManagedRepository( targetRepo );
+        configuration.save( c );
+
         when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( getArtifacts() );
         repositoryMerger.merge( TEST_REPO_ID, "target-rep" );
         verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
     }
+
+    public void testMergeWithOutConflictArtifacts()
+        throws Exception
+    {
+        String sourceRepoId = "source-repo";
+        ArtifactMetadata artifact1 = new ArtifactMetadata();
+        artifact1.setNamespace( "org.testng" );
+        artifact1.setProject( "testng" );
+        artifact1.setVersion( "5.8" );
+        artifact1.setProjectVersion( "5.8" );
+        artifact1.setId( "testng-5.8-jdk15.jar" );
+        artifact1.setRepositoryId( sourceRepoId );
+
+        List<ArtifactMetadata> sourceRepoArtifactsList = getArtifacts();
+        sourceRepoArtifactsList.add( artifact1 );
+        List<ArtifactMetadata> targetRepoArtifactsList = getArtifacts();
+
+        ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        Configuration c = new Configuration();
+        ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
+        testRepo.setId( TEST_REPO_ID );
+        testRepo.setLocation( getTestPath( "target/test-repository" ) );
+
+        String sourceRepo = "src/test/resources/test-repository-with-conflict-artifacts";
+        ManagedRepositoryConfiguration testRepoWithConflicts = new ManagedRepositoryConfiguration();
+        testRepoWithConflicts.setId( sourceRepoId );
+        testRepoWithConflicts.setLocation( getTestPath( sourceRepo ) );
+
+        RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
+        List<String> knownContentConsumers = new ArrayList<String>();
+        knownContentConsumers.add( "metadata-updater" );
+        repoScanConfig.setKnownContentConsumers( knownContentConsumers );
+        c.setRepositoryScanning( repoScanConfig );
+
+        c.addManagedRepository( testRepo );
+        c.addManagedRepository( testRepoWithConflicts );
+        configuration.save( c );
+
+        File targetRepoFile = new File( getTestPath(
+            "/target/test-repository/com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" ) );
+        targetRepoFile.setReadOnly();
+
+        when( metadataRepository.getArtifacts( sourceRepoId ) ).thenReturn( sourceRepoArtifactsList );
+        when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( targetRepoArtifactsList );
+
+        assertEquals( 1, repositoryMerger.mergeWithOutConflictArtifacts( sourceRepoId, TEST_REPO_ID ).size() );
+        verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
+    }
+
 }

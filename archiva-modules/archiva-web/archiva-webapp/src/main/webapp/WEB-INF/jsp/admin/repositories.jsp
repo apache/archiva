@@ -21,7 +21,7 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
-<%@ taglib prefix="archiva"   uri="/WEB-INF/taglib.tld" %>
+<%@ taglib prefix="archiva" uri="/WEB-INF/taglib.tld" %>
 
 <html>
 <head>
@@ -29,15 +29,17 @@
   <s:head/>
   <script type="text/javascript" src="<c:url value='/js/jquery-1.3.2.min.js'/>"></script>
   <script type="text/javascript">
-  $(document).ready(function(){
-    
- $(".pom").hide();
- $("a.expand").click(function(event){
-   event.preventDefault();
-   $(this).siblings("pre").toggle("slow");
- });
+    $(document).ready(function()
+    {
 
-  });
+      $(".pom").hide();
+      $("a.expand").click(function( event )
+      {
+        event.preventDefault();
+        $(this).siblings("pre").toggle("slow");
+      });
+
+    });
   </script>
 </head>
 
@@ -102,7 +104,7 @@
   </redback:ifAnyAuthorized>
   <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
   <a href="/archiva/feeds/${repository.id}">
-	<img src="${rssFeedIconUrl}" />
+    <img src="${rssFeedIconUrl}"/>
   </a>
 </div>
 
@@ -114,41 +116,57 @@
 
 <table class="infoTable">
 <tr>
-  <th>Identifier</th>
+  <th>Groups</th>
   <td>
-    <code>${repository.id}</code>
+    <c:forEach items="${repositoryToGroupMap[repository.id]}" varStatus="i" var="group">
+      ${group}<c:if test="${!i.last}">,</c:if>
+    </c:forEach>
   </td>
 </tr>
 <tr>
-  <th>Name</th>
-  <td>
-    <code>${repository.name}</code>
-  </td>
+  <th>Delete Released Snapshots</th>
+  <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"></td>
 </tr>
 <tr>
-  <th>Directory</th>
-  <td>${repository.location}</td>
-</tr>
-<c:if test="${!empty (repository.indexDir)}">
-	<tr>
-	  <th>Index Directory</th>
-	  <td>${repository.indexDir}</td>
-	</tr>
-</c:if>
-<tr>
-  <th>WebDAV URL</th>
-  <td><a href="${baseUrl}/${repository.id}/">${baseUrl}/${repository.id}/</a></td>
+  <th>Repository Purge By Days Older Than</th>
+  <td>${repository.daysOlder}</td>
 </tr>
 <tr>
-  <th>Type</th>
-    <%-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this --%>
+  <th>Repository Purge By Retention Count</th>
+  <td>${repository.retentionCount}</td>
+</tr>
+<tr>
+  <th>Scanning Cron</th>
+  <td>${repository.refreshCronExpression}</td>
+</tr>
+<tr>
+  <th>
+    Actions
+  </th>
   <td>
     <c:choose>
-      <c:when test="${repository.layout == 'default'}">
-        Maven 2.x Repository
+      <c:when test="${empty (stats)}">
+        No Statistics Available.
       </c:when>
       <c:otherwise>
-        Maven 1.x Repository
+        <table>
+          <tr>
+            <th>Last Scanned</th>
+            <td>${stats.scanStartTime}</td>
+          </tr>
+          <tr>
+            <th>Duration</th>
+            <td>${stats.duration} ms</td>
+          </tr>
+          <tr>
+            <th>Total File Count</th>
+            <td>${stats.totalFileCount}
+          </tr>
+          <tr>
+            <th>New Files Found</th>
+            <td>${stats.newFileCount}
+          </tr>
+        </table>
       </c:otherwise>
     </c:choose>
   </td>
@@ -158,23 +176,23 @@
     <th>Groups</th>
     <td>
       <c:forEach items="${repositoryToGroupMap[repository.id]}" varStatus="i" var="group">
-        ${group}<c:if test="${!i.last}">,</c:if>        
+        ${group}<c:if test="${!i.last}">,</c:if>
       </c:forEach>
     </td>
   </tr>
 </c:if>
 <tr>
   <th>Releases Included</th>
-  <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> </td>
+  <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"></td>
 </tr>
 <tr>
   <th>Snapshots Included</th>
-  <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> </td>
+  <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"></td>
 </tr>
 <c:if test="${repository.snapshots}">
   <tr>
     <th>Delete Released Snapshots</th>
-    <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"> </td>
+    <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"></td>
   </tr>
   <tr>
     <th>Repository Purge By Days Older Than</th>
@@ -187,7 +205,7 @@
 </c:if>
 <tr>
   <th>Scanned</th>
-  <td class="${repository.scanned ? 'donemark' : 'errormark'} booleanIcon"> </td>
+  <td class="${repository.scanned ? 'donemark' : 'errormark'} booleanIcon"></td>
 </tr>
 <c:if test="${repository.scanned}">
   <tr>
@@ -201,19 +219,19 @@
     <td>
       <redback:ifAuthorized permission="archiva-run-indexer">
         <s:form action="indexRepository" theme="simple">
-        <s:hidden name="repoid" value="%{#attr.repository.id}"/>
-        <table>
-          <tr>
-            <td><s:checkbox name="scanAll" value="scanAll"/>Process All Artifacts</td>
-          </tr>
-          <tr>
-            <td><s:submit value="Scan Repository Now"/></td>
-          </tr>
-        </table>
+          <s:hidden name="repoid" value="%{#attr.repository.id}"/>
+          <table>
+            <tr>
+              <td><s:checkbox name="scanAll" value="scanAll"/>Process All Artifacts</td>
+            </tr>
+            <tr>
+              <td><s:submit value="Scan Repository Now"/></td>
+            </tr>
+          </table>
         </s:form>
       </redback:ifAuthorized>
     </td>
-  </tr>  
+  </tr>
   <tr>
     <th>Stats</th>
     <td>
@@ -249,9 +267,49 @@
 <tr>
   <th>POM Snippet</th>
   <td>
-    <archiva:copy-paste-snippet object="${repository}" wrapper="toggle" />
+    <archiva:copy-paste-snippet object="${repository}" wrapper="toggle"/>
+  </td>
+
+</tr>
+
+
+<c:set var="str" value="${repository.id}"/>
+<jsp:useBean id="str" type="java.lang.String"/>
+<c:if test='<%= !( (str.equalsIgnoreCase("internal") ) || (str.equalsIgnoreCase( "snapshots" )) )%>'>
+ <tr>
+  <th>Merge Actions</th>
+  <td >
+    <redback:ifAuthorized permission="archiva-run-indexer">
+      <s:form action="merge" theme="simple">
+        <s:hidden name="repoid" value="%{#attr.repository.id}"/>
+        <table>
+          <tr>
+            <td><s:submit value="Merge All"/></td>
+          </tr>
+
+        </table>
+      </s:form>
+    </redback:ifAuthorized>
+  </td>
+  <td align="left">
+    <redback:ifAuthorized permission="archiva-run-indexer">
+      <s:form action="conflictsArtifacts" theme="simple">
+        <s:hidden name="repoid" value="%{#attr.repository.id}"/>
+        <table>
+          <tr>
+            <td align="left" ><s:submit value="Merge With skip"/></td>
+          </tr>
+
+        </table>
+      </s:form>
+    </redback:ifAuthorized>
   </td>
 </tr>
+
+</c:if>
+
+
+
 </table>
 
 </div>

@@ -51,6 +51,8 @@ public class EditManagedRepositoryAction
 
     private final String action = "editRepository";
 
+    private boolean stageNeeded;
+
     /**
      * @plexus.requirement
      */
@@ -123,6 +125,17 @@ public class EditManagedRepositoryAction
             addRepository( repository, configuration );
             triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO );
             addRepositoryRoles( repository );
+
+            if ( stageNeeded )
+            {
+                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig();
+//                if(new File( stagingRepository.getLocation()).exists())
+                addRepository( stagingRepository, configuration );
+                triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO );
+                addRepositoryRoles( stagingRepository );
+
+            }
+
             result = saveConfiguration( configuration );
             if ( resetStats )
             {
@@ -143,6 +156,27 @@ public class EditManagedRepositoryAction
         return result;
     }
 
+    private ManagedRepositoryConfiguration getStageRepoConfig()
+    {
+        ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
+        stagingRepository.setId( repository.getId() + "-stage" );
+        stagingRepository.setLayout( repository.getLayout() );
+        stagingRepository.setName( repository.getName() + "-stage" );
+        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
+        stagingRepository.setDaysOlder( repository.getDaysOlder() );
+        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
+        stagingRepository.setIndexDir( repository.getIndexDir() );
+        String path = repository.getLocation();
+        int lastIndex = path.lastIndexOf( '/' );
+        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
+        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
+        stagingRepository.setReleases( repository.isReleases() );
+        stagingRepository.setRetentionCount( repository.getRetentionCount() );
+        stagingRepository.setScanned( repository.isScanned() );
+        stagingRepository.setSnapshots( repository.isSnapshots() );
+        return stagingRepository;
+    }
+    
     @Override
     public void validate()
     {
@@ -177,6 +211,16 @@ public class EditManagedRepositoryAction
     public void setRepository( ManagedRepositoryConfiguration repository )
     {
         this.repository = repository;
+    }
+
+    public boolean isStageNeeded()
+    {
+        return stageNeeded;
+    }
+
+    public void setStageNeeded( boolean stageNeeded )
+    {
+        this.stageNeeded = stageNeeded;
     }
 
     public String getAction()

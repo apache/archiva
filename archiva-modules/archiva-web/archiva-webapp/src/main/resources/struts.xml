@@ -19,7 +19,7 @@
   -->
 
 <!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
-    "http://struts.apache.org/dtds/struts-2.0.dtd"> 
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
   <!-- Include plexus-security xwork configurations. -->
@@ -124,10 +124,10 @@
            include a result for 'error' -->
       <result name="error">/WEB-INF/jsp/generalError.jsp</result>
       <result name="access_to_no_repos">/WEB-INF/jsp/accessToNoRepos.jsp</result>
-      
+
     </global-results>
   </package>
-  
+
   <!-- Configuration for the default package. -->
   <package name="default" extends="base" namespace="/">
 
@@ -147,7 +147,7 @@
       <result>/WEB-INF/jsp/results.jsp</result>
       <result name="error">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
-	
+
     <action name="quickSearch" class="searchAction" method="quickSearch">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
       <result>/WEB-INF/jsp/results.jsp</result>
@@ -158,7 +158,7 @@
       <result name="input">/WEB-INF/jsp/findArtifact.jsp</result>
     </action>
 
-	<action name="upload" class="uploadAction" method="input">      
+    <action name="upload" class="uploadAction" method="input">
       <result name="input">/WEB-INF/jsp/upload.jsp</result>
       <result name="error">/WEB-INF/jsp/upload.jsp</result>
       <result name="success">/WEB-INF/jsp/upload.jsp</result>
@@ -166,7 +166,7 @@
       <interceptor-ref name="fileUpload"/>
     </action>
 
-	<action name="deleteArtifact" class="deleteArtifactAction" method="input">      
+    <action name="deleteArtifact" class="deleteArtifactAction" method="input">
       <result name="input">/WEB-INF/jsp/deleteArtifact.jsp</result>
       <result name="error">/WEB-INF/jsp/deleteArtifact.jsp</result>
       <result name="success">/WEB-INF/jsp/deleteArtifact.jsp</result>
@@ -179,7 +179,7 @@
       <result name="artifact" type="redirect">
         /browse/${databaseResults.get(0).getNamespace()}/${databaseResults.get(0).getProject()}/${databaseResults.get(0).getVersion()}
       </result>
-    </action>    
+    </action>
 
     <action name="browse" class="browseAction" method="browse">
       <result>/WEB-INF/jsp/browse.jsp</result>
@@ -222,7 +222,7 @@
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
-    <action name="addMetadataProperty" class="showArtifactAction" method="addMetadataProperty">      
+    <action name="addMetadataProperty" class="showArtifactAction" method="addMetadataProperty">
       <result name="input">/WEB-INF/jsp/showArtifact.jsp</result>
       <result name="success">/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
@@ -247,53 +247,53 @@
     <action name="index" class="repositoriesAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositories.jsp</result>
     </action>
-    
+
     <!-- .\ REPOSITORY GROUPS \._______________________________________ -->
-    
+
     <action name="repositoryGroups" class="repositoryGroupsAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
     </action>
-    
+
     <action name="addRepositoryGroup" class="repositoryGroupsAction" method="addRepositoryGroup">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="success" type="redirect-action">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="confirmDeleteRepositoryGroup" class="deleteRepositoryGroupAction" method="confirmDelete">
       <result name="input">/WEB-INF/jsp/admin/deleteRepositoryGroup.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="deleteRepositoryGroup" class="deleteRepositoryGroupAction" method="delete">
       <result name="input">/WEB-INF/jsp/admin/deleteRepositoryGroup.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/deleteRepositoryGroup.jsp</result>
       <result name="success" type="redirect-action">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-	
+
     <action name="addRepositoryToGroup" class="repositoryGroupsAction" method="addRepositoryToGroup">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="success" type="redirect-action">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-	
+
     <action name="removeRepositoryFromGroup" class="repositoryGroupsAction" method="removeRepositoryFromGroup">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="success" type="redirect-action">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-	
+
     <action name="sortDownRepositoryFromGroup" class="sortRepositoriesAction" method="sortDown">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="success" type="redirect-action">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-	
+
     <action name="sortUpRepositoryFromGroup" class="sortRepositoriesAction" method="sortUp">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
@@ -311,7 +311,7 @@
     <action name="indexRepository" class="schedulerAction" method="scanRepository">
       <result type="redirect-action">repositories</result>
     </action>
-    
+
     <action name="addRepository" class="addManagedRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/addRepository.jsp</result>
@@ -359,7 +359,20 @@
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="deleteRemoteRepository" class="deleteRemoteRepositoryAction" method="delete">
+    <action name="conflictsArtifacts" class="mergeAction" method="mergeWithOutConlficts" >
+       <result name="success"> /WEB-INF/jsp/mergeActionResults.jsp</result>
+       <interceptor-ref name="configuredPrepareParamsStack"/>
+     </action>
+
+     <action name="merge" class="mergeAction" method="doMerge" >
+       <!--<result name="input"> /WEB-INF/jsp/mergeAction.jsp</result>-->
+        <!--<result name="conflictsAvailable"> /WEB-INF/jsp/mergeExcludeConflicts.jsp</result>-->
+       <result name="success"> /WEB-INF/jsp/mergeActionResults.jsp</result>
+       <interceptor-ref name="configuredPrepareParamsStack"/>
+     </action>
+
+
+    <action name="deleteRemoteRepository" class="deleteRemoteRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
@@ -401,7 +414,7 @@
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="enableProxyConnector" class="enableProxyConnectorAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/enableProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
@@ -507,13 +520,13 @@
       <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
       <result>/WEB-INF/jsp/reports/basicReport.jsp</result>
     </action>
-    
+
     <action name="generateStatisticsReport" class="generateReport" method="generateStatistics">
       <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
       <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
       <result>/WEB-INF/jsp/reports/statisticsReport.jsp</result>
     </action>
-    
+
     <!-- TODO: make report filename dynamic -->
     <action name="downloadStatsReport" class="generateReport" method="downloadStatisticsReport">
       <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
@@ -523,17 +536,17 @@
         <param name="contentDisposition">attachment; filename="archiva_statistics_report.csv"</param>
       </result>
     </action>
-    
+
     <!--  audit logs -->
     <action name="queryAuditLogReport" class="viewAuditLogReport" method="input">
       <result name="input">/WEB-INF/jsp/reports/auditLogReport.jsp</result>
     </action>
-    
+
     <action name="viewAuditLogReport" class="viewAuditLogReport">
       <result name="input">/WEB-INF/jsp/reports/auditLogReport.jsp</result>
       <result>/WEB-INF/jsp/reports/auditLogReport.jsp</result>
     </action>
-    
+
   </package>
 </struts>
 
