@@ -69,7 +69,7 @@ public class AuditEvent
 
     public static final String REMOVE_SCANNED = "Removed in Filesystem";
 
-    public static final String MERGING_REPOSITORIES = "Merging repositories";
+    public static final String MERGING_REPOSITORIES = "Merged Artifact";
 
     // configuration events
 
