@@ -359,18 +359,12 @@
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="conflictsArtifacts" class="mergeAction" method="mergeWithOutConlficts" >
-       <result name="success"> /WEB-INF/jsp/mergeActionResults.jsp</result>
-       <interceptor-ref name="configuredPrepareParamsStack"/>
-     </action>
 
-     <action name="merge" class="mergeAction" method="doMerge" >
-       <!--<result name="input"> /WEB-INF/jsp/mergeAction.jsp</result>-->
-        <!--<result name="conflictsAvailable"> /WEB-INF/jsp/mergeExcludeConflicts.jsp</result>-->
-       <result name="success"> /WEB-INF/jsp/mergeActionResults.jsp</result>
-       <interceptor-ref name="configuredPrepareParamsStack"/>
-     </action>
-
+    <action name="merge" class="mergeAction" method="getConflicts">
+      <result name="CONFLICTS">/WEB-INF/jsp/mergeExcludeConflicts.jsp</result>
+      <result name="success">/WEB-INF/jsp/mergeActionResults.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
 
     <action name="deleteRemoteRepository" class="deleteRemoteRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>

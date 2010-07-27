@@ -89,6 +89,7 @@ public class Maven2RepositoryMerger
         List<ArtifactMetadata> artifactsInSourceRepo = metadataRepository.getArtifacts( sourceRepoId );
         for ( ArtifactMetadata artifactMetadata : artifactsInSourceRepo )
         {
+            artifactMetadata.setRepositoryId( targetRepoId );
             createFolderStructure( sourceRepoId, targetRepoId, artifactMetadata );
         }
     }
@@ -325,7 +326,7 @@ public class Maven2RepositoryMerger
         return metadata;
     }
 
-    public List<ArtifactMetadata> mergeWithOutConflictArtifacts( String sourceRepo, String targetRepo )
+    public List<ArtifactMetadata> getConflictsartifacts( String sourceRepo, String targetRepo )
         throws Exception
     {
 
@@ -354,7 +355,7 @@ public class Maven2RepositoryMerger
 
         sourceArtifacts.removeAll( conflictsArtifacts );
         Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-        merge( sourceRepo, targetRepo, artifactsWithOutConflicts );
+//        merge( sourceRepo, targetRepo, artifactsWithOutConflicts );
         return conflictsArtifacts;
     }
 

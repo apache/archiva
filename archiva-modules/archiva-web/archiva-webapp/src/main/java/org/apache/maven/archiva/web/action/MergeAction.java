@@ -22,13 +22,16 @@ package org.apache.maven.archiva.web.action;
 import com.opensymphony.xwork2.Validateable;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.audit.Auditable;
+import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.metadata.repository.filter.IncludesFilter;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -49,6 +52,11 @@ public class MergeAction
      */
     private ArchivaConfiguration configuration;
 
+    /**
+     * @plexus.requirement role-hint="default"
+     */
+    private MetadataRepository metadataRepository;
+
     private ManagedRepositoryConfiguration repository;
 
     private String repoid;
@@ -57,9 +65,13 @@ public class MergeAction
 
     private final String action = "merge";
 
-    List<ArtifactMetadata> conflictList;
+    private final String noConflicts = "NO CONFLICTS";
 
-    public String doMerge()
+    private final String hasConflicts = "CONFLICTS";
+
+    private List<ArtifactMetadata> conflictSourceArtifacts;
+
+    public String getConflicts()
     {
         targetRepoId = repoid + "-stage";
         Configuration config = configuration.getConfiguration();
@@ -67,18 +79,56 @@ public class MergeAction
 
         if ( targetRepoConfig != null )
         {
+            return hasConflicts;
 
-            try
+        }
+        else
+        {
+            return ERROR;
+        }
+    }
+
+    public String doMerge()
+        throws Exception
+    {
+        try
+        {
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( targetRepoId );
+            repositoryMerger.merge( targetRepoId, repoid );
+            triggerAuditEvent( targetRepoId, "file-eshan", AuditEvent.MERGING_REPOSITORIES );
+
+            for ( ArtifactMetadata metadata : sourceArtifacts )
             {
-                repositoryMerger.merge( repoid, targetRepoId );
-            }
-            catch ( Exception e )
-            {
-                return ERROR;
+                triggerAuditEvent( targetRepoId, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
             }
             return SUCCESS;
         }
-        else
+        catch ( Exception ex )
+        {
+            return ERROR;
+        }
+    }
+
+    public String mergeBySkippingConflicts()
+    {
+        try
+        {
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( targetRepoId );
+            sourceArtifacts.removeAll( conflictSourceArtifacts );
+            Filter<ArtifactMetadata> artifactsWithOutConflicts =
+                new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+            repositoryMerger.merge( targetRepoId, repoid, artifactsWithOutConflicts );
+
+            for ( ArtifactMetadata metadata : sourceArtifacts )
+            {
+
+                triggerAuditEvent( targetRepoId, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
+//
+            }
+            return SUCCESS;
+
+        }
+        catch ( Exception ex )
         {
             return ERROR;
         }
@@ -91,20 +141,13 @@ public class MergeAction
 
         try
         {
-            conflictList = repositoryMerger.mergeWithOutConflictArtifacts( repoid, targetRepoId );
+            conflictSourceArtifacts = repositoryMerger.getConflictsartifacts( targetRepoId, repoid );
         }
         catch ( Exception e )
         {
             return ERROR;
         }
-
         return SUCCESS;
-    }
-
-    public void prepare()
-        throws Exception
-    {
-        this.repository = new ManagedRepositoryConfiguration();
     }
 
     public ManagedRepositoryConfiguration getRepository()
@@ -117,6 +160,24 @@ public class MergeAction
         this.repository = repository;
     }
 
+    public void prepare()
+        throws Exception
+    {
+        targetRepoId = repoid + "-stage";
+        conflictSourceArtifacts = repositoryMerger.getConflictsartifacts( targetRepoId, repoid );
+        this.repository = new ManagedRepositoryConfiguration();
+    }
+
+    public String getTargetRepoId()
+    {
+        return targetRepoId;
+    }
+
+    public void setTargetRepoId( String targetRepoId )
+    {
+        this.targetRepoId = targetRepoId;
+    }
+
     public String getRepoid()
     {
         return repoid;
@@ -126,4 +187,15 @@ public class MergeAction
     {
         this.repoid = repoid;
     }
+
+    public List<ArtifactMetadata> getConflictSourceArtifacts()
+    {
+        return conflictSourceArtifacts;
+    }
+
+    public void setConflictSourceArtifacts( List<ArtifactMetadata> conflictSourceArtifacts )
+    {
+        this.conflictSourceArtifacts = conflictSourceArtifacts;
+    }
 }
+

@@ -33,7 +33,8 @@ public class MetadataAuditListener
     public void auditEvent( AuditEvent event )
     {
         // for now we only log upload events, some of the others are quite noisy
-        if ( event.getAction().equals( AuditEvent.CREATE_FILE ) || event.getAction().equals( AuditEvent.UPLOAD_FILE ) )
+        if ( event.getAction().equals( AuditEvent.CREATE_FILE ) || event.getAction().equals( AuditEvent.UPLOAD_FILE ) ||
+            event.getAction().equals( AuditEvent.MERGING_REPOSITORIES ) )
         {
             auditManager.addAuditEvent( event );
         }

@@ -23,121 +23,78 @@
 
 <html>
 <head>
-  <title>Admin: Add Managed Repository</title>
+  <title>Admin: Merge Staging Repository</title>
   <s:head/>
 </head>
 
 <body>
 
-<h1>Admin: Add Managed Repository</h1>
+<h1>Admin: Merge Staging Repository</h1>
 
-  <div class="warningbox">
-    <p>
-      <strong>WARNING: There Are some conflicts Artifacts.</strong>
-    </p>
-  </div>
+<p>
+  Are you sure you want to merge the repository?
+</p>
 
-  <p>
-    Are you sure you want to  merge the Repository
-    <%--<c:choose>--%>
-      <%--<c:when test="${action == 'merge'}">add</c:when>--%>
-      <%--<c:otherwise>update</c:otherwise>--%>
-    <%--</c:choose>--%>
+<div class="infobox">
+  <table class="infotable">
 
-  </p>
+    <c:choose>
+      <c:when test="${empty (conflictSourceArtifacts)}">
+        <h1>No conflicting artifacts</h1>
+        <s:form method="post" action="merge" namespace="/admin" validate="false" theme="simple">
+          <s:hidden name="repoid"/>
+          <div class="buttons">
+            <s:submit value="MergeAll" method="doMerge"/>
+          </div>
+        </s:form>
+      </c:when>
+      <c:otherwise>
+        <div class="warningbox">
+          <p>
+            <strong>WARNING: The following are the artifacts in conflict.</strong>
+          </p>
+        </div>
+        <c:forEach items="${conflictSourceArtifacts}" var="artifact">
+          <tr>
+            <td>Artifact Id :</td>
+            <td><code>${artifact.id}</code></td>
+          </tr>
+        </c:forEach>
+        <tr>
+          <td>
+            <s:form action="merge" method="post" namespace="/admin" validate="false">
+              <s:hidden name="repoid"/>
+              <div class="buttons">
+                <table>
+                  <tr>
+                    <td>
+                      <table>
+                        <tr>
+                          <td>
+                            <s:submit value="MergeAll" method="doMerge"/>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td>
+                      <table>
+                        <tr>
+                          <td>
+                            <s:submit value="Merge With Skipp" method="mergeBySkippingConflicts"/>
+                          </td>
+                        </tr>
+                      </table>
 
-  <div class="infobox">
-    <table class="infotable">
-      <tr>
-        <td>ID:</td>
-        <td><code>${repository.id}</code></td>
-      </tr>
-      <tr>
-        <td>Name:</td>
-        <td>${repository.name}</td>
-      </tr>
-      <tr>
-        <td>Directory:</td>
-        <td>${repository.location}</td>
-      </tr>
-      <tr>
-        <td>Index Directory:</td>
-        <td>${repository.indexDir}</td>
-      </tr>
-      <tr>
-        <td>Type:</td>
-        <%--td>${repository.layout}</td--%>
-        <td>
-          <c:choose>
-	        <c:when test="${repository.layout == 'default'}">
-	          Maven 2.x Repository
-	        </c:when>
-	        <c:otherwise>
-	          Maven 1.x Repository
-	        </c:otherwise>
-	      </c:choose>
-	    </td>
-      </tr>
-      <tr>
-        <td>Cron:</td>
-        <td>${repository.refreshCronExpression}</td>
-      </tr>
-      <tr>
-        <td>Repository Purge By Days Older Than:</td>
-        <td>${repository.daysOlder}</td>
-      </tr>
-      <tr>
-        <td>Repository Purge By Retention Count:</td>
-        <td>${repository.retentionCount}</td>
-      </tr>
-      <tr>
-        <td>Releases Included:</td>
-        <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon">
-      </tr>
-      <tr>
-        <td>Snapshots Included:</td>
-        <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon">
-      </tr>
-      <tr>
-        <td>Scannable:</td>
-        <td class="${repository.scanned ? 'donemark' : 'errormark'} booleanIcon">
-      </tr>
-      <tr>
-        <td>Delete Released Snapshots:</td>
-        <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon">
-      </tr>
-    </table>
-  </div>
-
-  <s:form method="post" action="%{action}" namespace="/admin" validate="true" theme="simple">
-    <div class="buttons">
-      <s:hidden name="repository.id" value="%{#attr.repository.id}"/>
-      <s:hidden name="repository.name" value="%{#attr.repository.name}"/>
-      <s:hidden name="repository.location" value="%{#attr.repository.location}"/>
-      <s:hidden name="repository.indexDir" value="%{#attr.repository.indexDir}"/>
-      <s:hidden name="repository.layout" value="%{#attr.repository.layout}"/>
-      <s:hidden name="repository.refreshCronExpression" value="%{#attr.repository.refreshCronExpression}"/>
-      <s:hidden name="repository.daysOlder" value="%{#attr.repository.daysOlder}"/>
-      <s:hidden name="repository.retentionCount" value="%{#attr.repository.retentionCount}"/>
-      <s:hidden name="repository.releases" value="%{#attr.repository.releases}"/>
-      <s:hidden name="repository.snapshots" value="%{#attr.repository.snapshots}"/>
-      <s:hidden name="repository.scanned" value="%{#attr.repository.scanned}"/>
-      <s:hidden name="repository.deleteReleasedSnapshots" value="%{#attr.repository.deleteReleasedSnapshots}"/>
-
-      <%--<c:choose>--%>
-
-        <s:submit value="Save" method="merge"/>
-        <%--<c:when test="${action == 'addRepository'}">--%>
-      	  <%--<s:submit value="Save" method="confirmAdd"/>--%>
-      	<%--</c:when>--%>
-      	<%--<c:otherwise>--%>
-      	  <%--<s:submit value="Save" method="confirmUpdate"/>--%>
-      	<%--</c:otherwise>--%>
-     <%--</c:choose>--%>
-
-      <s:submit value="Cancel" method="execute"/>
-    </div>
-  </s:form>
-
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </s:form>
+          </td>
+        </tr>
+      </c:otherwise>
+    </c:choose>
+  </table>
+</div>
 </body>
 </html>
