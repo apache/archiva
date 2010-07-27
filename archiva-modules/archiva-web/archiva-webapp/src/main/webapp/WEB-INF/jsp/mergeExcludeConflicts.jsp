@@ -71,7 +71,7 @@
                       <table>
                         <tr>
                           <td>
-                            <s:submit value="MergeAll" method="doMerge"/>
+                            <s:submit value="Merge All" method="doMerge"/>
                           </td>
                         </tr>
                       </table>
@@ -80,7 +80,7 @@
                       <table>
                         <tr>
                           <td>
-                            <s:submit value="Merge With Skipp" method="mergeBySkippingConflicts"/>
+                            <s:submit value="Merge With Skip" method="mergeBySkippingConflicts"/>
                           </td>
                         </tr>
                       </table>
