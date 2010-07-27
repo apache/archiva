@@ -121,9 +121,7 @@ public class MergeAction
 
             for ( ArtifactMetadata metadata : sourceArtifacts )
             {
-
                 triggerAuditEvent( targetRepoId, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
-//
             }
             return SUCCESS;
 
@@ -147,6 +145,7 @@ public class MergeAction
         {
             return ERROR;
         }
+        
         return SUCCESS;
     }
 
