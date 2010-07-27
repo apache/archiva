@@ -226,7 +226,6 @@ public class Maven2RepositoryMerger
     private void copyFile( File sourceFile, File targetFile )
         throws IOException
     {
-
         FileOutputStream out = new FileOutputStream( targetFile );
         FileInputStream input = new FileInputStream( sourceFile );
 
@@ -329,27 +328,21 @@ public class Maven2RepositoryMerger
     public List<ArtifactMetadata> getConflictsartifacts( String sourceRepo, String targetRepo )
         throws Exception
     {
-
         List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
         List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
         List<ArtifactMetadata> conflictsArtifacts = new ArrayList<ArtifactMetadata>();
 
         for ( ArtifactMetadata targerArtifact : targetArtifacts )
         {
-
             for ( ArtifactMetadata sourceArtifact : sourceArtifacts )
             {
-
                 if ( isEquals( targerArtifact, sourceArtifact ) )
                 {
                     if ( !conflictsArtifacts.contains( sourceArtifact ) )
                     {
                         conflictsArtifacts.add( sourceArtifact );
-
                     }
-
                 }
-
             }
         }
 
