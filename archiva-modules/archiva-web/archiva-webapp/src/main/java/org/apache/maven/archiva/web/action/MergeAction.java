@@ -31,6 +31,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.web.action.admin.SchedulerAction;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -59,6 +60,11 @@ public class MergeAction
      * @plexus.requirement role-hint="default"
      */
     private MetadataRepository metadataRepository;
+
+    /**
+     * @plexus.requirement role="com.opensymphony.xwork2.Action" role-hint="schedulerAction"
+     */
+    private SchedulerAction scheduler;
 
     private ManagedRepositoryConfiguration repository;
 
@@ -100,7 +106,7 @@ public class MergeAction
         {
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
             repositoryMerger.merge( sourceRepoId, repoid );
-            triggerAuditEvent( sourceRepoId, "file-eshan", AuditEvent.MERGING_REPOSITORIES );
+            scheduler.scanRepository();
 
             for ( ArtifactMetadata metadata : sourceArtifacts )
             {
@@ -127,6 +133,7 @@ public class MergeAction
             Filter<ArtifactMetadata> artifactsWithOutConflicts =
                 new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
             repositoryMerger.merge( sourceRepoId, repoid, artifactsWithOutConflicts );
+            scheduler.scanRepository();
 
             for ( ArtifactMetadata metadata : sourceArtifacts )
             {
@@ -179,6 +186,7 @@ public class MergeAction
     {
         sourceRepoId = repoid + "-stage";
         conflictSourceArtifacts = repositoryMerger.getConflictsartifacts( sourceRepoId, repoid );
+        this.scheduler.setRepoid( repoid );
         this.repository = new ManagedRepositoryConfiguration();
         setConflictSourceArtifactsToBeDisplayed( conflictSourceArtifacts );
     }
