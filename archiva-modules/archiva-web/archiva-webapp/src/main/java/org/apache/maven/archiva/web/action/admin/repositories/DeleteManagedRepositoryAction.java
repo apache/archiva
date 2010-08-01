@@ -45,6 +45,8 @@ public class DeleteManagedRepositoryAction
 {
     private ManagedRepositoryConfiguration repository;
 
+    private ManagedRepositoryConfiguration stagingRepository;
+
     private String repoid;
 
     /**
@@ -62,6 +64,7 @@ public class DeleteManagedRepositoryAction
         if ( StringUtils.isNotBlank( repoid ) )
         {
             this.repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid );
+            this.stagingRepository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid +"-stage");
         }
     }
 
@@ -87,8 +90,9 @@ public class DeleteManagedRepositoryAction
     }
 
     private String deleteRepository( boolean deleteContents )
-    {   
+    {
         ManagedRepositoryConfiguration existingRepository = repository;
+        ManagedRepositoryConfiguration attachedStagingRepo = stagingRepository;
         if ( existingRepository == null )
         {
             addActionError( "A repository with that id does not exist" );
@@ -103,12 +107,23 @@ public class DeleteManagedRepositoryAction
             cleanupRepositoryData( existingRepository );
             removeRepository( repoid, configuration );
             triggerAuditEvent( repoid, null, AuditEvent.DELETE_MANAGED_REPO );
+            if(attachedStagingRepo !=null)
+            {
+                cleanupRepositoryData( attachedStagingRepo );
+                removeRepository( repoid +"-stage", configuration );
+                triggerAuditEvent(repoid +"-stage", null, AuditEvent.DELETE_MANAGED_REPO );
+
+            }
             result = saveConfiguration( configuration );
 
             if ( result.equals( SUCCESS ) )
             {
                 if ( deleteContents )
                 {
+                    if(attachedStagingRepo !=null)
+                    {
+                        removeContents( attachedStagingRepo );
+                    }
                     removeContents( existingRepository );
                 }
             }
@@ -154,7 +169,7 @@ public class DeleteManagedRepositoryAction
                 {
                     archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository( cleanupRepository.getId() );
                 }
-            }            
+            }
         }
     }
 

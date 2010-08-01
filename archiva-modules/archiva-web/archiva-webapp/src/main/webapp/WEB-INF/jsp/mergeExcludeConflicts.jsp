@@ -54,10 +54,11 @@
             <strong>WARNING: The following are the artifacts in conflict.</strong>
           </p>
         </div>
-        <c:forEach items="${conflictSourceArtifacts}" var="artifact">
+        <c:forEach items="${conflictSourceArtifactsToBeDisplayed}" var="artifact">
           <tr>
             <td>Artifact Id :</td>
-            <td><code>${artifact.id}</code></td>
+            <%--<td><code>${artifact.id}</code></td>--%>
+            <td align="left"> <code>${artifact.namespace} ${" "} ${artifact.project}  ${" "} ${artifact.version}</code></td>
           </tr>
         </c:forEach>
         <tr>

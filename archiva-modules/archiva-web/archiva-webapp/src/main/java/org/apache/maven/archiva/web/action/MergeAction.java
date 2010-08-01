@@ -33,6 +33,9 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="mergeAction" instantiation-strategy="per-lookup"
@@ -70,6 +73,8 @@ public class MergeAction
     private final String hasConflicts = "CONFLICTS";
 
     private List<ArtifactMetadata> conflictSourceArtifacts;
+
+    private List<ArtifactMetadata> conflictSourceArtifactsToBeDisplayed;
 
     public String getConflicts()
     {
@@ -165,6 +170,7 @@ public class MergeAction
         targetRepoId = repoid + "-stage";
         conflictSourceArtifacts = repositoryMerger.getConflictsartifacts( targetRepoId, repoid );
         this.repository = new ManagedRepositoryConfiguration();
+        setConflictSourceArtifactsToBeDisplayed( conflictSourceArtifacts );
     }
 
     public String getTargetRepoId()
@@ -195,6 +201,30 @@ public class MergeAction
     public void setConflictSourceArtifacts( List<ArtifactMetadata> conflictSourceArtifacts )
     {
         this.conflictSourceArtifacts = conflictSourceArtifacts;
+    }
+
+      public  List<ArtifactMetadata> getConflictSourceArtifactsToBeDisplayed()
+    {
+        return conflictSourceArtifactsToBeDisplayed;
+    }
+
+    public void setConflictSourceArtifactsToBeDisplayed( List<ArtifactMetadata> conflictSourceArtifacts )
+        throws Exception
+    {
+        this.conflictSourceArtifactsToBeDisplayed = new ArrayList<ArtifactMetadata>();
+       HashMap<String, ArtifactMetadata> map = new HashMap<String, ArtifactMetadata>();
+        for ( ArtifactMetadata metadata : conflictSourceArtifacts )
+        {
+                String metadataId = metadata.getNamespace() + metadata.getProject() + metadata.getProjectVersion() + metadata.getVersion();
+                map.put( metadataId, metadata );
+        }
+        Iterator iterator = map.keySet().iterator();
+
+        while ( iterator.hasNext() )
+        {
+            conflictSourceArtifactsToBeDisplayed.add( map.get(iterator.next() ));
+        }
+
     }
 }
 

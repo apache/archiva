@@ -39,7 +39,17 @@
     <s:hidden name="repository.id"/>
     <s:label label="ID" name="repository.id" />
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
-    <s:checkbox name="stageNeeded" value="stageNeeded" label="Create stage repository"/>
+
+    <c:set var="stats" value="${stagingRepository == null}"/>
+     <jsp:useBean id="stats" type="java.lang.Boolean" scope="page"/>
+     <c:if
+      test='<%= !stats.booleanValue() %>'>
+      <s:checkbox name="stageNeeded" value="true" label="Create stage repository"/>
+     </c:if>
+     <c:if
+      test='<%= stats.booleanValue() %>'>
+      <s:checkbox name="stageNeeded" value="false" label="Create stage repository"/>
+     </c:if>
     <s:submit value="Update Repository"/>
   </s:form>
 
