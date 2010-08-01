@@ -25,18 +25,17 @@
 
 <html>
 <head>
-  <title>Merge Repositories</title>
+  <title>Admin: Merge Staging Repository</title>
   <s:head/>
 </head>
 
 <body>
-<h1>Merge Repositories</h1>
+<h1>Admin: Merge Staging Repository</h1>
 
 <div id="contentArea">
 
   <s:actionerror/>
   <s:actionmessage/>
-  <h1>successfully done the merging</h1>
 </div>
 
 </body>

@@ -44,7 +44,7 @@
         <s:form method="post" action="merge" namespace="/admin" validate="false" theme="simple">
           <s:hidden name="repoid"/>
           <div class="buttons">
-            <s:submit value="MergeAll" method="doMerge"/>
+            <s:submit value="Merge All" method="doMerge"/>
           </div>
         </s:form>
       </c:when>
