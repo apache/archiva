@@ -1196,4 +1196,10 @@
       <url>http://vmbuild.apache.org/archiva/repository/staged-archiva</url>
     </repository>
   </distributionManagement>
+  <repositories>
+    <repository>
+      <id>redback</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+    </repository>
+  </repositories>
 </project>
