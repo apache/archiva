@@ -41,6 +41,15 @@
     <c:choose>
       <c:when test="${empty (conflictSourceArtifacts)}">
         <h1>No conflicting artifacts</h1>
+
+        <c:if test="${!repository.snapshots and repository.releases}">
+          <div class="warningbox">
+            <p>
+              <strong>WARNING:  Repository  "${repoid}" does not allow to merge snapshots</strong>
+            </p>
+          </div>
+        </c:if>
+
         <s:form method="post" action="merge" namespace="/admin" validate="false" theme="simple">
           <s:hidden name="repoid"/>
           <div class="buttons">
@@ -50,6 +59,11 @@
       </c:when>
       <c:otherwise>
         <div class="warningbox">
+          <c:if test="${!repository.snapshots and repository.releases}">
+            <p>
+              <strong>WARNING:  Repository "${repoid}" does not allow to merge snapshots</strong>
+            </p>
+          </c:if>
           <p>
             <strong>WARNING: The following are the artifacts in conflict.</strong>
           </p>
@@ -85,7 +99,6 @@
                           </td>
                         </tr>
                       </table>
-
                     </td>
                   </tr>
                 </table>

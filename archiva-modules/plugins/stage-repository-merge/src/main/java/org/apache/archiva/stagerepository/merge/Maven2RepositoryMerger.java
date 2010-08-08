@@ -173,7 +173,7 @@ public class Maven2RepositoryMerger
         File targetPomFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) + "/" +
             artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
 
-        if ( !targetPomFile.exists() )
+        if ( !targetPomFile.exists() && sourcePomFile.exists() )
         {
             copyFile( sourcePomFile, targetPomFile );
         }
@@ -358,15 +358,12 @@ public class Maven2RepositoryMerger
 
         if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) ) &&
             ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) ) &&
-            ( sourceArtifact.getVersion().equals( targetArtifact.getVersion() ) ) &&
             ( sourceArtifact.getId().equals( targetArtifact.getId() ) ) &&
             ( sourceArtifact.getProjectVersion().equals( targetArtifact.getProjectVersion() ) ) )
 
         {
-            if ( sourceArtifact.getId().equals( targetArtifact.getId() ) )
-            {
-                isSame = true;
-            }
+            isSame = true;
+
         }
 
         return isSame;

@@ -41,7 +41,8 @@ import java.util.Iterator;
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="mergeAction" instantiation-strategy="per-lookup"
  */
-public class MergeAction
+public class
+    MergeAction
     extends PlexusActionSupport
     implements Validateable, Preparable, Auditable
 
@@ -52,9 +53,9 @@ public class MergeAction
     private Maven2RepositoryMerger repositoryMerger;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement
      */
-    private ArchivaConfiguration configuration;
+    protected ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement role-hint="default"
@@ -74,8 +75,6 @@ public class MergeAction
 
     private final String action = "merge";
 
-    private final String noConflicts = "NO CONFLICTS";
-
     private final String hasConflicts = "CONFLICTS";
 
     private List<ArtifactMetadata> conflictSourceArtifacts;
@@ -85,7 +84,7 @@ public class MergeAction
     public String getConflicts()
     {
         sourceRepoId = repoid + "-stage";
-        Configuration config = configuration.getConfiguration();
+        Configuration config = archivaConfiguration.getConfiguration();
         ManagedRepositoryConfiguration targetRepoConfig = config.findManagedRepositoryById( sourceRepoId );
 
         if ( targetRepoConfig != null )
@@ -105,20 +104,29 @@ public class MergeAction
         try
         {
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
-            repositoryMerger.merge( sourceRepoId, repoid );
-            scheduler.scanRepository();
 
-            for ( ArtifactMetadata metadata : sourceArtifacts )
+            if ( repository.isReleases() && !repository.isSnapshots() )
             {
-                triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
+                mergeWithOutSnapshots( sourceArtifacts, sourceRepoId, repoid );
             }
+            else
+            {
+                repositoryMerger.merge( sourceRepoId, repoid );
 
+                for ( ArtifactMetadata metadata : sourceArtifacts )
+                {
+                    triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
+                }
+
+            }
+            scheduler.scanRepository();
             addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
-            
+
             return SUCCESS;
         }
         catch ( Exception ex )
         {
+            ex.printStackTrace();
             addActionError( "Error occurred while merging the repositories." );
             return ERROR;
         }
@@ -130,22 +138,30 @@ public class MergeAction
         {
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
             sourceArtifacts.removeAll( conflictSourceArtifacts );
-            Filter<ArtifactMetadata> artifactsWithOutConflicts =
-                new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-            repositoryMerger.merge( sourceRepoId, repoid, artifactsWithOutConflicts );
-            scheduler.scanRepository();
 
-            for ( ArtifactMetadata metadata : sourceArtifacts )
+            if ( repository.isReleases() && !repository.isSnapshots() )
             {
-                triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
+                mergeWithOutSnapshots( sourceArtifacts, sourceRepoId, repoid );
             }
+            else
+            {
 
+                Filter<ArtifactMetadata> artifactsWithOutConflicts =
+                    new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+                repositoryMerger.merge( sourceRepoId, repoid, artifactsWithOutConflicts );
+                for ( ArtifactMetadata metadata : sourceArtifacts )
+                {
+                    triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
+                }
+            }
+            scheduler.scanRepository();
             addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
 
             return SUCCESS;
         }
         catch ( Exception ex )
         {
+            ex.printStackTrace();
             addActionError( "Error occurred while merging the repositories." );
             return ERROR;
         }
@@ -167,7 +183,7 @@ public class MergeAction
         }
 
         addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
-        
+
         return SUCCESS;
     }
 
@@ -187,7 +203,9 @@ public class MergeAction
         sourceRepoId = repoid + "-stage";
         conflictSourceArtifacts = repositoryMerger.getConflictsartifacts( sourceRepoId, repoid );
         this.scheduler.setRepoid( repoid );
-        this.repository = new ManagedRepositoryConfiguration();
+        
+        Configuration config = archivaConfiguration.getConfiguration();
+        this.repository = config.findManagedRepositoryById( repoid );
         setConflictSourceArtifactsToBeDisplayed( conflictSourceArtifacts );
     }
 
@@ -221,7 +239,7 @@ public class MergeAction
         this.conflictSourceArtifacts = conflictSourceArtifacts;
     }
 
-      public  List<ArtifactMetadata> getConflictSourceArtifactsToBeDisplayed()
+    public List<ArtifactMetadata> getConflictSourceArtifactsToBeDisplayed()
     {
         return conflictSourceArtifactsToBeDisplayed;
     }
@@ -233,15 +251,39 @@ public class MergeAction
         HashMap<String, ArtifactMetadata> map = new HashMap<String, ArtifactMetadata>();
         for ( ArtifactMetadata metadata : conflictSourceArtifacts )
         {
-                String metadataId = metadata.getNamespace() + metadata.getProject() + metadata.getProjectVersion() + metadata.getVersion();
-                map.put( metadataId, metadata );
+            String metadataId =
+                metadata.getNamespace() + metadata.getProject() + metadata.getProjectVersion() + metadata.getVersion();
+            map.put( metadataId, metadata );
         }
         Iterator iterator = map.keySet().iterator();
 
         while ( iterator.hasNext() )
         {
-            conflictSourceArtifactsToBeDisplayed.add( map.get(iterator.next() ));
+            conflictSourceArtifactsToBeDisplayed.add( map.get( iterator.next() ) );
         }
+    }
+
+    private void mergeWithOutSnapshots( List<ArtifactMetadata> sourceArtifacts, String sourceRepoId, String repoid )
+        throws Exception
+    {
+        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
+        for ( ArtifactMetadata metadata : sourceArtifacts )
+        {
+
+            if ( metadata.getProjectVersion().contains( "SNAPSHOT" ) )
+            {
+                artifactsWithOutSnapshots.add( metadata );
+            }
+            else
+            {
+                triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
+            }
+
+        }
+        sourceArtifacts.removeAll( artifactsWithOutSnapshots );
+
+        Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+        repositoryMerger.merge( sourceRepoId, repoid, artifactListWithOutSnapShots );
     }
 }
 
