@@ -195,6 +195,11 @@
             <jdkLevel>1.5</jdkLevel>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -1244,6 +1249,12 @@
     <repository>
       <id>redback</id>
       <url>http://snapshots.repository.codehaus.org/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>      
     </repository>
   </repositories>
 </project>
