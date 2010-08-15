@@ -280,7 +280,7 @@
             <%--<s:hidden name="repository" value="%{repository}"/>--%>
             <table>
               <tr>
-                <td><s:submit value="Merge"/></td>
+                <td><s:submit id="Merge" value="Merge"/></td>
               </tr>
 
             </table>

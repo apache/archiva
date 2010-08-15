@@ -48,7 +48,7 @@
      </c:if>
      <c:if
       test='<%= stats.booleanValue() %>'>
-      <s:checkbox name="stageNeeded" value="false" label="Create stage repository"/>
+      <s:checkbox id="stageNeeded" name="stageNeeded" value="false" label="Create stage repository"/>
      </c:if>
     <s:submit value="Update Repository"/>
   </s:form>

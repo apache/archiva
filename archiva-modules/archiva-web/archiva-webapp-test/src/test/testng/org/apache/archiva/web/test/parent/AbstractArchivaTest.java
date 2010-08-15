@@ -562,6 +562,23 @@ public abstract class AbstractArchivaTest
         clickButtonWithValue( "Add Repository" );
     }
 
+    // add managed repository and its staging repository
+    public void addStagingRepository( String identifier, String name, String directory, String indexDirectory,
+                                      String type, String cron, String daysOlder, String retentionCount )
+    {
+        setFieldValue( "repository.id", identifier );
+        setFieldValue( "repository.name", name );
+        setFieldValue( "repository.location", directory );
+        setFieldValue( "repository.indexDir", indexDirectory );
+        selectValue( "repository.layout", type );
+        setFieldValue( "repository.refreshCronExpression", cron );
+        setFieldValue( "repository.daysOlder", daysOlder );
+        setFieldValue( "repository.retentionCount", retentionCount );
+        checkField( "stageNeeded" );
+
+        clickButtonWithValue( "Add Repository" );
+    }
+
     protected void logout()
     {
         clickLinkWithText( "Logout" );
