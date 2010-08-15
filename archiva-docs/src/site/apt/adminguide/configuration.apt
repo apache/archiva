@@ -18,5 +18,7 @@ Runtime Configuration of Apache Archiva
 
     * {{{consumers.html} Configuring repository scanning and consumers}}
 
+    * {{{staging-repositories.html} Staging and merging repositories}}
+
     []
 
