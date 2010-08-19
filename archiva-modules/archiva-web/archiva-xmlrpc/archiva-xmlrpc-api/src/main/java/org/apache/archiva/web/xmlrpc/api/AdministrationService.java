@@ -24,18 +24,20 @@ import java.util.List;
 import com.atlassian.xmlrpc.ServiceObject;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
 @ServiceObject( "AdministrationService" )
 public interface AdministrationService
-{    
+{
     /**
      * Executes repository scanner on the given repository.
-     *  
+     * 
      * @param repoId id of the repository to be scanned
      * @return
      * @throws Exception
      */
-    public Boolean executeRepositoryScanner( String repoId ) throws Exception;
+    public Boolean executeRepositoryScanner( String repoId )
+        throws Exception;
 
     /**
      * Gets all available repository consumers.
@@ -43,8 +45,8 @@ public interface AdministrationService
      * @return
      */
     public List<String> getAllRepositoryConsumers();
-    
- // TODO should we already implement config of consumers per repository?
+
+    // TODO should we already implement config of consumers per repository?
     /**
      * Configures (enable or disable) repository consumer.
      * 
@@ -53,8 +55,9 @@ public interface AdministrationService
      * @param enable
      * @return
      * @throws Exception
-     */    
-    public Boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable ) throws Exception;
+     */
+    public Boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable )
+        throws Exception;
 
     /**
      * Gets all managed repositories.
@@ -81,9 +84,44 @@ public interface AdministrationService
      * @throws Exception
      */
     public Boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
-        throws Exception;    
-    
-    //TODO 
+        throws Exception;
+
+    /**
+     * Create a new managed repository with the given parameters.
+     * 
+     * @param repoId
+     * @param layout
+     * @param name
+     * @param location
+     * @param blockRedeployments
+     * @param releasesIncluded
+     * @param snapshotsIncluded
+     * @param cronExpression
+     * @return
+     * @throws Exception
+     */
+    public Boolean addManagedRepository( String repoId, String layout, String name, String location,
+                                         boolean blockRedeployments, boolean releasesIncluded,
+                                         boolean snapshotsIncluded, String cronExpression )
+        throws Exception;
+
+    /**
+     * Deletes a managed repository with the given repository id.
+     * 
+     * @param repoId
+     * @return
+     */
+    public Boolean deleteManagedRepository( String repoId )
+        throws Exception;
+
+    /**
+     * Get a managed repository with the given repository id.
+     * @param repoId
+     * @return
+     * @throws Exception
+     */
+    public ManagedRepository getManagedRepository(String repoId) throws Exception;
+    // TODO
     // consider the following as additional services:
     // - getAllConfiguredRepositoryConsumers( String repoId ) - list all enabled consumers for the repo
     // - getAllConfiguredDatabaseConsumers() - list all enabled db consumers

@@ -21,6 +21,7 @@ package org.apache.archiva.web.xmlrpc.services;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
@@ -105,6 +106,10 @@ public class AdministrationServiceImplTest
 
     private MetadataRepository metadataRepository;
 
+    private MockControl repositoryStatisticsManagerControl;
+
+    private RepositoryStatisticsManager repositoryStatisticsManager;
+
     protected void setUp()
         throws Exception
     {
@@ -140,11 +145,15 @@ public class AdministrationServiceImplTest
                 
         listenerControl = MockControl.createControl( RepositoryListener.class );
         listener = (RepositoryListener) listenerControl.getMock();
+
+        repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
+        repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
+
         
         service =
             new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
                                            metadataRepository, repositoryTaskScheduler,
-                                           Collections.singletonList( listener ) );
+                                           Collections.singletonList( listener ), repositoryStatisticsManager );
     }
   
     /* Tests for repository consumers  */

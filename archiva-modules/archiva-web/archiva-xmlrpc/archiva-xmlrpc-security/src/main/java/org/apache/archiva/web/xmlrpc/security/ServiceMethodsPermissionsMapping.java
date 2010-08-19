@@ -39,7 +39,10 @@ public class ServiceMethodsPermissionsMapping
                        "AdministrationService.getAllManagedRepositories",
                        "AdministrationService.getAllRemoteRepositories",
                        "AdministrationService.getAllDatabaseConsumers",
-                       "AdministrationService.getAllRepositoryConsumers", "AdministrationService.deleteArtifact" );
+                       "AdministrationService.getAllRepositoryConsumers", 
+                       "AdministrationService.deleteArtifact", 
+                       "AdministrationService.addManagedRepository",
+                       "AdministrationService.deleteManagedRepository", "AdministrationService.getManagedRepository" );
 
     public static final List<String> SERVICE_METHODS_FOR_OPERATION_RUN_INDEXER =
         Arrays.asList( "AdministrationService.executeRepositoryScanner" );

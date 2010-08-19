@@ -98,7 +98,26 @@ public class SampleClient
             success = adminService.executeRepositoryScanner( "internal" );
             System.out.println( "\nExecuted repo scanner of repository 'internal' : " +
                 ( (Boolean) success ).booleanValue() );
-            
+
+            /** add, get and delete managed repo **/
+            /*
+             * NOTE: change the location of the repository to be added depending on your platform!
+             *
+            success = adminService.addManagedRepository( "test", "default", "Test Repo",
+                                               "/tmp/archiva-repo/test/", true, true, false, "0 0 * * * ?" );
+            System.out.println( "\nSuccessfully added managed repository 'test'" );
+
+            ManagedRepository repo = adminService.getManagedRepository( "test" );
+            System.out.println( "****** managed repo info ******" );
+            System.out.println( "ID: " + repo.getId() );
+            System.out.println( "NAME: " + repo.getName() );
+            System.out.println( "LAYOUT: " + repo.getLayout() );
+            System.out.println( "URL: " + repo.getUrl() );
+
+            success = adminService.deleteManagedRepository( "test" );
+            System.out.println( "\nSuccessfully deleted managed repository 'test'" );
+            */
+
             /* delete artifact */
             /* 
              * NOTE: before enabling & invoking deleteArtifact, make sure that the repository and artifact exists first!

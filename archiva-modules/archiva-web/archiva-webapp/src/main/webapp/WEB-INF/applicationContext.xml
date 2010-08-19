@@ -57,6 +57,7 @@
     <constructor-arg>
       <bean class="org.apache.archiva.web.spring.RepositoryListenerFactoryBean" />
     </constructor-arg>       
+    <constructor-arg ref="repositoryStatisticsManager"/>    
   </bean> 
 
   <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">

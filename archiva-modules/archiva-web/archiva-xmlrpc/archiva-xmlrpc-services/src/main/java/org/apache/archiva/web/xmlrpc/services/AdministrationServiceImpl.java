@@ -21,6 +21,7 @@ package org.apache.archiva.web.xmlrpc.services;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
@@ -28,10 +29,13 @@ import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
@@ -42,17 +46,23 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * AdministrationServiceImpl
- *
+ * 
  * @version $Id: AdministrationServiceImpl.java
  */
 public class AdministrationServiceImpl
@@ -72,10 +82,13 @@ public class AdministrationServiceImpl
 
     private MetadataRepository metadataRepository;
 
+    private RepositoryStatisticsManager repositoryStatisticsManager;
+
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
                                       RepositoryContentFactory repoFactory, MetadataRepository metadataRepository,
                                       RepositoryArchivaTaskScheduler repositoryTaskScheduler,
-                                      Collection<RepositoryListener> listeners )
+                                      Collection<RepositoryListener> listeners,
+                                      RepositoryStatisticsManager repositoryStatisticsManager )
     {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
@@ -83,6 +96,7 @@ public class AdministrationServiceImpl
         this.repositoryTaskScheduler = repositoryTaskScheduler;
         this.listeners = listeners;
         this.metadataRepository = metadataRepository;
+        this.repositoryStatisticsManager = repositoryStatisticsManager;
     }
 
     /**
@@ -98,9 +112,9 @@ public class AdministrationServiceImpl
 
         boolean found = false;
         boolean isKnownContentConsumer = false;
-        for( KnownRepositoryContentConsumer consumer : knownConsumers )
+        for ( KnownRepositoryContentConsumer consumer : knownConsumers )
         {
-            if( consumer.getId().equals( consumerId ) )
+            if ( consumer.getId().equals( consumerId ) )
             {
                 found = true;
                 isKnownContentConsumer = true;
@@ -108,11 +122,11 @@ public class AdministrationServiceImpl
             }
         }
 
-        if( !found )
+        if ( !found )
         {
-            for( InvalidRepositoryContentConsumer consumer : invalidConsumers )
+            for ( InvalidRepositoryContentConsumer consumer : invalidConsumers )
             {
-                if( consumer.getId().equals( consumerId ) )
+                if ( consumer.getId().equals( consumerId ) )
                 {
                     found = true;
                     break;
@@ -120,7 +134,7 @@ public class AdministrationServiceImpl
             }
         }
 
-        if( !found )
+        if ( !found )
         {
             throw new Exception( "Invalid repository consumer." );
         }
@@ -128,7 +142,7 @@ public class AdministrationServiceImpl
         Configuration config = archivaConfiguration.getConfiguration();
         RepositoryScanningConfiguration repoScanningConfig = config.getRepositoryScanning();
 
-        if( isKnownContentConsumer )
+        if ( isKnownContentConsumer )
         {
             repoScanningConfig.addKnownContentConsumer( consumerId );
         }
@@ -154,7 +168,7 @@ public class AdministrationServiceImpl
         Configuration config = archivaConfiguration.getConfiguration();
         ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repoId );
 
-        if( repoConfig == null )
+        if ( repoConfig == null )
         {
             throw new Exception( "Repository does not exist." );
         }
@@ -179,11 +193,10 @@ public class AdministrationServiceImpl
                 if ( artifact.getVersion().equals( version ) )
                 {
                     metadataRepository.deleteArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
-                                                       artifact.getProject(), artifact.getVersion(),
-                                                       artifact.getId() );
+                                                       artifact.getProject(), artifact.getVersion(), artifact.getId() );
 
                     // TODO: move into the metadata repository proper - need to differentiate attachment of
-                    //       repository metadata to an artifact
+                    // repository metadata to an artifact
                     for ( RepositoryListener listener : listeners )
                     {
                         listener.deleteArtifact( repoId, artifact.getNamespace(), artifact.getProject(),
@@ -211,10 +224,11 @@ public class AdministrationServiceImpl
     /**
      * @see AdministrationService#executeRepositoryScanner(String)
      */
-    public Boolean executeRepositoryScanner( String repoId ) throws Exception
+    public Boolean executeRepositoryScanner( String repoId )
+        throws Exception
     {
         Configuration config = archivaConfiguration.getConfiguration();
-        if( config.findManagedRepositoryById( repoId ) == null )
+        if ( config.findManagedRepositoryById( repoId ) == null )
         {
             throw new Exception( "Repository does not exist." );
         }
@@ -242,12 +256,12 @@ public class AdministrationServiceImpl
         List<KnownRepositoryContentConsumer> knownConsumers = repoConsumersUtil.getAvailableKnownConsumers();
         List<InvalidRepositoryContentConsumer> invalidConsumers = repoConsumersUtil.getAvailableInvalidConsumers();
 
-        for( KnownRepositoryContentConsumer consumer : knownConsumers )
+        for ( KnownRepositoryContentConsumer consumer : knownConsumers )
         {
             consumers.add( consumer.getId() );
         }
 
-        for( InvalidRepositoryContentConsumer consumer : invalidConsumers )
+        for ( InvalidRepositoryContentConsumer consumer : invalidConsumers )
         {
             consumers.add( consumer.getId() );
         }
@@ -265,9 +279,9 @@ public class AdministrationServiceImpl
         Configuration config = archivaConfiguration.getConfiguration();
         List<ManagedRepositoryConfiguration> managedRepoConfigs = config.getManagedRepositories();
 
-        for( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
+        for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
-            // TODO fix resolution of repo url!            
+            // TODO fix resolution of repo url!
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), "URL", repoConfig.getLayout(),
                                        repoConfig.isSnapshots(), repoConfig.isReleases() );
@@ -287,7 +301,7 @@ public class AdministrationServiceImpl
         Configuration config = archivaConfiguration.getConfiguration();
         List<RemoteRepositoryConfiguration> remoteRepoConfigs = config.getRemoteRepositories();
 
-        for( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
+        for ( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
         {
             RemoteRepository repo =
                 new RemoteRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl(),
@@ -305,7 +319,7 @@ public class AdministrationServiceImpl
         {
             archivaConfiguration.save( config );
         }
-        catch(  RegistryException e )
+        catch ( RegistryException e )
         {
             throw new Exception( "Error occurred in the registry." );
         }
@@ -314,4 +328,135 @@ public class AdministrationServiceImpl
             throw new Exception( "Error occurred while saving the configuration." );
         }
     }
+
+    public Boolean addManagedRepository( String repoId, String layout, String name, String location,
+                                         boolean blockRedeployments, boolean releasesIncluded,
+                                         boolean snapshotsIncluded, String cronExpression )
+        throws Exception
+    {
+
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        CronExpressionValidator validator = new CronExpressionValidator();
+
+        if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
+        {
+            throw new Exception( "Unable to add new repository with id [" + repoId
+                + "], that id already exists as a managed repository." );
+        }
+        else if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
+        {
+            throw new Exception( "Unable to add new repository with id [" + repoId
+                + "], that id already exists as a remote repository." );
+        }
+        else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
+        {
+            throw new Exception( "Unable to add new repository with id [" + repoId
+                + "], that id already exists as a repository group." );
+        }
+
+        if ( !validator.validate( cronExpression ) )
+        {
+            throw new Exception( "Invalid cron expression." );
+        }
+
+        ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
+
+        repository.setId( repoId );
+        repository.setBlockRedeployments( blockRedeployments );
+        repository.setReleases( releasesIncluded );
+        repository.setSnapshots( snapshotsIncluded );
+        repository.setName( name );
+        repository.setLocation( location );
+        repository.setLayout( layout );
+        repository.setRefreshCronExpression( cronExpression );
+
+        File file = new File( repository.getLocation() );
+        repository.setLocation( file.getCanonicalPath() );
+
+        if ( !file.exists() )
+        {
+            file.mkdirs();
+        }
+
+        if ( !file.exists() || !file.isDirectory() )
+        {
+            throw new IOException( "Unable to add repository - no write access, can not create the root directory: "
+                + file );
+        }
+        config.addManagedRepository( repository );
+        saveConfiguration( config );
+        return Boolean.TRUE;
+    }
+
+    public Boolean deleteManagedRepository( String repoId )
+        throws Exception
+    {
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        ManagedRepositoryConfiguration repository = config.findManagedRepositoryById( repoId );
+
+        if ( repository == null )
+        {
+            throw new Exception( "A repository with that id does not exist" );
+        }
+
+        metadataRepository.deleteRepository( repository.getId() );
+        repositoryStatisticsManager.deleteStatistics( repository.getId() );
+        config.removeManagedRepository( repository );
+
+        try
+        {
+            saveConfiguration( config );
+        }
+        catch ( Exception e )
+        {
+            throw new Exception( "Error saving configuration for delete action" + e.getMessage() );
+        }
+
+        FileUtils.deleteDirectory( new File( repository.getLocation() ) );
+
+        List<ProxyConnectorConfiguration> proxyConnectors = config.getProxyConnectors();
+        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+        {
+            if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )
+            {
+                archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
+            }
+        }
+
+        Map<String, List<String>> repoToGroupMap = archivaConfiguration.getConfiguration().getRepositoryToGroupMap();
+        if ( repoToGroupMap != null )
+        {
+            if ( repoToGroupMap.containsKey( repository.getId() ) )
+            {
+                List<String> repoGroups = repoToGroupMap.get( repository.getId() );
+                for ( String repoGroup : repoGroups )
+                {
+                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository(
+                                                                                                                   repository.getId() );
+                }
+            }
+        }
+
+        return Boolean.TRUE;
+    }
+
+    public ManagedRepository getManagedRepository( String repoId )
+        throws Exception
+    {
+        Configuration config = archivaConfiguration.getConfiguration();
+        ManagedRepositoryConfiguration managedRepository = config.findManagedRepositoryById( repoId );
+        if ( managedRepository == null )
+        {
+            throw new Exception( "A repository with that id does not exist" );
+        }
+        ManagedRepository repo =
+            new ManagedRepository( managedRepository.getId(), managedRepository.getName(), "URL",
+                                   managedRepository.getLayout(), managedRepository.isSnapshots(),
+                                   managedRepository.isReleases() );
+
+        return repo;
+    }
+
 }
