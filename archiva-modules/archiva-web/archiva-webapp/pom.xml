@@ -183,6 +183,12 @@
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-struts2-integration</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.redback</groupId>
+          <artifactId>plexus-spring</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
