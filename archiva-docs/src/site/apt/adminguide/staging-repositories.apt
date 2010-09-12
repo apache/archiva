@@ -10,8 +10,9 @@ Staging Repositories
 
   With the support of staging repositories comes the ability to merge repositories from the web UI. By merging, we mean
   promoting the artifacts in the staging repository to the managed repository. In the current
-  implementation, a user can create and attach a staging repository to an existing managed repository. An attached 
-  staging repository is a shadow of its managed repository, meaning they would have the same configuration.
+  implementation, a user with the Repository Manager role can create and attach a staging repository to an existing
+  managed repository. An attached staging repository is a shadow of its managed repository, meaning they have the same
+  configuration.
 
   We append <<-stage>> to the managed repository's ID to identify its staging repository. For example, repository
   <<<test>>> would have a staging repository called <<<test-stage>>>.
@@ -19,13 +20,20 @@ Staging Repositories
   If you're creating a new managed repository, just tick the <<<Create stage repository>>> check box. Otherwise, if
   you already have an existing managed repository and you want to create a staging repository, just edit the managed
   repository's configuration and tick the <<<Create stage repository>>> checkbox, then save the configuration. A staging
-  repository will be created in the same directory as the managed repository.
+  repository directory will be created beside (as a sibling of) the managed repository directory, again with -stage
+  appended to the name.
 
   <<<Note:>>> By un-ticking the <<<Create stage repository>>> checkbox, the user can delete the attached staging
   repository. If the managed repository is deleted, then its attached staging repository is also deleted.
 
-  The <<<snapshots>>> and <<<internal>>> repositories configured in Archiva by default, are not configured with attached
-  staging repositories.
+  The default <<<snapshots>>> and <<<internal>>> repositories do not have staging repositories configured by default,
+  however they can be added by editing the repository configuration.
+
+* Populating the Staging Repository
+
+  The staging repository can be populated in the same way as a normal managed repository.  You can configure your Maven
+  build's <<<distributionManagement>>> section to deploy to the repository, or use Archiva's web-based upload feature.
+
 
 * Merging Repositories
 
