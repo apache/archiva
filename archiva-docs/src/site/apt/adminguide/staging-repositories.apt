@@ -10,7 +10,7 @@ Staging Repositories
 
   With the support of staging repositories comes the ability to merge repositories from the web UI. By merging, we mean
   promoting the artifacts in the staging repository to the managed repository. In the current
-  implementation, a user with the Repository Manager role can create and attach a staging repository to an existing
+  implementation, a user with the System Administrator role can create and attach a staging repository to an existing
   managed repository. An attached staging repository is a shadow of its managed repository, meaning they have the same
   configuration.
 
