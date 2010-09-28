@@ -1,21 +1,22 @@
+<%@ page import="java.io.File" %>
 <%--
-  ~ Licensed to the Apache Software Foundation (ASF) under one
-  ~ or more contributor license agreements.  See the NOTICE file
-  ~ distributed with this work for additional information
-  ~ regarding copyright ownership.  The ASF licenses this file
-  ~ to you under the Apache License, Version 2.0 (the
-  ~ "License"); you may not use this file except in compliance
-  ~ with the License.  You may obtain a copy of the License at
-  ~
-  ~   http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing,
-  ~ software distributed under the License is distributed on an
-  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~ KIND, either express or implied.  See the License for the
-  ~ specific language governing permissions and limitations
-  ~ under the License.
-  --%>
+~ Licensed to the Apache Software Foundation (ASF) under one
+~ or more contributor license agreements.  See the NOTICE file
+~ distributed with this work for additional information
+~ regarding copyright ownership.  The ASF licenses this file
+~ to you under the Apache License, Version 2.0 (the
+~ "License"); you may not use this file except in compliance
+~ with the License.  You may obtain a copy of the License at
+~
+~   http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing,
+~ software distributed under the License is distributed on an
+~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~ KIND, either express or implied.  See the License for the
+~ specific language governing permissions and limitations
+~ under the License.
+--%>
 
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
@@ -30,7 +31,7 @@
   <script type="text/javascript" src="<c:url value='/js/jquery-1.3.2.min.js'/>"></script>
   <script type="text/javascript">
   $(document).ready(function(){
-    
+
  $(".pom").hide();
  $("a.expand").click(function(event){
    event.preventDefault();
@@ -158,7 +159,7 @@
     <th>Groups</th>
     <td>
       <c:forEach items="${repositoryToGroupMap[repository.id]}" varStatus="i" var="group">
-        ${group}<c:if test="${!i.last}">,</c:if>        
+        ${group}<c:if test="${!i.last}">,</c:if>
       </c:forEach>
     </td>
   </tr>
@@ -213,7 +214,7 @@
         </s:form>
       </redback:ifAuthorized>
     </td>
-  </tr>  
+  </tr>
   <tr>
     <th>Stats</th>
     <td>
@@ -252,6 +253,47 @@
     <archiva:copy-paste-snippet object="${repository}" wrapper="toggle" />
   </td>
 </tr>
+
+
+  <c:set var="str" value="${repository.id}" />
+  <jsp:useBean id="str" type="java.lang.String" scope="page"/>
+  <c:set var="location" value="${repository.location}"/>
+  <jsp:useBean id="location" type="java.lang.String" scope="page"/>
+
+  <c:if
+      test='<%= !( (str.equalsIgnoreCase("internal") ) || (str.equalsIgnoreCase( "snapshots" )) ) &&
+      new File (new File(location ).getParent() ,str + "-stage" ).exists()%>'>
+     <tr>
+       <th>
+         stage repository location
+       </th>
+    <td>
+      ${repository.location}${'-stage'}
+    </td>
+  </tr>
+    <tr>
+      <th>Merge Actions</th>
+      <td>
+        <redback:ifAuthorized permission="archiva-run-indexer">
+          <s:form action="merge" theme="simple">
+            <s:hidden name="repoid" value="%{#attr.repository.id}"/>
+            <%--<s:hidden name="repository" value="%{repository}"/>--%>
+            <table>
+              <tr>
+                <td><s:submit id="Merge" value="Merge"/></td>
+              </tr>
+
+            </table>
+          </s:form>
+        </redback:ifAuthorized>
+      </td>
+    </tr>
+
+
+  </c:if>
+
+
+
 </table>
 
 </div>

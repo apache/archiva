@@ -287,5 +287,10 @@ public class NewArtifactsRssFeedProcessorTest
         {
             this.artifactsByDateRange = artifactsByDateRange;
         }
+  
+        public List<ArtifactMetadata> getArtifacts( String repositoryId )
+        {
+           return artifactsByDateRange;
+        }
     }
 }

@@ -75,4 +75,6 @@ public interface MetadataRepository
      * @param repositoryId the repository to delete
      */
     void deleteRepository( String repositoryId );
+
+    List<ArtifactMetadata> getArtifacts(String repositoryId);
 }

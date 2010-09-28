@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
@@ -81,6 +82,11 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-lucene-consumers</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>stage-repository-merge</artifactId>
+      <version>1.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -278,7 +284,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>  <!--  FIXME: temporary coupling to plugin, should be runtime -->
+      <groupId>org.apache.archiva</groupId>
+      <!--  FIXME: temporary coupling to plugin, should be runtime -->
       <artifactId>maven2-repository</artifactId>
     </dependency>
   </dependencies>
@@ -307,7 +314,7 @@
           </excludes>
         </configuration>
       </plugin>
-       -->     
+       -->
       <!-- hack for jetty:run, archiva web config files are checked in /WEB-INF/ dir -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -320,9 +327,9 @@
             <phase>compile</phase>
             <configuration>
               <tasks>
-                <mkdir dir="${basedir}/target/archiva/WEB-INF/" />
+                <mkdir dir="${basedir}/target/archiva/WEB-INF/"/>
                 <copy todir="${basedir}/target/archiva/WEB-INF/">
-                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml" />
+                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml"/>
                 </copy>
               </tasks>
             </configuration>
@@ -335,7 +342,7 @@
             <configuration>
               <tasks>
                 <copy todir="${basedir}/appserver-base">
-                  <fileset dir="src/appserver-base" />
+                  <fileset dir="src/appserver-base"/>
                 </copy>
               </tasks>
             </configuration>
@@ -348,21 +355,21 @@
           <execution>
             <id>unpack-redback-war</id>
             <goals>
-             <goal>unpack</goal>
+              <goal>unpack</goal>
             </goals>
             <phase>compile</phase>
             <configuration>
-               <artifactItems>
-                 <artifactItem>
-                   <groupId>org.codehaus.redback</groupId>
-                   <artifactId>redback-struts2-content</artifactId>
-                   <version>${redback.version}</version>
-                   <type>war</type>
-                   <overWrite>false</overWrite>
-                   <outputDirectory>${project.build.directory}/redback</outputDirectory>
-                   <excludes>**/struts-security.xml</excludes>
-                 </artifactItem>
-               </artifactItems>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.codehaus.redback</groupId>
+                  <artifactId>redback-struts2-content</artifactId>
+                  <version>${redback.version}</version>
+                  <type>war</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}/redback</outputDirectory>
+                  <excludes>**/struts-security.xml</excludes>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
         </executions>
@@ -375,9 +382,12 @@
           <!-- Some versions of maven-war-plugin (snapshots) have this incorrectly defaulted to true.
                Specifically setting this to false to avoid accidental jar file creation. -->
           <archiveClasses>false</archiveClasses>
-          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml,WEB-INF/lib/**</dependentWarExcludes>
-          <warSourceExcludes>WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar</warSourceExcludes>
-        </configuration>        
+          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml,WEB-INF/lib/**
+          </dependentWarExcludes>
+          <warSourceExcludes>
+            WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar
+          </warSourceExcludes>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>

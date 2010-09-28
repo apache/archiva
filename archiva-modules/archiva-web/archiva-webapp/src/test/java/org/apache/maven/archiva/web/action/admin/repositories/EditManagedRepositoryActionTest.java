@@ -95,6 +95,10 @@ public class EditManagedRepositoryActionTest
 
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
+        Configuration stageRepoConfiguration = new Configuration();
+        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
+        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
+
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
@@ -116,10 +120,18 @@ public class EditManagedRepositoryActionTest
     {
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
         roleManagerControl.setReturnValue( false );
+
+         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID +"-stage" );
+        roleManagerControl.setReturnValue( false );
+
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
         roleManagerControl.setVoidCallable();
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setReturnValue( false );
+
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID +"-stage");
+        roleManagerControl.setReturnValue( false );
+
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setVoidCallable();
 
@@ -128,6 +140,10 @@ public class EditManagedRepositoryActionTest
         Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
+
+        Configuration stageRepoConfiguration = new Configuration();
+        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
+        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
 
@@ -167,10 +183,18 @@ public class EditManagedRepositoryActionTest
     {
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
         roleManagerControl.setReturnValue( false );
+
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID +"-stage");
+        roleManagerControl.setReturnValue( false );
+
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
         roleManagerControl.setVoidCallable();
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setReturnValue( false );
+
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID +"-stage");
+        roleManagerControl.setReturnValue( false );
+
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setVoidCallable();
 
@@ -179,6 +203,11 @@ public class EditManagedRepositoryActionTest
         Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
+        Configuration stageRepoConfiguration = new Configuration();
+        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
+        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
+
+
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
 
@@ -230,9 +259,11 @@ public class EditManagedRepositoryActionTest
     }
 
     private Configuration createConfigurationForEditing( ManagedRepositoryConfiguration repositoryConfiguration )
+        throws Exception
     {
         Configuration configuration = new Configuration();
         configuration.addManagedRepository( repositoryConfiguration );
+//        configuration.addManagedRepository( createStagingRepository() );
         return configuration;
     }
 
@@ -245,10 +276,34 @@ public class EditManagedRepositoryActionTest
         return r;
     }
 
+    private ManagedRepositoryConfiguration createStagingRepository()
+        throws IOException
+    {
+        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
+        r.setId( REPO_ID + "-stage" );
+        populateStagingRepository( r );
+        return r;
+    }
+
     private void populateRepository( ManagedRepositoryConfiguration repository )
         throws IOException
     {
         repository.setId( REPO_ID );
+        repository.setName( "repo name" );
+        repository.setLocation( location.getCanonicalPath() );
+        repository.setLayout( "default" );
+        repository.setRefreshCronExpression( "* 0/5 * * * ?" );
+        repository.setDaysOlder( 31 );
+        repository.setRetentionCount( 20 );
+        repository.setReleases( true );
+        repository.setSnapshots( true );
+        repository.setScanned( false );
+        repository.setDeleteReleasedSnapshots( true );
+    }
+    private void populateStagingRepository( ManagedRepositoryConfiguration repository )
+        throws IOException
+    {
+        repository.setId( REPO_ID + "-stage");
         repository.setName( "repo name" );
         repository.setLocation( location.getCanonicalPath() );
         repository.setLayout( "default" );

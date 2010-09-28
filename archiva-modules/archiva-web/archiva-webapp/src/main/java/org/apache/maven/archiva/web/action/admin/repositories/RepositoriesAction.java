@@ -93,7 +93,7 @@ public class RepositoriesAction
         return bundle;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void prepare()
     {
         Configuration config = archivaConfiguration.getConfiguration();
@@ -118,7 +118,15 @@ public class RepositoriesAction
 
     public List<ManagedRepositoryConfiguration> getManagedRepositories()
     {
-        return managedRepositories;
+        List<ManagedRepositoryConfiguration> managedRepositoriesList = new ArrayList<ManagedRepositoryConfiguration>();
+        for ( ManagedRepositoryConfiguration repoConfig : managedRepositories )
+        {
+            if ( !repoConfig.getId().contains( "stage" ) )
+            {
+                managedRepositoriesList.add( repoConfig );
+            }
+        }
+        return managedRepositoriesList;
     }
 
     public List<RemoteRepositoryConfiguration> getRemoteRepositories()

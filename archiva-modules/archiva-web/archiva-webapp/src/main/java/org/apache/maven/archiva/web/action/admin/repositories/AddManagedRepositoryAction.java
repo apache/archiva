@@ -45,7 +45,9 @@ public class AddManagedRepositoryAction
      * The model for this action.
      */
     private ManagedRepositoryConfiguration repository;
-    
+
+    private boolean stageNeeded;
+
     private String action = "addRepository";
 
     public void prepare()
@@ -64,47 +66,79 @@ public class AddManagedRepositoryAction
 
         return INPUT;
     }
-     
+
     public String confirmAdd()
     {
         return save();
     }
-    
+
     public String commit()
     {
         File location = new File( repository.getLocation() );
         if( location.exists() )
-        {   
+        {
             return CONFIRM;
         }
-        
+
         return save();
     }
-    
+
     private String save()
     {
         Configuration configuration = archivaConfiguration.getConfiguration();
-                
+
         String result;
         try
         {
             addRepository( repository, configuration );
             triggerAuditEvent( repository.getId(), null, AuditEvent.ADD_MANAGED_REPO );
             addRepositoryRoles( repository );
+
+            if ( stageNeeded )
+            {
+                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig();
+
+                addRepository( stagingRepository, configuration );
+                triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO );
+                addRepositoryRoles( stagingRepository );
+
+            }
+
             result = saveConfiguration( configuration );
         }
         catch ( RoleManagerException e )
-        {            
+        {
             addActionError( "Role Manager Exception: " + e.getMessage() );
             result = INPUT;
         }
         catch ( IOException e )
-        {         
+        {
             addActionError( "Role Manager Exception: " + e.getMessage() );
             result = INPUT;
         }
 
         return result;
+    }
+
+    private ManagedRepositoryConfiguration getStageRepoConfig()
+    {
+        ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
+        stagingRepository.setId( repository.getId() + "-stage" );
+        stagingRepository.setLayout( repository.getLayout() );
+        stagingRepository.setName( repository.getName() + "-stage" );
+        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
+        stagingRepository.setDaysOlder( repository.getDaysOlder() );
+        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
+        stagingRepository.setIndexDir( repository.getIndexDir() );
+        String path = repository.getLocation();
+        int lastIndex = path.lastIndexOf( '/' );
+        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
+        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
+        stagingRepository.setReleases( repository.isReleases() );
+        stagingRepository.setRetentionCount( repository.getRetentionCount() );
+        stagingRepository.setScanned( repository.isScanned() );
+        stagingRepository.setSnapshots( repository.isSnapshots() );
+        return stagingRepository;
     }
 
     @Override
@@ -130,7 +164,12 @@ public class AddManagedRepositoryAction
             addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
                + "], that id already exists as a repository group." );
         }
-        
+        else if ( repoId.toLowerCase().contains( "stage" ) )
+        {
+            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId +
+                "], rpository  id cannot contains word stage" );
+        }
+
         if ( !validator.validate( repository.getRefreshCronExpression() ) )
         {
             addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
@@ -145,6 +184,12 @@ public class AddManagedRepositoryAction
     public void setRepository( ManagedRepositoryConfiguration repository )
     {
         this.repository = repository;
+    }
+
+
+    public void setStageNeeded( boolean stageNeeded )
+    {
+        this.stageNeeded = stageNeeded;
     }
     
     public String getAction()

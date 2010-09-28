@@ -36,6 +36,7 @@
   <s:form method="post" action="addRepository!commit" namespace="/admin" validate="true">
     <s:textfield name="repository.id" label="Identifier" size="10" required="true"/>
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
+    <s:checkbox name="stageNeeded" value="stageNeeded" label="Create stage repository"/>
     <s:submit value="Add Repository"/>
   </s:form>
 

@@ -34,5 +34,3 @@
 <s:checkbox name="repository.scanned" value="repository.scanned" label="Scannable"/>
 <s:checkbox name="repository.deleteReleasedSnapshots" value="repository.deleteReleasedSnapshots"
              label="Delete Released Snapshots"/>
-
- 

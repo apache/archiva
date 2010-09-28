@@ -140,7 +140,7 @@ public class FileMetadataRepository
             {
                 properties.remove( name );
             }
-            
+
             // clear the facet contents so old properties are no longer written
             clearMetadataFacetProperties( versionMetadata, properties );
         }
@@ -227,7 +227,7 @@ public class FileMetadataRepository
             }
         }
     }
-    
+
     private void clearMetadataFacetProperties( ProjectVersionMetadata versionMetadata, Properties properties )
     {
         List<Object> propsToRemove = new ArrayList<Object>();
@@ -242,7 +242,7 @@ public class FileMetadataRepository
                 }
             }
         }
-        
+
         for( Object key : propsToRemove )
         {
             properties.remove( key );
@@ -577,7 +577,7 @@ public class FileMetadataRepository
         properties.remove( "artifact:sha1:" + id );
         properties.remove( "artifact:version:" + id );
         properties.remove( "artifact:facetIds:" + id );
-        
+
         String prefix = "artifact:facet:" + id + ":";
         for ( Object key : new ArrayList( properties.keySet() ) )
         {
@@ -1073,6 +1073,38 @@ public class FileMetadataRepository
                 return -1;
             }
             return artifact1.getWhenGathered().compareTo( artifact2.getWhenGathered() );
+        }
+    }
+
+    public List<ArtifactMetadata> getArtifacts( String repoId )
+    {
+
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        for ( String ns : getRootNamespaces( repoId ) )
+        {
+            getArtifacts( artifacts, repoId, ns );
+        }
+        return artifacts;
+    }
+
+    private void getArtifacts( List<ArtifactMetadata> artifacts, String repoId, String ns )
+    {
+        for ( String namespace : getNamespaces( repoId, ns ) )
+        {
+            getArtifacts( artifacts, repoId, ns + "." + namespace );
+        }
+
+        for ( String project : getProjects( repoId, ns ) )
+        {
+            for ( String version : getProjectVersions( repoId, ns, project ) )
+            {
+                for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
+                {
+
+                    artifacts.add( artifact );
+
+                }
+            }
         }
     }
 }

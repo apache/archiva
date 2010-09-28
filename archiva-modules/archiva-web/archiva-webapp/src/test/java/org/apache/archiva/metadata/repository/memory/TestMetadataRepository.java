@@ -199,4 +199,8 @@ public class TestMetadataRepository
     {
         return artifacts;
     }
+
+    public List<ArtifactMetadata> getArtifacts(String repositoryId){
+        return artifacts;
+    }
 }

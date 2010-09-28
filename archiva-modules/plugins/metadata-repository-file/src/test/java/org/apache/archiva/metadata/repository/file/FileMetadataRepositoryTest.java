@@ -50,7 +50,6 @@ public class FileMetadataRepositoryTest
         FileMetadataRepository repository = new FileMetadataRepository();
         repository.setConfiguration( config );
         repository.setMetadataFacetFactories( factories );
-
         this.repository = repository;
     }
 

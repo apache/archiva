@@ -48,7 +48,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * DeleteManagedRepositoryActionTest 
+ * DeleteManagedRepositoryActionTest
  *
  * @version $Id$
  */
@@ -64,7 +64,7 @@ public class DeleteManagedRepositoryActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
-    
+
     private static final String REPO_ID = "repo-ident";
 
     private File location;
@@ -79,11 +79,11 @@ public class DeleteManagedRepositoryActionTest
         super.setUp();
 
         action = new DeleteManagedRepositoryAction();
-        
+
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
-        
+
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
@@ -122,6 +122,11 @@ public class DeleteManagedRepositoryActionTest
 
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
+
+         Configuration stageRepoConfiguration = new Configuration();
+        stageRepoConfiguration.addManagedRepository( createSatingRepository() );
+        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
+
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
@@ -131,10 +136,10 @@ public class DeleteManagedRepositoryActionTest
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
-        
+
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
-                
+
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
@@ -148,7 +153,7 @@ public class DeleteManagedRepositoryActionTest
         repositoryStatisticsManagerControl.replay();
 
         prepareRoleManagerMock();
-        
+
         Configuration configuration = prepDeletionTest( createRepository(), 4 );
 
         MockControl control = mockAuditListeners();
@@ -196,15 +201,15 @@ public class DeleteManagedRepositoryActionTest
         repositoryStatisticsManagerControl.replay();
 
         prepareRoleManagerMock();
-        
-        Configuration configuration = prepDeletionTest( createRepository(), 4 );              
-        
+
+        Configuration configuration = prepDeletionTest( createRepository(), 4 );
+
         MockControl control = mockAuditListeners();
 
         MockControl metadataRepositoryControl = mockMetadataRepository();
 
         String status = action.deleteContents();
-        
+
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -215,7 +220,7 @@ public class DeleteManagedRepositoryActionTest
         control.verify();
         metadataRepositoryControl.verify();
     }
-    
+
     public void testDeleteRepositoryAndAssociatedProxyConnectors()
         throws Exception
     {
@@ -230,11 +235,11 @@ public class DeleteManagedRepositoryActionTest
         prepareRoleManagerMock();
 
         assertEquals( 1, configuration.getProxyConnectors().size() );
-        
+
         MockControl control = mockAuditListeners();
         MockControl metadataRepositoryControl = mockMetadataRepository();
         String status = action.deleteContents();
-        
+
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -246,7 +251,7 @@ public class DeleteManagedRepositoryActionTest
         control.verify();
         metadataRepositoryControl.verify();
     }
-    
+
     public void testDeleteRepositoryCancelled()
         throws Exception
     {
@@ -254,7 +259,7 @@ public class DeleteManagedRepositoryActionTest
 
         ManagedRepositoryConfiguration originalRepository = createRepository();
         Configuration configuration = prepDeletionTest( originalRepository, 3 );
-                
+
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
 
@@ -266,36 +271,8 @@ public class DeleteManagedRepositoryActionTest
 
         repositoryStatisticsManagerControl.verify();
     }
-    
-    public void testDeleteRepositoryAndReposUnderRepoGroup()
-        throws Exception
-    {
-        repositoryStatisticsManager.deleteStatistics( REPO_ID );
-        repositoryStatisticsManagerControl.replay();
 
-        Configuration configuration = prepDeletionTest( createRepository(), 5 );
-        List<String> repoIds = new ArrayList<String>();
-        repoIds.add( REPO_ID );
-        configuration.addRepositoryGroup( createRepoGroup( repoIds, "repo.group" ) );
 
-        prepareRoleManagerMock();
-
-        assertEquals( 1, configuration.getRepositoryGroups().size() );
-        
-        MockControl control = mockAuditListeners();
-        MockControl metadataRepositoryControl = mockMetadataRepository();
-        String status = action.deleteContents();
-        assertEquals( Action.SUCCESS, status );
-
-        assertTrue( configuration.getManagedRepositories().isEmpty() );
-        assertEquals( 0, configuration.getRepositoryGroups().get( 0 ).getRepositories().size() );
-
-        assertFalse( location.exists() );
-
-        repositoryStatisticsManagerControl.verify();
-        control.verify();
-        metadataRepositoryControl.verify();
-    }
 
     private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, int expectCountGetConfig )
         throws RegistryException, IndeterminateConfigurationException
@@ -306,6 +283,11 @@ public class DeleteManagedRepositoryActionTest
 
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, expectCountGetConfig );
+
+        Configuration stageRepoConfiguration = new Configuration();
+        stageRepoConfiguration.addManagedRepository( createSatingRepository() );
+        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
+
 
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
@@ -363,16 +345,33 @@ public class DeleteManagedRepositoryActionTest
         return r;
     }
 
+    private ManagedRepositoryConfiguration createSatingRepository()
+    {
+        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
+        r.setId( REPO_ID +"-stage" );
+        r.setName( "repo name" );
+        r.setLocation( location.getAbsolutePath() );
+        r.setLayout( "default" );
+        r.setRefreshCronExpression( "* 0/5 * * * ?" );
+        r.setDaysOlder( 0 );
+        r.setRetentionCount( 0 );
+        r.setReleases( true );
+        r.setSnapshots( true );
+        r.setScanned( false );
+        r.setDeleteReleasedSnapshots( false );
+        return r;
+    }
+
     private RemoteRepositoryConfiguration createRemoteRepository(String id, String url)
     {
         RemoteRepositoryConfiguration r = new RemoteRepositoryConfiguration();
         r.setId( id );
         r.setUrl( url );
         r.setLayout( "default" );
-        
+
         return r;
     }
-    
+
     private ProxyConnectorConfiguration createProxyConnector( String managedRepoId, String remoteRepoId )
     {
         ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
@@ -387,10 +386,10 @@ public class DeleteManagedRepositoryActionTest
         RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration();
         repoGroup.setId( repoGroupId );
         repoGroup.setRepositories( repoIds );
-        
+
         return repoGroup;
     }
-    
+
     private void prepareRoleManagerMock()
         throws RoleManagerException
     {
