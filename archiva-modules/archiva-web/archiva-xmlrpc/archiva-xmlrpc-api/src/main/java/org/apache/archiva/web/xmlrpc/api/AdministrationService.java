@@ -24,7 +24,6 @@ import java.util.List;
 import com.atlassian.xmlrpc.ServiceObject;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
 @ServiceObject( "AdministrationService" )
 public interface AdministrationService
@@ -125,4 +124,14 @@ public interface AdministrationService
     // consider the following as additional services:
     // - getAllConfiguredRepositoryConsumers( String repoId ) - list all enabled consumers for the repo
     // - getAllConfiguredDatabaseConsumers() - list all enabled db consumers
+
+    /**
+     * Merge staging repository with the managed repository and skips if there are conflicts
+     * @param repoId
+     * @param skipConflicts
+     * @return
+     * @throws Exception
+     */
+    public boolean merge( String repoId, boolean skipConflicts ) throws Exception;
+   
 }

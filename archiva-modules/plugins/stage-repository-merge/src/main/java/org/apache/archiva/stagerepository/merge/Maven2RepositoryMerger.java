@@ -325,7 +325,7 @@ public class Maven2RepositoryMerger
         return metadata;
     }
 
-    public List<ArtifactMetadata> getConflictsartifacts( String sourceRepo, String targetRepo )
+    public List<ArtifactMetadata> getConflictingArtifacts( String sourceRepo, String targetRepo )
         throws Exception
     {
         List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );

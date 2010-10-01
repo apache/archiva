@@ -101,6 +101,8 @@ public class AuditEvent
 
     public static final String REMOVE_PATTERN = "Removed File Type Pattern";
 
+    public static final String MERGE_REPO_REMOTE = "Merged Staging Repository Triggered Remotely";
+    
     private String repositoryId;
 
     private String userId;

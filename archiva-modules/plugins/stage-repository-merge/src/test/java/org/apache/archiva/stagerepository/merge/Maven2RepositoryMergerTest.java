@@ -154,7 +154,7 @@ public class Maven2RepositoryMergerTest
         when( metadataRepository.getArtifacts( sourceRepoId ) ).thenReturn( sourceRepoArtifactsList );
         when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( targetRepoArtifactsList );
 
-        assertEquals( 1, repositoryMerger.getConflictsartifacts( sourceRepoId, TEST_REPO_ID ).size() );
+        assertEquals( 1, repositoryMerger.getConflictingArtifacts( sourceRepoId, TEST_REPO_ID ).size() );
         verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
     }
 

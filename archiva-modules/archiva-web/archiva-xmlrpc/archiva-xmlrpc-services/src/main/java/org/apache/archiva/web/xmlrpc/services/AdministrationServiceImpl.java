@@ -19,13 +19,26 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.stagerepository.merge.RepositoryMerger;
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
@@ -46,19 +59,10 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * AdministrationServiceImpl
@@ -83,12 +87,19 @@ public class AdministrationServiceImpl
     private MetadataRepository metadataRepository;
 
     private RepositoryStatisticsManager repositoryStatisticsManager;
+    
+    private RepositoryMerger repositoryMerger;
+    
+    private static final String STAGE = "-stage";
+    
+    private AuditListener auditListener;
 
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
                                       RepositoryContentFactory repoFactory, MetadataRepository metadataRepository,
                                       RepositoryArchivaTaskScheduler repositoryTaskScheduler,
                                       Collection<RepositoryListener> listeners,
-                                      RepositoryStatisticsManager repositoryStatisticsManager )
+                                      RepositoryStatisticsManager repositoryStatisticsManager, RepositoryMerger repositoryMerger,
+                                      AuditListener auditListener )
     {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
@@ -97,6 +108,8 @@ public class AdministrationServiceImpl
         this.listeners = listeners;
         this.metadataRepository = metadataRepository;
         this.repositoryStatisticsManager = repositoryStatisticsManager;
+        this.repositoryMerger = repositoryMerger;
+        this.auditListener = auditListener;
     }
 
     /**
@@ -459,4 +472,111 @@ public class AdministrationServiceImpl
         return repo;
     }
 
+    public boolean merge( String repoId, boolean skipConflicts )
+        throws Exception
+    {
+        String stagingId = repoId + STAGE;
+        ManagedRepositoryConfiguration repoConfig;
+        ManagedRepositoryConfiguration stagingConfig;
+        
+        Configuration config = archivaConfiguration.getConfiguration();
+        repoConfig = config.findManagedRepositoryById( repoId );
+
+        if( repoConfig != null )
+        { 
+            stagingConfig = config.findManagedRepositoryById( stagingId );
+            
+            if( stagingConfig != null )
+            {
+                List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( stagingId );
+                
+                if( repoConfig.isReleases() && !repoConfig.isSnapshots() )
+                {
+                    if( skipConflicts )
+                    {        
+                        List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts( stagingId, stagingId );
+                        sourceArtifacts.removeAll( conflicts );
+                        mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );
+                    }
+                    else
+                    {
+                        mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );    
+                    }       
+                }
+                else
+                {
+                    if( skipConflicts )
+                    {
+                        List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts( stagingId, stagingId );
+                        sourceArtifacts.removeAll( conflicts );
+                        Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+                        repositoryMerger.merge( stagingId, repoId, artifactsWithOutConflicts );   
+                    }
+                    else
+                    {
+                        repositoryMerger.merge( stagingId, repoId );    
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception( "Staging Id : " + stagingId + " not found." );
+            }
+        }
+        else
+        {
+            throw new Exception( "Repository Id : " + repoId + " not found." );
+        }
+        
+        if ( !repositoryTaskScheduler.isProcessingRepositoryTask( repoId ) )
+        {
+            RepositoryTask task = new RepositoryTask();
+            task.setRepositoryId( repoId );
+
+            repositoryTaskScheduler.queueTask( task );            
+        }
+
+        AuditEvent event = createAuditEvent( repoConfig );
+
+        // add event for audit log reports
+        metadataRepository.addMetadataFacet( event.getRepositoryId(), event );
+        
+        // log event in archiva audit log 
+        auditListener.auditEvent( createAuditEvent( repoConfig ) );
+        
+        return true;
+    }
+ 
+    // todo: setting userid of audit event
+    private AuditEvent createAuditEvent( ManagedRepositoryConfiguration repoConfig )
+    {
+
+        AuditEvent event = new AuditEvent();
+        event.setAction( AuditEvent.MERGE_REPO_REMOTE );
+        event.setRepositoryId( repoConfig.getId() );
+        event.setResource( repoConfig.getLocation() );
+        event.setTimestamp( new Date( ) );
+        
+        return event;
+    }
+
+    private void mergeWithOutSnapshots( List<ArtifactMetadata> sourceArtifacts, String sourceRepoId, String repoid )
+        throws Exception
+    {
+        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
+        for ( ArtifactMetadata metadata : sourceArtifacts )
+        {
+    
+            if ( metadata.getProjectVersion().contains( "SNAPSHOT" ) )
+            {
+                artifactsWithOutSnapshots.add( metadata );
+            }
+    
+        }
+        sourceArtifacts.removeAll( artifactsWithOutSnapshots );
+    
+        Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+        
+        repositoryMerger.merge( sourceRepoId, repoid, artifactListWithOutSnapShots );
+    }
 }

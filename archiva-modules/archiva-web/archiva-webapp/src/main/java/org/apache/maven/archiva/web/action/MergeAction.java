@@ -167,14 +167,14 @@ public class
         }
     }
 
-    public String mergeWithOutConlficts()
+    public String mergeWithOutConlficts()        
     {
 
         sourceRepoId = repoid + "-stage";
 
         try
         {
-            conflictSourceArtifacts = repositoryMerger.getConflictsartifacts( sourceRepoId, repoid );
+            conflictSourceArtifacts = repositoryMerger.getConflictingArtifacts( sourceRepoId, repoid );
         }
         catch ( Exception e )
         {
@@ -201,7 +201,7 @@ public class
         throws Exception
     {
         sourceRepoId = repoid + "-stage";
-        conflictSourceArtifacts = repositoryMerger.getConflictsartifacts( sourceRepoId, repoid );
+        conflictSourceArtifacts = repositoryMerger.getConflictingArtifacts( sourceRepoId, repoid );
         this.scheduler.setRepoid( repoid );
         
         Configuration config = archivaConfiguration.getConfiguration();

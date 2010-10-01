@@ -14,6 +14,10 @@
       <artifactId>archiva-indexer</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>stage-repository-merge</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.atlassian.xmlrpc</groupId>
       <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
     </dependency>
