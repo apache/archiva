@@ -27,27 +27,22 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
-      <version>1.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>
-      <version>1.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>maven2-repository</artifactId>
-      <version>1.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-model</artifactId>
-      <version>1.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-file</artifactId>
-      <version>1.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
