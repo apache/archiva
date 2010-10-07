@@ -22,7 +22,7 @@ Archiva Developer's Documentation
     storage of a repository from the representation it works on, allowing it to store information about the repository
     in an extensible format that any plugin can operate on or add to, without all subsystems needing to know about
     each other. The metadata is not specific to any repository type - for instance, the Maven 2 portions can be
-    completely optional. More information on the {{{./metadata.html} metadata format}} and how it is persisted is
+    completely optional. More information on the metadata format and how it is persisted is
     present in the section below.
 
     This structure allows metadata repositories to be physically separated from the repository they represent and
