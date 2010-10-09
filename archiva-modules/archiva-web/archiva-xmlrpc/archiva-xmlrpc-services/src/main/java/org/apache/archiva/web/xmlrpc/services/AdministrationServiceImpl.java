@@ -87,19 +87,19 @@ public class AdministrationServiceImpl
     private MetadataRepository metadataRepository;
 
     private RepositoryStatisticsManager repositoryStatisticsManager;
-    
+
     private RepositoryMerger repositoryMerger;
-    
+
     private static final String STAGE = "-stage";
-    
+
     private AuditListener auditListener;
 
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
                                       RepositoryContentFactory repoFactory, MetadataRepository metadataRepository,
                                       RepositoryArchivaTaskScheduler repositoryTaskScheduler,
                                       Collection<RepositoryListener> listeners,
-                                      RepositoryStatisticsManager repositoryStatisticsManager, RepositoryMerger repositoryMerger,
-                                      AuditListener auditListener )
+                                      RepositoryStatisticsManager repositoryStatisticsManager,
+                                      RepositoryMerger repositoryMerger, AuditListener auditListener )
     {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
@@ -344,7 +344,7 @@ public class AdministrationServiceImpl
 
     public Boolean addManagedRepository( String repoId, String layout, String name, String location,
                                          boolean blockRedeployments, boolean releasesIncluded,
-                                         boolean snapshotsIncluded, String cronExpression )
+                                         boolean snapshotsIncluded, boolean stageRepoNeeded, String cronExpression )
         throws Exception
     {
 
@@ -384,20 +384,14 @@ public class AdministrationServiceImpl
         repository.setLayout( layout );
         repository.setRefreshCronExpression( cronExpression );
 
-        File file = new File( repository.getLocation() );
-        repository.setLocation( file.getCanonicalPath() );
+        addRepository( repository, config );
 
-        if ( !file.exists() )
+        if ( stageRepoNeeded )
         {
-            file.mkdirs();
+            ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
+            addRepository( stagingRepository, config );
         }
 
-        if ( !file.exists() || !file.isDirectory() )
-        {
-            throw new IOException( "Unable to add repository - no write access, can not create the root directory: "
-                + file );
-        }
-        config.addManagedRepository( repository );
         saveConfiguration( config );
         return Boolean.TRUE;
     }
@@ -446,8 +440,7 @@ public class AdministrationServiceImpl
                 List<String> repoGroups = repoToGroupMap.get( repository.getId() );
                 for ( String repoGroup : repoGroups )
                 {
-                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository(
-                                                                                                                   repository.getId() );
+                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository( repository.getId() );
                 }
             }
         }
@@ -478,43 +471,46 @@ public class AdministrationServiceImpl
         String stagingId = repoId + STAGE;
         ManagedRepositoryConfiguration repoConfig;
         ManagedRepositoryConfiguration stagingConfig;
-        
+
         Configuration config = archivaConfiguration.getConfiguration();
         repoConfig = config.findManagedRepositoryById( repoId );
 
-        if( repoConfig != null )
-        { 
+        if ( repoConfig != null )
+        {
             stagingConfig = config.findManagedRepositoryById( stagingId );
-            
-            if( stagingConfig != null )
+
+            if ( stagingConfig != null )
             {
                 List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( stagingId );
-                
-                if( repoConfig.isReleases() && !repoConfig.isSnapshots() )
+
+                if ( repoConfig.isReleases() && !repoConfig.isSnapshots() )
                 {
-                    if( skipConflicts )
-                    {        
-                        List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts( stagingId, stagingId );
+                    if ( skipConflicts )
+                    {
+                        List<ArtifactMetadata> conflicts =
+                            repositoryMerger.getConflictingArtifacts( stagingId, stagingId );
                         sourceArtifacts.removeAll( conflicts );
                         mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );
                     }
                     else
                     {
-                        mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );    
-                    }       
+                        mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );
+                    }
                 }
                 else
                 {
-                    if( skipConflicts )
+                    if ( skipConflicts )
                     {
-                        List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts( stagingId, stagingId );
+                        List<ArtifactMetadata> conflicts =
+                            repositoryMerger.getConflictingArtifacts( stagingId, stagingId );
                         sourceArtifacts.removeAll( conflicts );
-                        Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-                        repositoryMerger.merge( stagingId, repoId, artifactsWithOutConflicts );   
+                        Filter<ArtifactMetadata> artifactsWithOutConflicts =
+                            new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+                        repositoryMerger.merge( stagingId, repoId, artifactsWithOutConflicts );
                     }
                     else
                     {
-                        repositoryMerger.merge( stagingId, repoId );    
+                        repositoryMerger.merge( stagingId, repoId );
                     }
                 }
             }
@@ -527,26 +523,45 @@ public class AdministrationServiceImpl
         {
             throw new Exception( "Repository Id : " + repoId + " not found." );
         }
-        
+
         if ( !repositoryTaskScheduler.isProcessingRepositoryTask( repoId ) )
         {
             RepositoryTask task = new RepositoryTask();
             task.setRepositoryId( repoId );
 
-            repositoryTaskScheduler.queueTask( task );            
+            repositoryTaskScheduler.queueTask( task );
         }
 
         AuditEvent event = createAuditEvent( repoConfig );
 
         // add event for audit log reports
         metadataRepository.addMetadataFacet( event.getRepositoryId(), event );
-        
-        // log event in archiva audit log 
+
+        // log event in archiva audit log
         auditListener.auditEvent( createAuditEvent( repoConfig ) );
-        
+
         return true;
     }
- 
+
+    protected void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
+        throws IOException
+    {
+        // Normalize the path
+        File file = new File( repository.getLocation() );
+        repository.setLocation( file.getCanonicalPath() );
+        if ( !file.exists() )
+        {
+            file.mkdirs();
+        }
+        if ( !file.exists() || !file.isDirectory() )
+        {
+            throw new IOException( "Unable to add repository - no write access, can not create the root directory: "
+                + file );
+        }
+
+        configuration.addManagedRepository( repository );
+    }
+
     // todo: setting userid of audit event
     private AuditEvent createAuditEvent( ManagedRepositoryConfiguration repoConfig )
     {
@@ -555,8 +570,8 @@ public class AdministrationServiceImpl
         event.setAction( AuditEvent.MERGE_REPO_REMOTE );
         event.setRepositoryId( repoConfig.getId() );
         event.setResource( repoConfig.getLocation() );
-        event.setTimestamp( new Date( ) );
-        
+        event.setTimestamp( new Date() );
+
         return event;
     }
 
@@ -566,17 +581,38 @@ public class AdministrationServiceImpl
         List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
         for ( ArtifactMetadata metadata : sourceArtifacts )
         {
-    
+
             if ( metadata.getProjectVersion().contains( "SNAPSHOT" ) )
             {
                 artifactsWithOutSnapshots.add( metadata );
             }
-    
+
         }
         sourceArtifacts.removeAll( artifactsWithOutSnapshots );
-    
+
         Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-        
+
         repositoryMerger.merge( sourceRepoId, repoid, artifactListWithOutSnapShots );
+    }
+
+    private ManagedRepositoryConfiguration getStageRepoConfig( ManagedRepositoryConfiguration repository )
+    {
+        ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
+        stagingRepository.setId( repository.getId() + "-stage" );
+        stagingRepository.setLayout( repository.getLayout() );
+        stagingRepository.setName( repository.getName() + "-stage" );
+        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
+        stagingRepository.setDaysOlder( repository.getDaysOlder() );
+        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
+        stagingRepository.setIndexDir( repository.getIndexDir() );
+        String path = repository.getLocation();
+        int lastIndex = path.lastIndexOf( '/' );
+        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
+        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
+        stagingRepository.setReleases( repository.isReleases() );
+        stagingRepository.setRetentionCount( repository.getRetentionCount() );
+        stagingRepository.setScanned( repository.isScanned() );
+        stagingRepository.setSnapshots( repository.isSnapshots() );
+        return stagingRepository;
     }
 }
