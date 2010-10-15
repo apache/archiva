@@ -187,37 +187,44 @@ public class Maven2RepositoryMerger
                 pathTranslator.toFile( new File( sourceRepoPath ), artifactMetadata.getNamespace(),
                                        artifactMetadata.getProject(), artifactMetadata.getVersion(),
                                        METADATA_FILENAME );
-            String relativePathToVersionMetadataFile =
-                versionMetaDataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
-            File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
 
-            if ( !versionMetaDataFileInTargetRepo.exists() )
+            if( versionMetaDataFileInSourceRepo.exists() )
             {
-                copyFile( versionMetaDataFileInSourceRepo, versionMetaDataFileInTargetRepo );
-            }
-            else
-            {
-                updateVersionMetadata( versionMetaDataFileInTargetRepo, artifactMetadata, lastUpdatedTimestamp );
+                String relativePathToVersionMetadataFile =
+                    versionMetaDataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
+                File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
 
+                if ( !versionMetaDataFileInTargetRepo.exists() )
+                {
+                    copyFile( versionMetaDataFileInSourceRepo, versionMetaDataFileInTargetRepo );
+                }
+                else
+                {
+                    updateVersionMetadata( versionMetaDataFileInTargetRepo, artifactMetadata, lastUpdatedTimestamp );
+
+                }
             }
 
             // updating project meta data file
             String projectDirectoryInSourceRepo = new File( versionMetaDataFileInSourceRepo.getParent() ).getParent();
             File projectMetadataFileInSourceRepo = new File( projectDirectoryInSourceRepo, METADATA_FILENAME );
 
-            String relativePathToProjectMetadataFile =
-                projectMetadataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
-            File projectMetadataFileInTargetRepo = new File( targetRepoPath, relativePathToProjectMetadataFile );
-
-            if ( !projectMetadataFileInTargetRepo.exists() )
+            if( projectMetadataFileInSourceRepo.exists() )
             {
+                String relativePathToProjectMetadataFile =
+                    projectMetadataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
+                File projectMetadataFileInTargetRepo = new File( targetRepoPath, relativePathToProjectMetadataFile );
 
-                copyFile( versionMetaDataFileInSourceRepo, projectMetadataFileInSourceRepo );
-            }
-            else
-            {
-                updateProjectMetadata( projectMetadataFileInTargetRepo, artifactMetadata, lastUpdatedTimestamp,
-                                       timestamp );
+                if ( !projectMetadataFileInTargetRepo.exists() )
+                {
+
+                    copyFile( projectMetadataFileInSourceRepo, projectMetadataFileInSourceRepo );
+                }
+                else
+                {
+                    updateProjectMetadata( projectMetadataFileInTargetRepo, artifactMetadata, lastUpdatedTimestamp,
+                                           timestamp );
+                }
             }
         }
 
