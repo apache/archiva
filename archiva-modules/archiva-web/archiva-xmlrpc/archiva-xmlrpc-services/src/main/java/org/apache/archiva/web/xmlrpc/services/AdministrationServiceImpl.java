@@ -475,6 +475,8 @@ public class AdministrationServiceImpl
         Configuration config = archivaConfiguration.getConfiguration();
         repoConfig = config.findManagedRepositoryById( repoId );
 
+        log.debug( "Retrieved repository configuration for repo '" + repoId + "'" );
+
         if ( repoConfig != null )
         {
             stagingConfig = config.findManagedRepositoryById( stagingId );
@@ -485,32 +487,62 @@ public class AdministrationServiceImpl
 
                 if ( repoConfig.isReleases() && !repoConfig.isSnapshots() )
                 {
+                    log.info( "Repository to be merged contains releases only.." );
                     if ( skipConflicts )
                     {
                         List<ArtifactMetadata> conflicts =
-                            repositoryMerger.getConflictingArtifacts( stagingId, stagingId );
+                            repositoryMerger.getConflictingArtifacts( repoId, stagingId );
+
+                        log.debug( "Artifacts in conflict.." );
+                        for( ArtifactMetadata metadata : conflicts )
+                        {
+                            log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
+                                metadata.getProjectVersion() );
+                        }
+
                         sourceArtifacts.removeAll( conflicts );
+
+                        log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
                         mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );
                     }
                     else
                     {
+                        log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
                         mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );
                     }
                 }
                 else
                 {
+                    log.info( "Repository to be merged has snapshot artifacts.." );
                     if ( skipConflicts )
                     {
                         List<ArtifactMetadata> conflicts =
-                            repositoryMerger.getConflictingArtifacts( stagingId, stagingId );
+                            repositoryMerger.getConflictingArtifacts( repoId, stagingId );
+
+                        log.debug( "Artifacts in conflict.." );
+                        for( ArtifactMetadata metadata : conflicts )
+                        {
+                            log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
+                                metadata.getProjectVersion() );
+                        }
+                        
                         sourceArtifacts.removeAll( conflicts );
+
+                        log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
+
                         Filter<ArtifactMetadata> artifactsWithOutConflicts =
                             new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
                         repositoryMerger.merge( stagingId, repoId, artifactsWithOutConflicts );
+
+                        log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '" +
+                            repoId + "'." );
                     }
                     else
                     {
                         repositoryMerger.merge( stagingId, repoId );
+                        
+                        log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '" +
+                            repoId + "'." );
                     }
                 }
             }

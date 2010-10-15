@@ -720,7 +720,6 @@ public class AdministrationServiceImplTest
                                                                                                   merge.getId() ),
                                                         sources );
         repositoryMerger.merge( staging.getId(), merge.getId() );
-        repositoryMergerControl.setMatcher( MockControl.ALWAYS_MATCHER );
         repositoryMergerControl.setVoidCallable();
         repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "merge" ),
                                                         false );
