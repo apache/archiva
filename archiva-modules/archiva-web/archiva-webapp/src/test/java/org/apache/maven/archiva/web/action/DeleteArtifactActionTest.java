@@ -20,17 +20,137 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.easymock.MockControl;
+import org.easymock.classextension.MockClassControl;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class DeleteArtifactActionTest
     extends PlexusInSpringTestCase
 {
+    private DeleteArtifactAction action;
+
+    private ArchivaConfiguration configuration;
+
+    private MockControl configurationControl;
+
+    private RepositoryContentFactory repositoryFactory;
+
+    private MockControl repositoryFactoryControl;
+
+    private MetadataRepository metadataRepository;
+
+    private MockControl metadataRepositoryControl;
+
+    private static final String REPOSITORY_ID = "test-repo";
+
+    private static final String GROUP_ID = "org.apache.archiva";
+
+    private static final String ARTIFACT_ID = "npe-metadata";
+
+    private static final String VERSION = "1.0";
+
+    private static final String REPO_LOCATION = getBasedir() + "/target/test-classes/test-repo";
+
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        action = (DeleteArtifactAction) lookup( Action.class.getName(), "deleteArtifactAction" );
+        assertNotNull( action );
+
+        configurationControl = MockControl.createControl( ArchivaConfiguration.class );
+        configuration = ( ArchivaConfiguration ) configurationControl.getMock();
+
+        repositoryFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
+        repositoryFactory = ( RepositoryContentFactory ) repositoryFactoryControl.getMock();
+
+        metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        metadataRepository = ( MetadataRepository ) metadataRepositoryControl.getMock();
+
+        action.setConfiguration( configuration );
+        action.setRepositoryFactory( repositoryFactory );
+        action.setMetadataRepository( metadataRepository );
+    }
+
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        action = null;
+        
+        super.tearDown();
+    }
+
     public void testGetListeners()
         throws Exception
     {
-        DeleteArtifactAction action = (DeleteArtifactAction) lookup( Action.class.getName(), "deleteArtifactAction" );
-        assertNotNull( action );
         assertNotNull( action.getListeners() );
         assertFalse( action.getListeners().isEmpty() );
+    }
+
+    public void testNPEInDeleteArtifact()
+        throws Exception
+    {
+        action.setGroupId( GROUP_ID );
+        action.setArtifactId( ARTIFACT_ID );
+        action.setVersion( VERSION );
+        action.setRepositoryId( REPOSITORY_ID );
+
+        Configuration config = createConfiguration();
+
+        ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
+        repoContent.setRepository( config.findManagedRepositoryById( REPOSITORY_ID ) );
+
+        configurationControl.expectAndReturn( configuration.getConfiguration(), config );
+        repositoryFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( REPOSITORY_ID ), repoContent );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( REPOSITORY_ID, GROUP_ID, ARTIFACT_ID, VERSION ),
+                                                   new ArrayList<ArtifactMetadata>() );
+
+        configurationControl.replay();
+        repositoryFactoryControl.replay();
+        metadataRepositoryControl.replay();
+
+        action.doDelete();
+
+        String artifactPath = REPO_LOCATION + "/" + StringUtils.replace( GROUP_ID, ".", "/" ) + "/" +
+            StringUtils.replace( ARTIFACT_ID, ".", "/" ) + "/" + VERSION + "/" + ARTIFACT_ID + "-" + VERSION;
+
+        assertFalse( new File( artifactPath + ".jar" ).exists() );
+        assertFalse( new File( artifactPath + ".jar.sha1" ).exists() );
+        assertFalse( new File( artifactPath + ".jar.md5" ).exists() );
+        
+        assertFalse( new File( artifactPath + ".pom" ).exists() );
+        assertFalse( new File( artifactPath + ".pom.sha1" ).exists() );
+        assertFalse( new File( artifactPath + ".pom.md5" ).exists() );
+    }
+
+    private Configuration createConfiguration()
+    {
+        ManagedRepositoryConfiguration managedRepo = new ManagedRepositoryConfiguration();
+        managedRepo.setId( REPOSITORY_ID );
+        managedRepo.setName( "Test Repository" );
+
+        managedRepo.setLocation( REPO_LOCATION );
+        managedRepo.setReleases( true );
+
+        Configuration config = new Configuration();
+        config.addManagedRepository( managedRepo );
+
+        return config;
     }
 }

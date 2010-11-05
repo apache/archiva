@@ -339,7 +339,7 @@ public class DeleteArtifactAction
 
         if ( !VersionUtil.isSnapshot( version ) )
         {
-            if ( metadata.getReleasedVersion().equals( version ) )
+            if ( metadata.getReleasedVersion() != null && metadata.getReleasedVersion().equals( version ) )
             {
                 metadata.setReleasedVersion( latestVersion );
             }
@@ -403,5 +403,20 @@ public class DeleteArtifactAction
     public List<RepositoryListener> getListeners()
     {
         return listeners;
+    }
+
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    public void setConfiguration( ArchivaConfiguration configuration )
+    {
+        this.configuration = configuration;
+    }
+
+    public void setMetadataRepository( MetadataRepository metadataRepository )
+    {
+        this.metadataRepository = metadataRepository;
     }
 }
