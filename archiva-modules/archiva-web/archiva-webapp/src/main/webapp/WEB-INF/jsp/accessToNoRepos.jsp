@@ -32,8 +32,8 @@
 <div id="contentArea">
   
    <div id="results">
-     You do not have access to any repository.  
-     Please contact your system administrator and request for access.  
+     You do not have access to any repositories.  
+     Please contact your system administrator to request access.  
    </div>
   
 </div>
