@@ -19,14 +19,6 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -63,6 +55,14 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * AdministrationServiceImpl
@@ -493,11 +493,14 @@ public class AdministrationServiceImpl
                         List<ArtifactMetadata> conflicts =
                             repositoryMerger.getConflictingArtifacts( repoId, stagingId );
 
-                        log.debug( "Artifacts in conflict.." );
-                        for( ArtifactMetadata metadata : conflicts )
+                        if ( log.isDebugEnabled() )
                         {
-                            log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
-                                metadata.getProjectVersion() );
+                            log.debug( "Artifacts in conflict.." );
+                            for( ArtifactMetadata metadata : conflicts )
+                            {
+                                log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
+                                    metadata.getProjectVersion() );
+                            }
                         }
 
                         sourceArtifacts.removeAll( conflicts );
@@ -519,13 +522,16 @@ public class AdministrationServiceImpl
                         List<ArtifactMetadata> conflicts =
                             repositoryMerger.getConflictingArtifacts( repoId, stagingId );
 
-                        log.debug( "Artifacts in conflict.." );
-                        for( ArtifactMetadata metadata : conflicts )
+                        if ( log.isDebugEnabled() )
                         {
-                            log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
-                                metadata.getProjectVersion() );
+                            log.debug( "Artifacts in conflict.." );
+                            for( ArtifactMetadata metadata : conflicts )
+                            {
+                                log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
+                                    metadata.getProjectVersion() );
+                            }
                         }
-                        
+
                         sourceArtifacts.removeAll( conflicts );
 
                         log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
