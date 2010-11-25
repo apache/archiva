@@ -1102,7 +1102,7 @@
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-5</wagon.version>
-    <redback.version>1.2.4</redback.version>
+    <redback.version>1.2.5</redback.version>
     <jetty.version>6.1.19</jetty.version>
     <slf4j.version>1.5.8</slf4j.version>
     <binder.version>0.9</binder.version>
@@ -1196,10 +1196,4 @@
       <url>http://vmbuild.apache.org/archiva/repository/staged-archiva</url>
     </repository>
   </distributionManagement>
-  <repositories>
-    <repository>
-      <id>redback</id>
-      <url>http://snapshots.repository.codehaus.org/</url>
-    </repository>
-  </repositories>
 </project>
