@@ -132,6 +132,12 @@ public class DuplicateArtifactsConsumer
         this.repositoryDir = new File( repo.getLocation() );
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repo, whenGathered );   
+    }
+
     public void processFile( String path )
         throws ConsumerException
     {
@@ -202,9 +208,20 @@ public class DuplicateArtifactsConsumer
         }
     }
 
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        processFile( path );     
+    }
+
     public void completeScan()
     {
         // nothing to do
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )

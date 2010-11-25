@@ -127,6 +127,12 @@ public class ArchivaMetadataCreationConsumer
         this.whenGathered = whenGathered;
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void processFile( String path )
         throws ConsumerException
     {
@@ -174,9 +180,20 @@ public class ArchivaMetadataCreationConsumer
         metadataRepository.updateProject( repoId, project );
     }
 
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        processFile( path );
+    }
+
     public void completeScan()
     {
         /* do nothing */
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )

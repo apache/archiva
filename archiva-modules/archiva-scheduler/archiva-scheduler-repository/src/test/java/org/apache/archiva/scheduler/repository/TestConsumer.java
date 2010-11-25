@@ -87,6 +87,13 @@ public class TestConsumer
         }
     }
 
+    @Override
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void processFile( String path )
         throws ConsumerException
     {
@@ -103,8 +110,21 @@ public class TestConsumer
         }
     }
 
+    @Override
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws Exception
+    {
+        processFile( path );
+    }
+
     public void completeScan()
     {
+    }
+
+    @Override
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public Collection<ArtifactReference> getConsumed()

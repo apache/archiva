@@ -99,6 +99,7 @@ public class NexusIndexerConsumer
 
         try
         {
+            log.info( "Creating indexing context for repo : " + repository.getId() );
             context = ArtifactIndexingTask.createContext( repository );
         }
         catch ( IOException e )
@@ -108,6 +109,21 @@ public class NexusIndexerConsumer
         catch ( UnsupportedExistingLuceneIndexException e )
         {
             throw new ConsumerException( e.getMessage(), e );
+        }
+    }
+
+    @Override
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        if( executeOnEntireRepo )
+        {
+            beginScan( repository, whenGathered );
+        }
+        else
+        {
+            this.repository = repository;
+            managedRepository = new File( repository.getLocation() );       
         }
     }
 
@@ -129,6 +145,33 @@ public class NexusIndexerConsumer
         }
     }
 
+    @Override
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws Exception
+    {
+        if( executeOnEntireRepo )
+        {
+            processFile( path );
+        }
+        else
+        {
+            File artifactFile = new File( managedRepository, path );
+
+            // specify in indexing task that this is not a repo scan request!
+            ArtifactIndexingTask task =
+                new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, context, false );
+            try
+            {
+                log.debug( "Queueing indexing task + '" + task + "' to add or update the artifact in the index." );
+                scheduler.queueTask( task );
+            }
+            catch ( TaskQueueException e )
+            {
+                throw new ConsumerException( e.getMessage(), e );
+            }
+        }
+    }
+
     public void completeScan()
     {
         ArtifactIndexingTask task =
@@ -143,6 +186,17 @@ public class NexusIndexerConsumer
             log.error( "Error queueing task: " + task + ": " + e.getMessage(), e );
         }
         context = null;
+    }
+
+    @Override
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        if( executeOnEntireRepo )
+        {
+            completeScan();
+        }
+
+        // else, do nothing as the context will be closed when indexing task is executed if not a repo scan request!
     }
 
     public List<String> getExcludes()

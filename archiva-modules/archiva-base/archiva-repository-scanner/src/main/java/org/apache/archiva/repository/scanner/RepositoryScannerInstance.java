@@ -82,7 +82,7 @@ public class RepositoryScannerInstance
         stats = new RepositoryScanStatistics();
         stats.setRepositoryId( repository.getId() );
 
-        Closure triggerBeginScan = new TriggerBeginScanClosure( repository, new Date( System.currentTimeMillis() ) );
+        Closure triggerBeginScan = new TriggerBeginScanClosure( repository, new Date( System.currentTimeMillis() ), true );
 
         CollectionUtils.forAllDo( knownConsumerList, triggerBeginScan );
         CollectionUtils.forAllDo( invalidConsumerList, triggerBeginScan );
@@ -131,6 +131,7 @@ public class RepositoryScannerInstance
         }
         
         consumerProcessFile.setBasefile( basefile );
+        consumerProcessFile.setExecuteOnEntireRepo( true );
         consumerWantsFile.setBasefile( basefile );
         
         Closure processIfWanted = IfClosure.getInstance( consumerWantsFile, consumerProcessFile );
@@ -145,7 +146,7 @@ public class RepositoryScannerInstance
 
     public void directoryWalkFinished()
     {
-        TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository );
+        TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository, true );
         CollectionUtils.forAllDo( knownConsumers, scanCompletedClosure );
         CollectionUtils.forAllDo( invalidConsumers, scanCompletedClosure );
 

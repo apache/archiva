@@ -130,6 +130,12 @@
       <lifecycle-handler>basic</lifecycle-handler>
     </component>
 
+    <component>
+      <role>org.codehaus.plexus.logging.Logger</role>
+      <implementation>org.apache.maven.archiva.common.utils.Slf4JPlexusLogger</implementation>
+      <role-hint>logger</role-hint>
+    </component>
+
     <!-- 
    PLXREDBACK-81 bad role hint, redefining here until redback alpha-2 is released.
     -->

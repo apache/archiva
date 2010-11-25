@@ -39,6 +39,7 @@ import org.sonatype.nexus.index.ArtifactInfo;
 import org.sonatype.nexus.index.DefaultArtifactContextProducer;
 import org.sonatype.nexus.index.IndexerEngine;
 import org.sonatype.nexus.index.context.IndexingContext;
+import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 import org.sonatype.nexus.index.packer.IndexPacker;
 import org.sonatype.nexus.index.packer.IndexPackingRequest;
 
@@ -77,44 +78,35 @@ public class ArchivaIndexingTaskExecutor
             ManagedRepositoryConfiguration repository = indexingTask.getRepository();
             IndexingContext context = indexingTask.getContext();
 
-            if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() ) )
+            if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() )
+                && indexingTask.isExecuteOnEntireRepo() )
             {
-                try
-                {
-                    context.optimize();
-
-                    File managedRepository = new File( repository.getLocation() );
-                    final File indexLocation = new File( managedRepository, ".index" );
-                    IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
-                    indexPacker.packIndex( request );
-
-                    log.debug( "Index file packaged at '" + indexLocation.getPath() + "'." );
-                }
-                catch ( IOException e )
-                {
-                    log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
-                    throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
-                        + "'", e );
-                }
-                finally
-                {
-                    if ( context != null )
-                    {
-                        try
-                        {
-                            context.close( false );
-                        }
-                        catch ( IOException e )
-                        {
-                            log.error( "Error occurred while closing context: " + e.getMessage() );
-                            throw new TaskExecutionException( "Error occurred while closing context: " + e.getMessage() );
-                        }
-                    }
-                }
+                log.debug( "Finishing indexing task on repo: " + repository.getId() );
+                finishIndexingTask( indexingTask, repository, context );
             }
             else
             {
-                if ( context.getIndexDirectory() == null )
+                // create context if not a repo scan request
+                if( !indexingTask.isExecuteOnEntireRepo() )
+                {
+                    try
+                    {
+                        log.debug( "Creating indexing context on resource: " + indexingTask.getResourceFile().getPath() );
+                        context = ArtifactIndexingTask.createContext( repository );
+                    }
+                    catch( IOException e )
+                    {
+                        log.error( "Error occurred while creating context: " + e.getMessage() );
+                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage() );
+                    }
+                    catch( UnsupportedExistingLuceneIndexException e )
+                    {
+                        log.error( "Error occurred while creating context: " + e.getMessage() );
+                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage() );    
+                    }
+                }
+
+                if ( context == null || context.getIndexDirectory() == null )
                 {
                     throw new TaskExecutionException( "Trying to index an artifact but the context is already closed" );
                 }
@@ -156,6 +148,13 @@ public class ArchivaIndexingTaskExecutor
                                 indexerEngine.update( context, ac );
                                 context.getIndexWriter().commit();
                             }
+
+                            // close the context if not a repo scan request
+                            if( !indexingTask.isExecuteOnEntireRepo() )
+                            {
+                                log.debug( "Finishing indexing task on resource file : " + indexingTask.getResourceFile().getPath() );
+                                finishIndexingTask( indexingTask, repository, context );   
+                            }
                         }
                         else
                         {
@@ -175,6 +174,44 @@ public class ArchivaIndexingTaskExecutor
                 {
                     log.error( "Error occurred while getting artifact context: " + e.getMessage() );
                     throw new TaskExecutionException( "Error occurred while getting artifact context.", e );
+                }
+            }
+        }
+    }
+
+    private void finishIndexingTask( ArtifactIndexingTask indexingTask, ManagedRepositoryConfiguration repository,
+                                     IndexingContext context )
+        throws TaskExecutionException
+    {
+        try
+        {
+            context.optimize();
+
+            File managedRepository = new File( repository.getLocation() );
+            final File indexLocation = new File( managedRepository, ".index" );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
+            indexPacker.packIndex( request );
+
+            log.debug( "Index file packaged at '" + indexLocation.getPath() + "'." );
+        }
+        catch ( IOException e )
+        {
+            log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
+            throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
+                + "'", e );
+        }
+        finally
+        {
+            if ( context != null )
+            {
+                try
+                {
+                    context.close( false );
+                }
+                catch ( IOException e )
+                {
+                    log.error( "Error occurred while closing context: " + e.getMessage() );
+                    throw new TaskExecutionException( "Error occurred while closing context: " + e.getMessage() );
                 }
             }
         }

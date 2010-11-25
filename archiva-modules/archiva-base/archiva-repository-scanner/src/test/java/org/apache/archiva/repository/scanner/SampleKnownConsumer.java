@@ -50,9 +50,22 @@ public class SampleKnownConsumer
         /* nothing to do */
     }
 
+    @Override
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void completeScan()
     {
         /* nothing to do */
+    }
+
+    @Override
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public List<String> getExcludes()
@@ -69,6 +82,13 @@ public class SampleKnownConsumer
         throws ConsumerException
     {
         /* nothing to do */
+    }
+
+    @Override
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws Exception
+    {
+        processFile( path );
     }
 
     public String getDescription()

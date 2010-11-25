@@ -95,9 +95,20 @@ public class AutoRemoveConsumer
         this.repositoryDir = new File( repository.getLocation() );
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void completeScan()
     {
         /* do nothing */
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public List<String> getExcludes()
@@ -119,6 +130,12 @@ public class AutoRemoveConsumer
             triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath() );
             file.delete();
         }
+    }
+
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        processFile( path );    
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )

@@ -37,6 +37,8 @@ public class ConsumerProcessFileClosure
     
     private BaseFile basefile;
 
+    private boolean executeOnEntireRepo;
+
     public void execute( Object input )
     {
         if ( input instanceof RepositoryContentConsumer )
@@ -47,7 +49,7 @@ public class ConsumerProcessFileClosure
             {
                 log.debug( "Sending to consumer: " + consumer.getId() );
 
-                consumer.processFile( basefile.getRelativePath() );
+                consumer.processFile( basefile.getRelativePath(), executeOnEntireRepo );
             }
             catch ( Exception e )
             {
@@ -68,6 +70,16 @@ public class ConsumerProcessFileClosure
     public void setBasefile( BaseFile basefile )
     {
         this.basefile = basefile;
+    }
+
+    public boolean isExecuteOnEntireRepo()
+    {
+        return executeOnEntireRepo;
+    }
+
+    public void setExecuteOnEntireRepo( boolean executeOnEntireRepo )
+    {
+        this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
     public Logger getLogger()

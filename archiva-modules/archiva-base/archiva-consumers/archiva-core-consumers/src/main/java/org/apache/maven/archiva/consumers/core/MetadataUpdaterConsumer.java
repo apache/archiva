@@ -142,9 +142,22 @@ public class MetadataUpdaterConsumer
         }
     }
 
+    @Override
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void completeScan()
     {
         /* do nothing here */
+    }
+
+    @Override
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public List<String> getExcludes()
@@ -174,6 +187,13 @@ public class MetadataUpdaterConsumer
                 log.info( "Not processing path that is not an artifact: " + path + " (" + e.getMessage() + ")" );
             }
         }
+    }
+
+    @Override
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws Exception
+    {
+        processFile( path );
     }
 
     private void updateProjectMetadata( ArtifactReference artifact, String path )
