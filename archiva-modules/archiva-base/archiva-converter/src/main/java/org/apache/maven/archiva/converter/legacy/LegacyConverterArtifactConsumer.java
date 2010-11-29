@@ -88,7 +88,6 @@ public class LegacyConverterArtifactConsumer
         this.managedRepository.setRepository( repository );
     }
 
-    @Override
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
@@ -100,7 +99,6 @@ public class LegacyConverterArtifactConsumer
 
     }
 
-    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
@@ -137,7 +135,6 @@ public class LegacyConverterArtifactConsumer
         }
     }
 
-    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {

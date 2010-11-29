@@ -87,7 +87,6 @@ public class TestConsumer
         }
     }
 
-    @Override
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
@@ -110,7 +109,6 @@ public class TestConsumer
         }
     }
 
-    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
@@ -121,7 +119,6 @@ public class TestConsumer
     {
     }
 
-    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();

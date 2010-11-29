@@ -76,7 +76,6 @@ public class KnownScanConsumer
         /* do nothing */
     }
 
-    @Override
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
@@ -89,7 +88,6 @@ public class KnownScanConsumer
         this.processCount++;
     }
 
-    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
@@ -101,7 +99,6 @@ public class KnownScanConsumer
         /* do nothing */
     }
 
-    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
        completeScan();

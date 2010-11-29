@@ -102,7 +102,6 @@ public class ValidateChecksumConsumer
         this.repositoryDir = new File( repository.getLocation() );
     }
 
-    @Override
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
@@ -114,7 +113,6 @@ public class ValidateChecksumConsumer
         /* nothing to do */
     }
 
-    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
@@ -156,7 +154,6 @@ public class ValidateChecksumConsumer
         }
     }
 
-    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {

@@ -142,7 +142,6 @@ public class MetadataUpdaterConsumer
         }
     }
 
-    @Override
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
@@ -154,7 +153,6 @@ public class MetadataUpdaterConsumer
         /* do nothing here */
     }
 
-    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
@@ -189,7 +187,6 @@ public class MetadataUpdaterConsumer
         }
     }
 
-    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {

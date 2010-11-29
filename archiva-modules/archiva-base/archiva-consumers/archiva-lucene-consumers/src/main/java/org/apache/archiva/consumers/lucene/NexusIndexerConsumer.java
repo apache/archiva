@@ -112,7 +112,6 @@ public class NexusIndexerConsumer
         }
     }
 
-    @Override
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
@@ -145,7 +144,6 @@ public class NexusIndexerConsumer
         }
     }
 
-    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
@@ -188,7 +186,6 @@ public class NexusIndexerConsumer
         context = null;
     }
 
-    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         if( executeOnEntireRepo )
