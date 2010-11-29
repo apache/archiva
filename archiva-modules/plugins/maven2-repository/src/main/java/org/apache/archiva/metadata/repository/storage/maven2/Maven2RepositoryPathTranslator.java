@@ -196,7 +196,7 @@ public class Maven2RepositoryPathTranslator
                 String timestamp = m.group( 1 );
                 String buildNumber = m.group( 2 );
                 facet.setTimestamp( timestamp );
-                facet.setBuildNumber( Integer.valueOf( buildNumber ) );
+                facet.setBuildNumber( Integer.parseInt( buildNumber ) );
                 version = idSubStrFromVersion.substring( 0, mainVersionLength ) + timestamp + "-" + buildNumber;
             }
             catch ( IllegalStateException e )

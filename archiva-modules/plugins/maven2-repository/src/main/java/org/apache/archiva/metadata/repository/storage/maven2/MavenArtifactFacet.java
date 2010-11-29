@@ -115,7 +115,7 @@ public class MavenArtifactFacet
         String buildNumber = properties.get( "buildNumber" );
         if ( buildNumber != null )
         {
-            this.buildNumber = Integer.valueOf( buildNumber );
+            this.buildNumber = Integer.parseInt( buildNumber );
         }
     }
 }

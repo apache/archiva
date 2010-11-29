@@ -176,14 +176,14 @@ public class RepositoryStatistics
 
     public void fromProperties( Map<String, String> properties )
     {
-        scanEndTime = new Date( Long.valueOf( properties.get( "scanEndTime" ) ) );
-        scanStartTime = new Date( Long.valueOf( properties.get( "scanStartTime" ) ) );
-        totalArtifactCount = Long.valueOf( properties.get( "totalArtifactCount" ) );
-        totalArtifactFileSize = Long.valueOf( properties.get( "totalArtifactFileSize" ) );
-        totalFileCount = Long.valueOf( properties.get( "totalFileCount" ) );
-        totalGroupCount = Long.valueOf( properties.get( "totalGroupCount" ) );
-        totalProjectCount = Long.valueOf( properties.get( "totalProjectCount" ) );
-        newFileCount = Long.valueOf( properties.get( "newFileCount" ) );
+        scanEndTime = new Date( Long.parseLong( properties.get( "scanEndTime" ) ) );
+        scanStartTime = new Date( Long.parseLong( properties.get( "scanStartTime" ) ) );
+        totalArtifactCount = Long.parseLong( properties.get( "totalArtifactCount" ) );
+        totalArtifactFileSize = Long.parseLong( properties.get( "totalArtifactFileSize" ) );
+        totalFileCount = Long.parseLong( properties.get( "totalFileCount" ) );
+        totalGroupCount = Long.parseLong( properties.get( "totalGroupCount" ) );
+        totalProjectCount = Long.parseLong( properties.get( "totalProjectCount" ) );
+        newFileCount = Long.parseLong( properties.get( "newFileCount" ) );
         totalCountForType.clear();
         for ( Map.Entry<String, String> entry : properties.entrySet() )
         {

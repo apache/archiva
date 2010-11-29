@@ -255,7 +255,7 @@ public class FileMetadataRepository
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-        int i = Integer.valueOf( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
+        int i = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
         setProperty( properties, "ref:lastReferenceNum", Integer.toString( i ) );
         setProperty( properties, "ref:reference." + i + ".namespace", reference.getNamespace() );
         setProperty( properties, "ref:reference." + i + ".projectId", reference.getProjectId() );
@@ -470,7 +470,7 @@ public class FileMetadataRepository
                 String value = (String) entry.getValue();
                 if ( "updated".equals( field ) )
                 {
-                    artifact.setFileLastModified( Long.valueOf( value ) );
+                    artifact.setFileLastModified( Long.parseLong( value ) );
                 }
                 else if ( "size".equals( field ) )
                 {
@@ -478,7 +478,7 @@ public class FileMetadataRepository
                 }
                 else if ( "whenGathered".equals( field ) )
                 {
-                    artifact.setWhenGathered( new Date( Long.valueOf( value ) ) );
+                    artifact.setWhenGathered( new Date( Long.parseLong( value ) ) );
                 }
                 else if ( "version".equals( field ) )
                 {
@@ -937,7 +937,7 @@ public class FileMetadataRepository
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-        int numberOfRefs = Integer.valueOf( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
+        int numberOfRefs = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
 
         List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
         for ( int i = 0; i < numberOfRefs; i++ )

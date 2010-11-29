@@ -145,7 +145,7 @@ public class LegacyToDefaultConverter
         if ( matcher.matches() )
         {
             Snapshot snapshot = new Snapshot();
-            snapshot.setBuildNumber( Integer.valueOf( matcher.group( 3 ) ).intValue() );
+            snapshot.setBuildNumber( Integer.parseInt( matcher.group( 3 ) ) );
             snapshot.setTimestamp( matcher.group( 2 ) );
             versioning.setSnapshot( snapshot );
         }
@@ -520,7 +520,7 @@ public class LegacyToDefaultConverter
                         if ( metadata.getVersioning() != null && metadata.getVersioning().getSnapshot() != null )
                         {
                             Snapshot snapshot = metadata.getVersioning().getSnapshot();
-                            int build = Integer.valueOf( matcher.group( 3 ) ).intValue();
+                            int build = Integer.parseInt( matcher.group( 3 ) );
                             String ts = matcher.group( 2 );
                             if ( build == snapshot.getBuildNumber() && ts.equals( snapshot.getTimestamp() ) )
                             {
