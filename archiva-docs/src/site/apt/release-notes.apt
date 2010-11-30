@@ -1,10 +1,10 @@
  -----
- Release Notes for Archiva 1.3
+ Release Notes for Archiva 1.3.2
  -----
 
-Release Notes for Archiva 1.3
+Release Notes for Archiva 1.3.2
 
-  The Apache Archiva team would like to announce the release of Archiva 1.3.  Archiva is {{{http://archiva.apache.org/download.html}
+  The Apache Archiva team would like to announce the release of Archiva 1.3.2.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -21,6 +21,12 @@ Release Notes for Archiva 1.3
     in <<<wrapper.conf>>> has changed. If you have customized your copy of
     <<<wrapper.conf>>>, please update it for compatibility with the version distributed
     with the current release.
+
+* Security Vulnerabilities
+
+  * A CSRF security vulnerability fix is available in 1.3.2. It is important that users using lower versions of Archiva
+    upgrade to this version (or higher).
+
 
 * New in Archiva 1.3
 
@@ -43,11 +49,63 @@ Release Notes for Archiva 1.3
 
 * Release Notes
 
-  The Archiva 1.3 feature set can be seen in the {{{tour/index.html} feature tour}}.
+  The Archiva 1.3.2 feature set can be seen in the {{{tour/index.html} feature tour}}.
+
+* Changes in Archiva 1.3.2
+
+  Released: <<29 November 2010>>
+
+** Bug
+
+    * [MRM-1438] - CSRF vulnerability - Archiva doesn't check which form sends credentials
+
+* Changes in Archiva 1.3.1
+
+  Released: <<11 June 2010>>
+
+** Bug
+
+  * [MRM-1066] - Shutdown of Tomcat causes Exception when running Archiva Project
+
+  * [MRM-1302] - java.util.ConcurrentModificationException while running Archiva 1.2.2
+
+  * [MRM-1304] - Query using Group ID field in audit log report uses '/' as a separator instead of '.'
+
+  * [MRM-1206] - HTTP ERROR: 500 when adding/deleting artifact, adding repository/legacy support/network proxies with null values
+
+  * [MRM-1312] - mda5 and sha are not generated for snapshot jars
+
+  * [MRM-1314] - Logo still links to incorrect location
+
+  * [MRM-1316] - audit log report does not restrict events to repositories that you are a manager of
+
+  * [MRM-1320] - Incorrect Archiva version specified for the "Process All Artifacts" feature in upgrade docs
+
+  * [MRM-1321] - Snapshot is linking to oldest version in Archiva GUI
+
+  * [MRM-1353] - Build number is always 1 for SNAPSHOT artifacts uploaded via web upload form
+
+  * [MRM-1355] - Audit log reports user as 'guest' when deployed via WebDAV
+
+  * [MRM-1356] - Content Lenght differs : Chunked request
+
+  * [MRM-1373] - Archiva fails when default charset in database is UTF 8
+
+  * [MRM-1386] - Start Date and End Date calendar pop-up in Audit Log Report page is broken
+
+** Improvement
+
+  * [MRM-621] - Use UTF-8 for better i18n support for page dispaly
+
+  * [MRM-1310] - Include Audit Log report in feature tour
+
+** New Feature
+
+  * [MRM-1389] - Add support for NPanday artifact types
 
 * Changes in Archiva 1.3
 
-  Released: *13 Jan 2010*
+  Released: <<13 January 2010>>
 
 ** Bug
 
@@ -107,7 +165,7 @@ Release Notes for Archiva 1.3
 
     * [MRM-1056] - Option to force scanning of an artifact/repository regardless of file dates
 
-    * [MRM-1251] - Update documentation - Artifacts not displayed in Archiva GUI after release 
+    * [MRM-1251] - Update documentation - Artifacts not displayed in Archiva GUI after release
 
     * [MRM-1262] - m2eclipse index should only be created at end of indexing run
 
@@ -152,7 +210,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.2.2
 
-  Released: *27 Aug 2009*
+  Released: <<27 August 2009>>
 
 ** Bug
 
@@ -222,7 +280,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.2.1
 
-  Released: *24 May 2009*
+  Released: <<24 May 2009>>
 
 ** Bug
 
@@ -250,7 +308,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.2
 
-  Released: *22 March 2009*
+  Released: <<22 March 2009>>
 
 ** Sub-task
 
@@ -436,7 +494,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.2-M1
 
-  Released: *14 November 2008*
+  Released: <<14 November 2008>>
 
 ** Bug
 
@@ -502,7 +560,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.1.3
 
-  Released: *9 October 2008*
+  Released: <<9 October 2008>>
 
 ** Bug
 
@@ -516,7 +574,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.1.2
 
-  *11 September 2008*
+  Released: <<11 September 2008>>
 
 ** Bug
 
@@ -566,7 +624,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.1.1
 
-  Released: *11 August 2008*
+  Released: <<11 August 2008>>
 
 ** Bug
 
@@ -600,7 +658,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.1
 
-  Released: *20 July 2008*
+  Released: <<20 July 2008>>
 
 ** Sub-task
 
@@ -791,12 +849,12 @@ Release Notes for Archiva 1.3
     * [MRM-708] - Migrate from Plexus Logging to Slf4J
 
     * [MRM-754] - Update the screenshots in the docs
-    
+
   The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13861&styleName=Text&projectId=10980} in JIRA}}.
 
 * Changes in Archiva 1.0.2
 
-  Released: *8 April 2008*
+  Released: <<8 April 2008>>
 
 ** Bug
 
@@ -856,7 +914,7 @@ Release Notes for Archiva 1.3
 
     * [MRM-727] - Archiva does not download plugin artifacts in Geronimo
 
-    * [MRM-734] - Unable to update metadata - No versions found for reference 
+    * [MRM-734] - Unable to update metadata - No versions found for reference
 
     * [MRM-746] - unable to include *.xml in artifacts list as it picks up maven-metadata.xml
 
@@ -888,7 +946,7 @@ Release Notes for Archiva 1.3
 
 * Changes in Archiva 1.0.1
 
-  Released: *4 February 2008*
+  Released: <<4 February 2008>>
 
 ** Bug
 
@@ -918,7 +976,7 @@ Release Notes for Archiva 1.3
 
 * Archiva 1.0
 
-  Released: *23 November 2007*
+  Released: <<23 November 2007>>
 
   First production release.
 
@@ -929,7 +987,7 @@ Release Notes for Archiva 1.3
   From January 2006 a web application was started to visualise the information and to start incorporating
   functionality from the unmaintained maven-proxy project.
 
-  Development continued through many stops and starts. Initial versions of Archiva were built from source by contributors, 
+  Development continued through many stops and starts. Initial versions of Archiva were built from source by contributors,
   and the first alpha version was not released until April 2007. Some significant changes were made to improve
   performance and functionality in June 2007 and over the next 6 months and a series of alpha and beta releases, a concerted effort
   was made to release the 1.0 version.
