@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,14 +67,28 @@ public class ArchivaCli
     public static final String TARGET_REPO_PATH = "targetRepositoryPath";
 
     public static final String BLACKLISTED_PATTERNS = "blacklistPatterns";
+    
+    public static final String POM_PROPERTIES = "/META-INF/maven/org.apache.archiva/archiva-cli/pom.properties";
 
     private static String getVersion()
         throws IOException
     {
-        Properties properties = new Properties();
-        properties.load(
-            ArchivaCli.class.getResourceAsStream( "/META-INF/maven/org.apache.archiva/archiva-cli/pom.properties" ) );
-        return properties.getProperty( "version" );
+        InputStream pomStream = ArchivaCli.class.getResourceAsStream( POM_PROPERTIES );
+        if ( pomStream == null )
+        {
+            throw new IOException( "Failed to load " + POM_PROPERTIES );
+        }
+
+        try
+        {
+            Properties properties = new Properties();
+            properties.load( pomStream );
+            return properties.getProperty( "version" );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( pomStream );
+        }
     }
 
     private PlexusClassPathXmlApplicationContext applicationContext;
