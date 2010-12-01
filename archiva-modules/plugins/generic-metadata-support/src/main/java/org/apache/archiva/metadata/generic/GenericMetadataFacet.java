@@ -48,10 +48,7 @@ public class GenericMetadataFacet
             additionalProperties = new TreeMap<String, String>();
         }
 
-        for ( String key : properties.keySet() )
-        {
-            additionalProperties.put( key, properties.get( key ) );
-        }
+        additionalProperties.putAll( properties );
     }
 
     public Map<String, String> toProperties()

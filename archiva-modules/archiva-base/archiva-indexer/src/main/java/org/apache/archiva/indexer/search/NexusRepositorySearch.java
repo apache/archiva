@@ -166,17 +166,17 @@ public class NexusRepositorySearch
         finally
         {
             Map<String, IndexingContext> indexingContexts = indexer.getIndexingContexts();
-            Set<String> keys = indexingContexts.keySet();
-            for( String key : keys )
+            
+            for ( Map.Entry<String, IndexingContext> entry : indexingContexts.entrySet() )
             {
                 try                
                 {   
-                    indexer.removeIndexingContext( indexingContexts.get( key ), false );
-                    log.debug( "Indexing context '" + key + "' removed from search." );
+                    indexer.removeIndexingContext( entry.getValue(), false );
+                    log.debug( "Indexing context '" + entry.getKey() + "' removed from search." );
                 }
                 catch ( IOException e )
                 {
-                    log.warn( "IOException occurred while removing indexing content '" + key  + "'." );
+                    log.warn( "IOException occurred while removing indexing content '" + entry.getKey()  + "'." );
                     continue;
                 }
             }            

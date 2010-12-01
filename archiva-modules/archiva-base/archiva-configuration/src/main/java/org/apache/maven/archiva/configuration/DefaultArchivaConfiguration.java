@@ -315,9 +315,8 @@ public class DefaultArchivaConfiguration
             Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap = config
                 .getProxyConnectorAsMap();
 
-            for ( String key : proxyConnectorMap.keySet() )
+            for ( List<ProxyConnectorConfiguration> connectors : proxyConnectorMap.values() )
             {
-                List<ProxyConnectorConfiguration> connectors = proxyConnectorMap.get( key );
                 // Sort connectors by order field.
                 Collections.sort( connectors, ProxyConnectorConfigurationOrderComparator.getInstance() );
 
