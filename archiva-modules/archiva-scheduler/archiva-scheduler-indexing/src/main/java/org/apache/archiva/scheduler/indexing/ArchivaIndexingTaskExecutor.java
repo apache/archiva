@@ -22,8 +22,10 @@ package org.apache.archiva.scheduler.indexing;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -120,23 +122,10 @@ public class ArchivaIndexingTaskExecutor
                     {
                         if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
                         {
-                            boolean add = true;
-                            IndexReader r = context.getIndexReader();
-                            for ( int i = 0; i < r.numDocs(); i++ )
-                            {
-                                if ( !r.isDeleted( i ) )
-                                {
-                                    Document d = r.document( i );
-                                    String uinfo = d.get( ArtifactInfo.UINFO );
-                                    if ( ac.getArtifactInfo().getUinfo().equals( uinfo ) )
-                                    {
-                                        add = false;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if ( add )
+                            IndexSearcher s = context.getIndexSearcher();
+                            String uinfo = ac.getArtifactInfo().getUinfo();
+                            TopDocs d = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), 1 );
+                            if ( d.totalHits == 0 )
                             {
                                 log.debug( "Adding artifact '" + ac.getArtifactInfo() + "' to index.." );
                                 indexerEngine.index( context, ac );
