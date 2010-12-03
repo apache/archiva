@@ -99,9 +99,20 @@ public class ArtifactMissingChecksumsConsumer
         this.repositoryDir = new File( repo.getLocation() );
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repo, whenGathered );
+    }
+
     public void completeScan()
     {
         /* do nothing */
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public List<String> getExcludes()
@@ -119,6 +130,12 @@ public class ArtifactMissingChecksumsConsumer
     {
         createFixChecksum( path, new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1 } );
         createFixChecksum( path, new ChecksumAlgorithm[] { ChecksumAlgorithm.MD5 } );        
+    }
+
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        processFile( path );   
     }
     
     private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm[] )

@@ -155,8 +155,19 @@ public class DependencyTreeGeneratorConsumer
         }
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );    
+    }
+
     public void completeScan()
     {
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public List<String> getExcludes()
@@ -244,6 +255,12 @@ public class DependencyTreeGeneratorConsumer
         {
             IOUtils.closeQuietly( writer );
         }
+    }
+
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        processFile( path );    
     }
 
     private void flushProjectCache( MavenProjectBuilder projectBuilder )

@@ -152,6 +152,12 @@ public class ArtifactUpdateDatabaseConsumer
         }
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void processFile( String path )
         throws ConsumerException
     {
@@ -210,6 +216,12 @@ public class ArtifactUpdateDatabaseConsumer
         }
     }
 
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws Exception
+    {
+        processFile( path );
+    }
+
     /**
      * Get a Live Artifact from a Path.
      * <p/>
@@ -246,6 +258,11 @@ public class ArtifactUpdateDatabaseConsumer
     public void completeScan()
     {
         /* do nothing */
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )

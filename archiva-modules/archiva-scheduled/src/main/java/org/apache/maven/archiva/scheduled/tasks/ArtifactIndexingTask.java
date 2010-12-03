@@ -41,6 +41,8 @@ public class ArtifactIndexingTask
 
     private final IndexingContext context;
 
+    private boolean executeOnEntireRepo = true;
+
     public ArtifactIndexingTask( ManagedRepositoryConfiguration repository, File resourceFile, Action action,
                                  IndexingContext context )
     {
@@ -48,6 +50,23 @@ public class ArtifactIndexingTask
         this.resourceFile = resourceFile;
         this.action = action;
         this.context = context;
+    }
+
+    public ArtifactIndexingTask( ManagedRepositoryConfiguration repository, File resourceFile, Action action,
+                                 IndexingContext context, boolean executeOnEntireRepo )
+    {
+        this( repository, resourceFile, action, context );
+        this.executeOnEntireRepo = executeOnEntireRepo;
+    }
+
+    public boolean isExecuteOnEntireRepo()
+    {
+        return executeOnEntireRepo;
+    }
+
+    public void setExecuteOnEntireRepo( boolean executeOnEntireRepo )
+    {
+        this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
     public long getMaxExecutionTime()

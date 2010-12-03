@@ -157,6 +157,12 @@ public class RepositoryPurgeConsumer
         }
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void processFile( String path )
         throws ConsumerException
     {
@@ -175,9 +181,20 @@ public class RepositoryPurgeConsumer
         }
     }
 
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws Exception
+    {
+        processFile( path );
+    }
+
     public void completeScan()
     {
         /* do nothing */
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )

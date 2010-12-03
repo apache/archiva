@@ -42,6 +42,8 @@ public class TriggerBeginScanClosure
     
     private Date whenGathered;
 
+    private boolean executeOnEntireRepo = true;
+
     public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository )
     {
         this.repository = repository;
@@ -53,6 +55,12 @@ public class TriggerBeginScanClosure
         this.whenGathered = whenGathered;
     }
 
+    public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    {
+        this( repository, whenGathered );
+        this.executeOnEntireRepo = executeOnEntireRepo;
+    }
+
     public void execute( Object input )
     {
         if ( input instanceof RepositoryContentConsumer )
@@ -61,7 +69,7 @@ public class TriggerBeginScanClosure
                 
             try
             {
-                consumer.beginScan( repository, whenGathered );
+                consumer.beginScan( repository, whenGathered, executeOnEntireRepo );
             }
             catch ( ConsumerException e )
             {

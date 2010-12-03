@@ -35,9 +35,17 @@ public class TriggerScanCompletedClosure
 
     private final ManagedRepositoryConfiguration repository;
 
+    private boolean executeOnEntireRepo = true;
+
     public TriggerScanCompletedClosure( ManagedRepositoryConfiguration repository )
     {
         this.repository = repository;
+    }
+
+    public TriggerScanCompletedClosure( ManagedRepositoryConfiguration repository, boolean executeOnEntireRepo )
+    {
+        this( repository );
+        this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
     public void execute( Object input )
@@ -45,7 +53,7 @@ public class TriggerScanCompletedClosure
         if ( input instanceof RepositoryContentConsumer )
         {
             RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
-            consumer.completeScan();
+            consumer.completeScan( executeOnEntireRepo );
             log.debug( "Consumer [" + consumer.getId() + "] completed for repository [" + repository.getId() + "]" );
         }
     }

@@ -241,16 +241,16 @@ public class RepositoryContentConsumersTest
         Date startTime = new Date( System.currentTimeMillis() );
         startTime.setTime( 12345678 );
 
-        selectedKnownConsumer.beginScan( repo, startTime );
+        selectedKnownConsumer.beginScan( repo, startTime, false );
         selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.EMPTY_LIST );
         selectedKnownConsumer.getIncludes();
         knownControl.setReturnValue( Collections.singletonList( "**/*.txt" ) );
-        selectedKnownConsumer.processFile( _OS( "path/to/test-file.txt" ) );
+        selectedKnownConsumer.processFile( _OS( "path/to/test-file.txt" ), false );
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        selectedInvalidConsumer.beginScan( repo, startTime );
+        selectedInvalidConsumer.beginScan( repo, startTime, false );
         //        invalidConsumer.completeScan();
         invalidControl.replay();
 
@@ -264,7 +264,7 @@ public class RepositoryContentConsumersTest
 
         File notIncludedTestFile = getTestFile( "target/test-repo/path/to/test-file.xml" );
 
-        selectedKnownConsumer.beginScan( repo, startTime );
+        selectedKnownConsumer.beginScan( repo, startTime, false );
         selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.EMPTY_LIST );
         selectedKnownConsumer.getIncludes();
@@ -272,8 +272,8 @@ public class RepositoryContentConsumersTest
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        selectedInvalidConsumer.beginScan( repo, startTime );
-        selectedInvalidConsumer.processFile( _OS( "path/to/test-file.xml" ) );
+        selectedInvalidConsumer.beginScan( repo, startTime, false );
+        selectedInvalidConsumer.processFile( _OS( "path/to/test-file.xml" ), false );
         selectedInvalidConsumer.getId();
         invalidControl.setReturnValue( "invalid" );
         //        invalidConsumer.completeScan();
@@ -289,14 +289,14 @@ public class RepositoryContentConsumersTest
 
         File excludedTestFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
 
-        selectedKnownConsumer.beginScan( repo, startTime );
+        selectedKnownConsumer.beginScan( repo, startTime, false );
         selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.singletonList( "**/test-file.txt" ) );
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        selectedInvalidConsumer.beginScan( repo, startTime );
-        selectedInvalidConsumer.processFile( _OS( "path/to/test-file.txt" ) );
+        selectedInvalidConsumer.beginScan( repo, startTime, false );
+        selectedInvalidConsumer.processFile( _OS( "path/to/test-file.txt" ), false );
         selectedInvalidConsumer.getId();
         invalidControl.setReturnValue( "invalid" );
         //        invalidConsumer.completeScan();

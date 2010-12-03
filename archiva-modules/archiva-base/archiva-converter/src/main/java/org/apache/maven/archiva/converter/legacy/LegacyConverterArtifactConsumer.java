@@ -88,9 +88,20 @@ public class LegacyConverterArtifactConsumer
         this.managedRepository.setRepository( repository );
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void completeScan()
     {
 
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public List<String> getExcludes()
@@ -122,6 +133,12 @@ public class LegacyConverterArtifactConsumer
         {
             log.warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
         }
+    }
+
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws Exception
+    {
+        processFile( path );
     }
 
     public String getDescription()

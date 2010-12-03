@@ -63,6 +63,22 @@ public interface RepositoryContentConsumer extends Consumer
 
     /**
      * <p>
+     * Event that triggers at the beginning of a scan, where you can also indicate whether the consumers will be
+     * executed on an entire repository or on a specific resource.
+     * </p>
+     *
+     * @see RepositoryContentConsumer#beginScan(org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration, java.util.Date )
+     *
+     * @param repository the repository that this consumer is being used for.
+     * @param whenGathered the start of the repository scan
+     * @param executeOnEntireRepo flags whether the consumer will be executed on an entire repository or just on a specific resource
+     * @throws ConsumerException if there was a problem with using the provided repository with the consumer.
+     */
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException;
+
+    /**
+     * <p>
      * Event indicating a file is to be processed by this consumer.
      * </p> 
      * 
@@ -76,6 +92,14 @@ public interface RepositoryContentConsumer extends Consumer
      * @throws ConsumerException if there was a problem processing this file.
      */
     public void processFile( String path ) throws ConsumerException;
+
+    /**
+     *
+     * @param path
+     * @param executeOnEntireRepo
+     * @throws Exception
+     */
+    public void processFile( String path, boolean executeOnEntireRepo ) throws Exception;
     
     /**
      * <p>
@@ -88,6 +112,13 @@ public interface RepositoryContentConsumer extends Consumer
      * </p>
      */
     public void completeScan();
+
+    /**
+     * 
+     * @param executeOnEntireRepo
+     * @throws Exception
+     */
+    public void completeScan( boolean executeOnEntireRepo );
 
     /**
      * Whether the consumer should process files that have not been modified since the time passed in to the scan

@@ -236,7 +236,7 @@ public class RepositoryContentConsumers
         // Run the repository consumers
         try
         {
-            Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime() );
+            Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime(), false );
 
             List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
             
@@ -266,9 +266,12 @@ public class RepositoryContentConsumers
             BaseFile baseFile = new BaseFile( repository.getLocation(), localFile );
             ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
             predicate.setBasefile( baseFile );
+            predicate.setCaseSensitive( false );
+
             ConsumerProcessFileClosure closure = new ConsumerProcessFileClosure();
             closure.setBasefile( baseFile );
-            predicate.setCaseSensitive( false );
+            closure.setExecuteOnEntireRepo( false );
+            
             Closure processIfWanted = IfClosure.getInstance( predicate, closure );
 
             CollectionUtils.forAllDo( selectedKnownConsumers, processIfWanted );
@@ -279,7 +282,7 @@ public class RepositoryContentConsumers
                 CollectionUtils.forAllDo( selectedInvalidConsumers, closure );
             }
 
-            TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository );
+            TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository, false );
 
             CollectionUtils.forAllDo( selectedKnownConsumers, scanCompletedClosure );
         }

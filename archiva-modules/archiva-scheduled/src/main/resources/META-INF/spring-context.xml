@@ -3,14 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-    <bean id="nexusSearch" class="org.apache.archiva.indexer.search.NexusRepositorySearch">
-        <constructor-arg ref="nexusIndexer"/>
-        <constructor-arg ref="archivaConfiguration"/>
-    </bean>
-
     <bean id="logger" class="org.apache.maven.archiva.common.utils.Slf4JPlexusLogger">
       <constructor-arg type="java.lang.Class"><value>org.sonatype.nexus.index.DefaultNexusIndexer</value></constructor-arg>
     </bean>
-  
-   <!--  <bean id="indexingContextMap" class="org.apache.archiva.indexer.IndexingContextMap"/>  -->
 </beans>

@@ -49,9 +49,20 @@ public class InvalidScanConsumer
         /* do nothing */
     }
 
+    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        beginScan( repository, whenGathered );
+    }
+
     public void completeScan()
     {
         /* do nothing */
+    }
+
+    public void completeScan( boolean executeOnEntireRepo )
+    {
+        completeScan();
     }
 
     public List<String> getExcludes()
@@ -68,6 +79,12 @@ public class InvalidScanConsumer
         throws ConsumerException
     {
         processCount++;
+    }
+
+    public void processFile( String path, boolean executeOnEntireRepo )
+        throws ConsumerException
+    {
+        processFile( path );
     }
 
     public String getDescription()

@@ -13,4 +13,8 @@
         <constructor-arg ref="repositoryContentFactory"/>
         <constructor-arg ref="archivaTaskScheduler"/>
     </bean>
+
+    <bean id="logger" class="org.apache.maven.archiva.common.utils.Slf4JPlexusLogger">
+      <constructor-arg type="java.lang.Class"><value>org.sonatype.nexus.index.DefaultNexusIndexer</value></constructor-arg>
+    </bean>
 </beans>
