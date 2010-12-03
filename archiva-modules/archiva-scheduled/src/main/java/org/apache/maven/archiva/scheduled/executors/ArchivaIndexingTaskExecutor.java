@@ -19,12 +19,10 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.scheduled.tasks.ArtifactIndexingTask;
 import org.apache.maven.archiva.scheduled.tasks.TaskCreator;
@@ -40,11 +38,13 @@ import org.sonatype.nexus.index.ArtifactContextProducer;
 import org.sonatype.nexus.index.ArtifactInfo;
 import org.sonatype.nexus.index.DefaultArtifactContextProducer;
 import org.sonatype.nexus.index.IndexerEngine;
-import org.sonatype.nexus.index.context.IndexCreator;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 import org.sonatype.nexus.index.packer.IndexPacker;
 import org.sonatype.nexus.index.packer.IndexPackingRequest;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
@@ -124,23 +124,10 @@ public class ArchivaIndexingTaskExecutor
                     {
                         if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
                         {
-                            boolean add = true;
-                            IndexReader r = context.getIndexReader();
-                            for ( int i = 0; i < r.numDocs(); i++ )
-                            {
-                                if ( !r.isDeleted( i ) )
-                                {
-                                    Document d = r.document( i );
-                                    String uinfo = d.get( ArtifactInfo.UINFO );
-                                    if ( ac.getArtifactInfo().getUinfo().equals( uinfo ) )
-                                    {
-                                        add = false;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if ( add )
+                            IndexSearcher s = context.getIndexSearcher();
+                            String uinfo = ac.getArtifactInfo().getUinfo();
+                            TopDocs d = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), 1 );
+                            if ( d.totalHits == 0 )
                             {
                                 log.debug( "Adding artifact '" + ac.getArtifactInfo() + "' to index.." );
                                 indexerEngine.index( context, ac );
