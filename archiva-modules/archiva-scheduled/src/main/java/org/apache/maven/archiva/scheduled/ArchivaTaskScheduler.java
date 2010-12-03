@@ -46,7 +46,7 @@ public interface ArchivaTaskScheduler
     public boolean isProcessingDatabaseTask();
 
     /**
-     * Checks if a repository scanning task for the specified repository is queuedd.
+     * Checks if a repository scanning task for the specified repository is queued.
      * 
      * @param repositoryId
      * @return
