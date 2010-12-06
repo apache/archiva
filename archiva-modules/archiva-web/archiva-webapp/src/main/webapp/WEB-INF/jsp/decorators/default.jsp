@@ -150,6 +150,9 @@
         <li class="none">
           <my:currentWWUrl action="database" namespace="/admin">Database</my:currentWWUrl>
         </li>
+        <li class="none">
+          <my:currentWWUrl action="systemStatus" namespace="/admin">System Statu</my:currentWWUrl>
+        </li>
           <%-- TODO: future options here.
                * Repository Syncing Connectors. (rsync, ftp, scp, etc...)
                * Web Services (enable / disable), role based?
