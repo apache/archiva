@@ -21,6 +21,7 @@ package org.apache.archiva.repository.scanner;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -69,6 +70,10 @@ public class RepositoryScanStatistics
      * Field totalSize
      */
     private long totalSize = 0;
+
+    private Map<String, Long> consumerCounts;
+
+    private Map<String, Long> consumerTimings;
 
     public void triggerStart()
     {
@@ -127,6 +132,17 @@ public class RepositoryScanStatistics
             for ( String id : knownConsumers )
             {
                 buf.append( "\n                      " ).append( id );
+                if ( consumerTimings.containsKey( id ) )
+                {
+                    long time = consumerTimings.get( id );
+                    buf.append( " (Total: " ).append( time ).append( "ms" );
+                    if ( consumerCounts.containsKey( id ) )
+                    {
+                        long total = consumerCounts.get( id );
+                        buf.append( "; Avg.: " + ( time / total ) + "; Count: " + total );
+                    }
+                    buf.append( ")" );
+                }
             }
         }
         else
@@ -141,6 +157,17 @@ public class RepositoryScanStatistics
             for ( String id : invalidConsumers )
             {
                 buf.append( "\n                      " ).append( id );
+                if ( consumerTimings.containsKey( id ) )
+                {
+                    long time = consumerTimings.get( id );
+                    buf.append( " (Total: " ).append( time ).append( "ms" );
+                    if ( consumerCounts.containsKey( id ) )
+                    {
+                        long total = consumerCounts.get( id );
+                        buf.append( "; Avg.: " + ( time / total ) + "ms; Count: " + total );
+                    }
+                    buf.append( ")" );
+                }
             }
         }
         else
@@ -204,5 +231,15 @@ public class RepositoryScanStatistics
     public long getTotalSize()
     {
         return totalSize;
+    }
+
+    public void setConsumerCounts( Map<String, Long> consumerCounts )
+    {
+        this.consumerCounts = consumerCounts;
+    }
+
+    public void setConsumerTimings( Map<String, Long> consumerTimings )
+    {
+        this.consumerTimings = consumerTimings;
     }
 }

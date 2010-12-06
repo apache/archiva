@@ -25,6 +25,9 @@ import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * ConsumerProcessFileClosure 
  *
@@ -39,24 +42,43 @@ public class ConsumerProcessFileClosure
 
     private boolean executeOnEntireRepo;
 
+    private Map<String,Long> consumerTimings;
+    
+    private Map<String,Long> consumerCounts;
+
     public void execute( Object input )
     {
         if ( input instanceof RepositoryContentConsumer )
         {
             RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
 
+            String id = consumer.getId();
             try
             {
-                log.debug( "Sending to consumer: " + consumer.getId() );
+                log.debug( "Sending to consumer: " + id );
 
+                long startTime = System.currentTimeMillis();
                 consumer.processFile( basefile.getRelativePath(), executeOnEntireRepo );
+                long endTime = System.currentTimeMillis();
+
+                if ( consumerTimings != null )
+                {
+                    Long value = consumerTimings.get( id );
+                    consumerTimings.put( id, ( value != null ? value : 0 ) + endTime - startTime );
+                }
+
+                if ( consumerCounts != null )
+                {
+                    Long value = consumerCounts.get( id );
+                    consumerCounts.put( id, ( value != null ? value : 0 ) + 1 );
+                }
             }
             catch ( Exception e )
             {
                 /* Intentionally Catch all exceptions.
                  * So that the discoverer processing can continue.
                  */
-                log.error( "Consumer [" + consumer.getId() + "] had an error when processing file ["
+                log.error( "Consumer [" + id + "] had an error when processing file ["
                     + basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
             }
         }
@@ -80,6 +102,16 @@ public class ConsumerProcessFileClosure
     public void setExecuteOnEntireRepo( boolean executeOnEntireRepo )
     {
         this.executeOnEntireRepo = executeOnEntireRepo;
+    }
+
+    public void setConsumerTimings( Map<String, Long> consumerTimings )
+    {
+        this.consumerTimings = consumerTimings;
+    }
+
+    public void setConsumerCounts( Map<String, Long> consumerCounts )
+    {
+        this.consumerCounts = consumerCounts;
     }
 
     public Logger getLogger()

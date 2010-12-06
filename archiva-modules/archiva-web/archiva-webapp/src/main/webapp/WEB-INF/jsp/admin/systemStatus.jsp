@@ -49,7 +49,7 @@
       <c:set var="queue" value="${queueEntry.value.queueSnapshot}"/>
       <tr>
         <td>${queueEntry.key}</td>
-        <td>${fn:length(queue)}</td>
+        <td align="right">${fn:length(queue)}</td>
       </tr>
     </c:forEach>
   </table>
@@ -67,8 +67,29 @@
     <c:forEach var="scan" items="${scanner.inProgressScans}">
       <tr>
         <td>${scan.repository.name} (${scan.repository.id})</td>
-        <td>${scan.stats.totalFileCount}</td>
-        <td>${scan.stats.newFileCount}</td>
+        <td align="right">${scan.stats.totalFileCount}</td>
+        <td align="right">${scan.stats.newFileCount}</td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <table>
+            <tr>
+              <th>Name</th>
+              <th>Total</th>
+              <th>Average</th>
+              <th>Invocations</th>
+            </tr>
+            <c:forEach var="entry" items="${scan.consumerTimings}">
+              <tr>
+                <c:set var="total" value="${scan.consumerCounts[entry.key]}"/>
+                <td>${entry.key}</td>
+                <td align="right">${entry.value}ms</td>
+                <td align="right"><fmt:formatNumber value="${entry.value / total}" pattern="#"/>ms</td>
+                <td align="right">${total}</td>
+              </tr>
+            </c:forEach>
+          </table>
+        </td>
       </tr>
     </c:forEach>
   </table>
@@ -92,10 +113,10 @@
     <c:forEach var="cacheEntry" items="${caches}">
       <tr>
         <td>${cacheEntry.key}</td>
-        <td>${cacheEntry.value.statistics.size}</td>
-        <td>${cacheEntry.value.statistics.cacheHits}</td>
-        <td>${cacheEntry.value.statistics.cacheMiss}</td>
-        <td><fmt:formatNumber value="${cacheEntry.value.statistics.cacheHitRate}" pattern="#%"/></td>
+        <td align="right">${cacheEntry.value.statistics.size}</td>
+        <td align="right">${cacheEntry.value.statistics.cacheHits}</td>
+        <td align="right">${cacheEntry.value.statistics.cacheMiss}</td>
+        <td align="right"><fmt:formatNumber value="${cacheEntry.value.statistics.cacheHitRate}" pattern="#%"/></td>
         <td><a href="javascript:alert('Not yet implemented')">Flush</a></td>
       </tr>
     </c:forEach>
