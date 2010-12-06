@@ -21,7 +21,9 @@ package org.apache.maven.archiva.repository.scanner;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.apache.commons.collections.Closure;
@@ -32,6 +34,7 @@ import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
@@ -68,6 +71,10 @@ public class RepositoryScannerInstance
 
     private ConsumerWantsFilePredicate consumerWantsFile;
 
+    private Map<String, Long> consumerTimings;
+
+    private Map<String, Long> consumerCounts;
+
     public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,
                                       List<KnownRepositoryContentConsumer> knownConsumerList,
                                       List<InvalidRepositoryContentConsumer> invalidConsumerList )
@@ -76,7 +83,14 @@ public class RepositoryScannerInstance
         this.knownConsumers = knownConsumerList;
         this.invalidConsumers = invalidConsumerList;
 
+        consumerTimings = new HashMap<String,Long>();
+        consumerCounts = new HashMap<String,Long>();
+
         this.consumerProcessFile = new ConsumerProcessFileClosure();
+        consumerProcessFile.setExecuteOnEntireRepo( true );
+        consumerProcessFile.setConsumerTimings( consumerTimings );
+        consumerProcessFile.setConsumerCounts( consumerCounts );
+
         this.consumerWantsFile = new ConsumerWantsFilePredicate();
 
         stats = new RepositoryScanStatistics();
@@ -109,6 +123,16 @@ public class RepositoryScannerInstance
         return stats;
     }
 
+    public Map<String, Long> getConsumerTimings()
+    {
+        return consumerTimings;
+    }
+
+    public Map<String, Long> getConsumerCounts()
+    {
+        return consumerCounts;
+    }
+
     public void directoryWalkStarting( File basedir )
     {
         log.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getLocation() );
@@ -123,20 +147,19 @@ public class RepositoryScannerInstance
 
         // consume files regardless - the predicate will check the timestamp
         BaseFile basefile = new BaseFile( repository.getLocation(), file );
-        
+
         // Timestamp finished points to the last successful scan, not this current one.
         if ( file.lastModified() >= changesSince )
         {
-            stats.increaseNewFileCount();             
+            stats.increaseNewFileCount();
         }
-        
+
         consumerProcessFile.setBasefile( basefile );
-        consumerProcessFile.setExecuteOnEntireRepo( true );
         consumerWantsFile.setBasefile( basefile );
-        
+
         Closure processIfWanted = IfClosure.getInstance( consumerWantsFile, consumerProcessFile );
         CollectionUtils.forAllDo( this.knownConsumers, processIfWanted );
-        
+
         if ( consumerWantsFile.getWantedFileCount() <= 0 )
         {
             // Nothing known processed this file.  It is invalid!
@@ -150,6 +173,9 @@ public class RepositoryScannerInstance
         
         CollectionUtils.forAllDo( knownConsumers, scanCompletedClosure );
         CollectionUtils.forAllDo( invalidConsumers, scanCompletedClosure );
+
+        stats.setConsumerTimings( consumerTimings );
+        stats.setConsumerCounts( consumerCounts );
         
         log.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getLocation() );
         stats.triggerFinished();
