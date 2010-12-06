@@ -24,7 +24,9 @@ import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.RepositoryException;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * RepositoryScanner 
@@ -107,4 +109,5 @@ public interface RepositoryScanner
                                              List<String> ignoredContentPatterns, long changesSince )
         throws RepositoryException;
 
+    Set<RepositoryScannerInstance> getInProgressScans();
 }

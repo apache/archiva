@@ -163,4 +163,18 @@ public class RepositoryScannerInstance
         log.debug( "Repository Scanner: " + message );
     }
     
+    public ManagedRepositoryConfiguration getRepository()
+    {
+        return repository;
+    }
+
+    public RepositoryScanStatistics getStats()
+    {
+        return stats;
+    }
+
+    public long getChangesSince()
+    {
+        return changesSince;
+    }
 }
