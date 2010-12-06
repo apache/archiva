@@ -19,20 +19,9 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Preparable;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
-import org.apache.maven.archiva.web.util.ContextUtils;
-import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.plexus.cache.Cache;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.taskqueue.TaskQueue;
@@ -40,12 +29,7 @@ import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Shows system status information for the administrator.
@@ -66,6 +50,11 @@ public class SystemStatusAction
      * @plexus.requirement role="org.codehaus.plexus.cache.Cache"
      */
     private Map<String,Cache> caches;
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryScanner scanner;
 
     private String memoryStatus;
 
@@ -100,6 +89,11 @@ public class SystemStatusAction
     public String getMemoryStatus()
     {
         return memoryStatus;
+    }
+
+    public RepositoryScanner getScanner()
+    {
+        return scanner;
     }
 
     public Map<String, Cache> getCaches()

@@ -19,7 +19,9 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
@@ -106,4 +108,5 @@ public interface RepositoryScanner
                                              List<String> ignoredContentPatterns, long changesSince )
         throws RepositoryScannerException;
 
+    Set<RepositoryScannerInstance> getInProgressScans();
 }

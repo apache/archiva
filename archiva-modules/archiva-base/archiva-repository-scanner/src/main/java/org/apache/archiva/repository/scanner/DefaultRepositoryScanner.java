@@ -21,7 +21,9 @@ package org.apache.archiva.repository.scanner;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -30,6 +32,8 @@ import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.codehaus.plexus.util.DirectoryWalker;
+
+import javax.swing.*;
 
 /**
  * DefaultRepositoryScanner
@@ -49,7 +53,9 @@ public class DefaultRepositoryScanner
      * @plexus.requirement
      */
     private RepositoryContentConsumers consumerUtil;
-    
+
+    private Set<RepositoryScannerInstance> inProgressScans = new LinkedHashSet<RepositoryScannerInstance>();
+
     public RepositoryScanStatistics scan( ManagedRepositoryConfiguration repository, long changesSince )
         throws RepositoryScannerException
     {
@@ -110,6 +116,8 @@ public class DefaultRepositoryScanner
         RepositoryScannerInstance scannerInstance = new RepositoryScannerInstance( repository, knownContentConsumers,
                                                                                    invalidContentConsumers, changesSince );
 
+        inProgressScans.add( scannerInstance );
+
         dirWalker.addDirectoryWalkListener( scannerInstance );
 
         // Execute scan.
@@ -119,7 +127,9 @@ public class DefaultRepositoryScanner
 
         stats.setKnownConsumers( gatherIds( knownContentConsumers ) );
         stats.setInvalidConsumers( gatherIds( invalidContentConsumers ) );
-        
+
+        inProgressScans.remove( scannerInstance );
+
         return stats;
     }
 
@@ -131,5 +141,10 @@ public class DefaultRepositoryScanner
             ids.add( consumer.getId() );
         }
         return ids;
-    }   
+    }
+
+    public Set<RepositoryScannerInstance> getInProgressScans()
+    {
+        return inProgressScans;
+    }
 }

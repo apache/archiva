@@ -54,6 +54,30 @@
     </c:forEach>
   </table>
 
+  <h2>Repository Scans</h2>
+
+  <c:choose>
+  <c:when test="${!empty scanner.inProgressScans}">
+  <table>
+    <tr>
+      <th>Repository</th>
+      <th>Files processed</th>
+      <th>New files</th>
+    </tr>
+    <c:forEach var="scan" items="${scanner.inProgressScans}">
+      <tr>
+        <td>${scan.repository.name} (${scan.repository.id})</td>
+        <td>${scan.stats.totalFileCount}</td>
+        <td>${scan.stats.newFileCount}</td>
+      </tr>
+    </c:forEach>
+  </table>
+  </c:when>
+  <c:otherwise>
+  <p>No scans in progress.</p>
+  </c:otherwise>
+  </c:choose>
+
   <h2>Caches</h2>
 
   <table>
