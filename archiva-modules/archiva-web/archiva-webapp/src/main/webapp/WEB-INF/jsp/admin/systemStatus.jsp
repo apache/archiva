@@ -123,7 +123,7 @@
     </c:forEach>
   </table>
 
-  <h2>Free Memory</h2>
+  <h2>Memory Usage</h2>
 
   <p>${memoryStatus}</p>
 
