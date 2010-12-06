@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
+import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.codehaus.plexus.cache.Cache;
