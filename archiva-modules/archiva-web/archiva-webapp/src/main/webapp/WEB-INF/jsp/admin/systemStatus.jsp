@@ -54,7 +54,7 @@
     </c:forEach>
   </table>
 
-  <h2>Repository Scans</h2>
+  <h2>Repository Scans Currently in Progress</h2>
 
   <c:choose>
   <c:when test="${!empty scanner.inProgressScans}">
@@ -125,6 +125,8 @@
   <h2>Memory</h2>
 
   <p>${memoryStatus}</p>
+
+  </div>
 
 </body>
 </html>
