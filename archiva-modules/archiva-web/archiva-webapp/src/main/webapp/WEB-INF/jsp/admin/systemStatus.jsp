@@ -126,5 +126,7 @@
 
   <p>${memoryStatus}</p>
 
+  </div>
+
 </body>
 </html>
