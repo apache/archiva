@@ -1,3 +1,4 @@
+<%@ page import="java.util.Date" %>
 <%--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -122,10 +123,14 @@
     </c:forEach>
   </table>
 
-  <h2>Memory</h2>
+  <h2>Free Memory</h2>
 
   <p>${memoryStatus}</p>
 
+  <h2>Current Time</h2>
+
+  <p><%= new Date() %></p>
+  
   </div>
 
 </body>
