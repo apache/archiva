@@ -1134,6 +1134,12 @@
           <type>boolean</type>
           <defaultValue>true</defaultValue>
         </field>
+        <field>
+          <name>disableEasterEggs</name>
+          <version>1.3.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
     </class>
 

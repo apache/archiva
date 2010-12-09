@@ -44,7 +44,31 @@
   <decorator:head />
 </head>
 
-<body onload="<decorator:getProperty property="body.onload" />" class="composite">
+<%
+  int inceptionYear = 2005;
+  Calendar cal = Calendar.getInstance();
+  int currentYear = cal.get( Calendar.YEAR );
+  String copyrightRange = String.valueOf( inceptionYear );
+  if ( inceptionYear != currentYear )
+  {
+    copyrightRange = copyrightRange + "-" + String.valueOf( currentYear );
+  }
+
+  if ( cal.get( Calendar.MONTH ) == Calendar.SEPTEMBER && cal.get( Calendar.DAY_OF_MONTH ) == 19 )
+  {
+      request.setAttribute( "is19Sep", "true" );
+  }
+%>
+
+<s:if test="%{#application['uiOptions'].disableEasterEggs}">
+  <c:remove var="is19Sep" scope="request" />
+</s:if>
+
+<body onload="<decorator:getProperty property="body.onload" />" class="composite"
+      <c:if test="${is19Sep}">
+        style="background: url('<c:url value="/images/19Sep.png"/>') no-repeat bottom right"
+      </c:if>
+>
 <div id="breadcrumbs">
   <div class="xright">
     <%@ include file="/WEB-INF/jsp/redback/include/securityLinks.jsp" %>
@@ -173,18 +197,9 @@
   <hr/>
 </div>
 
-<%
-  int inceptionYear = 2005;
-  int currentYear = Calendar.getInstance().get( Calendar.YEAR );
-  String copyrightRange = String.valueOf( inceptionYear );
-  if ( inceptionYear != currentYear )
-  {
-    copyrightRange = copyrightRange + "-" + String.valueOf( currentYear );
-  }
-%>
 <div id="footer">
   <div class="xleft">
-    <a target="_blank" href="http://archiva.apache.org/">Apache Archiva <%= ArchivaVersion.getVersion()%></a>
+    <a target="_blank" href="http://archiva.apache.org/">Apache Ar<c:if test="${is19Sep}">rr</c:if>chiva <%= ArchivaVersion.getVersion()%></a>
   </div>
   <div class="xright">
     Copyright &#169; <%= copyrightRange%> <a target="_blank" href="http://www.apache.org/">The Apache Software Foundation</a>

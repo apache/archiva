@@ -93,6 +93,7 @@ div.clear hr {
 #bodyColumn {
     margin-right: 1.5em;
     margin-left: 197px;
+    min-height: 575px
 }
 
 #legend {

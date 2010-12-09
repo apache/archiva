@@ -40,7 +40,12 @@
     </c:when>
     <c:otherwise>
       <my:currentWWUrl action="index" namespace="/">
+        <c:if test="${is19Sep}">
+        <img src="<c:url value='/images/19Sep-logo.png' />"/>
+        </c:if>
+        <c:if test="${!is19Sep}">
         <img src="<c:url value='/images/archiva.png' />"/>
+        </c:if>
       </my:currentWWUrl>
     </c:otherwise>
   </c:choose>
