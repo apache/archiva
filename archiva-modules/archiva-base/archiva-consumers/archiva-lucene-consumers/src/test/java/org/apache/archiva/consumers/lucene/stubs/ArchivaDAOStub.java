@@ -19,15 +19,15 @@ package org.apache.archiva.consumers.lucene.stubs;
  * under the License.
  */
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Using a stub for faster tests! Not really used for the unit tests, just for dependency injection.
@@ -52,6 +52,11 @@ public class ArchivaDAOStub
     {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public long count( SimpleConstraint constraint )
+    {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public RepositoryProblemDAO getRepositoryProblemDAO()

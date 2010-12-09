@@ -19,23 +19,16 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstraint;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
@@ -49,6 +42,10 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ArchivaRepositoryScanningTaskExecutor
@@ -171,21 +168,9 @@ public class ArchivaRepositoryScanningTaskExecutor
         dbstats.setWhenGathered( stats.getWhenGathered() );
 
         // total artifact count
-        try
-        {
-            // note that when gathered is the end of the scan, so we look for all those before that time
-            List<ArchivaArtifact> artifacts = dao.getArtifactDAO().queryArtifacts(
-                new ArtifactsByRepositoryConstraint( arepo.getId(), stats.getWhenGathered(), "groupId", true ) );
-            dbstats.setTotalArtifactCount( artifacts.size() );
-        }
-        catch ( ObjectNotFoundException oe )
-        {
-            log.error( "Object not found in the database : " + oe.getMessage() );
-        }
-        catch ( ArchivaDatabaseException ae )
-        {
-            log.error( "Error occurred while querying artifacts for artifact count : " + ae.getMessage() );
-        }
+        // note that when gathered is the end of the scan, so we look for all those before that time
+        dbstats.setTotalArtifactCount( dao.getArtifactDAO().countArtifacts(
+            new ArtifactsByRepositoryConstraint( arepo.getId(), stats.getWhenGathered(), "groupId", true ) ) );
 
         // total repo size -- TODO: needs to exclude ignored files (eg .svn)
         long size = FileUtils.sizeOfDirectory( new File( arepo.getLocation() ) );
@@ -195,12 +180,9 @@ public class ArchivaRepositoryScanningTaskExecutor
         List<String> repos = new ArrayList<String>();
         repos.add( arepo.getId() );
 
-        List<String> groupIds = (List<String>) dao.query( new UniqueGroupIdConstraint( repos ) );
-        dbstats.setTotalGroupCount( groupIds.size() );
+        dbstats.setTotalGroupCount( dao.count( new UniqueGroupIdConstraint( repos ) ) );
 
-        List<Object[]> artifactIds =
-            (List<Object[]>) dao.query( new UniqueArtifactIdConstraint( arepo.getId(), true ) );
-        dbstats.setTotalProjectCount( artifactIds.size() );
+        dbstats.setTotalProjectCount( dao.count( new UniqueArtifactIdConstraint( arepo.getId(), true ) ) );
 
         return dbstats;
     }

@@ -19,15 +19,16 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.DeclarativeConstraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ArtifactDAOStub
@@ -52,6 +53,11 @@ public class ArtifactDAOStub
 
     }
 
+    public long countArtifacts( DeclarativeConstraint constraint )
+    {
+        return queryArtifacts( constraint ).size();
+    }
+
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
                                         String type, String repositoryId )
         throws ObjectNotFoundException, ArchivaDatabaseException
@@ -61,7 +67,6 @@ public class ArtifactDAOStub
     }
 
     public List<ArchivaArtifact> queryArtifacts( Constraint constraint )
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
 
         List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();

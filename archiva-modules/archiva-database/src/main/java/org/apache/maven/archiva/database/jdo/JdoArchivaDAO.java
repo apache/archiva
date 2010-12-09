@@ -94,4 +94,9 @@ public class JdoArchivaDAO
     {
         return repositoryContentStatisticsDAO;
     }
+
+    public long count( SimpleConstraint constraint )
+    {
+        return jdo.countObjects( constraint );
+    }
 }

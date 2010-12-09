@@ -45,4 +45,9 @@ public abstract class AbstractSimpleConstraint
     {
         return false;
     }
+
+    public String getCountSql()
+    {
+        throw new UnsupportedOperationException( "count not supported" );
+    }
 }

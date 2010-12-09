@@ -34,7 +34,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.jdo.Extent;
 import javax.jdo.JDOException;
 import javax.jdo.JDOHelper;
@@ -210,11 +209,11 @@ public class JdoAccess
         PersistenceManager pm = getPersistenceManager();
         Transaction tx = pm.currentTransaction();
 
+        List<?> result = null;
+
         try
         {
             tx.begin();
-
-            List<?> result = null;
 
             if ( constraint != null )
             {
@@ -239,13 +238,13 @@ public class JdoAccess
             result = (List<?>) pm.detachCopyAll( result );
 
             tx.commit();
-
-            return result;
         }
         finally
         {
             rollbackIfActive( tx );
         }
+
+        return result;
     }
 
     public List<?> queryObjects( SimpleConstraint constraint )
@@ -304,12 +303,16 @@ public class JdoAccess
             pm.getFetchPlan().addGroup( constraint.getFetchLimits() );
         }
 
+        List<?> objects;
         if ( constraint.getParameters() != null )
         {
-            return processParameterizedQuery( query, constraint.getParameters() );
+            objects = processParameterizedQuery( query, constraint.getParameters() );
         }
-
-        return (List<?>) query.execute();
+        else
+        {
+            objects = (List<?>) query.execute();
+        }
+        return objects;
     }
 
     private List<?> processConstraint( PersistenceManager pm, Class<?> clazz, DeclarativeConstraint constraint )
@@ -595,4 +598,120 @@ public class JdoAccess
         return jdoFactory;
     }
 
+    public long countObjects( SimpleConstraint constraint )
+    {
+        PersistenceManager pm = getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+
+        try
+        {
+            tx.begin();
+
+            Query query = pm.newQuery( constraint.getCountSql() );
+
+            if ( constraint.getFetchLimits() != null )
+            {
+                pm.getFetchPlan().addGroup( constraint.getFetchLimits() );
+            }
+
+            List<?> objects;
+            if ( constraint.getParameters() != null )
+            {
+                objects = processParameterizedQuery( query, constraint.getParameters() );
+            }
+            else
+            {
+                objects = (List<?>) query.execute();
+            }
+
+            Long result = !objects.isEmpty() ? (Long) objects.get( 0 ) : 0;
+
+            tx.commit();
+
+            return result;
+        }
+        finally
+        {
+            rollbackIfActive( tx );
+        }
+    }
+
+    public long countObjects( Class<?> clazz, DeclarativeConstraint constraint )
+    {
+        PersistenceManager pm = getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+
+        Long result = null;
+
+        try
+        {
+            tx.begin();
+
+            Extent extent = pm.getExtent( clazz, true );
+            Query query = pm.newQuery( extent );
+
+            if ( constraint.getFilter() != null )
+            {
+                query.setFilter( constraint.getFilter() );
+            }
+
+            if ( constraint.getVariables() != null )
+            {
+                query.declareVariables( StringUtils.join( constraint.getVariables(), ";  " ) );
+            }
+
+            if ( constraint.getFetchLimits() != null )
+            {
+                pm.getFetchPlan().addGroup( constraint.getFetchLimits() );
+            }
+
+            if ( constraint.getWhereCondition() != null )
+            {
+                query.setFilter( constraint.getWhereCondition() );
+            }
+
+            if ( constraint.getDeclaredImports() != null )
+            {
+                query.declareImports( StringUtils.join( constraint.getDeclaredImports(), ", " ) );
+            }
+
+            if ( constraint.getRange() != null )
+            {
+                query.setRange( constraint.getRange()[0], constraint.getRange()[1] );
+            }
+
+            query.setResult( "count(this)" );
+
+            if ( constraint.getDeclaredParameters() != null )
+            {
+                if ( constraint.getParameters() == null )
+                {
+                    throw new JDOException( "Unable to use query, there are declared parameters, "
+                        + "but no parameter objects to use." );
+                }
+
+                if ( constraint.getParameters().length != constraint.getDeclaredParameters().length )
+                {
+                    throw new JDOException( "Unable to use query, there are <" + constraint.getDeclaredParameters().length
+                        + "> declared parameters, yet there are <" + constraint.getParameters().length
+                        + "> parameter objects to use.  This should be equal." );
+                }
+
+                query.declareParameters( StringUtils.join( constraint.getDeclaredParameters(), ", " ) );
+
+                result = (Long) query.executeWithArray( constraint.getParameters() );
+            }
+            else
+            {
+                result = (Long) query.execute();
+            }
+            tx.commit();
+        }
+        finally
+        {
+            rollbackIfActive( tx );
+        }
+
+        return result;
+    }
 }

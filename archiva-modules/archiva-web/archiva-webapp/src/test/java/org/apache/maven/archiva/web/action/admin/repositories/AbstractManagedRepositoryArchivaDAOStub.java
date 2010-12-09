@@ -19,9 +19,6 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
@@ -29,6 +26,9 @@ import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * AbstractManagedRepositoryArchivaDAOStub
@@ -81,5 +81,10 @@ public class AbstractManagedRepositoryArchivaDAOStub
     public RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO()
     {
         return repoContentStatisticsDAO;
+    }
+
+    public long count( SimpleConstraint constraint )
+    {
+        return query( constraint ).size();
     }
 }

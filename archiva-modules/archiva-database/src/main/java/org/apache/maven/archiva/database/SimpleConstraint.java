@@ -56,4 +56,6 @@ public interface SimpleConstraint extends Constraint
      * @return true if result classes are persistable.
      */
     public boolean isResultsPersistable();
+
+    String getCountSql();
 }

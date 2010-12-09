@@ -19,16 +19,16 @@ package org.apache.maven.archiva.web.rss;
  * under the License.
  */
 
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.DeclarativeConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.Constraint;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.model.ArchivaArtifact;
 
 /**
  * Stub used for RssFeedServlet unit test.
@@ -53,16 +53,19 @@ public class ArtifactDAOStub
 
     }
 
+    public long countArtifacts( DeclarativeConstraint constraint )
+    {
+        return queryArtifacts( constraint ).size();
+    }
+
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
                                         String type, String repositoryId )
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
         // TODO Auto-generated method stub
         return null;
     }
 
     public List<ArchivaArtifact> queryArtifacts( Constraint constraint )
-        throws ObjectNotFoundException, ArchivaDatabaseException
     {
         List<ArchivaArtifact> artifacts = new ArrayList<ArchivaArtifact>();
 

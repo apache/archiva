@@ -54,4 +54,6 @@ public interface ArchivaDAO
     RepositoryProblemDAO getRepositoryProblemDAO();
     
     RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO();
+
+    long count( SimpleConstraint constraint );
 }

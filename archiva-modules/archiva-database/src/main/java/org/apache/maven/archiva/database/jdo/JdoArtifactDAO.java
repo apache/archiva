@@ -19,16 +19,17 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.DeclarativeConstraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JdoArtifactDAO 
@@ -86,15 +87,15 @@ public class JdoArtifactDAO
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         List<ArchivaArtifactModel> results = (List<ArchivaArtifactModel>) jdo.queryObjects( ArchivaArtifactModel.class, constraint );
-        if ( results == null )
-        {
-            return null;
-        }
 
-        List<ArchivaArtifact> ret = new ArrayList<ArchivaArtifact>();
-        for ( ArchivaArtifactModel model : results )
+        List<ArchivaArtifact> ret = null;
+        if ( results != null )
         {
-            ret.add( new ArchivaArtifact( model ) );
+            ret = new ArrayList<ArchivaArtifact>();
+            for ( ArchivaArtifactModel model : results )
+            {
+                ret.add( new ArchivaArtifact( model ) );
+            }
         }
 
         return ret;
@@ -116,5 +117,10 @@ public class JdoArtifactDAO
         throws ArchivaDatabaseException
     {
         jdo.removeObject( artifact.getModel() );
+    }
+
+    public long countArtifacts( DeclarativeConstraint constraint )
+    {
+        return jdo.countObjects( ArchivaArtifactModel.class, constraint );
     }
 }

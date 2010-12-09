@@ -34,7 +34,9 @@ public class UniqueArtifactIdConstraint
     implements Constraint
 {
     private StringBuffer sql = new StringBuffer();
-    
+
+    private StringBuffer countSql = new StringBuffer();
+
     private Class<?> resultClass;
     
     /**
@@ -51,6 +53,13 @@ public class UniqueArtifactIdConstraint
         appendWhereSelectedGroupId( sql );
         appendGroupBy( sql );
 
+        countSql.append( "SELECT count(artifactId) FROM " ).append( ArchivaArtifactModel.class.getName() );
+        countSql.append( " WHERE " );
+        SqlBuilder.appendWhereSelectedRepositories( countSql, "repositoryId", selectedRepositoryIds );
+        countSql.append( " && " );
+        appendWhereSelectedGroupId( countSql );
+        appendGroupBy( countSql );
+
         super.params = new Object[] { groupId };
     }
 
@@ -66,6 +75,11 @@ public class UniqueArtifactIdConstraint
         appendWhereSelectedGroupId( sql );
         appendGroupBy( sql );
 
+        countSql.append( "SELECT count(artifactId) FROM " ).append( ArchivaArtifactModel.class.getName() );
+        countSql.append( " WHERE " );
+        appendWhereSelectedGroupId( countSql );
+        appendGroupBy( countSql );
+
         super.params = new Object[] { groupId };
     }
     
@@ -79,7 +93,19 @@ public class UniqueArtifactIdConstraint
     {
         appendSelect( sql, isUnique );
         sql.append( " WHERE repositoryId == \"" + repoId + "\"" );
-        
+
+        if( isUnique )
+        {
+            countSql.append( "SELECT count(this) FROM " ).append( ArchivaArtifactModel.class.getName() );
+            countSql.append( " WHERE repositoryId == \"" ).append( repoId ).append( "\"" );
+            countSql.append( " GROUP BY groupId, artifactId" );
+        }
+        else
+        {
+            countSql.append( "SELECT count(artifactId) FROM " ).append( ArchivaArtifactModel.class.getName() );
+            countSql.append( " WHERE repositoryId == \"" ).append( repoId ).append( "\"" );
+        }
+
         resultClass = Object[].class;
     }
 
@@ -97,6 +123,12 @@ public class UniqueArtifactIdConstraint
     public String getSelectSql()
     {
         return sql.toString();
+    }
+
+    @Override
+    public String getCountSql()
+    {
+        return countSql.toString();
     }
 
     private void appendGroupBy( StringBuffer buf )

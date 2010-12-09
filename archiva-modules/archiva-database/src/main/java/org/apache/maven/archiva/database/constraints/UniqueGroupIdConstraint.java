@@ -38,13 +38,11 @@ public class UniqueGroupIdConstraint
     public UniqueGroupIdConstraint()
     {
         /* this assumes search for no groupId prefix */
-        appendSelect( sql );
         appendGroupBy( sql );
     }
 
     public UniqueGroupIdConstraint( List<String> selectedRepositories )
     {
-        appendSelect( sql );
         sql.append( " WHERE " );
         SqlBuilder.appendWhereSelectedRepositories( sql, "repositoryId", selectedRepositories );
         appendGroupBy( sql );
@@ -52,7 +50,6 @@ public class UniqueGroupIdConstraint
 
     public UniqueGroupIdConstraint( List<String> selectedRepositories, String groupIdPrefix )
     {
-        appendSelect( sql );
         sql.append( " WHERE " );
         SqlBuilder.appendWhereSelectedRepositories( sql, "repositoryId", selectedRepositories );
         sql.append( " && " );
@@ -64,7 +61,6 @@ public class UniqueGroupIdConstraint
 
     public UniqueGroupIdConstraint( String groupIdPrefix )
     {
-        appendSelect( sql );
         sql.append( " WHERE " );
         appendWhereGroupIdStartsWith( sql );
         appendGroupBy( sql );
@@ -80,7 +76,19 @@ public class UniqueGroupIdConstraint
 
     public String getSelectSql()
     {
-        return sql.toString();
+        StringBuffer buf = new StringBuffer();
+        appendSelect( buf );
+        buf.append( sql );
+        return buf.toString();
+    }
+
+    @Override
+    public String getCountSql()
+    {
+        StringBuffer buf = new StringBuffer();
+        buf.append( "SELECT count(groupId) FROM " ).append( ArchivaArtifactModel.class.getName() );
+        buf.append( sql );
+        return buf.toString();
     }
 
     private void appendGroupBy( StringBuffer buf )

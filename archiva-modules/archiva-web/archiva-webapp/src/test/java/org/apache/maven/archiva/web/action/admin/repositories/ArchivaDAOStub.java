@@ -1,9 +1,5 @@
 package org.apache.maven.archiva.web.action.admin.repositories;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.Assert;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
@@ -17,6 +13,10 @@ import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -119,6 +119,11 @@ public class ArchivaDAOStub
     public RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO()
     {
         return repositoryContentStatisticsDAO;
+    }
+
+    public long count( SimpleConstraint constraint )
+    {
+        return query( constraint ).size();
     }
 
     public void setArtifactDao( ArtifactDAO artifactDao )

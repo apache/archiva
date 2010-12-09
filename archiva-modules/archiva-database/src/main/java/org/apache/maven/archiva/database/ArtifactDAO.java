@@ -66,4 +66,6 @@ public interface ArtifactDAO
 
     public void deleteArtifact( ArchivaArtifact artifact )
         throws ArchivaDatabaseException;
+
+    long countArtifacts( DeclarativeConstraint constraint );
 }

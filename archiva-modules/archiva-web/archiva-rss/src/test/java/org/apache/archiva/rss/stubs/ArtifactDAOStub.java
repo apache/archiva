@@ -19,13 +19,14 @@ package org.apache.archiva.rss.stubs;
  * under the License.
  */
 
-import java.util.List;
-
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.DeclarativeConstraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+
+import java.util.List;
 
 /**
  * ArtifactDAO stub.
@@ -49,6 +50,11 @@ public class ArtifactDAOStub
     {
         // TODO Auto-generated method stub
 
+    }
+
+    public long countArtifacts( DeclarativeConstraint constraint )
+    {
+        return artifacts.size();
     }
 
     public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
