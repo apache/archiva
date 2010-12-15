@@ -22,7 +22,7 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.io.File;
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -33,21 +33,6 @@ import java.util.List;
 public class DaysOldRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
-    private static final String[] extensions =
-        new String[] { "-5.jar", "-5.pom", "-6.jar", "-6.pom", "-7.jar", "-7.pom" };
-
-    private String year;
-
-    private String mon;
-
-    private String day;
-
-    private String hr;
-
-    private String min;
-
-    private String sec;
-
     private void setLastModified( String dirPath, long lastModified )
     {
         File dir = new File( dirPath );
@@ -182,45 +167,19 @@ public class DaysOldRepositoryPurgeTest
         Calendar currentDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
         setLastModified( versionRoot, currentDate.getTimeInMillis() );
 
-        year = String.valueOf( currentDate.get( Calendar.YEAR ) );
-        mon = String.valueOf( currentDate.get( Calendar.MONTH ) + 1 );
-        day = String.valueOf( currentDate.get( Calendar.DATE ) );
-        hr = String.valueOf( currentDate.get( Calendar.HOUR ) );
-        min = String.valueOf( currentDate.get( Calendar.MINUTE ) );
-        sec = String.valueOf( currentDate.get( Calendar.SECOND ) );
+        String timestamp = new SimpleDateFormat( "yyyyMMdd.HHmmss" ).format( currentDate.getTime() );
 
-        if ( mon.length() == 1 )
+        for ( int i = 5; i <= 7; i++ )
         {
-            mon = "0" + mon;
+            new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".jar" ).createNewFile();
+            new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".pom" ).createNewFile();
         }
-
-        if ( day.length() == 1 )
-        {
-            day = "0" + day;
-        }
-
-        if ( hr.length() == 1 )
-        {
-            hr = "0" + hr;
-        }
-
-        if ( min.length() == 1 )
-        {
-            min = "0" + min;
-        }
-
-        if ( sec.length() == 1 )
-        {
-            sec = "0" + sec;
-        }
-
-        createFiles( versionRoot );
 
         List<String> versions = new ArrayList<String>();
         versions.add( "1.4.3-20070113.163208-4" );
-        versions.add( "1.4.3-" + year + mon + day + "." + hr + min + sec + "-5" );
-        versions.add( "1.4.3-" + year + mon + day + "." + hr + min + sec + "-6" );
-        versions.add( "1.4.3-" + year + mon + day + "." + hr + min + sec + "-7" );
+        versions.add( "1.4.3-" + timestamp + "-5" );
+        versions.add( "1.4.3-" + timestamp + "-6" );
+        versions.add( "1.4.3-" + timestamp + "-7" );
         versions.add( "1.4.3-SNAPSHOT" );
 
         // test listeners for the correct artifacts
@@ -245,21 +204,10 @@ public class DaysOldRepositoryPurgeTest
         assertExists( versionRoot + "/plexus-utils-1.4.3-SNAPSHOT.jar" );
         assertExists( versionRoot + "/plexus-utils-1.4.3-SNAPSHOT.pom" );
 
-        for ( int i = 0; i < extensions.length; i++ )
+        for ( int i = 5; i <= 7; i++ )
         {
-            assertExists( versionRoot + "/plexus-utils-1.4.3-" + year + mon + day + "." + hr + min + sec +
-                extensions[i] );
-        }
-    }
-
-    private void createFiles( String versionRoot )
-        throws IOException
-    {
-        for ( int i = 0; i < extensions.length; i++ )
-        {
-            File file =
-                new File( versionRoot, "/plexus-utils-1.4.3-" + year + mon + day + "." + hr + min + sec + extensions[i] );
-            file.createNewFile();
+            assertExists( versionRoot + "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".jar" );
+            assertExists( versionRoot + "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".pom" );
         }
     }
 
