@@ -19,33 +19,18 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.commons.lang.time.DateUtils;
+
 import java.io.File;
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
-
-import org.apache.commons.lang.time.DateUtils;
 
 /**
  */
 public class DaysOldRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
-    private static final String[] extensions =
-        new String[] { "-5.jar", "-5.pom", "-6.jar", "-6.pom", "-7.jar", "-7.pom" };
-
-    private String year;
-
-    private String mon;
-
-    private String day;
-
-    private String hr;
-
-    private String min;
-
-    private String sec;
-
     private void setLastModified( String dirPath, long lastModified )
     {
         File dir = new File( dirPath );
@@ -76,10 +61,14 @@ public class DaysOldRepositoryPurgeTest
                                  "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.jar" );
         listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
                                  "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.pom" );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
+                                 "2.2-20061118.060401-2", "maven-install-plugin-2.2-20061118.060401-2.jar" );
+        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
+                                 "2.2-20061118.060401-2", "maven-install-plugin-2.2-20061118.060401-2.pom" );
         listenerControl.replay();
-        
+
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
-        
+
         listenerControl.verify();
 
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
@@ -97,12 +86,19 @@ public class DaysOldRepositoryPurgeTest
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom.md5" );
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom.sha1" );
 
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.md5" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.sha1" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.md5" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.sha1" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.jar" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.jar.md5" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.jar.sha1" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.pom" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.pom.md5" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.pom.sha1" );
+
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.sha1" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.sha1" );
     }
 
     public void testOrderOfDeletion()
@@ -110,7 +106,7 @@ public class DaysOldRepositoryPurgeTest
     {
         repoPurge =
             new DaysOldRepositoryPurge( getRepository(), getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(), 
+                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(),
                                         Collections.singletonList( listener ) );
 
         String repoRoot = prepareTestRepos();
@@ -125,7 +121,7 @@ public class DaysOldRepositoryPurgeTest
         listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
                                  "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
-        
+
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
 
         listenerControl.verify();
@@ -169,39 +165,13 @@ public class DaysOldRepositoryPurgeTest
         Calendar currentDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
         setLastModified( versionRoot, currentDate.getTimeInMillis() );
 
-        year = String.valueOf( currentDate.get( Calendar.YEAR ) );
-        mon = String.valueOf( currentDate.get( Calendar.MONTH ) + 1 );
-        day = String.valueOf( currentDate.get( Calendar.DATE ) );
-        hr = String.valueOf( currentDate.get( Calendar.HOUR ) );
-        min = String.valueOf( currentDate.get( Calendar.MINUTE ) );
-        sec = String.valueOf( currentDate.get( Calendar.SECOND ) );
+        String timestamp = new SimpleDateFormat( "yyyyMMdd.HHmmss" ).format( currentDate.getTime() );
 
-        if ( mon.length() == 1 )
+        for ( int i = 5; i <= 7; i++ )
         {
-            mon = "0" + mon;
+            new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".jar" ).createNewFile();
+            new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".pom" ).createNewFile();
         }
-
-        if ( day.length() == 1 )
-        {
-            day = "0" + day;
-        }
-
-        if ( hr.length() == 1 )
-        {
-            hr = "0" + hr;
-        }
-
-        if ( min.length() == 1 )
-        {
-            min = "0" + min;
-        }
-
-        if ( sec.length() == 1 )
-        {
-            sec = "0" + sec;
-        }
-
-        createFiles( versionRoot );
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
@@ -209,7 +179,7 @@ public class DaysOldRepositoryPurgeTest
         listener.deleteArtifact( getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
                                  "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.pom" );
         listenerControl.replay();
-        
+
         repoPurge.process( PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT );
 
         listenerControl.verify();
@@ -225,20 +195,10 @@ public class DaysOldRepositoryPurgeTest
         assertExists( versionRoot + "/plexus-utils-1.4.3-SNAPSHOT.jar" );
         assertExists( versionRoot + "/plexus-utils-1.4.3-SNAPSHOT.pom" );
 
-        for ( String extension : extensions )
+        for ( int i = 5; i <= 7; i++ )
         {
-            assertExists( versionRoot + "/plexus-utils-1.4.3-" + year + mon + day + "." + hr + min + sec + extension );
-        }
-    }
-
-    private void createFiles( String versionRoot )
-        throws IOException
-    {
-        for ( String extension : extensions )
-        {
-            File file =
-                new File( versionRoot, "/plexus-utils-1.4.3-" + year + mon + day + "." + hr + min + sec + extension );
-            file.createNewFile();
+            assertExists( versionRoot + "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".jar" );
+            assertExists( versionRoot + "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".pom" );
         }
     }
 

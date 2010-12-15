@@ -1,11 +1,12 @@
 package org.apache.maven.archiva.consumers.core;
 
-import java.io.File;
-import java.util.Calendar;
-
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+
+import java.io.File;
+import java.util.Calendar;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -54,6 +55,9 @@ public class ArtifactMissingChecksumsConsumerTest
         File sha1File = new File( repoConfig.getLocation(), path + ".sha1" );
         File md5File = new File( repoConfig.getLocation(), path + ".md5" );
 
+        sha1File.delete();
+        md5File.delete();
+
         assertFalse( sha1File.exists() );
         assertFalse( md5File.exists() );
 
@@ -68,6 +72,11 @@ public class ArtifactMissingChecksumsConsumerTest
     public void testExistingIncorrectChecksums()
         throws Exception
     {
+        File newLocation = getTestFile( "target/test-repo" );
+        FileUtils.deleteDirectory( newLocation );
+        FileUtils.copyDirectory( new File( repoConfig.getLocation() ), newLocation );
+        repoConfig.setLocation( newLocation.getAbsolutePath() );
+
         String path = "/incorrect-checksums/1.0/incorrect-checksums-1.0.jar";
 
         File sha1File = new File( repoConfig.getLocation(), path + ".sha1" );
