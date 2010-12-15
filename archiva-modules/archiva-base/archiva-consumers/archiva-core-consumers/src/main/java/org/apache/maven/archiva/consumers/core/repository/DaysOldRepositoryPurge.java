@@ -128,10 +128,6 @@ public class DaysOldRepositoryPurge
                     {
                         doPurgeAllRelated( newArtifactReference );
                     }
-                    else if ( newArtifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
-                    {
-                        doPurgeAllRelated( newArtifactReference );
-                    }
                 }
             }
         }

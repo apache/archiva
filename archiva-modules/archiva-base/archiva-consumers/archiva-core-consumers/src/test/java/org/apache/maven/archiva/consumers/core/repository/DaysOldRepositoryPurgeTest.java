@@ -31,6 +31,8 @@ import java.util.Collections;
 public class DaysOldRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
+    private static final int OLD_TIMESTAMP = 1179382029;
+
     private void setLastModified( String dirPath, long lastModified )
     {
         File dir = new File( dirPath );
@@ -54,7 +56,7 @@ public class DaysOldRepositoryPurgeTest
 
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-install-plugin";
 
-        setLastModified( projectRoot + "/2.2-SNAPSHOT/", 1179382029 );
+        setLastModified( projectRoot + "/2.2-SNAPSHOT/", OLD_TIMESTAMP );
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
@@ -113,7 +115,7 @@ public class DaysOldRepositoryPurgeTest
 
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-assembly-plugin";
 
-        setLastModified( projectRoot + "/1.1.2-SNAPSHOT/", 1179382029 );
+        setLastModified( projectRoot + "/1.1.2-SNAPSHOT/", OLD_TIMESTAMP );
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
@@ -169,8 +171,17 @@ public class DaysOldRepositoryPurgeTest
 
         for ( int i = 5; i <= 7; i++ )
         {
-            new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".jar" ).createNewFile();
-            new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".pom" ).createNewFile();
+            File jarFile = new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".jar" );
+            jarFile.createNewFile();
+            File pomFile = new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".pom" );
+            pomFile.createNewFile();
+
+            // set timestamp to older than 100 days for the first build, but ensure the filename timestamp is honoured instead
+            if ( i == 5 )
+            {
+                jarFile.setLastModified( OLD_TIMESTAMP );
+                pomFile.setLastModified( OLD_TIMESTAMP );
+            }
         }
 
         // test listeners for the correct artifacts
