@@ -48,3 +48,19 @@ security.policy.password.rule.nowhitespace.enabled=true
  can be found in:
  <<<apps/archiva/WEB-INF/classes/META-INF/plexus/application.xml>>>
 
+* Additional CSRF Prevention
+
+  To help prevent cross-site request forgery, it is possible to enable a basic check that the referrer is the current
+  site.
+
+  <Note:> This is only a generic solution that may prevent some types of attacks but not others. It may cause problems
+  with certain user agents. By default, the check is off.
+
+  To enable the check, change the following configuration value in the <<<struts.xml>>> file in the <<<WEB-INF/classes>>>
+  directory of the web application (2 locations):
+
+----
+<interceptor-ref name="redbackSecureActions">
+  <param name="enableReferrerCheck">false</param>
+</interceptor-ref>
+----

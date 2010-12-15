@@ -42,7 +42,7 @@
           <param name="blocked">externalResult</param>
         </interceptor-ref>
         <interceptor-ref name="redbackSecureActions">
-          <param name="enableReferrerCheck">true</param>
+          <param name="enableReferrerCheck">false</param>
         </interceptor-ref>
         <interceptor-ref name="redbackPolicyEnforcement"/>
         <interceptor-ref name="configuration"/>
@@ -60,7 +60,7 @@
         <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="redbackPolicyEnforcement"/>
         <interceptor-ref name="redbackSecureActions">
-          <param name="enableReferrerCheck">true</param>
+          <param name="enableReferrerCheck">false</param>
         </interceptor-ref>
         <interceptor-ref name="validation">
           <param name="excludeMethods">input,back,cancel,browse</param>
