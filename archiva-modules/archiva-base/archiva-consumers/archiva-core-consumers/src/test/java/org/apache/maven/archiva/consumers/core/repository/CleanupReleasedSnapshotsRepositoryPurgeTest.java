@@ -36,7 +36,9 @@ import org.easymock.MockControl;
  */
 public class CleanupReleasedSnapshotsRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
-{  
+{
+    private static final String INDEX_PATH = ".index\\nexus-maven-repository-index.zip";
+
     private ArchivaConfiguration archivaConfiguration;
 
     public static final String PATH_TO_RELEASED_SNAPSHOT_IN_DIFF_REPO =
@@ -80,7 +82,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
                                                                   "2.3-SNAPSHOT", "maven-plugin" ) );
         listenerControl.replay();
         
-        repoPurge.process( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
+        repoPurge.process( PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
         
         listenerControl.verify();
 
@@ -122,6 +124,29 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
     }
     
+    public void testNonArtifactFile()
+        throws Exception
+    {
+        Configuration config = archivaConfiguration.getConfiguration();
+        config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
+        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+
+        String repoRoot = prepareTestRepos();
+
+        // test listeners for the correct artifacts
+        listenerControl.replay();
+
+        File file = new File( repoRoot, INDEX_PATH );
+        file.createNewFile();
+        assertTrue( file.exists() );
+
+        repoPurge.process( INDEX_PATH );
+
+        listenerControl.verify();
+
+        assertTrue( file.exists() );
+    }
+
     public void testReleasedSnapshotsExistsInDifferentRepo()
         throws Exception
     {   
