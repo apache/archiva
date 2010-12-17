@@ -133,7 +133,7 @@ public class FileMetadataRepository
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
-        for ( Object key : new ArrayList( properties.keySet() ) )
+        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
         {
             String name = (String) key;
             if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
@@ -579,7 +579,7 @@ public class FileMetadataRepository
         properties.remove( "artifact:facetIds:" + id );
 
         String prefix = "artifact:facet:" + id + ":";
-        for ( Object key : new ArrayList( properties.keySet() ) )
+        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
         {
             String property = (String) key;
             if ( property.startsWith( prefix ) )
@@ -666,6 +666,10 @@ public class FileMetadataRepository
     public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifact )
     {
+        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+        metadata.setId( projectVersion );
+        updateProjectVersion( repoId, namespace, projectId, metadata );
+
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
@@ -741,11 +745,18 @@ public class FileMetadataRepository
     {
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
 
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+        Properties properties = readOrCreateProperties( directory, PROJECT_METADATA_KEY );
 
-        ProjectMetadata project = new ProjectMetadata();
-        project.setNamespace( properties.getProperty( "namespace" ) );
-        project.setId( properties.getProperty( "id" ) );
+        ProjectMetadata project = null;
+
+        String id = properties.getProperty( "id" );
+        if ( id != null )
+        {
+            project = new ProjectMetadata();
+            project.setNamespace( properties.getProperty( "namespace" ) );
+            project.setId( id );
+        }
+
         return project;
     }
 
@@ -838,8 +849,15 @@ public class FileMetadataRepository
                     MailingList mailingList = new MailingList();
                     mailingList.setName( mailingListName );
                     mailingList.setMainArchiveUrl( properties.getProperty( "mailingList." + i + ".archive" ) );
-                    mailingList.setOtherArchives( Arrays.asList( properties.getProperty(
-                        "mailingList." + i + ".otherArchives" ).split( "," ) ) );
+                    String p = properties.getProperty( "mailingList." + i + ".otherArchives" );
+                    if ( p != null && p.length() > 0 )
+                    {
+                        mailingList.setOtherArchives( Arrays.asList( p.split( "," ) ) );
+                    }
+                    else
+                    {
+                        mailingList.setOtherArchives( Collections.<String>emptyList() );
+                    }
                     mailingList.setPostAddress( properties.getProperty( "mailingList." + i + ".post" ) );
                     mailingList.setSubscribeAddress( properties.getProperty( "mailingList." + i + ".subscribe" ) );
                     mailingList.setUnsubscribeAddress( properties.getProperty( "mailingList." + i + ".unsubscribe" ) );
@@ -1078,7 +1096,6 @@ public class FileMetadataRepository
 
     public List<ArtifactMetadata> getArtifacts( String repoId )
     {
-
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
         for ( String ns : getRootNamespaces( repoId ) )
         {
@@ -1100,9 +1117,7 @@ public class FileMetadataRepository
             {
                 for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
                 {
-
                     artifacts.add( artifact );
-
                 }
             }
         }

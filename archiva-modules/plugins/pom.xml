@@ -37,5 +37,6 @@
     <module>maven1-repository</module>
     <module>stage-repository-merge</module>
     <module>generic-metadata-support</module>
+    <module>metadata-store-jcr</module>
   </modules>
 </project>
