@@ -78,6 +78,12 @@ import javax.jcr.query.QueryResult;
 public class JcrMetadataRepository
     implements MetadataRepository
 {
+    private static final String ARTIFACT_FACET_NODE_TYPE = "archiva:artifactFacet";
+
+    private static final String JCR_LAST_MODIFIED = "jcr:lastModified";
+
+    private static final String ARTIFACT_NODE_TYPE = "archiva:artifact";
+
     /**
      * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
      */
@@ -104,13 +110,11 @@ public class JcrMetadataRepository
             session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
 
             Workspace workspace = session.getWorkspace();
-            workspace.getNamespaceRegistry().registerNamespace( "archiva", "http://archiva.apache.org/jcr" );
+            workspace.getNamespaceRegistry().registerNamespace( "archiva", "http://archiva.apache.org/jcr/" );
 
             NodeTypeManager nodeTypeManager = workspace.getNodeTypeManager();
-            NodeTypeTemplate nodeType = nodeTypeManager.createNodeTypeTemplate();
-            nodeType.setMixin( true );
-            nodeType.setName( "archiva:artifact" );
-            nodeTypeManager.registerNodeType( nodeType, false );
+            registerMixinNodeType( nodeTypeManager, ARTIFACT_NODE_TYPE );
+            registerMixinNodeType( nodeTypeManager, ARTIFACT_FACET_NODE_TYPE );
         }
         catch ( LoginException e )
         {
@@ -122,6 +126,15 @@ public class JcrMetadataRepository
             // TODO
             throw new RuntimeException( e );
         }
+    }
+
+    private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String name )
+        throws RepositoryException
+    {
+        NodeTypeTemplate nodeType = nodeTypeManager.createNodeTypeTemplate();
+        nodeType.setMixin( true );
+        nodeType.setName( name );
+        nodeTypeManager.registerNodeType( nodeType, false );
     }
 
     public void updateProject( String repositoryId, ProjectMetadata project )
@@ -156,7 +169,7 @@ public class JcrMetadataRepository
 
             Calendar cal = Calendar.getInstance();
             cal.setTime( artifactMeta.getFileLastModified() );
-            node.setProperty( "jcr:lastModified", cal );
+            node.setProperty( JCR_LAST_MODIFIED, cal );
 
             cal = Calendar.getInstance();
             cal.setTime( artifactMeta.getWhenGathered() );
@@ -168,18 +181,18 @@ public class JcrMetadataRepository
 
             node.setProperty( "version", artifactMeta.getVersion() );
 
-            // TODO: namespaced properties instead?
-            Node facetNode = JcrUtils.getOrAddNode( node, "facets" );
             for ( MetadataFacet facet : artifactMeta.getFacetList() )
             {
                 // TODO: need to clear it?
-                Node n = JcrUtils.getOrAddNode( facetNode, facet.getFacetId() );
+                Node n = JcrUtils.getOrAddNode( node, facet.getFacetId() );
+                n.addMixin( ARTIFACT_FACET_NODE_TYPE );
 
                 for ( Map.Entry<String, String> entry : facet.toProperties().entrySet() )
                 {
                     n.setProperty( entry.getKey(), entry.getValue() );
                 }
             }
+            // TODO: need some context around this so it can be done only when needed
             session.save();
         }
         catch ( RepositoryException e )
@@ -1104,9 +1117,9 @@ public class JcrMetadataRepository
                                  ? artifactNode.getProperty( "version" ).getString()
                                  : projectVersionNode.getName() );
 
-        if ( artifactNode.hasProperty( "jcr:lastModified" ) )
+        if ( artifactNode.hasProperty( JCR_LAST_MODIFIED ) )
         {
-            artifact.setFileLastModified( artifactNode.getProperty( "jcr:lastModified" ).getDate().getTimeInMillis() );
+            artifact.setFileLastModified( artifactNode.getProperty( JCR_LAST_MODIFIED ).getDate().getTimeInMillis() );
         }
 
         if ( artifactNode.hasProperty( "whenGathered" ) )
@@ -1129,29 +1142,27 @@ public class JcrMetadataRepository
             artifact.setSha1( artifactNode.getProperty( "sha1" ).getString() );
         }
 
-        if ( artifactNode.hasNode( "facets" ) )
+        for ( Node n : JcrUtils.getChildNodes( artifactNode ) )
         {
-            NodeIterator j = artifactNode.getNode( "facets" ).getNodes();
-
-            while ( j.hasNext() )
+            if ( n.isNodeType( ARTIFACT_FACET_NODE_TYPE ) )
             {
-                Node facetNode = j.nextNode();
-
-                MetadataFacetFactory factory = metadataFacetFactories.get( facetNode.getName() );
+                String name = n.getName();
+                MetadataFacetFactory factory = metadataFacetFactories.get( name );
                 if ( factory == null )
                 {
-                    log.error( "Attempted to load unknown project version metadata facet: " + facetNode.getName() );
+                    log.error( "Attempted to load unknown project version metadata facet: " + name );
                 }
                 else
                 {
                     MetadataFacet facet = factory.createMetadataFacet();
                     Map<String, String> map = new HashMap<String, String>();
-                    PropertyIterator i = facetNode.getProperties();
-                    while ( i.hasNext() )
+                    for ( Property p : JcrUtils.getProperties( n ) )
                     {
-                        Property p = i.nextProperty();
                         String property = p.getName();
-                        map.put( property, p.getString() );
+                        if ( !property.startsWith( "jcr:" ) )
+                        {
+                            map.put( property, p.getString() );
+                        }
                     }
                     facet.fromProperties( map );
                     artifact.addFacet( facet );
@@ -1243,7 +1254,7 @@ public class JcrMetadataRepository
     {
         Node versionNode = getOrAddProjectVersionNode( repositoryId, namespace, projectId, projectVersion );
         Node node = JcrUtils.getOrAddNode( versionNode, id );
-        node.addMixin( "archiva:artifact" );
+        node.addMixin( ARTIFACT_NODE_TYPE );
         return node;
     }
 
