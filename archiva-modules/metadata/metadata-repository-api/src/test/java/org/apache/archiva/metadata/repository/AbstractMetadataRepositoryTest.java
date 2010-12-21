@@ -47,6 +47,8 @@ import java.util.Map;
 public abstract class AbstractMetadataRepositoryTest
     extends PlexusInSpringTestCase
 {
+    protected static final String OTHER_REPO_ID = "other-repo";
+
     protected MetadataRepository repository;
 
     protected static final String TEST_REPO_ID = "test";
@@ -162,9 +164,8 @@ public abstract class AbstractMetadataRepositoryTest
     public void testGetArtifactOnly()
         throws MetadataResolutionException
     {
-        assertEquals( Collections.<ArtifactMetadata>emptyList(),
-                      new ArrayList<ArtifactMetadata>(
-                          repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
+        assertEquals( Collections.<ArtifactMetadata>emptyList(), new ArrayList<ArtifactMetadata>(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
         assertNull( repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) );
         assertNull( repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ) );
         assertEquals( Collections.<String>emptyList(), repository.getRootNamespaces( TEST_REPO_ID ) );
@@ -184,7 +185,9 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( TEST_PROJECT, projectMetadata.getId() );
         assertEquals( TEST_NAMESPACE, projectMetadata.getNamespace() );
 
-        ProjectVersionMetadata projectVersionMetadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        ProjectVersionMetadata projectVersionMetadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE,
+                                                                                      TEST_PROJECT,
+                                                                                      TEST_PROJECT_VERSION );
         assertEquals( TEST_PROJECT_VERSION, projectVersionMetadata.getId() );
     }
 
@@ -307,9 +310,12 @@ public abstract class AbstractMetadataRepositoryTest
         reference.setProjectVersion( "1.1" );
         reference.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
 
-        repository.updateProjectReference( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, reference );
+        repository.updateProjectReference( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION,
+                                           reference );
 
-        Collection<ProjectVersionReference> references = repository.getProjectReferences( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        Collection<ProjectVersionReference> references = repository.getProjectReferences( TEST_REPO_ID, TEST_NAMESPACE,
+                                                                                          TEST_PROJECT,
+                                                                                          TEST_PROJECT_VERSION );
         assertEquals( 1, references.size() );
         reference = references.iterator().next();
         assertEquals( "another.namespace", reference.getNamespace() );
@@ -323,9 +329,10 @@ public abstract class AbstractMetadataRepositoryTest
         // currently set up this way so the behaviour of both the test and the mock config return the same repository
         // set as the File implementation just uses the config rather than the content
         repository.updateNamespace( TEST_REPO_ID, "namespace" );
-        repository.updateNamespace( "other-repo", "namespace" );
+        repository.updateNamespace( OTHER_REPO_ID, "namespace" );
 
-        assertEquals( Arrays.asList( TEST_REPO_ID, "other-repo" ), new ArrayList<String>( repository.getRepositories() ) );
+        assertEquals( Arrays.asList( TEST_REPO_ID, OTHER_REPO_ID ), new ArrayList<String>(
+            repository.getRepositories() ) );
     }
 
     public void testUpdateProjectVersionMetadataIncomplete()
@@ -390,7 +397,7 @@ public abstract class AbstractMetadataRepositoryTest
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
     }
-    
+
     public void testUpdateProjectVersionMetadataWithExistingFacetsFacetPropertyWasRemoved()
         throws MetadataResolutionException
     {
@@ -424,7 +431,7 @@ public abstract class AbstractMetadataRepositoryTest
         testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
         assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
     }
-    
+
     public void testUpdateArtifactMetadataWithExistingFacets()
     {
         ArtifactMetadata metadata = createArtifact();
@@ -700,7 +707,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( repository.getArtifactsByDateRange( TEST_REPO_ID, null, upper ).isEmpty() );
     }
 
-     public void testGetArtifactsByRepoId()
+    public void testGetArtifactsByRepoId()
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -767,7 +774,8 @@ public abstract class AbstractMetadataRepositoryTest
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
 
-        assertEquals( Collections.<ArtifactMetadata>emptyList(), repository.getArtifactsByChecksum( TEST_REPO_ID, "not a checksum" ) );
+        assertEquals( Collections.<ArtifactMetadata>emptyList(), repository.getArtifactsByChecksum( TEST_REPO_ID,
+                                                                                                    "not a checksum" ) );
     }
 
     public void testDeleteArtifact()
@@ -868,8 +876,8 @@ public abstract class AbstractMetadataRepositoryTest
         implements MetadataFacet
     {
         private String testFacetId;
-        
-        private Map<String, String> additionalProps;        
+
+        private Map<String, String> additionalProps;
 
         private String value;
 
@@ -884,11 +892,11 @@ public abstract class AbstractMetadataRepositoryTest
             this.value = value;
             testFacetId = facetId;
         }
-        
+
         private TestMetadataFacet( String facetId, String value, Map<String, String> additionalProps )
         {
             this( facetId, value );
-            this.additionalProps = additionalProps;            
+            this.additionalProps = additionalProps;
         }
 
         public String getFacetId()
@@ -902,10 +910,10 @@ public abstract class AbstractMetadataRepositoryTest
         }
 
         public Map<String, String> toProperties()
-        {            
+        {
             if ( value != null )
             {
-                if( additionalProps == null )
+                if ( additionalProps == null )
                 {
                     return Collections.singletonMap( "foo", value );
                 }
@@ -913,8 +921,8 @@ public abstract class AbstractMetadataRepositoryTest
                 {
                     Map<String, String> props = new HashMap<String, String>();
                     props.put( "foo", value );
-                    
-                    for( String key : additionalProps.keySet() )
+
+                    for ( String key : additionalProps.keySet() )
                     {
                         props.put( key, additionalProps.get( key ) );
                     }
@@ -934,15 +942,15 @@ public abstract class AbstractMetadataRepositoryTest
             {
                 this.value = value;
             }
-               
+
             properties.remove( "foo" );
-            
-            if( additionalProps == null )
+
+            if ( additionalProps == null )
             {
                 additionalProps = new HashMap<String, String>();
             }
-            
-            for( String key: properties.keySet() )
+
+            for ( String key : properties.keySet() )
             {
                 additionalProps.put( key, properties.get( key ) );
             }
@@ -952,7 +960,7 @@ public abstract class AbstractMetadataRepositoryTest
         {
             return value;
         }
-        
+
         @Override
         public String toString()
         {

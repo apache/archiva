@@ -23,8 +23,8 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.util.Map;
+import javax.jcr.RepositoryException;
 
 public class JcrMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
@@ -36,8 +36,7 @@ public class JcrMetadataRepositoryTest
     {
         super.setUp();
 
-        File directory = getTestFile( "target/test-repositories" );
-        FileUtils.deleteDirectory( directory );
+        FileUtils.deleteDirectory( getTestFile( "target/test-repositories" ) );
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
@@ -52,6 +51,15 @@ public class JcrMetadataRepositoryTest
         throws Exception
     {
         super.tearDown();
+
+        try
+        {
+            jcrMetadataRepository.getJcrSession().getRootNode().getNode( "repositories" ).remove();
+        }
+        catch ( RepositoryException e )
+        {
+            // ignore
+        }
 
         jcrMetadataRepository.close();
     }

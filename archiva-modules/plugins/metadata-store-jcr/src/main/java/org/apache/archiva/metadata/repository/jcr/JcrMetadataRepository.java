@@ -34,6 +34,7 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -61,6 +61,12 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.jcr.ValueFactory;
+import javax.jcr.Workspace;
+import javax.jcr.nodetype.NodeTypeManager;
+import javax.jcr.nodetype.NodeTypeTemplate;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataRepository"
@@ -96,6 +102,15 @@ public class JcrMetadataRepository
             }
             // TODO: shouldn't do this in constructor since it's a singleton
             session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
+
+            Workspace workspace = session.getWorkspace();
+            workspace.getNamespaceRegistry().registerNamespace( "archiva", "http://archiva.apache.org/jcr" );
+
+            NodeTypeManager nodeTypeManager = workspace.getNodeTypeManager();
+            NodeTypeTemplate nodeType = nodeTypeManager.createNodeTypeTemplate();
+            nodeType.setMixin( true );
+            nodeType.setName( "archiva:artifact" );
+            nodeTypeManager.registerNodeType( nodeType, false );
         }
         catch ( LoginException e )
         {
@@ -111,9 +126,7 @@ public class JcrMetadataRepository
 
     public void updateProject( String repositoryId, ProjectMetadata project )
     {
-        String namespace = project.getNamespace();
-        String projectId = project.getId();
-        updateProject( repositoryId, namespace, projectId );
+        updateProject( repositoryId, project.getNamespace(), project.getId() );
     }
 
     private void updateProject( String repositoryId, String namespace, String projectId )
@@ -122,8 +135,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Node namespaceNode = getOrCreateNamespaceNode( repositoryId, namespace );
-            getOrCreateNode( namespaceNode, projectId );
+            getOrAddProjectNode( repositoryId, namespace, projectId );
         }
         catch ( RepositoryException e )
         {
@@ -135,14 +147,16 @@ public class JcrMetadataRepository
     public void updateArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
     {
+        updateNamespace( repositoryId, namespace );
+
         try
         {
-            Node node = getOrCreateArtifactNode( repositoryId, namespace, projectId, projectVersion,
-                                                 artifactMeta.getId() );
+            Node node = getOrAddArtifactNode( repositoryId, namespace, projectId, projectVersion,
+                                              artifactMeta.getId() );
 
             Calendar cal = Calendar.getInstance();
             cal.setTime( artifactMeta.getFileLastModified() );
-            node.setProperty( "updated", cal );
+            node.setProperty( "jcr:lastModified", cal );
 
             cal = Calendar.getInstance();
             cal.setTime( artifactMeta.getWhenGathered() );
@@ -155,31 +169,24 @@ public class JcrMetadataRepository
             node.setProperty( "version", artifactMeta.getVersion() );
 
             // TODO: namespaced properties instead?
-            Node facetNode = getOrCreateNode( node, "facets" );
+            Node facetNode = JcrUtils.getOrAddNode( node, "facets" );
             for ( MetadataFacet facet : artifactMeta.getFacetList() )
             {
                 // TODO: need to clear it?
-                Node n = getOrCreateNode( facetNode, facet.getFacetId() );
+                Node n = JcrUtils.getOrAddNode( facetNode, facet.getFacetId() );
 
                 for ( Map.Entry<String, String> entry : facet.toProperties().entrySet() )
                 {
                     n.setProperty( entry.getKey(), entry.getValue() );
                 }
             }
+            session.save();
         }
         catch ( RepositoryException e )
         {
             // TODO
             throw new RuntimeException( e );
         }
-    }
-
-    private Node getOrCreateArtifactNode( String repositoryId, String namespace, String projectId,
-                                          String projectVersion, String id )
-        throws RepositoryException
-    {
-        Node versionNode = getOrCreateProjectVersionNode( repositoryId, namespace, projectId, projectVersion );
-        return getOrCreateNode( versionNode, id );
     }
 
     public void updateProjectVersion( String repositoryId, String namespace, String projectId,
@@ -189,8 +196,8 @@ public class JcrMetadataRepository
 
         try
         {
-            Node versionNode = getOrCreateProjectVersionNode( repositoryId, namespace, projectId,
-                                                              versionMetadata.getId() );
+            Node versionNode = getOrAddProjectVersionNode( repositoryId, namespace, projectId,
+                                                           versionMetadata.getId() );
 
             versionNode.setProperty( "name", versionMetadata.getName() );
             versionNode.setProperty( "description", versionMetadata.getDescription() );
@@ -252,7 +259,7 @@ public class JcrMetadataRepository
             }
 
             // TODO: namespaced properties instead?
-            Node facetNode = getOrCreateNode( versionNode, "facets" );
+            Node facetNode = JcrUtils.getOrAddNode( versionNode, "facets" );
             for ( MetadataFacet facet : versionMetadata.getFacetList() )
             {
                 // TODO: shouldn't need to recreate, just update
@@ -261,7 +268,7 @@ public class JcrMetadataRepository
                     facetNode.getNode( facet.getFacetId() ).remove();
                 }
                 Node n = facetNode.addNode( facet.getFacetId() );
-                
+
                 for ( Map.Entry<String, String> entry : facet.toProperties().entrySet() )
                 {
                     n.setProperty( entry.getKey(), entry.getValue() );
@@ -275,44 +282,6 @@ public class JcrMetadataRepository
         }
     }
 
-    private Node getOrCreateProjectVersionNode( String repositoryId, String namespace, String projectId,
-                                                String projectVersion )
-        throws RepositoryException
-    {
-        Node namespaceNode = getOrCreateNamespaceNode( repositoryId, namespace );
-        Node projectNode = getOrCreateNode( namespaceNode, projectId );
-        return getOrCreateNode( projectNode, projectVersion );
-    }
-
-    private Node getOrCreateNode( Node baseNode, String name )
-        throws RepositoryException
-    {
-        return baseNode.hasNode( name ) ? baseNode.getNode( name ) : baseNode.addNode( name );
-    }
-
-    private Node getOrCreateNamespaceNode( String repositoryId, String namespace )
-        throws RepositoryException
-    {
-        Node repo = getOrCreateRepositoryContentNode( repositoryId );
-        return getOrCreateNode( repo, namespace );
-    }
-
-    private Node getOrCreateRepositoryContentNode( String repositoryId )
-        throws RepositoryException
-    {
-        Node node = getOrCreateRepositoryNode( repositoryId );
-        return getOrCreateNode( node, "content" );
-    }
-
-    private Node getOrCreateRepositoryNode( String repositoryId )
-        throws RepositoryException
-    {
-        Node root = session.getRootNode();
-        Node node = getOrCreateNode( root, "repositories" );
-        node = getOrCreateNode( node, repositoryId );
-        return node;
-    }
-
     public void updateProjectReference( String repositoryId, String namespace, String projectId, String projectVersion,
                                         ProjectVersionReference reference )
     {
@@ -320,14 +289,14 @@ public class JcrMetadataRepository
         // TODO: is this tree the right way up? It differs from the content model
         try
         {
-            Node node = getOrCreateRepositoryContentNode( repositoryId );
-            node = getOrCreateNode( node, namespace );
-            node = getOrCreateNode( node, projectId );
-            node = getOrCreateNode( node, projectVersion );
-            node = getOrCreateNode( node, "references" );
-            node = getOrCreateNode( node, reference.getNamespace() );
-            node = getOrCreateNode( node, reference.getProjectId() );
-            node = getOrCreateNode( node, reference.getProjectVersion() );
+            Node node = getOrAddRepositoryContentNode( repositoryId );
+            node = JcrUtils.getOrAddNode( node, namespace );
+            node = JcrUtils.getOrAddNode( node, projectId );
+            node = JcrUtils.getOrAddNode( node, projectVersion );
+            node = JcrUtils.getOrAddNode( node, "references" );
+            node = JcrUtils.getOrAddNode( node, reference.getNamespace() );
+            node = JcrUtils.getOrAddNode( node, reference.getProjectId() );
+            node = JcrUtils.getOrAddNode( node, reference.getProjectVersion() );
             node.setProperty( "type", reference.getReferenceType().toString() );
         }
         catch ( RepositoryException e )
@@ -341,7 +310,8 @@ public class JcrMetadataRepository
     {
         try
         {
-            Node node = getOrCreateNamespaceNode( repositoryId, namespace );
+            // TODO: currently flat
+            Node node = getOrAddNamespaceNode( repositoryId, namespace );
             node.setProperty( "namespace", namespace );
         }
         catch ( RepositoryException e )
@@ -357,16 +327,17 @@ public class JcrMetadataRepository
 
         try
         {
-            Node root = session.getRootNode();
-            Node node = root.getNode( "repositories/" + repositoryId + "/facets/" + facetId );
+            // no need to construct node-by-node here, as we'll find in the next instance, the facet names have / and
+            // are paths themselves
+            Node node = session.getRootNode().getNode( getFacetPath( repositoryId, facetId ) );
 
-            // TODO: could we simply query all nodes with no children?
+            // TODO: could we simply query all nodes with no children? Or perhaps a specific nodetype?
+            //   Might be better to review the purpose of this function - why is the list of paths helpful?
             recurse( facets, "", node );
         }
         catch ( PathNotFoundException e )
         {
-            // TODO: handle this case differently?
-            // currently ignored
+            // ignored - the facet doesn't exist, so return the empty list
         }
         catch ( RepositoryException e )
         {
@@ -379,10 +350,8 @@ public class JcrMetadataRepository
     private void recurse( List<String> facets, String prefix, Node node )
         throws RepositoryException
     {
-        NodeIterator iterator = node.getNodes();
-        while ( iterator.hasNext() )
+        for ( Node n : JcrUtils.getChildNodes( node ) )
         {
-            Node n = iterator.nextNode();
             String name = prefix + "/" + n.getName();
             if ( n.hasNodes() )
             {
@@ -396,24 +365,21 @@ public class JcrMetadataRepository
         }
     }
 
-
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
     {
         MetadataFacet metadataFacet = null;
         try
         {
             Node root = session.getRootNode();
-            Node node = root.getNode( "repositories/" + repositoryId + "/facets/" + facetId + "/" + name );
+            Node node = root.getNode( getFacetPath( repositoryId, facetId, name ) );
 
             MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
             if ( metadataFacetFactory != null )
             {
                 metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
                 Map<String, String> map = new HashMap<String, String>();
-                PropertyIterator iterator = node.getProperties();
-                while ( iterator.hasNext() )
+                for ( Property property : JcrUtils.getProperties( node ) )
                 {
-                    Property property = iterator.nextProperty();
                     String p = property.getName();
                     if ( !p.startsWith( "jcr:" ) )
                     {
@@ -425,8 +391,7 @@ public class JcrMetadataRepository
         }
         catch ( PathNotFoundException e )
         {
-            // TODO: handle this case differently?
-            // currently ignored
+            // ignored - the facet doesn't exist, so return null
         }
         catch ( RepositoryException e )
         {
@@ -440,11 +405,11 @@ public class JcrMetadataRepository
     {
         try
         {
-            Node repo = getOrCreateRepositoryNode( repositoryId );
-            Node facets = getOrCreateNode( repo, "facets" );
+            Node repo = getOrAddRepositoryNode( repositoryId );
+            Node facets = JcrUtils.getOrAddNode( repo, "facets" );
 
             String id = metadataFacet.getFacetId();
-            Node facetNode = getOrCreateNode( facets, id );
+            Node facetNode = JcrUtils.getOrAddNode( facets, id );
 
             Node node = getOrCreatePath( facetNode, metadataFacet.getName() );
 
@@ -466,7 +431,7 @@ public class JcrMetadataRepository
         Node node = baseNode;
         for ( String n : name.split( "/" ) )
         {
-            node = getOrCreateNode( node, n );
+            node = JcrUtils.getOrAddNode( node, n );
         }
         return node;
     }
@@ -476,7 +441,7 @@ public class JcrMetadataRepository
         try
         {
             Node root = session.getRootNode();
-            String path = "repositories/" + repositoryId + "/facets/" + facetId;
+            String path = getFacetPath( repositoryId, facetId );
             // TODO: exception if missing?
             if ( root.hasNode( path ) )
             {
@@ -495,7 +460,7 @@ public class JcrMetadataRepository
         try
         {
             Node root = session.getRootNode();
-            String path = "repositories/" + repositoryId + "/facets/" + facetId + "/" + name;
+            String path = getFacetPath( repositoryId, facetId, name );
             // TODO: exception if missing?
             if ( root.hasNode( path ) )
             {
@@ -518,42 +483,47 @@ public class JcrMetadataRepository
 
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
     {
-        // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
-        //  of this information (eg. in Lucene, as before)
+        List<ArtifactMetadata> artifacts;
 
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
-        for ( String ns : getRootNamespaces( repoId ) )
+        String q = "SELECT * FROM [archiva:artifact]";
+
+        String clause = " WHERE";
+        if ( startTime != null )
         {
-            getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
+            q += clause + " [whenGathered] >= $start";
+            clause = " AND";
         }
-        Collections.sort( artifacts, new ArtifactComparator() );
-        return artifacts;
-    }
-
-    private void getArtifactsByDateRange( List<ArtifactMetadata> artifacts, String repoId, String ns, Date startTime,
-                                          Date endTime )
-    {
-        for ( String namespace : getNamespaces( repoId, ns ) )
+        if ( endTime != null )
         {
-            getArtifactsByDateRange( artifacts, repoId, ns + "." + namespace, startTime, endTime );
+            q += clause + " [whenGathered] <= $end";
         }
 
-        for ( String project : getProjects( repoId, ns ) )
+        try
         {
-            for ( String version : getProjectVersions( repoId, ns, project ) )
+            Query query = session.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            ValueFactory valueFactory = session.getValueFactory();
+            if ( startTime != null )
             {
-                for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
-                {
-                    if ( startTime == null || startTime.before( artifact.getWhenGathered() ) )
-                    {
-                        if ( endTime == null || endTime.after( artifact.getWhenGathered() ) )
-                        {
-                            artifacts.add( artifact );
-                        }
-                    }
-                }
+                query.bindValue( "start", valueFactory.createValue( createCalendar( startTime ) ) );
+            }
+            if ( endTime != null )
+            {
+                query.bindValue( "end", valueFactory.createValue( createCalendar( endTime ) ) );
+            }
+            QueryResult result = query.execute();
+
+            artifacts = new ArrayList<ArtifactMetadata>();
+            for ( Node n : JcrUtils.getNodes( result ) )
+            {
+                artifacts.add( getArtifactFromNode( repoId, n ) );
             }
         }
+        catch ( RepositoryException e )
+        {
+            // TODO
+            throw new RuntimeException( e );
+        }
+        return artifacts;
     }
 
     public Collection<String> getRepositories()
@@ -1100,72 +1070,7 @@ public class JcrMetadataRepository
                 {
                     Node artifactNode = iterator.nextNode();
 
-                    String id = artifactNode.getName();
-
-                    ArtifactMetadata artifact = new ArtifactMetadata();
-                    artifact.setId( id );
-                    artifact.setRepositoryId( repositoryId );
-                    artifact.setNamespace( namespace );
-                    artifact.setProject( projectId );
-                    artifact.setProjectVersion( projectVersion );
-                    artifact.setVersion( artifactNode.hasProperty( "version" ) ? artifactNode.getProperty(
-                        "version" ).getString() : projectVersion );
-
-                    if ( artifactNode.hasProperty( "updated" ) )
-                    {
-                        artifact.setFileLastModified( artifactNode.getProperty(
-                            "updated" ).getDate().getTimeInMillis() );
-                    }
-
-                    if ( artifactNode.hasProperty( "whenGathered" ) )
-                    {
-                        artifact.setWhenGathered( artifactNode.getProperty( "whenGathered" ).getDate().getTime() );
-                    }
-
-                    if ( artifactNode.hasProperty( "size" ) )
-                    {
-                        artifact.setSize( artifactNode.getProperty( "size" ).getLong() );
-                    }
-
-                    if ( artifactNode.hasProperty( "md5" ) )
-                    {
-                        artifact.setMd5( artifactNode.getProperty( "md5" ).getString() );
-                    }
-
-                    if ( artifactNode.hasProperty( "sha1" ) )
-                    {
-                        artifact.setSha1( artifactNode.getProperty( "sha1" ).getString() );
-                    }
-
-                    if ( artifactNode.hasNode( "facets" ) )
-                    {
-                        NodeIterator j = artifactNode.getNode( "facets" ).getNodes();
-
-                        while ( j.hasNext() )
-                        {
-                            Node facetNode = j.nextNode();
-
-                            MetadataFacetFactory factory = metadataFacetFactories.get( facetNode.getName() );
-                            if ( factory == null )
-                            {
-                                log.error( "Attempted to load unknown project version metadata facet: " + facetNode.getName() );
-                            }
-                            else
-                            {
-                                MetadataFacet facet = factory.createMetadataFacet();
-                                Map<String, String> map = new HashMap<String, String>();
-                                PropertyIterator i = facetNode.getProperties();
-                                while ( i.hasNext() )
-                                {
-                                    Property p = i.nextProperty();
-                                    String property = p.getName();
-                                    map.put( property, p.getString() );
-                                }
-                                facet.fromProperties( map );
-                                artifact.addFacet( facet );
-                            }
-                        }
-                    }
+                    ArtifactMetadata artifact = getArtifactFromNode( repositoryId, artifactNode );
                     artifacts.add( artifact );
                 }
             }
@@ -1177,6 +1082,83 @@ public class JcrMetadataRepository
         }
 
         return artifacts;
+    }
+
+    private ArtifactMetadata getArtifactFromNode( String repositoryId, Node artifactNode )
+        throws RepositoryException
+    {
+        String id = artifactNode.getName();
+
+        ArtifactMetadata artifact = new ArtifactMetadata();
+        artifact.setId( id );
+        artifact.setRepositoryId( repositoryId );
+
+        Node projectVersionNode = artifactNode.getParent();
+        Node projectNode = projectVersionNode.getParent();
+        Node namespaceNode = projectNode.getParent();
+
+        artifact.setNamespace( namespaceNode.getProperty( "namespace" ).getString() );
+        artifact.setProject( projectNode.getName() );
+        artifact.setProjectVersion( projectVersionNode.getName() );
+        artifact.setVersion( artifactNode.hasProperty( "version" )
+                                 ? artifactNode.getProperty( "version" ).getString()
+                                 : projectVersionNode.getName() );
+
+        if ( artifactNode.hasProperty( "jcr:lastModified" ) )
+        {
+            artifact.setFileLastModified( artifactNode.getProperty( "jcr:lastModified" ).getDate().getTimeInMillis() );
+        }
+
+        if ( artifactNode.hasProperty( "whenGathered" ) )
+        {
+            artifact.setWhenGathered( artifactNode.getProperty( "whenGathered" ).getDate().getTime() );
+        }
+
+        if ( artifactNode.hasProperty( "size" ) )
+        {
+            artifact.setSize( artifactNode.getProperty( "size" ).getLong() );
+        }
+
+        if ( artifactNode.hasProperty( "md5" ) )
+        {
+            artifact.setMd5( artifactNode.getProperty( "md5" ).getString() );
+        }
+
+        if ( artifactNode.hasProperty( "sha1" ) )
+        {
+            artifact.setSha1( artifactNode.getProperty( "sha1" ).getString() );
+        }
+
+        if ( artifactNode.hasNode( "facets" ) )
+        {
+            NodeIterator j = artifactNode.getNode( "facets" ).getNodes();
+
+            while ( j.hasNext() )
+            {
+                Node facetNode = j.nextNode();
+
+                MetadataFacetFactory factory = metadataFacetFactories.get( facetNode.getName() );
+                if ( factory == null )
+                {
+                    log.error( "Attempted to load unknown project version metadata facet: " + facetNode.getName() );
+                }
+                else
+                {
+                    MetadataFacet facet = factory.createMetadataFacet();
+                    Map<String, String> map = new HashMap<String, String>();
+                    PropertyIterator i = facetNode.getProperties();
+                    while ( i.hasNext() )
+                    {
+                        Property p = i.nextProperty();
+                        String property = p.getName();
+                        map.put( property, p.getString() );
+                    }
+                    facet.fromProperties( map );
+                    artifact.addFacet( facet );
+                }
+            }
+        }
+        return artifact;
     }
 
     void close()
@@ -1207,25 +1189,69 @@ public class JcrMetadataRepository
 //        }
     }
 
-    private static class ArtifactComparator
-        implements Comparator<ArtifactMetadata>
+    private static String getFacetPath( String repositoryId, String facetId )
     {
-        public int compare( ArtifactMetadata artifact1, ArtifactMetadata artifact2 )
-        {
-            if ( artifact1.getWhenGathered() == artifact2.getWhenGathered() )
-            {
-                return 0;
-            }
-            if ( artifact1.getWhenGathered() == null )
-            {
-                return 1;
-            }
-            if ( artifact2.getWhenGathered() == null )
-            {
-                return -1;
-            }
-            return artifact1.getWhenGathered().compareTo( artifact2.getWhenGathered() );
-        }
+        return "repositories/" + repositoryId + "/facets/" + facetId;
+    }
+
+    private static String getFacetPath( String repositoryId, String facetId, String name )
+    {
+        return getFacetPath( repositoryId, facetId ) + "/" + name;
+    }
+
+    private Node getOrAddRepositoryNode( String repositoryId )
+        throws RepositoryException
+    {
+        Node root = session.getRootNode();
+        Node node = JcrUtils.getOrAddNode( root, "repositories" );
+        node = JcrUtils.getOrAddNode( node, repositoryId );
+        return node;
+    }
+
+    private Node getOrAddRepositoryContentNode( String repositoryId )
+        throws RepositoryException
+    {
+        Node node = getOrAddRepositoryNode( repositoryId );
+        return JcrUtils.getOrAddNode( node, "content" );
+    }
+
+    private Node getOrAddNamespaceNode( String repositoryId, String namespace )
+        throws RepositoryException
+    {
+        Node repo = getOrAddRepositoryContentNode( repositoryId );
+        return JcrUtils.getOrAddNode( repo, namespace );
+    }
+
+    private Node getOrAddProjectNode( String repositoryId, String namespace, String projectId )
+        throws RepositoryException
+    {
+        Node namespaceNode = getOrAddNamespaceNode( repositoryId, namespace );
+        return JcrUtils.getOrAddNode( namespaceNode, projectId );
+    }
+
+    private Node getOrAddProjectVersionNode( String repositoryId, String namespace, String projectId,
+                                             String projectVersion )
+        throws RepositoryException
+    {
+        Node projectNode = getOrAddProjectNode( repositoryId, namespace, projectId );
+        return JcrUtils.getOrAddNode( projectNode, projectVersion );
+    }
+
+    private Node getOrAddArtifactNode( String repositoryId, String namespace, String projectId, String projectVersion,
+                                       String id )
+        throws RepositoryException
+    {
+        Node versionNode = getOrAddProjectVersionNode( repositoryId, namespace, projectId, projectVersion );
+        Node node = JcrUtils.getOrAddNode( versionNode, id );
+        node.addMixin( "archiva:artifact" );
+        return node;
+    }
+
+    private static Calendar createCalendar( Date time )
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime( time );
+        return cal;
     }
 
     private String join( Collection<String> ids )
@@ -1241,5 +1267,10 @@ public class JcrMetadataRepository
             return s.substring( 0, s.length() - 1 );
         }
         return null;
+    }
+
+    public Session getJcrSession()
+    {
+        return session;
     }
 }
