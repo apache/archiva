@@ -56,7 +56,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -78,11 +77,11 @@ import javax.jcr.query.QueryResult;
 public class JcrMetadataRepository
     implements MetadataRepository
 {
-    private static final String ARTIFACT_FACET_NODE_TYPE = "archiva:artifactFacet";
-
     private static final String JCR_LAST_MODIFIED = "jcr:lastModified";
 
     private static final String ARTIFACT_NODE_TYPE = "archiva:artifact";
+
+    private static final String FACET_NODE_TYPE = "archiva:facet";
 
     /**
      * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
@@ -114,7 +113,7 @@ public class JcrMetadataRepository
 
             NodeTypeManager nodeTypeManager = workspace.getNodeTypeManager();
             registerMixinNodeType( nodeTypeManager, ARTIFACT_NODE_TYPE );
-            registerMixinNodeType( nodeTypeManager, ARTIFACT_FACET_NODE_TYPE );
+            registerMixinNodeType( nodeTypeManager, FACET_NODE_TYPE );
         }
         catch ( LoginException e )
         {
@@ -183,9 +182,14 @@ public class JcrMetadataRepository
 
             for ( MetadataFacet facet : artifactMeta.getFacetList() )
             {
-                // TODO: need to clear it?
-                Node n = JcrUtils.getOrAddNode( node, facet.getFacetId() );
-                n.addMixin( ARTIFACT_FACET_NODE_TYPE );
+                if ( node.hasNode( facet.getFacetId() ) )
+                {
+                    node.getNode( facet.getFacetId() ).remove();
+                }
+
+                // recreate, to ensure properties are removed
+                Node n = node.addNode( facet.getFacetId() );
+                n.addMixin( FACET_NODE_TYPE );
 
                 for ( Map.Entry<String, String> entry : facet.toProperties().entrySet() )
                 {
@@ -271,16 +275,15 @@ public class JcrMetadataRepository
                 i++;
             }
 
-            // TODO: namespaced properties instead?
-            Node facetNode = JcrUtils.getOrAddNode( versionNode, "facets" );
             for ( MetadataFacet facet : versionMetadata.getFacetList() )
             {
-                // TODO: shouldn't need to recreate, just update
-                if ( facetNode.hasNode( facet.getFacetId() ) )
+                // recreate, to ensure properties are removed
+                if ( versionNode.hasNode( facet.getFacetId() ) )
                 {
-                    facetNode.getNode( facet.getFacetId() ).remove();
+                    versionNode.getNode( facet.getFacetId() ).remove();
                 }
-                Node n = facetNode.addNode( facet.getFacetId() );
+                Node n = versionNode.addNode( facet.getFacetId() );
+                n.addMixin( FACET_NODE_TYPE );
 
                 for ( Map.Entry<String, String> entry : facet.toProperties().entrySet() )
                 {
@@ -853,27 +856,22 @@ public class JcrMetadataRepository
                 i++;
             }
 
-            if ( node.hasNode( "facets" ) )
+            for ( Node n : JcrUtils.getChildNodes( node ) )
             {
-                NodeIterator j = node.getNode( "facets" ).getNodes();
-
-                while ( j.hasNext() )
+                if ( n.isNodeType( FACET_NODE_TYPE ) )
                 {
-                    Node facetNode = j.nextNode();
-
-                    MetadataFacetFactory factory = metadataFacetFactories.get( facetNode.getName() );
+                    String name = n.getName();
+                    MetadataFacetFactory factory = metadataFacetFactories.get( name );
                     if ( factory == null )
                     {
-                        log.error( "Attempted to load unknown project version metadata facet: " + facetNode.getName() );
+                        log.error( "Attempted to load unknown project version metadata facet: " + name );
                     }
                     else
                     {
                         MetadataFacet facet = factory.createMetadataFacet();
                         Map<String, String> map = new HashMap<String, String>();
-                        PropertyIterator iterator = facetNode.getProperties();
-                        while ( iterator.hasNext() )
+                        for ( Property property : JcrUtils.getProperties( n ) )
                         {
-                            Property property = iterator.nextProperty();
                             String p = property.getName();
                             if ( !p.startsWith( "jcr:" ) )
                             {
@@ -1144,7 +1142,7 @@ public class JcrMetadataRepository
 
         for ( Node n : JcrUtils.getChildNodes( artifactNode ) )
         {
-            if ( n.isNodeType( ARTIFACT_FACET_NODE_TYPE ) )
+            if ( n.isNodeType( FACET_NODE_TYPE ) )
             {
                 String name = n.getName();
                 MetadataFacetFactory factory = metadataFacetFactories.get( name );

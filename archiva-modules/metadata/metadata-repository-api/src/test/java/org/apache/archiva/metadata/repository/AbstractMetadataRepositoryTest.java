@@ -432,6 +432,41 @@ public abstract class AbstractMetadataRepositoryTest
         assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
     }
 
+    public void testUpdateArtifactMetadataWithExistingFacetsFacetPropertyWasRemoved()
+        throws MetadataResolutionException
+    {
+        ArtifactMetadata metadata = createArtifact();
+
+        Map<String, String> additionalProps = new HashMap<String, String>();
+        additionalProps.put( "deleteKey", "deleteValue" );
+
+        MetadataFacet facet = new TestMetadataFacet( TEST_FACET_ID, "baz", additionalProps );
+        metadata.addFacet( facet );
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
+
+        metadata = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                            TEST_PROJECT_VERSION ).iterator().next();
+        assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+
+        TestMetadataFacet testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
+        Map<String, String> facetProperties = testFacet.toProperties();
+
+        assertEquals( "deleteValue", facetProperties.get( "deleteKey" ) );
+
+        facetProperties.remove( "deleteKey" );
+
+        TestMetadataFacet newTestFacet = new TestMetadataFacet( TEST_FACET_ID, testFacet.getValue(), facetProperties );
+        metadata.addFacet( newTestFacet );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
+
+        metadata = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                            TEST_PROJECT_VERSION ).iterator().next();
+        assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+        testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
+        assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
+    }
+
     public void testUpdateArtifactMetadataWithExistingFacets()
     {
         ArtifactMetadata metadata = createArtifact();

@@ -142,7 +142,7 @@ public class FileMetadataRepository
             }
 
             // clear the facet contents so old properties are no longer written
-            clearMetadataFacetProperties( versionMetadata, properties );
+            clearMetadataFacetProperties( versionMetadata.getFacetList(), properties, "" );
         }
         properties.setProperty( "id", versionMetadata.getId() );
         setProperty( properties, "name", versionMetadata.getName() );
@@ -221,29 +221,30 @@ public class FileMetadataRepository
     {
         for ( MetadataFacet facet : versionMetadata.getFacetList() )
         {
-            for ( Map.Entry<String,String> entry : facet.toProperties().entrySet() )
+            for ( Map.Entry<String, String> entry : facet.toProperties().entrySet() )
             {
                 properties.setProperty( facet.getFacetId() + ":" + entry.getKey(), entry.getValue() );
             }
         }
     }
 
-    private void clearMetadataFacetProperties( ProjectVersionMetadata versionMetadata, Properties properties )
+    private static void clearMetadataFacetProperties( Collection<MetadataFacet> facetList, Properties properties,
+                                                      String prefix )
     {
         List<Object> propsToRemove = new ArrayList<Object>();
-        for ( MetadataFacet facet : versionMetadata.getFacetList() )
+        for ( MetadataFacet facet : facetList )
         {
             for ( Object key : properties.keySet() )
             {
-                String keyString = ( String ) key;
-                if( keyString.startsWith( facet.getFacetId() + ":" ) )
+                String keyString = (String) key;
+                if ( keyString.startsWith( prefix + facet.getFacetId() + ":" ) )
                 {
                     propsToRemove.add( key );
                 }
             }
         }
 
-        for( Object key : propsToRemove )
+        for ( Object key : propsToRemove )
         {
             properties.remove( key );
         }
@@ -673,6 +674,8 @@ public class FileMetadataRepository
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+        clearMetadataFacetProperties( artifact.getFacetList(), properties, "artifact:facet:" + artifact.getId() + ":" );
 
         String id = artifact.getId();
         properties.setProperty( "artifact:updated:" + id, Long.toString( artifact.getFileLastModified().getTime() ) );
