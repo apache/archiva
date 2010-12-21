@@ -73,6 +73,7 @@ import javax.jcr.query.QueryResult;
  * @todo review all methods for alternate implementations (use of queries)
  * @todo below: exception handling
  * @todo below: revise storage format for project version metadata
+ * @todo review for unnecessary node addition in r/o methods
  */
 public class JcrMetadataRepository
     implements MetadataRepository
@@ -82,6 +83,8 @@ public class JcrMetadataRepository
     private static final String ARTIFACT_NODE_TYPE = "archiva:artifact";
 
     private static final String FACET_NODE_TYPE = "archiva:facet";
+
+    private static final String QUERY_ARTIFACTS = "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "]";
 
     /**
      * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
@@ -301,8 +304,7 @@ public class JcrMetadataRepository
     public void updateProjectReference( String repositoryId, String namespace, String projectId, String projectVersion,
                                         ProjectVersionReference reference )
     {
-        // TODO: try weak reference?
-        // TODO: is this tree the right way up? It differs from the content model
+        // not using weak references, since they still need to exist upfront to be referred to
         try
         {
             Node node = getOrAddRepositoryContentNode( repositoryId );
@@ -326,7 +328,6 @@ public class JcrMetadataRepository
     {
         try
         {
-            // TODO: currently flat
             Node node = getOrAddNamespaceNode( repositoryId, namespace );
             node.setProperty( "namespace", namespace );
         }
@@ -347,8 +348,8 @@ public class JcrMetadataRepository
             // are paths themselves
             Node node = session.getRootNode().getNode( getFacetPath( repositoryId, facetId ) );
 
-            // TODO: could we simply query all nodes with no children? Or perhaps a specific nodetype?
-            //   Might be better to review the purpose of this function - why is the list of paths helpful?
+            // TODO: this is a bit awkward. Might be better to review the purpose of this function - why is the list of
+            //   paths helpful?
             recurse( facets, "", node );
         }
         catch ( PathNotFoundException e )
@@ -427,7 +428,7 @@ public class JcrMetadataRepository
             String id = metadataFacet.getFacetId();
             Node facetNode = JcrUtils.getOrAddNode( facets, id );
 
-            Node node = getOrCreatePath( facetNode, metadataFacet.getName() );
+            Node node = getOrAddNodeByPath( facetNode, metadataFacet.getName() );
 
             for ( Map.Entry<String, String> entry : metadataFacet.toProperties().entrySet() )
             {
@@ -441,24 +442,12 @@ public class JcrMetadataRepository
         }
     }
 
-    private Node getOrCreatePath( Node baseNode, String name )
-        throws RepositoryException
-    {
-        Node node = baseNode;
-        for ( String n : name.split( "/" ) )
-        {
-            node = JcrUtils.getOrAddNode( node, n );
-        }
-        return node;
-    }
-
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
         try
         {
             Node root = session.getRootNode();
             String path = getFacetPath( repositoryId, facetId );
-            // TODO: exception if missing?
             if ( root.hasNode( path ) )
             {
                 root.getNode( path ).remove();
@@ -477,12 +466,12 @@ public class JcrMetadataRepository
         {
             Node root = session.getRootNode();
             String path = getFacetPath( repositoryId, facetId, name );
-            // TODO: exception if missing?
             if ( root.hasNode( path ) )
             {
                 Node node = root.getNode( path );
                 do
                 {
+                    // also remove empty container nodes
                     Node parent = node.getParent();
                     node.remove();
                     node = parent;
@@ -501,7 +490,7 @@ public class JcrMetadataRepository
     {
         List<ArtifactMetadata> artifacts;
 
-        String q = "SELECT * FROM [archiva:artifact]";
+        String q = QUERY_ARTIFACTS;
 
         String clause = " WHERE";
         if ( startTime != null )
@@ -576,40 +565,29 @@ public class JcrMetadataRepository
 
     public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
     {
-        // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
-        //  of this information (eg. in Lucene, as before)
-        // alternatively, we could build a referential tree in the content repository, however it would need some levels
-        // of depth to avoid being too broad to be useful (eg. /repository/checksums/a/ab/abcdef1234567)
+        List<ArtifactMetadata> artifacts;
 
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
-        for ( String ns : getRootNamespaces( repositoryId ) )
-        {
-            getArtifactsByChecksum( artifacts, repositoryId, ns, checksum );
-        }
-        return artifacts;
-    }
+        String q = QUERY_ARTIFACTS + " WHERE [sha1] = $checksum OR [md5] = $checksum";
 
-    private void getArtifactsByChecksum( List<ArtifactMetadata> artifacts, String repositoryId, String ns,
-                                         String checksum )
-    {
-        for ( String namespace : getNamespaces( repositoryId, ns ) )
+        try
         {
-            getArtifactsByChecksum( artifacts, repositoryId, ns + "." + namespace, checksum );
-        }
+            Query query = session.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            ValueFactory valueFactory = session.getValueFactory();
+            query.bindValue( "checksum", valueFactory.createValue( checksum ) );
+            QueryResult result = query.execute();
 
-        for ( String project : getProjects( repositoryId, ns ) )
-        {
-            for ( String version : getProjectVersions( repositoryId, ns, project ) )
+            artifacts = new ArrayList<ArtifactMetadata>();
+            for ( Node n : JcrUtils.getNodes( result ) )
             {
-                for ( ArtifactMetadata artifact : getArtifacts( repositoryId, ns, project, version ) )
-                {
-                    if ( checksum.equals( artifact.getMd5() ) || checksum.equals( artifact.getSha1() ) )
-                    {
-                        artifacts.add( artifact );
-                    }
-                }
+                artifacts.add( getArtifactFromNode( repositoryId, n ) );
             }
         }
+        catch ( RepositoryException e )
+        {
+            // TODO
+            throw new RuntimeException( e );
+        }
+        return artifacts;
     }
 
     public void deleteArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
@@ -655,32 +633,27 @@ public class JcrMetadataRepository
 
     public List<ArtifactMetadata> getArtifacts( String repositoryId )
     {
-        // TODO: query faster?
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
-        for ( String ns : getRootNamespaces( repositoryId ) )
-        {
-            getArtifacts( artifacts, repositoryId, ns );
-        }
-        return artifacts;
-    }
+        List<ArtifactMetadata> artifacts;
 
-    private void getArtifacts( List<ArtifactMetadata> artifacts, String repoId, String ns )
-    {
-        for ( String namespace : getNamespaces( repoId, ns ) )
-        {
-            getArtifacts( artifacts, repoId, ns + "." + namespace );
-        }
+        String q = QUERY_ARTIFACTS;
 
-        for ( String project : getProjects( repoId, ns ) )
+        try
         {
-            for ( String version : getProjectVersions( repoId, ns, project ) )
+            Query query = session.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            QueryResult result = query.execute();
+
+            artifacts = new ArrayList<ArtifactMetadata>();
+            for ( Node n : JcrUtils.getNodes( result ) )
             {
-                for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
-                {
-                    artifacts.add( artifact );
-                }
+                artifacts.add( getArtifactFromNode( repositoryId, n ) );
             }
         }
+        catch ( RepositoryException e )
+        {
+            // TODO
+            throw new RuntimeException( e );
+        }
+        return artifacts;
     }
 
     public ProjectMetadata getProject( String repositoryId, String namespace, String projectId )
@@ -1026,27 +999,26 @@ public class JcrMetadataRepository
 
     public Collection<String> getNamespaces( String repositoryId, String baseNamespace )
     {
-        // TODO: could be simpler with pathed namespaces, rely on namespace property
-        Collection<String> allNamespaces = getNodeNames( "repositories/" + repositoryId + "/content" );
-
-        Set<String> namespaces = new LinkedHashSet<String>();
-        int fromIndex = baseNamespace != null ? baseNamespace.length() + 1 : 0;
-        for ( String namespace : allNamespaces )
+        List<String> namespaces = new ArrayList<String>();
+        try
         {
-            if ( baseNamespace == null || namespace.startsWith( baseNamespace + "." ) )
+            Node node = getOrAddRepositoryContentNode( repositoryId );
+            if ( baseNamespace != null )
             {
-                int i = namespace.indexOf( '.', fromIndex );
-                if ( i >= 0 )
-                {
-                    namespaces.add( namespace.substring( fromIndex, i ) );
-                }
-                else
-                {
-                    namespaces.add( namespace.substring( fromIndex ) );
-                }
+                node = getOrAddNodeByPath( node, baseNamespace.replace( '.', '/' ) );
+            }
+
+            for ( Node n : JcrUtils.getChildNodes( node ) )
+            {
+                namespaces.add( n.getName() );
             }
         }
-        return new ArrayList<String>( namespaces );
+        catch ( RepositoryException e )
+        {
+            // TODO
+            throw new RuntimeException( e );
+        }
+        return namespaces;
     }
 
     public Collection<String> getProjects( String repositoryId, String namespace )
@@ -1203,6 +1175,17 @@ public class JcrMetadataRepository
         return "repositories/" + repositoryId + "/facets/" + facetId;
     }
 
+    private Node getOrAddNodeByPath( Node baseNode, String name )
+        throws RepositoryException
+    {
+        Node node = baseNode;
+        for ( String n : name.split( "/" ) )
+        {
+            node = JcrUtils.getOrAddNode( node, n );
+        }
+        return node;
+    }
+
     private static String getFacetPath( String repositoryId, String facetId, String name )
     {
         return getFacetPath( repositoryId, facetId ) + "/" + name;
@@ -1228,7 +1211,7 @@ public class JcrMetadataRepository
         throws RepositoryException
     {
         Node repo = getOrAddRepositoryContentNode( repositoryId );
-        return JcrUtils.getOrAddNode( repo, namespace );
+        return getOrAddNodeByPath( repo, namespace.replace( '.', '/' ) );
     }
 
     private Node getOrAddProjectNode( String repositoryId, String namespace, String projectId )
