@@ -69,11 +69,9 @@ import javax.jcr.query.QueryResult;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataRepository"
- * @todo path construction should be centralised
- * @todo review all methods for alternate implementations (use of queries)
  * @todo below: exception handling
  * @todo below: revise storage format for project version metadata
- * @todo review for unnecessary node addition in r/o methods
+ * @todo revise reference storage
  */
 public class JcrMetadataRepository
     implements MetadataRepository
@@ -596,10 +594,7 @@ public class JcrMetadataRepository
         try
         {
             Node root = session.getRootNode();
-            String path =
-                "repositories/" + repositoryId + "/content/" + namespace + "/" + projectId + "/" + projectVersion +
-                    "/" + id;
-            // TODO: exception if missing?
+            String path = getArtifactPath( repositoryId, namespace, projectId, projectVersion, id );
             if ( root.hasNode( path ) )
             {
                 root.getNode( path ).remove();
@@ -617,8 +612,7 @@ public class JcrMetadataRepository
         try
         {
             Node root = session.getRootNode();
-            String path = "repositories/" + repositoryId;
-            // TODO: exception if missing?
+            String path = getRepositoryPath( repositoryId );
             if ( root.hasNode( path ) )
             {
                 root.getNode( path ).remove();
@@ -665,7 +659,7 @@ public class JcrMetadataRepository
             Node root = session.getRootNode();
 
             // basically just checking it exists
-            String path = "repositories/" + repositoryId + "/content/" + namespace + "/" + projectId;
+            String path = getProjectPath( repositoryId, namespace, projectId );
             if ( root.hasNode( path ) )
             {
                 metadata = new ProjectMetadata();
@@ -692,8 +686,7 @@ public class JcrMetadataRepository
         {
             Node root = session.getRootNode();
 
-            String path =
-                "repositories/" + repositoryId + "/content/" + namespace + "/" + projectId + "/" + projectVersion;
+            String path = getProjectVersionPath( repositoryId, namespace, projectId, projectVersion );
             if ( !root.hasNode( path ) )
             {
                 return null;
@@ -866,12 +859,6 @@ public class JcrMetadataRepository
         return versionMetadata;
     }
 
-    private static String getPropertyString( Node node, String name )
-        throws RepositoryException
-    {
-        return node.hasProperty( name ) ? node.getProperty( name ).getString() : null;
-    }
-
     public Collection<String> getArtifactVersions( String repositoryId, String namespace, String projectId,
                                                    String projectVersion )
     {
@@ -881,14 +868,10 @@ public class JcrMetadataRepository
         {
             Node root = session.getRootNode();
 
-            Node node = root.getNode(
-                "repositories/" + repositoryId + "/content/" + namespace + "/" + projectId + "/" + projectVersion );
+            Node node = root.getNode( getProjectVersionPath( repositoryId, namespace, projectId, projectVersion ) );
 
-            NodeIterator iterator = node.getNodes();
-            while ( iterator.hasNext() )
+            for ( Node n : JcrUtils.getChildNodes( node ) )
             {
-                Node n = iterator.nextNode();
-
                 versions.add( n.getProperty( "version" ).getString() );
             }
         }
@@ -915,14 +898,11 @@ public class JcrMetadataRepository
         {
             Node root = session.getRootNode();
 
-            String path =
-                "repositories/" + repositoryId + "/content/" + namespace + "/" + projectId + "/" + projectVersion +
-                    "/references";
+            String path = getProjectVersionPath( repositoryId, namespace, projectId, projectVersion ) + "/references";
             if ( root.hasNode( path ) )
             {
                 Node node = root.getNode( path );
 
-                // TODO: use query by reference type
                 NodeIterator i = node.getNodes();
                 while ( i.hasNext() )
                 {
@@ -966,71 +946,23 @@ public class JcrMetadataRepository
         return getNamespaces( repositoryId, null );
     }
 
-    private Collection<String> getNodeNames( String path )
-    {
-        List<String> names = new ArrayList<String>();
-
-        try
-        {
-            Node root = session.getRootNode();
-
-            Node repository = root.getNode( path );
-
-            NodeIterator nodes = repository.getNodes();
-            while ( nodes.hasNext() )
-            {
-                Node node = nodes.nextNode();
-                names.add( node.getName() );
-            }
-        }
-        catch ( PathNotFoundException e )
-        {
-            // ignore repo not found for now
-            // TODO: throw specific exception if repo doesn't exist
-        }
-        catch ( RepositoryException e )
-        {
-            // TODO
-            throw new RuntimeException( e );
-        }
-
-        return names;
-    }
-
     public Collection<String> getNamespaces( String repositoryId, String baseNamespace )
     {
-        List<String> namespaces = new ArrayList<String>();
-        try
-        {
-            Node node = getOrAddRepositoryContentNode( repositoryId );
-            if ( baseNamespace != null )
-            {
-                node = getOrAddNodeByPath( node, baseNamespace.replace( '.', '/' ) );
-            }
+        String path = baseNamespace != null
+            ? getNamespacePath( repositoryId, baseNamespace )
+            : getRepositoryContentPath( repositoryId );
 
-            for ( Node n : JcrUtils.getChildNodes( node ) )
-            {
-                namespaces.add( n.getName() );
-            }
-        }
-        catch ( RepositoryException e )
-        {
-            // TODO
-            throw new RuntimeException( e );
-        }
-        return namespaces;
+        return getNodeNames( path );
     }
 
     public Collection<String> getProjects( String repositoryId, String namespace )
     {
-        // TODO: could be simpler with pathed namespaces, rely on namespace property
-        return getNodeNames( "repositories/" + repositoryId + "/content/" + namespace );
+        return getNodeNames( getNamespacePath( repositoryId, namespace ) );
     }
 
     public Collection<String> getProjectVersions( String repositoryId, String namespace, String projectId )
     {
-        // TODO: could be simpler with pathed namespaces, rely on namespace property
-        return getNodeNames( "repositories/" + repositoryId + "/content/" + namespace + "/" + projectId );
+        return getNodeNames( getProjectPath( repositoryId, namespace, projectId ) );
     }
 
     public Collection<ArtifactMetadata> getArtifacts( String repositoryId, String namespace, String projectId,
@@ -1041,20 +973,15 @@ public class JcrMetadataRepository
         try
         {
             Node root = session.getRootNode();
-            String path =
-                "repositories/" + repositoryId + "/content/" + namespace + "/" + projectId + "/" + projectVersion;
+            String path = getProjectVersionPath( repositoryId, namespace, projectId, projectVersion );
 
             if ( root.hasNode( path ) )
             {
                 Node node = root.getNode( path );
 
-                NodeIterator iterator = node.getNodes();
-                while ( iterator.hasNext() )
+                for ( Node n : JcrUtils.getChildNodes( node ) )
                 {
-                    Node artifactNode = iterator.nextNode();
-
-                    ArtifactMetadata artifact = getArtifactFromNode( repositoryId, artifactNode );
-                    artifacts.add( artifact );
+                    artifacts.add( getArtifactFromNode( repositoryId, n ) );
                 }
             }
         }
@@ -1065,6 +992,34 @@ public class JcrMetadataRepository
         }
 
         return artifacts;
+    }
+
+    void close()
+    {
+        try
+        {
+            // TODO: this shouldn't be here! Repository may need a context
+            session.save();
+        }
+        catch ( RepositoryException e )
+        {
+            // TODO
+            throw new RuntimeException( e );
+        }
+        session.logout();
+    }
+
+    public void setMetadataFacetFactories( Map<String, MetadataFacetFactory> metadataFacetFactories )
+    {
+        this.metadataFacetFactories = metadataFacetFactories;
+
+        // TODO: check if actually called by normal injection
+
+        // TODO: consider using namespaces for facets instead of the current approach:
+//        for ( String facetId : metadataFacetFactories.keySet() )
+//        {
+//            session.getWorkspace().getNamespaceRegistry().registerNamespace( facetId, facetId );
+//        }
     }
 
     private ArtifactMetadata getArtifactFromNode( String repositoryId, Node artifactNode )
@@ -1142,37 +1097,78 @@ public class JcrMetadataRepository
         return artifact;
     }
 
-    void close()
+    private static String getPropertyString( Node node, String name )
+        throws RepositoryException
     {
+        return node.hasProperty( name ) ? node.getProperty( name ).getString() : null;
+    }
+
+    private Collection<String> getNodeNames( String path )
+    {
+        List<String> names = new ArrayList<String>();
+
         try
         {
-            // TODO: this shouldn't be here! Repository may need a context
-            session.save();
+            Node root = session.getRootNode();
+
+            Node repository = root.getNode( path );
+
+            NodeIterator nodes = repository.getNodes();
+            while ( nodes.hasNext() )
+            {
+                Node node = nodes.nextNode();
+                names.add( node.getName() );
+            }
+        }
+        catch ( PathNotFoundException e )
+        {
+            // ignore repo not found for now
+            // TODO: throw specific exception if repo doesn't exist
         }
         catch ( RepositoryException e )
         {
             // TODO
             throw new RuntimeException( e );
         }
-        session.logout();
+
+        return names;
     }
 
-    public void setMetadataFacetFactories( Map<String, MetadataFacetFactory> metadataFacetFactories )
+    private static String getRepositoryPath( String repositoryId )
     {
-        this.metadataFacetFactories = metadataFacetFactories;
+        return "repositories/" + repositoryId;
+    }
 
-        // TODO: check if actually called by normal injection
-
-//        for ( String facetId : metadataFacetFactories.keySet() )
-//        {
-//            // TODO: second arg should be a better URL for the namespace
-//            session.getWorkspace().getNamespaceRegistry().registerNamespace( facetId, facetId );
-//        }
+    private static String getRepositoryContentPath( String repositoryId )
+    {
+        return getRepositoryPath( repositoryId ) + "/content/";
     }
 
     private static String getFacetPath( String repositoryId, String facetId )
     {
-        return "repositories/" + repositoryId + "/facets/" + facetId;
+        return getRepositoryPath( repositoryId ) + "/facets/" + facetId;
+    }
+
+    private static String getNamespacePath( String repositoryId, String namespace )
+    {
+        return getRepositoryContentPath( repositoryId ) + namespace.replace( '.', '/' );
+    }
+
+    private static String getProjectPath( String repositoryId, String namespace, String projectId )
+    {
+        return getNamespacePath( repositoryId, namespace ) + "/" + projectId;
+    }
+
+    private static String getProjectVersionPath( String repositoryId, String namespace, String projectId,
+                                                 String projectVersion )
+    {
+        return getProjectPath( repositoryId, namespace, projectId ) + "/" + projectVersion;
+    }
+
+    private static String getArtifactPath( String repositoryId, String namespace, String projectId,
+                                           String projectVersion, String id )
+    {
+        return getProjectVersionPath( repositoryId, namespace, projectId, projectVersion ) + "/" + id;
     }
 
     private Node getOrAddNodeByPath( Node baseNode, String name )
