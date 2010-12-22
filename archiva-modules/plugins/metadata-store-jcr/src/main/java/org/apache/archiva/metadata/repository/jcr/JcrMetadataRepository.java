@@ -36,11 +36,9 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.core.TransientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -91,25 +89,26 @@ public class JcrMetadataRepository
 
     private static final Logger log = LoggerFactory.getLogger( JcrMetadataRepository.class );
 
-    private static Repository repository;
+    /**
+     * @plexus.requirement
+     */
+    private Repository repository;
 
     private Session session;
 
     public JcrMetadataRepository()
     {
+    }
+
+    public void login()
+    {
         // TODO: need to close this at the end - do we need to add it in the API?
 
         try
         {
-            // TODO: push this in from the test, and make it possible from the webapp
-            if ( repository == null )
-            {
-                repository = new TransientRepository( new File( "src/test/repository.xml" ), new File( "target/jcr" ) );
-            }
             // TODO: shouldn't do this in constructor since it's a singleton
             session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
 
-            // TODO: try moving this into the repo instantiation
             Workspace workspace = session.getWorkspace();
             workspace.getNamespaceRegistry().registerNamespace( "archiva", "http://archiva.apache.org/jcr/" );
 

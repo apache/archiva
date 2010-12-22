@@ -58,23 +58,29 @@
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-jcr-commons</artifactId>
+      <version>${jackrabbit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-core</artifactId>
       <version>${jackrabbit.version}</version>
-      <!-- TODO: trim more, or look for a lighter container? -->
+      <scope>test</scope>
+      <!-- could trim more, but since it's just for test we don't need to worry -->
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.apache.derby</groupId>
-          <artifactId>derby</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.jackrabbit</groupId>
-          <artifactId>jackrabbit-text-extractors</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
   </dependencies>
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/filtered-resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
 </project>

@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.jcr;
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FileUtils;
 
 import java.util.Map;
@@ -40,18 +41,11 @@ public class JcrMetadataRepositoryTest
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
-        jcrMetadataRepository = new JcrMetadataRepository();
+        jcrMetadataRepository = (JcrMetadataRepository) lookup( MetadataRepository.class );
         jcrMetadataRepository.setMetadataFacetFactories( factories );
+        jcrMetadataRepository.login();
 
-        this.repository = jcrMetadataRepository;
-    }
-
-    @Override
-    protected void tearDown()
-        throws Exception
-    {
-        super.tearDown();
-
+        // removing content is faster than deleting and re-copying the files from target/jcr
         try
         {
             jcrMetadataRepository.getJcrSession().getRootNode().getNode( "repositories" ).remove();
@@ -61,6 +55,15 @@ public class JcrMetadataRepositoryTest
             // ignore
         }
 
+        this.repository = jcrMetadataRepository;
+    }
+
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
         jcrMetadataRepository.close();
+
+        super.tearDown();
     }
 }
