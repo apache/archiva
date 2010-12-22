@@ -33,6 +33,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.core.TransientRepository;
@@ -69,7 +70,6 @@ import javax.jcr.query.QueryResult;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataRepository"
- * @todo below: exception handling
  * @todo below: revise storage format for project version metadata
  * @todo revise reference storage
  */
@@ -109,6 +109,7 @@ public class JcrMetadataRepository
             // TODO: shouldn't do this in constructor since it's a singleton
             session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
 
+            // TODO: try moving this into the repo instantiation
             Workspace workspace = session.getWorkspace();
             workspace.getNamespaceRegistry().registerNamespace( "archiva", "http://archiva.apache.org/jcr/" );
 
@@ -138,11 +139,13 @@ public class JcrMetadataRepository
     }
 
     public void updateProject( String repositoryId, ProjectMetadata project )
+        throws MetadataRepositoryException
     {
         updateProject( repositoryId, project.getNamespace(), project.getId() );
     }
 
     private void updateProject( String repositoryId, String namespace, String projectId )
+        throws MetadataRepositoryException
     {
         updateNamespace( repositoryId, namespace );
 
@@ -152,13 +155,13 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public void updateArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
+        throws MetadataRepositoryException
     {
         updateNamespace( repositoryId, namespace );
 
@@ -202,13 +205,13 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public void updateProjectVersion( String repositoryId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
+        throws MetadataRepositoryException
     {
         updateProject( repositoryId, namespace, projectId );
 
@@ -294,13 +297,13 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public void updateProjectReference( String repositoryId, String namespace, String projectId, String projectVersion,
                                         ProjectVersionReference reference )
+        throws MetadataRepositoryException
     {
         // not using weak references, since they still need to exist upfront to be referred to
         try
@@ -317,12 +320,12 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public void updateNamespace( String repositoryId, String namespace )
+        throws MetadataRepositoryException
     {
         try
         {
@@ -331,12 +334,12 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public List<String> getMetadataFacets( String repositoryId, String facetId )
+        throws MetadataRepositoryException
     {
         List<String> facets = new ArrayList<String>();
 
@@ -356,8 +359,7 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
         return facets;
     }
@@ -381,6 +383,7 @@ public class JcrMetadataRepository
     }
 
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
+        throws MetadataRepositoryException
     {
         MetadataFacet metadataFacet = null;
         try
@@ -410,13 +413,13 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
         return metadataFacet;
     }
 
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
+        throws MetadataRepositoryException
     {
         try
         {
@@ -435,12 +438,12 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public void removeMetadataFacets( String repositoryId, String facetId )
+        throws MetadataRepositoryException
     {
         try
         {
@@ -453,12 +456,12 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public void removeMetadataFacet( String repositoryId, String facetId, String name )
+        throws MetadataRepositoryException
     {
         try
         {
@@ -479,12 +482,12 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
+        throws MetadataRepositoryException
     {
         List<ArtifactMetadata> artifacts;
 
@@ -523,13 +526,13 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
         return artifacts;
     }
 
     public Collection<String> getRepositories()
+        throws MetadataRepositoryException
     {
         List<String> repositories;
 
@@ -555,13 +558,13 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
         return repositories;
     }
 
     public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+        throws MetadataRepositoryException
     {
         List<ArtifactMetadata> artifacts;
 
@@ -582,14 +585,14 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
         return artifacts;
     }
 
     public void deleteArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 String id )
+        throws MetadataRepositoryException
     {
         try
         {
@@ -602,12 +605,12 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public void deleteRepository( String repositoryId )
+        throws MetadataRepositoryException
     {
         try
         {
@@ -620,12 +623,12 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     public List<ArtifactMetadata> getArtifacts( String repositoryId )
+        throws MetadataRepositoryException
     {
         List<ArtifactMetadata> artifacts;
 
@@ -644,13 +647,13 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
         return artifacts;
     }
 
     public ProjectMetadata getProject( String repositoryId, String namespace, String projectId )
+        throws MetadataResolutionException
     {
         ProjectMetadata metadata = null;
 
@@ -669,8 +672,7 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataResolutionException( e.getMessage(), e );
         }
 
         return metadata;
@@ -852,8 +854,7 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataResolutionException( e.getMessage(), e );
         }
 
         return versionMetadata;
@@ -861,6 +862,7 @@ public class JcrMetadataRepository
 
     public Collection<String> getArtifactVersions( String repositoryId, String namespace, String projectId,
                                                    String projectVersion )
+        throws MetadataResolutionException
     {
         Set<String> versions = new LinkedHashSet<String>();
 
@@ -878,12 +880,10 @@ public class JcrMetadataRepository
         catch ( PathNotFoundException e )
         {
             // ignore repo not found for now
-            // TODO: throw specific exception if repo doesn't exist
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataResolutionException( e.getMessage(), e );
         }
 
         return versions;
@@ -891,6 +891,7 @@ public class JcrMetadataRepository
 
     public Collection<ProjectVersionReference> getProjectReferences( String repositoryId, String namespace,
                                                                      String projectId, String projectVersion )
+        throws MetadataResolutionException
     {
         List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
 
@@ -934,19 +935,20 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataResolutionException( e.getMessage(), e );
         }
 
         return references;
     }
 
     public Collection<String> getRootNamespaces( String repositoryId )
+        throws MetadataResolutionException
     {
         return getNamespaces( repositoryId, null );
     }
 
     public Collection<String> getNamespaces( String repositoryId, String baseNamespace )
+        throws MetadataResolutionException
     {
         String path = baseNamespace != null
             ? getNamespacePath( repositoryId, baseNamespace )
@@ -956,17 +958,20 @@ public class JcrMetadataRepository
     }
 
     public Collection<String> getProjects( String repositoryId, String namespace )
+        throws MetadataResolutionException
     {
         return getNodeNames( getNamespacePath( repositoryId, namespace ) );
     }
 
     public Collection<String> getProjectVersions( String repositoryId, String namespace, String projectId )
+        throws MetadataResolutionException
     {
         return getNodeNames( getProjectPath( repositoryId, namespace, projectId ) );
     }
 
     public Collection<ArtifactMetadata> getArtifacts( String repositoryId, String namespace, String projectId,
                                                       String projectVersion )
+        throws MetadataResolutionException
     {
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
 
@@ -987,8 +992,7 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataResolutionException( e.getMessage(), e );
         }
 
         return artifacts;
@@ -1104,6 +1108,7 @@ public class JcrMetadataRepository
     }
 
     private Collection<String> getNodeNames( String path )
+        throws MetadataResolutionException
     {
         List<String> names = new ArrayList<String>();
 
@@ -1123,12 +1128,10 @@ public class JcrMetadataRepository
         catch ( PathNotFoundException e )
         {
             // ignore repo not found for now
-            // TODO: throw specific exception if repo doesn't exist
         }
         catch ( RepositoryException e )
         {
-            // TODO
-            throw new RuntimeException( e );
+            throw new MetadataResolutionException( e.getMessage(), e );
         }
 
         return names;

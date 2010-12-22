@@ -35,46 +35,63 @@ public interface MetadataRepository
     /**
      * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
      *
-     * @param repositoryId  the repository the project is in
-     * @param project the project metadata to create or update
+     * @param repositoryId the repository the project is in
+     * @param project      the project metadata to create or update
      */
-    void updateProject( String repositoryId, ProjectMetadata project );
+    void updateProject( String repositoryId, ProjectMetadata project )
+        throws MetadataRepositoryException;
 
     void updateArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
-                         ArtifactMetadata artifactMeta );
+                         ArtifactMetadata artifactMeta )
+        throws MetadataRepositoryException;
 
     void updateProjectVersion( String repositoryId, String namespace, String projectId,
-                               ProjectVersionMetadata versionMetadata );
+                               ProjectVersionMetadata versionMetadata )
+        throws MetadataRepositoryException;
 
     void updateProjectReference( String repositoryId, String namespace, String projectId, String projectVersion,
-                                 ProjectVersionReference reference );
+                                 ProjectVersionReference reference )
+        throws MetadataRepositoryException;
 
-    void updateNamespace( String repositoryId, String namespace );
+    void updateNamespace( String repositoryId, String namespace )
+        throws MetadataRepositoryException;
 
-    List<String> getMetadataFacets( String repositoryId, String facetId );
+    List<String> getMetadataFacets( String repositoryId, String facetId )
+        throws MetadataRepositoryException;
 
-    MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name );
+    MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
+        throws MetadataRepositoryException;
 
-    void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet );
+    void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
+        throws MetadataRepositoryException;
 
-    void removeMetadataFacets( String repositoryId, String facetId );
+    void removeMetadataFacets( String repositoryId, String facetId )
+        throws MetadataRepositoryException;
 
-    void removeMetadataFacet( String repositoryId, String facetId, String name );
+    void removeMetadataFacet( String repositoryId, String facetId, String name )
+        throws MetadataRepositoryException;
 
-    List<ArtifactMetadata> getArtifactsByDateRange( String repositoryId, Date startTime, Date endTime );
+    List<ArtifactMetadata> getArtifactsByDateRange( String repositoryId, Date startTime, Date endTime )
+        throws MetadataRepositoryException;
 
     // TODO: remove from API, just use configuration
-    Collection<String> getRepositories();
+    Collection<String> getRepositories()
+        throws MetadataRepositoryException;
 
-    List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum );
+    List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+        throws MetadataRepositoryException;
 
-    void deleteArtifact( String repositoryId, String namespace, String project, String version, String id );
+    void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
+        throws MetadataRepositoryException;
 
     /**
      * Delete a repository's metadata. This includes all associated metadata facets.
+     *
      * @param repositoryId the repository to delete
      */
-    void deleteRepository( String repositoryId );
+    void deleteRepository( String repositoryId )
+        throws MetadataRepositoryException;
 
-    List<ArtifactMetadata> getArtifacts(String repositoryId);
+    List<ArtifactMetadata> getArtifacts( String repositoryId )
+        throws MetadataRepositoryException;
 }

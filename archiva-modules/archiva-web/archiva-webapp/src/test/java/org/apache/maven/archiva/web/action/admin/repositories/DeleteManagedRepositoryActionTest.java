@@ -23,6 +23,7 @@ import com.opensymphony.xwork2.Action;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -42,7 +43,6 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -123,7 +123,7 @@ public class DeleteManagedRepositoryActionTest
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
 
-         Configuration stageRepoConfiguration = new Configuration();
+        Configuration stageRepoConfiguration = new Configuration();
         stageRepoConfiguration.addManagedRepository( createSatingRepository() );
         archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
 
@@ -174,6 +174,7 @@ public class DeleteManagedRepositoryActionTest
     }
 
     private MockControl mockMetadataRepository()
+        throws MetadataRepositoryException
     {
         MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
@@ -273,8 +274,8 @@ public class DeleteManagedRepositoryActionTest
     }
 
 
-
-    private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, int expectCountGetConfig )
+    private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository,
+                                            int expectCountGetConfig )
         throws RegistryException, IndeterminateConfigurationException
     {
         location.mkdirs();
@@ -287,7 +288,6 @@ public class DeleteManagedRepositoryActionTest
         Configuration stageRepoConfiguration = new Configuration();
         stageRepoConfiguration.addManagedRepository( createSatingRepository() );
         archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
-
 
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
@@ -348,7 +348,7 @@ public class DeleteManagedRepositoryActionTest
     private ManagedRepositoryConfiguration createSatingRepository()
     {
         ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
-        r.setId( REPO_ID +"-stage" );
+        r.setId( REPO_ID + "-stage" );
         r.setName( "repo name" );
         r.setLocation( location.getAbsolutePath() );
         r.setLayout( "default" );
@@ -362,7 +362,7 @@ public class DeleteManagedRepositoryActionTest
         return r;
     }
 
-    private RemoteRepositoryConfiguration createRemoteRepository(String id, String url)
+    private RemoteRepositoryConfiguration createRemoteRepository( String id, String url )
     {
         RemoteRepositoryConfiguration r = new RemoteRepositoryConfiguration();
         r.setId( id );

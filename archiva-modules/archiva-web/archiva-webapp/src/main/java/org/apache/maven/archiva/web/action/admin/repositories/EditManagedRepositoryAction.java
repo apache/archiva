@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -144,7 +145,7 @@ public class EditManagedRepositoryAction
             //delete staging repo when we dont need it
             if ( !stageNeeded )
             {
-                stagingRepository = getStageRepoConfig(configuration);
+                stagingRepository = getStageRepoConfig( configuration );
                 removeRepository( stagingRepository.getId(), configuration );
                 removeContents( stagingRepository );
                 removeRepositoryRoles( stagingRepository );
@@ -166,6 +167,11 @@ public class EditManagedRepositoryAction
             addActionError( "Role Manager Exception: " + e.getMessage() );
             result = ERROR;
         }
+        catch ( MetadataRepositoryException e )
+        {
+            addActionError( "Metadata Exception: " + e.getMessage() );
+            result = ERROR;
+        }
 
         return result;
     }
@@ -177,7 +183,7 @@ public class EditManagedRepositoryAction
             if ( repoConf.getId().equals( repository.getId() + "-stage" ) )
             {
                 stagingRepository = repoConf;
-                removeRepository( repoConf .getId() , configuration);
+                removeRepository( repoConf.getId(), configuration );
                 updateStagingRepository( stagingRepository );
                 return stagingRepository;
             }
@@ -220,6 +226,7 @@ public class EditManagedRepositoryAction
     }
 
     private void resetStatistics()
+        throws MetadataRepositoryException
     {
         repositoryStatisticsManager.deleteStatistics( repository.getId() );
     }

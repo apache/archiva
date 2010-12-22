@@ -19,19 +19,19 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Browse the repository.
@@ -62,6 +62,7 @@ public class BrowseAction
     private Collection<String> projectVersions;
 
     public String browse()
+        throws MetadataResolutionException
     {
         List<String> selectedRepos = getObservableRepos();
         if ( CollectionUtils.isEmpty( selectedRepos ) )
@@ -91,6 +92,7 @@ public class BrowseAction
     }
 
     private String collapseNamespaces( Collection<String> repoIds, String n )
+        throws MetadataResolutionException
     {
         Set<String> subNamespaces = new LinkedHashSet<String>();
         for ( String repoId : repoIds )
@@ -124,6 +126,7 @@ public class BrowseAction
     }
 
     public String browseGroup()
+        throws MetadataResolutionException
     {
         if ( StringUtils.isEmpty( groupId ) )
         {
@@ -171,6 +174,7 @@ public class BrowseAction
     }
 
     public String browseArtifact()
+        throws MetadataResolutionException
     {
         if ( StringUtils.isEmpty( groupId ) )
         {
@@ -249,8 +253,8 @@ public class BrowseAction
             }
             else
             {
-                MavenProjectFacet versionMetadataMavenFacet =
-                    (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
+                MavenProjectFacet versionMetadataMavenFacet = (MavenProjectFacet) versionMetadata.getFacet(
+                    MavenProjectFacet.FACET_ID );
                 if ( versionMetadataMavenFacet != null )
                 {
                     if ( mavenFacet.getPackaging() != null && !StringUtils.equalsIgnoreCase( mavenFacet.getPackaging(),
@@ -260,14 +264,14 @@ public class BrowseAction
                     }
                 }
 
-                if ( sharedModel.getName() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getName(), versionMetadata.getName() ) )
+                if ( sharedModel.getName() != null && !StringUtils.equalsIgnoreCase( sharedModel.getName(),
+                                                                                     versionMetadata.getName() ) )
                 {
                     sharedModel.setName( "" );
                 }
 
-                if ( sharedModel.getDescription() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getDescription(), versionMetadata.getDescription() ) )
+                if ( sharedModel.getDescription() != null && !StringUtils.equalsIgnoreCase(
+                    sharedModel.getDescription(), versionMetadata.getDescription() ) )
                 {
                     sharedModel.setDescription( null );
                 }
@@ -293,8 +297,8 @@ public class BrowseAction
                     sharedModel.setOrganization( null );
                 }
 
-                if ( sharedModel.getUrl() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), versionMetadata.getUrl() ) )
+                if ( sharedModel.getUrl() != null && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(),
+                                                                                    versionMetadata.getUrl() ) )
                 {
                     sharedModel.setUrl( null );
                 }

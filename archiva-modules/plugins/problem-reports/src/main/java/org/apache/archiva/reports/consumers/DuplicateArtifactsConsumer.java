@@ -23,6 +23,7 @@ import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.collections.CollectionUtils;
@@ -96,6 +97,7 @@ public class DuplicateArtifactsConsumer
 
     /**
      * FIXME: needs to be selected based on the repository in question
+     *
      * @plexus.requirement role-hint="maven2"
      */
     private RepositoryPathTranslator pathTranslator;
@@ -135,7 +137,7 @@ public class DuplicateArtifactsConsumer
     public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
-        beginScan( repo, whenGathered );   
+        beginScan( repo, whenGathered );
     }
 
     public void processFile( String path )
@@ -158,7 +160,15 @@ public class DuplicateArtifactsConsumer
             throw new ConsumerException( e.getMessage(), e );
         }
 
-        List<ArtifactMetadata> results = metadataRepository.getArtifactsByChecksum( repoId, checksumSha1 );
+        List<ArtifactMetadata> results;
+        try
+        {
+            results = metadataRepository.getArtifactsByChecksum( repoId, checksumSha1 );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }
 
         if ( CollectionUtils.isNotEmpty( results ) )
         {
@@ -203,7 +213,14 @@ public class DuplicateArtifactsConsumer
                     dupArtifact.getId() ) );
                 problem.setProblem( "duplicate-artifact" );
 
-                metadataRepository.addMetadataFacet( repoId, problem );
+                try
+                {
+                    metadataRepository.addMetadataFacet( repoId, problem );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    throw new ConsumerException( e.getMessage(), e );
+                }
             }
         }
     }
@@ -211,7 +228,7 @@ public class DuplicateArtifactsConsumer
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
-        processFile( path );     
+        processFile( path );
     }
 
     public void completeScan()

@@ -19,17 +19,22 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 public interface AuditManager
 {
-    List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds );
+    List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds )
+        throws MetadataRepositoryException;
 
-    void addAuditEvent( AuditEvent event );
+    void addAuditEvent( AuditEvent event )
+        throws MetadataRepositoryException;
 
-    void deleteAuditEvents( String repositoryId );
+    void deleteAuditEvents( String repositoryId )
+        throws MetadataRepositoryException;
 
     /**
      * Get all audit events from the given repositories that match a certain range
@@ -39,7 +44,8 @@ public interface AuditManager
      * @param endTime       find events only before this time
      * @return the list of events found
      */
-    List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime );
+    List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime )
+        throws MetadataRepositoryException;
 
     /**
      * Get all audit events from the given repositories that match a certain range and resource pattern
@@ -51,5 +57,6 @@ public interface AuditManager
      * @return the list of events found
      */
     List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, String resourcePattern, Date startTime,
-                                            Date endTime );
+                                            Date endTime )
+        throws MetadataRepositoryException;
 }

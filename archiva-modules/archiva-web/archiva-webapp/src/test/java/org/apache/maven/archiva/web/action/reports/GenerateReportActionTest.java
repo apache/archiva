@@ -19,13 +19,6 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -35,6 +28,13 @@ import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Test the GenerationReportAction. Note that we are testing for <i>current</i> behaviour, however there are several
@@ -167,10 +167,12 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsSingleRepo()
+        throws Exception
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ),
-            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createDefaultStats() ) );
 
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
@@ -181,9 +183,13 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsSingleRepoNoStats()
+        throws Exception
+
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ), Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.<Object>emptyList() );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
 
@@ -195,10 +201,13 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsOvershotPages()
+        throws Exception
+
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ),
-            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createDefaultStats() ) );
         repositoryStatisticsManagerControl.replay();
         action.setPage( 2 );
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
@@ -210,12 +219,17 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsMultipleRepoNoResults()
+        throws Exception
+
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS, null, null ),
-            Collections.<Object>emptyList() );
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ), Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.<Object>emptyList() );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
 
@@ -229,13 +243,17 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsMultipleRepo()
+        throws Exception
+
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS, null, null ),
-            Collections.singletonList( createDefaultStats() ) );
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ),
-            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createDefaultStats() ) );
 
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
@@ -246,12 +264,13 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsSingleRepo()
-        throws IOException
+        throws Exception
     {
         Date date = new Date();
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS, null, null ),
-            Collections.singletonList( createStats( date ) ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createStats( date ) ) );
         repositoryStatisticsManagerControl.replay();
 
         prepareAction( Arrays.asList( SNAPSHOTS ), Arrays.asList( INTERNAL ) );
@@ -268,14 +287,16 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsMultipleRepos()
-        throws IOException
+        throws Exception
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS, null, null ),
-            Collections.singletonList( createDefaultStats() ) );
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ),
-            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createDefaultStats() ) );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
 
@@ -343,9 +364,13 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsSingleRepoNoStats()
+        throws Exception
+
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ), Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.<Object>emptyList() );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
 
@@ -367,12 +392,17 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsMultipleRepoNoResults()
+        throws Exception
+
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS, null, null ),
-            Collections.<Object>emptyList() );
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ), Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.<Object>emptyList() );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
 
@@ -385,14 +415,16 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsMultipleRepoInStrutsFormat()
-        throws IOException
+        throws Exception
     {
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS, null, null ),
-            Collections.singletonList( createDefaultStats() ) );
-        repositoryStatisticsManagerControl.expectAndReturn(
-            repositoryStatisticsManager.getStatisticsInRange( INTERNAL, null, null ),
-            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
+                                                                                                              null,
+                                                                                                              null ),
+                                                            Collections.singletonList( createDefaultStats() ) );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
 
@@ -412,15 +444,17 @@ public class GenerateReportActionTest
         RepositoryProblemFacet problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
         RepositoryProblemFacet problem2 = createProblem( GROUP_ID, "artifactId-2", INTERNAL );
 
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
-            Arrays.asList( problem1.getName(), problem2.getName() ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem1.getName() ),
-            problem1 );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem2.getName() ),
-            problem2 );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( INTERNAL,
+                                                                                         RepositoryProblemFacet.FACET_ID ),
+                                                   Arrays.asList( problem1.getName(), problem2.getName() ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( INTERNAL,
+                                                                                        RepositoryProblemFacet.FACET_ID,
+                                                                                        problem1.getName() ),
+                                                   problem1 );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( INTERNAL,
+                                                                                        RepositoryProblemFacet.FACET_ID,
+                                                                                        problem2.getName() ),
+                                                   problem2 );
         metadataRepositoryControl.replay();
 
         action.setRepositoryId( INTERNAL );
@@ -459,18 +493,20 @@ public class GenerateReportActionTest
     {
         RepositoryProblemFacet problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
         RepositoryProblemFacet problem2 = createProblem( GROUP_ID, "artifactId-2", SNAPSHOTS );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
-            Arrays.asList( problem1.getName() ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( SNAPSHOTS, RepositoryProblemFacet.FACET_ID ),
-            Arrays.asList( problem2.getName() ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem1.getName() ),
-            problem1 );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( SNAPSHOTS, RepositoryProblemFacet.FACET_ID, problem2.getName() ),
-            problem2 );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( INTERNAL,
+                                                                                         RepositoryProblemFacet.FACET_ID ),
+                                                   Arrays.asList( problem1.getName() ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( SNAPSHOTS,
+                                                                                         RepositoryProblemFacet.FACET_ID ),
+                                                   Arrays.asList( problem2.getName() ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( INTERNAL,
+                                                                                        RepositoryProblemFacet.FACET_ID,
+                                                                                        problem1.getName() ),
+                                                   problem1 );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( SNAPSHOTS,
+                                                                                        RepositoryProblemFacet.FACET_ID,
+                                                                                        problem2.getName() ),
+                                                   problem2 );
         metadataRepositoryControl.replay();
 
         action.setRepositoryId( GenerateReportAction.ALL_REPOSITORIES );
@@ -480,8 +516,8 @@ public class GenerateReportActionTest
         String result = action.execute();
         assertSuccessResult( result );
 
-        assertEquals( Arrays.asList( INTERNAL, SNAPSHOTS ),
-                      new ArrayList<String>( action.getRepositoriesMap().keySet() ) );
+        assertEquals( Arrays.asList( INTERNAL, SNAPSHOTS ), new ArrayList<String>(
+            action.getRepositoriesMap().keySet() ) );
         assertEquals( Arrays.asList( problem1 ), action.getRepositoriesMap().get( INTERNAL ) );
         assertEquals( Arrays.asList( problem2 ), action.getRepositoriesMap().get( SNAPSHOTS ) );
 
@@ -493,15 +529,17 @@ public class GenerateReportActionTest
     {
         RepositoryProblemFacet problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
         RepositoryProblemFacet problem2 = createProblem( GROUP_ID, "artifactId-2", INTERNAL );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
-            Arrays.asList( problem1.getName(), problem2.getName() ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem1.getName() ),
-            problem1 );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem2.getName() ),
-            problem2 );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( INTERNAL,
+                                                                                         RepositoryProblemFacet.FACET_ID ),
+                                                   Arrays.asList( problem1.getName(), problem2.getName() ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( INTERNAL,
+                                                                                        RepositoryProblemFacet.FACET_ID,
+                                                                                        problem1.getName() ),
+                                                   problem1 );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( INTERNAL,
+                                                                                        RepositoryProblemFacet.FACET_ID,
+                                                                                        problem2.getName() ),
+                                                   problem2 );
         metadataRepositoryControl.replay();
 
         action.setGroupId( GROUP_ID );
@@ -523,18 +561,20 @@ public class GenerateReportActionTest
     {
         RepositoryProblemFacet problem1 = createProblem( GROUP_ID, "artifactId", INTERNAL );
         RepositoryProblemFacet problem2 = createProblem( GROUP_ID, "artifactId-2", SNAPSHOTS );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
-            Arrays.asList( problem1.getName() ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( SNAPSHOTS, RepositoryProblemFacet.FACET_ID ),
-            Arrays.asList( problem2.getName() ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( INTERNAL, RepositoryProblemFacet.FACET_ID, problem1.getName() ),
-            problem1 );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacet( SNAPSHOTS, RepositoryProblemFacet.FACET_ID, problem2.getName() ),
-            problem2 );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( INTERNAL,
+                                                                                         RepositoryProblemFacet.FACET_ID ),
+                                                   Arrays.asList( problem1.getName() ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( SNAPSHOTS,
+                                                                                         RepositoryProblemFacet.FACET_ID ),
+                                                   Arrays.asList( problem2.getName() ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( INTERNAL,
+                                                                                        RepositoryProblemFacet.FACET_ID,
+                                                                                        problem1.getName() ),
+                                                   problem1 );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( SNAPSHOTS,
+                                                                                        RepositoryProblemFacet.FACET_ID,
+                                                                                        problem2.getName() ),
+                                                   problem2 );
         metadataRepositoryControl.replay();
 
         action.setGroupId( GROUP_ID );
@@ -545,8 +585,8 @@ public class GenerateReportActionTest
         String result = action.execute();
         assertSuccessResult( result );
 
-        assertEquals( Arrays.asList( INTERNAL, SNAPSHOTS ),
-                      new ArrayList<String>( action.getRepositoriesMap().keySet() ) );
+        assertEquals( Arrays.asList( INTERNAL, SNAPSHOTS ), new ArrayList<String>(
+            action.getRepositoriesMap().keySet() ) );
         assertEquals( Arrays.asList( problem1 ), action.getRepositoriesMap().get( INTERNAL ) );
         assertEquals( Arrays.asList( problem2 ), action.getRepositoriesMap().get( SNAPSHOTS ) );
 
@@ -556,9 +596,9 @@ public class GenerateReportActionTest
     public void testHealthReportSingleRepoByIncorrectGroupId()
         throws Exception
     {
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getMetadataFacets( INTERNAL, RepositoryProblemFacet.FACET_ID ),
-            Collections.<MetadataFacet>emptyList() );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( INTERNAL,
+                                                                                         RepositoryProblemFacet.FACET_ID ),
+                                                   Collections.<MetadataFacet>emptyList() );
         metadataRepositoryControl.replay();
 
         action.setGroupId( "not.it" );
@@ -579,8 +619,8 @@ public class GenerateReportActionTest
     {
         assertEquals(
             "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,Jars,Wars\n" +
-                "snapshots,0,0,0,0,0,0,0,0,0\n" + "internal,0,0,0,0,0,0,0,0,0\n",
-            IOUtils.toString( action.getInputStream() ) );
+                "snapshots,0,0,0,0,0,0,0,0,0\n" + "internal,0,0,0,0,0,0,0,0,0\n", IOUtils.toString(
+            action.getInputStream() ) );
     }
 
     private RepositoryProblemFacet createProblem( String groupId, String artifactId, String repoId )

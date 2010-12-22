@@ -19,6 +19,15 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.rss.RssFeedEntry;
+import org.apache.archiva.rss.RssFeedGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,25 +35,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import com.sun.syndication.feed.synd.SyndFeed;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.rss.RssFeedEntry;
-import org.apache.archiva.rss.RssFeedGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Retrieve and process all artifacts of a repository from the database and generate a rss feed.
- * The artifacts will be grouped by the date when the artifacts were gathered. 
+ * The artifacts will be grouped by the date when the artifacts were gathered.
  * Each group will appear as one entry in the feed.
- * 
+ *
  * @plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-artifacts"
  */
 public class NewArtifactsRssFeedProcessor
     extends AbstractArtifactsRssFeedProcessor
 {
     private int numberOfDaysBeforeNow = 30;
-    
+
     private static final String title = "New Artifacts in Repository ";
 
     private static final String desc = "These are the new artifacts found in the repository ";
@@ -63,6 +65,7 @@ public class NewArtifactsRssFeedProcessor
      * new versions of artifact.
      */
     public SyndFeed process( Map<String, String> reqParams )
+        throws FeedException
     {
         log.debug( "Process new artifacts into rss feeds." );
 
@@ -76,13 +79,22 @@ public class NewArtifactsRssFeedProcessor
     }
 
     private SyndFeed processNewArtifactsInRepo( String repoId )
+        throws FeedException
     {
         Calendar greaterThanThisDate = Calendar.getInstance( GMT_TIME_ZONE );
         greaterThanThisDate.add( Calendar.DATE, -( getNumberOfDaysBeforeNow() ) );
         greaterThanThisDate.clear( Calendar.MILLISECOND );
 
-        List<ArtifactMetadata> artifacts =
-            metadataRepository.getArtifactsByDateRange( repoId, greaterThanThisDate.getTime(), null );
+        List<ArtifactMetadata> artifacts = null;
+        try
+        {
+            artifacts = metadataRepository.getArtifactsByDateRange( repoId, greaterThanThisDate.getTime(), null );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new FeedException( "Unable to construct feed, metadata could not be retrieved: " + e.getMessage(),
+                                     e );
+        }
 
         long tmp = 0;
         RssFeedEntry entry = null;
@@ -104,7 +116,8 @@ public class NewArtifactsRssFeedProcessor
                 }
 
                 String repoId1 = artifact.getRepositoryId();
-                entry = new RssFeedEntry( this.getTitle() + "\'" + repoId1 + "\'" + " as of " + new Date( whenGathered ) );
+                entry = new RssFeedEntry( this.getTitle() + "\'" + repoId1 + "\'" + " as of " + new Date(
+                    whenGathered ) );
                 entry.setPublishedDate( artifact.getWhenGathered() );
                 description = this.getDescription() + "\'" + repoId1 + "\'" + ": \n" + id + " | ";
             }
@@ -123,8 +136,9 @@ public class NewArtifactsRssFeedProcessor
             idx++;
         }
 
-        return generator.generateFeed( getTitle() + "\'" + repoId + "\'", "New artifacts found in repository " +
-            "\'" + repoId + "\'" + " during repository scan.", entries );
+        return generator.generateFeed( getTitle() + "\'" + repoId + "\'",
+                                       "New artifacts found in repository " + "\'" + repoId + "\'" +
+                                           " during repository scan.", entries );
     }
 
     public String getTitle()

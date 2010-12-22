@@ -27,6 +27,8 @@ import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -199,8 +201,8 @@ public class DeleteArtifactAction
             TimeZone timezone = TimeZone.getTimeZone( "UTC" );
             DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
             fmt.setTimeZone( timezone );
-            ManagedRepositoryConfiguration repoConfig =
-                configuration.getConfiguration().findManagedRepositoryById( repositoryId );
+            ManagedRepositoryConfiguration repoConfig = configuration.getConfiguration().findManagedRepositoryById(
+                repositoryId );
 
             VersionedReference ref = new VersionedReference();
             ref.setArtifactId( artifactId );
@@ -228,8 +230,8 @@ public class DeleteArtifactAction
 
             updateMetadata( metadata, metadataFile, lastUpdatedTimestamp );
 
-            Collection<ArtifactMetadata> artifacts =
-                metadataRepository.getArtifacts( repositoryId, groupId, artifactId, version );
+            Collection<ArtifactMetadata> artifacts = metadataRepository.getArtifacts( repositoryId, groupId, artifactId,
+                                                                                      version );
 
             for ( ArtifactMetadata artifact : artifacts )
             {
@@ -237,8 +239,7 @@ public class DeleteArtifactAction
                 if ( artifact.getVersion().equals( version ) )
                 {
                     metadataRepository.deleteArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
-                                                       artifact.getProject(), artifact.getVersion(),
-                                                       artifact.getId() );
+                                                       artifact.getProject(), artifact.getVersion(), artifact.getId() );
 
                     // TODO: move into the metadata repository proper - need to differentiate attachment of
                     //       repository metadata to an artifact
@@ -271,6 +272,16 @@ public class DeleteArtifactAction
             return ERROR;
         }
         catch ( RepositoryException e )
+        {
+            addActionError( "Repository exception: " + e.getMessage() );
+            return ERROR;
+        }
+        catch ( MetadataResolutionException e )
+        {
+            addActionError( "Repository exception: " + e.getMessage() );
+            return ERROR;
+        }
+        catch ( MetadataRepositoryException e )
         {
             addActionError( "Repository exception: " + e.getMessage() );
             return ERROR;

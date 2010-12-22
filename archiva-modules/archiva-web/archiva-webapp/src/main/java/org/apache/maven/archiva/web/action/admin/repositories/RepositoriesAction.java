@@ -19,14 +19,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -42,6 +36,13 @@ import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Shows the Repositories Tab for the administrator.
@@ -108,7 +109,17 @@ public class RepositoriesAction
         repositoryStatistics = new HashMap<String, RepositoryStatistics>();
         for ( ManagedRepositoryConfiguration repo : managedRepositories )
         {
-            RepositoryStatistics stats = repositoryStatisticsManager.getLastStatistics( repo.getId() );
+            RepositoryStatistics stats = null;
+            try
+            {
+                stats = repositoryStatisticsManager.getLastStatistics( repo.getId() );
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                addActionError(
+                    "Error retrieving statistics for repository " + repo.getId() + " - consult application logs" );
+                log.warn( "Error retrieving repository statistics: " + e.getMessage(), e );
+            }
             if ( stats != null )
             {
                 repositoryStatistics.put( repo.getId(), stats );

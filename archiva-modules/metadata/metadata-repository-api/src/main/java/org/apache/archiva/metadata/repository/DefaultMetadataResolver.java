@@ -19,9 +19,6 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.ProjectMetadata;
@@ -31,6 +28,9 @@ import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver"
@@ -55,6 +55,7 @@ public class DefaultMetadataResolver
     private static final Logger log = LoggerFactory.getLogger( DefaultMetadataResolver.class );
 
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException
     {
         // TODO: intercept
         return metadataRepository.getProject( repoId, namespace, projectId );
@@ -64,8 +65,8 @@ public class DefaultMetadataResolver
                                                      String projectVersion )
         throws MetadataResolutionException
     {
-        ProjectVersionMetadata metadata =
-            metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
+        ProjectVersionMetadata metadata = metadataRepository.getProjectVersion( repoId, namespace, projectId,
+                                                                                projectVersion );
         // TODO: do we want to detect changes as well by comparing timestamps? isProjectVersionNewerThan(updated)
         //       in such cases we might also remove/update stale metadata, including adjusting plugin-based facets
         //       This would also be better than checking for completeness - we can then refresh only when fixed (though
@@ -91,12 +92,26 @@ public class DefaultMetadataResolver
                     ref.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
                     for ( Dependency dependency : metadata.getDependencies() )
                     {
-                        metadataRepository.updateProjectReference( repoId, dependency.getGroupId(),
-                                                                   dependency.getArtifactId(), dependency.getVersion(),
-                                                                   ref );
+                        try
+                        {
+                            metadataRepository.updateProjectReference( repoId, dependency.getGroupId(),
+                                                                       dependency.getArtifactId(),
+                                                                       dependency.getVersion(), ref );
+                        }
+                        catch ( MetadataRepositoryException e )
+                        {
+                            log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        }
                     }
                 }
-                metadataRepository.updateProjectVersion( repoId, namespace, projectId, metadata );
+                try
+                {
+                    metadataRepository.updateProjectVersion( repoId, namespace, projectId, metadata );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                }
             }
         }
         return metadata;
@@ -104,6 +119,7 @@ public class DefaultMetadataResolver
 
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
+        throws MetadataResolutionException
     {
         // TODO: intercept
         return metadataRepository.getArtifactVersions( repoId, namespace, projectId, projectVersion );
@@ -111,6 +127,7 @@ public class DefaultMetadataResolver
 
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                                      String projectVersion )
+        throws MetadataResolutionException
     {
         // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
         // not passed to the storage mechanism as resolving references would require iterating all artifacts
@@ -118,10 +135,11 @@ public class DefaultMetadataResolver
     }
 
     public Collection<String> getRootNamespaces( String repoId )
+        throws MetadataResolutionException
     {
         Collection<String> namespaces = metadataRepository.getRootNamespaces( repoId );
-        Collection<String> storageNamespaces =
-            storageResolver.getRootNamespaces( repoId, new ExcludesFilter<String>( namespaces ) );
+        Collection<String> storageNamespaces = storageResolver.getRootNamespaces( repoId, new ExcludesFilter<String>(
+            namespaces ) );
         if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
             if ( log.isDebugEnabled() )
@@ -130,7 +148,14 @@ public class DefaultMetadataResolver
             }
             for ( String n : storageNamespaces )
             {
-                metadataRepository.updateNamespace( repoId, n );
+                try
+                {
+                    metadataRepository.updateNamespace( repoId, n );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                }
             }
             namespaces = new ArrayList<String>( namespaces );
             namespaces.addAll( storageNamespaces );
@@ -139,12 +164,14 @@ public class DefaultMetadataResolver
     }
 
     public Collection<String> getNamespaces( String repoId, String namespace )
+        throws MetadataResolutionException
     {
         Collection<String> namespaces = metadataRepository.getNamespaces( repoId, namespace );
         Collection<String> exclusions = new ArrayList<String>( namespaces );
         exclusions.addAll( metadataRepository.getProjects( repoId, namespace ) );
-        Collection<String> storageNamespaces =
-            storageResolver.getNamespaces( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
+        Collection<String> storageNamespaces = storageResolver.getNamespaces( repoId, namespace,
+                                                                              new ExcludesFilter<String>(
+                                                                                  exclusions ) );
         if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
             if ( log.isDebugEnabled() )
@@ -153,7 +180,14 @@ public class DefaultMetadataResolver
             }
             for ( String n : storageNamespaces )
             {
-                metadataRepository.updateNamespace( repoId, namespace + "." + n );
+                try
+                {
+                    metadataRepository.updateNamespace( repoId, namespace + "." + n );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                }
             }
             namespaces = new ArrayList<String>( namespaces );
             namespaces.addAll( storageNamespaces );
@@ -162,12 +196,13 @@ public class DefaultMetadataResolver
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
+        throws MetadataResolutionException
     {
         Collection<String> projects = metadataRepository.getProjects( repoId, namespace );
         Collection<String> exclusions = new ArrayList<String>( projects );
         exclusions.addAll( metadataRepository.getNamespaces( repoId, namespace ) );
-        Collection<String> storageProjects =
-            storageResolver.getProjects( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
+        Collection<String> storageProjects = storageResolver.getProjects( repoId, namespace, new ExcludesFilter<String>(
+            exclusions ) );
         if ( storageProjects != null && !storageProjects.isEmpty() )
         {
             if ( log.isDebugEnabled() )
@@ -179,7 +214,14 @@ public class DefaultMetadataResolver
                 ProjectMetadata projectMetadata = storageResolver.getProject( repoId, namespace, projectId );
                 if ( projectMetadata != null )
                 {
-                    metadataRepository.updateProject( repoId, projectMetadata );
+                    try
+                    {
+                        metadataRepository.updateProject( repoId, projectMetadata );
+                    }
+                    catch ( MetadataRepositoryException e )
+                    {
+                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                    }
                 }
             }
             projects = new ArrayList<String>( projects );
@@ -189,6 +231,7 @@ public class DefaultMetadataResolver
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException
     {
         Collection<String> projectVersions = metadataRepository.getProjectVersions( repoId, namespace, projectId );
         Collection<String> storageProjectVersions = storageResolver.getProjectVersions( repoId, namespace, projectId,
@@ -204,8 +247,9 @@ public class DefaultMetadataResolver
             {
                 try
                 {
-                    ProjectVersionMetadata versionMetadata =
-                        storageResolver.getProjectVersion( repoId, namespace, projectId, projectVersion );
+                    ProjectVersionMetadata versionMetadata = storageResolver.getProjectVersion( repoId, namespace,
+                                                                                                projectId,
+                                                                                                projectVersion );
                     if ( versionMetadata != null )
                     {
                         metadataRepository.updateProjectVersion( repoId, namespace, projectId, versionMetadata );
@@ -214,7 +258,11 @@ public class DefaultMetadataResolver
                 catch ( MetadataResolutionException e )
                 {
                     log.warn( "Not update project in metadata repository due to an error resolving it from storage: " +
-                        e.getMessage() );
+                                  e.getMessage() );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
                 }
             }
             projectVersions = new ArrayList<String>( projectVersions );
@@ -225,12 +273,15 @@ public class DefaultMetadataResolver
 
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
+        throws MetadataResolutionException
     {
-        Collection<ArtifactMetadata> artifacts =
-            metadataRepository.getArtifacts( repoId, namespace, projectId, projectVersion );
-        Collection<ArtifactMetadata> storageArtifacts =
-            storageResolver.getArtifacts( repoId, namespace, projectId, projectVersion,
-                                          new ExcludesFilter<String>( createArtifactIdList( artifacts ) ) );
+        Collection<ArtifactMetadata> artifacts = metadataRepository.getArtifacts( repoId, namespace, projectId,
+                                                                                  projectVersion );
+        Collection<ArtifactMetadata> storageArtifacts = storageResolver.getArtifacts( repoId, namespace, projectId,
+                                                                                      projectVersion,
+                                                                                      new ExcludesFilter<String>(
+                                                                                          createArtifactIdList(
+                                                                                              artifacts ) ) );
         if ( storageArtifacts != null && !storageArtifacts.isEmpty() )
         {
             if ( log.isDebugEnabled() )
@@ -239,7 +290,14 @@ public class DefaultMetadataResolver
             }
             for ( ArtifactMetadata artifact : storageArtifacts )
             {
-                metadataRepository.updateArtifact( repoId, namespace, projectId, projectVersion, artifact );
+                try
+                {
+                    metadataRepository.updateArtifact( repoId, namespace, projectId, projectVersion, artifact );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                }
             }
             artifacts = new ArrayList<ArtifactMetadata>( artifacts );
             artifacts.addAll( storageArtifacts );

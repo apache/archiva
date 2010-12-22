@@ -23,6 +23,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -169,15 +170,24 @@ public class ArchivaMetadataCreationConsumer
             createVersionMetadata = true;
         }
 
-        // TODO: transaction
-        // read the metadata and update it if it is newer or doesn't exist
-        artifact.setWhenGathered( whenGathered );
-        metadataRepository.updateArtifact( repoId, project.getNamespace(), project.getId(), projectVersion, artifact );
-        if ( createVersionMetadata )
+        try
         {
-            metadataRepository.updateProjectVersion( repoId, project.getNamespace(), project.getId(), versionMetadata );
+            // TODO: transaction
+            // read the metadata and update it if it is newer or doesn't exist
+            artifact.setWhenGathered( whenGathered );
+            metadataRepository.updateArtifact( repoId, project.getNamespace(), project.getId(), projectVersion,
+                                               artifact );
+            if ( createVersionMetadata )
+            {
+                metadataRepository.updateProjectVersion( repoId, project.getNamespace(), project.getId(),
+                                                         versionMetadata );
+            }
+            metadataRepository.updateProject( repoId, project );
         }
-        metadataRepository.updateProject( repoId, project );
+        catch ( MetadataRepositoryException e )
+        {
+            log.warn( "Error occurred persisting metadata for artifact: " + path + "; message: " + e.getMessage(), e );
+        }
     }
 
     public void processFile( String path, boolean executeOnEntireRepo )

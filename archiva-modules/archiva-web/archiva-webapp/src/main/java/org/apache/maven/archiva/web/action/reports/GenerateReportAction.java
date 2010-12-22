@@ -19,22 +19,9 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;
@@ -50,6 +37,20 @@ import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport" instantiation-strategy="per-lookup"
@@ -114,7 +115,7 @@ public class GenerateReportAction
      */
     private MetadataRepository metadataRepository;
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void prepare()
     {
         repositoryIds = new ArrayList<String>();
@@ -186,9 +187,16 @@ public class GenerateReportAction
             // multiple repos
             for ( String repo : selectedRepositories )
             {
-                List<RepositoryStatistics> stats =
-                    repositoryStatisticsManager.getStatisticsInRange( repo, startDateInDF, endDateInDF );
-                if ( stats.isEmpty() )
+                List<RepositoryStatistics> stats = null;
+                try
+                {
+                    stats = repositoryStatisticsManager.getStatisticsInRange( repo, startDateInDF, endDateInDF );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                }
+                if ( stats == null || stats.isEmpty() )
                 {
                     log.info( "No statistics available for repository '" + repo + "'." );
                     // TODO set repo's stats to 0
@@ -212,10 +220,17 @@ public class GenerateReportAction
                     return INPUT;
                 }
 
-                List<RepositoryStatistics> stats =
-                    repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDateInDF, endDateInDF );
-
-                if ( stats.isEmpty() )
+                List<RepositoryStatistics> stats = null;
+                try
+                {
+                    stats = repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDateInDF,
+                                                                              endDateInDF );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                }
+                if ( stats == null || stats.isEmpty() )
                 {
                     addActionError( "No statistics available for repository. Repository might not have been scanned." );
                     return ERROR;
@@ -304,9 +319,16 @@ public class GenerateReportAction
             // multiple repos
             for ( String repo : selectedRepositories )
             {
-                List<RepositoryStatistics> stats =
-                    repositoryStatisticsManager.getStatisticsInRange( repo, startDateInDF, endDateInDF );
-                if ( stats.isEmpty() )
+                List<RepositoryStatistics> stats = null;
+                try
+                {
+                    stats = repositoryStatisticsManager.getStatisticsInRange( repo, startDateInDF, endDateInDF );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                }
+                if ( stats == null || stats.isEmpty() )
                 {
                     log.info( "No statistics available for repository '" + repo + "'." );
                     // TODO set repo's stats to 0
@@ -344,9 +366,17 @@ public class GenerateReportAction
                     return INPUT;
                 }
 
-                List<RepositoryStatistics> stats =
-                    repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDateInDF, endDateInDF );
-                if ( stats.isEmpty() )
+                List<RepositoryStatistics> stats = null;
+                try
+                {
+                    stats = repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDateInDF,
+                                                                              endDateInDF );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                }
+                if ( stats == null || stats.isEmpty() )
                 {
                     addActionError( "No statistics available for repository. Repository might not have been scanned." );
                     return ERROR;
@@ -503,10 +533,8 @@ public class GenerateReportAction
             // TODO: improve performance by navigating into a group subtree. Currently group is property, not part of name of item
             for ( String name : metadataRepository.getMetadataFacets( repoId, RepositoryProblemFacet.FACET_ID ) )
             {
-                RepositoryProblemFacet metadataFacet =
-                    (RepositoryProblemFacet) metadataRepository.getMetadataFacet( repoId,
-                                                                                  RepositoryProblemFacet.FACET_ID,
-                                                                                  name );
+                RepositoryProblemFacet metadataFacet = (RepositoryProblemFacet) metadataRepository.getMetadataFacet(
+                    repoId, RepositoryProblemFacet.FACET_ID, name );
 
                 if ( StringUtils.isEmpty( groupId ) || groupId.equals( metadataFacet.getNamespace() ) )
                 {

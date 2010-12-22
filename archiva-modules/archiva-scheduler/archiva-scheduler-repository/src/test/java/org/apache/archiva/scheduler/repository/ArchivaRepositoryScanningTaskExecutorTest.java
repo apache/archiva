@@ -19,12 +19,7 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -34,6 +29,12 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.codehaus.plexus.util.FileUtils;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * ArchivaRepositoryScanningTaskExecutorTest
@@ -294,6 +295,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
     }
 
     private void createAndSaveTestStats()
+        throws MetadataRepositoryException
     {
         Date date = Calendar.getInstance().getTime();
         RepositoryStatistics stats = new RepositoryStatistics();

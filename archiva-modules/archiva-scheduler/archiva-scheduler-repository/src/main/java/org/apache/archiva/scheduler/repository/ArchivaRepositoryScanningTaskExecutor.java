@@ -19,8 +19,7 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import java.util.Date;
-
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
@@ -37,6 +36,8 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 /**
  * ArchivaRepositoryScanningTaskExecutor
@@ -80,7 +81,7 @@ public class ArchivaRepositoryScanningTaskExecutor
         log.info( "Initialized " + this.getClass().getName() );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void executeTask( Task task )
         throws TaskExecutionException
     {
@@ -103,8 +104,8 @@ public class ArchivaRepositoryScanningTaskExecutor
             throw new TaskExecutionException( "Unable to execute RepositoryTask with blank repository Id." );
         }
 
-        ManagedRepositoryConfiguration arepo =
-            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
+        ManagedRepositoryConfiguration arepo = archivaConfiguration.getConfiguration().findManagedRepositoryById(
+            repoId );
 
         // execute consumers on resource file if set
         if ( repoTask.getResourceFile() != null )
@@ -117,50 +118,66 @@ public class ArchivaRepositoryScanningTaskExecutor
             log.info( "Executing task from queue with job name: " + repoTask );
 
             // otherwise, execute consumers on whole repository
+            if ( arepo == null )
+            {
+                throw new TaskExecutionException(
+                    "Unable to execute RepositoryTask with invalid repository id: " + repoId );
+            }
+
+            long sinceWhen = RepositoryScanner.FRESH_SCAN;
+            long previousFileCount = 0;
+
+            if ( !repoTask.isScanAll() )
+            {
+                RepositoryStatistics previousStats;
+                try
+                {
+                    previousStats = repositoryStatisticsManager.getLastStatistics( repoId );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    throw new TaskExecutionException( "Unable to get previous statistics: " + e.getMessage(), e );
+                }
+                if ( previousStats != null )
+                {
+                    sinceWhen = previousStats.getScanStartTime().getTime();
+                    previousFileCount = previousStats.getTotalFileCount();
+                }
+            }
+
+            RepositoryScanStatistics stats;
             try
             {
-                if ( arepo == null )
-                {
-                    throw new TaskExecutionException(
-                        "Unable to execute RepositoryTask with invalid repository id: " + repoId );
-                }
-
-                long sinceWhen = RepositoryScanner.FRESH_SCAN;
-                long previousFileCount = 0;
-
-                if ( !repoTask.isScanAll() )
-                {
-                    RepositoryStatistics previousStats = repositoryStatisticsManager.getLastStatistics( repoId );
-                    if ( previousStats != null )
-                    {
-                        sinceWhen = previousStats.getScanStartTime().getTime();
-                        previousFileCount = previousStats.getTotalFileCount();
-                    }
-                }
-
-                RepositoryScanStatistics stats = repoScanner.scan( arepo, sinceWhen );
-
-                log.info( "Finished first scan: " + stats.toDump( arepo ) );
-
-                // further statistics will be populated by the following method
-                Date endTime = new Date( stats.getWhenGathered().getTime() + stats.getDuration() );
-                repositoryStatisticsManager.addStatisticsAfterScan( repoId, stats.getWhenGathered(), endTime,
-                                                                    stats.getTotalFileCount(),
-                                                                    stats.getTotalFileCount() - previousFileCount );
-
-//                log.info( "Scanning for removed repository content" );
-
-//                metadataRepository.findAllProjects();
-                // FIXME: do something
-
-                log.info( "Finished repository task: " + repoTask );
-
-                this.task = null;
+                stats = repoScanner.scan( arepo, sinceWhen );
             }
             catch ( RepositoryScannerException e )
             {
                 throw new TaskExecutionException( "Repository error when executing repository job.", e );
             }
+
+            log.info( "Finished first scan: " + stats.toDump( arepo ) );
+
+            // further statistics will be populated by the following method
+            Date endTime = new Date( stats.getWhenGathered().getTime() + stats.getDuration() );
+            try
+            {
+                repositoryStatisticsManager.addStatisticsAfterScan( repoId, stats.getWhenGathered(), endTime,
+                                                                    stats.getTotalFileCount(),
+                                                                    stats.getTotalFileCount() - previousFileCount );
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                throw new TaskExecutionException( "Unable to store updated statistics: " + e.getMessage(), e );
+            }
+
+//                log.info( "Scanning for removed repository content" );
+
+//                metadataRepository.findAllProjects();
+            // FIXME: do something
+
+            log.info( "Finished repository task: " + repoTask );
+
+            this.task = null;
         }
     }
 

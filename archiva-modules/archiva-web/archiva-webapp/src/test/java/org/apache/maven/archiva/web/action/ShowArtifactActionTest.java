@@ -20,32 +20,29 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork2.Action;
-
-import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.file.FileMetadataRepository;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.DefaultArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ShowArtifactActionTest
     extends AbstractActionTestCase
@@ -77,8 +74,8 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueRelease()
     {
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_VERSION ) );
 
         setActionParameters();
 
@@ -100,8 +97,8 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueSnapshot()
     {
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_SNAPSHOT_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_SNAPSHOT_VERSION ) );
         metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
                                        TEST_SNAPSHOT_ARTIFACTS );
 
@@ -130,8 +127,8 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueSnapshotTimestamped()
     {
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_SNAPSHOT_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_SNAPSHOT_VERSION ) );
         metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
                                        TEST_SNAPSHOT_ARTIFACTS );
 
@@ -171,8 +168,8 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactNotInObservableRepos()
     {
-        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_VERSION ) );
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_VERSION ) );
 
         setActionParameters();
 
@@ -186,8 +183,8 @@ public class ShowArtifactActionTest
     public void testGetArtifactOnlySeenInSecondObservableRepo()
     {
         setObservableRepos( Arrays.asList( OTHER_TEST_REPO, TEST_REPO ) );
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_VERSION ) );
 
         setActionParameters();
 
@@ -210,10 +207,10 @@ public class ShowArtifactActionTest
     public void testGetArtifactSeenInBothObservableRepo()
     {
         setObservableRepos( Arrays.asList( TEST_REPO, OTHER_TEST_REPO ) );
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_VERSION ) );
-        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_VERSION ) );
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_VERSION ) );
 
         setActionParameters();
 
@@ -236,10 +233,10 @@ public class ShowArtifactActionTest
     public void testGetArtifactCanOnlyObserveInOneOfTwoRepos()
     {
         setObservableRepos( Arrays.asList( TEST_REPO ) );
-        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_VERSION ) );
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                            createProjectModel( TEST_VERSION ) );
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
+            TEST_VERSION ) );
 
         setActionParameters();
 
@@ -347,13 +344,14 @@ public class ShowArtifactActionTest
     }
 
     public void testGetDependees()
+        throws Exception
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
         ProjectVersionReference dependee1 = createReference( "artifactId1" );
         ProjectVersionReference dependee2 = createReference( "artifactId2" );
-        metadataResolver.setProjectReferences( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION,
-                                               Arrays.asList( dependee1, dependee2 ) );
+        metadataResolver.setProjectReferences( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, Arrays.asList(
+            dependee1, dependee2 ) );
 
         setActionParameters();
 
@@ -378,7 +376,7 @@ public class ShowArtifactActionTest
     public void testGetProjectMetadata()
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
-        
+
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
 
         setActionParameters();
@@ -388,11 +386,12 @@ public class ShowArtifactActionTest
         assertActionSuccess( action, result );
 
         assertActionParameters( action );
-        
+
         Map<String, String> genericMetadata = action.getGenericMetadata();
         assertNotNull( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ) );
-        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ), TEST_GENERIC_METADATA_PROPERTY_VALUE );
-        
+        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ),
+                      TEST_GENERIC_METADATA_PROPERTY_VALUE );
+
         assertEquals( TEST_REPO, action.getRepositoryId() );
         assertNotNull( action.getModel() );
         assertNull( action.getDependees() );
@@ -400,7 +399,7 @@ public class ShowArtifactActionTest
         assertNull( action.getMailingLists() );
         assertTrue( action.getArtifacts().isEmpty() );
     }
-    
+
     public void testAddAndDeleteMetadataProperty()
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
@@ -412,6 +411,9 @@ public class ShowArtifactActionTest
         action.setPropertyValue( "bar" );
         action.setRepositoryId( TEST_REPO );
 
+        MetadataRepository repo = mock( MetadataRepository.class );
+        action.setMetadataRepository( repo );
+
         String result = action.addMetadataProperty();
 
         assertActionSuccess( action, result );
@@ -419,7 +421,8 @@ public class ShowArtifactActionTest
 
         Map<String, String> genericMetadata = action.getGenericMetadata();
         assertNotNull( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ) );
-        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ), TEST_GENERIC_METADATA_PROPERTY_VALUE );
+        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ),
+                      TEST_GENERIC_METADATA_PROPERTY_VALUE );
 
         assertNotNull( genericMetadata.get( "foo" ) );
         assertEquals( "bar", genericMetadata.get( "foo" ) );
@@ -444,7 +447,8 @@ public class ShowArtifactActionTest
 
         genericMetadata = action.getGenericMetadata();
         assertNotNull( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ) );
-        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ), TEST_GENERIC_METADATA_PROPERTY_VALUE );
+        assertEquals( genericMetadata.get( TEST_GENERIC_METADATA_PROPERTY_NAME ),
+                      TEST_GENERIC_METADATA_PROPERTY_VALUE );
 
         assertNull( genericMetadata.get( "foo" ) );
 
@@ -474,7 +478,7 @@ public class ShowArtifactActionTest
             assertEquals( TEST_TYPE, actual.getType() );
             assertEquals( "12.06 K", actual.getSize() );
             assertEquals( artifact.getNamespace() + "/" + artifact.getProject() + "/" + TEST_SNAPSHOT_VERSION + "/" +
-                artifact.getId(), actual.getPath() );
+                              artifact.getId(), actual.getPath() );
         }
     }
 
@@ -576,8 +580,8 @@ public class ShowArtifactActionTest
         ml1.setSubscribeAddress( prefix + "-subscribe@" );
         ml1.setUnsubscribeAddress( prefix + "-unsubscribe@" );
         ml1.setMainArchiveUrl( prefix + "-archive-url" );
-        ml1.setOtherArchives(
-            Arrays.asList( "other-" + prefix + "-archive-url-1", "other-" + prefix + "-archive-url-2" ) );
+        ml1.setOtherArchives( Arrays.asList( "other-" + prefix + "-archive-url-1",
+                                             "other-" + prefix + "-archive-url-2" ) );
         return ml1;
     }
 
@@ -628,32 +632,22 @@ public class ShowArtifactActionTest
         super.setUp();
         action = (ShowArtifactAction) lookup( Action.class, ACTION_HINT );
         metadataResolver = (TestMetadataResolver) action.getMetadataResolver();
-        MockControl control = MockClassControl.createControl( RepositoryContentFactory.class );
-        RepositoryContentFactory factory = (RepositoryContentFactory) control.getMock();
+
+        RepositoryContentFactory factory = mock( RepositoryContentFactory.class );
         action.setRepositoryFactory( factory );
 
         ManagedRepositoryConfiguration config = new ManagedRepositoryConfiguration();
         config.setId( TEST_REPO );
         config.setLocation( getTestFile( "target/test-repo" ).getAbsolutePath() );
-        
+
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
         content.setRepository( config );
-        factory.getManagedRepositoryContent( TEST_REPO );
-        
-        FileMetadataRepository metadataRepo = ( FileMetadataRepository ) lookup( MetadataRepository.class );
-        MockControl archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
-        ArchivaConfiguration archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
-        
+        when( factory.getManagedRepositoryContent( TEST_REPO ) ).thenReturn( content );
+
+        ArchivaConfiguration archivaConfig = mock( ArchivaConfiguration.class );
+
         Configuration configuration = new Configuration();
         configuration.addManagedRepository( config );
-        metadataRepo.setConfiguration( archivaConfig );
-        archivaConfig.getConfiguration();
-        
-        action.setMetadataRepository( metadataRepo );
-        
-        archivaConfigControl.setDefaultReturnValue( configuration );        
-        control.setDefaultReturnValue( content );
-        control.replay();
-        archivaConfigControl.replay();
+        when( archivaConfig.getConfiguration() ).thenReturn( configuration );
     }
 }

@@ -20,6 +20,7 @@ package org.apache.archiva.audit;
  */
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,7 @@ public class DefaultAuditManager
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
     public List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds )
+        throws MetadataRepositoryException
     {
         // TODO: consider a more efficient implementation that directly gets the last ten from the content repository
         List<AuditRecord> records = new ArrayList<AuditRecord>();
@@ -68,15 +70,16 @@ public class DefaultAuditManager
         List<AuditEvent> events = new ArrayList<AuditEvent>( records.size() );
         for ( AuditRecord record : records )
         {
-            AuditEvent auditEvent =
-                (AuditEvent) metadataRepository.getMetadataFacet( record.repositoryId, AuditEvent.FACET_ID,
-                                                                  record.name );
+            AuditEvent auditEvent = (AuditEvent) metadataRepository.getMetadataFacet( record.repositoryId,
+                                                                                      AuditEvent.FACET_ID,
+                                                                                      record.name );
             events.add( auditEvent );
         }
         return events;
     }
 
     public void addAuditEvent( AuditEvent event )
+        throws MetadataRepositoryException
     {
         // ignore those with no repository - they will still be logged to the textual audit log
         if ( event.getRepositoryId() != null )
@@ -86,17 +89,20 @@ public class DefaultAuditManager
     }
 
     public void deleteAuditEvents( String repositoryId )
+        throws MetadataRepositoryException
     {
         metadataRepository.removeMetadataFacets( repositoryId, AuditEvent.FACET_ID );
     }
 
     public List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime )
+        throws MetadataRepositoryException
     {
         return getAuditEventsInRange( repositoryIds, null, startTime, endTime );
     }
 
     public List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, String resource, Date startTime,
                                                    Date endTime )
+        throws MetadataRepositoryException
     {
         List<AuditEvent> results = new ArrayList<AuditEvent>();
         for ( String repositoryId : repositoryIds )
@@ -107,11 +113,12 @@ public class DefaultAuditManager
                 try
                 {
                     Date date = createNameFormat().parse( name );
-                    if ( ( startTime == null || !date.before( startTime ) ) &&
-                        ( endTime == null || !date.after( endTime ) ) )
+                    if ( ( startTime == null || !date.before( startTime ) ) && ( endTime == null || !date.after(
+                        endTime ) ) )
                     {
-                        AuditEvent event =
-                            (AuditEvent) metadataRepository.getMetadataFacet( repositoryId, AuditEvent.FACET_ID, name );
+                        AuditEvent event = (AuditEvent) metadataRepository.getMetadataFacet( repositoryId,
+                                                                                             AuditEvent.FACET_ID,
+                                                                                             name );
 
                         if ( resource == null || event.getResource().startsWith( resource ) )
                         {

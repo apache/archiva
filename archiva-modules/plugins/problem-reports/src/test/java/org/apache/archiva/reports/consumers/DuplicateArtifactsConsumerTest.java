@@ -83,7 +83,7 @@ public class DuplicateArtifactsConsumerTest
     }
 
     public void testConsumerArtifactNotDuplicated()
-        throws ConsumerException
+        throws Exception
     {
         when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn( Arrays.asList(
             TEST_METADATA ) );
@@ -110,7 +110,7 @@ public class DuplicateArtifactsConsumerTest
 //    }
 
     public void testConsumerArtifactDuplicated()
-        throws ConsumerException
+        throws Exception
     {
         when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn( Arrays.asList(
             TEST_METADATA, createMetadata( "1.0" ) ) );
@@ -126,7 +126,7 @@ public class DuplicateArtifactsConsumerTest
     }
 
     public void testConsumerArtifactDuplicatedButSelfNotInMetadataRepository()
-        throws ConsumerException
+        throws Exception
     {
         when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn( Arrays.asList(
             createMetadata( "1.0" ) ) );
@@ -142,7 +142,7 @@ public class DuplicateArtifactsConsumerTest
     }
 
     public void testConsumerArtifactFileNotExist()
-        throws ConsumerException
+        throws Exception
     {
         consumer.beginScan( config, new Date() );
         try
@@ -163,7 +163,7 @@ public class DuplicateArtifactsConsumerTest
     }
 
     public void testConsumerArtifactNotAnArtifactPathNoResults()
-        throws ConsumerException
+        throws Exception
     {
         consumer.beginScan( config, new Date() );
         // No exception unnecessarily for something we can't report on
@@ -174,7 +174,7 @@ public class DuplicateArtifactsConsumerTest
     }
 
     public void testConsumerArtifactNotAnArtifactPathResults()
-        throws ConsumerException
+        throws Exception
     {
         when( metadataRepository.getArtifactsByChecksum( eq( TEST_REPO ), anyString() ) ).thenReturn( Arrays.asList(
             TEST_METADATA, createMetadata( "1.0" ) ) );

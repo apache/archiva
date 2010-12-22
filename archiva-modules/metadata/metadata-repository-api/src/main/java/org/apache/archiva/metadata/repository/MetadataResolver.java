@@ -19,22 +19,23 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import java.util.Collection;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 
+import java.util.Collection;
+
 public interface MetadataResolver
 {
-    ProjectMetadata getProject( String repoId, String namespace, String projectId );
-
-    ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
-                                              String projectVersion )
+    ProjectMetadata getProject( String repoId, String namespace, String projectId )
         throws MetadataResolutionException;
 
-    Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion );
+    ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+        throws MetadataResolutionException;
+
+    Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion )
+        throws MetadataResolutionException;
 
     /**
      * Retrieve project references from the metadata repository. Note that this is not built into the content model for
@@ -48,16 +49,22 @@ public interface MetadataResolver
      * @return a list of project references
      */
     Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
-                                                              String projectVersion );
+                                                              String projectVersion )
+        throws MetadataResolutionException;
 
-    Collection<String> getRootNamespaces( String repoId );
+    Collection<String> getRootNamespaces( String repoId )
+        throws MetadataResolutionException;
 
-    Collection<String> getNamespaces( String repoId, String namespace );
+    Collection<String> getNamespaces( String repoId, String namespace )
+        throws MetadataResolutionException;
 
-    Collection<String> getProjects( String repoId, String namespace );
+    Collection<String> getProjects( String repoId, String namespace )
+        throws MetadataResolutionException;
 
-    Collection<String> getProjectVersions( String repoId, String namespace, String projectId );
+    Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException;
 
     Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                               String projectVersion );
+                                               String projectVersion )
+        throws MetadataResolutionException;
 }

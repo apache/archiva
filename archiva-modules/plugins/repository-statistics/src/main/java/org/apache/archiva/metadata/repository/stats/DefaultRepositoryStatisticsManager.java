@@ -21,6 +21,8 @@ package org.apache.archiva.metadata.repository.stats;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,7 @@ public class DefaultRepositoryStatisticsManager
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
     public RepositoryStatistics getLastStatistics( String repositoryId )
+        throws MetadataRepositoryException
     {
         // TODO: consider a more efficient implementation that directly gets the last one from the content repository
         List<String> scans = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
@@ -67,6 +70,7 @@ public class DefaultRepositoryStatisticsManager
     }
 
     private void walkRepository( RepositoryStatistics stats, String repositoryId, String ns )
+        throws MetadataResolutionException
     {
         for ( String namespace : metadataRepository.getNamespaces( repositoryId, ns ) )
         {
@@ -89,7 +93,8 @@ public class DefaultRepositoryStatisticsManager
                         stats.setTotalArtifactCount( stats.getTotalArtifactCount() + 1 );
                         stats.setTotalArtifactFileSize( stats.getTotalArtifactFileSize() + artifact.getSize() );
 
-                        MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
+                        MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet(
+                            MavenArtifactFacet.FACET_ID );
                         if ( facet != null )
                         {
                             String type = facet.getType();
@@ -104,6 +109,7 @@ public class DefaultRepositoryStatisticsManager
 
     public void addStatisticsAfterScan( String repositoryId, Date startTime, Date endTime, long totalFiles,
                                         long newFiles )
+        throws MetadataRepositoryException
     {
         RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
         repositoryStatistics.setScanStartTime( startTime );
@@ -121,9 +127,16 @@ public class DefaultRepositoryStatisticsManager
         // TODO: we can probably get a more efficient implementation directly from the metadata repository, but for now
         //       we just walk it. Alternatively, we could build an index, or store the aggregate information and update
         //       it on the fly
-        for ( String ns : metadataRepository.getRootNamespaces( repositoryId ) )
+        try
         {
-            walkRepository( repositoryStatistics, repositoryId, ns );
+            for ( String ns : metadataRepository.getRootNamespaces( repositoryId ) )
+            {
+                walkRepository( repositoryStatistics, repositoryId, ns );
+            }
+        }
+        catch ( MetadataResolutionException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
         log.info( "Repository walk for statistics executed in " + ( System.currentTimeMillis() - startWalk ) + "ms" );
 
@@ -131,11 +144,13 @@ public class DefaultRepositoryStatisticsManager
     }
 
     public void deleteStatistics( String repositoryId )
+        throws MetadataRepositoryException
     {
         metadataRepository.removeMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
     }
 
     public List<RepositoryStatistics> getStatisticsInRange( String repositoryId, Date startTime, Date endTime )
+        throws MetadataRepositoryException
     {
         List<RepositoryStatistics> results = new ArrayList<RepositoryStatistics>();
         List<String> list = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
@@ -145,13 +160,11 @@ public class DefaultRepositoryStatisticsManager
             try
             {
                 Date date = createNameFormat().parse( name );
-                if ( ( startTime == null || !date.before( startTime ) ) &&
-                    ( endTime == null || !date.after( endTime ) ) )
+                if ( ( startTime == null || !date.before( startTime ) ) && ( endTime == null || !date.after(
+                    endTime ) ) )
                 {
-                    RepositoryStatistics stats =
-                        (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId,
-                                                                                    RepositoryStatistics.FACET_ID,
-                                                                                    name );
+                    RepositoryStatistics stats = (RepositoryStatistics) metadataRepository.getMetadataFacet(
+                        repositoryId, RepositoryStatistics.FACET_ID, name );
                     results.add( stats );
                 }
             }

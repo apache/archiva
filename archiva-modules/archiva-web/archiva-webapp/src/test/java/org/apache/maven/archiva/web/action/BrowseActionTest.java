@@ -19,13 +19,13 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class BrowseActionTest
     extends AbstractActionTestCase
@@ -34,9 +34,8 @@ public class BrowseActionTest
 
     private BrowseAction action;
 
-    private static final List<String> GROUPS =
-        Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven", "com.sun", "com.oracle",
-                       "repeat.repeat" );
+    private static final List<String> GROUPS = Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven",
+                                                              "com.sun", "com.oracle", "repeat.repeat" );
 
     private static final String OTHER_TEST_REPO = "other-repo";
 
@@ -46,6 +45,7 @@ public class BrowseActionTest
     }
 
     public void testBrowse()
+        throws Exception
     {
         metadataResolver.setNamespaces( TEST_REPO, GROUPS );
 
@@ -63,6 +63,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseNoObservableRepos()
+        throws Exception
     {
         setObservableRepos( Collections.<String>emptyList() );
 
@@ -73,6 +74,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseGroupNoObservableRepos()
+        throws Exception
     {
         setObservableRepos( Collections.<String>emptyList() );
         String selectedGroupId = "org";
@@ -91,6 +93,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoObservableRepos()
+        throws Exception
     {
         setObservableRepos( Collections.<String>emptyList() );
         String selectedGroupId = "org.apache";
@@ -111,6 +114,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseGroupNoGroupId()
+        throws Exception
     {
         String result = action.browseGroup();
         assertErrorResult( result );
@@ -118,6 +122,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseGroupNoArtifacts()
+        throws Exception
     {
         String selectedGroupId = "org";
         List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache.maven" );
@@ -138,6 +143,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseGroupWithArtifacts()
+        throws Exception
     {
         String artifacts = "apache";
         String selectedGroupId = "org.apache";
@@ -160,6 +166,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseWithCollapsedGroupsAndArtifacts()
+        throws Exception
     {
         List<String> groups = Arrays.asList( "org.apache.archiva", "org.apache" );
 
@@ -181,6 +188,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseWithCollapsedGroupsAndArtifactsAcrossRepositories()
+        throws Exception
     {
         setObservableRepos( Arrays.asList( TEST_REPO, OTHER_TEST_REPO ) );
 
@@ -204,6 +212,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseGroupWithCollapsedGroupsAndArtifacts()
+        throws Exception
     {
         String artifacts = "apache";
         String selectedGroupId = "org.apache";
@@ -228,6 +237,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoGroupId()
+        throws Exception
     {
         String selectedArtifactId = "apache";
 
@@ -245,6 +255,7 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactNoArtifactId()
+        throws Exception
     {
         String selectedGroupId = "org.apache";
 
@@ -262,19 +273,21 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifact()
+        throws Exception
+
     {
         String selectedGroupId = "org.apache";
         String selectedArtifactId = "apache";
 
         List<String> versions = Arrays.asList( "1", "2", "3", "4" );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "1" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "2" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "3" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "4" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "1" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "2" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "3" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "4" ) );
 
         action.setGroupId( selectedGroupId );
         action.setArtifactId( selectedArtifactId );
@@ -294,23 +307,25 @@ public class BrowseActionTest
     }
 
     public void testBrowseArtifactWithSnapshots()
+        throws Exception
+
     {
         String selectedGroupId = "org.apache";
         String selectedArtifactId = "apache";
 
         List<String> versions = Arrays.asList( "1", "2", "3", "4-SNAPSHOT", "4", "5-SNAPSHOT" );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "1" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "2" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "3" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "4-SNAPSHOT" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "4" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
-                                            createProjectModel( selectedGroupId, selectedArtifactId, "5-SNAPSHOT" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "1" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "2" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "3" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "4-SNAPSHOT" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "4" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
+            selectedGroupId, selectedArtifactId, "5-SNAPSHOT" ) );
 
         action.setGroupId( selectedGroupId );
         action.setArtifactId( selectedArtifactId );

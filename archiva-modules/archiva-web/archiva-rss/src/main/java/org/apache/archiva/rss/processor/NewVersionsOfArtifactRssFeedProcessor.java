@@ -19,16 +19,21 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.rss.RssFeedEntry;
+import org.apache.archiva.rss.RssFeedGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.sun.syndication.feed.synd.SyndFeed;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.rss.RssFeedEntry;
-import org.apache.archiva.rss.RssFeedGenerator;
 
 /**
  * Retrieve and process new versions of an artifact from the database and
@@ -40,6 +45,8 @@ import org.apache.archiva.rss.RssFeedGenerator;
 public class NewVersionsOfArtifactRssFeedProcessor
     extends AbstractArtifactsRssFeedProcessor
 {
+    private Logger log = LoggerFactory.getLogger( NewVersionsOfArtifactRssFeedProcessor.class );
+
     private static final String title = "New Versions of Artifact ";
 
     private static final String desc = "These are the new versions of artifact ";
@@ -53,6 +60,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
      * Process all versions of the artifact which had a rss feed request.
      */
     public SyndFeed process( Map<String, String> reqParams )
+        throws FeedException
     {
         String groupId = reqParams.get( RssFeedProcessor.KEY_GROUP_ID );
         String artifactId = reqParams.get( RssFeedProcessor.KEY_ARTIFACT_ID );
@@ -66,15 +74,29 @@ public class NewVersionsOfArtifactRssFeedProcessor
     }
 
     private SyndFeed processNewVersionsOfArtifact( String groupId, String artifactId )
+        throws FeedException
     {
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
-        for ( String repoId : metadataRepository.getRepositories() )
+        try
         {
-            Collection<String> versions = metadataRepository.getProjectVersions( repoId, groupId, artifactId );
-            for ( String version : versions )
+            for ( String repoId : metadataRepository.getRepositories() )
             {
-                artifacts.addAll( metadataRepository.getArtifacts( repoId, groupId, artifactId, version ) );
+                Collection<String> versions = metadataRepository.getProjectVersions( repoId, groupId, artifactId );
+                for ( String version : versions )
+                {
+                    artifacts.addAll( metadataRepository.getArtifacts( repoId, groupId, artifactId, version ) );
+                }
             }
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new FeedException( "Unable to construct feed, metadata could not be retrieved: " + e.getMessage(),
+                                     e );
+        }
+        catch ( MetadataResolutionException e )
+        {
+            throw new FeedException( "Unable to construct feed, metadata could not be retrieved: " + e.getMessage(),
+                                     e );
         }
 
         long tmp = 0;

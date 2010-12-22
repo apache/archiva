@@ -19,12 +19,18 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @plexus.component role="org.apache.archiva.audit.AuditListener" role-hint="metadata"
  */
 public class MetadataAuditListener
     implements AuditListener
 {
+    private static final Logger log = LoggerFactory.getLogger( MetadataAuditListener.class );
+
     /**
      * @plexus.requirement
      */
@@ -36,7 +42,14 @@ public class MetadataAuditListener
         if ( event.getAction().equals( AuditEvent.CREATE_FILE ) || event.getAction().equals( AuditEvent.UPLOAD_FILE ) ||
             event.getAction().equals( AuditEvent.MERGING_REPOSITORIES ) )
         {
-            auditManager.addAuditEvent( event );
+            try
+            {
+                auditManager.addAuditEvent( event );
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                log.warn( "Unable to write audit event to repository: " + e.getMessage(), e );
+            }
         }
     }
 }

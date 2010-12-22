@@ -19,12 +19,7 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
@@ -45,6 +40,12 @@ import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Default implementation of a scheduling component for archiva.
@@ -110,27 +111,35 @@ public class RepositoryArchivaTaskScheduler
     public void start()
         throws StartingException
     {
-        try
-        {
-            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration()
-                .getManagedRepositories();
+        List<ManagedRepositoryConfiguration> repositories =
+            archivaConfiguration.getConfiguration().getManagedRepositories();
 
-            for ( ManagedRepositoryConfiguration repoConfig : repositories )
+        for ( ManagedRepositoryConfiguration repoConfig : repositories )
+        {
+            if ( repoConfig.isScanned() )
             {
-                if ( repoConfig.isScanned() )
+                try
                 {
                     scheduleRepositoryJobs( repoConfig );
+                }
+                catch ( SchedulerException e )
+                {
+                    throw new StartingException( "Unable to start scheduler: " + e.getMessage(), e );
+                }
 
-                    if( !isPreviouslyScanned( repoConfig ) )
+                try
+                {
+                    if ( !isPreviouslyScanned( repoConfig ) )
                     {
                         queueInitialRepoScan( repoConfig );
                     }
                 }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: " +
+                                  e.getMessage(), e );
+                }
             }
-        }
-        catch ( SchedulerException e )
-        {
-            throw new StartingException( "Unable to start scheduler: " + e.getMessage(), e );
         }
     }
 
@@ -152,10 +161,10 @@ public class RepositoryArchivaTaskScheduler
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public boolean isProcessingRepositoryTask( String repositoryId )
     {
-        synchronized( repositoryScanningQueue )
+        synchronized ( repositoryScanningQueue )
         {
             List<RepositoryTask> queue = null;
 
@@ -179,10 +188,10 @@ public class RepositoryArchivaTaskScheduler
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private boolean isProcessingRepositoryTask( RepositoryTask task )
     {
-        synchronized( repositoryScanningQueue )
+        synchronized ( repositoryScanningQueue )
         {
             List<RepositoryTask> queue = null;
 
@@ -240,7 +249,8 @@ public class RepositoryArchivaTaskScheduler
             }
             jobs.clear();
 
-            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration().getManagedRepositories();
+            List<ManagedRepositoryConfiguration> repositories =
+                archivaConfiguration.getConfiguration().getManagedRepositories();
 
             for ( ManagedRepositoryConfiguration repoConfig : repositories )
             {
@@ -259,8 +269,9 @@ public class RepositoryArchivaTaskScheduler
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig )
+        throws MetadataRepositoryException
     {
         return repositoryStatisticsManager.getLastStatistics( repoConfig.getId() ) != null;
     }
@@ -310,13 +321,13 @@ public class RepositoryArchivaTaskScheduler
         if ( !cronValidator.validate( cronString ) )
         {
             log.warn( "Cron expression [" + cronString + "] for repository [" + repoConfig.getId() +
-                "] is invalid.  Defaulting to hourly." );
+                          "] is invalid.  Defaulting to hourly." );
             cronString = CRON_HOURLY;
         }
 
         // setup the unprocessed artifact job
-        JobDetail repositoryJob =
-            new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, RepositoryTaskJob.class );
+        JobDetail repositoryJob = new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
+                                                 RepositoryTaskJob.class );
 
         JobDataMap dataMap = new JobDataMap();
         dataMap.put( TASK_QUEUE, repositoryScanningQueue );
@@ -325,17 +336,16 @@ public class RepositoryArchivaTaskScheduler
 
         try
         {
-            CronTrigger trigger =
-                new CronTrigger( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, cronString );
+            CronTrigger trigger = new CronTrigger( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(),
+                                                   REPOSITORY_SCAN_GROUP, cronString );
 
             jobs.add( REPOSITORY_JOB + ":" + repoConfig.getId() );
             scheduler.scheduleJob( repositoryJob, trigger );
         }
         catch ( ParseException e )
         {
-            log.error(
-                "ParseException in repository scanning cron expression, disabling repository scanning for '" +
-                    repoConfig.getId() + "': " + e.getMessage() );
+            log.error( "ParseException in repository scanning cron expression, disabling repository scanning for '" +
+                           repoConfig.getId() + "': " + e.getMessage() );
         }
 
     }

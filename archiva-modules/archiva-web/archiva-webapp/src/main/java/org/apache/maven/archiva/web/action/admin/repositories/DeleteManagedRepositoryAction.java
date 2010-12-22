@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -35,7 +36,7 @@ import java.util.Map;
 
 /**
  * DeleteManagedRepositoryAction
- * 
+ *
  * @version $Id$
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
@@ -64,7 +65,8 @@ public class DeleteManagedRepositoryAction
         if ( StringUtils.isNotBlank( repoid ) )
         {
             this.repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid );
-            this.stagingRepository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid +"-stage");
+            this.stagingRepository = archivaConfiguration.getConfiguration().findManagedRepositoryById(
+                repoid + "-stage" );
         }
     }
 
@@ -104,23 +106,23 @@ public class DeleteManagedRepositoryAction
         try
         {
             Configuration configuration = archivaConfiguration.getConfiguration();
+            if ( attachedStagingRepo != null )
+            {
+                cleanupRepositoryData( attachedStagingRepo );
+                removeRepository( repoid + "-stage", configuration );
+                triggerAuditEvent( repoid + "-stage", null, AuditEvent.DELETE_MANAGED_REPO );
+
+            }
             cleanupRepositoryData( existingRepository );
             removeRepository( repoid, configuration );
             triggerAuditEvent( repoid, null, AuditEvent.DELETE_MANAGED_REPO );
-            if(attachedStagingRepo !=null)
-            {
-                cleanupRepositoryData( attachedStagingRepo );
-                removeRepository( repoid +"-stage", configuration );
-                triggerAuditEvent(repoid +"-stage", null, AuditEvent.DELETE_MANAGED_REPO );
-
-            }
             result = saveConfiguration( configuration );
 
             if ( result.equals( SUCCESS ) )
             {
                 if ( deleteContents )
                 {
-                    if(attachedStagingRepo !=null)
+                    if ( attachedStagingRepo != null )
                     {
                         removeContents( attachedStagingRepo );
                     }
@@ -130,12 +132,20 @@ public class DeleteManagedRepositoryAction
         }
         catch ( IOException e )
         {
-            addActionError( "Unable to delete repository: " + e.getMessage() );
+            addActionError(
+                "Unable to delete repository, content may already be partially removed: " + e.getMessage() );
             result = ERROR;
         }
         catch ( RoleManagerException e )
         {
-            addActionError( "Unable to delete repository: " + e.getMessage() );
+            addActionError(
+                "Unable to delete repository, content may already be partially removed: " + e.getMessage() );
+            result = ERROR;
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            addActionError(
+                "Unable to delete repository, content may already be partially removed: " + e.getMessage() );
             result = ERROR;
         }
 
@@ -143,7 +153,7 @@ public class DeleteManagedRepositoryAction
     }
 
     private void cleanupRepositoryData( ManagedRepositoryConfiguration cleanupRepository )
-        throws RoleManagerException
+        throws RoleManagerException, MetadataRepositoryException
     {
         removeRepositoryRoles( cleanupRepository );
         cleanupDatabase( cleanupRepository.getId() );
@@ -160,20 +170,22 @@ public class DeleteManagedRepositoryAction
         }
 
         Map<String, List<String>> repoToGroupMap = archivaConfiguration.getConfiguration().getRepositoryToGroupMap();
-        if( repoToGroupMap != null )
+        if ( repoToGroupMap != null )
         {
-            if( repoToGroupMap.containsKey( cleanupRepository.getId() ) )
+            if ( repoToGroupMap.containsKey( cleanupRepository.getId() ) )
             {
                 List<String> repoGroups = repoToGroupMap.get( cleanupRepository.getId() );
-                for( String repoGroup : repoGroups )
+                for ( String repoGroup : repoGroups )
                 {
-                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository( cleanupRepository.getId() );
+                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository(
+                        cleanupRepository.getId() );
                 }
             }
         }
     }
 
     private void cleanupDatabase( String repoId )
+        throws MetadataRepositoryException
     {
         metadataRepository.deleteRepository( repoId );
     }

@@ -20,7 +20,10 @@ package org.apache.archiva.reports;
  */
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Process repository management events and respond appropriately.
@@ -30,6 +33,8 @@ import org.apache.archiva.repository.events.RepositoryListener;
 public class RepositoryProblemEventListener
     implements RepositoryListener
 {
+    private Logger log = LoggerFactory.getLogger( RepositoryProblemEventListener.class );
+
     /**
      * @plexus.requirement
      */
@@ -39,6 +44,13 @@ public class RepositoryProblemEventListener
     {
         String name = RepositoryProblemFacet.createName( namespace, project, version, id );
 
-        metadataRepository.removeMetadataFacet( repositoryId, RepositoryProblemFacet.FACET_ID, name );
+        try
+        {
+            metadataRepository.removeMetadataFacet( repositoryId, RepositoryProblemFacet.FACET_ID, name );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.warn( "Unable to remove metadata facet as part of delete event: " + e.getMessage(), e );
+        }
     }
 }

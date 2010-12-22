@@ -106,12 +106,14 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testRootNamespaceWithNoMetadataRepository()
+        throws Exception
     {
         Collection<String> namespaces = repository.getRootNamespaces( TEST_REPO_ID );
         assertEquals( Collections.<String>emptyList(), namespaces );
     }
 
     public void testGetNamespaceOnly()
+        throws Exception
     {
         assertEquals( Collections.emptyList(), repository.getRootNamespaces( TEST_REPO_ID ) );
 
@@ -121,6 +123,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetProjectOnly()
+        throws Exception
     {
         assertNull( repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ) );
         assertEquals( Collections.emptyList(), repository.getRootNamespaces( TEST_REPO_ID ) );
@@ -140,7 +143,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetProjectVersionOnly()
-        throws MetadataResolutionException
+        throws Exception
     {
         assertNull( repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) );
         assertNull( repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ) );
@@ -162,7 +165,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactOnly()
-        throws MetadataResolutionException
+        throws Exception
     {
         assertEquals( Collections.<ArtifactMetadata>emptyList(), new ArrayList<ArtifactMetadata>(
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
@@ -192,7 +195,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataWithNoOtherArchives()
-        throws MetadataResolutionException
+        throws Exception
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -211,7 +214,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataWithAllElements()
-        throws MetadataResolutionException
+        throws Exception
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -303,6 +306,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateProjectReference()
+        throws Exception
     {
         ProjectVersionReference reference = new ProjectVersionReference();
         reference.setNamespace( "another.namespace" );
@@ -325,6 +329,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetRepositories()
+        throws Exception
     {
         // currently set up this way so the behaviour of both the test and the mock config return the same repository
         // set as the File implementation just uses the config rather than the content
@@ -336,7 +341,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataIncomplete()
-        throws MetadataResolutionException
+        throws Exception
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -359,7 +364,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataWithExistingFacets()
-        throws MetadataResolutionException
+        throws Exception
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -381,7 +386,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataWithNoExistingFacets()
-        throws MetadataResolutionException
+        throws Exception
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -399,7 +404,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateProjectVersionMetadataWithExistingFacetsFacetPropertyWasRemoved()
-        throws MetadataResolutionException
+        throws Exception
     {
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -433,7 +438,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateArtifactMetadataWithExistingFacetsFacetPropertyWasRemoved()
-        throws MetadataResolutionException
+        throws Exception
     {
         ArtifactMetadata metadata = createArtifact();
 
@@ -468,6 +473,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateArtifactMetadataWithExistingFacets()
+        throws Exception
     {
         ArtifactMetadata metadata = createArtifact();
         MetadataFacet facet = new TestMetadataFacet( "baz" );
@@ -489,6 +495,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testUpdateArtifactMetadataWithNoExistingFacets()
+        throws Exception
     {
         ArtifactMetadata metadata = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
@@ -506,6 +513,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetMetadataFacet()
+        throws Exception
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
@@ -514,11 +522,15 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetMetadataFacetWhenEmpty()
+        throws Exception
+
     {
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
     }
 
     public void testGetMetadataFacetWhenUnknownName()
+        throws Exception
+
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
@@ -526,6 +538,8 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetMetadataFacetWhenDefaultValue()
+        throws Exception
+
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( null ) );
 
@@ -535,11 +549,15 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetMetadataFacetWhenUnknownFacetId()
+        throws Exception
+
     {
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME ) );
     }
 
     public void testGetMetadataFacets()
+        throws Exception
+
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
@@ -548,12 +566,16 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetMetadataFacetsWhenEmpty()
+        throws Exception
+
     {
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
         assertTrue( facets.isEmpty() );
     }
 
     public void testRemoveFacets()
+        throws Exception
+
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
@@ -567,6 +589,8 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testRemoveFacetsWhenEmpty()
+        throws Exception
+
     {
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
         assertTrue( facets.isEmpty() );
@@ -578,18 +602,24 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testRemoveFacetsWhenUnknown()
+        throws Exception
+
     {
         // testing no exception
         repository.removeMetadataFacets( TEST_REPO_ID, UNKNOWN );
     }
 
     public void testRemoveFacetWhenUnknown()
+        throws Exception
+
     {
         // testing no exception
         repository.removeMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME );
     }
 
     public void testRemoveFacet()
+        throws Exception
+
     {
         TestMetadataFacet metadataFacet = new TestMetadataFacet( TEST_VALUE );
         repository.addMetadataFacet( TEST_REPO_ID, metadataFacet );
@@ -606,6 +636,8 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testRemoveFacetWhenEmpty()
+        throws Exception
+
     {
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
         assertTrue( facets.isEmpty() );
@@ -619,6 +651,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifacts()
+        throws Exception
     {
         ArtifactMetadata artifact1 = createArtifact();
         ArtifactMetadata artifact2 = createArtifact( "pom" );
@@ -639,6 +672,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactVersions()
+        throws Exception
     {
         ArtifactMetadata artifact1 = createArtifact();
         String version1 = "1.0-20091212.012345-1";
@@ -659,6 +693,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactVersionsMultipleArtifactsSingleVersion()
+        throws Exception
     {
         ArtifactMetadata artifact1 = createArtifact();
         artifact1.setId( TEST_PROJECT + "-" + TEST_PROJECT_VERSION + ".jar" );
@@ -674,6 +709,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByDateRangeOpen()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -683,6 +719,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByDateRangeSparseNamespace()
+        throws Exception
     {
         String namespace = "org.apache.archiva";
         ArtifactMetadata artifact = createArtifact();
@@ -694,6 +731,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByDateRangeLowerBound()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -704,6 +742,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByDateRangeLowerBoundOutOfRange()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -713,6 +752,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByDateRangeLowerAndUpperBound()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -724,6 +764,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByDateRangeUpperBound()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -734,6 +775,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByDateRangeUpperBoundOutOfRange()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -743,6 +785,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByRepoId()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -750,6 +793,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetNamespacesWithSparseDepth()
+        throws Exception
     {
         repository.updateNamespace( TEST_REPO_ID, "org.apache.maven.shared" );
 
@@ -760,6 +804,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByChecksumSingleResultMd5()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -769,6 +814,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByChecksumSingleResultSha1()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -778,6 +824,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByChecksumDeepNamespace()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         String namespace = "multi.level.ns";
@@ -789,6 +836,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByChecksumMultipleResult()
+        throws Exception
     {
         ArtifactMetadata artifact1 = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
@@ -805,6 +853,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testGetArtifactsByChecksumNoResult()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
@@ -814,6 +863,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testDeleteArtifact()
+        throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
         artifact.addFacet( new TestMetadataFacet( "value" ) );
@@ -830,6 +880,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     public void testDeleteRepository()
+        throws Exception
     {
         repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
 

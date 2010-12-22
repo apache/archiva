@@ -26,6 +26,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
@@ -116,7 +117,15 @@ public class Maven2RepositoryMetadataResolver
         // TODO: an event mechanism would remove coupling to the problem reporting plugin
         // TODO: this removes all problems - do we need something that just removes the problems created by this resolver?
         String name = RepositoryProblemFacet.createName( namespace, projectId, projectVersion, null );
-        metadataRepository.removeMetadataFacet( repoId, RepositoryProblemFacet.FACET_ID, name );
+        try
+        {
+            metadataRepository.removeMetadataFacet( repoId, RepositoryProblemFacet.FACET_ID, name );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.warn( "Unable to remove repository problem facets for the version being removed: " + e.getMessage(),
+                      e );
+        }
 
         ManagedRepositoryConfiguration repositoryConfiguration =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
@@ -251,7 +260,14 @@ public class Maven2RepositoryMetadataResolver
         problem.setRepositoryId( repoId );
         problem.setVersion( projectVersion );
 
-        metadataRepository.addMetadataFacet( repoId, problem );
+        try
+        {
+            metadataRepository.addMetadataFacet( repoId, problem );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.warn( "Unable to add repository problem facets for the version being removed: " + e.getMessage(), e );
+        }
     }
 
     private List<org.apache.archiva.metadata.model.Dependency> convertDependencies( List<Dependency> dependencies )

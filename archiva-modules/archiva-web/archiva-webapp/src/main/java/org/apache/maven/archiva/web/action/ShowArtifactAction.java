@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork2.Validateable;
-
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
@@ -28,6 +27,7 @@ import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
@@ -49,12 +49,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Browse the repository. 
- * 
+ * Browse the repository.
+ *
  * TODO change name to ShowVersionedAction to conform to terminology.
- * 
+ *
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
- *                   instantiation-strategy="per-lookup"
+ * instantiation-strategy="per-lookup"
  */
 @SuppressWarnings( "serial" )
 public class ShowArtifactAction
@@ -171,9 +171,19 @@ public class ShowArtifactAction
                 {
                     repositoryId = repoId;
 
-                    List<ArtifactMetadata> artifacts =
-                        new ArrayList<ArtifactMetadata>( metadataResolver.getArtifacts( repoId, groupId, artifactId,
-                                                                                        version ) );
+                    List<ArtifactMetadata> artifacts;
+                    try
+                    {
+                        artifacts = new ArrayList<ArtifactMetadata>( metadataResolver.getArtifacts( repoId, groupId,
+                                                                                                    artifactId,
+                                                                                                    version ) );
+                    }
+                    catch ( MetadataResolutionException e )
+                    {
+                        addIncompleteModelWarning();
+
+                        artifacts = Collections.emptyList();
+                    }
                     Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
                     {
                         public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
@@ -181,9 +191,8 @@ public class ShowArtifactAction
                             // sort by version (reverse), then ID
                             // TODO: move version sorting into repository handling (maven2 specific), and perhaps add a
                             // way to get latest instead
-                            int result =
-                                new DefaultArtifactVersion( o2.getVersion() ).compareTo( new DefaultArtifactVersion(
-                                                                                                                     o1.getVersion() ) );
+                            int result = new DefaultArtifactVersion( o2.getVersion() ).compareTo(
+                                new DefaultArtifactVersion( o1.getVersion() ) );
                             return result != 0 ? result : o1.getId().compareTo( o2.getId() );
                         }
                     } );
@@ -207,7 +216,8 @@ public class ShowArtifactAction
 
     private void addIncompleteModelWarning()
     {
-        addActionMessage( "The model may be incomplete due to a previous error in resolving information. Refer to the repository problem reports for more information." );
+        addActionMessage(
+            "The model may be incomplete due to a previous error in resolving information. Refer to the repository problem reports for more information." );
     }
 
     /**
@@ -248,6 +258,7 @@ public class ShowArtifactAction
      * Show the dependees (other artifacts that depend on this project) tab.
      */
     public String dependees()
+        throws MetadataResolutionException
     {
         List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
         // TODO: what if we get duplicates across repositories?
@@ -321,8 +332,8 @@ public class ShowArtifactAction
             genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
         }
 
-        if ( propertyName == null || "".equals( propertyName.trim() ) || propertyValue == null ||
-            "".equals( propertyValue.trim() ) )
+        if ( propertyName == null || "".equals( propertyName.trim() ) || propertyValue == null || "".equals(
+            propertyValue.trim() ) )
         {
             model = projectMetadata;
             addActionError( errorMsg != null ? errorMsg : "Property Name and Property Value are required." );
@@ -331,7 +342,16 @@ public class ShowArtifactAction
 
         genericMetadata.put( propertyName, propertyValue );
 
-        updateProjectMetadata( projectMetadata );
+        try
+        {
+            updateProjectMetadata( projectMetadata );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.warn( "Unable to persist modified project metadata after adding entry: " + e.getMessage(), e );
+            addActionError( "Unable to add metadata item to underlying content storage - consult application logs." );
+            return ERROR;
+        }
 
         projectMetadata = getProjectVersionMetadata();
 
@@ -352,7 +372,7 @@ public class ShowArtifactAction
 
         if ( projectMetadata == null )
         {
-            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
+            addActionError( "Artifact not found" );
             return ERROR;
         }
 
@@ -364,7 +384,18 @@ public class ShowArtifactAction
             {
                 genericMetadata.remove( deleteItem );
 
-                updateProjectMetadata( projectMetadata );
+                try
+                {
+                    updateProjectMetadata( projectMetadata );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to persist modified project metadata after removing entry: " + e.getMessage(),
+                              e );
+                    addActionError(
+                        "Unable to remove metadata item to underlying content storage - consult application logs." );
+                    return ERROR;
+                }
 
                 projectMetadata = getProjectVersionMetadata();
 
@@ -379,7 +410,7 @@ public class ShowArtifactAction
         }
         else
         {
-            addActionError( errorMsg != null ? errorMsg : "No generic metadata facet for this artifact." );
+            addActionError( "No generic metadata facet for this artifact." );
             return ERROR;
         }
 
@@ -387,6 +418,7 @@ public class ShowArtifactAction
     }
 
     private void updateProjectMetadata( ProjectVersionMetadata projectMetadata )
+        throws MetadataRepositoryException
     {
         GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
         genericMetadataFacet.fromProperties( genericMetadata );
