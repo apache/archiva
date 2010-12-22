@@ -95,7 +95,7 @@ public class DeleteManagedRepositoryActionTest
 
         MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
-        metadataRepository.deleteRepository( REPO_ID );
+        metadataRepository.removeRepository( REPO_ID );
         action.setMetadataRepository( metadataRepository );
 
         metadataRepositoryControl.replay();
@@ -178,7 +178,7 @@ public class DeleteManagedRepositoryActionTest
     {
         MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
-        metadataRepository.deleteRepository( REPO_ID );
+        metadataRepository.removeRepository( REPO_ID );
         metadataRepositoryControl.replay();
         action.setMetadataRepository( metadataRepository );
         return metadataRepositoryControl;

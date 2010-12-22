@@ -66,7 +66,7 @@ import java.util.Map;
 
 /**
  * AdministrationServiceImpl
- * 
+ *
  * @version $Id: AdministrationServiceImpl.java
  */
 public class AdministrationServiceImpl
@@ -197,15 +197,15 @@ public class AdministrationServiceImpl
             // delete from file system
             repoContent.deleteVersion( ref );
 
-            Collection<ArtifactMetadata> artifacts =
-                metadataRepository.getArtifacts( repoId, groupId, artifactId, version );
+            Collection<ArtifactMetadata> artifacts = metadataRepository.getArtifacts( repoId, groupId, artifactId,
+                                                                                      version );
 
             for ( ArtifactMetadata artifact : artifacts )
             {
                 // TODO: mismatch between artifact (snapshot) version and project (base) version here
                 if ( artifact.getVersion().equals( version ) )
                 {
-                    metadataRepository.deleteArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
+                    metadataRepository.removeArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
                                                        artifact.getProject(), artifact.getVersion(), artifact.getId() );
 
                     // TODO: move into the metadata repository proper - need to differentiate attachment of
@@ -295,9 +295,9 @@ public class AdministrationServiceImpl
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
             // TODO fix resolution of repo url!
-            ManagedRepository repo =
-                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), "URL", repoConfig.getLayout(),
-                                       repoConfig.isSnapshots(), repoConfig.isReleases() );
+            ManagedRepository repo = new ManagedRepository( repoConfig.getId(), repoConfig.getName(), "URL",
+                                                            repoConfig.getLayout(), repoConfig.isSnapshots(),
+                                                            repoConfig.isReleases() );
             managedRepos.add( repo );
         }
 
@@ -316,9 +316,8 @@ public class AdministrationServiceImpl
 
         for ( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
         {
-            RemoteRepository repo =
-                new RemoteRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl(),
-                                      repoConfig.getLayout() );
+            RemoteRepository repo = new RemoteRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl(),
+                                                          repoConfig.getLayout() );
             remoteRepos.add( repo );
         }
 
@@ -354,18 +353,18 @@ public class AdministrationServiceImpl
 
         if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
         {
-            throw new Exception( "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a managed repository." );
+            throw new Exception( "Unable to add new repository with id [" + repoId +
+                                     "], that id already exists as a managed repository." );
         }
         else if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
         {
-            throw new Exception( "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a remote repository." );
+            throw new Exception( "Unable to add new repository with id [" + repoId +
+                                     "], that id already exists as a remote repository." );
         }
         else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
         {
-            throw new Exception( "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a repository group." );
+            throw new Exception( "Unable to add new repository with id [" + repoId +
+                                     "], that id already exists as a repository group." );
         }
 
         if ( !validator.validate( cronExpression ) )
@@ -408,7 +407,7 @@ public class AdministrationServiceImpl
             throw new Exception( "A repository with that id does not exist" );
         }
 
-        metadataRepository.deleteRepository( repository.getId() );
+        metadataRepository.removeRepository( repository.getId() );
         repositoryStatisticsManager.deleteStatistics( repository.getId() );
         config.removeManagedRepository( repository );
 
@@ -440,7 +439,8 @@ public class AdministrationServiceImpl
                 List<String> repoGroups = repoToGroupMap.get( repository.getId() );
                 for ( String repoGroup : repoGroups )
                 {
-                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository( repository.getId() );
+                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository(
+                        repository.getId() );
                 }
             }
         }
@@ -457,10 +457,9 @@ public class AdministrationServiceImpl
         {
             throw new Exception( "A repository with that id does not exist" );
         }
-        ManagedRepository repo =
-            new ManagedRepository( managedRepository.getId(), managedRepository.getName(), "URL",
-                                   managedRepository.getLayout(), managedRepository.isSnapshots(),
-                                   managedRepository.isReleases() );
+        ManagedRepository repo = new ManagedRepository( managedRepository.getId(), managedRepository.getName(), "URL",
+                                                        managedRepository.getLayout(), managedRepository.isSnapshots(),
+                                                        managedRepository.isReleases() );
 
         return repo;
     }
@@ -490,16 +489,16 @@ public class AdministrationServiceImpl
                     log.info( "Repository to be merged contains releases only.." );
                     if ( skipConflicts )
                     {
-                        List<ArtifactMetadata> conflicts =
-                            repositoryMerger.getConflictingArtifacts( repoId, stagingId );
+                        List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts( repoId,
+                                                                                                     stagingId );
 
                         if ( log.isDebugEnabled() )
                         {
                             log.debug( "Artifacts in conflict.." );
-                            for( ArtifactMetadata metadata : conflicts )
+                            for ( ArtifactMetadata metadata : conflicts )
                             {
                                 log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
-                                    metadata.getProjectVersion() );
+                                               metadata.getProjectVersion() );
                             }
                         }
 
@@ -519,16 +518,16 @@ public class AdministrationServiceImpl
                     log.info( "Repository to be merged has snapshot artifacts.." );
                     if ( skipConflicts )
                     {
-                        List<ArtifactMetadata> conflicts =
-                            repositoryMerger.getConflictingArtifacts( repoId, stagingId );
+                        List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts( repoId,
+                                                                                                     stagingId );
 
                         if ( log.isDebugEnabled() )
                         {
                             log.debug( "Artifacts in conflict.." );
-                            for( ArtifactMetadata metadata : conflicts )
+                            for ( ArtifactMetadata metadata : conflicts )
                             {
                                 log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
-                                    metadata.getProjectVersion() );
+                                               metadata.getProjectVersion() );
                             }
                         }
 
@@ -536,19 +535,21 @@ public class AdministrationServiceImpl
 
                         log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
 
-                        Filter<ArtifactMetadata> artifactsWithOutConflicts =
-                            new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+                        Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>(
+                            sourceArtifacts );
                         repositoryMerger.merge( stagingId, repoId, artifactsWithOutConflicts );
 
-                        log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '" +
-                            repoId + "'." );
+                        log.info(
+                            "Staging repository '" + stagingId + "' merged successfully with managed repo '" + repoId +
+                                "'." );
                     }
                     else
                     {
                         repositoryMerger.merge( stagingId, repoId );
-                        
-                        log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '" +
-                            repoId + "'." );
+
+                        log.info(
+                            "Staging repository '" + stagingId + "' merged successfully with managed repo '" + repoId +
+                                "'." );
                     }
                 }
             }
@@ -593,8 +594,8 @@ public class AdministrationServiceImpl
         }
         if ( !file.exists() || !file.isDirectory() )
         {
-            throw new IOException( "Unable to add repository - no write access, can not create the root directory: "
-                + file );
+            throw new IOException(
+                "Unable to add repository - no write access, can not create the root directory: " + file );
         }
 
         configuration.addManagedRepository( repository );

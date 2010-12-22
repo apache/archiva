@@ -19,61 +19,49 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import java.util.Collection;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+
+import java.util.Collection;
 
 public class TestMetadataResolver
     implements MetadataResolver
 {
-    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
+    public ProjectVersionMetadata resolveProjectVersion( String repoId, String namespace, String projectId,
+                                                         String projectVersion )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
-                                                     String projectVersion )
+    public Collection<ProjectVersionReference> resolveProjectReferences( String repoId, String namespace,
+                                                                         String projectId, String projectVersion )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
-                                                   String projectVersion )
+    public Collection<String> resolveRootNamespaces( String repoId )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
-                                                                     String projectVersion )
+    public Collection<String> resolveNamespaces( String repoId, String namespace )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<String> getRootNamespaces( String repoId )
+    public Collection<String> resolveProjects( String repoId, String namespace )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<String> getNamespaces( String repoId, String namespace )
+    public Collection<String> resolveProjectVersions( String repoId, String namespace, String projectId )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<String> getProjects( String repoId, String namespace )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                                      String projectVersion )
+    public Collection<ArtifactMetadata> resolveArtifacts( String repoId, String namespace, String projectId,
+                                                          String projectVersion )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

@@ -589,7 +589,7 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
-    public void deleteArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
+    public void removeArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 String id )
         throws MetadataRepositoryException
     {
@@ -608,7 +608,7 @@ public class JcrMetadataRepository
         }
     }
 
-    public void deleteRepository( String repositoryId )
+    public void removeRepository( String repositoryId )
         throws MetadataRepositoryException
     {
         try

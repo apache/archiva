@@ -184,12 +184,12 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
+    public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void deleteRepository( String repoId )
+    public void removeRepository( String repoId )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -200,7 +200,8 @@ public class TestMetadataRepository
         return artifacts;
     }
 
-    public List<ArtifactMetadata> getArtifacts(String repositoryId){
+    public List<ArtifactMetadata> getArtifacts( String repositoryId )
+    {
         return artifacts;
     }
 }

@@ -19,15 +19,6 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -63,9 +54,18 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * AdministrationServiceImplTest
- * 
+ *
  * @version $Id: AdministrationServiceImplTest.java
  */
 public class AdministrationServiceImplTest
@@ -174,10 +174,9 @@ public class AdministrationServiceImplTest
         auditListenerControl = MockControl.createControl( AuditListener.class );
         auditListener = (AuditListener) auditListenerControl.getMock();
 
-        service =
-            new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory, metadataRepository,
-                                           repositoryTaskScheduler, Collections.singletonList( listener ),
-                                           repositoryStatisticsManager, repositoryMerger, auditListener );
+        service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
+                                                 metadataRepository, repositoryTaskScheduler, Collections.singletonList(
+            listener ), repositoryStatisticsManager, repositoryMerger, auditListener );
     }
 
     /* Tests for repository consumers */
@@ -338,8 +337,9 @@ public class AdministrationServiceImplTest
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( repoContent.getId(),
                                                                                     artifact.getNamespace(),
                                                                                     artifact.getProject(),
-                                                                                    artifact.getVersion() ), artifacts );
-        metadataRepository.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                                                                    artifact.getVersion() ),
+                                                   artifacts );
+        metadataRepository.removeArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
                                            artifact.getVersion(), artifact.getId() );
 
         listener.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
@@ -394,8 +394,9 @@ public class AdministrationServiceImplTest
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( repoContent.getId(),
                                                                                     artifact.getNamespace(),
                                                                                     artifact.getProject(),
-                                                                                    artifact.getVersion() ), artifacts );
-        metadataRepository.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                                                                    artifact.getVersion() ),
+                                                   artifacts );
+        metadataRepository.removeArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
                                            artifact.getVersion(), artifact.getId() );
 
         listener.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
@@ -474,8 +475,8 @@ public class AdministrationServiceImplTest
 
         FileUtils.copyDirectory( srcDir, repoDir, FileFilterUtils.makeSVNAware( null ) );
 
-        ManagedRepositoryConfiguration managedRepo =
-            createManagedRepo( "internal", layout, "Internal Repository", true, false );
+        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "internal", layout, "Internal Repository", true,
+                                                                        false );
         managedRepo.setLocation( repoDir.getAbsolutePath() );
         return managedRepo;
     }
@@ -509,13 +510,16 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
-                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), createManagedRepo( "internal",
+                                                                                                          "default",
+                                                                                                          "Internal Repository",
+                                                                                                          true,
+                                                                                                          false ) );
 
         RepositoryTask task = new RepositoryTask();
 
-        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "internal" ),
-                                                        false );
+        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask(
+            "internal" ), false );
 
         repositoryTaskScheduler.queueTask( task );
         repositoryTaskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
@@ -544,11 +548,14 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
-                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), createManagedRepo( "internal",
+                                                                                                          "default",
+                                                                                                          "Internal Repository",
+                                                                                                          true,
+                                                                                                          false ) );
 
-        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "internal" ),
-                                                        true );
+        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask(
+            "internal" ), true );
 
         archivaConfigControl.replay();
         configControl.replay();
@@ -625,7 +632,8 @@ public class AdministrationServiceImplTest
         List<RemoteRepositoryConfiguration> remoteRepos = new ArrayList<RemoteRepositoryConfiguration>();
         remoteRepos.add( createRemoteRepository( "central", "Central Repository", "default",
                                                  "http://repo1.maven.org/maven2" ) );
-        remoteRepos.add( createRemoteRepository( "dummy", "Dummy Remote Repository", "legacy", "http://dummy.com/dummy" ) );
+        remoteRepos.add( createRemoteRepository( "dummy", "Dummy Remote Repository", "legacy",
+                                                 "http://dummy.com/dummy" ) );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.getRemoteRepositories(), remoteRepos );
@@ -673,8 +681,9 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "repo" ),
-                                       createManagedRepo( "repo", "default", "repo", true, false ) );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "repo" ), createManagedRepo( "repo", "default",
+                                                                                                      "repo", true,
+                                                                                                      false ) );
         configControl.expectAndReturn( config.findManagedRepositoryById( "repo-stage" ), null );
 
         archivaConfigControl.replay();
@@ -830,8 +839,8 @@ public class AdministrationServiceImplTest
         String stageLocation = releaseLocation + "-stage";
 
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
-        RemoteRepositoryConfiguration remoteRepo =
-            createRemoteRepository( "central", "Central Repository", "default", "http://repo1.maven.org/maven2" );
+        RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
+                                                                           "http://repo1.maven.org/maven2" );
         List<String> repositories = new ArrayList<String>();
         repositories.add( managedRepo.getName() );
         RepositoryGroupConfiguration repoGroup = createRepoGroupConfig( "repoGroup", repositories );
@@ -861,9 +870,8 @@ public class AdministrationServiceImplTest
         configControl.replay();
         assertFalse( new File( releaseLocation ).isDirectory() );
         assertFalse( new File( stageLocation ).isDirectory() );
-        boolean success =
-            service.addManagedRepository( repoId, layout, name, releaseLocation, true, true, false, true,
-                                          "0 15 3 * * ? *" );
+        boolean success = service.addManagedRepository( repoId, layout, name, releaseLocation, true, true, false, true,
+                                                        "0 15 3 * * ? *" );
         assertTrue( success );
         assertTrue( new File( releaseLocation ).isDirectory() );
         assertTrue( new File( stageLocation ).isDirectory() );

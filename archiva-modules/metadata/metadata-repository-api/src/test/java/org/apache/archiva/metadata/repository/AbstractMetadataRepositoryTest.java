@@ -873,7 +873,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>( repository.getArtifacts(
             TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
 
-        repository.deleteArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
+        repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
 
         assertTrue( repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
                                              TEST_PROJECT_VERSION ).isEmpty() );
@@ -909,7 +909,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         assertEquals( expected, actual );
 
-        repository.deleteRepository( TEST_REPO_ID );
+        repository.removeRepository( TEST_REPO_ID );
 
         assertTrue( repository.getArtifacts( TEST_REPO_ID ).isEmpty() );
         assertTrue( repository.getRootNamespaces( TEST_REPO_ID ).isEmpty() );

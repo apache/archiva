@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface MetadataRepository
-    extends MetadataResolver
 {
     /**
      * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
@@ -81,7 +80,7 @@ public interface MetadataRepository
     List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
         throws MetadataRepositoryException;
 
-    void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
+    void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
         throws MetadataRepositoryException;
 
     /**
@@ -89,9 +88,49 @@ public interface MetadataRepository
      *
      * @param repositoryId the repository to delete
      */
-    void deleteRepository( String repositoryId )
+    void removeRepository( String repositoryId )
         throws MetadataRepositoryException;
 
     List<ArtifactMetadata> getArtifacts( String repositoryId )
         throws MetadataRepositoryException;
+
+    ProjectMetadata getProject( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException;
+
+    ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+        throws MetadataResolutionException;
+
+    Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion )
+        throws MetadataResolutionException;
+
+    /**
+     * Retrieve project references from the metadata repository. Note that this is not built into the content model for
+     * a project version as a reference may be present (due to reverse-lookup of dependencies) before the actual
+     * project is, and we want to avoid adding a stub model to the content repository.
+     *
+     * @param repoId         the repository ID to look within
+     * @param namespace      the namespace of the project to get references to
+     * @param projectId      the identifier of the project to get references to
+     * @param projectVersion the version of the project to get references to
+     * @return a list of project references
+     */
+    Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+                                                              String projectVersion )
+        throws MetadataResolutionException;
+
+    Collection<String> getRootNamespaces( String repoId )
+        throws MetadataResolutionException;
+
+    Collection<String> getNamespaces( String repoId, String namespace )
+        throws MetadataResolutionException;
+
+    Collection<String> getProjects( String repoId, String namespace )
+        throws MetadataResolutionException;
+
+    Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException;
+
+    Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                               String projectVersion )
+        throws MetadataResolutionException;
 }

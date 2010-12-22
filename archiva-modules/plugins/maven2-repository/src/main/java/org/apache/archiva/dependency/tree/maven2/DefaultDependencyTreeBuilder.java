@@ -425,8 +425,8 @@ public class DefaultDependencyTreeBuilder
                 Collection<String> projectVersions;
                 try
                 {
-                    projectVersions = metadataResolver.getProjectVersions( repoId, artifact.getGroupId(),
-                                                                           artifact.getArtifactId() );
+                    projectVersions = metadataResolver.resolveProjectVersions( repoId, artifact.getGroupId(),
+                                                                               artifact.getArtifactId() );
                 }
                 catch ( MetadataResolutionException e )
                 {

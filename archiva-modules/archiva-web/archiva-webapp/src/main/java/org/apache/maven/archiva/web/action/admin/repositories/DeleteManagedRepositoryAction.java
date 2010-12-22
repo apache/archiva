@@ -187,7 +187,7 @@ public class DeleteManagedRepositoryAction
     private void cleanupDatabase( String repoId )
         throws MetadataRepositoryException
     {
-        metadataRepository.deleteRepository( repoId );
+        metadataRepository.removeRepository( repoId );
     }
 
     public ManagedRepositoryConfiguration getRepository()

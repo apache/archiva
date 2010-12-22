@@ -61,7 +61,7 @@ public class SearchServiceImpl
         this.metadataRepository = metadataRepository;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public List<Artifact> quickSearch( String queryString )
         throws Exception
     {
@@ -85,9 +85,9 @@ public class SearchServiceImpl
                         // slight behaviour change to previous implementation: instead of allocating "jar" when not
                         // found in the database, we can rely on the metadata repository to create it on the fly. We
                         // just allocate the default packaging if the Maven facet is not found.
-                        FacetedMetadata model =
-                            metadataResolver.getProjectVersion( repoId, resultHit.getGroupId(),
-                                                                resultHit.getArtifactId(), version );
+                        FacetedMetadata model = metadataResolver.resolveProjectVersion( repoId, resultHit.getGroupId(),
+                                                                                        resultHit.getArtifactId(),
+                                                                                        version );
 
                         if ( model != null )
                         {
@@ -143,7 +143,7 @@ public class SearchServiceImpl
 
         for ( String repoId : observableRepos )
         {
-            Collection<String> results = metadataResolver.getProjectVersions( repoId, groupId, artifactId );
+            Collection<String> results = metadataResolver.resolveProjectVersions( repoId, groupId, artifactId );
 
             for ( final String version : results )
             {
@@ -176,16 +176,16 @@ public class SearchServiceImpl
 
         for ( String repoId : observableRepos )
         {
-            ProjectVersionMetadata model = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+            ProjectVersionMetadata model = metadataResolver.resolveProjectVersion( repoId, groupId, artifactId,
+                                                                                   version );
             if ( model != null )
             {
                 List<Dependency> dependencies = new ArrayList<Dependency>();
                 List<org.apache.archiva.metadata.model.Dependency> modelDeps = model.getDependencies();
                 for ( org.apache.archiva.metadata.model.Dependency dep : modelDeps )
                 {
-                    Dependency dependency =
-                        new Dependency( dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), dep.getClassifier(),
-                                        dep.getType(), dep.getScope() );
+                    Dependency dependency = new Dependency( dep.getGroupId(), dep.getArtifactId(), dep.getVersion(),
+                                                            dep.getClassifier(), dep.getType(), dep.getScope() );
                     dependencies.add( dependency );
                 }
                 return dependencies;
@@ -211,12 +211,12 @@ public class SearchServiceImpl
 
         for ( String repoId : observableRepos )
         {
-            Collection<ProjectVersionReference> refs =
-                metadataResolver.getProjectReferences( repoId, groupId, artifactId, version );
+            Collection<ProjectVersionReference> refs = metadataResolver.resolveProjectReferences( repoId, groupId,
+                                                                                                  artifactId, version );
             for ( ProjectVersionReference ref : refs )
             {
-                artifacts.add(
-                    new Artifact( repoId, ref.getNamespace(), ref.getProjectId(), ref.getProjectVersion(), "" ) );
+                artifacts.add( new Artifact( repoId, ref.getNamespace(), ref.getProjectId(), ref.getProjectVersion(),
+                                             "" ) );
             }
         }
 

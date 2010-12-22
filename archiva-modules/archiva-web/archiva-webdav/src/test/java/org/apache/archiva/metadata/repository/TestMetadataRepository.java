@@ -19,16 +19,16 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class TestMetadataRepository
     implements MetadataRepository
@@ -144,12 +144,12 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
+    public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void deleteRepository( String repoId )
+    public void removeRepository( String repoId )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -159,7 +159,9 @@ public class TestMetadataRepository
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-    public List<ArtifactMetadata> getArtifacts(String repositoryId){
+
+    public List<ArtifactMetadata> getArtifacts( String repositoryId )
+    {
         return null;
     }
 }

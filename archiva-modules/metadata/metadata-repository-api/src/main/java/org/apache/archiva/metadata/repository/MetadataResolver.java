@@ -20,7 +20,6 @@ package org.apache.archiva.metadata.repository;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 
@@ -28,13 +27,8 @@ import java.util.Collection;
 
 public interface MetadataResolver
 {
-    ProjectMetadata getProject( String repoId, String namespace, String projectId )
-        throws MetadataResolutionException;
-
-    ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
-        throws MetadataResolutionException;
-
-    Collection<String> getArtifactVersions( String repoId, String namespace, String projectId, String projectVersion )
+    ProjectVersionMetadata resolveProjectVersion( String repoId, String namespace, String projectId,
+                                                  String projectVersion )
         throws MetadataResolutionException;
 
     /**
@@ -48,23 +42,23 @@ public interface MetadataResolver
      * @param projectVersion the version of the project to get references to
      * @return a list of project references
      */
-    Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
-                                                              String projectVersion )
+    Collection<ProjectVersionReference> resolveProjectReferences( String repoId, String namespace, String projectId,
+                                                                  String projectVersion )
         throws MetadataResolutionException;
 
-    Collection<String> getRootNamespaces( String repoId )
+    Collection<String> resolveRootNamespaces( String repoId )
         throws MetadataResolutionException;
 
-    Collection<String> getNamespaces( String repoId, String namespace )
+    Collection<String> resolveNamespaces( String repoId, String namespace )
         throws MetadataResolutionException;
 
-    Collection<String> getProjects( String repoId, String namespace )
+    Collection<String> resolveProjects( String repoId, String namespace )
         throws MetadataResolutionException;
 
-    Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+    Collection<String> resolveProjectVersions( String repoId, String namespace, String projectId )
         throws MetadataResolutionException;
 
-    Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                               String projectVersion )
+    Collection<ArtifactMetadata> resolveArtifacts( String repoId, String namespace, String projectId,
+                                                   String projectVersion )
         throws MetadataResolutionException;
 }

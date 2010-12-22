@@ -19,6 +19,11 @@ package org.apache.archiva.metadata.repository.memory;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataResolver;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,12 +31,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
-import org.apache.archiva.metadata.repository.MetadataResolver;
 
 public class TestMetadataResolver
     implements MetadataResolver
@@ -49,38 +48,24 @@ public class TestMetadataResolver
 
     private Map<String, Collection<String>> versionsInProject = new HashMap<String, Collection<String>>();
 
-    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
-    {
-        ProjectMetadata metadata = new ProjectMetadata();
-        metadata.setNamespace( namespace );
-        metadata.setId( projectId );
-        return metadata;
-    }
-
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
-                                                     String projectVersion )
+    public ProjectVersionMetadata resolveProjectVersion( String repoId, String namespace, String projectId,
+                                                         String projectVersion )
     {
         return projectVersions.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
-                                                   String projectVersion )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
-                                                                     String projectVersion )
+    public Collection<ProjectVersionReference> resolveProjectReferences( String repoId, String namespace,
+                                                                         String projectId, String projectVersion )
     {
         return references.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
     }
 
-    public Collection<String> getRootNamespaces( String repoId )
+    public Collection<String> resolveRootNamespaces( String repoId )
     {
-        return getNamespaces( repoId, null );
+        return resolveNamespaces( repoId, null );
     }
 
-    public Collection<String> getNamespaces( String repoId, String baseNamespace )
+    public Collection<String> resolveNamespaces( String repoId, String baseNamespace )
     {
         Set<String> namespaces = new LinkedHashSet<String>();
         int fromIndex = baseNamespace != null ? baseNamespace.length() + 1 : 0;
@@ -102,23 +87,23 @@ public class TestMetadataResolver
         return namespaces;
     }
 
-    public Collection<String> getProjects( String repoId, String namespace )
+    public Collection<String> resolveProjects( String repoId, String namespace )
     {
         Collection<String> list = projectsInNamespace.get( namespace );
         return list != null ? list : Collections.<String>emptyList();
     }
 
-    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+    public Collection<String> resolveProjectVersions( String repoId, String namespace, String projectId )
     {
         Collection<String> list = versionsInProject.get( namespace + ":" + projectId );
         return list != null ? list : Collections.<String>emptyList();
     }
 
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                                      String projectVersion )
+    public Collection<ArtifactMetadata> resolveArtifacts( String repoId, String namespace, String projectId,
+                                                          String projectVersion )
     {
-        List<ArtifactMetadata> artifacts =
-            this.artifacts.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
+        List<ArtifactMetadata> artifacts = this.artifacts.get( createMapKey( repoId, namespace, projectId,
+                                                                             projectVersion ) );
         return ( artifacts != null ? artifacts : Collections.<ArtifactMetadata>emptyList() );
     }
 

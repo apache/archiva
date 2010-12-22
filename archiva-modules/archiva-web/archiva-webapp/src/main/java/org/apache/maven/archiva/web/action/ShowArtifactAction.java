@@ -157,7 +157,7 @@ public class ShowArtifactAction
                 // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
                 try
                 {
-                    versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                    versionMetadata = metadataResolver.resolveProjectVersion( repoId, groupId, artifactId, version );
                 }
                 catch ( MetadataResolutionException e )
                 {
@@ -174,9 +174,9 @@ public class ShowArtifactAction
                     List<ArtifactMetadata> artifacts;
                     try
                     {
-                        artifacts = new ArrayList<ArtifactMetadata>( metadataResolver.getArtifacts( repoId, groupId,
-                                                                                                    artifactId,
-                                                                                                    version ) );
+                        artifacts = new ArrayList<ArtifactMetadata>( metadataResolver.resolveArtifacts( repoId, groupId,
+                                                                                                        artifactId,
+                                                                                                        version ) );
                     }
                     catch ( MetadataResolutionException e )
                     {
@@ -265,7 +265,7 @@ public class ShowArtifactAction
         for ( String repoId : getObservableRepos() )
         {
             // TODO: what about if we want to see this irrespective of version?
-            references.addAll( metadataResolver.getProjectReferences( repoId, groupId, artifactId, version ) );
+            references.addAll( metadataResolver.resolveProjectReferences( repoId, groupId, artifactId, version ) );
         }
 
         this.dependees = references;

@@ -78,7 +78,7 @@ public class BrowseAction
         Set<String> namespacesToCollapse = new LinkedHashSet<String>();
         for ( String repoId : selectedRepos )
         {
-            namespacesToCollapse.addAll( metadataResolver.getRootNamespaces( repoId ) );
+            namespacesToCollapse.addAll( metadataResolver.resolveRootNamespaces( repoId ) );
         }
 
         for ( String n : namespacesToCollapse )
@@ -97,7 +97,7 @@ public class BrowseAction
         Set<String> subNamespaces = new LinkedHashSet<String>();
         for ( String repoId : repoIds )
         {
-            subNamespaces.addAll( metadataResolver.getNamespaces( repoId, n ) );
+            subNamespaces.addAll( metadataResolver.resolveNamespaces( repoId, n ) );
         }
         if ( subNamespaces.size() != 1 )
         {
@@ -111,7 +111,7 @@ public class BrowseAction
         {
             for ( String repoId : repoIds )
             {
-                Collection<String> projects = metadataResolver.getProjects( repoId, n );
+                Collection<String> projects = metadataResolver.resolveProjects( repoId, n );
                 if ( projects != null && !projects.isEmpty() )
                 {
                     if ( log.isDebugEnabled() )
@@ -146,9 +146,9 @@ public class BrowseAction
         Set<String> namespacesToCollapse = new LinkedHashSet<String>();
         for ( String repoId : selectedRepos )
         {
-            namespacesToCollapse.addAll( metadataResolver.getNamespaces( repoId, groupId ) );
+            namespacesToCollapse.addAll( metadataResolver.resolveNamespaces( repoId, groupId ) );
 
-            projects.addAll( metadataResolver.getProjects( repoId, groupId ) );
+            projects.addAll( metadataResolver.resolveProjects( repoId, groupId ) );
         }
 
         // TODO: this logic should be optional, particularly remembering we want to keep this code simple
@@ -199,7 +199,7 @@ public class BrowseAction
         Set<String> versions = new LinkedHashSet<String>();
         for ( String repoId : selectedRepos )
         {
-            versions.addAll( metadataResolver.getProjectVersions( repoId, groupId, artifactId ) );
+            versions.addAll( metadataResolver.resolveProjectVersions( repoId, groupId, artifactId ) );
         }
 
         // TODO: sort by known version ordering method
@@ -230,7 +230,8 @@ public class BrowseAction
                 {
                     try
                     {
-                        versionMetadata = metadataResolver.getProjectVersion( repoId, groupId, artifactId, version );
+                        versionMetadata = metadataResolver.resolveProjectVersion( repoId, groupId, artifactId,
+                                                                                  version );
                     }
                     catch ( MetadataResolutionException e )
                     {

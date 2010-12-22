@@ -19,15 +19,8 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
@@ -38,8 +31,14 @@ import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 public class NewArtifactsRssFeedProcessorTest
     extends PlexusInSpringTestCase
@@ -95,13 +94,14 @@ public class NewArtifactsRssFeedProcessorTest
 
         assertTrue( feed.getTitle().equals( "New Artifacts in Repository 'test-repo'" ) );
         assertTrue( feed.getDescription().equals(
-                                                  "New artifacts found in repository 'test-repo' during repository scan." ) );
+            "New artifacts found in repository 'test-repo' during repository scan." ) );
         assertTrue( feed.getLanguage().equals( "en-us" ) );
         assertTrue( feed.getPublishedDate().equals( whenGathered ) );
 
         List<SyndEntry> entries = feed.getEntries();
         assertEquals( entries.size(), 1 );
-        assertTrue( entries.get( 0 ).getTitle().equals( "New Artifacts in Repository 'test-repo' as of " + whenGathered ) );
+        assertTrue( entries.get( 0 ).getTitle().equals(
+            "New Artifacts in Repository 'test-repo' as of " + whenGathered ) );
         assertTrue( entries.get( 0 ).getPublishedDate().equals( whenGathered ) );
     }
 
@@ -140,12 +140,12 @@ public class NewArtifactsRssFeedProcessorTest
             throw new UnsupportedOperationException();
         }
 
-        public void deleteArtifact( String arg0, String arg1, String arg2, String arg3, String arg4 )
+        public void removeArtifact( String arg0, String arg1, String arg2, String arg3, String arg4 )
         {
             throw new UnsupportedOperationException();
         }
 
-        public void deleteRepository( String arg0 )
+        public void removeRepository( String arg0 )
         {
             throw new UnsupportedOperationException();
         }
@@ -287,10 +287,10 @@ public class NewArtifactsRssFeedProcessorTest
         {
             this.artifactsByDateRange = artifactsByDateRange;
         }
-  
+
         public List<ArtifactMetadata> getArtifacts( String repositoryId )
         {
-           return artifactsByDateRange;
+            return artifactsByDateRange;
         }
     }
 }

@@ -24,14 +24,12 @@ import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
-import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -63,10 +61,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.repository.storage.StorageMetadataResolver" role-hint="maven2"
+ * @plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryStorage" role-hint="maven2"
  */
-public class Maven2RepositoryMetadataResolver
-    implements StorageMetadataResolver
+public class Maven2RepositoryStorage
+    implements RepositoryStorage
 {
     /**
      * @plexus.requirement
@@ -88,11 +86,9 @@ public class Maven2RepositoryMetadataResolver
      */
     private MetadataRepository metadataRepository;
 
-    private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryMetadataResolver.class );
+    private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
-
-    private static final Filter<String> ALL = new AllFilter<String>();
 
     private static final String PROBLEM_MISSING_POM = "missing-pom";
 
@@ -103,14 +99,14 @@ public class Maven2RepositoryMetadataResolver
     private static final List<String> POTENTIAL_PROBLEMS = Arrays.asList( PROBLEM_INVALID_POM, PROBLEM_MISSING_POM,
                                                                           PROBLEM_MISLOCATED_POM );
 
-    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
+    public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
     {
         // TODO: could natively implement the "shared model" concept from the browse action to avoid needing it there?
         return null;
     }
 
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
-                                                     String projectVersion )
+    public ProjectVersionMetadata readProjectVersionMetadata( String repoId, String namespace, String projectId,
+                                                              String projectVersion )
         throws MetadataResolutionException
     {
         // Remove problems associated with this version, since we'll be re-adding any that still exist
@@ -372,26 +368,7 @@ public class Maven2RepositoryMetadataResolver
         return ci;
     }
 
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
-                                                   String projectVersion )
-    {
-        // TODO: useful, but not implemented yet, not called from DefaultMetadataResolver
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
-                                                                     String projectVersion )
-    {
-        // Can't be determined on a Maven 2 repository
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<String> getRootNamespaces( String repoId )
-    {
-        return getRootNamespaces( repoId, ALL );
-    }
-
-    public Collection<String> getRootNamespaces( String repoId, Filter<String> filter )
+    public Collection<String> listRootNamespaces( String repoId, Filter<String> filter )
     {
         File dir = getRepositoryBasedir( repoId );
 
@@ -422,12 +399,7 @@ public class Maven2RepositoryMetadataResolver
         return new File( repositoryConfiguration.getLocation() );
     }
 
-    public Collection<String> getNamespaces( String repoId, String namespace )
-    {
-        return getNamespaces( repoId, namespace, ALL );
-    }
-
-    public Collection<String> getNamespaces( String repoId, String namespace, Filter<String> filter )
+    public Collection<String> listNamespaces( String repoId, String namespace, Filter<String> filter )
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
@@ -448,12 +420,7 @@ public class Maven2RepositoryMetadataResolver
         return namespaces;
     }
 
-    public Collection<String> getProjects( String repoId, String namespace )
-    {
-        return getProjects( repoId, namespace, ALL );
-    }
-
-    public Collection<String> getProjects( String repoId, String namespace, Filter<String> filter )
+    public Collection<String> listProjects( String repoId, String namespace, Filter<String> filter )
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
@@ -474,19 +441,8 @@ public class Maven2RepositoryMetadataResolver
         return projects;
     }
 
-    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
-    {
-        return getProjectVersions( repoId, namespace, projectId, ALL );
-    }
-
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                                      String projectVersion )
-    {
-        return getArtifacts( repoId, namespace, projectId, projectVersion, ALL );
-    }
-
-    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId,
-                                                  Filter<String> filter )
+    public Collection<String> listProjectVersions( String repoId, String namespace, String projectId,
+                                                   Filter<String> filter )
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId );
 
@@ -494,8 +450,8 @@ public class Maven2RepositoryMetadataResolver
         return getSortedFiles( dir, filter );
     }
 
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
-                                                      String projectVersion, Filter<String> filter )
+    public Collection<ArtifactMetadata> readArtifactsMetadata( String repoId, String namespace, String projectId,
+                                                               String projectVersion, Filter<String> filter )
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId, projectVersion );
 
@@ -514,7 +470,7 @@ public class Maven2RepositoryMetadataResolver
         return artifacts;
     }
 
-    public ArtifactMetadata getArtifactForPath( String repoId, String path )
+    public ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
     {
         ArtifactMetadata metadata = pathTranslator.getArtifactForPath( repoId, path );
 
@@ -651,11 +607,6 @@ public class Maven2RepositoryMetadataResolver
             }
         }
         return metadata;
-    }
-
-    public void setConfiguration( ArchivaConfiguration configuration )
-    {
-        this.archivaConfiguration = configuration;
     }
 
     private static class DirectoryFilter

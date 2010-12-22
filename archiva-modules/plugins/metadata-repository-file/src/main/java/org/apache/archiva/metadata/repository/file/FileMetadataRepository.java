@@ -565,7 +565,7 @@ public class FileMetadataRepository
         return artifacts;
     }
 
-    public void deleteArtifact( String repoId, String namespace, String project, String version, String id )
+    public void removeArtifact( String repoId, String namespace, String project, String version, String id )
     {
         File directory = new File( getDirectory( repoId ), namespace + "/" + project + "/" + version );
 
@@ -600,7 +600,7 @@ public class FileMetadataRepository
         }
     }
 
-    public void deleteRepository( String repoId )
+    public void removeRepository( String repoId )
     {
         try
         {

@@ -134,9 +134,10 @@ public class SearchServiceImplTest
         facet.setPackaging( "war" );
         model.addFacet( facet );
 
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectVersion( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, "archiva-webapp", "1.0" ),
-            model );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectVersion( "repo1.mirror",
+                                                                                         ARCHIVA_TEST_GROUP_ID,
+                                                                                         "archiva-webapp", "1.0" ),
+                                                 model );
 
         userReposControl.replay();
         searchControl.replay();
@@ -188,15 +189,17 @@ public class SearchServiceImplTest
         searchControl.expectAndDefaultReturn( search.search( "", observableRepoIds, "archiva", limits, null ),
                                               results );
 
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectVersion( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                                "1.0" ), null );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectVersion( "repo1.mirror",
+                                                                                         ARCHIVA_TEST_GROUP_ID,
+                                                                                         ARCHIVA_TEST_ARTIFACT_ID,
+                                                                                         "1.0" ), null );
 
         ProjectVersionMetadata model = new ProjectVersionMetadata();
         model.setId( "1.0" );
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectVersion( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                                "1.0" ), model );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectVersion( "public.releases",
+                                                                                         ARCHIVA_TEST_GROUP_ID,
+                                                                                         ARCHIVA_TEST_ARTIFACT_ID,
+                                                                                         "1.0" ), model );
 
         userReposControl.replay();
         searchControl.replay();
@@ -253,9 +256,10 @@ public class SearchServiceImplTest
         facet.setPackaging( "jar" );
         model.addFacet( facet );
 
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectVersion( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                                "1.0" ), model );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectVersion( "repo1.mirror",
+                                                                                         ARCHIVA_TEST_GROUP_ID,
+                                                                                         ARCHIVA_TEST_ARTIFACT_ID,
+                                                                                         "1.0" ), model );
 
         userReposControl.replay();
         searchControl.replay();
@@ -310,8 +314,8 @@ public class SearchServiceImplTest
     public void testGetArtifactByChecksum()
         throws Exception
     {
-        userReposControl.expectAndReturn( userRepos.getObservableRepositories(),
-                                          Collections.singletonList( TEST_REPO ) );
+        userReposControl.expectAndReturn( userRepos.getObservableRepositories(), Collections.singletonList(
+            TEST_REPO ) );
 
         Date whenGathered = new Date();
 
@@ -345,12 +349,14 @@ public class SearchServiceImplTest
         observableRepoIds.add( "public.releases" );
 
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectVersions( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID ),
-            Arrays.asList( "1.0", "1.1-beta-2", "1.2" ) );
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectVersions( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID ),
-            Arrays.asList( "1.1-beta-1", "1.1", "1.2.1-SNAPSHOT" ) );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectVersions( "repo1.mirror",
+                                                                                          ARCHIVA_TEST_GROUP_ID,
+                                                                                          ARCHIVA_TEST_ARTIFACT_ID ),
+                                                 Arrays.asList( "1.0", "1.1-beta-2", "1.2" ) );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectVersions( "public.releases",
+                                                                                          ARCHIVA_TEST_GROUP_ID,
+                                                                                          ARCHIVA_TEST_ARTIFACT_ID ),
+                                                 Arrays.asList( "1.1-beta-1", "1.1", "1.2.1-SNAPSHOT" ) );
 
         userReposControl.replay();
         metadataResolverControl.replay();
@@ -364,19 +370,16 @@ public class SearchServiceImplTest
         assertEquals( 6, artifacts.size() );
         assertEquals( new Artifact( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0", "pom" ),
                       artifacts.get( 0 ) );
-        assertEquals(
-            new Artifact( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.1-beta-1", "pom" ),
-            artifacts.get( 3 ) );
-        assertEquals(
-            new Artifact( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.1-beta-2", "pom" ),
-            artifacts.get( 1 ) );
+        assertEquals( new Artifact( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.1-beta-1",
+                                    "pom" ), artifacts.get( 3 ) );
+        assertEquals( new Artifact( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.1-beta-2",
+                                    "pom" ), artifacts.get( 1 ) );
         assertEquals( new Artifact( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.1", "pom" ),
                       artifacts.get( 4 ) );
         assertEquals( new Artifact( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.2", "pom" ),
                       artifacts.get( 2 ) );
-        assertEquals(
-            new Artifact( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.2.1-SNAPSHOT", "pom" ),
-            artifacts.get( 5 ) );
+        assertEquals( new Artifact( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
+                                    "1.2.1-SNAPSHOT", "pom" ), artifacts.get( 5 ) );
     }
 
     public void testGetArtifactVersionsByDateArtifactExists()
@@ -415,15 +418,15 @@ public class SearchServiceImplTest
         model.addDependency( dependency );
 
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), Collections.singletonList( repoId ) );
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectVersion( repoId, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
-            model );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectVersion( repoId, ARCHIVA_TEST_GROUP_ID,
+                                                                                         ARCHIVA_TEST_ARTIFACT_ID,
+                                                                                         "1.0" ), model );
 
         metadataResolverControl.replay();
         userReposControl.replay();
 
-        List<Dependency> dependencies =
-            searchService.getDependencies( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" );
+        List<Dependency> dependencies = searchService.getDependencies( ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
+                                                                       "1.0" );
 
         metadataResolverControl.verify();
         userReposControl.verify();
@@ -441,9 +444,9 @@ public class SearchServiceImplTest
         String repoId = "repo1.mirror";
 
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), Collections.singletonList( repoId ) );
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectVersion( repoId, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
-            null );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectVersion( repoId, ARCHIVA_TEST_GROUP_ID,
+                                                                                         ARCHIVA_TEST_ARTIFACT_ID,
+                                                                                         "1.0" ), null );
 
         userReposControl.replay();
         metadataResolverControl.replay();
@@ -495,9 +498,10 @@ public class SearchServiceImplTest
         dependeeModels.add( dependeeModel );
 
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectReferences( repoId, ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID, "1.0" ),
-            dependeeModels );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectReferences( repoId,
+                                                                                            ARCHIVA_TEST_GROUP_ID,
+                                                                                            ARCHIVA_TEST_ARTIFACT_ID,
+                                                                                            "1.0" ), dependeeModels );
 
         metadataResolverControl.replay();
         userReposControl.replay();
@@ -509,10 +513,10 @@ public class SearchServiceImplTest
 
         assertNotNull( dependees );
         assertEquals( 2, dependees.size() );
-        assertEquals( new Artifact( repoId, ARCHIVA_TEST_GROUP_ID, "archiva-dependee-one", "1.0", "" ),
-                      dependees.get( 0 ) );
-        assertEquals( new Artifact( repoId, ARCHIVA_TEST_GROUP_ID, "archiva-dependee-two", "1.0", "" ),
-                      dependees.get( 1 ) );
+        assertEquals( new Artifact( repoId, ARCHIVA_TEST_GROUP_ID, "archiva-dependee-one", "1.0", "" ), dependees.get(
+            0 ) );
+        assertEquals( new Artifact( repoId, ARCHIVA_TEST_GROUP_ID, "archiva-dependee-two", "1.0", "" ), dependees.get(
+            1 ) );
     }
 
     public void testGetDependeesArtifactDoesNotExist()
@@ -525,12 +529,16 @@ public class SearchServiceImplTest
         // no longer differentiating between a project not being present and a project that is present but with
         // no references. If it is later determined to be needed, we will need to modify the metadata content repository
         userReposControl.expectAndReturn( userRepos.getObservableRepositories(), observableRepoIds );
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectReferences( "repo1.mirror", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                                   "1.0" ), Collections.<ProjectVersionReference>emptyList() );
-        metadataResolverControl.expectAndReturn(
-            metadataResolver.getProjectReferences( "public.releases", ARCHIVA_TEST_GROUP_ID, ARCHIVA_TEST_ARTIFACT_ID,
-                                                   "1.0" ), Collections.<ProjectVersionReference>emptyList() );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectReferences( "repo1.mirror",
+                                                                                            ARCHIVA_TEST_GROUP_ID,
+                                                                                            ARCHIVA_TEST_ARTIFACT_ID,
+                                                                                            "1.0" ),
+                                                 Collections.<ProjectVersionReference>emptyList() );
+        metadataResolverControl.expectAndReturn( metadataResolver.resolveProjectReferences( "public.releases",
+                                                                                            ARCHIVA_TEST_GROUP_ID,
+                                                                                            ARCHIVA_TEST_ARTIFACT_ID,
+                                                                                            "1.0" ),
+                                                 Collections.<ProjectVersionReference>emptyList() );
 
         userReposControl.replay();
         metadataResolverControl.replay();

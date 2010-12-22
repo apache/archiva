@@ -238,7 +238,7 @@ public class DeleteArtifactAction
                 // TODO: mismatch between artifact (snapshot) version and project (base) version here
                 if ( artifact.getVersion().equals( version ) )
                 {
-                    metadataRepository.deleteArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
+                    metadataRepository.removeArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
                                                        artifact.getProject(), artifact.getVersion(), artifact.getId() );
 
                     // TODO: move into the metadata repository proper - need to differentiate attachment of

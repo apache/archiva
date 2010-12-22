@@ -19,6 +19,12 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -26,14 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
-
 public class TestMetadataRepository
-    extends TestMetadataResolver
     implements MetadataRepository
 {
     private Map<String, MetadataFacet> facets = new HashMap<String, MetadataFacet>();
@@ -49,7 +48,8 @@ public class TestMetadataRepository
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void updateProjectVersion( String repoId, String namespace, String projectId, ProjectVersionMetadata versionMetadata )
+    public void updateProjectVersion( String repoId, String namespace, String projectId,
+                                      ProjectVersionMetadata versionMetadata )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -105,16 +105,76 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void deleteArtifact( String repositoryId, String namespace, String project, String version, String id )
+    public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void deleteRepository( String repoId )
+    public void removeRepository( String repoId )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
-    public List<ArtifactMetadata> getArtifacts(String repositoryId){
+
+    public List<ArtifactMetadata> getArtifacts( String repositoryId )
+    {
         return null;
+    }
+
+    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
+                                                     String projectVersion )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
+                                                   String projectVersion )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+                                                                     String projectVersion )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<String> getRootNamespaces( String repoId )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<String> getNamespaces( String repoId, String namespace )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<String> getProjects( String repoId, String namespace )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+                                                      String projectVersion )
+        throws MetadataResolutionException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

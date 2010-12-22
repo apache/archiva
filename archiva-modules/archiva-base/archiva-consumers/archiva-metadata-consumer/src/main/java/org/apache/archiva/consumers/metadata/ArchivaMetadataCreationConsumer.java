@@ -25,7 +25,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
-import org.apache.archiva.metadata.repository.storage.StorageMetadataResolver;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -90,7 +90,7 @@ public class ArchivaMetadataCreationConsumer
      *
      * @plexus.requirement role-hint="maven2"
      */
-    private StorageMetadataResolver storageResolver;
+    private RepositoryStorage repositoryStorage;
 
     private static final Logger log = LoggerFactory.getLogger( ArchivaMetadataCreationConsumer.class );
 
@@ -141,7 +141,7 @@ public class ArchivaMetadataCreationConsumer
         // the initial scan. Any request for this information will be intercepted and populated on-demand
         // or picked up by subsequent scans
 
-        ArtifactMetadata artifact = storageResolver.getArtifactForPath( repoId, path );
+        ArtifactMetadata artifact = repositoryStorage.readArtifactMetadataFromPath( repoId, path );
 
         ProjectMetadata project = new ProjectMetadata();
         project.setNamespace( artifact.getNamespace() );
@@ -152,8 +152,8 @@ public class ArchivaMetadataCreationConsumer
         ProjectVersionMetadata versionMetadata = null;
         try
         {
-            versionMetadata = storageResolver.getProjectVersion( repoId, artifact.getNamespace(), artifact.getProject(),
-                                                                 projectVersion );
+            versionMetadata = repositoryStorage.readProjectVersionMetadata( repoId, artifact.getNamespace(),
+                                                                            artifact.getProject(), projectVersion );
         }
         catch ( MetadataResolutionException e )
         {
