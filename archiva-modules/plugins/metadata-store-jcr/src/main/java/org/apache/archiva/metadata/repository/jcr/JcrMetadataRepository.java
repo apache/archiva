@@ -102,11 +102,11 @@ public class JcrMetadataRepository
 
     public void login()
     {
-        // TODO: need to close this at the end - do we need to add it in the API?
+        // FIXME: need to close this at the end - do we need to add it in the API?
 
         try
         {
-            // TODO: shouldn't do this in constructor since it's a singleton
+            // FIXME: shouldn't do this in constructor since it's a singleton
             session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
 
             Workspace workspace = session.getWorkspace();
@@ -118,12 +118,12 @@ public class JcrMetadataRepository
         }
         catch ( LoginException e )
         {
-            // TODO
+            // FIXME
             throw new RuntimeException( e );
         }
         catch ( RepositoryException e )
         {
-            // TODO
+            // FIXME
             throw new RuntimeException( e );
         }
     }
@@ -199,7 +199,7 @@ public class JcrMetadataRepository
                     n.setProperty( entry.getKey(), entry.getValue() );
                 }
             }
-            // TODO: need some context around this so it can be done only when needed
+            // FIXME: need some context around this so it can be done only when needed
             session.save();
         }
         catch ( RepositoryException e )
@@ -224,7 +224,7 @@ public class JcrMetadataRepository
             versionNode.setProperty( "url", versionMetadata.getUrl() );
             versionNode.setProperty( "incomplete", versionMetadata.isIncomplete() );
 
-            // TODO: decide how to treat these in the content repo
+            // FIXME: decide how to treat these in the content repo
             if ( versionMetadata.getScm() != null )
             {
                 versionNode.setProperty( "scm.connection", versionMetadata.getScm().getConnection() );
@@ -703,7 +703,7 @@ public class JcrMetadataRepository
             versionMetadata.setIncomplete( node.hasProperty( "incomplete" ) && node.getProperty(
                 "incomplete" ).getBoolean() );
 
-            // TODO: decide how to treat these in the content repo
+            // FIXME: decide how to treat these in the content repo
             String scmConnection = getPropertyString( node, "scm.connection" );
             String scmDeveloperConnection = getPropertyString( node, "scm.developerConnection" );
             String scmUrl = getPropertyString( node, "scm.url" );
@@ -1001,12 +1001,12 @@ public class JcrMetadataRepository
     {
         try
         {
-            // TODO: this shouldn't be here! Repository may need a context
+            // FIXME: this shouldn't be here! Repository may need a context
             session.save();
         }
         catch ( RepositoryException e )
         {
-            // TODO
+            // FIXME
             throw new RuntimeException( e );
         }
         session.logout();
@@ -1016,9 +1016,8 @@ public class JcrMetadataRepository
     {
         this.metadataFacetFactories = metadataFacetFactories;
 
-        // TODO: check if actually called by normal injection
-
         // TODO: consider using namespaces for facets instead of the current approach:
+        // (if used, check if actually called by normal injection)
 //        for ( String facetId : metadataFacetFactories.keySet() )
 //        {
 //            session.getWorkspace().getNamespaceRegistry().registerNamespace( facetId, facetId );

@@ -50,7 +50,7 @@
       <artifactId>plexus-spring</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- TODO: dependency management -->
+    <!-- FIXME: dependency management -->
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>

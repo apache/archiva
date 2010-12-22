@@ -44,7 +44,10 @@ public class DefaultMetadataResolver
     private MetadataRepository metadataRepository;
 
     /**
-     * FIXME: this needs to be configurable based on storage type, and availability of proxy module
+     * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
+     * factory.
+     *
+     * TODO: Also need to accommodate availability of proxy module
      * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
      * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
      *

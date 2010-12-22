@@ -28,15 +28,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Default implementation of a scheduling component for archiva.
  *
- * @todo FIXME - consider just folding in, not really scheduled
- *
+ * @todo TODO - consider just folding in, not really scheduled
  * @plexus.component role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="indexing"
  */
 public class IndexingArchivaTaskScheduler
     implements ArchivaTaskScheduler<ArtifactIndexingTask>
 {
     private Logger log = LoggerFactory.getLogger( IndexingArchivaTaskScheduler.class );
-    
+
     /**
      * @plexus.requirement role-hint="indexing"
      */

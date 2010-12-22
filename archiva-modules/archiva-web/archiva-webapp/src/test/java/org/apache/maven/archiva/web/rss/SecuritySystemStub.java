@@ -19,11 +19,6 @@ package org.apache.maven.archiva.web.rss;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -40,8 +35,13 @@ import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.users.jdo.JdoUser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- * SecuritySystem stub used for testing. 
+ * SecuritySystem stub used for testing.
  *
  * @version $Id$
  */
@@ -94,58 +94,50 @@ public class SecuritySystemStub
     public AuthorizationResult authorize( SecuritySession arg0, Object arg1, Object arg2 )
         throws AuthorizationException
     {
-        AuthorizationResult result = new AuthorizationResult( true, arg1, null);
-        
+        AuthorizationResult result = new AuthorizationResult( true, arg1, null );
+
         return result;
     }
 
     public String getAuthenticatorId()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String getAuthorizerId()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public KeyManager getKeyManager()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public UserSecurityPolicy getPolicy()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String getUserManagementId()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public UserManager getUserManager()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public boolean isAuthenticated( AuthenticationDataSource arg0 )
         throws AuthenticationException, UserNotFoundException, AccountLockedException
     {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean isAuthorized( SecuritySession arg0, Object arg1 )
         throws AuthorizationException
     {
-        // TODO Auto-generated method stub
         return false;
     }
 

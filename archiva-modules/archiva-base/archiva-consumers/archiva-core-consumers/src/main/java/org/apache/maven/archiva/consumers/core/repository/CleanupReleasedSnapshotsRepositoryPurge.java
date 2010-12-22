@@ -48,7 +48,7 @@ import java.util.List;
  * This will look in a single managed repository, and purge any snapshots that are present
  * that have a corresponding released version on the same repository.
  * </p>
- * 
+ *
  * <p>
  * So, if you have the following (presented in the m2/default layout form) ...
  * <pre>
@@ -71,9 +71,9 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     extends AbstractRepositoryPurge
 {
     private MetadataTools metadataTools;
-    
+
     private ArchivaConfiguration archivaConfig;
-    
+
     private RepositoryContentFactory repoContentFactory;
 
     public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, MetadataTools metadataTools,
@@ -111,25 +111,26 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             ProjectReference reference = new ProjectReference();
             reference.setGroupId( artifactRef.getGroupId() );
             reference.setArtifactId( artifactRef.getArtifactId() );
-            
+
             // Gather up all of the versions.
             List<String> allVersions = new ArrayList<String>( repository.getVersions( reference ) );
 
             List<ManagedRepositoryConfiguration> repos = archivaConfig.getConfiguration().getManagedRepositories();
-            for( ManagedRepositoryConfiguration repo : repos )
-            {   
-                if( repo.isReleases() && !repo.getId().equals( repository.getId() ) )
-                {   
+            for ( ManagedRepositoryConfiguration repo : repos )
+            {
+                if ( repo.isReleases() && !repo.getId().equals( repository.getId() ) )
+                {
                     try
-                    {   
-                        ManagedRepositoryContent repoContent = repoContentFactory.getManagedRepositoryContent( repo.getId() );                        
+                    {
+                        ManagedRepositoryContent repoContent = repoContentFactory.getManagedRepositoryContent(
+                            repo.getId() );
                         allVersions.addAll( repoContent.getVersions( reference ) );
                     }
-                    catch( RepositoryNotFoundException  e )
+                    catch ( RepositoryNotFoundException e )
                     {
                         // swallow
                     }
-                    catch( RepositoryException  e )
+                    catch ( RepositoryException e )
                     {
                         // swallow
                     }
@@ -141,7 +142,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             List<String> snapshotVersions = new ArrayList<String>();
 
             for ( String version : allVersions )
-            {   
+            {
                 if ( VersionUtil.isSnapshot( version ) )
                 {
                     snapshotVersions.add( version );
@@ -155,36 +156,36 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             Collections.sort( allVersions, VersionComparator.getInstance() );
             Collections.sort( releasedVersions, VersionComparator.getInstance() );
             Collections.sort( snapshotVersions, VersionComparator.getInstance() );
-            
+
             // Now clean out any version that is earlier than the highest released version.
             boolean needsMetadataUpdate = false;
 
             VersionedReference versionRef = new VersionedReference();
             versionRef.setGroupId( artifactRef.getGroupId() );
             versionRef.setArtifactId( artifactRef.getArtifactId() );
-            
-            ArchivaArtifact artifact =
-                new ArchivaArtifact( artifactRef.getGroupId(), artifactRef.getArtifactId(), artifactRef.getVersion(),
-                                     artifactRef.getClassifier(), artifactRef.getType(), repository.getId() );
-            
+
+            ArchivaArtifact artifact = new ArchivaArtifact( artifactRef.getGroupId(), artifactRef.getArtifactId(),
+                                                            artifactRef.getVersion(), artifactRef.getClassifier(),
+                                                            artifactRef.getType(), repository.getId() );
+
             for ( String version : snapshotVersions )
-            {   
-                if( releasedVersions.contains( VersionUtil.getReleaseVersion( version ) ) )
-                {                    
+            {
+                if ( releasedVersions.contains( VersionUtil.getReleaseVersion( version ) ) )
+                {
                     versionRef.setVersion( version );
                     repository.deleteVersion( versionRef );
-                    
-                    // TODO: looks incomplete, might not delete related metadata?
+
+                    // FIXME: looks incomplete, might not delete related metadata?
                     for ( RepositoryListener listener : listeners )
                     {
                         listener.deleteArtifact( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
                                                  artifact.getVersion(), artifactFile.getName() );
                     }
-                    
+
                     needsMetadataUpdate = true;
                 }
-            }           
-                        
+            }
+
             if ( needsMetadataUpdate )
             {
                 updateMetadata( artifactRef );

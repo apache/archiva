@@ -205,9 +205,9 @@ public class DuplicateArtifactsConsumer
                 problem.setProject( originalArtifact.getProject() );
                 problem.setVersion( originalArtifact.getVersion() );
                 problem.setId( id );
-                // TODO: need to get the right storage resolver for the repository the dupe artifact is in, it might be
+                // FIXME: need to get the right storage resolver for the repository the dupe artifact is in, it might be
                 //       a different type
-                // TODO: we need the project version here, not the artifact version
+                // FIXME: we need the project version here, not the artifact version
                 problem.setMessage( "Duplicate Artifact Detected: " + path + " <--> " + pathTranslator.toPath(
                     dupArtifact.getNamespace(), dupArtifact.getProject(), dupArtifact.getVersion(),
                     dupArtifact.getId() ) );

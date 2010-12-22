@@ -19,18 +19,17 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLReader;
 import org.dom4j.Element;
 
+import java.io.File;
+
 /**
  * RepositoryMetadataReader - read maven-metadata.xml files.
  *
- * TODO: we should improve on this, ideally using the Maven standard libraries (which are unfortunately baked into
- * maven-core now)
+ * TODO: we should improve on this, ideally using the Maven standard library
  */
 public final class MavenRepositoryMetadataReader
 {
@@ -44,6 +43,7 @@ public final class MavenRepositoryMetadataReader
      * @param metadataFile the maven-metadata.xml file to read.
      * @return the archiva repository metadata object that represents the provided file contents.
      * @throws org.apache.maven.archiva.xml.XMLException
+     *
      */
     public static MavenRepositoryMetadata read( File metadataFile )
         throws XMLException

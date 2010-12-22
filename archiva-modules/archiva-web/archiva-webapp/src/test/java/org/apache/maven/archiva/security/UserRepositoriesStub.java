@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * UserRepositories stub used for testing. 
+ * UserRepositories stub used for testing.
  *
  * @version $Id$
  */
@@ -35,37 +35,33 @@ public class UserRepositoriesStub
     public void createMissingRepositoryRoles( String repoId )
         throws ArchivaSecurityException
     {
-        // TODO Auto-generated method stub
-
     }
 
     public List<String> getObservableRepositoryIds( String principal )
-        throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
+        throws ArchivaSecurityException
     {
         return repoIds;
     }
 
     public void setObservableRepositoryIds( List<String> repoIds )
     {
-        this.repoIds = repoIds; 
+        this.repoIds = repoIds;
     }
 
     public boolean isAuthorizedToUploadArtifacts( String principal, String repoId )
-        throws PrincipalNotFoundException, ArchivaSecurityException
+        throws ArchivaSecurityException
     {
-        // TODO Auto-generated method stub
         return false;
     }
-    
+
     public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
     {
         return false;
     }
 
     public List<String> getManagableRepositoryIds( String principal )
-        throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
+        throws ArchivaSecurityException
     {
-        // TODO Auto-generated method stub
         return null;
     }
 

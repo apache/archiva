@@ -33,7 +33,6 @@ import java.util.Set;
 
 /**
  * Base class for all repository purge tasks.
- * 
  */
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
@@ -41,11 +40,11 @@ public abstract class AbstractRepositoryPurge
     protected Logger log = LoggerFactory.getLogger( AbstractRepositoryPurge.class );
 
     protected final ManagedRepositoryContent repository;
-    
-	protected final List<RepositoryListener> listeners;
-	  
+
+    protected final List<RepositoryListener> listeners;
+
     private Logger logger = LoggerFactory.getLogger( "org.apache.archiva.AuditLog" );
-	
+
     private static final char DELIM = ' ';
 
     public AbstractRepositoryPurge( ManagedRepositoryContent repository, List<RepositoryListener> listeners )
@@ -56,27 +55,28 @@ public abstract class AbstractRepositoryPurge
 
     /**
      * Purge the repo. Update db and index of removed artifacts.
-     * 
+     *
      * @param references
      */
     protected void purge( Set<ArtifactReference> references )
-    {        
-        if( references != null && !references.isEmpty() )
+    {
+        if ( references != null && !references.isEmpty() )
         {
             for ( ArtifactReference reference : references )
-            {   
+            {
                 File artifactFile = repository.toFile( reference );
 
-                // TODO: looks incomplete, might not delete related metadata?
+                // FIXME: looks incomplete, might not delete related metadata?
                 for ( RepositoryListener listener : listeners )
                 {
                     listener.deleteArtifact( repository.getId(), reference.getGroupId(), reference.getArtifactId(),
                                              reference.getVersion(), artifactFile.getName() );
                 }
-                
+
                 // TODO: this needs to be logged
                 artifactFile.delete();
-                triggerAuditEvent( repository.getRepository().getId(), ArtifactReference.toKey( reference ), AuditEvent.PURGE_ARTIFACT );
+                triggerAuditEvent( repository.getRepository().getId(), ArtifactReference.toKey( reference ),
+                                   AuditEvent.PURGE_ARTIFACT );
                 purgeSupportFiles( artifactFile );
             }
         }
@@ -89,7 +89,7 @@ public abstract class AbstractRepositoryPurge
      * <p>
      * Support Files are things like ".sha1", ".md5", ".asc", etc.
      * </p>
-     * 
+     *
      * @param artifactFile the file to base off of.
      */
     private void purgeSupportFiles( File artifactFile )
@@ -116,12 +116,13 @@ public abstract class AbstractRepositoryPurge
             }
         }
     }
-    
+
     private void triggerAuditEvent( String repoId, String resource, String action )
     {
-        String msg = repoId + DELIM + "<system-purge>" + DELIM + "<system>" + DELIM + '\"' + resource + '\"' +
-            DELIM + '\"' + action + '\"';
-        
+        String msg =
+            repoId + DELIM + "<system-purge>" + DELIM + "<system>" + DELIM + '\"' + resource + '\"' + DELIM + '\"' +
+                action + '\"';
+
         logger.info( msg );
     }
 }

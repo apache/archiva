@@ -86,7 +86,8 @@ public class ArchivaMetadataCreationConsumer
     private MetadataRepository metadataRepository;
 
     /**
-     * FIXME: this needs to be configurable based on storage type
+     * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
+     * factory.
      *
      * @plexus.requirement role-hint="maven2"
      */
@@ -148,7 +149,7 @@ public class ArchivaMetadataCreationConsumer
         project.setId( artifact.getProject() );
 
         String projectVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
-        // TODO: maybe not too efficient since it may have already been read and stored for this artifact
+        // FIXME: maybe not too efficient since it may have already been read and stored for this artifact
         ProjectVersionMetadata versionMetadata = null;
         try
         {
@@ -172,7 +173,7 @@ public class ArchivaMetadataCreationConsumer
 
         try
         {
-            // TODO: transaction
+            // FIXME: transaction
             // read the metadata and update it if it is newer or doesn't exist
             artifact.setWhenGathered( whenGathered );
             metadataRepository.updateArtifact( repoId, project.getNamespace(), project.getId(), projectVersion,

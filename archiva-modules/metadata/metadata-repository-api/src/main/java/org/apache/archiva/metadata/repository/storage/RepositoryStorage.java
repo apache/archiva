@@ -27,6 +27,7 @@ import org.apache.archiva.metadata.repository.filter.Filter;
 
 import java.util.Collection;
 
+// FIXME: we should drop the repoId parameters and attach this to an instance of a repository storage
 public interface RepositoryStorage
 {
     ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
@@ -47,6 +48,6 @@ public interface RepositoryStorage
     Collection<ArtifactMetadata> readArtifactsMetadata( String repoId, String namespace, String projectId,
                                                         String projectVersion, Filter<String> filter );
 
-    // TODO: reconsider this API, do we want to expose storage format in the form of a path?
+    // FIXME: reconsider this API, do we want to expose storage format in the form of a path?
     ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path );
 }

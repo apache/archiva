@@ -148,7 +148,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         RepositoryStatistics newStats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertEquals( 0, newStats.getNewFileCount() );
         assertEquals( 31, newStats.getTotalFileCount() );
-        // TODO: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
+        // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
@@ -179,7 +179,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         RepositoryStatistics updatedStats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertEquals( 2, updatedStats.getNewFileCount() );
         assertEquals( 33, updatedStats.getTotalFileCount() );
-        // TODO: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
+        // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
@@ -223,7 +223,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         RepositoryStatistics newStats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertEquals( 2, newStats.getNewFileCount() );
         assertEquals( 33, newStats.getTotalFileCount() );
-        // TODO: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
+        // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
@@ -267,7 +267,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         RepositoryStatistics newStats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertEquals( 2, newStats.getNewFileCount() );
         assertEquals( 33, newStats.getTotalFileCount() );
-        // TODO: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
+        // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
 //        assertEquals( 5, newStats.getTotalProjectCount() );
