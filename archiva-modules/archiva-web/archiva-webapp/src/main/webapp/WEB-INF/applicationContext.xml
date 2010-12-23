@@ -5,16 +5,12 @@
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
-    init-method="initialize"/>
-
-  <bean id="urlFailureCache" class="org.apache.maven.archiva.policies.urlcache.DefaultUrlFailureCache">
-    <constructor-arg ref="cache#url-failures-cache" type="org.codehaus.plexus.cache.Cache"/>
-  </bean>
+        init-method="initialize"/>
 
   <bean name="wagon#http" class="org.apache.maven.wagon.providers.http.LightweightHttpWagon" scope="prototype">
     <property name="httpHeaders">
       <map>
-        <entry key="User-Agent" value="${user.agent}" />
+        <entry key="User-Agent" value="${user.agent}"/>
       </map>
     </property>
   </bean>
@@ -22,46 +18,49 @@
   <bean name="wagon#https" class="org.apache.maven.wagon.providers.http.LightweightHttpsWagon" scope="prototype">
     <property name="httpHeaders">
       <map>
-        <entry key="User-Agent" value="${user.agent}" />
+        <entry key="User-Agent" value="${user.agent}"/>
       </map>
     </property>
   </bean>
 
   <bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location" value="classpath:application.properties" />
+    <property name="location" value="classpath:application.properties"/>
   </bean>
-   
+
   <bean name="xmlRpcUserRepositories" class="org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories">
     <constructor-arg ref="userRepositories"/>
-    <constructor-arg ref="xmlRpcAuthenticator"/>    
-  </bean> 
-  
+    <constructor-arg ref="xmlRpcAuthenticator"/>
+  </bean>
+
   <!--  Web Service : Ping Service -->
-  <bean name="pingService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.PingServiceImpl"/> 
-  
+  <bean name="pingService" lazy-init="true" scope="singleton"
+        class="org.apache.archiva.web.xmlrpc.services.PingServiceImpl"/>
+
   <!-- Web Services : Search Service -->
-  <bean name="searchService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">    
-    <constructor-arg ref="xmlRpcUserRepositories"/>   
+  <bean name="searchService" lazy-init="true" scope="singleton"
+        class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">
+    <constructor-arg ref="xmlRpcUserRepositories"/>
     <constructor-arg ref="metadataResolver"/>
     <constructor-arg ref="metadataRepository"/>
     <constructor-arg ref="nexusSearch"/>
   </bean>
-  
+
   <!-- Web Services : Administration Service -->
-  <bean name="administrationService" lazy-init="true" scope="singleton" class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
+  <bean name="administrationService" lazy-init="true" scope="singleton"
+        class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
     <constructor-arg ref="archivaConfiguration"/>
     <constructor-arg ref="repositoryContentConsumers"/>
     <constructor-arg ref="repositoryContentFactory"/>
     <constructor-arg ref="metadataRepository"/>
     <constructor-arg ref="archivaTaskScheduler#repository"/>
     <constructor-arg>
-      <bean class="org.apache.archiva.web.spring.RepositoryListenerFactoryBean" />
-    </constructor-arg>       
+      <bean class="org.apache.archiva.web.spring.RepositoryListenerFactoryBean"/>
+    </constructor-arg>
     <constructor-arg ref="repositoryStatisticsManager"/>
     <constructor-arg ref="repositoryMerger#maven2"/>
     <constructor-arg ref="auditListener#logging"/>
-       
-  </bean> 
+
+  </bean>
 
   <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">
     <constructor-arg>
@@ -72,10 +71,10 @@
       </list>
     </constructor-arg>
   </bean>
-    
+
   <bean name="xmlRpcAuthenticator" class="org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator">
-      <constructor-arg ref="securitySystem"/>
-      <constructor-arg ref="userRepositories"/>
+    <constructor-arg ref="securitySystem"/>
+    <constructor-arg ref="userRepositories"/>
   </bean>
 
   <bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
@@ -88,7 +87,7 @@
   </bean>
 
   <!-- This is used to prevent the old profile activator being loaded from the running instance of Maven in jetty:run -->
-  <bean name="profileActivator#jdk-prefix" class="org.apache.archiva.web.spring.DummyProfileActivator" />
-  <bean name="profileActivator#system-property" class="org.apache.archiva.web.spring.DummyProfileActivator" />
-  <bean name="profileActivator#always-on" class="org.apache.archiva.web.spring.DummyProfileActivator" />
+  <bean name="profileActivator#jdk-prefix" class="org.apache.archiva.web.spring.DummyProfileActivator"/>
+  <bean name="profileActivator#system-property" class="org.apache.archiva.web.spring.DummyProfileActivator"/>
+  <bean name="profileActivator#always-on" class="org.apache.archiva.web.spring.DummyProfileActivator"/>
 </beans>
