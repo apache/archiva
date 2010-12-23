@@ -19,11 +19,7 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
-import java.lang.reflect.Field;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
+import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
@@ -38,7 +34,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
+import java.lang.reflect.Field;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order.
@@ -55,27 +53,23 @@ public class ArchivaStartup
     private ThreadedTaskQueueExecutor tqeIndexing;
 
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
-    
+
     public void contextInitialized( ServletContextEvent contextEvent )
     {
-        WebApplicationContext wac =
-            WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
+        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(
+            contextEvent.getServletContext() );
 
-        SecuritySynchronization securitySync =
-            (SecuritySynchronization) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySynchronization.class ) );
+        SecuritySynchronization securitySync = (SecuritySynchronization) wac.getBean( PlexusToSpringUtils.buildSpringId(
+            SecuritySynchronization.class ) );
 
-        repositoryTaskScheduler =
-            (RepositoryArchivaTaskScheduler) wac.getBean( PlexusToSpringUtils.buildSpringId(
-                                                                                             ArchivaTaskScheduler.class,
-                                                                                             "repository" ) );
+        repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) wac.getBean( PlexusToSpringUtils.buildSpringId(
+            ArchivaTaskScheduler.class, "repository" ) );
 
-        tqeRepoScanning =
-            (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class,
-                                                                                        "repository-scanning" ) );
+        tqeRepoScanning = (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId(
+            TaskQueueExecutor.class, "repository-scanning" ) );
 
-        tqeIndexing =
-            (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId( TaskQueueExecutor.class,
-                                                                                        "indexing" ) );
+        tqeIndexing = (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId(
+            TaskQueueExecutor.class, "indexing" ) );
 
         try
         {
@@ -91,8 +85,8 @@ public class ArchivaStartup
 
     public void contextDestroyed( ServletContextEvent contextEvent )
     {
-        WebApplicationContext applicationContext =
-            WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
+        WebApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
+            contextEvent.getServletContext() );
         if ( applicationContext != null && applicationContext instanceof ClassPathXmlApplicationContext )
         {
             ( (ClassPathXmlApplicationContext) applicationContext ).close();
@@ -116,20 +110,20 @@ public class ArchivaStartup
                 {
                     e.printStackTrace();
                 }
-            }
 
-            try
-            {
-                // shutdown the scheduler, otherwise Quartz scheduler and Threads still exists
-                Field schedulerField = repositoryTaskScheduler.getClass().getDeclaredField( "scheduler" );
-                schedulerField.setAccessible( true );
+                try
+                {
+                    // shutdown the scheduler, otherwise Quartz scheduler and Threads still exists
+                    Field schedulerField = repositoryTaskScheduler.getClass().getDeclaredField( "scheduler" );
+                    schedulerField.setAccessible( true );
 
-                DefaultScheduler scheduler = (DefaultScheduler) schedulerField.get( repositoryTaskScheduler );
-                scheduler.stop();
-            }
-            catch ( Exception e )
-            {   
-                e.printStackTrace();
+                    DefaultScheduler scheduler = (DefaultScheduler) schedulerField.get( repositoryTaskScheduler );
+                    scheduler.stop();
+                }
+                catch ( Exception e )
+                {
+                    e.printStackTrace();
+                }
             }
 
             // close the application context
