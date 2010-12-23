@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-base</artifactId>
@@ -68,23 +69,10 @@
         <executions>
           <execution>
             <id>descriptor</id>
-			<phase>generate-resources</phase>
+            <phase>generate-resources</phase>
             <goals>
               <goal>generate-metadata</goal>
             </goals>
-          </execution>
-          <execution>
-            <id>merge</id>
-			<phase>generate-resources</phase>
-            <goals>
-              <goal>merge-metadata</goal>
-            </goals>
-            <configuration>
-              <descriptors>
-                <descriptor>${basedir}/src/main/resources/META-INF/plexus/components-fragment.xml</descriptor>
-                <descriptor>${project.build.outputDirectory}/META-INF/plexus/components.xml</descriptor>
-              </descriptors>
-            </configuration>
           </execution>
         </executions>
       </plugin>
