@@ -437,6 +437,33 @@ public abstract class AbstractMetadataRepositoryTest
         assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
     }
 
+    public void testGetArtifactsDoesntReturnProjectVersionMetadataFacets()
+        throws Exception
+    {
+        ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
+        versionMetadata.setId( TEST_PROJECT_VERSION );
+
+        MetadataFacet facet = new TestMetadataFacet( TEST_FACET_ID, "baz" );
+        versionMetadata.addFacet( facet );
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, versionMetadata );
+
+        ArtifactMetadata artifactMetadata = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifactMetadata );
+
+        Collection<ArtifactMetadata> artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                                                          TEST_PROJECT_VERSION );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+
+        artifacts = repository.getArtifacts( TEST_REPO_ID );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+
+        artifacts = repository.getArtifactsByChecksum( TEST_REPO_ID, artifactMetadata.getSha1() );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+
+        artifacts = repository.getArtifactsByDateRange( TEST_REPO_ID, null, null );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+    }
+
     public void testUpdateArtifactMetadataWithExistingFacetsFacetPropertyWasRemoved()
         throws Exception
     {
@@ -449,8 +476,10 @@ public abstract class AbstractMetadataRepositoryTest
         metadata.addFacet( facet );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
 
-        metadata = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
-                                            TEST_PROJECT_VERSION ).iterator().next();
+        Collection<ArtifactMetadata> artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                                                          TEST_PROJECT_VERSION );
+        assertEquals( 1, artifacts.size() );
+        metadata = artifacts.iterator().next();
         assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
 
         TestMetadataFacet testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
@@ -465,8 +494,9 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
 
-        metadata = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
-                                            TEST_PROJECT_VERSION ).iterator().next();
+        artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        assertEquals( 1, artifacts.size() );
+        metadata = artifacts.iterator().next();
         assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
         testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
         assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
@@ -523,14 +553,12 @@ public abstract class AbstractMetadataRepositoryTest
 
     public void testGetMetadataFacetWhenEmpty()
         throws Exception
-
     {
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
     }
 
     public void testGetMetadataFacetWhenUnknownName()
         throws Exception
-
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
@@ -539,7 +567,6 @@ public abstract class AbstractMetadataRepositoryTest
 
     public void testGetMetadataFacetWhenDefaultValue()
         throws Exception
-
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( null ) );
 
@@ -550,14 +577,12 @@ public abstract class AbstractMetadataRepositoryTest
 
     public void testGetMetadataFacetWhenUnknownFacetId()
         throws Exception
-
     {
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME ) );
     }
 
     public void testGetMetadataFacets()
         throws Exception
-
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
@@ -590,7 +615,6 @@ public abstract class AbstractMetadataRepositoryTest
 
     public void testRemoveFacetsWhenEmpty()
         throws Exception
-
     {
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
         assertTrue( facets.isEmpty() );
@@ -603,7 +627,6 @@ public abstract class AbstractMetadataRepositoryTest
 
     public void testRemoveFacetsWhenUnknown()
         throws Exception
-
     {
         // testing no exception
         repository.removeMetadataFacets( TEST_REPO_ID, UNKNOWN );
@@ -611,7 +634,6 @@ public abstract class AbstractMetadataRepositoryTest
 
     public void testRemoveFacetWhenUnknown()
         throws Exception
-
     {
         // testing no exception
         repository.removeMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME );
@@ -619,7 +641,6 @@ public abstract class AbstractMetadataRepositoryTest
 
     public void testRemoveFacet()
         throws Exception
-
     {
         TestMetadataFacet metadataFacet = new TestMetadataFacet( TEST_VALUE );
         repository.addMetadataFacet( TEST_REPO_ID, metadataFacet );
@@ -637,7 +658,6 @@ public abstract class AbstractMetadataRepositoryTest
 
     public void testRemoveFacetWhenEmpty()
         throws Exception
-
     {
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
         assertTrue( facets.isEmpty() );

@@ -640,7 +640,10 @@ public class JcrMetadataRepository
             artifacts = new ArrayList<ArtifactMetadata>();
             for ( Node n : JcrUtils.getNodes( result ) )
             {
-                artifacts.add( getArtifactFromNode( repositoryId, n ) );
+                if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
+                {
+                    artifacts.add( getArtifactFromNode( repositoryId, n ) );
+                }
             }
         }
         catch ( RepositoryException e )
@@ -984,7 +987,10 @@ public class JcrMetadataRepository
 
                 for ( Node n : JcrUtils.getChildNodes( node ) )
                 {
-                    artifacts.add( getArtifactFromNode( repositoryId, n ) );
+                    if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
+                    {
+                        artifacts.add( getArtifactFromNode( repositoryId, n ) );
+                    }
                 }
             }
         }
