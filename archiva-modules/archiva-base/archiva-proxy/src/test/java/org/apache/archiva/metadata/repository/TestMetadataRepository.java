@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+// TODO: remove, it does nothing
 public class TestMetadataRepository
     implements MetadataRepository
 {
@@ -158,6 +159,21 @@ public class TestMetadataRepository
                                                       String projectVersion )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void save()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void close()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void revert()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public List<ArtifactMetadata> getArtifacts( String repositoryId )

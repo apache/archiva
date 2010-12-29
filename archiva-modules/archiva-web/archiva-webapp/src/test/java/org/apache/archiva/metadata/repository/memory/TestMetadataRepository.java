@@ -200,6 +200,19 @@ public class TestMetadataRepository
         return artifacts;
     }
 
+    public void save()
+    {
+    }
+
+    public void close()
+    {
+    }
+
+    public void revert()
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public List<ArtifactMetadata> getArtifacts( String repositoryId )
     {
         return artifacts;

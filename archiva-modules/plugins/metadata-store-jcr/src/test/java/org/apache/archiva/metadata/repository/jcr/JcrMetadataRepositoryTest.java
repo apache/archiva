@@ -21,11 +21,12 @@ package org.apache.archiva.metadata.repository.jcr;
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
-import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FileUtils;
 
 import java.util.Map;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 public class JcrMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
@@ -41,14 +42,19 @@ public class JcrMetadataRepositoryTest
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
-        jcrMetadataRepository = (JcrMetadataRepository) lookup( MetadataRepository.class );
-        jcrMetadataRepository.setMetadataFacetFactories( factories );
-        jcrMetadataRepository.login();
+        // TODO: probably don't need to use Spring for this
+        Repository repository = (Repository) lookup( Repository.class );
+        jcrMetadataRepository = new JcrMetadataRepository( factories, repository );
 
-        // removing content is faster than deleting and re-copying the files from target/jcr
         try
         {
-            jcrMetadataRepository.getJcrSession().getRootNode().getNode( "repositories" ).remove();
+            Session session = jcrMetadataRepository.getJcrSession();
+
+            // set up namespaces, etc.
+            JcrMetadataRepository.initialize( session );
+
+            // removing content is faster than deleting and re-copying the files from target/jcr
+            session.getRootNode().getNode( "repositories" ).remove();
         }
         catch ( RepositoryException e )
         {

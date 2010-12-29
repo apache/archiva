@@ -133,4 +133,12 @@ public interface MetadataRepository
     Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                String projectVersion )
         throws MetadataResolutionException;
+
+    void save()
+        throws MetadataRepositoryException;
+
+    void close();
+
+    void revert()
+        throws MetadataRepositoryException;
 }

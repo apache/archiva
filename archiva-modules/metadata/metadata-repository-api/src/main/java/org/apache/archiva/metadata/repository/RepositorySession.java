@@ -61,14 +61,30 @@ public class RepositorySession
 
     public void save()
     {
-        // FIXME
+        try
+        {
+            repository.save();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            // FIXME
+            throw new RuntimeException( e );
+        }
 
         dirty = false;
     }
 
     public void revert()
     {
-        // FIXME
+        try
+        {
+            repository.revert();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            // FIXME
+            throw new RuntimeException( e );
+        }
 
         dirty = false;
     }
@@ -86,7 +102,7 @@ public class RepositorySession
             save();
         }
 
-        // FIXME
+        repository.close();
     }
 
     public void markDirty()

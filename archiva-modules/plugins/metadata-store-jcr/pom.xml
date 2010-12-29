@@ -48,7 +48,6 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
-      <scope>test</scope>
     </dependency>
     <!-- FIXME: dependency management -->
     <dependency>

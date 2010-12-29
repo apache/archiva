@@ -21,6 +21,8 @@ package org.apache.archiva.scheduler.repository;
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -114,6 +116,9 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         testConsumer = (TestConsumer) lookup( KnownRepositoryContentConsumer.class, "test-consumer" );
 
         metadataRepository = mock( MetadataRepository.class );
+
+        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        factory.setRepository( metadataRepository );
     }
 
     protected void tearDown()

@@ -33,6 +33,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -528,6 +529,23 @@ public class FileMetadataRepository
             }
         }
         return artifacts.values();
+    }
+
+    public void save()
+        throws MetadataRepositoryException
+    {
+        // it's all instantly persisted
+    }
+
+    public void close()
+    {
+        // nothing additional to close
+    }
+
+    public void revert()
+        throws MetadataRepositoryException
+    {
+        log.warn( "Attempted to revert a session, but the file-based repository storage doesn't support it" );
     }
 
     private void updateArtifactFacets( ArtifactMetadata artifact, Properties properties )

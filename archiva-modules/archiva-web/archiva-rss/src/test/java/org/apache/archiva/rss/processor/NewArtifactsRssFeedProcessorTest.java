@@ -117,6 +117,7 @@ public class NewArtifactsRssFeedProcessorTest
         return artifact;
     }
 
+    // TODO: replace with mockito
     private class MetadataRepositoryMock
         implements MetadataRepository
     {
@@ -211,6 +212,21 @@ public class NewArtifactsRssFeedProcessorTest
         }
 
         public Collection<ArtifactMetadata> getArtifacts( String arg0, String arg1, String arg2, String arg3 )
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public void save()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public void close()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public void revert()
         {
             throw new UnsupportedOperationException();
         }

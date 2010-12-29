@@ -177,4 +177,19 @@ public class TestMetadataRepository
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public void save()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void close()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void revert()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

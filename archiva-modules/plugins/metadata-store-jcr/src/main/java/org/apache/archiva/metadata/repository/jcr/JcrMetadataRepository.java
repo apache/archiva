@@ -50,7 +50,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.jcr.LoginException;
+import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -67,7 +67,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.repository.MetadataRepository"
  * @todo below: revise storage format for project version metadata
  * @todo revise reference storage
  */
@@ -76,56 +75,50 @@ public class JcrMetadataRepository
 {
     private static final String JCR_LAST_MODIFIED = "jcr:lastModified";
 
-    private static final String ARTIFACT_NODE_TYPE = "archiva:artifact";
+    static final String ARTIFACT_NODE_TYPE = "archiva:artifact";
 
-    private static final String FACET_NODE_TYPE = "archiva:facet";
+    static final String FACET_NODE_TYPE = "archiva:facet";
 
     private static final String QUERY_ARTIFACTS = "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "]";
 
-    /**
-     * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
-     */
-    private Map<String, MetadataFacetFactory> metadataFacetFactories;
+    private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
     private static final Logger log = LoggerFactory.getLogger( JcrMetadataRepository.class );
 
-    /**
-     * @plexus.requirement
-     */
     private Repository repository;
 
     private Session session;
 
-    public JcrMetadataRepository()
+    public JcrMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories, Repository repository )
+        throws RepositoryException
     {
+        this.metadataFacetFactories = metadataFacetFactories;
+        this.repository = repository;
+
+        session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
     }
 
-    public void login()
+    static void initialize( Session session )
+        throws RepositoryException
     {
-        // FIXME: need to close this at the end - do we need to add it in the API?
+        // TODO: consider using namespaces for facets instead of the current approach:
+        // (if used, check if actually called by normal injection)
+//        for ( String facetId : metadataFacetFactories.keySet() )
+//        {
+//            session.getWorkspace().getNamespaceRegistry().registerNamespace( facetId, facetId );
+//        }
 
-        try
-        {
-            // FIXME: shouldn't do this in constructor since it's a singleton
-            session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
+        Workspace workspace = session.getWorkspace();
+        NamespaceRegistry registry = workspace.getNamespaceRegistry();
 
-            Workspace workspace = session.getWorkspace();
-            workspace.getNamespaceRegistry().registerNamespace( "archiva", "http://archiva.apache.org/jcr/" );
+        if ( !Arrays.asList( registry.getPrefixes() ).contains( "archiva" ) )
+        {
+            registry.registerNamespace( "archiva", "http://archiva.apache.org/jcr/" );
+        }
 
-            NodeTypeManager nodeTypeManager = workspace.getNodeTypeManager();
-            registerMixinNodeType( nodeTypeManager, ARTIFACT_NODE_TYPE );
-            registerMixinNodeType( nodeTypeManager, FACET_NODE_TYPE );
-        }
-        catch ( LoginException e )
-        {
-            // FIXME
-            throw new RuntimeException( e );
-        }
-        catch ( RepositoryException e )
-        {
-            // FIXME
-            throw new RuntimeException( e );
-        }
+        NodeTypeManager nodeTypeManager = workspace.getNodeTypeManager();
+        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.ARTIFACT_NODE_TYPE );
+        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.FACET_NODE_TYPE );
     }
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String name )
@@ -134,7 +127,13 @@ public class JcrMetadataRepository
         NodeTypeTemplate nodeType = nodeTypeManager.createNodeTypeTemplate();
         nodeType.setMixin( true );
         nodeType.setName( name );
-        nodeTypeManager.registerNodeType( nodeType, false );
+
+        // for now just don't re-create - but in future if we change the definition, make sure to remove first as an
+        // upgrade path
+        if ( !nodeTypeManager.hasNodeType( name ) )
+        {
+            nodeTypeManager.registerNodeType( nodeType, false );
+        }
     }
 
     public void updateProject( String repositoryId, ProjectMetadata project )
@@ -997,31 +996,35 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
-    void close()
+    public void save()
+        throws MetadataRepositoryException
     {
         try
         {
-            // FIXME: this shouldn't be here! Repository may need a context
             session.save();
         }
         catch ( RepositoryException e )
         {
-            // FIXME
-            throw new RuntimeException( e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
-        session.logout();
     }
 
-    public void setMetadataFacetFactories( Map<String, MetadataFacetFactory> metadataFacetFactories )
+    public void revert()
+        throws MetadataRepositoryException
     {
-        this.metadataFacetFactories = metadataFacetFactories;
+        try
+        {
+            session.refresh( false );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+    }
 
-        // TODO: consider using namespaces for facets instead of the current approach:
-        // (if used, check if actually called by normal injection)
-//        for ( String facetId : metadataFacetFactories.keySet() )
-//        {
-//            session.getWorkspace().getNamespaceRegistry().registerNamespace( facetId, facetId );
-//        }
+    public void close()
+    {
+        session.logout();
     }
 
     private ArtifactMetadata getArtifactFromNode( String repositoryId, Node artifactNode )
