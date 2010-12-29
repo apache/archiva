@@ -168,6 +168,7 @@ public class ArchivaMetadataCreationConsumer
             {
                 versionMetadata = repositoryStorage.readProjectVersionMetadata( repoId, artifact.getNamespace(),
                                                                                 artifact.getProject(), projectVersion );
+                createVersionMetadata = true;
             }
             catch ( RepositoryStorageMetadataNotFoundException e )
             {
