@@ -18,13 +18,6 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>repository-statistics</artifactId>
-      <exclusions>
-        <!-- interferes with tests -->
-        <exclusion>
-          <groupId>org.apache.archiva</groupId>
-          <artifactId>problem-reports</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
