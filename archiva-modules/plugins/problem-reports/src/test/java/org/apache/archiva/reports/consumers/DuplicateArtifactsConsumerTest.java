@@ -22,6 +22,8 @@ package org.apache.archiva.reports.consumers;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -76,7 +78,13 @@ public class DuplicateArtifactsConsumerTest
         config.setId( TEST_REPO );
         config.setLocation( getTestFile( "target/test-repository" ).getAbsolutePath() );
 
-        metadataRepository = (MetadataRepository) lookup( MetadataRepository.class );
+        metadataRepository = mock( MetadataRepository.class );
+
+        RepositorySession session = mock( RepositorySession.class );
+        when( session.getRepository() ).thenReturn( metadataRepository );
+
+        RepositorySessionFactory factory = (RepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        when( factory.createSession() ).thenReturn( session );
 
         pathTranslator = (RepositoryPathTranslator) lookup( RepositoryPathTranslator.class, "maven2" );
         when( pathTranslator.getArtifactForPath( TEST_REPO, TEST_FILE ) ).thenReturn( TEST_METADATA );

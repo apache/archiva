@@ -24,6 +24,8 @@ import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.collections.CollectionUtils;
@@ -84,6 +86,13 @@ public class DuplicateArtifactsConsumer
      */
     private FileTypes filetypes;
 
+    /**
+     * FIXME: can be of other types
+     *
+     * @plexus.requirement
+     */
+    private RepositorySessionFactory repositorySessionFactory;
+
     private List<String> includes = new ArrayList<String>();
 
     private File repositoryDir;
@@ -91,16 +100,13 @@ public class DuplicateArtifactsConsumer
     private String repoId;
 
     /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
-
-    /**
      * FIXME: needs to be selected based on the repository in question
      *
      * @plexus.requirement role-hint="maven2"
      */
     private RepositoryPathTranslator pathTranslator;
+
+    private RepositorySession repositorySession;
 
     public String getId()
     {
@@ -132,6 +138,7 @@ public class DuplicateArtifactsConsumer
     {
         repoId = repo.getId();
         this.repositoryDir = new File( repo.getLocation() );
+        repositorySession = repositorySessionFactory.createSession();
     }
 
     public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered, boolean executeOnEntireRepo )
@@ -159,6 +166,8 @@ public class DuplicateArtifactsConsumer
         {
             throw new ConsumerException( e.getMessage(), e );
         }
+
+        MetadataRepository metadataRepository = repositorySession.getRepository();
 
         List<ArtifactMetadata> results;
         try
@@ -233,7 +242,7 @@ public class DuplicateArtifactsConsumer
 
     public void completeScan()
     {
-        // nothing to do
+        repositorySession.close();
     }
 
     public void completeScan( boolean executeOnEntireRepo )

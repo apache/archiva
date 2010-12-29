@@ -21,9 +21,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-  <bean id="metadataRepositoryFactory" class="org.apache.archiva.reports.consumers.MockitoFactory"
-        name="metadataRepository">
-    <constructor-arg value="org.apache.archiva.metadata.repository.MetadataRepository"/>
+  <bean id="repositorySessionFactoryFactory" class="org.apache.archiva.reports.consumers.MockitoFactory"
+        name="repositorySessionFactory">
+    <constructor-arg value="org.apache.archiva.metadata.repository.RepositorySessionFactory"/>
   </bean>
   <bean id="repositoryPathTranslatorFactory" class="org.apache.archiva.reports.consumers.MockitoFactory"
         name="repositoryPathTranslator#maven2">
