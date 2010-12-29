@@ -19,11 +19,12 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import java.util.List;
-
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -31,6 +32,11 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DependencyTreeTest
     extends PlexusInSpringTestCase
@@ -70,6 +76,12 @@ public class DependencyTreeTest
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_VERSION );
         metadataResolver.setProjectVersion( TEST_REPO_ID, TEST_GROUP_ID, TEST_ARTIFACT_ID, metadata );
+
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getResolver() ).thenReturn( metadataResolver );
+        TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
+            RepositorySessionFactory.class );
+        repositorySessionFactory.setRepositorySession( repositorySession );
     }
 
     public void testTree()

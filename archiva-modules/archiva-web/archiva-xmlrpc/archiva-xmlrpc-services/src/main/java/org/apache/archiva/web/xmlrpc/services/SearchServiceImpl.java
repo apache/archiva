@@ -29,6 +29,8 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.web.xmlrpc.api.SearchService;
@@ -48,17 +50,14 @@ public class SearchServiceImpl
 
     private XmlRpcUserRepositories xmlRpcUserRepositories;
 
-    private MetadataResolver metadataResolver;
+    private RepositorySessionFactory repositorySessionFactory;
 
-    private MetadataRepository metadataRepository;
-
-    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories, MetadataResolver metadataResolver,
-                              MetadataRepository metadataRepository, RepositorySearch search )
+    public SearchServiceImpl( XmlRpcUserRepositories xmlRpcUserRepositories,
+                              RepositorySessionFactory repositorySessionFactory, RepositorySearch search )
     {
         this.xmlRpcUserRepositories = xmlRpcUserRepositories;
         this.search = search;
-        this.metadataResolver = metadataResolver;
-        this.metadataRepository = metadataRepository;
+        this.repositorySessionFactory = repositorySessionFactory;
     }
 
     @SuppressWarnings( "unchecked" )
@@ -72,44 +71,56 @@ public class SearchServiceImpl
 
         results = search.search( "", observableRepos, queryString, limits, null );
 
-        for ( SearchResultHit resultHit : results.getHits() )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            List<String> resultHitVersions = resultHit.getVersions();
-            if ( resultHitVersions != null )
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+
+            for ( SearchResultHit resultHit : results.getHits() )
             {
-                for ( String version : resultHitVersions )
+                List<String> resultHitVersions = resultHit.getVersions();
+                if ( resultHitVersions != null )
                 {
-                    Artifact artifact = null;
-                    for ( String repoId : observableRepos )
+                    for ( String version : resultHitVersions )
                     {
-                        // slight behaviour change to previous implementation: instead of allocating "jar" when not
-                        // found in the database, we can rely on the metadata repository to create it on the fly. We
-                        // just allocate the default packaging if the Maven facet is not found.
-                        FacetedMetadata model = metadataResolver.resolveProjectVersion( repoId, resultHit.getGroupId(),
-                                                                                        resultHit.getArtifactId(),
-                                                                                        version );
-
-                        if ( model != null )
+                        Artifact artifact = null;
+                        for ( String repoId : observableRepos )
                         {
-                            String packaging = "jar";
+                            // slight behaviour change to previous implementation: instead of allocating "jar" when not
+                            // found in the database, we can rely on the metadata repository to create it on the fly. We
+                            // just allocate the default packaging if the Maven facet is not found.
+                            FacetedMetadata model = metadataResolver.resolveProjectVersion( repositorySession, repoId,
+                                                                                            resultHit.getGroupId(),
+                                                                                            resultHit.getArtifactId(),
+                                                                                            version );
 
-                            MavenProjectFacet facet = (MavenProjectFacet) model.getFacet( MavenProjectFacet.FACET_ID );
-                            if ( facet != null && facet.getPackaging() != null )
+                            if ( model != null )
                             {
-                                packaging = facet.getPackaging();
-                            }
-                            artifact = new Artifact( repoId, resultHit.getGroupId(), resultHit.getArtifactId(), version,
-                                                     packaging );
-                            break;
-                        }
-                    }
+                                String packaging = "jar";
 
-                    if ( artifact != null )
-                    {
-                        artifacts.add( artifact );
+                                MavenProjectFacet facet = (MavenProjectFacet) model.getFacet(
+                                    MavenProjectFacet.FACET_ID );
+                                if ( facet != null && facet.getPackaging() != null )
+                                {
+                                    packaging = facet.getPackaging();
+                                }
+                                artifact = new Artifact( repoId, resultHit.getGroupId(), resultHit.getArtifactId(),
+                                                         version, packaging );
+                                break;
+                            }
+                        }
+
+                        if ( artifact != null )
+                        {
+                            artifacts.add( artifact );
+                        }
                     }
                 }
             }
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         return artifacts;
@@ -120,17 +131,29 @@ public class SearchServiceImpl
     {
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
 
-        List<Artifact> results = new ArrayList<Artifact>();
-        for ( String repoId : observableRepos )
-        {
-            for ( ArtifactMetadata artifact : metadataRepository.getArtifactsByChecksum( repoId, checksum ) )
-            {
-                // TODO: customise XMLRPC to handle non-Maven artifacts
-                MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
 
-                results.add( new Artifact( artifact.getRepositoryId(), artifact.getNamespace(), artifact.getProject(),
-                                           artifact.getVersion(), facet != null ? facet.getType() : null ) );
+        List<Artifact> results = new ArrayList<Artifact>();
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+
+            for ( String repoId : observableRepos )
+            {
+                for ( ArtifactMetadata artifact : metadataRepository.getArtifactsByChecksum( repoId, checksum ) )
+                {
+                    // TODO: customise XMLRPC to handle non-Maven artifacts
+                    MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
+
+                    results.add( new Artifact( artifact.getRepositoryId(), artifact.getNamespace(),
+                                               artifact.getProject(), artifact.getVersion(),
+                                               facet != null ? facet.getType() : null ) );
+                }
             }
+        }
+        finally
+        {
+            repositorySession.close();
         }
         return results;
     }
@@ -141,16 +164,27 @@ public class SearchServiceImpl
         List<Artifact> artifacts = new ArrayList<Artifact>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
 
-        for ( String repoId : observableRepos )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            Collection<String> results = metadataResolver.resolveProjectVersions( repoId, groupId, artifactId );
+            MetadataResolver metadataResolver = repositorySession.getResolver();
 
-            for ( final String version : results )
+            for ( String repoId : observableRepos )
             {
-                final Artifact artifact = new Artifact( repoId, groupId, artifactId, version, "pom" );
+                Collection<String> results = metadataResolver.resolveProjectVersions( repositorySession, repoId,
+                                                                                      groupId, artifactId );
 
-                artifacts.add( artifact );
+                for ( final String version : results )
+                {
+                    final Artifact artifact = new Artifact( repoId, groupId, artifactId, version, "pom" );
+
+                    artifacts.add( artifact );
+                }
             }
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         return artifacts;
@@ -174,22 +208,32 @@ public class SearchServiceImpl
     {
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
 
-        for ( String repoId : observableRepos )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            ProjectVersionMetadata model = metadataResolver.resolveProjectVersion( repoId, groupId, artifactId,
-                                                                                   version );
-            if ( model != null )
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+
+            for ( String repoId : observableRepos )
             {
-                List<Dependency> dependencies = new ArrayList<Dependency>();
-                List<org.apache.archiva.metadata.model.Dependency> modelDeps = model.getDependencies();
-                for ( org.apache.archiva.metadata.model.Dependency dep : modelDeps )
+                ProjectVersionMetadata model = metadataResolver.resolveProjectVersion( repositorySession, repoId,
+                                                                                       groupId, artifactId, version );
+                if ( model != null )
                 {
-                    Dependency dependency = new Dependency( dep.getGroupId(), dep.getArtifactId(), dep.getVersion(),
-                                                            dep.getClassifier(), dep.getType(), dep.getScope() );
-                    dependencies.add( dependency );
+                    List<Dependency> dependencies = new ArrayList<Dependency>();
+                    List<org.apache.archiva.metadata.model.Dependency> modelDeps = model.getDependencies();
+                    for ( org.apache.archiva.metadata.model.Dependency dep : modelDeps )
+                    {
+                        Dependency dependency = new Dependency( dep.getGroupId(), dep.getArtifactId(), dep.getVersion(),
+                                                                dep.getClassifier(), dep.getType(), dep.getScope() );
+                        dependencies.add( dependency );
+                    }
+                    return dependencies;
                 }
-                return dependencies;
             }
+        }
+        finally
+        {
+            repositorySession.close();
         }
         throw new Exception( "Artifact does not exist." );
     }
@@ -209,15 +253,27 @@ public class SearchServiceImpl
         List<Artifact> artifacts = new ArrayList<Artifact>();
         List<String> observableRepos = xmlRpcUserRepositories.getObservableRepositories();
 
-        for ( String repoId : observableRepos )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            Collection<ProjectVersionReference> refs = metadataResolver.resolveProjectReferences( repoId, groupId,
-                                                                                                  artifactId, version );
-            for ( ProjectVersionReference ref : refs )
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+
+            for ( String repoId : observableRepos )
             {
-                artifacts.add( new Artifact( repoId, ref.getNamespace(), ref.getProjectId(), ref.getProjectVersion(),
-                                             "" ) );
+                Collection<ProjectVersionReference> refs = metadataResolver.resolveProjectReferences( repositorySession,
+                                                                                                      repoId, groupId,
+                                                                                                      artifactId,
+                                                                                                      version );
+                for ( ProjectVersionReference ref : refs )
+                {
+                    artifacts.add( new Artifact( repoId, ref.getNamespace(), ref.getProjectId(),
+                                                 ref.getProjectVersion(), "" ) );
+                }
             }
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         return artifacts;

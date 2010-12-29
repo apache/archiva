@@ -19,7 +19,10 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
@@ -75,6 +78,13 @@ public class ArchivaRepositoryScanningTaskExecutor
      */
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
+    /**
+     * TODO: may be different implementations
+     *
+     * @plexus.requirement
+     */
+    private RepositorySessionFactory repositorySessionFactory;
+
     public void initialize()
         throws InitializationException
     {
@@ -127,47 +137,47 @@ public class ArchivaRepositoryScanningTaskExecutor
             long sinceWhen = RepositoryScanner.FRESH_SCAN;
             long previousFileCount = 0;
 
-            if ( !repoTask.isScanAll() )
+            RepositorySession repositorySession = repositorySessionFactory.createSession();
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            try
             {
-                RepositoryStatistics previousStats;
+                if ( !repoTask.isScanAll() )
+                {
+                    RepositoryStatistics previousStats = repositoryStatisticsManager.getLastStatistics(
+                        metadataRepository, repoId );
+                    if ( previousStats != null )
+                    {
+                        sinceWhen = previousStats.getScanStartTime().getTime();
+                        previousFileCount = previousStats.getTotalFileCount();
+                    }
+                }
+
+                RepositoryScanStatistics stats;
                 try
                 {
-                    previousStats = repositoryStatisticsManager.getLastStatistics( repoId );
+                    stats = repoScanner.scan( arepo, sinceWhen );
                 }
-                catch ( MetadataRepositoryException e )
+                catch ( RepositoryScannerException e )
                 {
-                    throw new TaskExecutionException( "Unable to get previous statistics: " + e.getMessage(), e );
+                    throw new TaskExecutionException( "Repository error when executing repository job.", e );
                 }
-                if ( previousStats != null )
-                {
-                    sinceWhen = previousStats.getScanStartTime().getTime();
-                    previousFileCount = previousStats.getTotalFileCount();
-                }
-            }
 
-            RepositoryScanStatistics stats;
-            try
-            {
-                stats = repoScanner.scan( arepo, sinceWhen );
-            }
-            catch ( RepositoryScannerException e )
-            {
-                throw new TaskExecutionException( "Repository error when executing repository job.", e );
-            }
+                log.info( "Finished first scan: " + stats.toDump( arepo ) );
 
-            log.info( "Finished first scan: " + stats.toDump( arepo ) );
-
-            // further statistics will be populated by the following method
-            Date endTime = new Date( stats.getWhenGathered().getTime() + stats.getDuration() );
-            try
-            {
-                repositoryStatisticsManager.addStatisticsAfterScan( repoId, stats.getWhenGathered(), endTime,
-                                                                    stats.getTotalFileCount(),
+                // further statistics will be populated by the following method
+                Date endTime = new Date( stats.getWhenGathered().getTime() + stats.getDuration() );
+                repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, repoId, stats.getWhenGathered(),
+                                                                    endTime, stats.getTotalFileCount(),
                                                                     stats.getTotalFileCount() - previousFileCount );
+                repositorySession.save();
             }
             catch ( MetadataRepositoryException e )
             {
                 throw new TaskExecutionException( "Unable to store updated statistics: " + e.getMessage(), e );
+            }
+            finally
+            {
+                repositorySession.close();
             }
 
 //                log.info( "Scanning for removed repository content" );

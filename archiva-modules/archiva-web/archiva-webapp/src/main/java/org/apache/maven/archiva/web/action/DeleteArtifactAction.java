@@ -29,6 +29,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -117,11 +118,6 @@ public class DeleteArtifactAction
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5};
 
-    /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
-
     public String getGroupId()
     {
         return groupId;
@@ -194,21 +190,22 @@ public class DeleteArtifactAction
 
     public String doDelete()
     {
+        Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
+
+        TimeZone timezone = TimeZone.getTimeZone( "UTC" );
+        DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
+        fmt.setTimeZone( timezone );
+        ManagedRepositoryConfiguration repoConfig = configuration.getConfiguration().findManagedRepositoryById(
+            repositoryId );
+
+        VersionedReference ref = new VersionedReference();
+        ref.setArtifactId( artifactId );
+        ref.setGroupId( groupId );
+        ref.setVersion( version );
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
-
-            TimeZone timezone = TimeZone.getTimeZone( "UTC" );
-            DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-            fmt.setTimeZone( timezone );
-            ManagedRepositoryConfiguration repoConfig = configuration.getConfiguration().findManagedRepositoryById(
-                repositoryId );
-
-            VersionedReference ref = new VersionedReference();
-            ref.setArtifactId( artifactId );
-            ref.setGroupId( groupId );
-            ref.setVersion( version );
-
             ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
 
             String path = repository.toMetadataPath( ref );
@@ -230,6 +227,7 @@ public class DeleteArtifactAction
 
             updateMetadata( metadata, metadataFile, lastUpdatedTimestamp );
 
+            MetadataRepository metadataRepository = repositorySession.getRepository();
             Collection<ArtifactMetadata> artifacts = metadataRepository.getArtifacts( repositoryId, groupId, artifactId,
                                                                                       version );
 
@@ -245,21 +243,14 @@ public class DeleteArtifactAction
                     //       repository metadata to an artifact
                     for ( RepositoryListener listener : listeners )
                     {
-                        listener.deleteArtifact( repository.getId(), artifact.getNamespace(), artifact.getProject(),
-                                                 artifact.getVersion(), artifact.getId() );
+                        listener.deleteArtifact( metadataRepository, repository.getId(), artifact.getNamespace(),
+                                                 artifact.getProject(), artifact.getVersion(), artifact.getId() );
                     }
 
                     triggerAuditEvent( repositoryId, path, AuditEvent.REMOVE_FILE );
                 }
             }
-
-            String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
-                "\' was successfully deleted from repository \'" + repositoryId + "\'";
-
-            addActionMessage( msg );
-
-            reset();
-            return SUCCESS;
+            repositorySession.save();
         }
         catch ( ContentNotFoundException e )
         {
@@ -286,6 +277,18 @@ public class DeleteArtifactAction
             addActionError( "Repository exception: " + e.getMessage() );
             return ERROR;
         }
+        finally
+        {
+            repositorySession.close();
+        }
+
+        String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
+            "\' was successfully deleted from repository \'" + repositoryId + "\'";
+
+        addActionMessage( msg );
+
+        reset();
+        return SUCCESS;
     }
 
     private File getMetadata( String targetPath )
@@ -424,10 +427,5 @@ public class DeleteArtifactAction
     public void setConfiguration( ArchivaConfiguration configuration )
     {
         this.configuration = configuration;
-    }
-
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
     }
 }

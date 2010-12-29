@@ -23,6 +23,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -54,11 +55,6 @@ public class DeleteManagedRepositoryAction
      * @plexus.requirement
      */
     private RepositoryStatisticsManager repositoryStatisticsManager;
-
-    /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
 
     public void prepare()
     {
@@ -103,17 +99,18 @@ public class DeleteManagedRepositoryAction
 
         String result;
 
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
             Configuration configuration = archivaConfiguration.getConfiguration();
             if ( attachedStagingRepo != null )
             {
-                cleanupRepositoryData( attachedStagingRepo );
+                cleanupRepositoryData( attachedStagingRepo, repositorySession );
                 removeRepository( repoid + "-stage", configuration );
                 triggerAuditEvent( repoid + "-stage", null, AuditEvent.DELETE_MANAGED_REPO );
 
             }
-            cleanupRepositoryData( existingRepository );
+            cleanupRepositoryData( existingRepository, repositorySession );
             removeRepository( repoid, configuration );
             triggerAuditEvent( repoid, null, AuditEvent.DELETE_MANAGED_REPO );
             result = saveConfiguration( configuration );
@@ -148,17 +145,24 @@ public class DeleteManagedRepositoryAction
                 "Unable to delete repository, content may already be partially removed: " + e.getMessage() );
             result = ERROR;
         }
+        finally
+        {
+            repositorySession.close();
+        }
 
         return result;
     }
 
-    private void cleanupRepositoryData( ManagedRepositoryConfiguration cleanupRepository )
+    private void cleanupRepositoryData( ManagedRepositoryConfiguration cleanupRepository,
+                                        RepositorySession repositorySession )
         throws RoleManagerException, MetadataRepositoryException
     {
         removeRepositoryRoles( cleanupRepository );
-        cleanupDatabase( cleanupRepository.getId() );
-        repositoryStatisticsManager.deleteStatistics( cleanupRepository.getId() );
+        MetadataRepository metadataRepository = repositorySession.getRepository();
+        cleanupDatabase( metadataRepository, cleanupRepository.getId() );
+        repositoryStatisticsManager.deleteStatistics( metadataRepository, cleanupRepository.getId() );
         // TODO: delete all content for a repository from the content API?
+        repositorySession.save();
 
         List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
@@ -184,7 +188,7 @@ public class DeleteManagedRepositoryAction
         }
     }
 
-    private void cleanupDatabase( String repoId )
+    private void cleanupDatabase( MetadataRepository metadataRepository, String repoId )
         throws MetadataRepositoryException
     {
         metadataRepository.removeRepository( repoId );
@@ -213,10 +217,5 @@ public class DeleteManagedRepositoryAction
     public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
     {
         this.repositoryStatisticsManager = repositoryStatisticsManager;
-    }
-
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
     }
 }

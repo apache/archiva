@@ -19,40 +19,27 @@ package org.apache.archiva.stagerepository.merge;
  * under the License.
  */
 
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.mockito.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.junit.Before;
+import org.mockito.MockitoAnnotations;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 public class Maven2RepositoryMergerTest
     extends PlexusInSpringTestCase
 {
 
     private static final String TEST_REPO_ID = "test";
-
-    private static final String TARGET_REPOSITORY_ID = "target-repo";
-
-    private Configuration config;
-
-    @MockitoAnnotations.Mock
-    private MetadataRepository metadataResolver;
-
-    private RepositoryContentFactory repositoryFactory;
-
-    private ArchivaConfiguration configuration;
 
     private Maven2RepositoryMerger repositoryMerger;
 
@@ -66,7 +53,6 @@ public class Maven2RepositoryMergerTest
         MockitoAnnotations.initMocks( this );
         metadataRepository = mock( MetadataRepository.class );
         repositoryMerger = (Maven2RepositoryMerger) lookup( RepositoryMerger.class, "maven2" );
-        repositoryMerger.setMetadataRepository( metadataRepository );
     }
 
     private List<ArtifactMetadata> getArtifacts()
@@ -106,7 +92,7 @@ public class Maven2RepositoryMergerTest
         configuration.save( c );
 
         when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( getArtifacts() );
-        repositoryMerger.merge( TEST_REPO_ID, "target-rep" );
+        repositoryMerger.merge( metadataRepository, TEST_REPO_ID, "target-rep" );
         verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
     }
 
@@ -154,7 +140,8 @@ public class Maven2RepositoryMergerTest
         when( metadataRepository.getArtifacts( sourceRepoId ) ).thenReturn( sourceRepoArtifactsList );
         when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( targetRepoArtifactsList );
 
-        assertEquals( 1, repositoryMerger.getConflictingArtifacts( sourceRepoId, TEST_REPO_ID ).size() );
+        assertEquals( 1, repositoryMerger.getConflictingArtifacts( metadataRepository, sourceRepoId,
+                                                                   TEST_REPO_ID ).size() );
         verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
     }
 

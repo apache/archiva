@@ -22,6 +22,7 @@ package org.apache.archiva.rss.processor;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.rss.RssFeedEntry;
@@ -59,7 +60,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
     /**
      * Process all versions of the artifact which had a rss feed request.
      */
-    public SyndFeed process( Map<String, String> reqParams )
+    public SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
         throws FeedException
     {
         String groupId = reqParams.get( RssFeedProcessor.KEY_GROUP_ID );
@@ -67,13 +68,14 @@ public class NewVersionsOfArtifactRssFeedProcessor
 
         if ( groupId != null && artifactId != null )
         {
-            return processNewVersionsOfArtifact( groupId, artifactId );
+            return processNewVersionsOfArtifact( groupId, artifactId, metadataRepository );
         }
 
         return null;
     }
 
-    private SyndFeed processNewVersionsOfArtifact( String groupId, String artifactId )
+    private SyndFeed processNewVersionsOfArtifact( String groupId, String artifactId,
+                                                   MetadataRepository metadataRepository )
         throws FeedException
     {
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();

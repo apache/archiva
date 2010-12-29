@@ -1,5 +1,5 @@
 package org.apache.maven.archiva.web.action;
-	
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,12 +19,6 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
@@ -34,6 +28,7 @@ import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -43,12 +38,18 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Search all indexed fields by the given criteria.
  *
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
  */
-public class SearchAction 
+public class SearchAction
     extends AbstractRepositoryBasedAction
     implements Preparable
 {
@@ -70,15 +71,15 @@ public class SearchAction
     private static final String ARTIFACT = "artifact";
 
     private List<ArtifactMetadata> databaseResults;
-    
+
     private int currentPage = 0;
-    
+
     private int totalPages;
-    
+
     private boolean searchResultsOnly;
-    
+
     private String completeQueryString;
-    
+
     private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
 
     private List<String> managedRepositoryList;
@@ -102,15 +103,10 @@ public class SearchAction
     private boolean fromResultsPage;
 
     private RepositorySearch nexusSearch;
-    
+
     private Map<String, String> searchFields;
 
     private String infoMessage;
-
-    /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
 
     public boolean isFromResultsPage()
     {
@@ -141,25 +137,25 @@ public class SearchAction
         {
             managedRepositoryList.add( "all" );
         }
-        
+
         searchFields = new LinkedHashMap<String, String>();
         searchFields.put( "groupId", "Group ID" );
         searchFields.put( "artifactId", "Artifact ID" );
         searchFields.put( "version", "Version" );
-        searchFields.put( "className", "Class/Package Name" ); 
+        searchFields.put( "className", "Class/Package Name" );
         searchFields.put( "rowCount", "Row Count" );
-        
-        super.clearErrorsAndMessages();       
+
+        super.clearErrorsAndMessages();
         clearSearchFields();
     }
-    
+
     private void clearSearchFields()
     {
         repositoryId = "";
         artifactId = "";
         groupId = "";
         version = "";
-        className = "";     
+        className = "";
         rowCount = 30;
         currentPage = 0;
     }
@@ -167,44 +163,42 @@ public class SearchAction
     // advanced search MRM-90 -- filtered search
     public String filteredSearch()
         throws MalformedURLException
-    {           
-        if ( ( groupId == null || "".equals( groupId ) ) &&
-            ( artifactId == null || "".equals( artifactId ) ) && ( className == null || "".equals( className ) ) &&
-            ( version == null || "".equals( version ) ) )
-        {   
+    {
+        if ( ( groupId == null || "".equals( groupId ) ) && ( artifactId == null || "".equals( artifactId ) ) &&
+            ( className == null || "".equals( className ) ) && ( version == null || "".equals( version ) ) )
+        {
             addActionError( "Advanced Search - At least one search criteria must be provided." );
             return INPUT;
         }
-        
+
         fromFilterSearch = true;
-        
+
         if ( CollectionUtils.isEmpty( managedRepositoryList ) )
-        {            
+        {
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
         SearchResultLimits limits = new SearchResultLimits( currentPage );
         limits.setPageSize( rowCount );
         List<String> selectedRepos = new ArrayList<String>();
-        
-        if ( repositoryId == null || StringUtils.isBlank( repositoryId ) ||
-            "all".equals( StringUtils.stripToEmpty( repositoryId ) ) )
+
+        if ( repositoryId == null || StringUtils.isBlank( repositoryId ) || "all".equals( StringUtils.stripToEmpty(
+            repositoryId ) ) )
         {
             selectedRepos = getObservableRepos();
         }
         else
         {
             selectedRepos.add( repositoryId );
-        }        
+        }
 
         if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {         
+        {
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        SearchFields searchFields =
-            new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
-                
+        SearchFields searchFields = new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
+
         // TODO: add packaging in the list of fields for advanced search (UI)?
         try
         {
@@ -215,7 +209,7 @@ public class SearchAction
             addActionError( e.getMessage() );
             return ERROR;
         }
-        
+
         if ( results.isEmpty() )
         {
             addActionError( "No results found" );
@@ -229,19 +223,19 @@ public class SearchAction
             totalPages = totalPages + 1;
         }
 
-        for (SearchResultHit hit : results.getHits())
+        for ( SearchResultHit hit : results.getHits() )
         {
             final String version = hit.getVersion();
-            if (version != null)
+            if ( version != null )
             {
-                hit.setVersion(VersionUtil.getBaseVersion(version));
+                hit.setVersion( VersionUtil.getBaseVersion( version ) );
             }
         }
 
         return SUCCESS;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public String quickSearch()
         throws MalformedURLException
     {
@@ -265,14 +259,15 @@ public class SearchAction
 
         try
         {
-            if( searchResultsOnly && !completeQueryString.equals( "" ) )
-            {                       
-                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );                   
+            if ( searchResultsOnly && !completeQueryString.equals( "" ) )
+            {
+                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits,
+                                                   parseCompleteQueryString() );
             }
             else
             {
-                completeQueryString = "";                    
-                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );                    
+                completeQueryString = "";
+                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );
             }
         }
         catch ( RepositorySearchException e )
@@ -289,16 +284,16 @@ public class SearchAction
 
         totalPages = results.getTotalHits() / limits.getPageSize();
 
-        if( (results.getTotalHits() % limits.getPageSize()) != 0 )
+        if ( ( results.getTotalHits() % limits.getPageSize() ) != 0 )
         {
             totalPages = totalPages + 1;
         }
 
-        if( !isEqualToPreviousSearchTerm( q ) )
+        if ( !isEqualToPreviousSearchTerm( q ) )
         {
             buildCompleteQueryString( q );
         }
-       
+
         return SUCCESS;
     }
 
@@ -314,9 +309,18 @@ public class SearchAction
         }
 
         databaseResults = new ArrayList<ArtifactMetadata>();
-        for ( String repoId : getObservableRepos() )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            databaseResults.addAll( metadataRepository.getArtifactsByChecksum( repoId, q ) );
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            for ( String repoId : getObservableRepos() )
+            {
+                databaseResults.addAll( metadataRepository.getArtifactsByChecksum( repoId, q ) );
+            }
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         if ( databaseResults.isEmpty() )
@@ -333,7 +337,7 @@ public class SearchAction
 
         return RESULTS;
     }
-    
+
     public String doInput()
     {
         return INPUT;
@@ -541,11 +545,11 @@ public class SearchAction
     public RepositorySearch getNexusSearch()
     {
         // no need to do this when wiring is already in spring
-        if( nexusSearch == null )
+        if ( nexusSearch == null )
         {
-            WebApplicationContext wac =
-                WebApplicationContextUtils.getRequiredWebApplicationContext( ServletActionContext.getServletContext() );
-            nexusSearch = ( RepositorySearch ) wac.getBean( "nexusSearch" );
+            WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(
+                ServletActionContext.getServletContext() );
+            nexusSearch = (RepositorySearch) wac.getBean( "nexusSearch" );
         }
         return nexusSearch;
     }
@@ -564,7 +568,7 @@ public class SearchAction
     {
         this.searchFields = searchFields;
     }
-    
+
     public String getInfoMessage()
     {
         return infoMessage;
@@ -573,10 +577,5 @@ public class SearchAction
     public void setInfoMessage( String infoMessage )
     {
         this.infoMessage = infoMessage;
-    }
-
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
     }
 }

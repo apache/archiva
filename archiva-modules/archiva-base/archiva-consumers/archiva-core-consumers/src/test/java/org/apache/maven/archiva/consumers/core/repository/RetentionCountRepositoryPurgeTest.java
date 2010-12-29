@@ -1,7 +1,5 @@
 package org.apache.maven.archiva.consumers.core.repository;
 
-import java.util.Collections;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -11,7 +9,7 @@ import java.util.Collections;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -21,24 +19,27 @@ import java.util.Collections;
  * under the License.
  */
 
+import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Test RetentionsCountRepositoryPurgeTest
- *
  */
 public class RetentionCountRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
-
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
-        repoPurge =
-            new RetentionCountRepositoryPurge(
-                                               getRepository(),
-                                               getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(),
-                                               Collections.singletonList( listener ) );
+        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        List<RepositoryListener> listeners = Collections.singletonList( listener );
+        repoPurge = new RetentionCountRepositoryPurge( getRepository(), repoConfiguration.getRetentionCount(),
+                                                       repositorySession, listeners );
     }
 
     /**
@@ -50,18 +51,18 @@ public class RetentionCountRepositoryPurgeTest
         String repoRoot = prepareTestRepos();
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
                                  "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" );
-        listener.deleteArtifact( getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
                                  "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1.pom" );
-        listener.deleteArtifact( getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
                                  "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.jar" );
-        listener.deleteArtifact( getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
                                  "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" );
         listenerControl.replay();
-        
+
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
-        
+
         listenerControl.verify();
 
         String versionRoot = repoRoot + "/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT";
@@ -106,18 +107,18 @@ public class RetentionCountRepositoryPurgeTest
         String repoRoot = prepareTestRepos();
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
                                  "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.jar" );
-        listener.deleteArtifact( getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
                                  "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
-        
+
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_POM );
-        
+
         listenerControl.verify();
 
         String versionRoot = repoRoot + "/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT";
-        
+
         // assert if removed from repo
         assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.jar" );
         assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.jar.md5" );
@@ -154,19 +155,20 @@ public class RetentionCountRepositoryPurgeTest
         String repoRoot = prepareTestRepos();
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
-                                 "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
-        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
-                                 "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                                 "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                                 "maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                                 "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                                 "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
-        
+
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
 
         listenerControl.verify();
 
-        String versionRoot = repoRoot + 
-            "/org/apache/maven/plugins/maven-assembly-plugin/1.1.2-SNAPSHOT";
-        
+        String versionRoot = repoRoot + "/org/apache/maven/plugins/maven-assembly-plugin/1.1.2-SNAPSHOT";
+
         assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
         assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.jar.sha1" );
         assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.jar.md5" );

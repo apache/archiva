@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 
 import java.util.Date;
@@ -26,15 +27,17 @@ import java.util.List;
 
 public interface RepositoryStatisticsManager
 {
-    RepositoryStatistics getLastStatistics( String repositoryId )
+    RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException;
 
-    void addStatisticsAfterScan( String repositoryId, Date startTime, Date endTime, long totalFiles, long newFiles )
+    void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
+                                 Date endTime, long totalFiles, long newFiles )
         throws MetadataRepositoryException;
 
-    void deleteStatistics( String repositoryId )
+    void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException;
 
-    List<RepositoryStatistics> getStatisticsInRange( String repositoryId, Date startTime, Date endTime )
+    List<RepositoryStatistics> getStatisticsInRange( MetadataRepository metadataRepository, String repositoryId,
+                                                     Date startTime, Date endTime )
         throws MetadataRepositoryException;
 }

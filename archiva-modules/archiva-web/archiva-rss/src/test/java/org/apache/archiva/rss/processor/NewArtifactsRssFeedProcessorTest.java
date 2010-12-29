@@ -59,7 +59,6 @@ public class NewArtifactsRssFeedProcessorTest
         newArtifactsProcessor.setGenerator( new RssFeedGenerator() );
 
         metadataRepository = new MetadataRepositoryMock();
-        newArtifactsProcessor.setMetadataRepository( metadataRepository );
     }
 
     @SuppressWarnings( "unchecked" )
@@ -83,7 +82,7 @@ public class NewArtifactsRssFeedProcessorTest
         Map<String, String> reqParams = new HashMap<String, String>();
         reqParams.put( RssFeedProcessor.KEY_REPO_ID, TEST_REPO );
 
-        SyndFeed feed = newArtifactsProcessor.process( reqParams );
+        SyndFeed feed = newArtifactsProcessor.process( reqParams, metadataRepository );
 
         // check that the date used in the call is close to the one passed (5 seconds difference at most)
         Calendar cal = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );

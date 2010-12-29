@@ -40,18 +40,14 @@ import java.util.TimeZone;
 public class DefaultAuditManager
     implements AuditManager
 {
-    /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
-
-    private static final int NUM_RECENT_REVENTS = 10;
+    private static final int NUM_RECENT_EVENTS = 10;
 
     private static final Logger log = LoggerFactory.getLogger( DefaultAuditManager.class );
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
-    public List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds )
+    public List<AuditEvent> getMostRecentAuditEvents( MetadataRepository metadataRepository,
+                                                      List<String> repositoryIds )
         throws MetadataRepositoryException
     {
         // TODO: consider a more efficient implementation that directly gets the last ten from the content repository
@@ -65,7 +61,7 @@ public class DefaultAuditManager
             }
         }
         Collections.sort( records );
-        records = records.subList( 0, records.size() < NUM_RECENT_REVENTS ? records.size() : NUM_RECENT_REVENTS );
+        records = records.subList( 0, records.size() < NUM_RECENT_EVENTS ? records.size() : NUM_RECENT_EVENTS );
 
         List<AuditEvent> events = new ArrayList<AuditEvent>( records.size() );
         for ( AuditRecord record : records )
@@ -78,29 +74,31 @@ public class DefaultAuditManager
         return events;
     }
 
-    public void addAuditEvent( AuditEvent event )
+    public void addAuditEvent( MetadataRepository repository, AuditEvent event )
         throws MetadataRepositoryException
     {
         // ignore those with no repository - they will still be logged to the textual audit log
         if ( event.getRepositoryId() != null )
         {
-            metadataRepository.addMetadataFacet( event.getRepositoryId(), event );
+            repository.addMetadataFacet( event.getRepositoryId(), event );
         }
     }
 
-    public void deleteAuditEvents( String repositoryId )
+    public void deleteAuditEvents( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         metadataRepository.removeMetadataFacets( repositoryId, AuditEvent.FACET_ID );
     }
 
-    public List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime )
+    public List<AuditEvent> getAuditEventsInRange( MetadataRepository metadataRepository,
+                                                   Collection<String> repositoryIds, Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
-        return getAuditEventsInRange( repositoryIds, null, startTime, endTime );
+        return getAuditEventsInRange( metadataRepository, repositoryIds, null, startTime, endTime );
     }
 
-    public List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, String resource, Date startTime,
+    public List<AuditEvent> getAuditEventsInRange( MetadataRepository metadataRepository,
+                                                   Collection<String> repositoryIds, String resource, Date startTime,
                                                    Date endTime )
         throws MetadataRepositoryException
     {
@@ -148,11 +146,6 @@ public class DefaultAuditManager
         SimpleDateFormat fmt = new SimpleDateFormat( AuditEvent.TIMESTAMP_FORMAT );
         fmt.setTimeZone( UTC_TIME_ZONE );
         return fmt;
-    }
-
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
     }
 
     private static final class AuditRecord

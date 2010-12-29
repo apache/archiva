@@ -24,8 +24,11 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -81,9 +84,11 @@ public class ArchivaMetadataCreationConsumer
     private List<String> includes = new ArrayList<String>();
 
     /**
+     * FIXME: can be of other types
+     *
      * @plexus.requirement
      */
-    private MetadataRepository metadataRepository;
+    private RepositorySessionFactory repositorySessionFactory;
 
     /**
      * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
@@ -149,31 +154,35 @@ public class ArchivaMetadataCreationConsumer
         project.setId( artifact.getProject() );
 
         String projectVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
-        // FIXME: maybe not too efficient since it may have already been read and stored for this artifact
-        ProjectVersionMetadata versionMetadata = null;
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            versionMetadata = repositoryStorage.readProjectVersionMetadata( repoId, artifact.getNamespace(),
-                                                                            artifact.getProject(), projectVersion );
-        }
-        catch ( MetadataResolutionException e )
-        {
-            log.warn( "Error occurred resolving POM for artifact: " + path + "; message: " + e.getMessage() );
-        }
+            MetadataRepository metadataRepository = repositorySession.getRepository();
 
-        boolean createVersionMetadata = false;
-        if ( versionMetadata == null )
-        {
-            log.warn( "Missing or invalid POM for artifact: " + path + "; creating empty metadata" );
-            versionMetadata = new ProjectVersionMetadata();
-            versionMetadata.setId( projectVersion );
-            versionMetadata.setIncomplete( true );
-            createVersionMetadata = true;
-        }
+            boolean createVersionMetadata = false;
 
-        try
-        {
-            // FIXME: transaction
+            // FIXME: maybe not too efficient since it may have already been read and stored for this artifact
+            ProjectVersionMetadata versionMetadata = null;
+            try
+            {
+                versionMetadata = repositoryStorage.readProjectVersionMetadata( repoId, artifact.getNamespace(),
+                                                                                artifact.getProject(), projectVersion );
+            }
+            catch ( RepositoryStorageMetadataNotFoundException e )
+            {
+                log.warn( "Missing or invalid POM for artifact: " + path + "; creating empty metadata" );
+
+                versionMetadata = new ProjectVersionMetadata();
+                versionMetadata.setId( projectVersion );
+                versionMetadata.setIncomplete( true );
+                createVersionMetadata = true;
+            }
+            catch ( RepositoryStorageMetadataInvalidException e )
+            {
+                log.warn( "Error occurred resolving POM for artifact: " + path + "; message: " + e.getMessage() );
+            }
+
             // read the metadata and update it if it is newer or doesn't exist
             artifact.setWhenGathered( whenGathered );
             metadataRepository.updateArtifact( repoId, project.getNamespace(), project.getId(), projectVersion,
@@ -184,10 +193,16 @@ public class ArchivaMetadataCreationConsumer
                                                          versionMetadata );
             }
             metadataRepository.updateProject( repoId, project );
+            repositorySession.save();
         }
         catch ( MetadataRepositoryException e )
         {
             log.warn( "Error occurred persisting metadata for artifact: " + path + "; message: " + e.getMessage(), e );
+            repositorySession.revert();
+        }
+        finally
+        {
+            repositorySession.close();
         }
     }
 

@@ -59,21 +59,12 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-/**
- * @plexus.component role="org.apache.archiva.metadata.repository.MetadataRepository"
- */
 public class FileMetadataRepository
     implements MetadataRepository
 {
-    /**
-     * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
-     */
-    private Map<String, MetadataFacetFactory> metadataFacetFactories;
+    private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaConfiguration configuration;
+    private final ArchivaConfiguration configuration;
 
     private static final Logger log = LoggerFactory.getLogger( FileMetadataRepository.class );
 
@@ -84,6 +75,13 @@ public class FileMetadataRepository
     private static final String NAMESPACE_METADATA_KEY = "namespace-metadata";
 
     private static final String METADATA_KEY = "metadata";
+
+    public FileMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
+                                   ArchivaConfiguration configuration )
+    {
+        this.metadataFacetFactories = metadataFacetFactories;
+        this.configuration = configuration;
+    }
 
     private File getBaseDirectory( String repoId )
     {
@@ -1064,16 +1062,6 @@ public class FileMetadataRepository
         {
             IOUtils.closeQuietly( os );
         }
-    }
-
-    public void setMetadataFacetFactories( Map<String, MetadataFacetFactory> metadataFacetFactories )
-    {
-        this.metadataFacetFactories = metadataFacetFactories;
-    }
-
-    public void setConfiguration( ArchivaConfiguration configuration )
-    {
-        this.configuration = configuration;
     }
 
     private static class ArtifactComparator

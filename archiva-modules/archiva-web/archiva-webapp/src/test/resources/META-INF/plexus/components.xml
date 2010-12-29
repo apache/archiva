@@ -29,5 +29,10 @@
         <resource>archiva-mime-types.txt</resource>
       </configuration>
     </component>
+    <component>
+      <role>org.apache.archiva.metadata.repository.RepositorySessionFactory</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory</implementation>
+    </component>
   </components>
 </component-set>

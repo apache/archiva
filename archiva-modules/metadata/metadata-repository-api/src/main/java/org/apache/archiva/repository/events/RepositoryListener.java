@@ -19,15 +19,30 @@ package org.apache.archiva.repository.events;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataException;
+
 /**
- * Listen to events on the repository. This class is a stopgap 
- * refactoring measure until an event bus is in place to handle 
+ * Listen to events on the repository. This class is a stopgap
+ * refactoring measure until an event bus is in place to handle
  * generic events such as these.
+ *
+ * This assumes that the events occur before the action has completed, though they don't currently offer any mechanism
+ * to prevent an event from occurring or guarantee that it will happen.
+ *
+ * FIXME: this needs to be made more permanent since 3rd party plugins will depend on it heavily
  */
-public interface RepositoryListener 
+public interface RepositoryListener
 {
-    /**
-     * Event for the deletion of a given artifact.
-     */
-    void deleteArtifact( String repositoryId, String namespace, String project, String version, String id );
+    void deleteArtifact( MetadataRepository metadataRepository, String repositoryId, String namespace, String project,
+                         String version, String id );
+
+    void addArtifact( RepositorySession session, String repoId, String namespace, String projectId,
+                      ProjectVersionMetadata metadata );
+
+    // FIXME: this would be better as a "processException" method, with the event information captured in a single class
+    void addArtifactProblem( RepositorySession session, String repoId, String namespace, String projectId,
+                             String projectVersion, RepositoryStorageMetadataException exception );
 }

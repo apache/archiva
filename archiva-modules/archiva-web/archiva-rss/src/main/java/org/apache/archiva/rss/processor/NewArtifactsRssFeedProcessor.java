@@ -22,6 +22,7 @@ package org.apache.archiva.rss.processor;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
@@ -64,7 +65,7 @@ public class NewArtifactsRssFeedProcessor
      * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
      * new versions of artifact.
      */
-    public SyndFeed process( Map<String, String> reqParams )
+    public SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
         throws FeedException
     {
         log.debug( "Process new artifacts into rss feeds." );
@@ -72,20 +73,20 @@ public class NewArtifactsRssFeedProcessor
         String repoId = reqParams.get( RssFeedProcessor.KEY_REPO_ID );
         if ( repoId != null )
         {
-            return processNewArtifactsInRepo( repoId );
+            return processNewArtifactsInRepo( repoId, metadataRepository );
         }
 
         return null;
     }
 
-    private SyndFeed processNewArtifactsInRepo( String repoId )
+    private SyndFeed processNewArtifactsInRepo( String repoId, MetadataRepository metadataRepository )
         throws FeedException
     {
         Calendar greaterThanThisDate = Calendar.getInstance( GMT_TIME_ZONE );
         greaterThanThisDate.add( Calendar.DATE, -( getNumberOfDaysBeforeNow() ) );
         greaterThanThisDate.clear( Calendar.MILLISECOND );
 
-        List<ArtifactMetadata> artifacts = null;
+        List<ArtifactMetadata> artifacts;
         try
         {
             artifacts = metadataRepository.getArtifactsByDateRange( repoId, greaterThanThisDate.getTime(), null );

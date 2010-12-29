@@ -42,6 +42,9 @@
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
           <role-hint>retention-count</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.archiva.metadata.repository.RepositorySessionFactory</role>
+        </requirement>
       </requirements>
       <configuration>
         <id>repository-purge</id>
@@ -125,6 +128,9 @@
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
           <role-hint>days-old</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.archiva.metadata.repository.RepositorySessionFactory</role>
+        </requirement>
       </requirements>
       <configuration>
         <id>repository-purge</id>
@@ -184,6 +190,10 @@
           <role-hint>days-old</role-hint>
         </requirement>
       </requirements>
+    </component>
+    <component>
+      <role>org.apache.archiva.metadata.repository.RepositorySessionFactory</role>
+      <implementation>org.apache.archiva.metadata.repository.TestRepositorySessionFactory</implementation>
     </component>
   </components>
 </component-set>

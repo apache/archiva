@@ -19,12 +19,15 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 
 /**
  */
@@ -46,11 +49,10 @@ public class DaysOldRepositoryPurgeTest
     public void testByLastModified()
         throws Exception
     {
-        repoPurge =
-            new DaysOldRepositoryPurge( getRepository(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(),
-                                        Collections.singletonList( listener ) );
+        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
+                                                repoConfiguration.getRetentionCount(), repositorySession,
+                                                Collections.singletonList( listener ) );
 
         String repoRoot = prepareTestRepos();
 
@@ -59,14 +61,16 @@ public class DaysOldRepositoryPurgeTest
         setLastModified( projectRoot + "/2.2-SNAPSHOT/", OLD_TIMESTAMP );
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
-                                 "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.jar" );
-        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
-                                 "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.pom" );
-        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
-                                 "2.2-20061118.060401-2", "maven-install-plugin-2.2-20061118.060401-2.jar" );
-        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-install-plugin",
-                                 "2.2-20061118.060401-2", "maven-install-plugin-2.2-20061118.060401-2.pom" );
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                                 "maven-install-plugin", "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.jar" );
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                                 "maven-install-plugin", "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.pom" );
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                                 "maven-install-plugin", "2.2-20061118.060401-2",
+                                 "maven-install-plugin-2.2-20061118.060401-2.jar" );
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                                 "maven-install-plugin", "2.2-20061118.060401-2",
+                                 "maven-install-plugin-2.2-20061118.060401-2.pom" );
         listenerControl.replay();
 
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
@@ -106,10 +110,10 @@ public class DaysOldRepositoryPurgeTest
     public void testOrderOfDeletion()
         throws Exception
     {
-        repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(),
-                                        Collections.singletonList( listener ) );
+        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        List<RepositoryListener> listeners = Collections.singletonList( listener );
+        repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
+                                                repoConfiguration.getRetentionCount(), repositorySession, listeners );
 
         String repoRoot = prepareTestRepos();
 
@@ -118,10 +122,12 @@ public class DaysOldRepositoryPurgeTest
         setLastModified( projectRoot + "/1.1.2-SNAPSHOT/", OLD_TIMESTAMP );
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
-                                 "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
-        listener.deleteArtifact( getRepository().getId(), "org.apache.maven.plugins", "maven-assembly-plugin",
-                                 "1.1.2-20070427.065136-1", "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                                 "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                                 "maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                                 "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                                 "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
 
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
@@ -154,11 +160,10 @@ public class DaysOldRepositoryPurgeTest
     public void testMetadataDrivenSnapshots()
         throws Exception
     {
-        repoPurge =
-            new DaysOldRepositoryPurge( getRepository(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getDaysOlder(),
-                                        getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ).getRetentionCount(),
-                                        Collections.singletonList( listener ) );
+        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        List<RepositoryListener> listeners = Collections.singletonList( listener );
+        repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
+                                                repoConfiguration.getRetentionCount(), repositorySession, listeners );
 
         String repoRoot = prepareTestRepos();
 
@@ -185,9 +190,9 @@ public class DaysOldRepositoryPurgeTest
         }
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
                                  "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.jar" );
-        listener.deleteArtifact( getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
                                  "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.pom" );
         listenerControl.replay();
 

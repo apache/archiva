@@ -19,6 +19,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
@@ -42,7 +43,6 @@ import java.util.regex.Matcher;
 
 /**
  * Purge from repository all snapshots older than the specified days in the repository configuration.
- * 
  */
 public class DaysOldRepositoryPurge
     extends AbstractRepositoryPurge
@@ -53,10 +53,10 @@ public class DaysOldRepositoryPurge
 
     private int retentionCount;
 
-    public DaysOldRepositoryPurge( ManagedRepositoryContent repository, int daysOlder,
-                                   int retentionCount, List<RepositoryListener> listeners )
+    public DaysOldRepositoryPurge( ManagedRepositoryContent repository, int daysOlder, int retentionCount,
+                                   RepositorySession repositorySession, List<RepositoryListener> listeners )
     {
-        super( repository, listeners );
+        super( repository, repositorySession, listeners );
         this.daysOlder = daysOlder;
         this.retentionCount = retentionCount;
         timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
@@ -105,8 +105,8 @@ public class DaysOldRepositoryPurge
                     break;
                 }
 
-                ArtifactReference newArtifactReference =
-                    repository.toArtifactReference( artifactFile.getAbsolutePath() );
+                ArtifactReference newArtifactReference = repository.toArtifactReference(
+                    artifactFile.getAbsolutePath() );
                 newArtifactReference.setVersion( version );
 
                 File newArtifactFile = repository.toFile( newArtifactReference );

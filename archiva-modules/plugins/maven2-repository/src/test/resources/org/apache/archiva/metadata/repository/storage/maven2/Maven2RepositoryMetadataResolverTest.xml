@@ -27,5 +27,9 @@
       <role>org.apache.archiva.metadata.repository.MetadataRepository</role>
       <implementation>org.apache.archiva.metadata.repository.TestMetadataRepository</implementation>
     </component>
+    <component>
+      <role>org.apache.archiva.metadata.repository.RepositorySessionFactory</role>
+      <implementation>org.apache.archiva.metadata.repository.TestRepositorySessionFactory</implementation>
+    </component>
   </components>
 </component-set>

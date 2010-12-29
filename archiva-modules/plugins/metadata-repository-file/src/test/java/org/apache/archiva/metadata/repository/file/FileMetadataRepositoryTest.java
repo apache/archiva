@@ -47,10 +47,7 @@ public class FileMetadataRepositoryTest
         ArchivaConfiguration config = createTestConfiguration( directory );
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
-        FileMetadataRepository repository = new FileMetadataRepository();
-        repository.setConfiguration( config );
-        repository.setMetadataFacetFactories( factories );
-        this.repository = repository;
+        this.repository = new FileMetadataRepository( factories, config );
     }
 
     protected static ArchivaConfiguration createTestConfiguration( File directory )

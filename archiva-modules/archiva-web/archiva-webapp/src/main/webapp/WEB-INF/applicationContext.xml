@@ -7,6 +7,8 @@
   <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
         init-method="initialize"/>
 
+  <alias name="repositorySessionFactory#file" alias="repositorySessionFactory"/>
+
   <bean name="wagon#http" class="org.apache.maven.wagon.providers.http.LightweightHttpWagon" scope="prototype">
     <property name="httpHeaders">
       <map>
@@ -40,8 +42,7 @@
   <bean name="searchService" lazy-init="true" scope="singleton"
         class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">
     <constructor-arg ref="xmlRpcUserRepositories"/>
-    <constructor-arg ref="metadataResolver"/>
-    <constructor-arg ref="metadataRepository"/>
+    <constructor-arg ref="repositorySessionFactory"/>
     <constructor-arg ref="nexusSearch"/>
   </bean>
 
@@ -51,7 +52,7 @@
     <constructor-arg ref="archivaConfiguration"/>
     <constructor-arg ref="repositoryContentConsumers"/>
     <constructor-arg ref="repositoryContentFactory"/>
-    <constructor-arg ref="metadataRepository"/>
+    <constructor-arg ref="repositorySessionFactory"/>
     <constructor-arg ref="archivaTaskScheduler#repository"/>
     <constructor-arg>
       <bean class="org.apache.archiva.web.spring.RepositoryListenerFactoryBean"/>

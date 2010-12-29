@@ -25,43 +25,53 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
 
 import java.util.Collection;
 
+// FIXME: remove - this is useless, better to mock it or avoid needing it
 public class TestMetadataResolver
     implements MetadataResolver
 {
-    public ProjectVersionMetadata resolveProjectVersion( String repoId, String namespace, String projectId,
-                                                         String projectVersion )
+    public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
+                                                         String projectId, String projectVersion )
+        throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<ProjectVersionReference> resolveProjectReferences( String repoId, String namespace,
-                                                                         String projectId, String projectVersion )
+    public Collection<ProjectVersionReference> resolveProjectReferences( RepositorySession session, String repoId,
+                                                                         String namespace, String projectId,
+                                                                         String projectVersion )
+        throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<String> resolveRootNamespaces( String repoId )
+    public Collection<String> resolveRootNamespaces( RepositorySession session, String repoId )
+        throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<String> resolveNamespaces( String repoId, String namespace )
+    public Collection<String> resolveNamespaces( RepositorySession session, String repoId, String namespace )
+        throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<String> resolveProjects( String repoId, String namespace )
+    public Collection<String> resolveProjects( RepositorySession session, String repoId, String namespace )
+        throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<String> resolveProjectVersions( String repoId, String namespace, String projectId )
+    public Collection<String> resolveProjectVersions( RepositorySession session, String repoId, String namespace,
+                                                      String projectId )
+        throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<ArtifactMetadata> resolveArtifacts( String repoId, String namespace, String projectId,
-                                                          String projectVersion )
+    public Collection<ArtifactMetadata> resolveArtifacts( RepositorySession session, String repoId, String namespace,
+                                                          String projectId, String projectVersion )
+        throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

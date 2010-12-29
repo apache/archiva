@@ -22,6 +22,9 @@ package org.apache.maven.archiva.web.action;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -35,7 +38,9 @@ import org.easymock.classextension.MockClassControl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DeleteArtifactActionTest
     extends PlexusInSpringTestCase
@@ -74,17 +79,23 @@ public class DeleteArtifactActionTest
         assertNotNull( action );
 
         configurationControl = MockControl.createControl( ArchivaConfiguration.class );
-        configuration = ( ArchivaConfiguration ) configurationControl.getMock();
+        configuration = (ArchivaConfiguration) configurationControl.getMock();
 
         repositoryFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
-        repositoryFactory = ( RepositoryContentFactory ) repositoryFactoryControl.getMock();
+        repositoryFactory = (RepositoryContentFactory) repositoryFactoryControl.getMock();
 
         metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
-        metadataRepository = ( MetadataRepository ) metadataRepositoryControl.getMock();
+        metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getRepository() ).thenReturn( metadataRepository );
+
+        TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
+            RepositorySessionFactory.class );
+        repositorySessionFactory.setRepositorySession( repositorySession );
 
         action.setConfiguration( configuration );
         action.setRepositoryFactory( repositoryFactory );
-        action.setMetadataRepository( metadataRepository );
     }
 
     @Override
@@ -92,7 +103,7 @@ public class DeleteArtifactActionTest
         throws Exception
     {
         action = null;
-        
+
         super.tearDown();
     }
 
@@ -117,8 +128,10 @@ public class DeleteArtifactActionTest
         repoContent.setRepository( config.findManagedRepositoryById( REPOSITORY_ID ) );
 
         configurationControl.expectAndReturn( configuration.getConfiguration(), config );
-        repositoryFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( REPOSITORY_ID ), repoContent );
-        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( REPOSITORY_ID, GROUP_ID, ARTIFACT_ID, VERSION ),
+        repositoryFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( REPOSITORY_ID ),
+                                                  repoContent );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( REPOSITORY_ID, GROUP_ID,
+                                                                                    ARTIFACT_ID, VERSION ),
                                                    new ArrayList<ArtifactMetadata>() );
 
         configurationControl.replay();
@@ -133,7 +146,7 @@ public class DeleteArtifactActionTest
         assertFalse( new File( artifactPath + ".jar" ).exists() );
         assertFalse( new File( artifactPath + ".jar.sha1" ).exists() );
         assertFalse( new File( artifactPath + ".jar.md5" ).exists() );
-        
+
         assertFalse( new File( artifactPath + ".pom" ).exists() );
         assertFalse( new File( artifactPath + ".pom.sha1" ).exists() );
         assertFalse( new File( artifactPath + ".pom.md5" ).exists() );

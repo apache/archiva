@@ -20,7 +20,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -107,23 +109,32 @@ public class RepositoriesAction
         Collections.sort( remoteRepositories, new RepositoryConfigurationComparator() );
 
         repositoryStatistics = new HashMap<String, RepositoryStatistics>();
-        for ( ManagedRepositoryConfiguration repo : managedRepositories )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            RepositoryStatistics stats = null;
-            try
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            for ( ManagedRepositoryConfiguration repo : managedRepositories )
             {
-                stats = repositoryStatisticsManager.getLastStatistics( repo.getId() );
+                RepositoryStatistics stats = null;
+                try
+                {
+                    stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, repo.getId() );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    addActionError(
+                        "Error retrieving statistics for repository " + repo.getId() + " - consult application logs" );
+                    log.warn( "Error retrieving repository statistics: " + e.getMessage(), e );
+                }
+                if ( stats != null )
+                {
+                    repositoryStatistics.put( repo.getId(), stats );
+                }
             }
-            catch ( MetadataRepositoryException e )
-            {
-                addActionError(
-                    "Error retrieving statistics for repository " + repo.getId() + " - consult application logs" );
-                log.warn( "Error retrieving repository statistics: " + e.getMessage(), e );
-            }
-            if ( stats != null )
-            {
-                repositoryStatistics.put( repo.getId(), stats );
-            }
+        }
+        finally
+        {
+            repositorySession.close();
         }
     }
 

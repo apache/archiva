@@ -28,6 +28,9 @@ import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -37,6 +40,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -60,6 +66,8 @@ public class SearchActionTest
 
     private static final String GUEST = "guest";
 
+    private RepositorySession session;
+
     @Override
     protected void setUp()
         throws Exception
@@ -68,26 +76,24 @@ public class SearchActionTest
 
         action = new SearchAction();
 
+        session = mock( RepositorySession.class );
+        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        factory.setRepositorySession( session );
+        action.setRepositorySessionFactory( factory );
+
         MockControl archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
         ArchivaConfiguration archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
 
         userReposControl = MockControl.createControl( UserRepositories.class );
-        userRepos = ( UserRepositories ) userReposControl.getMock();
+        userRepos = (UserRepositories) userReposControl.getMock();
 
         searchControl = MockControl.createControl( RepositorySearch.class );
         searchControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        search = ( RepositorySearch ) searchControl.getMock();
+        search = (RepositorySearch) searchControl.getMock();
 
         action.setArchivaConfiguration( archivaConfig );
         action.setUserRepositories( userRepos );
         action.setNexusSearch( search );
-    }
-
-    @Override
-    protected void tearDown()
-        throws Exception
-    {
-        super.tearDown();
     }
 
     // quick search...
@@ -372,7 +378,7 @@ public class SearchActionTest
 
         assertEquals( Action.INPUT, result );
         assertFalse( action.getActionErrors().isEmpty() );
-        assertEquals( "No results found",( String ) action.getActionErrors().iterator().next() );
+        assertEquals( "No results found", (String) action.getActionErrors().iterator().next() );
 
         searchControl.verify();
     }
@@ -413,14 +419,14 @@ public class SearchActionTest
 
         MockControl control = MockControl.createControl( MetadataRepository.class );
         MetadataRepository metadataRepository = (MetadataRepository) control.getMock();
-        action.setMetadataRepository( metadataRepository );
+        when( session.getRepository() ).thenReturn( metadataRepository );
 
         ArtifactMetadata artifact = createArtifact( "archiva-configuration", "1.0" );
         control.expectAndReturn( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ),
                                  Collections.singletonList( artifact ) );
 
-        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ),
-                                          Collections.singletonList( TEST_REPO ) );
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ), Collections.singletonList(
+            TEST_REPO ) );
 
         control.replay();
         userReposControl.replay();
@@ -441,14 +447,14 @@ public class SearchActionTest
 
         MockControl control = MockControl.createControl( MetadataRepository.class );
         MetadataRepository metadataRepository = (MetadataRepository) control.getMock();
-        action.setMetadataRepository( metadataRepository );
+        when( session.getRepository() ).thenReturn( metadataRepository );
 
         List<ArtifactMetadata> artifacts = Arrays.asList( createArtifact( "archiva-configuration", "1.0" ),
                                                           createArtifact( "archiva-indexer", "1.0" ) );
         control.expectAndReturn( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ), artifacts );
 
-        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ),
-                                          Collections.singletonList( TEST_REPO ) );
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ), Collections.singletonList(
+            TEST_REPO ) );
 
         control.replay();
         userReposControl.replay();
@@ -469,7 +475,7 @@ public class SearchActionTest
 
         assertEquals( Action.INPUT, result );
         assertFalse( action.getActionErrors().isEmpty() );
-        assertEquals( "Unable to search for a blank checksum", ( String ) action.getActionErrors().iterator().next() );
+        assertEquals( "Unable to search for a blank checksum", (String) action.getActionErrors().iterator().next() );
     }
 
     public void testFindArtifactNoResults()
@@ -479,13 +485,13 @@ public class SearchActionTest
 
         MockControl control = MockControl.createControl( MetadataRepository.class );
         MetadataRepository metadataRepository = (MetadataRepository) control.getMock();
-        action.setMetadataRepository( metadataRepository );
+        when( session.getRepository() ).thenReturn( metadataRepository );
 
         control.expectAndReturn( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ),
                                  Collections.<ArtifactMetadata>emptyList() );
 
-        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ),
-                                          Collections.singletonList( TEST_REPO ) );
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ), Collections.singletonList(
+            TEST_REPO ) );
 
         control.replay();
         userReposControl.replay();
@@ -493,7 +499,7 @@ public class SearchActionTest
         String result = action.findArtifact();
         assertEquals( Action.INPUT, result );
         assertFalse( action.getActionErrors().isEmpty() );
-        assertEquals( "No results found", ( String )action.getActionErrors().iterator().next() );
+        assertEquals( "No results found", (String) action.getActionErrors().iterator().next() );
 
         control.verify();
         userReposControl.verify();

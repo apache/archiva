@@ -78,7 +78,6 @@ public class AuditManagerTest
 
         metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
-        auditManager.setMetadataRepository( metadataRepository );
 
         ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
         repository.setId( TEST_REPO_ID );
@@ -108,7 +107,8 @@ public class AuditManagerTest
         }
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getMostRecentAuditEvents( Collections.singletonList( TEST_REPO_ID ) );
+        List<AuditEvent> events = auditManager.getMostRecentAuditEvents( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ) );
         assertNotNull( events );
         assertEquals( numEvents - 1, events.size() );
         int expectedTimestampCounter = numEvents - 1;
@@ -144,7 +144,8 @@ public class AuditManagerTest
         }
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getMostRecentAuditEvents( Collections.singletonList( TEST_REPO_ID ) );
+        List<AuditEvent> events = auditManager.getMostRecentAuditEvents( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ) );
         assertNotNull( events );
         assertEquals( numEvents, events.size() );
         int expectedTimestampCounter = numEvents - 1;
@@ -190,7 +191,8 @@ public class AuditManagerTest
         }
         metadataRepositoryControl.replay();
 
-        events = auditManager.getMostRecentAuditEvents( Arrays.asList( TEST_REPO_ID, TEST_REPO_ID_2 ) );
+        events = auditManager.getMostRecentAuditEvents( metadataRepository, Arrays.asList( TEST_REPO_ID,
+                                                                                           TEST_REPO_ID_2 ) );
         assertNotNull( events );
         assertEquals( numEvents - 1, events.size() );
         int expectedTimestampCounter = numEvents - 1;
@@ -214,7 +216,8 @@ public class AuditManagerTest
                                                    Collections.emptyList() );
         metadataRepositoryControl.replay();
 
-        assertTrue( auditManager.getMostRecentAuditEvents( Collections.singletonList( TEST_REPO_ID ) ).isEmpty() );
+        assertTrue( auditManager.getMostRecentAuditEvents( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ) ).isEmpty() );
 
         metadataRepositoryControl.verify();
     }
@@ -229,7 +232,7 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        auditManager.addAuditEvent( event );
+        auditManager.addAuditEvent( metadataRepository, event );
 
         metadataRepositoryControl.verify();
     }
@@ -244,7 +247,7 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        auditManager.addAuditEvent( event );
+        auditManager.addAuditEvent( metadataRepository, event );
 
         metadataRepositoryControl.verify();
     }
@@ -257,7 +260,7 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        auditManager.deleteAuditEvents( TEST_REPO_ID );
+        auditManager.deleteAuditEvents( metadataRepository, TEST_REPO_ID );
 
         metadataRepositoryControl.verify();
     }
@@ -286,9 +289,8 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ),
-                                                                      new Date( current.getTime() - 4000 ), new Date(
-                current.getTime() - 2000 ) );
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ), new Date( current.getTime() - 4000 ), new Date( current.getTime() - 2000 ) );
 
         assertEquals( 1, events.size() );
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( expectedTimestamp ), expectedEvent.getResource() );
@@ -323,8 +325,8 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ),
-                                                                      new Date( current.getTime() - 4000 ), current );
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ), new Date( current.getTime() - 4000 ), current );
 
         assertEquals( 2, events.size() );
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( ts3 ), expectedEvent3.getResource() );
@@ -360,9 +362,8 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ),
-                                                                      new Date( current.getTime() - 20000 ), new Date(
-                current.getTime() - 2000 ) );
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ), new Date( current.getTime() - 20000 ), new Date( current.getTime() - 2000 ) );
 
         assertEquals( 2, events.size() );
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( expectedTimestamp ), expectedEvent2.getResource() );
@@ -403,8 +404,8 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ),
-                                                                      new Date( current.getTime() - 20000 ), current );
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ), new Date( current.getTime() - 20000 ), current );
 
         assertEquals( 3, events.size() );
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( ts3 ), expectedEvent3.getResource() );
@@ -447,9 +448,8 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ),
-                                                                      TEST_RESOURCE_BASE, new Date(
-                current.getTime() - 20000 ), current );
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ), TEST_RESOURCE_BASE, new Date( current.getTime() - 20000 ), current );
 
         assertEquals( 2, events.size() );
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( ts3 ), expectedEvent3.getResource() );
@@ -489,8 +489,8 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ), "foo",
-                                                                      new Date( current.getTime() - 20000 ), current );
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ), "foo", new Date( current.getTime() - 20000 ), current );
 
         assertEquals( 0, events.size() );
 
@@ -533,7 +533,8 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getAuditEventsInRange( Arrays.asList( TEST_REPO_ID, TEST_REPO_ID_2 ),
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( metadataRepository, Arrays.asList( TEST_REPO_ID,
+                                                                                                         TEST_REPO_ID_2 ),
                                                                       new Date( current.getTime() - 20000 ), current );
 
         assertEquals( 3, events.size() );
@@ -561,9 +562,8 @@ public class AuditManagerTest
 
         metadataRepositoryControl.replay();
 
-        List<AuditEvent> events = auditManager.getAuditEventsInRange( Collections.singletonList( TEST_REPO_ID ),
-                                                                      new Date( current.getTime() - 20000 ), new Date(
-                current.getTime() - 16000 ) );
+        List<AuditEvent> events = auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList(
+            TEST_REPO_ID ), new Date( current.getTime() - 20000 ), new Date( current.getTime() - 16000 ) );
 
         assertEquals( 0, events.size() );
 

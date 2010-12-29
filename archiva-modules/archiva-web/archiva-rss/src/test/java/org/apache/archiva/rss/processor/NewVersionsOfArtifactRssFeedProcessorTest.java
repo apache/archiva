@@ -60,10 +60,9 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
 
         metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
-        newVersionsProcessor.setMetadataRepository( metadataRepository );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void testProcess()
         throws Exception
     {
@@ -80,23 +79,23 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         reqParams.put( RssFeedProcessor.KEY_GROUP_ID, GROUP_ID );
         reqParams.put( RssFeedProcessor.KEY_ARTIFACT_ID, ARTIFACT_ID );
 
-        metadataRepositoryControl.expectAndReturn( metadataRepository.getRepositories(),
-                                                   Collections.singletonList( TEST_REPO ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getProjectVersions( TEST_REPO, GROUP_ID, ARTIFACT_ID ),
-            Arrays.asList( "1.0.1", "1.0.2", "1.0.3-SNAPSHOT" ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.1" ),
-            Collections.singletonList( artifact1 ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.2" ),
-            Collections.singletonList( artifact2 ) );
-        metadataRepositoryControl.expectAndReturn(
-            metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.3-SNAPSHOT" ),
-            Collections.singletonList( artifact3 ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getRepositories(), Collections.singletonList(
+            TEST_REPO ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getProjectVersions( TEST_REPO, GROUP_ID,
+                                                                                          ARTIFACT_ID ), Arrays.asList(
+            "1.0.1", "1.0.2", "1.0.3-SNAPSHOT" ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID,
+                                                                                    "1.0.1" ),
+                                                   Collections.singletonList( artifact1 ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID,
+                                                                                    "1.0.2" ),
+                                                   Collections.singletonList( artifact2 ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID,
+                                                                                    "1.0.3-SNAPSHOT" ),
+                                                   Collections.singletonList( artifact3 ) );
         metadataRepositoryControl.replay();
 
-        SyndFeed feed = newVersionsProcessor.process( reqParams );
+        SyndFeed feed = newVersionsProcessor.process( reqParams, metadataRepository );
 
         assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two'", feed.getTitle() );
         assertEquals( "New versions of artifact 'org.apache.archiva:artifact-two' found during repository scan.",
@@ -108,8 +107,8 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
 
         assertEquals( 2, entries.size() );
 
-        assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGathered,
-                      entries.get( 0 ).getTitle() );
+        assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGathered, entries.get(
+            0 ).getTitle() );
         assertEquals( whenGathered, entries.get( 0 ).getPublishedDate() );
 
         assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGatheredNext,

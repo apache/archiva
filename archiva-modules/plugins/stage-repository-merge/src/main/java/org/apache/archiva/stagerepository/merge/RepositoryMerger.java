@@ -19,18 +19,22 @@ package org.apache.archiva.stagerepository.merge;
  * under the License.
  */
 
-import java.util.List;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.filter.Filter;
+
+import java.util.List;
 
 public interface RepositoryMerger
 {
-    void merge( String sourceRepoId, String targetRepoId )
+    void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId )
         throws Exception;
 
-    void merge( String sourceRepoId, String targetRepoId, Filter<ArtifactMetadata> filter ) throws Exception;
-    
-    public List<ArtifactMetadata> getConflictingArtifacts( String sourceRepo, String targetRepo )
+    void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId,
+                Filter<ArtifactMetadata> filter )
+        throws Exception;
+
+    public List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
+                                                           String targetRepo )
         throws Exception;
 }

@@ -19,30 +19,30 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Validateable;
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.audit.Auditable;
+import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
+import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.web.action.admin.SchedulerAction;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="mergeAction" instantiation-strategy="per-lookup"
  */
-public class
-    MergeAction
+public class MergeAction
     extends PlexusActionSupport
     implements Validateable, Preparable, Auditable
 
@@ -56,11 +56,6 @@ public class
      * @plexus.requirement
      */
     protected ArchivaConfiguration archivaConfiguration;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private MetadataRepository metadataRepository;
 
     /**
      * @plexus.requirement role="com.opensymphony.xwork2.Action" role-hint="schedulerAction"
@@ -101,17 +96,19 @@ public class
     public String doMerge()
         throws Exception
     {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
 
             if ( repository.isReleases() && !repository.isSnapshots() )
             {
-                mergeWithOutSnapshots( sourceArtifacts, sourceRepoId, repoid );
+                mergeWithOutSnapshots( metadataRepository, sourceArtifacts, sourceRepoId, repoid );
             }
             else
             {
-                repositoryMerger.merge( sourceRepoId, repoid );
+                repositoryMerger.merge( metadataRepository, sourceRepoId, repoid );
 
                 for ( ArtifactMetadata metadata : sourceArtifacts )
                 {
@@ -129,26 +126,32 @@ public class
             ex.printStackTrace();
             addActionError( "Error occurred while merging the repositories." );
             return ERROR;
+        }
+        finally
+        {
+            repositorySession.close();
         }
     }
 
     public String mergeBySkippingConflicts()
     {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
             sourceArtifacts.removeAll( conflictSourceArtifacts );
 
             if ( repository.isReleases() && !repository.isSnapshots() )
             {
-                mergeWithOutSnapshots( sourceArtifacts, sourceRepoId, repoid );
+                mergeWithOutSnapshots( metadataRepository, sourceArtifacts, sourceRepoId, repoid );
             }
             else
             {
 
-                Filter<ArtifactMetadata> artifactsWithOutConflicts =
-                    new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-                repositoryMerger.merge( sourceRepoId, repoid, artifactsWithOutConflicts );
+                Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>(
+                    sourceArtifacts );
+                repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactsWithOutConflicts );
                 for ( ArtifactMetadata metadata : sourceArtifacts )
                 {
                     triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
@@ -165,21 +168,30 @@ public class
             addActionError( "Error occurred while merging the repositories." );
             return ERROR;
         }
+        finally
+        {
+            repositorySession.close();
+        }
     }
 
-    public String mergeWithOutConlficts()        
+    public String mergeWithOutConlficts()
     {
-
         sourceRepoId = repoid + "-stage";
 
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            conflictSourceArtifacts = repositoryMerger.getConflictingArtifacts( sourceRepoId, repoid );
+            conflictSourceArtifacts = repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(),
+                                                                                sourceRepoId, repoid );
         }
         catch ( Exception e )
         {
             addActionError( "Error occurred while merging the repositories." );
             return ERROR;
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
@@ -201,9 +213,18 @@ public class
         throws Exception
     {
         sourceRepoId = repoid + "-stage";
-        conflictSourceArtifacts = repositoryMerger.getConflictingArtifacts( sourceRepoId, repoid );
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            conflictSourceArtifacts = repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(),
+                                                                                sourceRepoId, repoid );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
         this.scheduler.setRepoid( repoid );
-        
+
         Configuration config = archivaConfiguration.getConfiguration();
         this.repository = config.findManagedRepositoryById( repoid );
         setConflictSourceArtifactsToBeDisplayed( conflictSourceArtifacts );
@@ -263,7 +284,8 @@ public class
         }
     }
 
-    private void mergeWithOutSnapshots( List<ArtifactMetadata> sourceArtifacts, String sourceRepoId, String repoid )
+    private void mergeWithOutSnapshots( MetadataRepository metadataRepository, List<ArtifactMetadata> sourceArtifacts,
+                                        String sourceRepoId, String repoid )
         throws Exception
     {
         List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
@@ -283,7 +305,7 @@ public class
         sourceArtifacts.removeAll( artifactsWithOutSnapshots );
 
         Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-        repositoryMerger.merge( sourceRepoId, repoid, artifactListWithOutSnapShots );
+        repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
     }
 }
 

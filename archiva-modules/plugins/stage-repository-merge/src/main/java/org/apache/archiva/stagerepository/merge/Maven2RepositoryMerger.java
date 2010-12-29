@@ -20,33 +20,33 @@ package org.apache.archiva.stagerepository.merge;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
-import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.common.utils.VersionComparator;
-import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 
-import java.util.List;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.io.IOException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @plexus.component role="org.apache.archiva.stagerepository.merge.RepositoryMerger" role-hint="maven2"
@@ -54,12 +54,6 @@ import java.text.SimpleDateFormat;
 public class Maven2RepositoryMerger
     implements RepositoryMerger
 {
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private MetadataRepository metadataRepository;
-
     /**
      * @plexus.requirement role-hint="default"
      */
@@ -77,12 +71,7 @@ public class Maven2RepositoryMerger
         this.configuration = configuration;
     }
 
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
-    }
-
-    public void merge( String sourceRepoId, String targetRepoId )
+    public void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId )
         throws Exception
     {
 
@@ -95,7 +84,8 @@ public class Maven2RepositoryMerger
     }
 
     // TODO when UI needs a subset to merge
-    public void merge( String sourceRepoId, String targetRepoId, Filter<ArtifactMetadata> filter )
+    public void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId,
+                       Filter<ArtifactMetadata> filter )
         throws Exception
     {
         List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
@@ -183,15 +173,16 @@ public class Maven2RepositoryMerger
         {
 
             // updating version metadata files
-            File versionMetaDataFileInSourceRepo =
-                pathTranslator.toFile( new File( sourceRepoPath ), artifactMetadata.getNamespace(),
-                                       artifactMetadata.getProject(), artifactMetadata.getVersion(),
-                                       METADATA_FILENAME );
+            File versionMetaDataFileInSourceRepo = pathTranslator.toFile( new File( sourceRepoPath ),
+                                                                          artifactMetadata.getNamespace(),
+                                                                          artifactMetadata.getProject(),
+                                                                          artifactMetadata.getVersion(),
+                                                                          METADATA_FILENAME );
 
-            if( versionMetaDataFileInSourceRepo.exists() )
+            if ( versionMetaDataFileInSourceRepo.exists() )
             {
-                String relativePathToVersionMetadataFile =
-                    versionMetaDataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
+                String relativePathToVersionMetadataFile = versionMetaDataFileInSourceRepo.getAbsolutePath().split(
+                    sourceRepoPath )[1];
                 File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
 
                 if ( !versionMetaDataFileInTargetRepo.exists() )
@@ -209,10 +200,10 @@ public class Maven2RepositoryMerger
             String projectDirectoryInSourceRepo = new File( versionMetaDataFileInSourceRepo.getParent() ).getParent();
             File projectMetadataFileInSourceRepo = new File( projectDirectoryInSourceRepo, METADATA_FILENAME );
 
-            if( projectMetadataFileInSourceRepo.exists() )
+            if ( projectMetadataFileInSourceRepo.exists() )
             {
-                String relativePathToProjectMetadataFile =
-                    projectMetadataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
+                String relativePathToProjectMetadataFile = projectMetadataFileInSourceRepo.getAbsolutePath().split(
+                    sourceRepoPath )[1];
                 File projectMetadataFileInTargetRepo = new File( targetRepoPath, relativePathToProjectMetadataFile );
 
                 if ( !projectMetadataFileInTargetRepo.exists() )
@@ -332,7 +323,8 @@ public class Maven2RepositoryMerger
         return metadata;
     }
 
-    public List<ArtifactMetadata> getConflictingArtifacts( String sourceRepo, String targetRepo )
+    public List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
+                                                           String targetRepo )
         throws Exception
     {
         List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
@@ -364,9 +356,9 @@ public class Maven2RepositoryMerger
         boolean isSame = false;
 
         if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) ) &&
-            ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) ) &&
-            ( sourceArtifact.getId().equals( targetArtifact.getId() ) ) &&
-            ( sourceArtifact.getProjectVersion().equals( targetArtifact.getProjectVersion() ) ) )
+            ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) ) && ( sourceArtifact.getId().equals(
+            targetArtifact.getId() ) ) && ( sourceArtifact.getProjectVersion().equals(
+            targetArtifact.getProjectVersion() ) ) )
 
         {
             isSame = true;

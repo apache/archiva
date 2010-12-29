@@ -19,6 +19,8 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -79,9 +81,10 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, MetadataTools metadataTools,
                                                     ArchivaConfiguration archivaConfig,
                                                     RepositoryContentFactory repoContentFactory,
+                                                    RepositorySession repositorySession,
                                                     List<RepositoryListener> listeners )
     {
-        super( repository, listeners );
+        super( repository, repositorySession, listeners );
         this.metadataTools = metadataTools;
         this.archivaConfig = archivaConfig;
         this.repoContentFactory = repoContentFactory;
@@ -168,6 +171,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                                                             artifactRef.getVersion(), artifactRef.getClassifier(),
                                                             artifactRef.getType(), repository.getId() );
 
+            MetadataRepository metadataRepository = repositorySession.getRepository();
             for ( String version : snapshotVersions )
             {
                 if ( releasedVersions.contains( VersionUtil.getReleaseVersion( version ) ) )
@@ -178,8 +182,9 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                     // FIXME: looks incomplete, might not delete related metadata?
                     for ( RepositoryListener listener : listeners )
                     {
-                        listener.deleteArtifact( repository.getId(), artifact.getGroupId(), artifact.getArtifactId(),
-                                                 artifact.getVersion(), artifactFile.getName() );
+                        listener.deleteArtifact( metadataRepository, repository.getId(), artifact.getGroupId(),
+                                                 artifact.getArtifactId(), artifact.getVersion(),
+                                                 artifactFile.getName() );
                     }
 
                     needsMetadataUpdate = true;

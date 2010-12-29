@@ -19,6 +19,8 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -46,11 +48,9 @@ import java.util.List;
  * Consumer for removing old snapshots in the repository based on the criteria
  * specified by the user.
  *
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *      role-hint="repository-purge"
- *      instantiation-strategy="per-lookup"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * role-hint="repository-purge"
+ * instantiation-strategy="per-lookup"
  */
 public class RepositoryPurgeConsumer
     extends AbstractMonitoredConsumer
@@ -94,9 +94,20 @@ public class RepositoryPurgeConsumer
 
     private boolean deleteReleasedSnapshots;
 
-    /** @plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener" */
+    /**
+     * @plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
+     */
     private List<RepositoryListener> listeners = Collections.emptyList();
-    
+
+    /**
+     * TODO: this could be multiple implementations and needs to be configured.
+     *
+     * @plexus.requirement
+     */
+    private RepositorySessionFactory repositorySessionFactory;
+
+    private RepositorySession repositorySession;
+
     public String getId()
     {
         return this.id;
@@ -125,27 +136,10 @@ public class RepositoryPurgeConsumer
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
         throws ConsumerException
     {
+        ManagedRepositoryContent repositoryContent;
         try
         {
-            ManagedRepositoryContent repositoryContent = repositoryFactory.getManagedRepositoryContent( repository
-                .getId() );
-
-            if ( repository.getDaysOlder() != 0 )
-            {
-                repoPurge = new DaysOldRepositoryPurge( repositoryContent, repository.getDaysOlder(), 
-                                                        repository.getRetentionCount(), listeners );
-            }
-            else
-            {
-                repoPurge = new RetentionCountRepositoryPurge( repositoryContent, repository.getRetentionCount(), 
-                                                               listeners );
-            }
-            
-            cleanUp =
-                new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, configuration,
-                                                             repositoryFactory, listeners );
-
-            deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
+            repositoryContent = repositoryFactory.getManagedRepositoryContent( repository.getId() );
         }
         catch ( RepositoryNotFoundException e )
         {
@@ -155,6 +149,24 @@ public class RepositoryPurgeConsumer
         {
             throw new ConsumerException( "Can't run repository purge: " + e.getMessage(), e );
         }
+
+        repositorySession = repositorySessionFactory.createSession();
+
+        if ( repository.getDaysOlder() != 0 )
+        {
+            repoPurge = new DaysOldRepositoryPurge( repositoryContent, repository.getDaysOlder(),
+                                                    repository.getRetentionCount(), repositorySession, listeners );
+        }
+        else
+        {
+            repoPurge = new RetentionCountRepositoryPurge( repositoryContent, repository.getRetentionCount(),
+                                                           repositorySession, listeners );
+        }
+
+        cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, configuration,
+                                                               repositoryFactory, repositorySession, listeners );
+
+        deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
     }
 
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
@@ -189,7 +201,7 @@ public class RepositoryPurgeConsumer
 
     public void completeScan()
     {
-        /* do nothing */
+        repositorySession.close();
     }
 
     public void completeScan( boolean executeOnEntireRepo )

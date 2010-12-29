@@ -19,6 +19,7 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 
 import java.util.Collection;
@@ -27,36 +28,39 @@ import java.util.List;
 
 public interface AuditManager
 {
-    List<AuditEvent> getMostRecentAuditEvents( List<String> repositoryIds )
+    List<AuditEvent> getMostRecentAuditEvents( MetadataRepository metadataRepository, List<String> repositoryIds )
         throws MetadataRepositoryException;
 
-    void addAuditEvent( AuditEvent event )
+    void addAuditEvent( MetadataRepository repository, AuditEvent event )
         throws MetadataRepositoryException;
 
-    void deleteAuditEvents( String repositoryId )
+    void deleteAuditEvents( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException;
 
     /**
      * Get all audit events from the given repositories that match a certain range
      *
-     * @param repositoryIds the repositories to retrieve events for
-     * @param startTime     find events only after this time
-     * @param endTime       find events only before this time
+     * @param metadataRepository
+     * @param repositoryIds      the repositories to retrieve events for
+     * @param startTime          find events only after this time
+     * @param endTime            find events only before this time
      * @return the list of events found
      */
-    List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, Date startTime, Date endTime )
+    List<AuditEvent> getAuditEventsInRange( MetadataRepository metadataRepository, Collection<String> repositoryIds,
+                                            Date startTime, Date endTime )
         throws MetadataRepositoryException;
 
     /**
      * Get all audit events from the given repositories that match a certain range and resource pattern
      *
-     * @param repositoryIds   the repositories to retrieve events for
-     * @param resourcePattern find all events whose resources start with this string
-     * @param startTime       find events only after this time
-     * @param endTime         find events only before this time
+     * @param metadataRepository
+     * @param repositoryIds      the repositories to retrieve events for
+     * @param resourcePattern    find all events whose resources start with this string
+     * @param startTime          find events only after this time
+     * @param endTime            find events only before this time
      * @return the list of events found
      */
-    List<AuditEvent> getAuditEventsInRange( Collection<String> repositoryIds, String resourcePattern, Date startTime,
-                                            Date endTime )
+    List<AuditEvent> getAuditEventsInRange( MetadataRepository metadataRepository, Collection<String> repositoryIds,
+                                            String resourcePattern, Date startTime, Date endTime )
         throws MetadataRepositoryException;
 }

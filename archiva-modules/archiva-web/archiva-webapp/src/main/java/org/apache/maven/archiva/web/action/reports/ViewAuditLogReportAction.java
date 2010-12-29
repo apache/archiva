@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.reports;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditManager;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.security.AccessDeniedException;
@@ -119,7 +120,7 @@ public class ViewAuditLogReportAction
         this.request = request;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void prepare()
         throws Exception
     {
@@ -142,7 +143,15 @@ public class ViewAuditLogReportAction
             headerName = HEADER_RESULTS;
         }
 
-        auditLogs = auditManager.getMostRecentAuditEvents( repos );
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            auditLogs = auditManager.getMostRecentAuditEvents( repositorySession.getRepository(), repos );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
     }
 
     public String execute()
@@ -205,7 +214,16 @@ public class ViewAuditLogReportAction
             }
         }
 
-        auditLogs = auditManager.getAuditEventsInRange( repos, resource, startDateInDF, endDateInDF );
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            auditLogs = auditManager.getAuditEventsInRange( repositorySession.getRepository(), repos, resource,
+                                                            startDateInDF, endDateInDF );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
 
         if ( auditLogs.isEmpty() )
         {

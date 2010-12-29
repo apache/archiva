@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -42,11 +43,6 @@ import java.util.Set;
 public class BrowseAction
     extends AbstractRepositoryBasedAction
 {
-    /**
-     * @plexus.requirement
-     */
-    private MetadataResolver metadataResolver;
-
     private String groupId;
 
     private String artifactId;
@@ -75,29 +71,40 @@ public class BrowseAction
         // TODO: this logic should be optional, particularly remembering we want to keep this code simple
         //       it is located here to avoid the content repository implementation needing to do too much for what
         //       is essentially presentation code
-        Set<String> namespacesToCollapse = new LinkedHashSet<String>();
-        for ( String repoId : selectedRepos )
+        Set<String> namespacesToCollapse;
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            namespacesToCollapse.addAll( metadataResolver.resolveRootNamespaces( repoId ) );
-        }
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+            namespacesToCollapse = new LinkedHashSet<String>();
+            for ( String repoId : selectedRepos )
+            {
+                namespacesToCollapse.addAll( metadataResolver.resolveRootNamespaces( repositorySession, repoId ) );
+            }
 
-        for ( String n : namespacesToCollapse )
+            for ( String n : namespacesToCollapse )
+            {
+                // TODO: check performance of this
+                namespaces.add( collapseNamespaces( repositorySession, metadataResolver, selectedRepos, n ) );
+            }
+        }
+        finally
         {
-            // TODO: check performance of this
-            namespaces.add( collapseNamespaces( selectedRepos, n ) );
+            repositorySession.close();
         }
 
         this.namespaces = getSortedList( namespaces );
         return SUCCESS;
     }
 
-    private String collapseNamespaces( Collection<String> repoIds, String n )
+    private String collapseNamespaces( RepositorySession repositorySession, MetadataResolver metadataResolver,
+                                       Collection<String> repoIds, String n )
         throws MetadataResolutionException
     {
         Set<String> subNamespaces = new LinkedHashSet<String>();
         for ( String repoId : repoIds )
         {
-            subNamespaces.addAll( metadataResolver.resolveNamespaces( repoId, n ) );
+            subNamespaces.addAll( metadataResolver.resolveNamespaces( repositorySession, repoId, n ) );
         }
         if ( subNamespaces.size() != 1 )
         {
@@ -111,7 +118,7 @@ public class BrowseAction
         {
             for ( String repoId : repoIds )
             {
-                Collection<String> projects = metadataResolver.resolveProjects( repoId, n );
+                Collection<String> projects = metadataResolver.resolveProjects( repositorySession, repoId, n );
                 if ( projects != null && !projects.isEmpty() )
                 {
                     if ( log.isDebugEnabled() )
@@ -121,7 +128,8 @@ public class BrowseAction
                     return n;
                 }
             }
-            return collapseNamespaces( repoIds, n + "." + subNamespaces.iterator().next() );
+            return collapseNamespaces( repositorySession, metadataResolver, repoIds,
+                                       n + "." + subNamespaces.iterator().next() );
         }
     }
 
@@ -143,22 +151,34 @@ public class BrowseAction
 
         Set<String> projects = new LinkedHashSet<String>();
 
-        Set<String> namespacesToCollapse = new LinkedHashSet<String>();
-        for ( String repoId : selectedRepos )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        Set<String> namespaces;
+        try
         {
-            namespacesToCollapse.addAll( metadataResolver.resolveNamespaces( repoId, groupId ) );
+            MetadataResolver metadataResolver = repositorySession.getResolver();
 
-            projects.addAll( metadataResolver.resolveProjects( repoId, groupId ) );
+            Set<String> namespacesToCollapse = new LinkedHashSet<String>();
+            for ( String repoId : selectedRepos )
+            {
+                namespacesToCollapse.addAll( metadataResolver.resolveNamespaces( repositorySession, repoId, groupId ) );
+
+                projects.addAll( metadataResolver.resolveProjects( repositorySession, repoId, groupId ) );
+            }
+
+            // TODO: this logic should be optional, particularly remembering we want to keep this code simple
+            //       it is located here to avoid the content repository implementation needing to do too much for what
+            //       is essentially presentation code
+            namespaces = new LinkedHashSet<String>();
+            for ( String n : namespacesToCollapse )
+            {
+                // TODO: check performance of this
+                namespaces.add( collapseNamespaces( repositorySession, metadataResolver, selectedRepos,
+                                                    groupId + "." + n ) );
+            }
         }
-
-        // TODO: this logic should be optional, particularly remembering we want to keep this code simple
-        //       it is located here to avoid the content repository implementation needing to do too much for what
-        //       is essentially presentation code
-        Set<String> namespaces = new LinkedHashSet<String>();
-        for ( String n : namespacesToCollapse )
+        finally
         {
-            // TODO: check performance of this
-            namespaces.add( collapseNamespaces( selectedRepos, groupId + "." + n ) );
+            repositorySession.close();
         }
 
         this.namespaces = getSortedList( namespaces );
@@ -196,21 +216,33 @@ public class BrowseAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        Set<String> versions = new LinkedHashSet<String>();
-        for ( String repoId : selectedRepos )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            versions.addAll( metadataResolver.resolveProjectVersions( repoId, groupId, artifactId ) );
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+
+            Set<String> versions = new LinkedHashSet<String>();
+            for ( String repoId : selectedRepos )
+            {
+                versions.addAll( metadataResolver.resolveProjectVersions( repositorySession, repoId, groupId,
+                                                                          artifactId ) );
+            }
+
+            // TODO: sort by known version ordering method
+            this.projectVersions = new ArrayList<String>( versions );
+
+            populateSharedModel( repositorySession, metadataResolver, selectedRepos, versions );
         }
-
-        // TODO: sort by known version ordering method
-        this.projectVersions = new ArrayList<String>( versions );
-
-        populateSharedModel( selectedRepos, versions );
+        finally
+        {
+            repositorySession.close();
+        }
 
         return SUCCESS;
     }
 
-    private void populateSharedModel( Collection<String> selectedRepos, Collection<String> projectVersions )
+    private void populateSharedModel( RepositorySession repositorySession, MetadataResolver metadataResolver,
+                                      Collection<String> selectedRepos, Collection<String> projectVersions )
     {
         sharedModel = new ProjectVersionMetadata();
 
@@ -230,8 +262,8 @@ public class BrowseAction
                 {
                     try
                     {
-                        versionMetadata = metadataResolver.resolveProjectVersion( repoId, groupId, artifactId,
-                                                                                  version );
+                        versionMetadata = metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId,
+                                                                                  artifactId, version );
                     }
                     catch ( MetadataResolutionException e )
                     {
@@ -349,11 +381,6 @@ public class BrowseAction
     public ProjectVersionMetadata getSharedModel()
     {
         return sharedModel;
-    }
-
-    public MetadataResolver getMetadataResolver()
-    {
-        return metadataResolver;
     }
 
     public Collection<String> getProjectIds()

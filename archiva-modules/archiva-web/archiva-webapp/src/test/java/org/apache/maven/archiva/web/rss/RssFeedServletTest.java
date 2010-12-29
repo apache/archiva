@@ -19,8 +19,6 @@ package org.apache.maven.archiva.web.rss;
  * under the License.
  */
 
-import javax.servlet.http.HttpServletResponse;
-
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebRequest;
@@ -31,6 +29,8 @@ import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import sun.misc.BASE64Encoder;
+
+import javax.servlet.http.HttpServletResponse;
 
 public class RssFeedServletTest
     extends PlexusInSpringTestCase
@@ -49,16 +49,16 @@ public class RssFeedServletTest
     public void testRetrieveServlet()
         throws Exception
     {
-        RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/test-repo" ).getServlet();
+        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
+            "http://localhost/feeds/test-repo" ).getServlet();
         assertNotNull( servlet );
     }
 
     public void testRequestNewArtifactsInRepo()
         throws Exception
     {
-        RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/test-repo" ).getServlet();
+        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
+            "http://localhost/feeds/test-repo" ).getServlet();
         assertNotNull( servlet );
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/test-repo" );
@@ -97,8 +97,8 @@ public class RssFeedServletTest
     public void XXX_testInvalidRequest()
         throws Exception
     {
-        RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation( "http://localhost/feeds?invalid_param=xxx" ).getServlet();
+        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
+            "http://localhost/feeds?invalid_param=xxx" ).getServlet();
         assertNotNull( servlet );
 
         try
@@ -116,8 +116,8 @@ public class RssFeedServletTest
     public void XXX_testInvalidAuthenticationRequest()
         throws Exception
     {
-        RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/unauthorized-repo" ).getServlet();
+        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
+            "http://localhost/feeds/unauthorized-repo" ).getServlet();
         assertNotNull( servlet );
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
@@ -142,8 +142,8 @@ public class RssFeedServletTest
     public void XXX_testUnauthorizedRequest()
         throws Exception
     {
-        RssFeedServlet servlet =
-            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/unauthorized-repo" ).getServlet();
+        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
+            "http://localhost/feeds/unauthorized-repo" ).getServlet();
         assertNotNull( servlet );
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );

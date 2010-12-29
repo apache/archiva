@@ -19,19 +19,23 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.util.Arrays;
-
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
+
+import java.util.Arrays;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test the repositories action returns the correct data.
@@ -46,7 +50,16 @@ public class RepositoriesActionTest
     {
         super.setUp();
 
-        action = (RepositoriesAction) lookup( Action.class.getName(), "repositoriesAction" );
+        try
+        {
+            action = (RepositoriesAction) lookup( Action.class.getName(), "repositoriesAction" );
+        }
+        catch ( Exception e )
+        {
+            // clean up cache - TODO: move handling to plexus-spring
+            applicationContext.close();
+            throw e;
+        }
     }
 
     public void testGetRepositories()
@@ -56,19 +69,20 @@ public class RepositoriesActionTest
         MetadataRepository metadataRepository = (MetadataRepository) control.getMock();
         control.expectAndReturn( metadataRepository.getMetadataFacets( "internal", RepositoryStatistics.FACET_ID ),
                                  Arrays.asList( "20091125.123456.678" ) );
-        control.expectAndReturn(
-            metadataRepository.getMetadataFacet( "internal", RepositoryStatistics.FACET_ID, "20091125.123456.678" ),
-            new RepositoryStatistics() );
+        control.expectAndReturn( metadataRepository.getMetadataFacet( "internal", RepositoryStatistics.FACET_ID,
+                                                                      "20091125.123456.678" ),
+                                 new RepositoryStatistics() );
         control.expectAndReturn( metadataRepository.getMetadataFacets( "snapshots", RepositoryStatistics.FACET_ID ),
                                  Arrays.asList( "20091112.012345.012" ) );
-        control.expectAndReturn(
-            metadataRepository.getMetadataFacet( "snapshots", RepositoryStatistics.FACET_ID, "20091112.012345.012" ),
-            new RepositoryStatistics() );
+        control.expectAndReturn( metadataRepository.getMetadataFacet( "snapshots", RepositoryStatistics.FACET_ID,
+                                                                      "20091112.012345.012" ),
+                                 new RepositoryStatistics() );
         control.replay();
 
-        DefaultRepositoryStatisticsManager statsManager =
-            (DefaultRepositoryStatisticsManager) lookup( RepositoryStatisticsManager.class );
-        statsManager.setMetadataRepository( metadataRepository );
+        RepositorySession session = mock( RepositorySession.class );
+        when( session.getRepository() ).thenReturn( metadataRepository );
+        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        factory.setRepositorySession( session );
 
         ServletRunner sr = new ServletRunner();
         ServletUnitClient sc = sr.newClient();

@@ -20,6 +20,8 @@ package org.apache.archiva.audit;
  */
 
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,19 +38,33 @@ public class MetadataAuditListener
      */
     private AuditManager auditManager;
 
+    /**
+     * FIXME: this could be multiple implementations and needs to be configured. It also starts a separate session to
+     * the originator of the audit event that we may rather want to pass through.
+     *
+     * @plexus.requirement
+     */
+    private RepositorySessionFactory repositorySessionFactory;
+
     public void auditEvent( AuditEvent event )
     {
         // for now we only log upload events, some of the others are quite noisy
         if ( event.getAction().equals( AuditEvent.CREATE_FILE ) || event.getAction().equals( AuditEvent.UPLOAD_FILE ) ||
             event.getAction().equals( AuditEvent.MERGING_REPOSITORIES ) )
         {
+            RepositorySession repositorySession = repositorySessionFactory.createSession();
             try
             {
-                auditManager.addAuditEvent( event );
+                auditManager.addAuditEvent( repositorySession.getRepository(), event );
+                repositorySession.save();
             }
             catch ( MetadataRepositoryException e )
             {
                 log.warn( "Unable to write audit event to repository: " + e.getMessage(), e );
+            }
+            finally
+            {
+                repositorySession.close();
             }
         }
     }

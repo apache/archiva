@@ -23,6 +23,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.RepositorySession;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,24 +49,26 @@ public class TestMetadataResolver
 
     private Map<String, Collection<String>> versionsInProject = new HashMap<String, Collection<String>>();
 
-    public ProjectVersionMetadata resolveProjectVersion( String repoId, String namespace, String projectId,
-                                                         String projectVersion )
+    public ProjectVersionMetadata resolveProjectVersion( RepositorySession repositorySession, String repoId,
+                                                         String namespace, String projectId, String projectVersion )
     {
         return projectVersions.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
     }
 
-    public Collection<ProjectVersionReference> resolveProjectReferences( String repoId, String namespace,
+    public Collection<ProjectVersionReference> resolveProjectReferences( RepositorySession repositorySession,
+                                                                         String repoId, String namespace,
                                                                          String projectId, String projectVersion )
     {
         return references.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
     }
 
-    public Collection<String> resolveRootNamespaces( String repoId )
+    public Collection<String> resolveRootNamespaces( RepositorySession repositorySession, String repoId )
     {
-        return resolveNamespaces( repoId, null );
+        return resolveNamespaces( repositorySession, repoId, null );
     }
 
-    public Collection<String> resolveNamespaces( String repoId, String baseNamespace )
+    public Collection<String> resolveNamespaces( RepositorySession repositorySession, String repoId,
+                                                 String baseNamespace )
     {
         Set<String> namespaces = new LinkedHashSet<String>();
         int fromIndex = baseNamespace != null ? baseNamespace.length() + 1 : 0;
@@ -87,20 +90,21 @@ public class TestMetadataResolver
         return namespaces;
     }
 
-    public Collection<String> resolveProjects( String repoId, String namespace )
+    public Collection<String> resolveProjects( RepositorySession repositorySession, String repoId, String namespace )
     {
         Collection<String> list = projectsInNamespace.get( namespace );
         return list != null ? list : Collections.<String>emptyList();
     }
 
-    public Collection<String> resolveProjectVersions( String repoId, String namespace, String projectId )
+    public Collection<String> resolveProjectVersions( RepositorySession repositorySession, String repoId,
+                                                      String namespace, String projectId )
     {
         Collection<String> list = versionsInProject.get( namespace + ":" + projectId );
         return list != null ? list : Collections.<String>emptyList();
     }
 
-    public Collection<ArtifactMetadata> resolveArtifacts( String repoId, String namespace, String projectId,
-                                                          String projectVersion )
+    public Collection<ArtifactMetadata> resolveArtifacts( RepositorySession repositorySession, String repoId,
+                                                          String namespace, String projectId, String projectVersion )
     {
         List<ArtifactMetadata> artifacts = this.artifacts.get( createMapKey( repoId, namespace, projectId,
                                                                              projectVersion ) );

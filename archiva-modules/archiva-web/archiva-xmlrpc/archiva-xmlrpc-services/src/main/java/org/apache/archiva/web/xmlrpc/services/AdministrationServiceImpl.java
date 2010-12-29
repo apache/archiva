@@ -23,6 +23,8 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
@@ -84,8 +86,6 @@ public class AdministrationServiceImpl
 
     private Collection<RepositoryListener> listeners;
 
-    private MetadataRepository metadataRepository;
-
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     private RepositoryMerger repositoryMerger;
@@ -94,8 +94,11 @@ public class AdministrationServiceImpl
 
     private AuditListener auditListener;
 
+    private RepositorySessionFactory repositorySessionFactory;
+
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
-                                      RepositoryContentFactory repoFactory, MetadataRepository metadataRepository,
+                                      RepositoryContentFactory repoFactory,
+                                      RepositorySessionFactory repositorySessionFactory,
                                       RepositoryArchivaTaskScheduler repositoryTaskScheduler,
                                       Collection<RepositoryListener> listeners,
                                       RepositoryStatisticsManager repositoryStatisticsManager,
@@ -106,7 +109,7 @@ public class AdministrationServiceImpl
         this.repoFactory = repoFactory;
         this.repositoryTaskScheduler = repositoryTaskScheduler;
         this.listeners = listeners;
-        this.metadataRepository = metadataRepository;
+        this.repositorySessionFactory = repositorySessionFactory;
         this.repositoryStatisticsManager = repositoryStatisticsManager;
         this.repositoryMerger = repositoryMerger;
         this.auditListener = auditListener;
@@ -186,6 +189,7 @@ public class AdministrationServiceImpl
             throw new Exception( "Repository does not exist." );
         }
 
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
             ManagedRepositoryContent repoContent = repoFactory.getManagedRepositoryContent( repoId );
@@ -197,6 +201,7 @@ public class AdministrationServiceImpl
             // delete from file system
             repoContent.deleteVersion( ref );
 
+            MetadataRepository metadataRepository = repositorySession.getRepository();
             Collection<ArtifactMetadata> artifacts = metadataRepository.getArtifacts( repoId, groupId, artifactId,
                                                                                       version );
 
@@ -212,11 +217,12 @@ public class AdministrationServiceImpl
                     // repository metadata to an artifact
                     for ( RepositoryListener listener : listeners )
                     {
-                        listener.deleteArtifact( repoId, artifact.getNamespace(), artifact.getProject(),
-                                                 artifact.getVersion(), artifact.getId() );
+                        listener.deleteArtifact( metadataRepository, repoId, artifact.getNamespace(),
+                                                 artifact.getProject(), artifact.getVersion(), artifact.getId() );
                     }
                 }
             }
+            repositorySession.save();
         }
         catch ( ContentNotFoundException e )
         {
@@ -229,6 +235,10 @@ public class AdministrationServiceImpl
         catch ( RepositoryException e )
         {
             throw new Exception( "Repository exception occurred." );
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         return true;
@@ -407,8 +417,18 @@ public class AdministrationServiceImpl
             throw new Exception( "A repository with that id does not exist" );
         }
 
-        metadataRepository.removeRepository( repository.getId() );
-        repositoryStatisticsManager.deleteStatistics( repository.getId() );
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            metadataRepository.removeRepository( repository.getId() );
+            repositoryStatisticsManager.deleteStatistics( metadataRepository, repository.getId() );
+            repositorySession.save();
+        }
+        finally
+        {
+            repositorySession.close();
+        }
         config.removeManagedRepository( repository );
 
         try
@@ -476,108 +496,116 @@ public class AdministrationServiceImpl
 
         log.debug( "Retrieved repository configuration for repo '" + repoId + "'" );
 
-        if ( repoConfig != null )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            stagingConfig = config.findManagedRepositoryById( stagingId );
-
-            if ( stagingConfig != null )
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            if ( repoConfig != null )
             {
-                List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( stagingId );
+                stagingConfig = config.findManagedRepositoryById( stagingId );
 
-                if ( repoConfig.isReleases() && !repoConfig.isSnapshots() )
+                if ( stagingConfig != null )
                 {
-                    log.info( "Repository to be merged contains releases only.." );
-                    if ( skipConflicts )
+                    List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( stagingId );
+
+                    if ( repoConfig.isReleases() && !repoConfig.isSnapshots() )
                     {
-                        List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts( repoId,
-                                                                                                     stagingId );
-
-                        if ( log.isDebugEnabled() )
+                        log.info( "Repository to be merged contains releases only.." );
+                        if ( skipConflicts )
                         {
-                            log.debug( "Artifacts in conflict.." );
-                            for ( ArtifactMetadata metadata : conflicts )
+                            List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts(
+                                metadataRepository, repoId, stagingId );
+
+                            if ( log.isDebugEnabled() )
                             {
-                                log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
-                                               metadata.getProjectVersion() );
+                                log.debug( "Artifacts in conflict.." );
+                                for ( ArtifactMetadata metadata : conflicts )
+                                {
+                                    log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
+                                                   metadata.getProjectVersion() );
+                                }
                             }
+
+                            sourceArtifacts.removeAll( conflicts );
+
+                            log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
+                            mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId, null );
                         }
-
-                        sourceArtifacts.removeAll( conflicts );
-
-                        log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
-                        mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );
+                        else
+                        {
+                            log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
+                            mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId, null );
+                        }
                     }
                     else
                     {
-                        log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
-                        mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId );
+                        log.info( "Repository to be merged has snapshot artifacts.." );
+                        if ( skipConflicts )
+                        {
+                            List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts(
+                                metadataRepository, repoId, stagingId );
+
+                            if ( log.isDebugEnabled() )
+                            {
+                                log.debug( "Artifacts in conflict.." );
+                                for ( ArtifactMetadata metadata : conflicts )
+                                {
+                                    log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
+                                                   metadata.getProjectVersion() );
+                                }
+                            }
+
+                            sourceArtifacts.removeAll( conflicts );
+
+                            log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
+
+                            Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>(
+                                sourceArtifacts );
+                            repositoryMerger.merge( metadataRepository, stagingId, repoId, artifactsWithOutConflicts );
+
+                            log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '" +
+                                          repoId + "'." );
+                        }
+                        else
+                        {
+                            repositoryMerger.merge( metadataRepository, stagingId, repoId );
+
+                            log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '" +
+                                          repoId + "'." );
+                        }
                     }
                 }
                 else
                 {
-                    log.info( "Repository to be merged has snapshot artifacts.." );
-                    if ( skipConflicts )
-                    {
-                        List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts( repoId,
-                                                                                                     stagingId );
-
-                        if ( log.isDebugEnabled() )
-                        {
-                            log.debug( "Artifacts in conflict.." );
-                            for ( ArtifactMetadata metadata : conflicts )
-                            {
-                                log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
-                                               metadata.getProjectVersion() );
-                            }
-                        }
-
-                        sourceArtifacts.removeAll( conflicts );
-
-                        log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
-
-                        Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>(
-                            sourceArtifacts );
-                        repositoryMerger.merge( stagingId, repoId, artifactsWithOutConflicts );
-
-                        log.info(
-                            "Staging repository '" + stagingId + "' merged successfully with managed repo '" + repoId +
-                                "'." );
-                    }
-                    else
-                    {
-                        repositoryMerger.merge( stagingId, repoId );
-
-                        log.info(
-                            "Staging repository '" + stagingId + "' merged successfully with managed repo '" + repoId +
-                                "'." );
-                    }
+                    throw new Exception( "Staging Id : " + stagingId + " not found." );
                 }
             }
             else
             {
-                throw new Exception( "Staging Id : " + stagingId + " not found." );
+                throw new Exception( "Repository Id : " + repoId + " not found." );
             }
+
+            if ( !repositoryTaskScheduler.isProcessingRepositoryTask( repoId ) )
+            {
+                RepositoryTask task = new RepositoryTask();
+                task.setRepositoryId( repoId );
+
+                repositoryTaskScheduler.queueTask( task );
+            }
+
+            AuditEvent event = createAuditEvent( repoConfig );
+
+            // add event for audit log reports
+            metadataRepository.addMetadataFacet( event.getRepositoryId(), event );
+
+            // log event in archiva audit log
+            auditListener.auditEvent( createAuditEvent( repoConfig ) );
+            repositorySession.save();
         }
-        else
+        finally
         {
-            throw new Exception( "Repository Id : " + repoId + " not found." );
+            repositorySession.close();
         }
-
-        if ( !repositoryTaskScheduler.isProcessingRepositoryTask( repoId ) )
-        {
-            RepositoryTask task = new RepositoryTask();
-            task.setRepositoryId( repoId );
-
-            repositoryTaskScheduler.queueTask( task );
-        }
-
-        AuditEvent event = createAuditEvent( repoConfig );
-
-        // add event for audit log reports
-        metadataRepository.addMetadataFacet( event.getRepositoryId(), event );
-
-        // log event in archiva audit log
-        auditListener.auditEvent( createAuditEvent( repoConfig ) );
 
         return true;
     }
@@ -614,7 +642,8 @@ public class AdministrationServiceImpl
         return event;
     }
 
-    private void mergeWithOutSnapshots( List<ArtifactMetadata> sourceArtifacts, String sourceRepoId, String repoid )
+    private void mergeWithOutSnapshots( List<ArtifactMetadata> sourceArtifacts, String sourceRepoId, String repoid,
+                                        MetadataRepository metadataRepository )
         throws Exception
     {
         List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
@@ -631,7 +660,7 @@ public class AdministrationServiceImpl
 
         Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
 
-        repositoryMerger.merge( sourceRepoId, repoid, artifactListWithOutSnapShots );
+        repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
     }
 
     private ManagedRepositoryConfiguration getStageRepoConfig( ManagedRepositoryConfiguration repository )

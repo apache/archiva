@@ -22,7 +22,6 @@ package org.apache.archiva.metadata.repository.storage;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.filter.Filter;
 
 import java.util.Collection;
@@ -30,12 +29,11 @@ import java.util.Collection;
 // FIXME: we should drop the repoId parameters and attach this to an instance of a repository storage
 public interface RepositoryStorage
 {
-    ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
-        throws MetadataResolutionException;
+    ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId );
 
     ProjectVersionMetadata readProjectVersionMetadata( String repoId, String namespace, String projectId,
                                                        String projectVersion )
-        throws MetadataResolutionException;
+        throws RepositoryStorageMetadataInvalidException, RepositoryStorageMetadataNotFoundException;
 
     Collection<String> listRootNamespaces( String repoId, Filter<String> filter );
 

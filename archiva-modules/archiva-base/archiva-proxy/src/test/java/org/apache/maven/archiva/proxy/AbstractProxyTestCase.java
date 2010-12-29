@@ -19,17 +19,6 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -47,6 +36,17 @@ import org.apache.maven.wagon.Wagon;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.ArgumentsMatcher;
 import org.easymock.MockControl;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * AbstractProxyTestCase
@@ -88,52 +88,57 @@ public abstract class AbstractProxyTestCase
 
     protected static final String REPOPATH_LEGACY_MANAGED_TARGET = "target/test-repository/legacy-managed";
 
-    protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher() {
+    protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher()
+    {
 
-        public boolean matches(Object[] expected, Object[] actual) {
-            if (expected.length < 1 || actual.length < 1)
+        public boolean matches( Object[] expected, Object[] actual )
+        {
+            if ( expected.length < 1 || actual.length < 1 )
             {
                 return false;
             }
-            return MockControl.ARRAY_MATCHER.matches(ArrayUtils.remove(expected, 1), ArrayUtils.remove(actual, 1));
+            return MockControl.ARRAY_MATCHER.matches( ArrayUtils.remove( expected, 1 ), ArrayUtils.remove( actual,
+                                                                                                           1 ) );
         }
 
-        public String toString(Object[] arguments) {
-            return ArrayUtils.toString(arguments);
+        public String toString( Object[] arguments )
+        {
+            return ArrayUtils.toString( arguments );
         }
     };
 
-    protected static final ArgumentsMatcher customWagonGetMatcher = new ArgumentsMatcher() {
+    protected static final ArgumentsMatcher customWagonGetMatcher = new ArgumentsMatcher()
+    {
 
-            public boolean matches(Object[] expected, Object[] actual)
+        public boolean matches( Object[] expected, Object[] actual )
+        {
+            if ( expected.length == 2 && actual.length == 2 )
             {
-                if (expected.length == 2 && actual.length == 2)
+                if ( expected[0] == null && actual[0] == null )
                 {
-                    if (expected[0] == null && actual[0] == null)
-                    {
-                        return true;
-                    }
-
-                    if (expected[0] == null)
-                    {
-                        return actual[0] == null;
-                    }
-
-                    if (actual[0] == null)
-                    {
-                        return expected[0] == null;
-                    }
-
-                    return expected[0].equals(actual[0]);
+                    return true;
                 }
-                return false;
-            }
 
-            public String toString(Object[] arguments)
-            {
-                return ArrayUtils.toString(arguments);
+                if ( expected[0] == null )
+                {
+                    return actual[0] == null;
+                }
+
+                if ( actual[0] == null )
+                {
+                    return expected[0] == null;
+                }
+
+                return expected[0].equals( actual[0] );
             }
-        };
+            return false;
+        }
+
+        public String toString( Object[] arguments )
+        {
+            return ArrayUtils.toString( arguments );
+        }
+    };
 
     protected MockControl wagonMockControl;
 
@@ -187,7 +192,8 @@ public abstract class AbstractProxyTestCase
         assertNotNull( "Actual File should not be null.", actualFile );
 
         assertTrue( "Check actual file exists.", actualFile.exists() );
-        assertEquals( "Check filename path is appropriate.", expectedFile.getCanonicalPath(), actualFile.getCanonicalPath() );
+        assertEquals( "Check filename path is appropriate.", expectedFile.getCanonicalPath(),
+                      actualFile.getCanonicalPath() );
         assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), actualFile.getAbsolutePath() );
 
         String expectedContents = FileUtils.readFileToString( sourceFile, null );
@@ -200,7 +206,7 @@ public abstract class AbstractProxyTestCase
         assertNull( "Found file: " + downloadedFile + "; but was expecting a failure", downloadedFile );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     protected void assertNoTempFiles( File expectedFile )
     {
         File workingDir = expectedFile.getParentFile();
@@ -209,7 +215,7 @@ public abstract class AbstractProxyTestCase
             return;
         }
 
-        Collection<File> tmpFiles = FileUtils.listFiles( workingDir, new String[] { "tmp" }, false );
+        Collection<File> tmpFiles = FileUtils.listFiles( workingDir, new String[]{"tmp"}, false );
         if ( !tmpFiles.isEmpty() )
         {
             StringBuffer emsg = new StringBuffer();
@@ -266,8 +272,8 @@ public abstract class AbstractProxyTestCase
                 {
                     if ( !destination.exists() && !destination.mkdirs() )
                     {
-                        throw new IOException( "Could not create destination directory '"
-                            + destination.getAbsolutePath() + "'." );
+                        throw new IOException(
+                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
                     }
 
                     copyDirectoryStructure( file, destination );
@@ -340,8 +346,8 @@ public abstract class AbstractProxyTestCase
 
     protected void saveConnector( String sourceRepoId, String targetRepoId, boolean disabled )
     {
-        saveConnector( sourceRepoId, targetRepoId, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, disabled );
+        saveConnector( sourceRepoId, targetRepoId, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS,
+                       CachedFailuresPolicy.NO, disabled );
     }
 
     protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
@@ -352,7 +358,8 @@ public abstract class AbstractProxyTestCase
     }
 
     protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
-                                  String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy, boolean disabled )
+                                  String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy,
+                                  boolean disabled )
     {
         saveConnector( sourceRepoId, targetRepoId, checksumPolicy, releasePolicy, snapshotPolicy, cacheFailuresPolicy,
                        errorPolicy, PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT, disabled );
@@ -371,7 +378,7 @@ public abstract class AbstractProxyTestCase
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, cacheFailuresPolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS, errorPolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS_ON_UPDATE, errorOnUpdatePolicy );
-        connectorConfig.setDisabled(disabled);
+        connectorConfig.setDisabled( disabled );
 
         int count = config.getConfiguration().getProxyConnectors().size();
         config.getConfiguration().addProxyConnector( connectorConfig );
@@ -385,10 +392,10 @@ public abstract class AbstractProxyTestCase
         config.triggerChange( prefix + ".policies.checksum", connectorConfig.getPolicy( "checksum", "" ) );
         config.triggerChange( prefix + ".policies.snapshots", connectorConfig.getPolicy( "snapshots", "" ) );
         config.triggerChange( prefix + ".policies.cache-failures", connectorConfig.getPolicy( "cache-failures", "" ) );
-        config.triggerChange( prefix + ".policies.propagate-errors",
-                              connectorConfig.getPolicy( "propagate-errors", "" ) );
-        config.triggerChange( prefix + ".policies.propagate-errors-on-update",
-                              connectorConfig.getPolicy( "propagate-errors-on-update", "" ) );
+        config.triggerChange( prefix + ".policies.propagate-errors", connectorConfig.getPolicy( "propagate-errors",
+                                                                                                "" ) );
+        config.triggerChange( prefix + ".policies.propagate-errors-on-update", connectorConfig.getPolicy(
+            "propagate-errors-on-update", "" ) );
     }
 
     protected void saveManagedRepositoryConfig( String id, String name, String path, String layout )
@@ -444,6 +451,7 @@ public abstract class AbstractProxyTestCase
 
     /**
      * {@inheritDoc}
+     *
      * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getConfigLocation()
      */
     @Override
@@ -488,19 +496,28 @@ public abstract class AbstractProxyTestCase
         config.getConfiguration().addManagedRepository( repoConfig );
 
         // Setup target (proxied to) repository.
-        saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1", new File( REPOPATH_PROXIED1 ).toURL()
-            .toExternalForm(), "default" );
+        saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1", new File(
+            REPOPATH_PROXIED1 ).toURL().toExternalForm(), "default" );
 
         // Setup target (proxied to) repository.
-        saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2", new File( REPOPATH_PROXIED2 ).toURL()
-            .toExternalForm(), "default" );
+        saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2", new File(
+            REPOPATH_PROXIED2 ).toURL().toExternalForm(), "default" );
 
         // Setup target (proxied to) repository using legacy layout.
-        saveRemoteRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository", new File( REPOPATH_PROXIED_LEGACY )
-            .toURL().toExternalForm(), "legacy" );
+        saveRemoteRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository", new File(
+            REPOPATH_PROXIED_LEGACY ).toURL().toExternalForm(), "legacy" );
 
         // Setup the proxy handler.
-        proxyHandler = (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
+        try
+        {
+            proxyHandler = (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
+        }
+        catch ( Exception e )
+        {
+            // TODO: handle in plexus-spring instead
+            applicationContext.close();
+            throw e;
+        }
 
         // Setup the wagon mock.
         wagonMockControl = MockControl.createNiceControl( Wagon.class );
@@ -548,8 +565,8 @@ public abstract class AbstractProxyTestCase
         if ( !sourceDir.exists() )
         {
             // This is just a warning.
-            System.err.println( "[WARN] Skipping setup of testable managed repository, source dir does not exist: "
-                + sourceDir );
+            System.err.println(
+                "[WARN] Skipping setup of testable managed repository, source dir does not exist: " + sourceDir );
         }
         else
         {
@@ -583,8 +600,8 @@ public abstract class AbstractProxyTestCase
 
     protected void assertNotModified( File file, long expectedModificationTime )
     {
-        assertEquals( "File <" + file.getAbsolutePath() + "> not have been modified.",
-                      expectedModificationTime, file.lastModified() );
+        assertEquals( "File <" + file.getAbsolutePath() + "> not have been modified.", expectedModificationTime,
+                      file.lastModified() );
     }
 
     protected void assertNotExistsInManagedLegacyRepo( File file )
@@ -593,9 +610,9 @@ public abstract class AbstractProxyTestCase
         String managedLegacyPath = managedLegacyDir.getCanonicalPath();
         String testFile = file.getCanonicalPath();
 
-        assertTrue( "Unit Test Failure: File <" + testFile
-            + "> should be have been defined within the legacy managed path of <" + managedLegacyPath + ">", testFile
-            .startsWith( managedLegacyPath ) );
+        assertTrue( "Unit Test Failure: File <" + testFile +
+                        "> should be have been defined within the legacy managed path of <" + managedLegacyPath + ">",
+                    testFile.startsWith( managedLegacyPath ) );
 
         assertFalse( "File < " + testFile + "> should not exist in managed legacy repository.", file.exists() );
     }
@@ -606,9 +623,9 @@ public abstract class AbstractProxyTestCase
         String managedDefaultPath = managedDefaultDir.getCanonicalPath();
         String testFile = file.getCanonicalPath();
 
-        assertTrue( "Unit Test Failure: File <" + testFile
-            + "> should be have been defined within the managed default path of <" + managedDefaultPath + ">", testFile
-            .startsWith( managedDefaultPath ) );
+        assertTrue( "Unit Test Failure: File <" + testFile +
+                        "> should be have been defined within the managed default path of <" + managedDefaultPath + ">",
+                    testFile.startsWith( managedDefaultPath ) );
 
         assertFalse( "File < " + testFile + "> should not exist in managed default repository.", file.exists() );
     }

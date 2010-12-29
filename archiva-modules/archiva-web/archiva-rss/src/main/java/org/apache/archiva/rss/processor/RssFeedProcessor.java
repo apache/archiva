@@ -21,6 +21,7 @@ package org.apache.archiva.rss.processor;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 
 import java.util.Map;
 
@@ -35,6 +36,6 @@ public interface RssFeedProcessor
 
     public static final String KEY_ARTIFACT_ID = "artifactId";
 
-    SyndFeed process( Map<String, String> reqParams )
+    SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
         throws FeedException;
 }

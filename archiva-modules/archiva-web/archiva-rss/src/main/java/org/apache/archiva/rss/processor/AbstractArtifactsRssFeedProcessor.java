@@ -19,22 +19,10 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.MetadataRepository;
-
 public abstract class AbstractArtifactsRssFeedProcessor
     implements RssFeedProcessor
 {
-    /**
-     * @plexus.requirement
-     */
-    protected MetadataRepository metadataRepository;
-
     protected abstract String getTitle();
 
     protected abstract String getDescription();
-
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
-    }
 }

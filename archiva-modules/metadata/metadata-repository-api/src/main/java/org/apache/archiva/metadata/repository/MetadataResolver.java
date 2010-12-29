@@ -27,8 +27,8 @@ import java.util.Collection;
 
 public interface MetadataResolver
 {
-    ProjectVersionMetadata resolveProjectVersion( String repoId, String namespace, String projectId,
-                                                  String projectVersion )
+    ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
+                                                  String projectId, String projectVersion )
         throws MetadataResolutionException;
 
     /**
@@ -42,23 +42,25 @@ public interface MetadataResolver
      * @param projectVersion the version of the project to get references to
      * @return a list of project references
      */
-    Collection<ProjectVersionReference> resolveProjectReferences( String repoId, String namespace, String projectId,
+    Collection<ProjectVersionReference> resolveProjectReferences( RepositorySession session, String repoId,
+                                                                  String namespace, String projectId,
                                                                   String projectVersion )
         throws MetadataResolutionException;
 
-    Collection<String> resolveRootNamespaces( String repoId )
+    Collection<String> resolveRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException;
 
-    Collection<String> resolveNamespaces( String repoId, String namespace )
+    Collection<String> resolveNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException;
 
-    Collection<String> resolveProjects( String repoId, String namespace )
+    Collection<String> resolveProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException;
 
-    Collection<String> resolveProjectVersions( String repoId, String namespace, String projectId )
+    Collection<String> resolveProjectVersions( RepositorySession session, String repoId, String namespace,
+                                               String projectId )
         throws MetadataResolutionException;
 
-    Collection<ArtifactMetadata> resolveArtifacts( String repoId, String namespace, String projectId,
-                                                   String projectVersion )
+    Collection<ArtifactMetadata> resolveArtifacts( RepositorySession session, String repoId, String namespace,
+                                                   String projectId, String projectVersion )
         throws MetadataResolutionException;
 }

@@ -24,13 +24,11 @@ import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
-import org.apache.archiva.reports.RepositoryProblemFacet;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -61,6 +59,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
+ * deal with rather than being instantiated per-repository.
+ * FIXME: instantiate one per repository and allocate permanently from a factory (which can be obtained within the session).
+ * TODO: finish Maven 1 implementation to prove this API
+ *
+ * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
+ * within the session in the context of a single managed repository's resolution needs.
+ *
  * @plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryStorage" role-hint="maven2"
  */
 public class Maven2RepositoryStorage
@@ -81,23 +87,9 @@ public class Maven2RepositoryStorage
      */
     private RepositoryPathTranslator pathTranslator;
 
-    /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
-
     private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
-
-    private static final String PROBLEM_MISSING_POM = "missing-pom";
-
-    private static final String PROBLEM_INVALID_POM = "invalid-pom";
-
-    private static final String PROBLEM_MISLOCATED_POM = "mislocated-pom";
-
-    private static final List<String> POTENTIAL_PROBLEMS = Arrays.asList( PROBLEM_INVALID_POM, PROBLEM_MISSING_POM,
-                                                                          PROBLEM_MISLOCATED_POM );
 
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
     {
@@ -107,22 +99,8 @@ public class Maven2RepositoryStorage
 
     public ProjectVersionMetadata readProjectVersionMetadata( String repoId, String namespace, String projectId,
                                                               String projectVersion )
-        throws MetadataResolutionException
+        throws RepositoryStorageMetadataNotFoundException, RepositoryStorageMetadataInvalidException
     {
-        // Remove problems associated with this version, since we'll be re-adding any that still exist
-        // TODO: an event mechanism would remove coupling to the problem reporting plugin
-        // TODO: this removes all problems - do we need something that just removes the problems created by this resolver?
-        String name = RepositoryProblemFacet.createName( namespace, projectId, projectVersion, null );
-        try
-        {
-            metadataRepository.removeMetadataFacet( repoId, RepositoryProblemFacet.FACET_ID, name );
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            log.warn( "Unable to remove repository problem facets for the version being removed: " + e.getMessage(),
-                      e );
-        }
-
         ManagedRepositoryConfiguration repositoryConfiguration =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
 
@@ -160,12 +138,9 @@ public class Maven2RepositoryStorage
 
         if ( !file.exists() )
         {
-            // TODO: an event mechanism would remove coupling to the problem reporting plugin
-            addProblemReport( repoId, namespace, projectId, projectVersion, PROBLEM_MISSING_POM,
-                              "The artifact's POM file '" + file + "' was missing" );
-
             // metadata could not be resolved
-            return null;
+            throw new RepositoryStorageMetadataNotFoundException(
+                "The artifact's POM file '" + file.getAbsolutePath() + "' was missing" );
         }
 
         ModelBuildingRequest req = new DefaultModelBuildingRequest();
@@ -181,10 +156,9 @@ public class Maven2RepositoryStorage
         }
         catch ( ModelBuildingException e )
         {
-            addProblemReport( repoId, namespace, projectId, projectVersion, PROBLEM_INVALID_POM,
-                              "The artifact's POM file '" + file + "' was invalid: " + e.getMessage() );
+            String msg = "The artifact's POM file '" + file + "' was invalid: " + e.getMessage();
 
-            throw new MetadataResolutionException( e.getMessage() );
+            throw new RepositoryStorageMetadataInvalidException( "invalid-pom", msg, e );
         }
 
         // Check if the POM is in the correct location
@@ -207,10 +181,7 @@ public class Maven2RepositoryStorage
                 message.append( "\nIncorrect version: " ).append( model.getVersion() );
             }
 
-            String msg = message.toString();
-            addProblemReport( repoId, namespace, projectId, projectVersion, PROBLEM_MISLOCATED_POM, msg );
-
-            throw new MetadataResolutionException( msg );
+            throw new RepositoryStorageMetadataInvalidException( "mislocated-pom", message.toString() );
         }
 
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
@@ -241,29 +212,6 @@ public class Maven2RepositoryStorage
         metadata.addFacet( facet );
 
         return metadata;
-    }
-
-    private void addProblemReport( String repoId, String namespace, String projectId, String projectVersion,
-                                   String problemId, String message )
-    {
-        // TODO: an event mechanism would remove coupling to the problem reporting plugin and allow other plugins to
-        //       generate metadata on the fly if appropriately checked for missing facets in the resolver
-        RepositoryProblemFacet problem = new RepositoryProblemFacet();
-        problem.setProblem( problemId );
-        problem.setMessage( message );
-        problem.setProject( projectId );
-        problem.setNamespace( namespace );
-        problem.setRepositoryId( repoId );
-        problem.setVersion( projectVersion );
-
-        try
-        {
-            metadataRepository.addMetadataFacet( repoId, problem );
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            log.warn( "Unable to add repository problem facets for the version being removed: " + e.getMessage(), e );
-        }
     }
 
     private List<org.apache.archiva.metadata.model.Dependency> convertDependencies( List<Dependency> dependencies )

@@ -22,6 +22,9 @@ package org.apache.maven.archiva.web.action.reports;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;
@@ -35,6 +38,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test the GenerationReportAction. Note that we are testing for <i>current</i> behaviour, however there are several
@@ -68,7 +74,16 @@ public class GenerateReportActionTest
     {
         super.setUp();
 
-        action = (GenerateReportAction) lookup( Action.class, "generateReport" );
+        try
+        {
+            action = (GenerateReportAction) lookup( Action.class, "generateReport" );
+        }
+        catch ( Exception e )
+        {
+            // clean up cache - TODO: move handling to plexus-spring
+            applicationContext.close();
+            throw e;
+        }
 
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
@@ -76,7 +91,12 @@ public class GenerateReportActionTest
 
         metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
-        action.setMetadataRepository( metadataRepository );
+
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getRepository() ).thenReturn( metadataRepository );
+
+        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        factory.setRepositorySession( repositorySession );
     }
 
     private void prepareAction( List<String> selectedRepositories, List<String> availableRepositories )
@@ -169,10 +189,8 @@ public class GenerateReportActionTest
     public void testGenerateStatisticsSingleRepo()
         throws Exception
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.singletonList( createDefaultStats() ) );
 
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
@@ -186,10 +204,8 @@ public class GenerateReportActionTest
         throws Exception
 
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.<Object>emptyList() );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
 
@@ -204,10 +220,8 @@ public class GenerateReportActionTest
         throws Exception
 
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.singletonList( createDefaultStats() ) );
         repositoryStatisticsManagerControl.replay();
         action.setPage( 2 );
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
@@ -222,14 +236,10 @@ public class GenerateReportActionTest
         throws Exception
 
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.<Object>emptyList() );
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, SNAPSHOTS, null, null ), Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.<Object>emptyList() );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
 
@@ -246,14 +256,10 @@ public class GenerateReportActionTest
         throws Exception
 
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createDefaultStats() ) );
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, SNAPSHOTS, null, null ), Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.singletonList( createDefaultStats() ) );
 
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
@@ -267,10 +273,8 @@ public class GenerateReportActionTest
         throws Exception
     {
         Date date = new Date();
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createStats( date ) ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, SNAPSHOTS, null, null ), Collections.singletonList( createStats( date ) ) );
         repositoryStatisticsManagerControl.replay();
 
         prepareAction( Arrays.asList( SNAPSHOTS ), Arrays.asList( INTERNAL ) );
@@ -289,14 +293,10 @@ public class GenerateReportActionTest
     public void testDownloadStatisticsMultipleRepos()
         throws Exception
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createDefaultStats() ) );
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, SNAPSHOTS, null, null ), Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.singletonList( createDefaultStats() ) );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
 
@@ -367,10 +367,8 @@ public class GenerateReportActionTest
         throws Exception
 
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.<Object>emptyList() );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
 
@@ -395,14 +393,10 @@ public class GenerateReportActionTest
         throws Exception
 
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.<Object>emptyList() );
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, SNAPSHOTS, null, null ), Collections.<Object>emptyList() );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.<Object>emptyList() );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
 
@@ -417,14 +411,10 @@ public class GenerateReportActionTest
     public void testDownloadStatisticsMultipleRepoInStrutsFormat()
         throws Exception
     {
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( SNAPSHOTS,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createDefaultStats() ) );
-        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange( INTERNAL,
-                                                                                                              null,
-                                                                                                              null ),
-                                                            Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, SNAPSHOTS, null, null ), Collections.singletonList( createDefaultStats() ) );
+        repositoryStatisticsManagerControl.expectAndReturn( repositoryStatisticsManager.getStatisticsInRange(
+            metadataRepository, INTERNAL, null, null ), Collections.singletonList( createDefaultStats() ) );
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
 

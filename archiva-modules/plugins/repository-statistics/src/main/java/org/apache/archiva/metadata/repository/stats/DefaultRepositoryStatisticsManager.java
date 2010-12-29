@@ -44,14 +44,9 @@ public class DefaultRepositoryStatisticsManager
 {
     private static final Logger log = LoggerFactory.getLogger( DefaultRepositoryStatisticsManager.class );
 
-    /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
-
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
-    public RepositoryStatistics getLastStatistics( String repositoryId )
+    public RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         // TODO: consider a more efficient implementation that directly gets the last one from the content repository
@@ -69,12 +64,13 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
-    private void walkRepository( RepositoryStatistics stats, String repositoryId, String ns )
+    private void walkRepository( MetadataRepository metadataRepository, RepositoryStatistics stats, String repositoryId,
+                                 String ns )
         throws MetadataResolutionException
     {
         for ( String namespace : metadataRepository.getNamespaces( repositoryId, ns ) )
         {
-            walkRepository( stats, repositoryId, ns + "." + namespace );
+            walkRepository( metadataRepository, stats, repositoryId, ns + "." + namespace );
         }
 
         Collection<String> projects = metadataRepository.getProjects( repositoryId, ns );
@@ -106,9 +102,8 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
-
-    public void addStatisticsAfterScan( String repositoryId, Date startTime, Date endTime, long totalFiles,
-                                        long newFiles )
+    public void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
+                                        Date endTime, long totalFiles, long newFiles )
         throws MetadataRepositoryException
     {
         RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
@@ -131,7 +126,7 @@ public class DefaultRepositoryStatisticsManager
         {
             for ( String ns : metadataRepository.getRootNamespaces( repositoryId ) )
             {
-                walkRepository( repositoryStatistics, repositoryId, ns );
+                walkRepository( metadataRepository, repositoryStatistics, repositoryId, ns );
             }
         }
         catch ( MetadataResolutionException e )
@@ -143,13 +138,14 @@ public class DefaultRepositoryStatisticsManager
         metadataRepository.addMetadataFacet( repositoryId, repositoryStatistics );
     }
 
-    public void deleteStatistics( String repositoryId )
+    public void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         metadataRepository.removeMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
     }
 
-    public List<RepositoryStatistics> getStatisticsInRange( String repositoryId, Date startTime, Date endTime )
+    public List<RepositoryStatistics> getStatisticsInRange( MetadataRepository metadataRepository, String repositoryId,
+                                                            Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
         List<RepositoryStatistics> results = new ArrayList<RepositoryStatistics>();
@@ -182,10 +178,5 @@ public class DefaultRepositoryStatisticsManager
         SimpleDateFormat fmt = new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT );
         fmt.setTimeZone( UTC_TIME_ZONE );
         return fmt;
-    }
-
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
     }
 }

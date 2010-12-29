@@ -19,7 +19,10 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
@@ -77,6 +80,13 @@ public class RepositoryArchivaTaskScheduler
      */
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
+    /**
+     * TODO: could have multiple implementations
+     *
+     * @plexus.requirement
+     */
+    private RepositorySessionFactory repositorySessionFactory;
+
     private static final String REPOSITORY_SCAN_GROUP = "rg";
 
     private static final String REPOSITORY_JOB = "rj";
@@ -114,32 +124,41 @@ public class RepositoryArchivaTaskScheduler
         List<ManagedRepositoryConfiguration> repositories =
             archivaConfiguration.getConfiguration().getManagedRepositories();
 
-        for ( ManagedRepositoryConfiguration repoConfig : repositories )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            if ( repoConfig.isScanned() )
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            for ( ManagedRepositoryConfiguration repoConfig : repositories )
             {
-                try
+                if ( repoConfig.isScanned() )
                 {
-                    scheduleRepositoryJobs( repoConfig );
-                }
-                catch ( SchedulerException e )
-                {
-                    throw new StartingException( "Unable to start scheduler: " + e.getMessage(), e );
-                }
-
-                try
-                {
-                    if ( !isPreviouslyScanned( repoConfig ) )
+                    try
                     {
-                        queueInitialRepoScan( repoConfig );
+                        scheduleRepositoryJobs( repoConfig );
+                    }
+                    catch ( SchedulerException e )
+                    {
+                        throw new StartingException( "Unable to start scheduler: " + e.getMessage(), e );
+                    }
+
+                    try
+                    {
+                        if ( !isPreviouslyScanned( repoConfig, metadataRepository ) )
+                        {
+                            queueInitialRepoScan( repoConfig );
+                        }
+                    }
+                    catch ( MetadataRepositoryException e )
+                    {
+                        log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: " +
+                                      e.getMessage(), e );
                     }
                 }
-                catch ( MetadataRepositoryException e )
-                {
-                    log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: " +
-                                  e.getMessage(), e );
-                }
             }
+        }
+        finally
+        {
+            repositorySession.close();
         }
     }
 
@@ -270,10 +289,11 @@ public class RepositoryArchivaTaskScheduler
     }
 
     @SuppressWarnings( "unchecked" )
-    private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig )
+    private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig,
+                                         MetadataRepository metadataRepository )
         throws MetadataRepositoryException
     {
-        return repositoryStatisticsManager.getLastStatistics( repoConfig.getId() ) != null;
+        return repositoryStatisticsManager.getLastStatistics( metadataRepository, repoConfig.getId() ) != null;
     }
 
     // MRM-848: Pre-configured repository initially appear to be empty

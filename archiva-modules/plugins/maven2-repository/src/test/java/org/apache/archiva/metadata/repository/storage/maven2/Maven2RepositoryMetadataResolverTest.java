@@ -21,17 +21,15 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
-import org.apache.archiva.metadata.model.FacetedMetadata;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
-import org.apache.archiva.reports.RepositoryProblemFacet;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -49,7 +47,7 @@ public class Maven2RepositoryMetadataResolverTest
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
-    private Maven2RepositoryStorage resolver;
+    private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
 
@@ -62,8 +60,6 @@ public class Maven2RepositoryMetadataResolverTest
     private static final String EMPTY_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
 
     private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-
-    private MetadataRepository metadataRepository;
 
     public void setUp()
         throws Exception
@@ -78,16 +74,14 @@ public class Maven2RepositoryMetadataResolverTest
         c.addManagedRepository( testRepo );
         configuration.save( c );
 
-        resolver = (Maven2RepositoryStorage) lookup( RepositoryStorage.class, "maven2" );
-        metadataRepository = (MetadataRepository) lookup( MetadataRepository.class );
-        metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID );
+        storage = (Maven2RepositoryStorage) lookup( RepositoryStorage.class, "maven2" );
     }
 
     public void testGetProjectVersionMetadata()
         throws Exception
     {
-        ProjectVersionMetadata metadata = resolver.readProjectVersionMetadata( TEST_REPO_ID, "org.apache.archiva",
-                                                                               "archiva-common", "1.2.1" );
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache.archiva",
+                                                                              "archiva-common", "1.2.1" );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
         assertEquals( "http://archiva.apache.org/ref/1.2.1/archiva-base/archiva-common", metadata.getUrl() );
@@ -140,9 +134,9 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifactMetadata()
         throws Exception
     {
-        Collection<ArtifactMetadata> springArtifacts = resolver.readArtifactsMetadata( TEST_REPO_ID,
-                                                                                       "org.codehaus.plexus",
-                                                                                       "plexus-spring", "1.2", ALL );
+        Collection<ArtifactMetadata> springArtifacts = storage.readArtifactsMetadata( TEST_REPO_ID,
+                                                                                      "org.codehaus.plexus",
+                                                                                      "plexus-spring", "1.2", ALL );
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( springArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -182,9 +176,9 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifactMetadataSnapshots()
         throws Exception
     {
-        Collection<ArtifactMetadata> testArtifacts = resolver.readArtifactsMetadata( TEST_REPO_ID, "com.example.test",
-                                                                                     "test-artifact", "1.0-SNAPSHOT",
-                                                                                     ALL );
+        Collection<ArtifactMetadata> testArtifacts = storage.readArtifactsMetadata( TEST_REPO_ID, "com.example.test",
+                                                                                    "test-artifact", "1.0-SNAPSHOT",
+                                                                                    ALL );
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( testArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -265,8 +259,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
         throws Exception
     {
-        ProjectVersionMetadata metadata = resolver.readProjectVersionMetadata( TEST_REPO_ID, "org.apache", "apache",
-                                                                               "5-SNAPSHOT" );
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache", "apache",
+                                                                              "5-SNAPSHOT" );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "pom", facet.getPackaging() );
         assertEquals( "http://www.apache.org/", metadata.getUrl() );
@@ -302,169 +296,175 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()
         throws Exception
     {
-        FacetedMetadata metadata = resolver.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test",
-                                                                        "missing-metadata", "1.0-SNAPSHOT" );
-        assertNull( metadata );
+        try
+        {
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT" );
+            fail( "Should not be found" );
+        }
+        catch ( RepositoryStorageMetadataNotFoundException e )
+        {
+            assertEquals( "missing-pom", e.getId() );
+        }
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotMalformedMetadata()
         throws Exception
     {
-        FacetedMetadata metadata = resolver.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test",
-                                                                        "malformed-metadata", "1.0-SNAPSHOT" );
-        assertNull( metadata );
+        try
+        {
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "malformed-metadata",
+                                                "1.0-SNAPSHOT" );
+            fail( "Should not be found" );
+        }
+        catch ( RepositoryStorageMetadataNotFoundException e )
+        {
+            assertEquals( "missing-pom", e.getId() );
+        }
     }
 
     public void testGetProjectVersionMetadataForTimestampedSnapshotIncompleteMetadata()
         throws Exception
     {
-        FacetedMetadata metadata = resolver.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test",
-                                                                        "incomplete-metadata", "1.0-SNAPSHOT" );
-        assertNull( metadata );
+        try
+        {
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "incomplete-metadata",
+                                                "1.0-SNAPSHOT" );
+            fail( "Should not be found" );
+        }
+        catch ( RepositoryStorageMetadataNotFoundException e )
+        {
+            assertEquals( "missing-pom", e.getId() );
+        }
     }
 
     public void testGetProjectVersionMetadataForInvalidPom()
         throws Exception
     {
-        assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
-
         try
         {
-            resolver.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "invalid-pom", "1.0" );
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "invalid-pom", "1.0" );
             fail( "Should have received an exception due to invalid POM" );
         }
-        catch ( MetadataResolutionException e )
+        catch ( RepositoryStorageMetadataInvalidException e )
         {
-            assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID,
-                                                               RepositoryProblemFacet.FACET_ID ).isEmpty() );
-            RepositoryProblemFacet facet = (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID,
-                                                                                                         RepositoryProblemFacet.FACET_ID,
-                                                                                                         "com.example.test/invalid-pom/1.0" );
-            assertEquals( "invalid-pom", facet.getProblem() );
+            assertEquals( "invalid-pom", e.getId() );
         }
     }
 
     public void testGetProjectVersionMetadataForMislocatedPom()
         throws Exception
     {
-        assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
-
         try
         {
-            resolver.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "mislocated-pom", "1.0" );
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "mislocated-pom", "1.0" );
             fail( "Should have received an exception due to mislocated POM" );
         }
-        catch ( MetadataResolutionException e )
+        catch ( RepositoryStorageMetadataInvalidException e )
         {
-            assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID,
-                                                               RepositoryProblemFacet.FACET_ID ).isEmpty() );
-            RepositoryProblemFacet facet = (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID,
-                                                                                                         RepositoryProblemFacet.FACET_ID,
-                                                                                                         "com.example.test/mislocated-pom/1.0" );
-            assertEquals( "mislocated-pom", facet.getProblem() );
+            assertEquals( "mislocated-pom", e.getId() );
         }
     }
 
     public void testGetProjectVersionMetadataForMissingPom()
         throws Exception
     {
-        assertTrue( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
-
-        FacetedMetadata metadata = resolver.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-pom",
-                                                                        "1.0" );
-        assertNull( metadata );
-
-        assertFalse( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryProblemFacet.FACET_ID ).isEmpty() );
-        RepositoryProblemFacet facet = (RepositoryProblemFacet) metadataRepository.getMetadataFacet( TEST_REPO_ID,
-                                                                                                     RepositoryProblemFacet.FACET_ID,
-                                                                                                     "com.example.test/missing-pom/1.0" );
-        assertEquals( "missing-pom", facet.getProblem() );
-
+        try
+        {
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-pom", "1.0" );
+            fail( "Should not be found" );
+        }
+        catch ( RepositoryStorageMetadataNotFoundException e )
+        {
+            assertEquals( "missing-pom", e.getId() );
+        }
     }
 
     public void testGetRootNamespaces()
     {
-        assertEquals( Arrays.asList( "com", "org" ), resolver.listRootNamespaces( TEST_REPO_ID, ALL ) );
+        assertEquals( Arrays.asList( "com", "org" ), storage.listRootNamespaces( TEST_REPO_ID, ALL ) );
     }
 
     public void testGetNamespaces()
     {
-        assertEquals( Arrays.asList( "example" ), resolver.listNamespaces( TEST_REPO_ID, "com", ALL ) );
-        assertEquals( Arrays.asList( "test" ), resolver.listNamespaces( TEST_REPO_ID, "com.example", ALL ) );
-        assertEquals( Collections.<String>emptyList(), resolver.listNamespaces( TEST_REPO_ID, "com.example.test",
-                                                                                ALL ) );
+        assertEquals( Arrays.asList( "example" ), storage.listNamespaces( TEST_REPO_ID, "com", ALL ) );
+        assertEquals( Arrays.asList( "test" ), storage.listNamespaces( TEST_REPO_ID, "com.example", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "com.example.test",
+                                                                               ALL ) );
 
-        assertEquals( Arrays.asList( "apache", "codehaus" ), resolver.listNamespaces( TEST_REPO_ID, "org", ALL ) );
-        assertEquals( Arrays.asList( "archiva", "maven" ), resolver.listNamespaces( TEST_REPO_ID, "org.apache", ALL ) );
-        assertEquals( Collections.<String>emptyList(), resolver.listNamespaces( TEST_REPO_ID, "org.apache.archiva",
-                                                                                ALL ) );
-        assertEquals( Arrays.asList( "plugins", "shared" ), resolver.listNamespaces( TEST_REPO_ID, "org.apache.maven",
-                                                                                     ALL ) );
-        assertEquals( Collections.<String>emptyList(), resolver.listNamespaces( TEST_REPO_ID,
-                                                                                "org.apache.maven.plugins", ALL ) );
-        assertEquals( Collections.<String>emptyList(), resolver.listNamespaces( TEST_REPO_ID, "org.apache.maven.shared",
-                                                                                ALL ) );
+        assertEquals( Arrays.asList( "apache", "codehaus" ), storage.listNamespaces( TEST_REPO_ID, "org", ALL ) );
+        assertEquals( Arrays.asList( "archiva", "maven" ), storage.listNamespaces( TEST_REPO_ID, "org.apache", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "org.apache.archiva",
+                                                                               ALL ) );
+        assertEquals( Arrays.asList( "plugins", "shared" ), storage.listNamespaces( TEST_REPO_ID, "org.apache.maven",
+                                                                                    ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "org.apache.maven.plugins",
+                                                                               ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "org.apache.maven.shared",
+                                                                               ALL ) );
 
-        assertEquals( Arrays.asList( "plexus" ), resolver.listNamespaces( TEST_REPO_ID, "org.codehaus", ALL ) );
-        assertEquals( Collections.<String>emptyList(), resolver.listNamespaces( TEST_REPO_ID, "org.codehaus.plexus",
-                                                                                ALL ) );
+        assertEquals( Arrays.asList( "plexus" ), storage.listNamespaces( TEST_REPO_ID, "org.codehaus", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "org.codehaus.plexus",
+                                                                               ALL ) );
     }
 
     public void testGetProjects()
     {
-        assertEquals( Collections.<String>emptyList(), resolver.listProjects( TEST_REPO_ID, "com", ALL ) );
-        assertEquals( Collections.<String>emptyList(), resolver.listProjects( TEST_REPO_ID, "com.example", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "com", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "com.example", ALL ) );
         assertEquals( Arrays.asList( "incomplete-metadata", "invalid-pom", "malformed-metadata", "mislocated-pom",
-                                     "missing-metadata", "test-artifact" ), resolver.listProjects( TEST_REPO_ID,
-                                                                                                   "com.example.test",
-                                                                                                   ALL ) );
+                                     "missing-metadata", "test-artifact" ), storage.listProjects( TEST_REPO_ID,
+                                                                                                  "com.example.test",
+                                                                                                  ALL ) );
 
-        assertEquals( Collections.<String>emptyList(), resolver.listProjects( TEST_REPO_ID, "org", ALL ) );
-        assertEquals( Arrays.asList( "apache" ), resolver.listProjects( TEST_REPO_ID, "org.apache", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "org", ALL ) );
+        assertEquals( Arrays.asList( "apache" ), storage.listProjects( TEST_REPO_ID, "org.apache", ALL ) );
         assertEquals( Arrays.asList( "archiva", "archiva-base", "archiva-common", "archiva-modules", "archiva-parent" ),
-                      resolver.listProjects( TEST_REPO_ID, "org.apache.archiva", ALL ) );
-        assertEquals( Collections.<String>emptyList(), resolver.listProjects( TEST_REPO_ID, "org.apache.maven", ALL ) );
-        assertEquals( Collections.<String>emptyList(), resolver.listProjects( TEST_REPO_ID, "org.apache.maven.plugins",
-                                                                              ALL ) );
-        assertEquals( Arrays.asList( "maven-downloader" ), resolver.listProjects( TEST_REPO_ID,
-                                                                                  "org.apache.maven.shared", ALL ) );
+                      storage.listProjects( TEST_REPO_ID, "org.apache.archiva", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "org.apache.maven", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "org.apache.maven.plugins",
+                                                                             ALL ) );
+        assertEquals( Arrays.asList( "maven-downloader" ), storage.listProjects( TEST_REPO_ID,
+                                                                                 "org.apache.maven.shared", ALL ) );
     }
 
     public void testGetProjectVersions()
     {
-        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), resolver.listProjectVersions( TEST_REPO_ID, "com.example.test",
-                                                                                     "incomplete-metadata", ALL ) );
-        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), resolver.listProjectVersions( TEST_REPO_ID, "com.example.test",
-                                                                                     "malformed-metadata", ALL ) );
-        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), resolver.listProjectVersions( TEST_REPO_ID, "com.example.test",
-                                                                                     "missing-metadata", ALL ) );
-        assertEquals( Arrays.asList( "1.0" ), resolver.listProjectVersions( TEST_REPO_ID, "com.example.test",
-                                                                            "invalid-pom", ALL ) );
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
+                                                                                    "incomplete-metadata", ALL ) );
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
+                                                                                    "malformed-metadata", ALL ) );
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
+                                                                                    "missing-metadata", ALL ) );
+        assertEquals( Arrays.asList( "1.0" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
+                                                                           "invalid-pom", ALL ) );
 
-        assertEquals( Arrays.asList( "4", "5-SNAPSHOT" ), resolver.listProjectVersions( TEST_REPO_ID, "org.apache",
-                                                                                        "apache", ALL ) );
+        assertEquals( Arrays.asList( "4", "5-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache",
+                                                                                       "apache", ALL ) );
 
-        assertEquals( Arrays.asList( "1.2.1", "1.2.2" ), resolver.listProjectVersions( TEST_REPO_ID,
-                                                                                       "org.apache.archiva", "archiva",
-                                                                                       ALL ) );
-        assertEquals( Arrays.asList( "1.2.1" ), resolver.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
-                                                                              "archiva-base", ALL ) );
-        assertEquals( Arrays.asList( "1.2.1" ), resolver.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
-                                                                              "archiva-common", ALL ) );
-        assertEquals( Arrays.asList( "1.2.1" ), resolver.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
-                                                                              "archiva-modules", ALL ) );
-        assertEquals( Arrays.asList( "3" ), resolver.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
-                                                                          "archiva-parent", ALL ) );
+        assertEquals( Arrays.asList( "1.2.1", "1.2.2" ), storage.listProjectVersions( TEST_REPO_ID,
+                                                                                      "org.apache.archiva", "archiva",
+                                                                                      ALL ) );
+        assertEquals( Arrays.asList( "1.2.1" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
+                                                                             "archiva-base", ALL ) );
+        assertEquals( Arrays.asList( "1.2.1" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
+                                                                             "archiva-common", ALL ) );
+        assertEquals( Arrays.asList( "1.2.1" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
+                                                                             "archiva-modules", ALL ) );
+        assertEquals( Arrays.asList( "3" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
+                                                                         "archiva-parent", ALL ) );
 
-        assertEquals( Collections.<String>emptyList(), resolver.listProjectVersions( TEST_REPO_ID,
-                                                                                     "org.apache.maven.shared",
-                                                                                     "maven-downloader", ALL ) );
+        assertEquals( Collections.<String>emptyList(), storage.listProjectVersions( TEST_REPO_ID,
+                                                                                    "org.apache.maven.shared",
+                                                                                    "maven-downloader", ALL ) );
     }
 
     public void testGetArtifacts()
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( resolver.readArtifactsMetadata(
-            TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata( TEST_REPO_ID,
+                                                                                                           "org.codehaus.plexus",
+                                                                                                           "plexus-spring",
+                                                                                                           "1.2",
+                                                                                                           ALL ) );
         assertEquals( 3, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -484,8 +484,11 @@ public class Maven2RepositoryMetadataResolverTest
     {
         ExcludesFilter<String> filter = new ExcludesFilter<String>( Collections.singletonList(
             "plexus-spring-1.2.pom" ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( resolver.readArtifactsMetadata(
-            TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", filter ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata( TEST_REPO_ID,
+                                                                                                           "org.codehaus.plexus",
+                                                                                                           "plexus-spring",
+                                                                                                           "1.2",
+                                                                                                           filter ) );
         assertEquals( 2, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -501,8 +504,11 @@ public class Maven2RepositoryMetadataResolverTest
 
     public void testGetArtifactsTimestampedSnapshots()
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( resolver.readArtifactsMetadata(
-            TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT", ALL ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata( TEST_REPO_ID,
+                                                                                                           "com.example.test",
+                                                                                                           "missing-metadata",
+                                                                                                           "1.0-SNAPSHOT",
+                                                                                                           ALL ) );
         assertEquals( 1, artifacts.size() );
 
         ArtifactMetadata artifact = artifacts.get( 0 );

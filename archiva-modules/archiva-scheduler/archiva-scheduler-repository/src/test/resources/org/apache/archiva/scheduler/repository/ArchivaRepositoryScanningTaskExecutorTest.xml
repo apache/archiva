@@ -37,6 +37,9 @@
         <requirement>
           <role>org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager</role>
         </requirement>
+        <requirement>
+          <role>org.apache.archiva.metadata.repository.RepositorySessionFactory</role>
+        </requirement>
       </requirements>
     </component>
 
@@ -86,6 +89,11 @@
           <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
         </requirement>
       </requirements>
+    </component>
+
+    <component>
+      <role>org.apache.archiva.metadata.repository.RepositorySessionFactory</role>
+      <implementation>org.apache.archiva.metadata.repository.TestRepositorySessionFactory</implementation>
     </component>
   </components>
 </component-set>

@@ -71,7 +71,6 @@ public class RepositoryStatisticsManagerTest
 
         metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
-        repositoryStatisticsManager.setMetadataRepository( metadataRepository );
     }
 
     public void testGetLatestStats()
@@ -98,7 +97,7 @@ public class RepositoryStatisticsManagerTest
                                                                                         SECOND_TEST_SCAN ), stats );
         metadataRepositoryControl.replay();
 
-        stats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
+        stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertNotNull( stats );
         assertEquals( 1314527915L, stats.getTotalArtifactFileSize() );
         assertEquals( 123, stats.getNewFileCount() );
@@ -121,7 +120,7 @@ public class RepositoryStatisticsManagerTest
                                                    Collections.emptyList() );
         metadataRepositoryControl.replay();
 
-        RepositoryStatistics stats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
+        RepositoryStatistics stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertNull( stats );
 
         metadataRepositoryControl.verify();
@@ -148,9 +147,10 @@ public class RepositoryStatisticsManagerTest
 
         metadataRepositoryControl.replay();
 
-        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime, current, 56345, 45 );
+        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, startTime, current, 56345,
+                                                            45 );
 
-        stats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
+        stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertNotNull( stats );
         assertEquals( 246900, stats.getTotalArtifactFileSize() );
         assertEquals( 45, stats.getNewFileCount() );
@@ -195,16 +195,16 @@ public class RepositoryStatisticsManagerTest
 
         metadataRepositoryControl.replay();
 
-        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime1, stats1.getScanEndTime(), 56345,
-                                                            45 );
-        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime2, stats2.getScanEndTime(), 56345,
-                                                            45 );
+        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, startTime1,
+                                                            stats1.getScanEndTime(), 56345, 45 );
+        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, startTime2,
+                                                            stats2.getScanEndTime(), 56345, 45 );
 
-        assertNotNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+        assertNotNull( repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID ) );
 
-        repositoryStatisticsManager.deleteStatistics( TEST_REPO_ID );
+        repositoryStatisticsManager.deleteStatistics( metadataRepository, TEST_REPO_ID );
 
-        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+        assertNull( repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID ) );
 
         metadataRepositoryControl.verify();
     }
@@ -220,11 +220,11 @@ public class RepositoryStatisticsManagerTest
 
         metadataRepositoryControl.replay();
 
-        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+        assertNull( repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID ) );
 
-        repositoryStatisticsManager.deleteStatistics( TEST_REPO_ID );
+        repositoryStatisticsManager.deleteStatistics( metadataRepository, TEST_REPO_ID );
 
-        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+        assertNull( repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID ) );
 
         metadataRepositoryControl.verify();
     }
@@ -257,12 +257,14 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats.getScanStartTime(),
-                                                                stats.getScanEndTime(), 56345, 45 );
+            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+                                                                stats.getScanStartTime(), stats.getScanEndTime(), 56345,
+                                                                45 );
         }
 
-        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date(
-            current.getTime() - 4000 ), new Date( current.getTime() - 2000 ) );
+        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( metadataRepository,
+                                                                                            TEST_REPO_ID, new Date(
+                current.getTime() - 4000 ), new Date( current.getTime() - 2000 ) );
 
         assertEquals( 1, list.size() );
         assertEquals( new Date( current.getTime() - 3000 ), list.get( 0 ).getScanStartTime() );
@@ -302,12 +304,14 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats.getScanStartTime(),
-                                                                stats.getScanEndTime(), 56345, 45 );
+            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+                                                                stats.getScanStartTime(), stats.getScanEndTime(), 56345,
+                                                                45 );
         }
 
-        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date(
-            current.getTime() - 4000 ), current );
+        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( metadataRepository,
+                                                                                            TEST_REPO_ID, new Date(
+                current.getTime() - 4000 ), current );
 
         assertEquals( 2, list.size() );
         assertEquals( new Date( current.getTime() - 3000 ), list.get( 1 ).getScanStartTime() );
@@ -348,12 +352,14 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats.getScanStartTime(),
-                                                                stats.getScanEndTime(), 56345, 45 );
+            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+                                                                stats.getScanStartTime(), stats.getScanEndTime(), 56345,
+                                                                45 );
         }
 
-        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date(
-            current.getTime() - 20000 ), new Date( current.getTime() - 2000 ) );
+        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( metadataRepository,
+                                                                                            TEST_REPO_ID, new Date(
+                current.getTime() - 20000 ), new Date( current.getTime() - 2000 ) );
 
         assertEquals( 2, list.size() );
         assertEquals( new Date( current.getTime() - 12345 ), list.get( 1 ).getScanStartTime() );
@@ -399,12 +405,14 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats.getScanStartTime(),
-                                                                stats.getScanEndTime(), 56345, 45 );
+            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+                                                                stats.getScanStartTime(), stats.getScanEndTime(), 56345,
+                                                                45 );
         }
 
-        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date(
-            current.getTime() - 20000 ), current );
+        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( metadataRepository,
+                                                                                            TEST_REPO_ID, new Date(
+                current.getTime() - 20000 ), current );
 
         assertEquals( 3, list.size() );
         assertEquals( new Date( current.getTime() - 12345 ), list.get( 2 ).getScanStartTime() );
@@ -435,12 +443,14 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, stats.getScanStartTime(),
-                                                                stats.getScanEndTime(), 56345, 45 );
+            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+                                                                stats.getScanStartTime(), stats.getScanEndTime(), 56345,
+                                                                45 );
         }
 
-        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID, new Date(
-            current.getTime() - 20000 ), new Date( current.getTime() - 16000 ) );
+        List<RepositoryStatistics> list = repositoryStatisticsManager.getStatisticsInRange( metadataRepository,
+                                                                                            TEST_REPO_ID, new Date(
+                current.getTime() - 20000 ), new Date( current.getTime() - 16000 ) );
 
         assertEquals( 0, list.size() );
 

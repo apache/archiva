@@ -23,6 +23,8 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
@@ -62,6 +64,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * AdministrationServiceImplTest
@@ -162,6 +167,12 @@ public class AdministrationServiceImplTest
         metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
 
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getRepository() ).thenReturn( metadataRepository );
+
+        RepositorySessionFactory repositorySessionFactory = mock( RepositorySessionFactory.class );
+        when( repositorySessionFactory.createSession() ).thenReturn( repositorySession );
+
         listenerControl = MockControl.createControl( RepositoryListener.class );
         listener = (RepositoryListener) listenerControl.getMock();
 
@@ -175,8 +186,9 @@ public class AdministrationServiceImplTest
         auditListener = (AuditListener) auditListenerControl.getMock();
 
         service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
-                                                 metadataRepository, repositoryTaskScheduler, Collections.singletonList(
-            listener ), repositoryStatisticsManager, repositoryMerger, auditListener );
+                                                 repositorySessionFactory, repositoryTaskScheduler,
+                                                 Collections.singletonList( listener ), repositoryStatisticsManager,
+                                                 repositoryMerger, auditListener );
     }
 
     /* Tests for repository consumers */
@@ -342,8 +354,8 @@ public class AdministrationServiceImplTest
         metadataRepository.removeArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
                                            artifact.getVersion(), artifact.getId() );
 
-        listener.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
-                                 artifact.getVersion(), artifact.getId() );
+        listener.deleteArtifact( metadataRepository, repoContent.getId(), artifact.getNamespace(),
+                                 artifact.getProject(), artifact.getVersion(), artifact.getId() );
         listenerControl.setVoidCallable( 1 );
 
         archivaConfigControl.replay();
@@ -399,8 +411,8 @@ public class AdministrationServiceImplTest
         metadataRepository.removeArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
                                            artifact.getVersion(), artifact.getId() );
 
-        listener.deleteArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
-                                 artifact.getVersion(), artifact.getId() );
+        listener.deleteArtifact( metadataRepository, repoContent.getId(), artifact.getNamespace(),
+                                 artifact.getProject(), artifact.getVersion(), artifact.getId() );
         listenerControl.setVoidCallable( 1 );
 
         archivaConfigControl.replay();
@@ -725,10 +737,11 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "merge-stage" ), staging );
 
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
-        repositoryMergerControl.expectAndDefaultReturn( repositoryMerger.getConflictingArtifacts( staging.getId(),
+        repositoryMergerControl.expectAndDefaultReturn( repositoryMerger.getConflictingArtifacts( metadataRepository,
+                                                                                                  staging.getId(),
                                                                                                   merge.getId() ),
                                                         sources );
-        repositoryMerger.merge( staging.getId(), merge.getId() );
+        repositoryMerger.merge( metadataRepository, staging.getId(), merge.getId() );
         repositoryMergerControl.setVoidCallable();
         repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "merge" ),
                                                         false );
@@ -794,10 +807,11 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "repo-stage" ), staging );
 
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
-        repositoryMergerControl.expectAndDefaultReturn( repositoryMerger.getConflictingArtifacts( staging.getId(),
+        repositoryMergerControl.expectAndDefaultReturn( repositoryMerger.getConflictingArtifacts( metadataRepository,
+                                                                                                  staging.getId(),
                                                                                                   repo.getId() ),
                                                         conflicts );
-        repositoryMerger.merge( staging.getId(), repo.getId(), artifactsWithOutConflicts );
+        repositoryMerger.merge( metadataRepository, staging.getId(), repo.getId(), artifactsWithOutConflicts );
         repositoryMergerControl.setMatcher( MockControl.ALWAYS_MATCHER );
         repositoryMergerControl.setVoidCallable();
         repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "repo" ),

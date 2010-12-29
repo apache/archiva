@@ -23,7 +23,9 @@ import com.opensymphony.xwork2.Action;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -46,6 +48,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * DeleteManagedRepositoryActionTest
@@ -73,6 +78,12 @@ public class DeleteManagedRepositoryActionTest
 
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
+    private MetadataRepository metadataRepository;
+
+    private RepositorySession respositorySession;
+
+    private MockControl metadataRepositoryControl;
+
     protected void setUp()
         throws Exception
     {
@@ -93,10 +104,15 @@ public class DeleteManagedRepositoryActionTest
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
         action.setRepositoryStatisticsManager( repositoryStatisticsManager );
 
-        MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
-        MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
+        metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
+        metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
         metadataRepository.removeRepository( REPO_ID );
-        action.setMetadataRepository( metadataRepository );
+
+        respositorySession = mock( RepositorySession.class );
+        when( respositorySession.getRepository() ).thenReturn( metadataRepository );
+        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        factory.setRepositorySession( respositorySession );
+        action.setRepositorySessionFactory( factory );
 
         metadataRepositoryControl.replay();
     }
@@ -149,7 +165,7 @@ public class DeleteManagedRepositoryActionTest
         throws Exception
     {
         // even when we keep the content, we don't keep the metadata at this point
-        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManager.deleteStatistics( metadataRepository, REPO_ID );
         repositoryStatisticsManagerControl.replay();
 
         prepareRoleManagerMock();
@@ -158,7 +174,7 @@ public class DeleteManagedRepositoryActionTest
 
         MockControl control = mockAuditListeners();
 
-        MockControl metadataRepositoryControl = mockMetadataRepository();
+        when( respositorySession.getRepository() ).thenReturn( metadataRepository );
 
         String status = action.deleteEntry();
 
@@ -171,17 +187,6 @@ public class DeleteManagedRepositoryActionTest
         repositoryStatisticsManagerControl.verify();
         control.verify();
         metadataRepositoryControl.verify();
-    }
-
-    private MockControl mockMetadataRepository()
-        throws MetadataRepositoryException
-    {
-        MockControl metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
-        MetadataRepository metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
-        metadataRepository.removeRepository( REPO_ID );
-        metadataRepositoryControl.replay();
-        action.setMetadataRepository( metadataRepository );
-        return metadataRepositoryControl;
     }
 
     private MockControl mockAuditListeners()
@@ -198,7 +203,7 @@ public class DeleteManagedRepositoryActionTest
     public void testDeleteRepositoryDeleteContent()
         throws Exception
     {
-        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManager.deleteStatistics( metadataRepository, REPO_ID );
         repositoryStatisticsManagerControl.replay();
 
         prepareRoleManagerMock();
@@ -207,7 +212,7 @@ public class DeleteManagedRepositoryActionTest
 
         MockControl control = mockAuditListeners();
 
-        MockControl metadataRepositoryControl = mockMetadataRepository();
+        when( respositorySession.getRepository() ).thenReturn( metadataRepository );
 
         String status = action.deleteContents();
 
@@ -225,7 +230,7 @@ public class DeleteManagedRepositoryActionTest
     public void testDeleteRepositoryAndAssociatedProxyConnectors()
         throws Exception
     {
-        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManager.deleteStatistics( metadataRepository, REPO_ID );
         repositoryStatisticsManagerControl.replay();
 
         Configuration configuration = prepDeletionTest( createRepository(), 5 );
@@ -238,7 +243,7 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( 1, configuration.getProxyConnectors().size() );
 
         MockControl control = mockAuditListeners();
-        MockControl metadataRepositoryControl = mockMetadataRepository();
+        when( respositorySession.getRepository() ).thenReturn( metadataRepository );
         String status = action.deleteContents();
 
         assertEquals( Action.SUCCESS, status );

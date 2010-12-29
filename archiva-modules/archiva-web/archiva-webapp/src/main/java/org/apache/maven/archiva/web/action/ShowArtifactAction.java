@@ -30,6 +30,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -66,17 +67,7 @@ public class ShowArtifactAction
     /**
      * @plexus.requirement
      */
-    private MetadataResolver metadataResolver;
-
-    /**
-     * @plexus.requirement
-     */
     private RepositoryContentFactory repositoryFactory;
-
-    /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
 
     /* .\ Exposed Output Objects \.__________________________________ */
 
@@ -120,15 +111,26 @@ public class ShowArtifactAction
      */
     public String artifact()
     {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            return handleArtifact( repositorySession );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
 
+    private String handleArtifact( RepositorySession session )
+    {
         // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
         // simple resource requests here and letting the resolver take care of it
-        String errorMsg = null;
-        ProjectVersionMetadata versionMetadata = getProjectVersionMetadata();
+        ProjectVersionMetadata versionMetadata = getProjectVersionMetadata( session );
 
         if ( versionMetadata == null )
         {
-            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
+            addActionError( "Artifact not found" );
             return ERROR;
         }
 
@@ -142,13 +144,14 @@ public class ShowArtifactAction
         return SUCCESS;
     }
 
-    private ProjectVersionMetadata getProjectVersionMetadata()
+    private ProjectVersionMetadata getProjectVersionMetadata( RepositorySession session )
     {
         ProjectVersionMetadata versionMetadata = null;
         artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
 
         List<String> repos = getObservableRepos();
 
+        MetadataResolver metadataResolver = session.getResolver();
         for ( String repoId : repos )
         {
             if ( versionMetadata == null )
@@ -157,7 +160,8 @@ public class ShowArtifactAction
                 // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
                 try
                 {
-                    versionMetadata = metadataResolver.resolveProjectVersion( repoId, groupId, artifactId, version );
+                    versionMetadata = metadataResolver.resolveProjectVersion( session, repoId, groupId, artifactId,
+                                                                              version );
                 }
                 catch ( MetadataResolutionException e )
                 {
@@ -174,7 +178,8 @@ public class ShowArtifactAction
                     List<ArtifactMetadata> artifacts;
                     try
                     {
-                        artifacts = new ArrayList<ArtifactMetadata>( metadataResolver.resolveArtifacts( repoId, groupId,
+                        artifacts = new ArrayList<ArtifactMetadata>( metadataResolver.resolveArtifacts( session, repoId,
+                                                                                                        groupId,
                                                                                                         artifactId,
                                                                                                         version ) );
                     }
@@ -262,10 +267,20 @@ public class ShowArtifactAction
     {
         List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
         // TODO: what if we get duplicates across repositories?
-        for ( String repoId : getObservableRepos() )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            // TODO: what about if we want to see this irrespective of version?
-            references.addAll( metadataResolver.resolveProjectReferences( repoId, groupId, artifactId, version ) );
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+            for ( String repoId : getObservableRepos() )
+            {
+                // TODO: what about if we want to see this irrespective of version?
+                references.addAll( metadataResolver.resolveProjectReferences( repositorySession, repoId, groupId,
+                                                                              artifactId, version ) );
+            }
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         this.dependees = references;
@@ -314,46 +329,56 @@ public class ShowArtifactAction
 
     public String addMetadataProperty()
     {
-        String errorMsg = null;
-
-        ProjectVersionMetadata projectMetadata = getProjectVersionMetadata();
-        if ( projectMetadata == null )
-        {
-            addActionError( errorMsg != null ? errorMsg : "Artifact not found" );
-            return ERROR;
-        }
-
-        if ( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) == null )
-        {
-            genericMetadata = new HashMap<String, String>();
-        }
-        else
-        {
-            genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
-        }
-
-        if ( propertyName == null || "".equals( propertyName.trim() ) || propertyValue == null || "".equals(
-            propertyValue.trim() ) )
-        {
-            model = projectMetadata;
-            addActionError( errorMsg != null ? errorMsg : "Property Name and Property Value are required." );
-            return INPUT;
-        }
-
-        genericMetadata.put( propertyName, propertyValue );
-
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        ProjectVersionMetadata projectMetadata;
         try
         {
-            updateProjectMetadata( projectMetadata );
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            log.warn( "Unable to persist modified project metadata after adding entry: " + e.getMessage(), e );
-            addActionError( "Unable to add metadata item to underlying content storage - consult application logs." );
-            return ERROR;
-        }
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            projectMetadata = getProjectVersionMetadata( repositorySession );
+            if ( projectMetadata == null )
+            {
+                addActionError( "Artifact not found" );
+                return ERROR;
+            }
 
-        projectMetadata = getProjectVersionMetadata();
+            if ( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) == null )
+            {
+                genericMetadata = new HashMap<String, String>();
+            }
+            else
+            {
+                genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+            }
+
+            if ( propertyName == null || "".equals( propertyName.trim() ) || propertyValue == null || "".equals(
+                propertyValue.trim() ) )
+            {
+                model = projectMetadata;
+                addActionError( "Property Name and Property Value are required." );
+                return INPUT;
+            }
+
+            genericMetadata.put( propertyName, propertyValue );
+
+            try
+            {
+                updateProjectMetadata( projectMetadata, metadataRepository );
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                log.warn( "Unable to persist modified project metadata after adding entry: " + e.getMessage(), e );
+                addActionError(
+                    "Unable to add metadata item to underlying content storage - consult application logs." );
+                return ERROR;
+            }
+
+            // TODO: why re-retrieve?
+            projectMetadata = getProjectVersionMetadata( repositorySession );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
 
         genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
 
@@ -367,57 +392,66 @@ public class ShowArtifactAction
 
     public String deleteMetadataEntry()
     {
-        ProjectVersionMetadata projectMetadata = getProjectVersionMetadata();
-        String errorMsg = null;
-
-        if ( projectMetadata == null )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            addActionError( "Artifact not found" );
-            return ERROR;
-        }
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            ProjectVersionMetadata projectMetadata = getProjectVersionMetadata( repositorySession );
 
-        if ( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) != null )
-        {
-            genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
-
-            if ( !StringUtils.isEmpty( deleteItem ) )
+            if ( projectMetadata == null )
             {
-                genericMetadata.remove( deleteItem );
-
-                try
-                {
-                    updateProjectMetadata( projectMetadata );
-                }
-                catch ( MetadataRepositoryException e )
-                {
-                    log.warn( "Unable to persist modified project metadata after removing entry: " + e.getMessage(),
-                              e );
-                    addActionError(
-                        "Unable to remove metadata item to underlying content storage - consult application logs." );
-                    return ERROR;
-                }
-
-                projectMetadata = getProjectVersionMetadata();
-
-                genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
-
-                model = projectMetadata;
-
-                addActionMessage( "Property successfully deleted." );
+                addActionError( "Artifact not found" );
+                return ERROR;
             }
 
-            deleteItem = "";
+            if ( projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ) != null )
+            {
+                genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+
+                if ( !StringUtils.isEmpty( deleteItem ) )
+                {
+                    genericMetadata.remove( deleteItem );
+
+                    try
+                    {
+                        updateProjectMetadata( projectMetadata, metadataRepository );
+                    }
+                    catch ( MetadataRepositoryException e )
+                    {
+                        log.warn( "Unable to persist modified project metadata after removing entry: " + e.getMessage(),
+                                  e );
+                        addActionError(
+                            "Unable to remove metadata item to underlying content storage - consult application logs." );
+                        return ERROR;
+                    }
+
+                    // TODO: why re-retrieve?
+                    projectMetadata = getProjectVersionMetadata( repositorySession );
+
+                    genericMetadata = projectMetadata.getFacet( GenericMetadataFacet.FACET_ID ).toProperties();
+
+                    model = projectMetadata;
+
+                    addActionMessage( "Property successfully deleted." );
+                }
+
+                deleteItem = "";
+            }
+            else
+            {
+                addActionError( "No generic metadata facet for this artifact." );
+                return ERROR;
+            }
         }
-        else
+        finally
         {
-            addActionError( "No generic metadata facet for this artifact." );
-            return ERROR;
+            repositorySession.close();
         }
 
         return SUCCESS;
     }
 
-    private void updateProjectMetadata( ProjectVersionMetadata projectMetadata )
+    private void updateProjectMetadata( ProjectVersionMetadata projectMetadata, MetadataRepository metadataRepository )
         throws MetadataRepositoryException
     {
         GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
@@ -507,11 +541,6 @@ public class ShowArtifactAction
         this.repositoryId = repositoryId;
     }
 
-    public MetadataResolver getMetadataResolver()
-    {
-        return metadataResolver;
-    }
-
     public Map<String, List<ArtifactDownloadInfo>> getArtifacts()
     {
         return artifacts;
@@ -565,11 +594,6 @@ public class ShowArtifactAction
     public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
     {
         this.repositoryFactory = repositoryFactory;
-    }
-
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
     }
 
     // TODO: move this into the artifact metadata itself via facets where necessary

@@ -24,6 +24,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
@@ -51,9 +52,14 @@ public abstract class PlexusActionSupport
      */
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
+    /**
+     * @plexus.requirement
+     */
+    protected RepositorySessionFactory repositorySessionFactory;
+
     private String principal;
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void setSession( Map map )
     {
         this.session = map;
@@ -78,7 +84,7 @@ public abstract class PlexusActionSupport
     {
         AuditEvent event = new AuditEvent( repositoryId, getPrincipal(), resource, action );
         event.setRemoteIP( getRemoteAddr() );
-    
+
         for ( AuditListener listener : auditListeners )
         {
             listener.auditEvent( event );
@@ -89,7 +95,7 @@ public abstract class PlexusActionSupport
     {
         AuditEvent event = new AuditEvent( null, getPrincipal(), resource, action );
         event.setRemoteIP( getRemoteAddr() );
-        
+
         for ( AuditListener listener : auditListeners )
         {
             listener.auditEvent( event );
@@ -100,7 +106,7 @@ public abstract class PlexusActionSupport
     {
         AuditEvent event = new AuditEvent( null, getPrincipal(), null, action );
         event.setRemoteIP( getRemoteAddr() );
-        
+
         for ( AuditListener listener : auditListeners )
         {
             listener.auditEvent( event );
@@ -122,7 +128,7 @@ public abstract class PlexusActionSupport
         }
         return ArchivaXworkUser.getActivePrincipal( ActionContext.getContext().getSession() );
     }
-    
+
     void setPrincipal( String principal )
     {
         this.principal = principal;
@@ -131,5 +137,10 @@ public abstract class PlexusActionSupport
     public void setAuditListeners( List<AuditListener> auditListeners )
     {
         this.auditListeners = auditListeners;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
     }
 }

@@ -19,6 +19,8 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -62,13 +64,12 @@ public class RepositoryPurgeConsumerTest
         FileTypes fileTypes = (FileTypes) lookup( FileTypes.class );
         fileTypes.afterConfigurationChange( null, "repositoryScanning.fileTypes", null );
 
-        KnownRepositoryContentConsumer repoPurgeConsumer =
-            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class, "repository-purge" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repository-purge" );
 
         File repoLocation = getTestFile( "target/test-" + getName() + "/test-repo" );
 
-        File localFile =
-            new File( repoLocation, path );
+        File localFile = new File( repoLocation, path );
 
         ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
         BaseFile baseFile = new BaseFile( repoLocation, localFile );
@@ -83,16 +84,15 @@ public class RepositoryPurgeConsumerTest
         File[] contents = dir.listFiles();
         for ( int i = 0; i < contents.length; i++ )
         {
-            contents[i].setLastModified( 1179382029 ); 
+            contents[i].setLastModified( 1179382029 );
         }
     }
 
     public void testConsumerByRetentionCount()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer =
-            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
-                                                     "repo-purge-consumer-by-retention-count" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-retention-count" );
 
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDaysOlder( 0 ); // force days older off to allow retention count purge to execute.
@@ -141,8 +141,8 @@ public class RepositoryPurgeConsumerTest
     private void addRepoToConfiguration( String configHint, ManagedRepositoryConfiguration repoConfiguration )
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, configHint );
+        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class,
+                                                                                   configHint );
         Configuration configuration = archivaConfiguration.getConfiguration();
         configuration.removeManagedRepository( configuration.findManagedRepositoryById( repoConfiguration.getId() ) );
         configuration.addManagedRepository( repoConfiguration );
@@ -151,9 +151,8 @@ public class RepositoryPurgeConsumerTest
     public void testConsumerByDaysOld()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer =
-            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
-                                                     "repo-purge-consumer-by-days-old" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
 
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDaysOlder( TEST_DAYS_OLDER );
@@ -182,7 +181,7 @@ public class RepositoryPurgeConsumerTest
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom" );
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom.md5" );
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom.sha1" );
-        
+
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.jar" );
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.jar.md5" );
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070510.010101-4.jar.sha1" );
@@ -206,9 +205,8 @@ public class RepositoryPurgeConsumerTest
     public void testReleasedSnapshotsWereNotCleaned()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer =
-            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
-                                                     "repo-purge-consumer-by-retention-count" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-retention-count" );
 
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
@@ -218,7 +216,8 @@ public class RepositoryPurgeConsumerTest
 
         String repoRoot = prepareTestRepos();
 
-        repoPurgeConsumer.processFile( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
+        repoPurgeConsumer.processFile(
+            CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
         // check if the snapshot wasn't removed
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
@@ -247,9 +246,8 @@ public class RepositoryPurgeConsumerTest
     public void testReleasedSnapshotsWereCleaned()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer =
-            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
-                                                     "repo-purge-consumer-by-days-old" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
 
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDeleteReleasedSnapshots( true );
@@ -259,7 +257,8 @@ public class RepositoryPurgeConsumerTest
 
         String repoRoot = prepareTestRepos();
 
-        repoPurgeConsumer.processFile( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
+        repoPurgeConsumer.processFile(
+            CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
 
@@ -284,5 +283,15 @@ public class RepositoryPurgeConsumerTest
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
                                      "//metadata/versioning/versions/version", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
+    }
+
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        factory.setRepository( metadataRepository );
     }
 }

@@ -20,6 +20,8 @@ package org.apache.maven.archiva.consumers.core.repository;
  */
 
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -41,15 +43,19 @@ public abstract class AbstractRepositoryPurge
 
     protected final ManagedRepositoryContent repository;
 
+    protected final RepositorySession repositorySession;
+
     protected final List<RepositoryListener> listeners;
 
     private Logger logger = LoggerFactory.getLogger( "org.apache.archiva.AuditLog" );
 
     private static final char DELIM = ' ';
 
-    public AbstractRepositoryPurge( ManagedRepositoryContent repository, List<RepositoryListener> listeners )
+    public AbstractRepositoryPurge( ManagedRepositoryContent repository, RepositorySession repositorySession,
+                                    List<RepositoryListener> listeners )
     {
         this.repository = repository;
+        this.repositorySession = repositorySession;
         this.listeners = listeners;
     }
 
@@ -62,6 +68,7 @@ public abstract class AbstractRepositoryPurge
     {
         if ( references != null && !references.isEmpty() )
         {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
             for ( ArtifactReference reference : references )
             {
                 File artifactFile = repository.toFile( reference );
@@ -69,12 +76,15 @@ public abstract class AbstractRepositoryPurge
                 // FIXME: looks incomplete, might not delete related metadata?
                 for ( RepositoryListener listener : listeners )
                 {
-                    listener.deleteArtifact( repository.getId(), reference.getGroupId(), reference.getArtifactId(),
-                                             reference.getVersion(), artifactFile.getName() );
+                    listener.deleteArtifact( metadataRepository, repository.getId(), reference.getGroupId(),
+                                             reference.getArtifactId(), reference.getVersion(),
+                                             artifactFile.getName() );
                 }
 
                 // TODO: this needs to be logged
                 artifactFile.delete();
+                repositorySession.save();
+
                 triggerAuditEvent( repository.getRepository().getId(), ArtifactReference.toKey( reference ),
                                    AuditEvent.PURGE_ARTIFACT );
                 purgeSupportFiles( artifactFile );

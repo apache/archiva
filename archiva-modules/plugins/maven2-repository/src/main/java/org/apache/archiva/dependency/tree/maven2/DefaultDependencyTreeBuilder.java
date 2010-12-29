@@ -21,6 +21,8 @@ package org.apache.archiva.dependency.tree.maven2;
 
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.RepositoryModelResolver;
 import org.apache.commons.lang.StringUtils;
@@ -100,9 +102,11 @@ public class DefaultDependencyTreeBuilder
     private ModelBuilder builder;
 
     /**
+     * TODO: can have other types, and this might eventually come through from the main request
+     *
      * @plexus.requirement
      */
-    private MetadataResolver metadataResolver;
+    private RepositorySessionFactory repositorySessionFactory;
 
     /**
      * @plexus.requirement role-hint="maven2"
@@ -138,12 +142,21 @@ public class DefaultDependencyTreeBuilder
 
             Set<Artifact> dependencyArtifacts = createArtifacts( model, null );
 
-            ArtifactMetadataSource metadataSource = new MetadataArtifactMetadataSource( repositoryIds );
+            RepositorySession repositorySession = repositorySessionFactory.createSession();
+            try
+            {
+                ArtifactMetadataSource metadataSource = new MetadataArtifactMetadataSource( repositoryIds,
+                                                                                            repositorySession );
 
-            // Note that we don't permit going to external repositories. We don't need to pass in a local and remote
-            // since our metadata source has control over them
-            collector.collect( dependencyArtifacts, projectArtifact, managedVersions, null, null, metadataSource, null,
-                               Collections.singletonList( listener ) );
+                // Note that we don't permit going to external repositories. We don't need to pass in a local and remote
+                // since our metadata source has control over them
+                collector.collect( dependencyArtifacts, projectArtifact, managedVersions, null, null, metadataSource,
+                                   null, Collections.singletonList( listener ) );
+            }
+            finally
+            {
+                repositorySession.close();
+            }
 
             DependencyNode rootNode = listener.getRootNode();
 
@@ -347,9 +360,15 @@ public class DefaultDependencyTreeBuilder
     {
         private final List<String> repositoryIds;
 
-        public MetadataArtifactMetadataSource( List<String> repositoryIds )
+        private final RepositorySession session;
+
+        private final MetadataResolver resolver;
+
+        public MetadataArtifactMetadataSource( List<String> repositoryIds, RepositorySession session )
         {
             this.repositoryIds = repositoryIds;
+            this.session = session;
+            resolver = this.session.getResolver();
         }
 
         // modified version from MavenMetadataSource to work with the simpler environment
@@ -425,8 +444,8 @@ public class DefaultDependencyTreeBuilder
                 Collection<String> projectVersions;
                 try
                 {
-                    projectVersions = metadataResolver.resolveProjectVersions( repoId, artifact.getGroupId(),
-                                                                               artifact.getArtifactId() );
+                    projectVersions = resolver.resolveProjectVersions( session, repoId, artifact.getGroupId(),
+                                                                       artifact.getArtifactId() );
                 }
                 catch ( MetadataResolutionException e )
                 {

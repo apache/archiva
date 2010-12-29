@@ -21,11 +21,17 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BrowseActionTest
     extends AbstractActionTestCase
@@ -385,6 +391,10 @@ public class BrowseActionTest
     {
         super.setUp();
         action = (BrowseAction) lookup( Action.class, ACTION_HINT );
-        metadataResolver = (TestMetadataResolver) action.getMetadataResolver();
+        metadataResolver = new TestMetadataResolver();
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getResolver() ).thenReturn( metadataResolver );
+        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        factory.setRepositorySession( repositorySession );
     }
 }

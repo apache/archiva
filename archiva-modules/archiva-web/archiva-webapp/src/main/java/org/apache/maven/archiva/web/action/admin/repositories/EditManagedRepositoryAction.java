@@ -23,6 +23,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -127,6 +128,7 @@ public class EditManagedRepositoryAction
 
         // Save the repository configuration.
         String result;
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
             addRepository( repository, configuration );
@@ -154,7 +156,8 @@ public class EditManagedRepositoryAction
             result = saveConfiguration( configuration );
             if ( resetStats )
             {
-                resetStatistics();
+                repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(), repository.getId() );
+                repositorySession.save();
             }
         }
         catch ( IOException e )
@@ -171,6 +174,10 @@ public class EditManagedRepositoryAction
         {
             addActionError( "Metadata Exception: " + e.getMessage() );
             result = ERROR;
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         return result;
@@ -223,12 +230,6 @@ public class EditManagedRepositoryAction
         {
             addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
         }
-    }
-
-    private void resetStatistics()
-        throws MetadataRepositoryException
-    {
-        repositoryStatisticsManager.deleteStatistics( repository.getId() );
     }
 
     public String getRepoid()

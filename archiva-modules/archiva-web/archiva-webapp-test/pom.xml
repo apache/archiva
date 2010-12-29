@@ -18,7 +18,7 @@
   ~ under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
@@ -41,7 +41,7 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.4</version>
-    </dependency> 
+    </dependency>
 
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -73,10 +73,10 @@
       <version>1.0.1</version>
       <scope>test</scope>
       <exclusions>
-	<exclusion>
-	  <groupId>commons-logging</groupId>
-	  <artifactId>commons-logging</artifactId>
-	</exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -89,7 +89,7 @@
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
     </dependency>
-    
+
     <!-- Dependencies below are provided by the appserver -->
     <dependency>
       <groupId>org.apache.derby</groupId>
@@ -143,7 +143,7 @@
           </execution>
         </executions>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -176,7 +176,7 @@
                   <name>browser</name>
                   <value>${selenium.browser}</value>
                 </property>
-		            <property>
+                <property>
                   <name>baseUrl</name>
                   <value>${baseUrl}</value>
                 </property>
@@ -227,6 +227,7 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
+                  <!-- TODO: this sometimes copies everything, causing problems with the server start up -->
                   <includeGroupIds>org.apache.derby,javax.mail,javax.activation</includeGroupIds>
                   <overWriteReleases>false</overWriteReleases>
                   <overWriteSnapshots>true</overWriteSnapshots>
@@ -247,22 +248,22 @@
                 <configuration>
                   <tasks>
                     <copy todir="${project.build.directory}/appserver-base">
-                      <fileset dir="src/test/resources/appserver-base" />
+                      <fileset dir="src/test/resources/appserver-base"/>
                     </copy>
                     <copy todir="${project.build.directory}/repository">
-                      <fileset dir="src/test/resources/repository" />
+                      <fileset dir="src/test/resources/repository"/>
                     </copy>
                     <copy todir="${project.build.directory}/index">
-                      <fileset dir="src/test/resources/index" />
+                      <fileset dir="src/test/resources/index"/>
                     </copy>
                     <copy todir="${project.build.directory}/snapshots">
-                      <fileset dir="src/test/resources/snapshots" />
+                      <fileset dir="src/test/resources/snapshots"/>
                     </copy>
                     <copy todir="${project.build.directory}/projects">
-                      <fileset dir="src/test/resources/projects" />
+                      <fileset dir="src/test/resources/projects"/>
                     </copy>
                     <copy todir="${project.build.directory}/local-repo">
-                      <fileset dir="src/test/resources/local-repo" />
+                      <fileset dir="src/test/resources/local-repo"/>
                     </copy>
                   </tasks>
                 </configuration>
@@ -273,12 +274,12 @@
                 <configuration>
                   <tasks>
                     <copy todir="${project.build.directory}/${container.name}conf">
-                      <fileset dir="src/test/${container.name}" />
+                      <fileset dir="src/test/${container.name}"/>
                     </copy>
                     <copy
-                      todir="${cargo.install.dir}/${container.name}/apache-tomcat-${tomcat5x.version}/apache-tomcat-${tomcat5x.version}/common/lib">
+                        todir="${cargo.install.dir}/${container.name}/apache-tomcat-${tomcat5x.version}/apache-tomcat-${tomcat5x.version}/common/lib">
                       <fileset dir="${project.build.directory}/providedDependencies">
-                        <include name="**/*.jar" />
+                        <include name="**/*.jar"/>
                       </fileset>
                     </copy>
                   </tasks>
@@ -292,8 +293,8 @@
                 <phase>integration-test</phase>
                 <configuration>
                   <tasks>
-                    <get src="http://localhost:9696/archiva/" dest="${project.build.directory}/index.html" />
-                    <delete file="${project.build.directory}/index.html" />
+                    <get src="http://localhost:9696/archiva/" dest="${project.build.directory}/index.html"/>
+                    <delete file="${project.build.directory}/index.html"/>
                   </tasks>
                 </configuration>
                 <goals>
@@ -386,7 +387,7 @@
                 <configuration>
                   <background>true</background>
                   <port>${seleniumPort}</port>
-                  <logOutput>true</logOutput>      
+                  <logOutput>true</logOutput>
                 </configuration>
               </execution>
             </executions>
@@ -403,7 +404,9 @@
       </activation>
       <properties>
         <container.name>tomcat5x</container.name>
-        <container.url>http://archive.apache.org/dist/tomcat/tomcat-5/v${tomcat5x.version}/bin/apache-tomcat-${tomcat5x.version}.zip</container.url>
+        <container.url>
+          http://archive.apache.org/dist/tomcat/tomcat-5/v${tomcat5x.version}/bin/apache-tomcat-${tomcat5x.version}.zip
+        </container.url>
       </properties>
     </profile>
     <profile>
@@ -415,7 +418,7 @@
       </activation>
       <properties>
         <selenium.browser>*firefox</selenium.browser>
-        <excluded.groups />
+        <excluded.groups/>
       </properties>
     </profile>
     <profile>

@@ -19,11 +19,11 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -35,6 +35,13 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * EditManagedRepositoryActionTest
@@ -58,6 +65,8 @@ public class EditManagedRepositoryActionTest
 
     private File location;
 
+    private MetadataRepository metadataRepository;
+
     protected void setUp()
         throws Exception
     {
@@ -73,6 +82,13 @@ public class EditManagedRepositoryActionTest
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
         location = getTestFile( "target/test/location" );
+
+        metadataRepository = mock( MetadataRepository.class );
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getRepository() ).thenReturn( metadataRepository );
+        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        factory.setRepositorySession( repositorySession );
+        action.setRepositorySessionFactory( factory );
     }
 
     public void testSecureActionBundle()
@@ -121,7 +137,7 @@ public class EditManagedRepositoryActionTest
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
         roleManagerControl.setReturnValue( false );
 
-         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID +"-stage" );
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID + "-stage" );
         roleManagerControl.setReturnValue( false );
 
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
@@ -129,7 +145,7 @@ public class EditManagedRepositoryActionTest
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setReturnValue( false );
 
-        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID +"-stage");
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID + "-stage" );
         roleManagerControl.setReturnValue( false );
 
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
@@ -184,7 +200,7 @@ public class EditManagedRepositoryActionTest
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
         roleManagerControl.setReturnValue( false );
 
-        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID +"-stage");
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID + "-stage" );
         roleManagerControl.setReturnValue( false );
 
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
@@ -192,7 +208,7 @@ public class EditManagedRepositoryActionTest
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setReturnValue( false );
 
-        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID +"-stage");
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID + "-stage" );
         roleManagerControl.setReturnValue( false );
 
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
@@ -207,7 +223,6 @@ public class EditManagedRepositoryActionTest
         stageRepoConfiguration.addManagedRepository( createStagingRepository() );
         archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
 
-
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
 
@@ -219,7 +234,7 @@ public class EditManagedRepositoryActionTest
         RepositoryStatisticsManager repositoryStatisticsManager =
             (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
         action.setRepositoryStatisticsManager( repositoryStatisticsManager );
-        repositoryStatisticsManager.deleteStatistics( REPO_ID );
+        repositoryStatisticsManager.deleteStatistics( metadataRepository, REPO_ID );
         repositoryStatisticsManagerControl.replay();
 
         action.setRepoid( REPO_ID );
@@ -300,10 +315,11 @@ public class EditManagedRepositoryActionTest
         repository.setScanned( false );
         repository.setDeleteReleasedSnapshots( true );
     }
+
     private void populateStagingRepository( ManagedRepositoryConfiguration repository )
         throws IOException
     {
-        repository.setId( REPO_ID + "-stage");
+        repository.setId( REPO_ID + "-stage" );
         repository.setName( "repo name" );
         repository.setLocation( location.getCanonicalPath() );
         repository.setLayout( "default" );

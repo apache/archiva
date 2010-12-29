@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.reports;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;
@@ -110,11 +111,6 @@ public class GenerateReportAction
 
     private boolean lastPage;
 
-    /**
-     * @plexus.requirement
-     */
-    private MetadataRepository metadataRepository;
-
     @SuppressWarnings( "unchecked" )
     public void prepare()
     {
@@ -163,56 +159,24 @@ public class GenerateReportAction
         Date startDateInDF;
         Date endDateInDF;
 
-        if ( selectedRepositories.size() > 1 )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            numPages = 1;
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            if ( selectedRepositories.size() > 1 )
+            {
+                numPages = 1;
 
-            try
-            {
-                startDateInDF = getStartDateInDateFormat();
-                endDateInDF = getEndDateInDateFormat();
-            }
-            catch ( ParseException e )
-            {
-                addActionError( "Error parsing date(s)." );
-                return ERROR;
-            }
-
-            if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
-            {
-                addFieldError( "startDate", "Start Date must be earlier than the End Date" );
-                return INPUT;
-            }
-
-            // multiple repos
-            for ( String repo : selectedRepositories )
-            {
-                List<RepositoryStatistics> stats = null;
                 try
                 {
-                    stats = repositoryStatisticsManager.getStatisticsInRange( repo, startDateInDF, endDateInDF );
+                    startDateInDF = getStartDateInDateFormat();
+                    endDateInDF = getEndDateInDateFormat();
                 }
-                catch ( MetadataRepositoryException e )
+                catch ( ParseException e )
                 {
-                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                    addActionError( "Error parsing date(s)." );
+                    return ERROR;
                 }
-                if ( stats == null || stats.isEmpty() )
-                {
-                    log.info( "No statistics available for repository '" + repo + "'." );
-                    // TODO set repo's stats to 0
-                    continue;
-                }
-
-                repositoryStatistics.add( stats.get( 0 ) );
-            }
-        }
-        else if ( selectedRepositories.size() == 1 )
-        {
-            repositoryId = selectedRepositories.get( 0 );
-            try
-            {
-                startDateInDF = getStartDateInDateFormat();
-                endDateInDF = getEndDateInDateFormat();
 
                 if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
                 {
@@ -220,55 +184,98 @@ public class GenerateReportAction
                     return INPUT;
                 }
 
-                List<RepositoryStatistics> stats = null;
+                // multiple repos
+                for ( String repo : selectedRepositories )
+                {
+                    List<RepositoryStatistics> stats = null;
+                    try
+                    {
+                        stats = repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repo,
+                                                                                  startDateInDF, endDateInDF );
+                    }
+                    catch ( MetadataRepositoryException e )
+                    {
+                        log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                    }
+                    if ( stats == null || stats.isEmpty() )
+                    {
+                        log.info( "No statistics available for repository '" + repo + "'." );
+                        // TODO set repo's stats to 0
+                        continue;
+                    }
+
+                    repositoryStatistics.add( stats.get( 0 ) );
+                }
+            }
+            else if ( selectedRepositories.size() == 1 )
+            {
+                repositoryId = selectedRepositories.get( 0 );
                 try
                 {
-                    stats = repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDateInDF,
-                                                                              endDateInDF );
+                    startDateInDF = getStartDateInDateFormat();
+                    endDateInDF = getEndDateInDateFormat();
+
+                    if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
+                    {
+                        addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                        return INPUT;
+                    }
+
+                    List<RepositoryStatistics> stats = null;
+                    try
+                    {
+                        stats = repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repositoryId,
+                                                                                  startDateInDF, endDateInDF );
+                    }
+                    catch ( MetadataRepositoryException e )
+                    {
+                        log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                    }
+                    if ( stats == null || stats.isEmpty() )
+                    {
+                        addActionError(
+                            "No statistics available for repository. Repository might not have been scanned." );
+                        return ERROR;
+                    }
+
+                    int rowCount = getRowCount();
+                    int extraPage = ( stats.size() % rowCount ) != 0 ? 1 : 0;
+                    int totalPages = ( stats.size() / rowCount ) + extraPage;
+                    numPages = totalPages;
+
+                    int currentPage = getPage();
+                    if ( currentPage > totalPages )
+                    {
+                        addActionError(
+                            "Error encountered while generating report :: The requested page exceeds the total number of pages." );
+                        return ERROR;
+                    }
+
+                    int start = rowCount * ( currentPage - 1 );
+                    int end = ( start + rowCount ) - 1;
+
+                    if ( end > stats.size() )
+                    {
+                        end = stats.size() - 1;
+                    }
+
+                    repositoryStatistics = stats.subList( start, end + 1 );
                 }
-                catch ( MetadataRepositoryException e )
+                catch ( ParseException pe )
                 {
-                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
-                }
-                if ( stats == null || stats.isEmpty() )
-                {
-                    addActionError( "No statistics available for repository. Repository might not have been scanned." );
+                    addActionError( pe.getMessage() );
                     return ERROR;
                 }
-
-                int rowCount = getRowCount();
-                int extraPage = ( stats.size() % rowCount ) != 0 ? 1 : 0;
-                int totalPages = ( stats.size() / rowCount ) + extraPage;
-                numPages = totalPages;
-
-                int currentPage = getPage();
-                if ( currentPage > totalPages )
-                {
-                    addActionError(
-                        "Error encountered while generating report :: The requested page exceeds the total number of pages." );
-                    return ERROR;
-                }
-
-                int start = rowCount * ( currentPage - 1 );
-                int end = ( start + rowCount ) - 1;
-
-                if ( end > stats.size() )
-                {
-                    end = stats.size() - 1;
-                }
-
-                repositoryStatistics = stats.subList( start, end + 1 );
             }
-            catch ( ParseException pe )
+            else
             {
-                addActionError( pe.getMessage() );
-                return ERROR;
+                addFieldError( "availableRepositories", "Please select a repository (or repositories) from the list." );
+                return INPUT;
             }
         }
-        else
+        finally
         {
-            addFieldError( "availableRepositories", "Please select a repository (or repositories) from the list." );
-            return INPUT;
+            repositorySession.close();
         }
 
         if ( repositoryStatistics.isEmpty() )
@@ -293,72 +300,22 @@ public class GenerateReportAction
         List<RepositoryStatistics> repositoryStatistics = new ArrayList<RepositoryStatistics>();
 
         StringBuffer input;
-        if ( selectedRepositories.size() > 1 )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            try
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            if ( selectedRepositories.size() > 1 )
             {
-                startDateInDF = getStartDateInDateFormat();
-                endDateInDF = getEndDateInDateFormat();
-            }
-            catch ( ParseException e )
-            {
-                addActionError( "Error parsing date(s)." );
-                return ERROR;
-            }
-
-            if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
-            {
-                addFieldError( "startDate", "Start Date must be earlier than the End Date" );
-                return INPUT;
-            }
-
-            input = new StringBuffer(
-                "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes," +
-                    "Jars,Wars\n" );
-
-            // multiple repos
-            for ( String repo : selectedRepositories )
-            {
-                List<RepositoryStatistics> stats = null;
                 try
                 {
-                    stats = repositoryStatisticsManager.getStatisticsInRange( repo, startDateInDF, endDateInDF );
+                    startDateInDF = getStartDateInDateFormat();
+                    endDateInDF = getEndDateInDateFormat();
                 }
-                catch ( MetadataRepositoryException e )
+                catch ( ParseException e )
                 {
-                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                    addActionError( "Error parsing date(s)." );
+                    return ERROR;
                 }
-                if ( stats == null || stats.isEmpty() )
-                {
-                    log.info( "No statistics available for repository '" + repo + "'." );
-                    // TODO set repo's stats to 0
-                    continue;
-                }
-
-                // only the first one
-                RepositoryStatistics repositoryStats = stats.get( 0 );
-                repositoryStatistics.add( repositoryStats );
-
-                input.append( repo ).append( "," );
-                input.append( repositoryStats.getTotalFileCount() ).append( "," );
-                input.append( repositoryStats.getTotalArtifactFileSize() ).append( "," );
-                input.append( repositoryStats.getTotalArtifactCount() ).append( "," );
-                input.append( repositoryStats.getTotalGroupCount() ).append( "," );
-                input.append( repositoryStats.getTotalProjectCount() ).append( "," );
-                input.append( repositoryStats.getTotalCountForType( "maven-plugin" ) ).append( "," );
-                input.append( repositoryStats.getTotalCountForType( "maven-archetype" ) ).append( "," );
-                input.append( repositoryStats.getTotalCountForType( "jar" ) ).append( "," );
-                input.append( repositoryStats.getTotalCountForType( "war" ) );
-                input.append( "\n" );
-            }
-        }
-        else if ( selectedRepositories.size() == 1 )
-        {
-            repositoryId = selectedRepositories.get( 0 );
-            try
-            {
-                startDateInDF = getStartDateInDateFormat();
-                endDateInDF = getEndDateInDateFormat();
 
                 if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
                 {
@@ -366,29 +323,35 @@ public class GenerateReportAction
                     return INPUT;
                 }
 
-                List<RepositoryStatistics> stats = null;
-                try
-                {
-                    stats = repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDateInDF,
-                                                                              endDateInDF );
-                }
-                catch ( MetadataRepositoryException e )
-                {
-                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
-                }
-                if ( stats == null || stats.isEmpty() )
-                {
-                    addActionError( "No statistics available for repository. Repository might not have been scanned." );
-                    return ERROR;
-                }
-
                 input = new StringBuffer(
-                    "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins," +
-                        "Archetypes,Jars,Wars\n" );
+                    "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes," +
+                        "Jars,Wars\n" );
 
-                for ( RepositoryStatistics repositoryStats : stats )
+                // multiple repos
+                for ( String repo : selectedRepositories )
                 {
-                    input.append( repositoryStats.getScanStartTime() ).append( "," );
+                    List<RepositoryStatistics> stats = null;
+                    try
+                    {
+                        stats = repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repo,
+                                                                                  startDateInDF, endDateInDF );
+                    }
+                    catch ( MetadataRepositoryException e )
+                    {
+                        log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                    }
+                    if ( stats == null || stats.isEmpty() )
+                    {
+                        log.info( "No statistics available for repository '" + repo + "'." );
+                        // TODO set repo's stats to 0
+                        continue;
+                    }
+
+                    // only the first one
+                    RepositoryStatistics repositoryStats = stats.get( 0 );
+                    repositoryStatistics.add( repositoryStats );
+
+                    input.append( repo ).append( "," );
                     input.append( repositoryStats.getTotalFileCount() ).append( "," );
                     input.append( repositoryStats.getTotalArtifactFileSize() ).append( "," );
                     input.append( repositoryStats.getTotalArtifactCount() ).append( "," );
@@ -400,19 +363,74 @@ public class GenerateReportAction
                     input.append( repositoryStats.getTotalCountForType( "war" ) );
                     input.append( "\n" );
                 }
-
-                repositoryStatistics = stats;
             }
-            catch ( ParseException pe )
+            else if ( selectedRepositories.size() == 1 )
             {
-                addActionError( pe.getMessage() );
-                return ERROR;
+                repositoryId = selectedRepositories.get( 0 );
+                try
+                {
+                    startDateInDF = getStartDateInDateFormat();
+                    endDateInDF = getEndDateInDateFormat();
+
+                    if ( startDateInDF != null && endDateInDF != null && startDateInDF.after( endDateInDF ) )
+                    {
+                        addFieldError( "startDate", "Start Date must be earlier than the End Date" );
+                        return INPUT;
+                    }
+
+                    List<RepositoryStatistics> stats = null;
+                    try
+                    {
+                        stats = repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repositoryId,
+                                                                                  startDateInDF, endDateInDF );
+                    }
+                    catch ( MetadataRepositoryException e )
+                    {
+                        log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                    }
+                    if ( stats == null || stats.isEmpty() )
+                    {
+                        addActionError(
+                            "No statistics available for repository. Repository might not have been scanned." );
+                        return ERROR;
+                    }
+
+                    input = new StringBuffer(
+                        "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins," +
+                            "Archetypes,Jars,Wars\n" );
+
+                    for ( RepositoryStatistics repositoryStats : stats )
+                    {
+                        input.append( repositoryStats.getScanStartTime() ).append( "," );
+                        input.append( repositoryStats.getTotalFileCount() ).append( "," );
+                        input.append( repositoryStats.getTotalArtifactFileSize() ).append( "," );
+                        input.append( repositoryStats.getTotalArtifactCount() ).append( "," );
+                        input.append( repositoryStats.getTotalGroupCount() ).append( "," );
+                        input.append( repositoryStats.getTotalProjectCount() ).append( "," );
+                        input.append( repositoryStats.getTotalCountForType( "maven-plugin" ) ).append( "," );
+                        input.append( repositoryStats.getTotalCountForType( "maven-archetype" ) ).append( "," );
+                        input.append( repositoryStats.getTotalCountForType( "jar" ) ).append( "," );
+                        input.append( repositoryStats.getTotalCountForType( "war" ) );
+                        input.append( "\n" );
+                    }
+
+                    repositoryStatistics = stats;
+                }
+                catch ( ParseException pe )
+                {
+                    addActionError( pe.getMessage() );
+                    return ERROR;
+                }
+            }
+            else
+            {
+                addFieldError( "availableRepositories", "Please select a repository (or repositories) from the list." );
+                return INPUT;
             }
         }
-        else
+        finally
         {
-            addFieldError( "availableRepositories", "Please select a repository (or repositories) from the list." );
-            return INPUT;
+            repositorySession.close();
         }
 
         if ( repositoryStatistics.isEmpty() )
@@ -528,19 +546,28 @@ public class GenerateReportAction
         }
 
         List<RepositoryProblemFacet> problemArtifacts = new ArrayList<RepositoryProblemFacet>();
-        for ( String repoId : repoIds )
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
         {
-            // TODO: improve performance by navigating into a group subtree. Currently group is property, not part of name of item
-            for ( String name : metadataRepository.getMetadataFacets( repoId, RepositoryProblemFacet.FACET_ID ) )
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            for ( String repoId : repoIds )
             {
-                RepositoryProblemFacet metadataFacet = (RepositoryProblemFacet) metadataRepository.getMetadataFacet(
-                    repoId, RepositoryProblemFacet.FACET_ID, name );
-
-                if ( StringUtils.isEmpty( groupId ) || groupId.equals( metadataFacet.getNamespace() ) )
+                // TODO: improve performance by navigating into a group subtree. Currently group is property, not part of name of item
+                for ( String name : metadataRepository.getMetadataFacets( repoId, RepositoryProblemFacet.FACET_ID ) )
                 {
-                    problemArtifacts.add( metadataFacet );
+                    RepositoryProblemFacet metadataFacet = (RepositoryProblemFacet) metadataRepository.getMetadataFacet(
+                        repoId, RepositoryProblemFacet.FACET_ID, name );
+
+                    if ( StringUtils.isEmpty( groupId ) || groupId.equals( metadataFacet.getNamespace() ) )
+                    {
+                        problemArtifacts.add( metadataFacet );
+                    }
                 }
             }
+        }
+        finally
+        {
+            repositorySession.close();
         }
 
         // TODO: getting range only after reading is not efficient for a large number of artifacts
@@ -726,10 +753,5 @@ public class GenerateReportAction
     public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
     {
         this.repositoryStatisticsManager = repositoryStatisticsManager;
-    }
-
-    public void setMetadataRepository( MetadataRepository metadataRepository )
-    {
-        this.metadataRepository = metadataRepository;
     }
 }

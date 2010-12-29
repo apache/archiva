@@ -19,13 +19,6 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -46,9 +39,15 @@ import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
 
+import java.io.File;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Integration test for connecting over a HTTP proxy.
- * 
+ *
  * @version $Id: ManagedDefaultTransferTest.java 677852 2008-07-18 08:16:24Z brett $
  */
 public class HttpProxyTransferTest
@@ -75,7 +74,7 @@ public class HttpProxyTransferTest
         throws Exception
     {
         super.setUp();
-     
+
         // Setup source repository (using default layout)
         String repoPath = "target/test-repository/managed/" + getName();
 
@@ -96,8 +95,8 @@ public class HttpProxyTransferTest
         repo.setLocation( repoPath );
         repo.setLayout( "default" );
 
-        ManagedRepositoryContent repoContent =
-            (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
+        ManagedRepositoryContent repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class,
+                                                                                  "default" );
         repoContent.setRepository( repo );
         managedDefaultRepository = repoContent;
 
@@ -113,7 +112,7 @@ public class HttpProxyTransferTest
                 response.setStatus( HttpServletResponse.SC_OK );
                 response.getWriter().print( "get-default-layout-1.0.jar\n\n" );
                 assertNotNull( request.getHeader( "Proxy-Connection" ) );
-                
+
                 ( (Request) request ).setHandled( true );
             }
         };
@@ -130,7 +129,7 @@ public class HttpProxyTransferTest
         proxyConfig.setProtocol( "http" );
         proxyConfig.setId( PROXY_ID );
         config.getConfiguration().addNetworkProxy( proxyConfig );
-        
+
         // Setup target (proxied to) repository.
         RemoteRepositoryConfiguration repoConfig = new RemoteRepositoryConfiguration();
 
@@ -142,7 +141,16 @@ public class HttpProxyTransferTest
         config.getConfiguration().addRemoteRepository( repoConfig );
 
         // Setup the proxy handler.
-        proxyHandler = (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
+        try
+        {
+            proxyHandler = (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
+        }
+        catch ( Exception e )
+        {
+            server.stop();
+            applicationContext.close();
+            throw e;
+        }
     }
 
     @Override
@@ -150,7 +158,7 @@ public class HttpProxyTransferTest
         throws Exception
     {
         super.tearDown();
-        
+
         server.stop();
     }
 
@@ -159,7 +167,7 @@ public class HttpProxyTransferTest
     {
         assertNull( System.getProperty( "http.proxyHost" ) );
         assertNull( System.getProperty( "http.proxyPort" ) );
-        
+
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
 
         // Configure Connector (usually done within archiva.xml configuration)
@@ -183,7 +191,7 @@ public class HttpProxyTransferTest
         String expectedContents = FileUtils.readFileToString( sourceFile, null );
         String actualContents = FileUtils.readFileToString( downloadedFile, null );
         assertEquals( "Check file contents.", expectedContents, actualContents );
-        
+
         assertNull( System.getProperty( "http.proxyHost" ) );
         assertNull( System.getProperty( "http.proxyPort" ) );
     }

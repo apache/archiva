@@ -26,7 +26,10 @@ import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
+import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -411,9 +414,6 @@ public class ShowArtifactActionTest
         action.setPropertyValue( "bar" );
         action.setRepositoryId( TEST_REPO );
 
-        MetadataRepository repo = mock( MetadataRepository.class );
-        action.setMetadataRepository( repo );
-
         String result = action.addMetadataProperty();
 
         assertActionSuccess( action, result );
@@ -631,7 +631,15 @@ public class ShowArtifactActionTest
     {
         super.setUp();
         action = (ShowArtifactAction) lookup( Action.class, ACTION_HINT );
-        metadataResolver = (TestMetadataResolver) action.getMetadataResolver();
+
+        metadataResolver = new TestMetadataResolver();
+        MetadataRepository repo = mock( MetadataRepository.class );
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getResolver() ).thenReturn( metadataResolver );
+        when( repositorySession.getRepository() ).thenReturn( repo );
+        TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
+            RepositorySessionFactory.class );
+        repositorySessionFactory.setRepositorySession( repositorySession );
 
         RepositoryContentFactory factory = mock( RepositoryContentFactory.class );
         action.setRepositoryFactory( factory );

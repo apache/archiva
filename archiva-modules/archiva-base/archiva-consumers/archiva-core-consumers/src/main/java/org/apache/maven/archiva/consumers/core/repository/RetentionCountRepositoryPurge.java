@@ -19,6 +19,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -36,17 +37,16 @@ import java.util.Set;
 
 /**
  * Purge the repository by retention count. Retain only the specified number of snapshots.
- *
  */
 public class RetentionCountRepositoryPurge
     extends AbstractRepositoryPurge
 {
     private int retentionCount;
 
-    public RetentionCountRepositoryPurge( ManagedRepositoryContent repository, 
-                                          int retentionCount, List<RepositoryListener> listeners )
+    public RetentionCountRepositoryPurge( ManagedRepositoryContent repository, int retentionCount,
+                                          RepositorySession repositorySession, List<RepositoryListener> listeners )
     {
-        super( repository, listeners );
+        super( repository, repositorySession, listeners );
         this.retentionCount = retentionCount;
     }
 
@@ -61,7 +61,7 @@ public class RetentionCountRepositoryPurge
             {
                 return;
             }
-                                                                     
+
             ArtifactReference artifact = repository.toArtifactReference( path );
 
             if ( VersionUtil.isSnapshot( artifact.getVersion() ) )
@@ -114,7 +114,7 @@ public class RetentionCountRepositoryPurge
         artifact.setVersion( version );
         artifact.setClassifier( reference.getClassifier() );
         artifact.setType( reference.getType() );
-        
+
         try
         {
             Set<ArtifactReference> related = repository.getRelatedArtifacts( artifact );
