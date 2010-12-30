@@ -288,6 +288,7 @@
       <artifactId>jackrabbit-core</artifactId>
       <version>${jackrabbit.version}</version>
       <scope>runtime</scope>
+      <!-- FIXME: exclude dependencies that aren't needed -->
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
