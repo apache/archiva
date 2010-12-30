@@ -19,6 +19,11 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
+import com.thoughtworks.selenium.DefaultSelenium;
+import com.thoughtworks.selenium.Selenium;
+import org.apache.commons.io.IOUtils;
+import org.testng.Assert;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -28,11 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import com.thoughtworks.selenium.DefaultSelenium;
-import com.thoughtworks.selenium.Selenium;
-import org.apache.commons.io.IOUtils;
-import org.testng.Assert;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -57,18 +57,16 @@ public abstract class AbstractSeleniumTest
     {
         p = new Properties();
         p.load( this.getClass().getClassLoader().getResourceAsStream( "testng.properties" ) );
-
-        // baseUrl = getProperty( "BASE_URL" );
-        maxWaitTimeInMs = getProperty( "MAX_WAIT_TIME_IN_MS" );
     }
 
     /**
      * Initialize selenium
      */
-    public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort )
+    public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort, String maxWaitTimeInMs )
         throws Exception
     {
-        this.baseUrl = baseUrl;
+        AbstractSeleniumTest.baseUrl = baseUrl;
+        AbstractSeleniumTest.maxWaitTimeInMs = maxWaitTimeInMs;
 
         if ( getSelenium() == null )
         {
@@ -201,7 +199,7 @@ public abstract class AbstractSeleniumTest
 
         assertElementPresent( locator );
     }
-    
+
     public void assertImgWithAltNotPresent( String alt )
     {
         assertElementNotPresent( "/¯img[@alt='" + alt + "']" );
@@ -285,8 +283,8 @@ public abstract class AbstractSeleniumTest
 
     public boolean isButtonWithValuePresent( String text )
     {
-        return isElementPresent( "//button[@value='" + text + "']" )
-            || isElementPresent( "//input[@value='" + text + "']" );
+        return isElementPresent( "//button[@value='" + text + "']" ) || isElementPresent(
+            "//input[@value='" + text + "']" );
     }
 
     public boolean isButtonWithIdPresent( String text )

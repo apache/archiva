@@ -27,7 +27,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-@Test( groups = { "about" }, alwaysRun = true )
+@Test( groups = {"about"}, alwaysRun = true )
 public class ArchivaAdminTest
     extends AbstractArchivaTest
 {
@@ -49,12 +49,12 @@ public class ArchivaAdminTest
     }
 
     @BeforeTest
-    @Parameters( { "baseUrl", "browser", "seleniumHost", "seleniumPort" } )
-    public void initializeArchiva( String baseUrl, String browser, @Optional( "localhost" ) String seleniumHost,
-                                   @Optional( "4444" ) int seleniumPort )
+    @Parameters( {"baseUrl", "browser", "maxWaitTimeInMs", "seleniumHost", "seleniumPort"} )
+    public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs,
+                                   @Optional( "localhost" ) String seleniumHost, @Optional( "4444" ) int seleniumPort )
         throws Exception
     {
-        super.open( baseUrl, browser, seleniumHost, seleniumPort );
+        super.open( baseUrl, browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
         getSelenium().open( baseUrl );
         String title = getSelenium().getTitle();
         if ( title.endsWith( "Create Admin User" ) )

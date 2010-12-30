@@ -148,6 +148,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <redirectTestOutputToFile>false</redirectTestOutputToFile>
           <properties>
             <!--
               Use this instead of suiteXmlFiles so that we can add the exclusion, as it is only accepted without suiteXmlFiles
@@ -179,6 +180,10 @@
                 <property>
                   <name>baseUrl</name>
                   <value>${baseUrl}</value>
+                </property>
+                <property>
+                  <name>maxWaitTimeInMs</name>
+                  <value>${maxWaitTimeInMs}</value>
                 </property>
               </systemProperties>
             </configuration>
@@ -344,6 +349,7 @@
                 <type>existing</type>
                 <properties>
                   <cargo.servlet.port>9696</cargo.servlet.port>
+                  <cargo.jvmargs>${cargo.jvm.args}</cargo.jvmargs>
                 </properties>
               </configuration>
             </configuration>
@@ -498,10 +504,23 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>debug</id>
+      <properties>
+        <cargo.jvm.args>
+          -Xdebug -Xnoagent -Djava.compiler=NONE
+          -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=${cargo.debug.port}
+        </cargo.jvm.args>
+        <cargo.debug.port>8000</cargo.debug.port>
+        <!-- wait an unusual amount of time (1hr) to allow debugging to occur -->
+        <maxWaitTimeInMs>3600000</maxWaitTimeInMs>
+      </properties>
+    </profile>
   </profiles>
   <properties>
     <tomcat5x.version>5.5.27</tomcat5x.version>
     <cargo.wait>false</cargo.wait>
     <cargo.install.dir>cargo-installs</cargo.install.dir>
+    <maxWaitTimeInMs>60000</maxWaitTimeInMs>
   </properties>
 </project>
