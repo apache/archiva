@@ -75,6 +75,12 @@ public class JcrMetadataRepository
 {
     private static final String JCR_LAST_MODIFIED = "jcr:lastModified";
 
+    static final String NAMESPACE_NODE_TYPE = "archiva:namespace";
+
+    static final String PROJECT_NODE_TYPE = "archiva:project";
+
+    static final String PROJECT_VERSION_NODE_TYPE = "archiva:projectVersion";
+
     static final String ARTIFACT_NODE_TYPE = "archiva:artifact";
 
     static final String FACET_NODE_TYPE = "archiva:facet";
@@ -115,6 +121,9 @@ public class JcrMetadataRepository
         }
 
         NodeTypeManager nodeTypeManager = workspace.getNodeTypeManager();
+        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.NAMESPACE_NODE_TYPE );
+        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.PROJECT_NODE_TYPE );
+        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.PROJECT_VERSION_NODE_TYPE );
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.ARTIFACT_NODE_TYPE );
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.FACET_NODE_TYPE );
     }
@@ -955,19 +964,19 @@ public class JcrMetadataRepository
             ? getNamespacePath( repositoryId, baseNamespace )
             : getRepositoryContentPath( repositoryId );
 
-        return getNodeNames( path );
+        return getNodeNames( path, NAMESPACE_NODE_TYPE );
     }
 
     public Collection<String> getProjects( String repositoryId, String namespace )
         throws MetadataResolutionException
     {
-        return getNodeNames( getNamespacePath( repositoryId, namespace ) );
+        return getNodeNames( getNamespacePath( repositoryId, namespace ), PROJECT_NODE_TYPE );
     }
 
     public Collection<String> getProjectVersions( String repositoryId, String namespace, String projectId )
         throws MetadataResolutionException
     {
-        return getNodeNames( getProjectPath( repositoryId, namespace, projectId ) );
+        return getNodeNames( getProjectPath( repositoryId, namespace, projectId ), PROJECT_VERSION_NODE_TYPE );
     }
 
     public Collection<ArtifactMetadata> getArtifacts( String repositoryId, String namespace, String projectId,
@@ -1114,7 +1123,7 @@ public class JcrMetadataRepository
         return node.hasProperty( name ) ? node.getProperty( name ).getString() : null;
     }
 
-    private Collection<String> getNodeNames( String path )
+    private Collection<String> getNodeNames( String path, String nodeType )
         throws MetadataResolutionException
     {
         List<String> names = new ArrayList<String>();
@@ -1123,13 +1132,14 @@ public class JcrMetadataRepository
         {
             Node root = session.getRootNode();
 
-            Node repository = root.getNode( path );
+            Node nodeAtPath = root.getNode( path );
 
-            NodeIterator nodes = repository.getNodes();
-            while ( nodes.hasNext() )
+            for ( Node node : JcrUtils.getChildNodes( nodeAtPath ) )
             {
-                Node node = nodes.nextNode();
-                names.add( node.getName() );
+                if ( node.isNodeType( nodeType ) )
+                {
+                    names.add( node.getName() );
+                }
             }
         }
         catch ( PathNotFoundException e )
@@ -1184,10 +1194,20 @@ public class JcrMetadataRepository
     private Node getOrAddNodeByPath( Node baseNode, String name )
         throws RepositoryException
     {
+        return getOrAddNodeByPath( baseNode, name, null );
+    }
+
+    private Node getOrAddNodeByPath( Node baseNode, String name, String nodeType )
+        throws RepositoryException
+    {
         Node node = baseNode;
         for ( String n : name.split( "/" ) )
         {
             node = JcrUtils.getOrAddNode( node, n );
+            if ( nodeType != null )
+            {
+                node.addMixin( nodeType );
+            }
         }
         return node;
     }
@@ -1217,14 +1237,16 @@ public class JcrMetadataRepository
         throws RepositoryException
     {
         Node repo = getOrAddRepositoryContentNode( repositoryId );
-        return getOrAddNodeByPath( repo, namespace.replace( '.', '/' ) );
+        return getOrAddNodeByPath( repo, namespace.replace( '.', '/' ), NAMESPACE_NODE_TYPE );
     }
 
     private Node getOrAddProjectNode( String repositoryId, String namespace, String projectId )
         throws RepositoryException
     {
         Node namespaceNode = getOrAddNamespaceNode( repositoryId, namespace );
-        return JcrUtils.getOrAddNode( namespaceNode, projectId );
+        Node node = JcrUtils.getOrAddNode( namespaceNode, projectId );
+        node.addMixin( PROJECT_NODE_TYPE );
+        return node;
     }
 
     private Node getOrAddProjectVersionNode( String repositoryId, String namespace, String projectId,
@@ -1232,7 +1254,9 @@ public class JcrMetadataRepository
         throws RepositoryException
     {
         Node projectNode = getOrAddProjectNode( repositoryId, namespace, projectId );
-        return JcrUtils.getOrAddNode( projectNode, projectVersion );
+        Node node = JcrUtils.getOrAddNode( projectNode, projectVersion );
+        node.addMixin( PROJECT_VERSION_NODE_TYPE );
+        return node;
     }
 
     private Node getOrAddArtifactNode( String repositoryId, String namespace, String projectId, String projectVersion,

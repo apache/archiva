@@ -891,6 +891,52 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Arrays.asList( "shared" ), repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) );
     }
 
+    public void testGetNamespacesWithProjectsPresent()
+        throws Exception
+    {
+        String namespace = "org.apache.maven.shared";
+        repository.updateNamespace( TEST_REPO_ID, namespace );
+
+        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+        metadata.setId( TEST_PROJECT_VERSION );
+        repository.updateProjectVersion( TEST_REPO_ID, namespace, TEST_PROJECT, metadata );
+
+        assertEquals( Collections.<String>emptyList(), repository.getNamespaces( TEST_REPO_ID, namespace ) );
+    }
+
+    public void testGetProjectsWithOtherNamespacesPresent()
+        throws Exception
+    {
+        ProjectMetadata projectMetadata = new ProjectMetadata();
+        projectMetadata.setId( TEST_PROJECT );
+        projectMetadata.setNamespace( "org.apache.maven" );
+        repository.updateProject( TEST_REPO_ID, projectMetadata );
+
+        repository.updateNamespace( TEST_REPO_ID, "org.apache.maven.shared" );
+
+        assertEquals( Collections.singletonList( TEST_PROJECT ), repository.getProjects( TEST_REPO_ID,
+                                                                                         "org.apache.maven" ) );
+    }
+
+    public void testGetProjectVersionsWithOtherNamespacesPresent()
+        throws Exception
+    {
+        // an unusual case but technically possible where a project namespace matches another project's name
+
+        ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
+        versionMetadata.setId( TEST_PROJECT_VERSION );
+        repository.updateProjectVersion( TEST_REPO_ID, "org.apache.maven", TEST_PROJECT, versionMetadata );
+
+        repository.updateProjectVersion( TEST_REPO_ID, "org.apache.maven." + TEST_PROJECT, "other-project",
+                                         versionMetadata );
+
+        List<String> expectedVersions = Collections.singletonList( TEST_PROJECT_VERSION );
+        assertEquals( expectedVersions, repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven." + TEST_PROJECT,
+                                                                       "other-project" ) );
+        assertEquals( expectedVersions, repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven",
+                                                                       TEST_PROJECT ) );
+    }
+
     public void testGetArtifactsByChecksumSingleResultMd5()
         throws Exception
     {
