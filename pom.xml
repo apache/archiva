@@ -16,7 +16,9 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
     <maven>2.2.1</maven>
@@ -500,7 +502,7 @@
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva</groupId>      
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-xmlrpc-api</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
@@ -743,9 +745,9 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- redback -->
-      
+
       <dependency>
         <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-rbac-memory</artifactId>
@@ -873,12 +875,12 @@
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-          </exclusion>  
+          </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- redback -->
-      
+
       <dependency>
         <groupId>org.codehaus.plexus.registry</groupId>
         <artifactId>plexus-registry-api</artifactId>
@@ -1048,6 +1050,23 @@
         <artifactId>atlassian-xmlrpc-binder-testing</artifactId>
         <version>${binder.version}</version>
         <scope>test</scope>
+      </dependency>
+
+      <!-- JCR -->
+      <dependency>
+        <groupId>javax.jcr</groupId>
+        <artifactId>jcr</artifactId>
+        <version>2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-jcr-commons</artifactId>
+        <version>${jackrabbit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-core</artifactId>
+        <version>${jackrabbit.version}</version>
       </dependency>
 
       <!-- Transitive versions to manage -->
@@ -1273,7 +1292,7 @@
       </releases>
       <snapshots>
         <enabled>true</enabled>
-      </snapshots>      
+      </snapshots>
     </repository>
   </repositories>
 </project>

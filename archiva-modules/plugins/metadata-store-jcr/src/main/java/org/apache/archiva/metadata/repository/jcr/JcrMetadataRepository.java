@@ -1037,6 +1037,21 @@ public class JcrMetadataRepository
         }
     }
 
+    public boolean canObtainAccess( Class<?> aClass )
+    {
+        return aClass == Session.class;
+    }
+
+    public Object obtainAccess( Class<?> aClass )
+    {
+        if ( aClass == Session.class )
+        {
+            return session;
+        }
+        throw new IllegalArgumentException(
+            "Access using " + aClass + " is not supported on the JCR metadata storage" );
+    }
+
     public void close()
     {
         session.logout();

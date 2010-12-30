@@ -141,4 +141,8 @@ public interface MetadataRepository
 
     void revert()
         throws MetadataRepositoryException;
+
+    boolean canObtainAccess( Class<?> aClass );
+
+    Object obtainAccess( Class<?> aClass );
 }
