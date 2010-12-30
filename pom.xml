@@ -52,7 +52,7 @@
       <archive>http://mail-archives.apache.org/mod_mbox/archiva-users/</archive>
       <otherArchives>
         <otherArchive>http://www.mail-archive.com/users@archiva.apache.org</otherArchive>
-        <otherArchive>http://www.nabble.com/archiva-users-f16426.html</otherArchive>
+        <otherArchive>http://old.nabble.com/archiva-users-f16426.html</otherArchive>
         <otherArchive>http://markmail.org/list/org.apache.archiva.users</otherArchive>
       </otherArchives>
     </mailingList>
@@ -64,7 +64,7 @@
       <archive>http://mail-archives.apache.org/mod_mbox/archiva-dev</archive>
       <otherArchives>
         <otherArchive>http://www.mail-archive.com/dev@archiva.apache.org</otherArchive>
-        <otherArchive>http://www.nabble.com/archiva-dev-f16427.html</otherArchive>
+        <otherArchive>http://old.nabble.com/archiva-dev-f16427.html</otherArchive>
         <otherArchive>http://markmail.org/list/org.apache.archiva.dev</otherArchive>
       </otherArchives>
     </mailingList>
@@ -85,7 +85,7 @@
       <archive>http://mail-archives.apache.org/mod_mbox/archiva-issues</archive>
       <otherArchives>
         <otherArchive>http://www.mail-archive.com/issues@archiva.apache.org</otherArchive>
-        <otherArchive>http://www.nabble.com/Archiva---Issues-f29617.html</otherArchive>
+        <otherArchive>http://old.nabble.com/Archiva---Issues-f29617.html</otherArchive>
       </otherArchives>
     </mailingList>
    </mailingLists>
@@ -532,6 +532,9 @@
     </contributor> 
     <contributor>
       <name>Jim Sellers</name>
+    </contributor> 
+    <contributor>
+      <name>Igor Galic</name>
     </contributor> 
   </contributors>
 
