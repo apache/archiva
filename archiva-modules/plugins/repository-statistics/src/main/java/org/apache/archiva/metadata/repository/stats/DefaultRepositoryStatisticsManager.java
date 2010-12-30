@@ -162,9 +162,15 @@ public class DefaultRepositoryStatisticsManager
         try
         {
             QueryManager queryManager = session.getWorkspace().getQueryManager();
-            String whereClause = "WHERE ISDESCENDANTNODE([/repositories/" + repositoryId + "/content])";
-            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause,
-                                                    Query.JCR_SQL2 );
+
+            // TODO: JCR-SQL2 query will not complete on a large repo in Jackrabbit 2.2.0 - see JCR-2835
+            //    Using the JCR-SQL2 variants gives
+            //      "org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024"
+//            String whereClause = "WHERE ISDESCENDANTNODE([/repositories/" + repositoryId + "/content])";
+//            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause,
+//                                                    Query.JCR_SQL2 );
+            String whereClause = "WHERE jcr:path LIKE '/repositories/" + repositoryId + "/content/%'";
+            Query query = queryManager.createQuery( "SELECT size FROM archiva:artifact " + whereClause, Query.SQL );
 
             QueryResult queryResult = query.execute();
 
@@ -173,25 +179,22 @@ public class DefaultRepositoryStatisticsManager
             for ( Row row : JcrUtils.getRows( queryResult ) )
             {
                 Node n = row.getNode();
-//                if ( n.getPath().startsWith( "/repositories/" + repositoryId + "/content/" ) )
+                totalSize += row.getValue( "size" ).getLong();
+
+                String type;
+                if ( n.hasNode( MavenArtifactFacet.FACET_ID ) )
                 {
-                    totalSize += row.getValue( "size" ).getLong();
-
-                    String type;
-                    if ( n.hasNode( MavenArtifactFacet.FACET_ID ) )
-                    {
-                        Node facetNode = n.getNode( MavenArtifactFacet.FACET_ID );
-                        type = facetNode.getProperty( "type" ).getString();
-                    }
-                    else
-                    {
-                        type = "Other";
-                    }
-                    Integer prev = totalByType.get( type );
-                    totalByType.put( type, prev != null ? prev + 1 : 1 );
-
-                    totalArtifacts++;
+                    Node facetNode = n.getNode( MavenArtifactFacet.FACET_ID );
+                    type = facetNode.getProperty( "type" ).getString();
                 }
+                else
+                {
+                    type = "Other";
+                }
+                Integer prev = totalByType.get( type );
+                totalByType.put( type, prev != null ? prev + 1 : 1 );
+
+                totalArtifacts++;
             }
 
             repositoryStatistics.setTotalArtifactCount( totalArtifacts );
@@ -201,11 +204,17 @@ public class DefaultRepositoryStatisticsManager
                 repositoryStatistics.setTotalCountForType( entry.getKey(), entry.getValue() );
             }
 
-            query = queryManager.createQuery( "SELECT * FROM [archiva:project] " + whereClause, Query.JCR_SQL2 );
+            // The query ordering is a trick to ensure that the size is correct, otherwise due to lazy init it will be -1
+//            query = queryManager.createQuery( "SELECT * FROM [archiva:project] " + whereClause, Query.JCR_SQL2 );
+            query = queryManager.createQuery( "SELECT * FROM archiva:project " + whereClause + " ORDER BY jcr:score",
+                                              Query.SQL );
             repositoryStatistics.setTotalProjectCount( query.execute().getRows().getSize() );
 
+//            query = queryManager.createQuery(
+//                "SELECT * FROM [archiva:namespace] " + whereClause + " AND namespace IS NOT NULL", Query.JCR_SQL2 );
             query = queryManager.createQuery(
-                "SELECT * FROM [archiva:namespace] " + whereClause + " AND namespace IS NOT NULL", Query.JCR_SQL2 );
+                "SELECT * FROM archiva:namespace " + whereClause + " AND namespace IS NOT NULL ORDER BY jcr:score",
+                Query.SQL );
             repositoryStatistics.setTotalGroupCount( query.execute().getRows().getSize() );
         }
         catch ( RepositoryException e )
