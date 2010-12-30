@@ -196,8 +196,6 @@ public class JcrMetadataRepository
                     n.setProperty( entry.getKey(), entry.getValue() );
                 }
             }
-            // FIXME: need some context around this so it can be done only when needed
-            session.save();
         }
         catch ( RepositoryException e )
         {
