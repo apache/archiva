@@ -812,6 +812,21 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( artifact ), repository.getArtifacts( TEST_REPO_ID ) );
     }
 
+    public void testGetArtifactsByRepoIdMultipleCopies()
+        throws Exception
+    {
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        ArtifactMetadata secondArtifact = createArtifact();
+        secondArtifact.setRepositoryId( OTHER_REPO_ID );
+        repository.updateArtifact( OTHER_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, secondArtifact );
+
+        // test it restricts to the appropriate repository
+        assertEquals( Collections.singletonList( artifact ), repository.getArtifacts( TEST_REPO_ID ) );
+        assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifacts( OTHER_REPO_ID ) );
+    }
+
     public void testGetNamespacesWithSparseDepth()
         throws Exception
     {

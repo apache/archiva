@@ -79,7 +79,7 @@ public class JcrMetadataRepository
 
     static final String FACET_NODE_TYPE = "archiva:facet";
 
-    private static final String QUERY_ARTIFACTS = "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "]";
+    private static final String QUERY_ARTIFACTS = "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact";
 
     private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
@@ -630,7 +630,8 @@ public class JcrMetadataRepository
     {
         List<ArtifactMetadata> artifacts;
 
-        String q = QUERY_ARTIFACTS;
+        String q = QUERY_ARTIFACTS + " WHERE ISDESCENDANTNODE(artifact,'/" + getRepositoryContentPath( repositoryId ) +
+            "')";
 
         try
         {
