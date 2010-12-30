@@ -162,7 +162,9 @@ public class DefaultRepositoryStatisticsManager
         try
         {
             QueryManager queryManager = session.getWorkspace().getQueryManager();
-            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact]", Query.JCR_SQL2 );
+            String whereClause = "WHERE ISDESCENDANTNODE([/repositories/" + repositoryId + "/content])";
+            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause,
+                                                    Query.JCR_SQL2 );
 
             QueryResult queryResult = query.execute();
 
@@ -171,7 +173,7 @@ public class DefaultRepositoryStatisticsManager
             for ( Row row : JcrUtils.getRows( queryResult ) )
             {
                 Node n = row.getNode();
-                if ( n.getPath().startsWith( "/repositories/" + repositoryId + "/content/" ) )
+//                if ( n.getPath().startsWith( "/repositories/" + repositoryId + "/content/" ) )
                 {
                     totalSize += row.getValue( "size" ).getLong();
 
@@ -199,11 +201,11 @@ public class DefaultRepositoryStatisticsManager
                 repositoryStatistics.setTotalCountForType( entry.getKey(), entry.getValue() );
             }
 
-            query = queryManager.createQuery( "SELECT * FROM [archiva:project]", Query.JCR_SQL2 );
+            query = queryManager.createQuery( "SELECT * FROM [archiva:project] " + whereClause, Query.JCR_SQL2 );
             repositoryStatistics.setTotalProjectCount( query.execute().getRows().getSize() );
 
-            query = queryManager.createQuery( "SELECT * FROM [archiva:namespace] WHERE namespace IS NOT NULL",
-                                              Query.JCR_SQL2 );
+            query = queryManager.createQuery(
+                "SELECT * FROM [archiva:namespace] " + whereClause + " AND namespace IS NOT NULL", Query.JCR_SQL2 );
             repositoryStatistics.setTotalGroupCount( query.execute().getRows().getSize() );
         }
         catch ( RepositoryException e )

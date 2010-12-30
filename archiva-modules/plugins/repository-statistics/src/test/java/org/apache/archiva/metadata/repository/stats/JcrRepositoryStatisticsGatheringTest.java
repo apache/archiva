@@ -26,6 +26,7 @@ import org.apache.jackrabbit.core.TransientRepository;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
@@ -115,15 +116,8 @@ public class JcrRepositoryStatisticsGatheringTest
         cal.add( Calendar.HOUR, -1 );
         Date startTime = cal.getTime();
 
-        Node n = JcrUtils.getOrAddNode( session.getRootNode(), "repositories" );
-        n = JcrUtils.getOrAddNode( n, TEST_REPO );
-        n = JcrUtils.getOrAddNode( n, "content" );
-        n = JcrUtils.getOrAddNode( n, "org" );
-        n = JcrUtils.getOrAddNode( n, "apache" );
-
-        GZIPInputStream inputStream = new GZIPInputStream( getClass().getResourceAsStream( "/artifacts.xml.gz" ) );
-        session.importXML( n.getPath(), inputStream, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW );
-        session.save();
+        loadContentIntoRepo( TEST_REPO );
+        loadContentIntoRepo( "another-repo" );
 
         repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO, startTime, endTime,
                                                             TOTAL_FILE_COUNT, NEW_FILE_COUNT );
@@ -146,5 +140,19 @@ public class JcrRepositoryStatisticsGatheringTest
         expectedStatistics.setTotalCountForType( "pom", 144 );
 
         verify( metadataRepository ).addMetadataFacet( TEST_REPO, expectedStatistics );
+    }
+
+    private void loadContentIntoRepo( String repoId )
+        throws RepositoryException, IOException
+    {
+        Node n = JcrUtils.getOrAddNode( session.getRootNode(), "repositories" );
+        n = JcrUtils.getOrAddNode( n, repoId );
+        n = JcrUtils.getOrAddNode( n, "content" );
+        n = JcrUtils.getOrAddNode( n, "org" );
+        n = JcrUtils.getOrAddNode( n, "apache" );
+
+        GZIPInputStream inputStream = new GZIPInputStream( getClass().getResourceAsStream( "/artifacts.xml.gz" ) );
+        session.importXML( n.getPath(), inputStream, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW );
+        session.save();
     }
 }
