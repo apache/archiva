@@ -32,6 +32,7 @@
     <href>http://www.apache.org/</href>
   </bannerRight>
   <publishDate format="dd MMM yyyy" position="right" />
+  <version position="none" />
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-stylus-skin</artifactId>
