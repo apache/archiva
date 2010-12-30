@@ -363,6 +363,7 @@ public class ShowArtifactAction
             try
             {
                 updateProjectMetadata( projectMetadata, metadataRepository );
+                repositorySession.save();
             }
             catch ( MetadataRepositoryException e )
             {
@@ -415,6 +416,7 @@ public class ShowArtifactAction
                     try
                     {
                         updateProjectMetadata( projectMetadata, metadataRepository );
+                        repositorySession.save();
                     }
                     catch ( MetadataRepositoryException e )
                     {
