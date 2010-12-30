@@ -457,7 +457,10 @@ public abstract class AbstractMetadataRepositoryTest
         artifacts = repository.getArtifacts( TEST_REPO_ID );
         assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
 
-        artifacts = repository.getArtifactsByChecksum( TEST_REPO_ID, artifactMetadata.getSha1() );
+        artifacts = repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+
+        artifacts = repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 );
         assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
 
         artifacts = repository.getArtifactsByDateRange( TEST_REPO_ID, null, null );
@@ -827,6 +830,44 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifacts( OTHER_REPO_ID ) );
     }
 
+    public void testGetArtifactsByDateRangeMultipleCopies()
+        throws Exception
+    {
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        ArtifactMetadata secondArtifact = createArtifact();
+        secondArtifact.setRepositoryId( OTHER_REPO_ID );
+        repository.updateArtifact( OTHER_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, secondArtifact );
+
+        // test it restricts to the appropriate repository
+        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByDateRange( TEST_REPO_ID, null,
+                                                                                                 null ) );
+        assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifactsByDateRange( OTHER_REPO_ID,
+                                                                                                       null, null ) );
+    }
+
+    public void testGetArtifactsByChecksumMultipleCopies()
+        throws Exception
+    {
+        ArtifactMetadata artifact = createArtifact();
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        ArtifactMetadata secondArtifact = createArtifact();
+        secondArtifact.setRepositoryId( OTHER_REPO_ID );
+        repository.updateArtifact( OTHER_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, secondArtifact );
+
+        // test it restricts to the appropriate repository
+        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
+                                                                                                TEST_SHA1 ) );
+        assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifactsByChecksum( OTHER_REPO_ID,
+                                                                                                      TEST_SHA1 ) );
+        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
+                                                                                                TEST_MD5 ) );
+        assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifactsByChecksum( OTHER_REPO_ID,
+                                                                                                      TEST_MD5 ) );
+    }
+
     public void testGetNamespacesWithSparseDepth()
         throws Exception
     {
@@ -868,6 +909,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
                                                                                                 TEST_SHA1 ) );
+        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
+                                                                                                TEST_MD5 ) );
     }
 
     public void testGetArtifactsByChecksumMultipleResult()
@@ -885,6 +928,10 @@ public abstract class AbstractMetadataRepositoryTest
             TEST_REPO_ID, TEST_SHA1 ) );
         Collections.sort( artifacts, new ArtifactMetadataComparator() );
         assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
+
+        artifacts = new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) );
+        Collections.sort( artifacts, new ArtifactMetadataComparator() );
+        assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
     }
 
     public void testGetArtifactsByChecksumNoResult()
@@ -894,7 +941,7 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
 
         assertEquals( Collections.<ArtifactMetadata>emptyList(), repository.getArtifactsByChecksum( TEST_REPO_ID,
-                                                                                                    "not a checksum" ) );
+                                                                                                    "not checksum" ) );
     }
 
     public void testDeleteArtifact()

@@ -79,8 +79,6 @@ public class JcrMetadataRepository
 
     static final String FACET_NODE_TYPE = "archiva:facet";
 
-    private static final String QUERY_ARTIFACTS = "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact";
-
     private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
     private static final Logger log = LoggerFactory.getLogger( JcrMetadataRepository.class );
@@ -489,17 +487,15 @@ public class JcrMetadataRepository
     {
         List<ArtifactMetadata> artifacts;
 
-        String q = QUERY_ARTIFACTS;
+        String q = getArtifactQuery( repoId );
 
-        String clause = " WHERE";
         if ( startTime != null )
         {
-            q += clause + " [whenGathered] >= $start";
-            clause = " AND";
+            q += " AND [whenGathered] >= $start";
         }
         if ( endTime != null )
         {
-            q += clause + " [whenGathered] <= $end";
+            q += " AND [whenGathered] <= $end";
         }
 
         try
@@ -566,7 +562,7 @@ public class JcrMetadataRepository
     {
         List<ArtifactMetadata> artifacts;
 
-        String q = QUERY_ARTIFACTS + " WHERE [sha1] = $checksum OR [md5] = $checksum";
+        String q = getArtifactQuery( repositoryId ) + " AND ([sha1] = $checksum OR [md5] = $checksum)";
 
         try
         {
@@ -630,8 +626,7 @@ public class JcrMetadataRepository
     {
         List<ArtifactMetadata> artifacts;
 
-        String q = QUERY_ARTIFACTS + " WHERE ISDESCENDANTNODE(artifact,'/" + getRepositoryContentPath( repositoryId ) +
-            "')";
+        String q = getArtifactQuery( repositoryId );
 
         try
         {
@@ -652,6 +647,12 @@ public class JcrMetadataRepository
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
         return artifacts;
+    }
+
+    private static String getArtifactQuery( String repositoryId )
+    {
+        return "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact WHERE ISDESCENDANTNODE(artifact,'/" +
+            getRepositoryContentPath( repositoryId ) + "')";
     }
 
     public ProjectMetadata getProject( String repositoryId, String namespace, String projectId )
