@@ -166,7 +166,7 @@ public class Maven2RepositoryPathTranslator
         if ( !id.startsWith( projectId + "-" ) )
         {
             throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + id +
-                "' doesn't start with artifact ID '" + projectId + "'" );
+                                                    "' doesn't start with artifact ID '" + projectId + "'" );
         }
 
         MavenArtifactFacet facet = new MavenArtifactFacet();
@@ -228,9 +228,9 @@ public class Maven2RepositoryPathTranslator
             char c = id.charAt( index );
             if ( c == '-' )
             {
-                // classifier up until last '.'
-                int extIndex = id.lastIndexOf( '.' );
-                if ( extIndex > index )
+                // classifier up until '.'
+                int extIndex = id.indexOf( '.', index );
+                if ( extIndex >= 0 )
                 {
                     classifier = id.substring( index + 1, extIndex );
                     ext = id.substring( extIndex + 1 );

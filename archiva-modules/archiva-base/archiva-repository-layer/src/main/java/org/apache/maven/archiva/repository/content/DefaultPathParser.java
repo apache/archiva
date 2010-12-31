@@ -34,11 +34,13 @@ import java.util.Collections;
 /**
  * DefaultPathParser is a parser for maven 2 (default layout) paths to ArtifactReference.
  *
- * TODO: remove in favour of path translator, this is just delegating for the most part
+ * TODO: remove in favour of path translator, this is just delegating for the most part, but won't accommodate other
+ * extensions like NPanday
  *
  * @version $Id$
  */
-public class DefaultPathParser implements PathParser
+public class DefaultPathParser
+    implements PathParser
 {
     private static final String INVALID_ARTIFACT_PATH = "Invalid path to Artifact: ";
 
@@ -47,6 +49,7 @@ public class DefaultPathParser implements PathParser
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.maven.archiva.repository.content.PathParser#toArtifactReference(java.lang.String)
      */
     public ArtifactReference toArtifactReference( String path )
@@ -77,7 +80,7 @@ public class DefaultPathParser implements PathParser
             artifact.setClassifier( facet.getClassifier() );
             artifact.setType( facet.getType() );
         }
-        
+
         return artifact;
     }
 
