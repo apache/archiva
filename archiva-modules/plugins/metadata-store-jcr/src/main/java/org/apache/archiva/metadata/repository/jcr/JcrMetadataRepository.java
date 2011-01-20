@@ -99,7 +99,7 @@ public class JcrMetadataRepository
         this.metadataFacetFactories = metadataFacetFactories;
         this.repository = repository;
 
-        session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
+        session = repository.login( new SimpleCredentials( "admin", "admin".toCharArray() ) );
     }
 
     static void initialize( Session session )
