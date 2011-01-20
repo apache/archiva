@@ -548,6 +548,17 @@ public class FileMetadataRepository
         log.warn( "Attempted to revert a session, but the file-based repository storage doesn't support it" );
     }
 
+    public boolean canObtainAccess( Class<?> aClass )
+    {
+        return false;
+    }
+
+    public Object obtainAccess( Class<?> aClass )
+    {
+        throw new IllegalArgumentException(
+            "Access using " + aClass + " is not supported on the file metadata storage" );
+    }
+
     private void updateArtifactFacets( ArtifactMetadata artifact, Properties properties )
     {
         String propertyPrefix = "artifact:facet:" + artifact.getId() + ":";

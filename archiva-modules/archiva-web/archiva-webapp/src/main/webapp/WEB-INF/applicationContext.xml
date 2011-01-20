@@ -7,15 +7,7 @@
   <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
         init-method="initialize"/>
 
-  <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
-  <bean id="repository" class="org.apache.jackrabbit.core.RepositoryImpl" destroy-method="shutdown">
-    <constructor-arg ref="config"/>
-  </bean>
-  <bean id="config" class="org.apache.jackrabbit.core.config.RepositoryConfig" factory-method="create">
-    <!-- FIXME: better arguments needed? -->
-    <constructor-arg value="${appserver.base}/conf/repository.xml"/>
-    <constructor-arg value="${appserver.base}/data/jcr"/>
-  </bean>
+  <alias name="repositorySessionFactory#file" alias="repositorySessionFactory"/>
 
   <bean name="wagon#http" class="org.apache.maven.wagon.providers.http.LightweightHttpWagon" scope="prototype">
     <property name="httpHeaders">

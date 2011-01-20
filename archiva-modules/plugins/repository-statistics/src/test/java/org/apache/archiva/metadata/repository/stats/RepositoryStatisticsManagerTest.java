@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import javax.jcr.Session;
 
 public class RepositoryStatisticsManagerTest
     extends TestCase
@@ -128,7 +129,6 @@ public class RepositoryStatisticsManagerTest
 
     public void testAddNewStats()
         throws Exception
-
     {
         Date current = new Date();
         Date startTime = new Date( current.getTime() - 12345 );
@@ -144,6 +144,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( TEST_REPO_ID,
                                                                                         RepositoryStatistics.FACET_ID,
                                                                                         stats.getName() ), stats );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false );
 
         metadataRepositoryControl.replay();
 
@@ -166,7 +167,6 @@ public class RepositoryStatisticsManagerTest
 
     public void testDeleteStats()
         throws Exception
-
     {
         walkRepository( 2 );
 
@@ -192,6 +192,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( TEST_REPO_ID,
                                                                                          RepositoryStatistics.FACET_ID ),
                                                    Collections.emptyList() );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 2 );
 
         metadataRepositoryControl.replay();
 
@@ -211,7 +212,6 @@ public class RepositoryStatisticsManagerTest
 
     public void testDeleteStatsWhenEmpty()
         throws Exception
-
     {
         metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( TEST_REPO_ID,
                                                                                          RepositoryStatistics.FACET_ID ),
@@ -231,7 +231,6 @@ public class RepositoryStatisticsManagerTest
 
     public void testGetStatsRangeInside()
         throws Exception
-
     {
         walkRepository( 3 );
 
@@ -252,6 +251,7 @@ public class RepositoryStatisticsManagerTest
                                                                                         RepositoryStatistics.FACET_ID,
                                                                                         key ), statsCreated.get(
             key ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
 
         metadataRepositoryControl.replay();
 
@@ -274,7 +274,6 @@ public class RepositoryStatisticsManagerTest
 
     public void testGetStatsRangeUpperOutside()
         throws Exception
-
     {
         walkRepository( 3 );
 
@@ -299,6 +298,7 @@ public class RepositoryStatisticsManagerTest
                                                                                         RepositoryStatistics.FACET_ID,
                                                                                         key ), statsCreated.get(
             key ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
 
         metadataRepositoryControl.replay();
 
@@ -322,7 +322,6 @@ public class RepositoryStatisticsManagerTest
 
     public void testGetStatsRangeLowerOutside()
         throws Exception
-
     {
         walkRepository( 3 );
 
@@ -347,6 +346,7 @@ public class RepositoryStatisticsManagerTest
                                                                                         RepositoryStatistics.FACET_ID,
                                                                                         key ), statsCreated.get(
             key ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
 
         metadataRepositoryControl.replay();
 
@@ -370,7 +370,6 @@ public class RepositoryStatisticsManagerTest
 
     public void testGetStatsRangeLowerAndUpperOutside()
         throws Exception
-
     {
         walkRepository( 3 );
 
@@ -400,6 +399,7 @@ public class RepositoryStatisticsManagerTest
                                                                                         RepositoryStatistics.FACET_ID,
                                                                                         key ), statsCreated.get(
             key ) );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
 
         metadataRepositoryControl.replay();
 
@@ -424,7 +424,6 @@ public class RepositoryStatisticsManagerTest
 
     public void testGetStatsRangeNotInside()
         throws Exception
-
     {
         walkRepository( 3 );
 
@@ -438,6 +437,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( TEST_REPO_ID,
                                                                                          RepositoryStatistics.FACET_ID ),
                                                    keys );
+        metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
 
         metadataRepositoryControl.replay();
 
@@ -459,7 +459,6 @@ public class RepositoryStatisticsManagerTest
 
     private void addStats( Date startTime, Date endTime )
         throws Exception
-
     {
         RepositoryStatistics stats = createTestStats( startTime, endTime );
         metadataRepository.addMetadataFacet( TEST_REPO_ID, stats );

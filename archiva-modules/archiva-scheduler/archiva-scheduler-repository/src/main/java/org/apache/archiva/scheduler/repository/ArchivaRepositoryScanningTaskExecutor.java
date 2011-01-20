@@ -166,6 +166,9 @@ public class ArchivaRepositoryScanningTaskExecutor
 
                 // further statistics will be populated by the following method
                 Date endTime = new Date( stats.getWhenGathered().getTime() + stats.getDuration() );
+
+                log.info( "Gathering repository statistics" );
+
                 repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, repoId, stats.getWhenGathered(),
                                                                     endTime, stats.getTotalFileCount(),
                                                                     stats.getTotalFileCount() - previousFileCount );

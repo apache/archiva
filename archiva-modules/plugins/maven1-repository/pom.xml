@@ -24,7 +24,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-MRM-1327-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>maven1-repository</artifactId>
   <name>Maven 1.x Repository Support</name>

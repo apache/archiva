@@ -27,6 +27,8 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 /**
  * DefaultPathParserTest
  *
+ * TODO: move to path translator tests
+ *
  * @version $Id$
  */
 public class DefaultPathParserTest
@@ -42,7 +44,8 @@ public class DefaultPathParserTest
 
     public void testBadPathReleaseInSnapshotDir()
     {
-        assertBadPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar", "non snapshot artifact inside of a snapshot dir" );
+        assertBadPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar",
+                       "non snapshot artifact inside of a snapshot dir" );
     }
 
     public void testBadPathTimestampedSnapshotNotInSnapshotDir()
@@ -88,9 +91,49 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    public void testGoodButDualExtensionsWithClassifier()
+        throws LayoutException
+    {
+        String groupId = "org.project";
+        String artifactId = "example-presentation";
+        String version = "3.2";
+        String classifier = "extras";
+        String type = "xml.zip";
+        String path = "org/project/example-presentation/3.2/example-presentation-3.2-extras.xml.zip";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    public void testGoodButDualExtensionsTarGz()
+        throws LayoutException
+    {
+        String groupId = "org.project";
+        String artifactId = "example-distribution";
+        String version = "1.3";
+        String classifier = null;
+        String type = "tar.gz"; // no longer using distribution-tgz / distribution-zip in maven 2
+        String path = "org/project/example-distribution/1.3/example-distribution-1.3.tar.gz";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    public void testGoodButDualExtensionsTarGzAndClassifier()
+        throws LayoutException
+    {
+        String groupId = "org.project";
+        String artifactId = "example-distribution";
+        String version = "1.3";
+        String classifier = "bin";
+        String type = "tar.gz"; // no longer using distribution-tgz / distribution-zip in maven 2
+        String path = "org/project/example-distribution/1.3/example-distribution-1.3-bin.tar.gz";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws LayoutException
      */
     public void testGoodButOddVersionSpecGanymedSsh2()
@@ -109,6 +152,7 @@ public class DefaultPathParserTest
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws LayoutException
      */
     public void testGoodButOddVersionSpecJavaxComm()
@@ -148,6 +192,7 @@ public class DefaultPathParserTest
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws LayoutException
      */
     public void testGoodButOddVersionSpecJavaxPersistence()
@@ -252,13 +297,15 @@ public class DefaultPathParserTest
         String version = "0.3";
         String classifier = null;
         String type = "pom";
-        String path = "com/company/department/com.company.department.project/0.3/com.company.department.project-0.3.pom";
+        String path =
+            "com/company/department/com.company.department.project/0.3/com.company.department.project-0.3.pom";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
      * Test the classifier, and java-source type spec.
+     *
      * @throws LayoutException
      */
     public void testGoodFooLibSources()
@@ -276,6 +323,7 @@ public class DefaultPathParserTest
 
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     *
      * @throws LayoutException
      */
     public void testGoodSnapshotMavenTest()
@@ -286,13 +334,15 @@ public class DefaultPathParserTest
         String version = "3.1-beta-1-20050831.101112-42";
         String classifier = null;
         String type = "jar";
-        String path = "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar";
+        String path =
+            "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     *
      * @throws LayoutException
      */
     public void testGoodLongSnapshotMavenTest()
@@ -309,16 +359,17 @@ public class DefaultPathParserTest
     }
 
     /**
-     * A timestamped versioned artifact but without release version part. Like on axiom trunk. 
+     * A timestamped versioned artifact but without release version part. Like on axiom trunk.
      */
     public void testBadSnapshotWithoutReleasePart()
     {
-        assertBadPath( "org/apache/ws/commons/axiom/axiom/SNAPSHOT/axiom-20070912.093446-2.pom", 
-             "snapshot version without release part");
+        assertBadPath( "org/apache/ws/commons/axiom/axiom/SNAPSHOT/axiom-20070912.093446-2.pom",
+                       "snapshot version without release part" );
     }
 
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     *
      * @throws LayoutException
      */
     public void testClassifiedSnapshotMavenTest()
@@ -451,8 +502,8 @@ public class DefaultPathParserTest
     private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
                                           String version, String classifier, String type )
     {
-        String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier
-            + ":" + type;
+        String expectedId =
+            "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
 
         assertNotNull( expectedId + " - Should not be null.", actualReference );
 
@@ -471,7 +522,8 @@ public class DefaultPathParserTest
         try
         {
             parser.toArtifactReference( path );
-            fail( "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
+            fail(
+                "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
         catch ( LayoutException e )
         {

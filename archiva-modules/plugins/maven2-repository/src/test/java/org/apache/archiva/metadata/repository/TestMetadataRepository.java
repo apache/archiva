@@ -192,4 +192,14 @@ public class TestMetadataRepository
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public boolean canObtainAccess( Class<?> aClass )
+    {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Object obtainAccess( Class<?> aClass )
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

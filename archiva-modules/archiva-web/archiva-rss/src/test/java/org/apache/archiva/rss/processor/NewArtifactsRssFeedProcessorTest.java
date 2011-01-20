@@ -231,6 +231,16 @@ public class NewArtifactsRssFeedProcessorTest
             throw new UnsupportedOperationException();
         }
 
+        public boolean canObtainAccess( Class<?> aClass )
+        {
+            return false;
+        }
+
+        public Object obtainAccess( Class<?> aClass )
+        {
+            throw new UnsupportedOperationException();
+        }
+
         public Collection<String> getNamespaces( String arg0, String arg1 )
         {
             throw new UnsupportedOperationException();

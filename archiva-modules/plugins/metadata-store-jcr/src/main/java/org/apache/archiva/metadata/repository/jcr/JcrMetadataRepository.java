@@ -99,7 +99,7 @@ public class JcrMetadataRepository
         this.metadataFacetFactories = metadataFacetFactories;
         this.repository = repository;
 
-        session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
+        session = repository.login( new SimpleCredentials( "admin", "admin".toCharArray() ) );
     }
 
     static void initialize( Session session )
@@ -1035,6 +1035,21 @@ public class JcrMetadataRepository
         {
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
+    }
+
+    public boolean canObtainAccess( Class<?> aClass )
+    {
+        return aClass == Session.class;
+    }
+
+    public Object obtainAccess( Class<?> aClass )
+    {
+        if ( aClass == Session.class )
+        {
+            return session;
+        }
+        throw new IllegalArgumentException(
+            "Access using " + aClass + " is not supported on the JCR metadata storage" );
     }
 
     public void close()

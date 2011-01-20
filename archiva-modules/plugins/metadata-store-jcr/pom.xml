@@ -25,7 +25,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-MRM-1327-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-store-jcr</artifactId>
   <name>JCR Storage for Metadata</name>
@@ -49,21 +49,17 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-spring</artifactId>
     </dependency>
-    <!-- FIXME: dependency management -->
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
-      <version>2.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
-      <version>${jackrabbit.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-core</artifactId>
-      <version>${jackrabbit.version}</version>
       <scope>test</scope>
       <!-- could trim more, but since it's just for test we don't need to worry -->
       <exclusions>
