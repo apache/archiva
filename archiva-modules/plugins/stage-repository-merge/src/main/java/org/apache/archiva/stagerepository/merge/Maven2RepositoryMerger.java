@@ -331,11 +331,11 @@ public class Maven2RepositoryMerger
         List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
         List<ArtifactMetadata> conflictsArtifacts = new ArrayList<ArtifactMetadata>();
 
-        for ( ArtifactMetadata targerArtifact : targetArtifacts )
+        for ( ArtifactMetadata targetArtifact : targetArtifacts )
         {
             for ( ArtifactMetadata sourceArtifact : sourceArtifacts )
             {
-                if ( isEquals( targerArtifact, sourceArtifact ) )
+                if ( isEquals( targetArtifact, sourceArtifact ) )
                 {
                     if ( !conflictsArtifacts.contains( sourceArtifact ) )
                     {
