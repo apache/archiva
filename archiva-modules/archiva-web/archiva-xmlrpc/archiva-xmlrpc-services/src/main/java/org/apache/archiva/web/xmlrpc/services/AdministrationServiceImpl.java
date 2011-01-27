@@ -529,12 +529,12 @@ public class AdministrationServiceImpl
                             sourceArtifacts.removeAll( conflicts );
 
                             log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
-                            mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId, null );
+                            mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId, metadataRepository );
                         }
                         else
                         {
                             log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
-                            mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId, null );
+                            mergeWithOutSnapshots( sourceArtifacts, stagingId, repoId, metadataRepository );
                         }
                     }
                     else
