@@ -40,6 +40,7 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +48,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -675,7 +677,8 @@ public class ShowArtifactAction
                 }
             }
 
-            size = new DecimalFormat( "#,###.##" ).format( s ) + " " + symbol;
+            DecimalFormat df = new DecimalFormat( "#,###.##", DecimalFormatSymbols.getInstance( Locale.US) );
+            size = df.format( s ) + " " + symbol;
             id = artifact.getId();
             version = artifact.getVersion();
         }
