@@ -114,6 +114,16 @@ public interface AdministrationService
         throws Exception;
 
     /**
+     * Deletes a managed repository content with the given repository id
+     * 
+     * @param repoId
+     * @return
+     * @throws Exception
+     */
+    public Boolean deleteManagedRepositoryContent( String repoId )
+        throws Exception;
+
+    /**
      * Get a managed repository with the given repository id.
      * @param repoId
      * @return

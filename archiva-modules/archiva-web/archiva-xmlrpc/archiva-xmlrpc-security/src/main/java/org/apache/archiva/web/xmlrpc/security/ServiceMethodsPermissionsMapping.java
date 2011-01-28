@@ -43,7 +43,8 @@ public class ServiceMethodsPermissionsMapping
                        "AdministrationService.deleteArtifact", 
                        "AdministrationService.addManagedRepository",
                        "AdministrationService.deleteManagedRepository", "AdministrationService.getManagedRepository",
-                       "AdministrationService.merge");
+                       "AdministrationService.merge",
+                       "AdministrationService.deleteManagedRepositoryContent");
 
     public static final List<String> SERVICE_METHODS_FOR_OPERATION_RUN_INDEXER =
         Arrays.asList( "AdministrationService.executeRepositoryScanner" );

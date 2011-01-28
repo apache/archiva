@@ -468,6 +468,44 @@ public class AdministrationServiceImpl
         return Boolean.TRUE;
     }
 
+    public Boolean deleteManagedRepositoryContent( String repoId )
+        throws Exception
+    {
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        ManagedRepositoryConfiguration repository = config.findManagedRepositoryById( repoId );
+
+        if ( repository == null )
+        {
+            throw new Exception( "Repository Id : " + repoId + " not found." );
+        }
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            metadataRepository.removeRepository( repository.getId() );
+            repositorySession.save();
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+
+        File repoDir = new File( repository.getLocation() );
+        File[] children = repoDir.listFiles();
+
+        if ( children != null )
+        {
+            for ( File child : children )
+            {
+                FileUtils.deleteDirectory( child );
+            }
+        }
+
+        return Boolean.TRUE;
+    }
+
     public ManagedRepository getManagedRepository( String repoId )
         throws Exception
     {

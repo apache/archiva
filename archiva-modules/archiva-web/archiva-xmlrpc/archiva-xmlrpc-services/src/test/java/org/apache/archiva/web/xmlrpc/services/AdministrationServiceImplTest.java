@@ -665,6 +665,52 @@ public class AdministrationServiceImplTest
         assertRemoteRepo( repos.get( 1 ), remoteRepos.get( 1 ) );
     }
 
+    public void testDeleteInvalidRepositoryContent()
+    {
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "invalid" ), null );
+
+        archivaConfigControl.replay();
+        configControl.replay();
+
+        try
+        {
+            service.deleteManagedRepositoryContent( "invalid" );
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Repository Id : invalid not found.", e.getMessage() );
+        }
+
+        archivaConfigControl.verify();
+        configControl.verify();
+    }
+
+    public void testDeleteRepositoryContent()
+        throws Exception
+    {
+        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "default", "default-repo" );
+        assertTrue( new File( managedRepo.getLocation(), "org" ).exists() );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
+        metadataRepository.removeRepository( "internal" );
+        
+        archivaConfigControl.replay();
+        configControl.replay();
+        metadataRepositoryControl.replay();
+
+        boolean success = service.deleteManagedRepositoryContent( "internal" );
+        assertTrue( success );
+
+        archivaConfigControl.verify();
+        configControl.verify();
+        metadataRepositoryControl.verify();
+
+        assertFalse( new File( managedRepo.getLocation(), "org" ).exists() );
+        assertTrue( new File( managedRepo.getLocation() ).exists() );
+    }
+
     /* Merge method */
 
     public void testMergeRepositoryWithInvalidRepository()
