@@ -228,8 +228,16 @@ public class Maven2RepositoryMerger
         FileOutputStream out = new FileOutputStream( targetFile );
         FileInputStream input = new FileInputStream( sourceFile );
 
-        // IOUtils internally buffers the streams 
-        IOUtils.copy( input, out );
+        // IOUtils internally buffers the streams
+        try
+        {
+            IOUtils.copy( input, out );
+        }
+        finally
+        {
+            out.close();
+            input.close();
+        }
     }
 
     private void updateProjectMetadata( File projectMetaDataFileIntargetRepo, ArtifactMetadata artifactMetadata,
