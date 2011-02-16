@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -227,20 +228,8 @@ public class Maven2RepositoryMerger
         FileOutputStream out = new FileOutputStream( targetFile );
         FileInputStream input = new FileInputStream( sourceFile );
 
-        try
-        {
-            int i;
-            while ( ( i = input.read() ) != -1 )
-            {
-                out.write( i );
-            }
-            out.flush();
-        }
-        finally
-        {
-            out.close();
-            input.close();
-        }
+        // IOUtils internally buffers the streams 
+        IOUtils.copy( input, out );
     }
 
     private void updateProjectMetadata( File projectMetaDataFileIntargetRepo, ArtifactMetadata artifactMetadata,
