@@ -235,8 +235,8 @@ public class Maven2RepositoryMerger
         }
         finally
         {
-            out.close();
-            input.close();
+            IOUtils.closeQuietly( out );
+            IOUtils.closeQuietly( input );
         }
     }
 
