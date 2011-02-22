@@ -17,5 +17,18 @@ Understanding Network Proxy Configuration of Apache Archiva
   Once configured, the network proxy can be attached to operations that access remote resources. At present, this is configured on the
   remote repository proxy connectors that need to access the remote repository over the HTTP protocol.
 
+* Network Proxy Settings and the JVM
+
+  As Archiva still targets Java 5 and uses the built-in networking libraries, it must configure these settings using
+  system properties. This can be problematic in two scenarios:
+
+    * if you use multiple different network proxies on different proxy connectors, they may clash
+
+    * if you deploy other applications into the same container as Archiva, they will likely pick up the settings
+
+    []
+
+  Please refer to {{{http://jira.codehaus.org/browse/MRM-1248} MRM-1248}} for workarounds and to track the issue.
+
   ~~TODO: walkthrough configuration
 
