@@ -33,11 +33,13 @@
       <interceptor name="redbackAutoLogin" class="redbackAutoLoginInterceptor"/>
       <interceptor name="redbackPolicyEnforcement" class="redbackPolicyEnforcementInterceptor"/>
       <interceptor name="paramFilter" class="com.opensymphony.xwork2.interceptor.ParameterFilterInterceptor"/>
+      <interceptor name="redbackXssParameterCheck" class="redbackXSSParameterCheckInterceptor"/>
 
       <interceptor-stack name="configuredArchivaStack">
         <interceptor-ref name="redbackForceAdminUser"/>
         <interceptor-ref name="redbackAutoLogin"/>
         <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="redbackXssParameterCheck"/>
         <interceptor-ref name="paramFilter">
           <param name="blocked">externalResult</param>
         </interceptor-ref>
@@ -58,6 +60,7 @@
         <interceptor-ref name="redbackForceAdminUser"/>
         <interceptor-ref name="redbackAutoLogin"/>
         <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="redbackXssParameterCheck"/>
         <interceptor-ref name="redbackPolicyEnforcement"/>
         <interceptor-ref name="redbackSecureActions">
           <param name="enableReferrerCheck">false</param>
@@ -124,6 +127,8 @@
         <param name="namespace">/security</param>
       </result>
 
+      <result name="possible-xss-attack">/WEB-INF/jsp/redback/possibleXssAttack.jsp</result>
+      
       <!-- Generic Catchall for those action configurations that forget to
            include a result for 'error' -->
       <result name="error">/WEB-INF/jsp/generalError.jsp</result>
