@@ -181,6 +181,8 @@ public class EditManagedRepositoryActionTest
         // no deletion
         repositoryStatisticsManagerControl.replay();
 
+        new File( "target/test/" + REPO_ID + "-stage" ).mkdirs();
+
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
 
@@ -236,6 +238,8 @@ public class EditManagedRepositoryActionTest
         action.setRepositoryStatisticsManager( repositoryStatisticsManager );
         repositoryStatisticsManager.deleteStatistics( metadataRepository, REPO_ID );
         repositoryStatisticsManagerControl.replay();
+
+        new File( "target/test/location/" + REPO_ID + "-stage" ).mkdirs();
 
         action.setRepoid( REPO_ID );
         action.prepare();

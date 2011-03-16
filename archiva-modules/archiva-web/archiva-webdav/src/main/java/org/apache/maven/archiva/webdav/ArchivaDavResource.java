@@ -384,7 +384,10 @@ public class ArchivaDavResource
             {
                 if ( resource.isDirectory() )
                 {
-                    FileUtils.deleteDirectory( resource );
+                    if ( !FileUtils.deleteQuietly( resource ) )
+                    {
+                        throw new IOException( "Could not remove directory" );
+                    }
 
                     triggerAuditEvent( member, AuditEvent.REMOVE_DIR );
                 }

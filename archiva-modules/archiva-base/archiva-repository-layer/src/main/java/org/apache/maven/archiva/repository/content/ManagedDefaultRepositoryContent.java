@@ -74,14 +74,7 @@ public class ManagedDefaultRepositoryContent
         File projectDir = projectPath.getParentFile();
         if( projectDir.exists() && projectDir.isDirectory() )
         {
-            try
-            {
-                FileUtils.deleteDirectory( projectDir );
-            }
-            catch ( IOException e )
-            {
-                // TODO: log this somewhere?
-            }
+            FileUtils.deleteQuietly( projectDir );
         }
         else
         {

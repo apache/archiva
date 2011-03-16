@@ -440,7 +440,11 @@ public class AdministrationServiceImpl
             throw new Exception( "Error saving configuration for delete action" + e.getMessage() );
         }
 
-        FileUtils.deleteDirectory( new File( repository.getLocation() ) );
+        File dir = new File( repository.getLocation() );
+        if ( !FileUtils.deleteQuietly( dir ) )
+        {
+            throw new IOException( "Cannot delete repository " + dir );
+        }
 
         List<ProxyConnectorConfiguration> proxyConnectors = config.getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
@@ -499,7 +503,12 @@ public class AdministrationServiceImpl
         {
             for ( File child : children )
             {
-                FileUtils.deleteDirectory( child );
+                FileUtils.deleteQuietly( child );
+            }
+
+            if ( repoDir.listFiles().length > 0 )
+            {
+                throw new IOException( "Cannot delete repository contents of " + repoDir );
             }
         }
 

@@ -371,28 +371,19 @@ public class FileMetadataRepository
 
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
-        try
+        File dir = getMetadataDirectory( repositoryId, facetId );
+        if ( !FileUtils.deleteQuietly( dir ) )
         {
-            FileUtils.deleteDirectory( getMetadataDirectory( repositoryId, facetId ) );
-        }
-        catch ( IOException e )
-        {
-            // TODO!
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( "Cannot delete the metadata repository {}", dir );
         }
     }
 
     public void removeMetadataFacet( String repoId, String facetId, String name )
     {
         File dir = new File( getMetadataDirectory( repoId, facetId ), name );
-        try
+        if ( !FileUtils.deleteQuietly( dir ) )
         {
-            FileUtils.deleteDirectory( dir );
-        }
-        catch ( IOException e )
-        {
-            // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( "Cannot delete the metadata repository {}", dir );
         }
     }
 
@@ -629,14 +620,10 @@ public class FileMetadataRepository
 
     public void removeRepository( String repoId )
     {
-        try
+        File dir = getDirectory( repoId );
+        if ( !FileUtils.deleteQuietly( dir ) )
         {
-            FileUtils.deleteDirectory( getDirectory( repoId ) );
-        }
-        catch ( IOException e )
-        {
-            // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( "Cannot delete repository {}", dir );
         }
     }
 

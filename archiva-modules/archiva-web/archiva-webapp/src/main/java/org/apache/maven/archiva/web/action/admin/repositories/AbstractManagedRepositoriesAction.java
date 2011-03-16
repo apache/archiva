@@ -96,7 +96,11 @@ public abstract class AbstractManagedRepositoriesAction
     protected void removeContents( ManagedRepositoryConfiguration existingRepository )
         throws IOException
     {
-        FileUtils.deleteDirectory( new File( existingRepository.getLocation() ) );
+        File dir = new File( existingRepository.getLocation() );
+        if ( !FileUtils.deleteQuietly( dir ) )
+        {
+            throw new IOException( "Cannot delete repository " + dir );
+        }
     }
 
     protected void removeRepository( String repoId, Configuration configuration )
