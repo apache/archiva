@@ -1192,7 +1192,7 @@
     <slf4j.version>1.5.8</slf4j.version>
     <binder.version>0.9</binder.version>
     <spring.version>2.5.6</spring.version>
-    <jackrabbit.version>2.2.0</jackrabbit.version>
+    <jackrabbit.version>2.2.5</jackrabbit.version>
   </properties>
   <profiles>
     <profile>
