@@ -197,6 +197,7 @@ public class FileMetadataRepository
             setProperty( properties, "dependency." + i + ".groupId", dependency.getGroupId() );
             setProperty( properties, "dependency." + i + ".version", dependency.getVersion() );
             setProperty( properties, "dependency." + i + ".type", dependency.getType() );
+            setProperty( properties, "dependency." + i + ".optional", String.valueOf( dependency.isOptional() ) );
             i++;
         }
         Set<String> facetIds = new LinkedHashSet<String>( versionMetadata.getFacetIds() );
@@ -904,6 +905,8 @@ public class FileMetadataRepository
                     dependency.setSystemPath( properties.getProperty( "dependency." + i + ".systemPath" ) );
                     dependency.setType( properties.getProperty( "dependency." + i + ".type" ) );
                     dependency.setVersion( properties.getProperty( "dependency." + i + ".version" ) );
+                    dependency.setOptional( Boolean.valueOf( properties.getProperty(
+                        "dependency." + i + ".optional" ) ) );
                     versionMetadata.addDependency( dependency );
                 }
                 else
