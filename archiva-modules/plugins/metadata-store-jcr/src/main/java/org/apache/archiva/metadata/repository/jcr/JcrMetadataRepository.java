@@ -85,6 +85,8 @@ public class JcrMetadataRepository
 
     static final String FACET_NODE_TYPE = "archiva:facet";
 
+    private static final String DEPENDENCY_NODE_TYPE = "archiva:dependency";
+
     private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
     private static final Logger log = LoggerFactory.getLogger( JcrMetadataRepository.class );
@@ -126,6 +128,7 @@ public class JcrMetadataRepository
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.PROJECT_VERSION_NODE_TYPE );
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.ARTIFACT_NODE_TYPE );
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.FACET_NODE_TYPE );
+        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.DEPENDENCY_NODE_TYPE );
     }
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String name )
@@ -269,17 +272,55 @@ public class JcrMetadataRepository
                     mailingList.getOtherArchives() ) );
                 i++;
             }
-            i = 0;
-            for ( Dependency dependency : versionMetadata.getDependencies() )
+
+            if ( !versionMetadata.getDependencies().isEmpty() )
             {
-                versionNode.setProperty( "dependency." + i + ".classifier", dependency.getClassifier() );
-                versionNode.setProperty( "dependency." + i + ".scope", dependency.getScope() );
-                versionNode.setProperty( "dependency." + i + ".systemPath", dependency.getSystemPath() );
-                versionNode.setProperty( "dependency." + i + ".artifactId", dependency.getArtifactId() );
-                versionNode.setProperty( "dependency." + i + ".groupId", dependency.getGroupId() );
-                versionNode.setProperty( "dependency." + i + ".version", dependency.getVersion() );
-                versionNode.setProperty( "dependency." + i + ".type", dependency.getType() );
-                i++;
+                Node dependenciesNode = JcrUtils.getOrAddNode( versionNode, "dependencies" );
+
+                for ( Dependency dependency : versionMetadata.getDependencies() )
+                {
+                    // Note that we deliberately don't alter the namespace path - not enough dependencies for
+                    // number of nodes at a given depth to be an issue. Similarly, we don't add subnodes for each
+                    // component of the ID as that creates extra depth and causes a great cost in space and memory
+
+                    // FIXME: change group ID to namespace
+                    // FIXME: change to artifact's ID - this is constructed by the Maven 2 format for now.
+                    //        This won't support types where the extension doesn't match the type.
+                    //        (see also Maven2RepositoryStorage#readProjectVersionMetadata construction of POM)
+                    String id =
+                        dependency.getGroupId() + ";" + dependency.getArtifactId() + "-" + dependency.getVersion();
+                    if ( dependency.getClassifier() != null )
+                    {
+                        id += "-" + dependency.getClassifier();
+                    }
+                    id += "." + dependency.getType();
+
+                    Node n = JcrUtils.getOrAddNode( dependenciesNode, id );
+                    n.addMixin( DEPENDENCY_NODE_TYPE );
+
+                    // FIXME: remove temp code just to make it keep working
+                    n.setProperty( "groupId", dependency.getGroupId() );
+                    n.setProperty( "artifactId", dependency.getArtifactId() );
+                    n.setProperty( "version", dependency.getVersion() );
+                    n.setProperty( "type", dependency.getType() );
+                    n.setProperty( "classifier", dependency.getClassifier() );
+                    n.setProperty( "scope", dependency.getScope() );
+                    n.setProperty( "systemPath", dependency.getSystemPath() );
+                    n.setProperty( "optional", dependency.isOptional() );
+
+                    // node has no native content at this time, just facets
+                    // no need to list a type as it's implied by the path. Parents are Maven specific.
+
+                    // FIXME: add scope, systemPath, type, version, classifier & maven2 specific IDs as a facet
+                    //        (should also have been added to the Dependency)
+
+                    // TODO: add a property that is a weak reference to the originating artifact, creating it if
+                    //       necessary (without adding the archiva:artifact mixin so that it doesn't get listed as an
+                    //       artifact, which gives a different meaning to "incomplete" which is a known local project
+                    //       that doesn't have metadata yet but has artifacts). (Though we may want to give it the
+                    //       artifact mixin and another property to identify all non-local artifacts for the closure
+                    //       reports)
+                }
             }
 
             for ( MetadataFacet facet : versionMetadata.getFacetList() )
@@ -304,6 +345,7 @@ public class JcrMetadataRepository
         }
     }
 
+    // FIXME: remove this and projectversionreference
     public void updateProjectReference( String repositoryId, String namespace, String projectId, String projectVersion,
                                         ProjectVersionReference reference )
         throws MetadataRepositoryException
@@ -808,30 +850,26 @@ public class JcrMetadataRepository
                 i++;
             }
 
-            done = false;
-            i = 0;
-            while ( !done )
+            if ( node.hasNode( "dependencies" ) )
             {
-                String dependencyArtifactId = getPropertyString( node, "dependency." + i + ".artifactId" );
-                if ( dependencyArtifactId != null )
+                Node dependenciesNode = node.getNode( "dependencies" );
+                for ( Node n : JcrUtils.getChildNodes( dependenciesNode ) )
                 {
-                    Dependency dependency = new Dependency();
-                    dependency.setArtifactId( dependencyArtifactId );
-                    dependency.setGroupId( getPropertyString( node, "dependency." + i + ".groupId" ) );
-                    dependency.setClassifier( getPropertyString( node, "dependency." + i + ".classifier" ) );
-                    dependency.setOptional( Boolean.valueOf( getPropertyString( node,
-                                                                                "dependency." + i + ".optional" ) ) );
-                    dependency.setScope( getPropertyString( node, "dependency." + i + ".scope" ) );
-                    dependency.setSystemPath( getPropertyString( node, "dependency." + i + ".systemPath" ) );
-                    dependency.setType( getPropertyString( node, "dependency." + i + ".type" ) );
-                    dependency.setVersion( getPropertyString( node, "dependency." + i + ".version" ) );
-                    versionMetadata.addDependency( dependency );
+                    if ( n.isNodeType( DEPENDENCY_NODE_TYPE ) )
+                    {
+                        Dependency dependency = new Dependency();
+                        // FIXME: correct these properties
+                        dependency.setArtifactId( getPropertyString( n, "artifactId" ) );
+                        dependency.setGroupId( getPropertyString( n, "groupId" ) );
+                        dependency.setClassifier( getPropertyString( n, "classifier" ) );
+                        dependency.setOptional( Boolean.valueOf( getPropertyString( n, "optional" ) ) );
+                        dependency.setScope( getPropertyString( n, "scope" ) );
+                        dependency.setSystemPath( getPropertyString( n, "systemPath" ) );
+                        dependency.setType( getPropertyString( n, "type" ) );
+                        dependency.setVersion( getPropertyString( n, "version" ) );
+                        versionMetadata.addDependency( dependency );
+                    }
                 }
-                else
-                {
-                    done = true;
-                }
-                i++;
             }
 
             for ( Node n : JcrUtils.getChildNodes( node ) )

@@ -261,6 +261,7 @@ public abstract class AbstractMetadataRepositoryTest
         d.setSystemPath( "system path" );
         d.setType( "type" );
         d.setVersion( "version" );
+        d.setOptional( true );
         metadata.addDependency( d );
 
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
@@ -303,6 +304,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( "system path", d.getSystemPath() );
         assertEquals( "type", d.getType() );
         assertEquals( "version", d.getVersion() );
+        assertTrue( d.isOptional() );
     }
 
     public void testUpdateProjectReference()
