@@ -30,7 +30,6 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
@@ -305,29 +304,6 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( "type", d.getType() );
         assertEquals( "version", d.getVersion() );
         assertTrue( d.isOptional() );
-    }
-
-    public void testUpdateProjectReference()
-        throws Exception
-    {
-        ProjectVersionReference reference = new ProjectVersionReference();
-        reference.setNamespace( "another.namespace" );
-        reference.setProjectId( "another-project-id" );
-        reference.setProjectVersion( "1.1" );
-        reference.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
-
-        repository.updateProjectReference( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION,
-                                           reference );
-
-        Collection<ProjectVersionReference> references = repository.getProjectReferences( TEST_REPO_ID, TEST_NAMESPACE,
-                                                                                          TEST_PROJECT,
-                                                                                          TEST_PROJECT_VERSION );
-        assertEquals( 1, references.size() );
-        reference = references.iterator().next();
-        assertEquals( "another.namespace", reference.getNamespace() );
-        assertEquals( "another-project-id", reference.getProjectId() );
-        assertEquals( "1.1", reference.getProjectVersion() );
-        assertEquals( ProjectVersionReference.ReferenceType.DEPENDENCY, reference.getReferenceType() );
     }
 
     public void testGetRepositories()

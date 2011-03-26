@@ -943,42 +943,37 @@ public class JcrMetadataRepository
     {
         List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
 
+        // TODO: bind variables instead
+        String q = "SELECT * FROM [archiva:dependency] WHERE ISDESCENDANTNODE([/repositories/" + repositoryId +
+            "/content]) AND [groupId]='" + namespace + "' AND [artifactId]='" + projectId + "'";
+        if ( projectVersion != null )
+        {
+            q += " AND [version]='" + projectVersion + "'";
+        }
         try
         {
-            Node root = session.getRootNode();
+            Query query = session.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            QueryResult result = query.execute();
 
-            String path = getProjectVersionPath( repositoryId, namespace, projectId, projectVersion ) + "/references";
-            if ( root.hasNode( path ) )
+            for ( Node n : JcrUtils.getNodes( result ) )
             {
-                Node node = root.getNode( path );
+                n = n.getParent(); // dependencies grouping element
 
-                NodeIterator i = node.getNodes();
-                while ( i.hasNext() )
-                {
-                    Node ns = i.nextNode();
+                n = n.getParent(); // project version
+                String usedByProjectVersion = n.getName();
 
-                    NodeIterator j = ns.getNodes();
+                n = n.getParent(); // project
+                String usedByProject = n.getName();
 
-                    while ( j.hasNext() )
-                    {
-                        Node project = j.nextNode();
+                n = n.getParent(); // namespace
+                String usedByNamespace = n.getProperty( "namespace" ).getString();
 
-                        NodeIterator k = project.getNodes();
-
-                        while ( k.hasNext() )
-                        {
-                            Node version = k.nextNode();
-
-                            ProjectVersionReference ref = new ProjectVersionReference();
-                            ref.setNamespace( ns.getName() );
-                            ref.setProjectId( project.getName() );
-                            ref.setProjectVersion( version.getName() );
-                            String type = version.getProperty( "type" ).getString();
-                            ref.setReferenceType( ProjectVersionReference.ReferenceType.valueOf( type ) );
-                            references.add( ref );
-                        }
-                    }
-                }
+                ProjectVersionReference ref = new ProjectVersionReference();
+                ref.setNamespace( usedByNamespace );
+                ref.setProjectId( usedByProject );
+                ref.setProjectVersion( usedByProjectVersion );
+                ref.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
+                references.add( ref );
             }
         }
         catch ( RepositoryException e )
