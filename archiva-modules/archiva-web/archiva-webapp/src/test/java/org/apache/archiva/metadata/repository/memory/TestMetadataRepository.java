@@ -133,12 +133,6 @@ public class TestMetadataRepository
         throw new UnsupportedOperationException();
     }
 
-    public void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
-                                        ProjectVersionReference reference )
-    {
-        throw new UnsupportedOperationException();
-    }
-
     public void updateNamespace( String repoId, String namespace )
     {
         throw new UnsupportedOperationException();

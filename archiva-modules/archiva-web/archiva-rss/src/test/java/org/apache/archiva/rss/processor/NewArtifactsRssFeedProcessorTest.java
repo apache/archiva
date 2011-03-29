@@ -195,12 +195,6 @@ public class NewArtifactsRssFeedProcessorTest
             throw new UnsupportedOperationException();
         }
 
-        public void updateProjectReference( String arg0, String arg1, String arg2, String arg3,
-                                            ProjectVersionReference arg4 )
-        {
-            throw new UnsupportedOperationException();
-        }
-
         public void updateProjectVersion( String arg0, String arg1, String arg2, ProjectVersionMetadata arg3 )
         {
             throw new UnsupportedOperationException();

@@ -54,12 +54,6 @@ public class TestMetadataRepository
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
-                                        ProjectVersionReference reference )
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public void updateNamespace( String repoId, String namespace )
     {
         //To change body of implemented methods use File | Settings | File Templates.

@@ -188,6 +188,11 @@ public class FileMetadataRepository
             i++;
         }
         i = 0;
+        ProjectVersionReference reference = new ProjectVersionReference();
+        reference.setNamespace( namespace );
+        reference.setProjectId( projectId );
+        reference.setProjectVersion( versionMetadata.getId() );
+        reference.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
         for ( Dependency dependency : versionMetadata.getDependencies() )
         {
             setProperty( properties, "dependency." + i + ".classifier", dependency.getClassifier() );
@@ -198,6 +203,10 @@ public class FileMetadataRepository
             setProperty( properties, "dependency." + i + ".version", dependency.getVersion() );
             setProperty( properties, "dependency." + i + ".type", dependency.getType() );
             setProperty( properties, "dependency." + i + ".optional", String.valueOf( dependency.isOptional() ) );
+
+            updateProjectReference( repoId, dependency.getGroupId(), dependency.getArtifactId(),
+                                    dependency.getVersion(), reference );
+
             i++;
         }
         Set<String> facetIds = new LinkedHashSet<String>( versionMetadata.getFacetIds() );
@@ -250,8 +259,8 @@ public class FileMetadataRepository
         }
     }
 
-    public void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
-                                        ProjectVersionReference reference )
+    private void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
+                                         ProjectVersionReference reference )
     {
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 

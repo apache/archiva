@@ -48,10 +48,6 @@ public interface MetadataRepository
                                ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException;
 
-    void updateProjectReference( String repositoryId, String namespace, String projectId, String projectVersion,
-                                 ProjectVersionReference reference )
-        throws MetadataRepositoryException;
-
     void updateNamespace( String repositoryId, String namespace )
         throws MetadataRepositoryException;
 

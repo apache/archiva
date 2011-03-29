@@ -20,7 +20,6 @@ package org.apache.archiva.metadata.repository;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
@@ -108,19 +107,6 @@ public class DefaultMetadataResolver
                     ref.setProjectId( projectId );
                     ref.setProjectVersion( projectVersion );
                     ref.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
-                    for ( Dependency dependency : metadata.getDependencies() )
-                    {
-                        try
-                        {
-                            metadataRepository.updateProjectReference( repoId, dependency.getGroupId(),
-                                                                       dependency.getArtifactId(),
-                                                                       dependency.getVersion(), ref );
-                        }
-                        catch ( MetadataRepositoryException e )
-                        {
-                            log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
-                        }
-                    }
                 }
                 try
                 {

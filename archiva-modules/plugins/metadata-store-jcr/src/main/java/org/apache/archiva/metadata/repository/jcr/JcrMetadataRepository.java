@@ -345,30 +345,6 @@ public class JcrMetadataRepository
         }
     }
 
-    // FIXME: remove this and projectversionreference
-    public void updateProjectReference( String repositoryId, String namespace, String projectId, String projectVersion,
-                                        ProjectVersionReference reference )
-        throws MetadataRepositoryException
-    {
-        // not using weak references, since they still need to exist upfront to be referred to
-        try
-        {
-            Node node = getOrAddRepositoryContentNode( repositoryId );
-            node = JcrUtils.getOrAddNode( node, namespace );
-            node = JcrUtils.getOrAddNode( node, projectId );
-            node = JcrUtils.getOrAddNode( node, projectVersion );
-            node = JcrUtils.getOrAddNode( node, "references" );
-            node = JcrUtils.getOrAddNode( node, reference.getNamespace() );
-            node = JcrUtils.getOrAddNode( node, reference.getProjectId() );
-            node = JcrUtils.getOrAddNode( node, reference.getProjectVersion() );
-            node.setProperty( "type", reference.getReferenceType().toString() );
-        }
-        catch ( RepositoryException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }
-    }
-
     public void updateNamespace( String repositoryId, String namespace )
         throws MetadataRepositoryException
     {
