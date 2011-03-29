@@ -27,7 +27,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>6</version>
+    <version>7-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
   <name>Apache Archiva</name>
@@ -324,7 +324,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>metadata-repository-file</artifactId>
+        <artifactId>metadata-store-file</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>

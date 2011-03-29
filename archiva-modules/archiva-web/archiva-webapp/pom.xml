@@ -280,7 +280,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-repository-file</artifactId>
+      <artifactId>metadata-store-file</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
