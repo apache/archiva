@@ -40,29 +40,31 @@
 <s:actionmessage /> 
 
 <c:url var="iconDeleteUrl" value="/images/icons/delete.gif" /> 
-<c:url var="iconCreateUrl" value="/images/icons/create.png" /> 
-<s:url id="removeFiletypePatternUrl" action="repositoryScanning" method="removeFiletypePattern" /> 
-<s:url id="addFiletypePatternUrl"    action="repositoryScanning" method="addFiletypePattern" /> 
+<c:url var="iconCreateUrl" value="/images/icons/create.png" />
+<s:url id="removeFiletypePatternUrl" action="repositoryScanning" method="removeFiletypePattern"/>
+<s:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern"/>
    
 <script type="text/javascript">
 <!--
-  function removeFiletypePattern(filetypeId, pattern)
+  function removeFiletypePattern(filetypeId, pattern, token)
   {
      var f = document.getElementById('filetypeForm');
      
      f.action = "${removeFiletypePatternUrl}";
      f['pattern'].value = pattern;
      f['fileTypeId'].value = filetypeId;
+     f.elements['struts2Token'].value = token;
      f.submit();
   }
   
-  function addFiletypePattern(filetypeId, newPatternId)
+  function addFiletypePattern(filetypeId, newPatternId, token)
   {
      var f = document.forms['filetypeForm'];
           
      f.action = "${addFiletypePatternUrl}";     
      f.elements['pattern'].value = document.getElementById(newPatternId).value;
      f.elements['fileTypeId'].value = filetypeId;
+     f.elements['struts2Token'].value = token;     
      f.submit();
   }
 //-->
@@ -82,11 +84,17 @@
     <s:form method="post" action="repositoryScanning" 
              namespace="/admin" validate="false" 
              id="filetypeForm" theme="simple">
+      <s:token/>
       <input type="hidden" name="pattern" />
       <input type="hidden" name="fileTypeId" />
+      <input type="hidden" name="struts2Token"/>
     </s:form>
 
-    <s:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern" />
+    <%-- DUPLICATE? IS THIS STILL NEEDED? --%>
+    <s:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern" >
+      <s:param name="struts.token.name">struts.token</s:param>
+      <s:param name="struts.token"><s:property value="struts.token"/></s:param>
+    </s:url>
 
     <c:forEach items="${fileTypeIds}" var="filetypeId" varStatus="j">
 
@@ -97,6 +105,7 @@
       <h3 class="filetype">${filetypeId}</h3>
 
       <table>
+        <s:token id="struts2TokenUd"/>
         <c:forEach items="${fileTypeMap[filetypeId].patterns}" var="pattern" varStatus="i">
           <c:choose>
             <c:when test='${(i.index)%2 eq 0}'>
@@ -115,7 +124,7 @@
             </td>
             <td class="controls ${bgcolor}">
               <s:a href="#" title="Remove [%{#attr.escapedPattern}] Pattern from [%{#attr.filetypeId}]"
-                    onclick="removeFiletypePattern( '%{#attr.filetypeId}', '%{#attr.escapedPattern}' )" 
+                    onclick="removeFiletypePattern( '%{#attr.filetypeId}', '%{#attr.escapedPattern}', '%{#attr.struts2TokenId}' )" 
                     theme="simple">
                 <img src="${iconDeleteUrl}" />
               </s:a>
@@ -131,7 +140,7 @@
           <td>
             <s:a href="#" 
                   title="Add Pattern to [%{#attr.filetypeId}]"
-                  onclick="addFiletypePattern( '%{#attr.filetypeId}', 'newpattern_%{#attr.j.index}' )"
+                  onclick="addFiletypePattern( '%{#attr.filetypeId}', 'newpattern_%{#attr.j.index}', '%{#attr.struts2TokenId}' )"
                   theme="simple">
               <img src="${iconCreateUrl}" />
             </s:a>
@@ -157,6 +166,7 @@
 
     <s:form method="post" action="repositoryScanning!updateKnownConsumers" 
              namespace="/admin" validate="false" theme="simple">
+    <s:token/>
     <table class="consumers">
       <tr>
         <th>&nbsp;</th>
@@ -213,6 +223,7 @@
 
     <s:form method="post" action="repositoryScanning!updateInvalidConsumers" 
              namespace="/admin" validate="false" theme="simple">
+    <s:token/>         
     <table class="consumers">
       <tr>
         <th>&nbsp;</th>

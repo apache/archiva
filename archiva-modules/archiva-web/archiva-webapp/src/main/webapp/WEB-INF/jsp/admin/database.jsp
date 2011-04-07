@@ -48,6 +48,7 @@
 
   <s:form method="post" action="database!updateSchedule" 
              namespace="/admin" validate="false" theme="simple">
+    <s:token/>
     <table>
       <s:textfield name="cron" label="Cron" size="40" theme="xhtml" />
       <tr>
@@ -74,6 +75,7 @@
 
     <s:form method="post" action="database!updateUnprocessedConsumers" 
              namespace="/admin" validate="false" theme="simple">
+    <s:token/>         
     <table class="consumers">
       <tr>
         <th>&nbsp;</th>
@@ -129,6 +131,7 @@
 
     <s:form method="post" action="database!updateCleanupConsumers" 
              namespace="/admin" validate="false" theme="simple">
+    <s:token/>
     <table class="consumers">
       <tr>
         <th>&nbsp;</th>

@@ -43,6 +43,7 @@
   <s:form method="post" action="disableProxyConnector!disable" namespace="/admin" validate="true">
     <s:hidden name="target"/>
     <s:hidden name="source"/>
+    <s:token/>
     <s:submit value="Disable"/>
   </s:form>
 </div>

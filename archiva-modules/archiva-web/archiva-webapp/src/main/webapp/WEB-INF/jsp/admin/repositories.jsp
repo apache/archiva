@@ -88,8 +88,11 @@
     <s:url id="editRepositoryUrl" action="editRepository">
       <s:param name="repoid" value="%{#attr.repository.id}"/>
     </s:url>
+    <s:token/>
     <s:url id="deleteRepositoryUrl" action="confirmDeleteRepository">
       <s:param name="repoid" value="%{#attr.repository.id}"/>
+      <s:param name="struts.token.name">struts.token</s:param>
+      <s:param name="struts.token"><s:property value="struts.token"/></s:param>
     </s:url>
     <s:a href="%{editRepositoryUrl}">
       <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
@@ -299,8 +302,11 @@
               <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
               Edit
             </s:a>
+            <s:token/>
             <s:url id="deleteRepositoryUrl" action="confirmDeleteRemoteRepository">
               <s:param name="repoid" value="%{#attr.repository.id}"/>
+              <s:param name="struts.token.name">struts.token</s:param>
+              <s:param name="struts.token"><s:property value="struts.token"/></s:param>
             </s:url>
             <s:a href="%{deleteRepositoryUrl}">
               <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>

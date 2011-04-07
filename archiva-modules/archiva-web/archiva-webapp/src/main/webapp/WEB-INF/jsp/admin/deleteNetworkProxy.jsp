@@ -46,6 +46,7 @@
 
   <s:form method="post" action="deleteNetworkProxy!delete" namespace="/admin" validate="true">
     <s:hidden name="proxyid"/>
+    <s:token/>
     <s:submit value="Delete"/>
   </s:form>
 </div>
