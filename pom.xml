@@ -1188,6 +1188,25 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>snapshots-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>redback.snapshots</id>
+          <name>Codehaus Redback Snapshots Repository</name>
+          <url>http://snapshots.repository.codehaus.org/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
   </profiles>
   <!-- TODO: we need to push this into the parent, and also upgrade to the latest ASF parent POM -->
   <distributionManagement>
