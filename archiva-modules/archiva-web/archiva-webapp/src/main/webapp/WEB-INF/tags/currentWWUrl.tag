@@ -22,9 +22,16 @@
 <%@ attribute name="action" %>
 <%@ attribute name="namespace" %>
 <%@ attribute name="url" %>
+<%@ attribute name="useParams" required="false" %>
 
 <c:set var="currentUrl">
-  <s:url/>
+  <s:url>
+    <c:if test="${useParams}">
+      <s:param name="groupId" value="%{groupId}"/>
+      <s:param name="artifactId" value="%{artifactId}"/>
+      <s:param name="version" value="%{version}"/>
+    </c:if>
+  </s:url>
 </c:set>
 <c:if test="${!empty (action) && !empty (namespace)}">
   <c:set var="url">
@@ -34,6 +41,8 @@
 <c:set var="text">
   <jsp:doBody/>
 </c:set>
+<!--URL: <c:out value="${url}"/>
+Current URL: <c:out value="${currentUrl}"/> -->
 <c:choose>
   <c:when test="${currentUrl == url}">
     <b>

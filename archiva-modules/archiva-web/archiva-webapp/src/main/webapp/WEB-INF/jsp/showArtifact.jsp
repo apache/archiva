@@ -94,7 +94,7 @@
           <s:param name="version" value="%{version}"/>
         </s:url>
       </c:set>
-      <my:currentWWUrl url="${url}">Info</my:currentWWUrl>
+      <my:currentWWUrl url="${url}" useParams="true">Info</my:currentWWUrl>
       <c:set var="url">
         <s:url action="showArtifactDependencies">
           <s:param name="groupId" value="%{groupId}"/>
@@ -102,7 +102,7 @@
           <s:param name="version" value="%{version}"/>
         </s:url>
       </c:set>
-      <my:currentWWUrl url="${url}">Dependencies</my:currentWWUrl>
+      <my:currentWWUrl url="${url}" useParams="true">Dependencies</my:currentWWUrl>
       <c:set var="url">
         <s:url action="showArtifactDependencyTree">
           <s:param name="groupId" value="%{groupId}"/>
@@ -110,7 +110,7 @@
           <s:param name="version" value="%{version}"/>
         </s:url>
       </c:set>
-      <my:currentWWUrl url="${url}">Dependency Tree</my:currentWWUrl>
+      <my:currentWWUrl url="${url}" useParams="true">Dependency Tree</my:currentWWUrl>
       <c:set var="url">
         <s:url action="showArtifactDependees">
           <s:param name="groupId" value="%{groupId}"/>
@@ -118,7 +118,7 @@
           <s:param name="version" value="%{version}"/>
         </s:url>
       </c:set>
-      <my:currentWWUrl url="${url}">Used By</my:currentWWUrl>
+      <my:currentWWUrl url="${url}" useParams="true">Used By</my:currentWWUrl>
       <c:set var="url">
         <s:url action="showArtifactMailingLists">
           <s:param name="groupId" value="%{groupId}"/>
@@ -126,7 +126,7 @@
           <s:param name="version" value="%{version}"/>
         </s:url>
       </c:set>
-      <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
+      <my:currentWWUrl url="${url}" useParams="true">Mailing Lists</my:currentWWUrl>
       <c:set var="url">
         <s:url action="showProjectMetadata">
           <s:param name="groupId" value="%{groupId}"/>
@@ -134,7 +134,7 @@
           <s:param name="version" value="%{version}"/>
         </s:url>
       </c:set>
-      <my:currentWWUrl url="${url}">Metadata</my:currentWWUrl>
+      <my:currentWWUrl url="${url}" useParams="true">Metadata</my:currentWWUrl>
       <%-- TODO
       <redback:ifAnyAuthorized permissions="archiva-access-reports">
         <c:set var="url">
@@ -144,7 +144,7 @@
             <s:param name="version" value="%{version}"/>
           </s:url>
         </c:set>
-        <my:currentWWUrl url="${url}">Reports</my:currentWWUrl>
+        <my:currentWWUrl url="${url}" useParams="true">Reports</my:currentWWUrl>
       </redback:ifAnyAuthorized>
         --%>
       
