@@ -57,7 +57,7 @@ import java.util.TimeZone;
  * UploadActionTest
  */
 public class UploadActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private UploadAction uploadAction;
 

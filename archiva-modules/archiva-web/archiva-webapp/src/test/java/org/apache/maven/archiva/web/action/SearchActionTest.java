@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
  *
  */
 public class SearchActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private SearchAction action;
 
