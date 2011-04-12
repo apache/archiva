@@ -19,6 +19,26 @@ Release Notes for Archiva 1.4
 
 ~~TODO
 
+* Compatibility Changes
+
+  * If upgrading from versions of Archiva earlier than 1.2.2, the list of libraries
+    in <<<wrapper.conf>>> has changed. If you have customized your copy of
+    <<<wrapper.conf>>>, please update it for compatibility with the version distributed
+    with the current release.
+
+* Security Vulnerabilities
+
+    * A CSRF security vulnerability (CVE-2010-3449) is present in 1.3.2 and earlier.
+  
+    * An XSS security vulnerability (CVE-2011-0533) is present in 1.3.3 and earlier.
+
+    * Additional CSRF (CVE-2011-1026) and XSS security (CVE-2011-1077) vulnerabilities have been reported against 1.3.4
+      and earlier versions.
+
+  It is important that users using lower versions of Archiva upgrade to this version (or higher).
+
+  See {{{http://archiva.apache.org/security.html} Archiva Security}} for more details.
+
 * Release Notes
 
   The Archiva 1.4 feature set can be seen in the {{{tour/index.html} feature tour}}.
@@ -28,6 +48,16 @@ Release Notes for Archiva 1.4
   Released: <<???>>
 
   ~~TODO
+
+Previous Releases
+
+* Changes in Archiva 1.3.5
+
+  Released: <<14 March 2011>>
+
+** Task
+
+    * [MRM-1460] - Upgrade Archiva to Redback 1.2.7
 
 * Changes in Archiva 1.3.4
 

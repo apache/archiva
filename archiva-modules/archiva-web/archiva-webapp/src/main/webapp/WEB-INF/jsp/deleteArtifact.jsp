@@ -36,6 +36,7 @@
   <div id="contentArea">
     <s:form action="deleteArtifact!doDelete" namespace="/" method="post" validate="true">    
       <%@ include file="/WEB-INF/jsp/include/deleteArtifactForm.jspf" %>
+      <s:token/>
       <s:submit/>
     </s:form>
   </div>

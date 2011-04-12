@@ -50,6 +50,7 @@
   
   <s:form method="post" action="saveNetworkProxy" namespace="/admin">
     <s:hidden name="mode"/>
+    <s:token/>
     
 	<c:choose>
 	  <c:when test="${mode == 'edit'}">

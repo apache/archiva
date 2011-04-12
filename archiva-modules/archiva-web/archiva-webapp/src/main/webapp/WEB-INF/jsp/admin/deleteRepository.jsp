@@ -63,6 +63,7 @@
 
   <s:form method="post" action="deleteRepository" namespace="/admin" validate="true" theme="simple">
     <s:hidden name="repoid"/>
+    <s:token/>
     <div class="buttons">
       <s:submit value="Delete Configuration Only" method="deleteEntry" />
       <s:submit value="Delete Configuration and Contents" method="deleteContents" />

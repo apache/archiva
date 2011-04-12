@@ -73,8 +73,11 @@
 <div class="controls">
     <%-- TODO: make some icons --%>
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
+    <s:token/>
     <s:url id="deleteLegacyArtifactPath" action="deleteLegacyArtifactPath">
       <s:param name="path" value="%{#attr.legacyArtifactPath.path}"/>
+      <s:param name="struts.token.name">struts.token</s:param>
+      <s:param name="struts.token"><s:property value="struts.token"/></s:param>
     </s:url>
     <s:a href="%{deleteLegacyArtifactPath}">
       <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>

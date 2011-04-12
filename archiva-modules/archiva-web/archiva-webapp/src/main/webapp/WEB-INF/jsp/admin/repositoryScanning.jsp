@@ -40,9 +40,9 @@
 <s:actionmessage /> 
 
 <c:url var="iconDeleteUrl" value="/images/icons/delete.gif" /> 
-<c:url var="iconCreateUrl" value="/images/icons/create.png" /> 
-<s:url id="removeFiletypePatternUrl" action="repositoryScanning" method="removeFiletypePattern" /> 
-<s:url id="addFiletypePatternUrl"    action="repositoryScanning" method="addFiletypePattern" /> 
+<c:url var="iconCreateUrl" value="/images/icons/create.png" />
+<s:url id="removeFiletypePatternUrl" action="repositoryScanning" method="removeFiletypePattern"/>
+<s:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern"/>
    
 <script type="text/javascript">
 <!--
@@ -82,12 +82,11 @@
     <s:form method="post" action="repositoryScanning" 
              namespace="/admin" validate="false" 
              id="filetypeForm" theme="simple">
+      <s:token/>
       <input type="hidden" name="pattern" />
       <input type="hidden" name="fileTypeId" />
     </s:form>
-
-    <s:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern" />
-
+    
     <c:forEach items="${fileTypeIds}" var="filetypeId" varStatus="j">
 
       <div class="filetype">
@@ -115,7 +114,7 @@
             </td>
             <td class="controls ${bgcolor}">
               <s:a href="#" title="Remove [%{#attr.escapedPattern}] Pattern from [%{#attr.filetypeId}]"
-                    onclick="removeFiletypePattern( '%{#attr.filetypeId}', '%{#attr.escapedPattern}' )" 
+                    onclick="removeFiletypePattern( '%{#attr.filetypeId}', '%{#attr.escapedPattern}' )"
                     theme="simple">
                 <img src="${iconDeleteUrl}" />
               </s:a>
@@ -157,6 +156,7 @@
 
     <s:form method="post" action="repositoryScanning!updateKnownConsumers" 
              namespace="/admin" validate="false" theme="simple">
+    <s:token/>
     <table class="consumers">
       <tr>
         <th>&nbsp;</th>
@@ -213,6 +213,7 @@
 
     <s:form method="post" action="repositoryScanning!updateInvalidConsumers" 
              namespace="/admin" validate="false" theme="simple">
+    <s:token/>         
     <table class="consumers">
       <tr>
         <th>&nbsp;</th>

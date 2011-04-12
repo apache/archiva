@@ -71,11 +71,14 @@
       <div class="controls">
       <redback:ifAnyAuthorized
         permissions="archiva-manage-configuration">
+        <s:token/>
         <s:url id="editNetworkProxyUrl" action="editNetworkProxy">
           <s:param name="proxyid" value="%{#attr.proxy.id}" />
         </s:url>
         <s:url id="deleteNetworkProxyUrl" action="deleteNetworkProxy" method="confirm">
           <s:param name="proxyid" value="%{#attr.proxy.id}" />
+          <s:param name="struts.token.name">struts.token</s:param>
+          <s:param name="struts.token"><s:property value="struts.token"/></s:param>
         </s:url>
         <s:a href="%{editNetworkProxyUrl}">
           <img src="<c:url value="/images/icons/edit.png" />" />

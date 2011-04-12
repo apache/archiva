@@ -56,6 +56,7 @@
   <s:form method="post" action="deleteRepositoryGroup" namespace="/admin" validate="true" theme="simple">
     <s:hidden name="repoGroupId"/>
     <div class="buttons">
+      <s:token/>
       <s:submit value="Confirm" method="delete"/>
       <s:submit value="Cancel" method="execute"/>
     </div>
