@@ -29,7 +29,7 @@ import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.easymock.MockControl;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
  * never forward to HTML page, etc). This is also missing tests for various combinations of paging at this point.
  */
 public class GenerateReportActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private GenerateReportAction action;
 

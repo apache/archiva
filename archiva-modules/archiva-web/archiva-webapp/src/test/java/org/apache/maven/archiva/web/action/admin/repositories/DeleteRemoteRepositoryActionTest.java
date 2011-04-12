@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
@@ -38,7 +39,7 @@ import java.util.Collections;
  * @version $Id$
  */
 public class DeleteRemoteRepositoryActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private static final String REPO_ID = "remote-repo-ident";
 

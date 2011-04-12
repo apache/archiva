@@ -25,7 +25,7 @@
 <head>
 
   <title>Audit Log Report</title>
-  <s:head theme="ajax" />
+  <s:head theme="xhtml" />
   
   <link rel="stylesheet" href="<c:url value='/css/no-theme/jquery-ui-1.7.2.custom.css'/>" type="text/css" />
   <script type="text/javascript" src="<c:url value='/js/jquery-1.3.2.min.js'/>"></script>

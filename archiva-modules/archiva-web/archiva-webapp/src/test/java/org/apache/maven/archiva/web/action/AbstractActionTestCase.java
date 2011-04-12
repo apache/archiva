@@ -23,6 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.config.Configuration;
+import com.opensymphony.xwork2.config.ConfigurationManager;
+import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
+import com.opensymphony.xwork2.inject.Container;
+import com.opensymphony.xwork2.util.ValueStack;
+import com.opensymphony.xwork2.util.ValueStackFactory;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.IssueManagement;
@@ -191,5 +198,21 @@ public abstract class AbstractActionTestCase
         model.addFacet( genericMetadataFacet );
         
         return model;
+    }
+
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        configurationManager.addContainerProvider( new XWorkConfigurationProvider() );
+        Configuration config = configurationManager.getConfiguration();
+        Container container = config.getContainer();
+
+        ValueStack stack = container.getInstance( ValueStackFactory.class ).createValueStack();
+        stack.getContext().put( ActionContext.CONTAINER, container );
+        ActionContext.setContext( new ActionContext( stack.getContext() ) );
     }
 }

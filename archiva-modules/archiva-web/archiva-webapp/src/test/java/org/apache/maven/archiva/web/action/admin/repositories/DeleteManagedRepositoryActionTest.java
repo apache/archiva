@@ -35,6 +35,7 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.apache.maven.archiva.web.action.AuditEventArgumentsMatcher;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 public class DeleteManagedRepositoryActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private DeleteManagedRepositoryAction action;
 

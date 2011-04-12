@@ -29,7 +29,7 @@
   <name>Archiva Web :: RSS</name>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>plexus-spring</artifactId>
       <scope>test</scope>
     </dependency>

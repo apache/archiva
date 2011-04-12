@@ -28,6 +28,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
@@ -40,7 +41,7 @@ import org.easymock.MockControl;
  * @version $Id$
  */
 public class AddManagedRepositoryActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private AddManagedRepositoryAction action;
 

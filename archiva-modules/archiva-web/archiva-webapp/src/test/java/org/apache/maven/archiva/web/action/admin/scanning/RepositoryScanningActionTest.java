@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
@@ -29,7 +30,7 @@ import org.easymock.MockControl;
  */
 
 public class RepositoryScanningActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private RepositoryScanningAction action;
     

@@ -68,6 +68,8 @@ public class RepositoryActionMapper
     private static final String PARAM_GROUP_ID = "groupId";
 
     private static final String PARAM_VERSION = "version";
+    
+    private static final String ACTION_EXTENSION = "action";
 
     public ActionMapping getMapping( HttpServletRequest httpServletRequest, ConfigurationManager manager )
     {
@@ -86,7 +88,7 @@ public class RepositoryActionMapper
                  StringUtils.equals( path, ".action" ) )
             {
                 // Return "root" browse.
-                return new ActionMapping( ACTION_BROWSE, "/", "", null );
+                return createActionMapping( ACTION_BROWSE, "/", "", null );
             }
             else
             {
@@ -102,18 +104,18 @@ public class RepositoryActionMapper
                 {
                     case 1:
                         params.put( PARAM_GROUP_ID, parts[0] );
-                        return new ActionMapping( ACTION_BROWSE_GROUP, "/", "", params );
+                        return createActionMapping( ACTION_BROWSE_GROUP, "/", "", params );
 
                     case 2:
                         params.put( PARAM_GROUP_ID, parts[0] );
                         params.put( PARAM_ARTIFACT_ID, parts[1] );
-                        return new ActionMapping( ACTION_BROWSE_ARTIFACT, "/", "", params );
+                        return createActionMapping( ACTION_BROWSE_ARTIFACT, "/", "", params );
 
                     case 3:
                         params.put( PARAM_GROUP_ID, parts[0] );
                         params.put( PARAM_ARTIFACT_ID, parts[1] );
                         params.put( PARAM_VERSION, parts[2] );
-                        return new ActionMapping( ACTION_SHOW_ARTIFACT, "/", "", params );
+                        return createActionMapping( ACTION_SHOW_ARTIFACT, "/", "", params );
 
                     case 4:
                         params.put( PARAM_GROUP_ID, parts[0] );
@@ -122,19 +124,19 @@ public class RepositoryActionMapper
 
                         if ( METHOD_DEPENDENCIES.equals( parts[3] ) )
                         {
-                            return new ActionMapping( ACTION_SHOW_ARTIFACT_DEPENDENCIES, "/", "", params );
+                            return createActionMapping( ACTION_SHOW_ARTIFACT_DEPENDENCIES, "/", "", params );
                         }
                         else if ( METHOD_MAILING_LISTS.equals( parts[3] ) )
                         {
-                            return new ActionMapping( ACTION_SHOW_ARTIFACT_MAILING_LISTS, "/", "", params );
+                            return createActionMapping( ACTION_SHOW_ARTIFACT_MAILING_LISTS, "/", "", params );
                         }
                         else if ( METHOD_USEDBY.equals( parts[3] ) )
                         {
-                            return new ActionMapping( ACTION_SHOW_ARTIFACT_DEPENDEES, "/", "", params );
+                            return createActionMapping( ACTION_SHOW_ARTIFACT_DEPENDEES, "/", "", params );
                         }
                         else if ( METHOD_DEPENDENCY_TREE.equals( parts[3] ) )
                         {
-                            return new ActionMapping( ACTION_SHOW_ARTIFACT_DEPENDENCY_TREE, "/", "", params );
+                            return createActionMapping( ACTION_SHOW_ARTIFACT_DEPENDENCY_TREE, "/", "", params );
                         }
                         break;
                 }
@@ -148,7 +150,7 @@ public class RepositoryActionMapper
     @Override
     public String getUriFromActionMapping( ActionMapping actionMapping )
     {
-        Map<String, String> params = actionMapping.getParams();
+        Map<String, Object> params = actionMapping.getParams();
         if ( ACTION_BROWSE.equals( actionMapping.getName() ) )
         {
             return BROWSE_PREFIX;
@@ -185,7 +187,7 @@ public class RepositoryActionMapper
         return super.getUriFromActionMapping( actionMapping );
     }
 
-    private String toUri( Map<String, String> params, boolean artifactId, boolean version, String method )
+    private String toUri( Map<String, Object> params, boolean artifactId, boolean version, String method )
     {
         StringBuffer buf = new StringBuffer();
 
@@ -212,5 +214,13 @@ public class RepositoryActionMapper
         }
 
         return buf.toString();
+    }
+    
+    private ActionMapping createActionMapping( String name, String namespace, String method, Map params )
+    {
+        ActionMapping mapping = new ActionMapping( name, namespace, method, params );
+        mapping.setExtension( ACTION_EXTENSION );
+        
+        return mapping;
     }
 }

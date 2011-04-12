@@ -23,6 +23,7 @@ import com.opensymphony.xwork2.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
@@ -36,7 +37,7 @@ import java.util.Collections;
  * @version $Id$
  */
 public class AddRemoteRepositoryActionTest
-    extends PlexusInSpringTestCase
+    extends AbstractActionTestCase
 {
     private AddRemoteRepositoryAction action;
 

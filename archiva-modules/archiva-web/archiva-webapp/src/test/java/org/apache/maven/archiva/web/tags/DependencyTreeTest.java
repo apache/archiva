@@ -38,6 +38,13 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.config.ConfigurationManager;
+import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
+import com.opensymphony.xwork2.inject.Container;
+import com.opensymphony.xwork2.util.ValueStack;
+import com.opensymphony.xwork2.util.ValueStackFactory;
+
 public class DependencyTreeTest
     extends PlexusInSpringTestCase
 {
@@ -58,6 +65,17 @@ public class DependencyTreeTest
         throws Exception
     {
         super.setUp();
+        
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        configurationManager.addContainerProvider(new XWorkConfigurationProvider());
+        com.opensymphony.xwork2.config.Configuration config = configurationManager.getConfiguration();
+        Container container = config.getContainer();
+
+        ValueStack stack = container.getInstance(ValueStackFactory.class).createValueStack();
+        stack.getContext().put(ActionContext.CONTAINER, container);
+        ActionContext.setContext(new ActionContext(stack.getContext()));
+        
+        assertNotNull(ActionContext.getContext());
 
         Configuration configuration = new Configuration();
         ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
