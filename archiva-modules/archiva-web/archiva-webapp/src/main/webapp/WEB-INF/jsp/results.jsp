@@ -85,7 +85,7 @@
         </tr>
         <tr>
           <td>
-          <s:form id="filteredSearch" method="post" action="filteredSearch" validate="true">
+          <s:form id="filteredSearch" method="get" action="filteredSearch" validate="true">
             <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}" theme="simple"/>  
             <label><strong>Advanced Search Fields: </strong></label><s:select name="searchField" list="searchFields" theme="simple"/> 
             <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
@@ -108,7 +108,7 @@
       </table>
     </c:if>
     <c:if test="${fromFilterSearch == false}">
-      <s:form method="post" action="quickSearch" validate="true">
+      <s:form method="get" action="quickSearch" validate="true">
         <s:textfield label="Search for" size="50" name="q"/>
         <s:checkbox label="Search within results" name="searchResultsOnly"/>        
         <s:hidden name="completeQueryString" value="%{#attr.completeQueryString}"/>        
