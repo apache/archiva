@@ -129,21 +129,4 @@ public class CSRFSecurityTest
         assertTextPresent( "Security Alert - Invalid Token Found" );
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }
-
-    public void testCSRFUpdateUnprocessedConsumers()
-    {
-        getSelenium().open( baseUrl );
-        getSelenium().open( baseUrl + "/admin/database!updateUnprocessedConsumers.action?enabledUnprocessedConsumers=update-db-project" );
-        assertTextPresent( "Security Alert - Invalid Token Found" );
-        assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
-    }
-
-    public void testCSRFUpdateCleanupConsumers()
-    {
-        getSelenium().open( baseUrl );
-        getSelenium().open( baseUrl + "/admin/database!updateCleanupConsumers.action?enabledCleanupConsumers=not-present-remove-db-artifact&" +
-            "enabledCleanupConsumers=not-present-remove-db-project&enabledCleanupConsumers=not-present-remove-indexed" );
-        assertTextPresent( "Security Alert - Invalid Token Found" );
-        assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );    
-    }
 }
