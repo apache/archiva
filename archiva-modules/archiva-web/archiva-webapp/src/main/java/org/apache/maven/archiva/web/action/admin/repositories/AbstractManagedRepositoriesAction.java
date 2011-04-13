@@ -97,7 +97,7 @@ public abstract class AbstractManagedRepositoriesAction
         throws IOException
     {
         File dir = new File( existingRepository.getLocation() );
-        if ( !FileUtils.deleteQuietly( dir ) )
+        if ( dir.exists() && !FileUtils.deleteQuietly( dir ) )
         {
             throw new IOException( "Cannot delete repository " + dir );
         }
