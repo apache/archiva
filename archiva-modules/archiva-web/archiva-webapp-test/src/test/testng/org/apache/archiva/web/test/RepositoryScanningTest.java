@@ -47,7 +47,7 @@ public class RepositoryScanningTest
     {
         setFieldValue( "newpattern_0", "**/*.zip" );
         clickAddIcon( "newpattern_0" );
-        Assert.assertEquals( getSelenium().getText( "//span[@class='errorMessage']" ),
+        Assert.assertEquals( getSelenium().getText( "//ul[@class='errorMessage']/li/span" ),
                              "Not adding pattern \"**/*.zip\" to filetype artifacts as it already exists." );
     }
 
