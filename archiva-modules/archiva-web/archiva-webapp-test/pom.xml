@@ -507,9 +507,11 @@
     <profile>
       <id>debug</id>
       <properties>
+        <!-- TODO: review how appropriate the memory settings are - should work with less -->
         <cargo.jvm.args>
           -Xdebug -Xnoagent -Djava.compiler=NONE
           -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=${cargo.debug.port}
+          <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
         </cargo.jvm.args>
         <cargo.debug.port>8000</cargo.debug.port>
         <!-- wait an unusual amount of time (1hr) to allow debugging to occur -->
@@ -522,5 +524,7 @@
     <cargo.wait>false</cargo.wait>
     <cargo.install.dir>cargo-installs</cargo.install.dir>
     <maxWaitTimeInMs>60000</maxWaitTimeInMs>
+    <!-- TODO: review how appropriate the memory settings are - should work with less -->
+    <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
   </properties>
 </project>
