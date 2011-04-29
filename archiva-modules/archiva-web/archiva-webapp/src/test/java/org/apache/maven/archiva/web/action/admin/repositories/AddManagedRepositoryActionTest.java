@@ -30,6 +30,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
@@ -50,6 +51,10 @@ public class AddManagedRepositoryActionTest
     private MockControl roleManagerControl;
 
     private MockControl archivaConfigurationControl;
+
+    private Registry registry;
+
+    private MockControl registryControl;
 
     private ArchivaConfiguration archivaConfiguration;
     
@@ -72,6 +77,11 @@ public class AddManagedRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
+
+        registryControl = MockControl.createControl( Registry.class );
+        registry = (Registry) registryControl.getMock();
+        action.setRegistry( registry );
+
         location = getTestFile( "target/test/location" );
     }
 
@@ -131,6 +141,13 @@ public class AddManagedRepositoryActionTest
 
         roleManagerControl.replay();
 
+        registry.getString( "appserver.base", "${appserver.base}" );
+        registryControl.setReturnValue( "target/test" );
+        registry.getString( "appserver.home", "${appserver.home}" );
+        registryControl.setReturnValue( "target/test" );
+
+        registryControl.replay();
+
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
@@ -146,11 +163,13 @@ public class AddManagedRepositoryActionTest
         assertFalse( location.exists() );
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
-        assertTrue( location.exists() );        
+        assertTrue( location.exists() );
         assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
+        assertEquals( location.getCanonicalPath(), new File( repository.getLocation() ).getCanonicalPath() );
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
+        registryControl.verify();
     }
     
     
@@ -160,8 +179,15 @@ public class AddManagedRepositoryActionTest
         if( !location.exists() )
         {
             location.mkdirs();
-        }        
-    
+        }
+
+        registry.getString( "appserver.base", "${appserver.base}" );
+        registryControl.setReturnValue( "target/test" );
+        registry.getString( "appserver.home", "${appserver.home}" );
+        registryControl.setReturnValue( "target/test" );
+
+        registryControl.replay();
+
         action.prepare();
         ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
@@ -169,13 +195,15 @@ public class AddManagedRepositoryActionTest
         assertTrue( location.exists() );
         String status = action.commit();
         assertEquals( AddManagedRepositoryAction.CONFIRM, status );
+        assertEquals( location.getCanonicalPath(), new File( repository.getLocation() ).getCanonicalPath() );
+        registryControl.verify();
     }
     
     private void populateRepository( ManagedRepositoryConfiguration repository )
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
-        repository.setLocation( location.getAbsolutePath() );
+        repository.setLocation( "${appserver.base}/location" );
         repository.setLayout( "default" );
         repository.setRefreshCronExpression( "* 0/5 * * * ?" );
         repository.setDaysOlder( 31 );

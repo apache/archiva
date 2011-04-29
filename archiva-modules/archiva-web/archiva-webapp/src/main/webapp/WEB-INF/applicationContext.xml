@@ -60,6 +60,7 @@
     <constructor-arg ref="repositoryStatisticsManager"/>
     <constructor-arg ref="repositoryMerger#maven2"/>
     <constructor-arg ref="auditListener#logging"/>
+    <constructor-arg ref="registry#commons-configuration"/>
 
   </bean>
 

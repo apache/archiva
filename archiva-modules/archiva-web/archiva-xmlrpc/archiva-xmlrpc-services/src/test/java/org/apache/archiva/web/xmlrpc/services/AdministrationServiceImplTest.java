@@ -52,6 +52,7 @@ import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryConte
 import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
 import org.apache.maven.archiva.repository.content.PathParser;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
@@ -132,6 +133,10 @@ public class AdministrationServiceImplTest
 
     private AuditListener auditListener;
 
+    private MockControl registryControl;
+
+    private Registry registry;
+
     private static final String STAGE = "-stage";
 
     protected void setUp()
@@ -185,10 +190,13 @@ public class AdministrationServiceImplTest
         auditListenerControl = MockControl.createControl( AuditListener.class );
         auditListener = (AuditListener) auditListenerControl.getMock();
 
+        registryControl = MockControl.createControl( Registry.class );
+        registry = (Registry) registryControl.getMock();
+
         service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
                                                  repositorySessionFactory, repositoryTaskScheduler,
                                                  Collections.singletonList( listener ), repositoryStatisticsManager,
-                                                 repositoryMerger, auditListener );
+                                                 repositoryMerger, auditListener, registry );
     }
 
     /* Tests for repository consumers */
@@ -897,6 +905,7 @@ public class AdministrationServiceImplTest
         String name = projId + " Releases";
         String releaseLocation = "target/test-repository/" + projId + ".releases";
         String stageLocation = releaseLocation + "-stage";
+        String appserverBase = "target";
 
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
         RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
@@ -917,6 +926,8 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
         configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
         configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
+        registryControl.expectAndReturn( registry.getString( "appserver.base", "${appserver.base}" ), appserverBase );
+        registryControl.expectAndReturn( registry.getString( "appserver.home", "${appserver.home}" ), appserverBase );
         config.addManagedRepository( managedRepo );
         configControl.setMatcher( MockControl.ALWAYS_MATCHER );
         configControl.setVoidCallable();
@@ -928,15 +939,18 @@ public class AdministrationServiceImplTest
 
         archivaConfigControl.replay();
         configControl.replay();
+        registryControl.replay();
         assertFalse( new File( releaseLocation ).isDirectory() );
         assertFalse( new File( stageLocation ).isDirectory() );
-        boolean success = service.addManagedRepository( repoId, layout, name, releaseLocation, true, true, false, true,
+        boolean success = service.addManagedRepository( repoId, layout, name, "${appserver.base}/test-repository/" + projId + ".releases", true, true, false, true,
                                                         "0 15 3 * * ? *" );
         assertTrue( success );
         assertTrue( new File( releaseLocation ).isDirectory() );
         assertTrue( new File( stageLocation ).isDirectory() );
         new File( releaseLocation ).delete();
         new File( stageLocation ).delete();
+
+        registryControl.verify();
     }
 
     /* private methods */

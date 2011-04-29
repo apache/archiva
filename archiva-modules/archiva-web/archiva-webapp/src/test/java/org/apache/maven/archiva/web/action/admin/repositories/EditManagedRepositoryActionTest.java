@@ -32,6 +32,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
@@ -62,6 +63,10 @@ public class EditManagedRepositoryActionTest
 
     private ArchivaConfiguration archivaConfiguration;
 
+    private Registry registry;
+
+    private MockControl registryControl;
+    
     private static final String REPO_ID = "repo-ident";
 
     private File location;
@@ -82,6 +87,11 @@ public class EditManagedRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
+
+        registryControl = MockControl.createControl( Registry.class );
+        registry = (Registry) registryControl.getMock();
+        action.setRegistry( registry );
+
         location = getTestFile( "target/test/location" );
 
         metadataRepository = mock( MetadataRepository.class );
@@ -124,7 +134,10 @@ public class EditManagedRepositoryActionTest
         assertEquals( REPO_ID, action.getRepoid() );
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
-        assertRepositoryEquals( repository, createRepository() );
+
+        ManagedRepositoryConfiguration newRepository = createRepository();
+        assertRepositoryEquals( repository, newRepository );
+        assertEquals( repository.getLocation(), newRepository.getLocation() );
 
         String status = action.input();
         assertEquals( Action.INPUT, status );
@@ -153,6 +166,13 @@ public class EditManagedRepositoryActionTest
         roleManagerControl.setVoidCallable();
 
         roleManagerControl.replay();
+
+        registry.getString( "appserver.base", "${appserver.base}" );
+        registryControl.setReturnValue( "target/test" );
+        registry.getString( "appserver.home", "${appserver.home}" );
+        registryControl.setReturnValue( "target/test" );
+
+        registryControl.replay();
 
         Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();
@@ -191,10 +211,12 @@ public class EditManagedRepositoryActionTest
         newRepository.setName( "new repo name" );
         assertRepositoryEquals( repository, newRepository );
         assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
+        assertEquals( location.getCanonicalPath(), new File( repository.getLocation() ).getCanonicalPath() );
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
         repositoryStatisticsManagerControl.verify();
+        registryControl.verify();
     }
 
     public void testEditRepositoryLocationChanged()
@@ -218,6 +240,13 @@ public class EditManagedRepositoryActionTest
         roleManagerControl.setVoidCallable();
 
         roleManagerControl.replay();
+
+        registry.getString( "appserver.base", "${appserver.base}" );
+        registryControl.setReturnValue( "target/test" );
+        registry.getString( "appserver.home", "${appserver.home}" );
+        registryControl.setReturnValue( "target/test" );
+
+        registryControl.replay();
 
         Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();
@@ -250,15 +279,17 @@ public class EditManagedRepositoryActionTest
         populateRepository( repository );
         File testFile = getTestFile( "target/test/location/new" );
         FileUtils.deleteDirectory( testFile );
-        repository.setLocation( testFile.getCanonicalPath() );
+        repository.setLocation( "${appserver.base}/location/new" );
         action.setRepository( repository );
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
         assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
+        assertEquals( testFile.getCanonicalPath(), new File( repository.getLocation() ).getCanonicalPath() );
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
         repositoryStatisticsManagerControl.verify();
+        registryControl.verify();
     }
 
     private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
@@ -268,7 +299,6 @@ public class EditManagedRepositoryActionTest
         assertEquals( expectedRepository.getId(), actualRepository.getId() );
         assertEquals( expectedRepository.getIndexDir(), actualRepository.getIndexDir() );
         assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
-        assertEquals( expectedRepository.getLocation(), actualRepository.getLocation() );
         assertEquals( expectedRepository.getName(), actualRepository.getName() );
         assertEquals( expectedRepository.getRefreshCronExpression(), actualRepository.getRefreshCronExpression() );
         assertEquals( expectedRepository.getRetentionCount(), actualRepository.getRetentionCount() );
@@ -310,7 +340,7 @@ public class EditManagedRepositoryActionTest
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
-        repository.setLocation( location.getCanonicalPath() );
+        repository.setLocation( "${appserver.base}/location" );
         repository.setLayout( "default" );
         repository.setRefreshCronExpression( "* 0/5 * * * ?" );
         repository.setDaysOlder( 31 );
@@ -326,7 +356,7 @@ public class EditManagedRepositoryActionTest
     {
         repository.setId( REPO_ID + "-stage" );
         repository.setName( "repo name" );
-        repository.setLocation( location.getCanonicalPath() );
+        repository.setLocation( "${appserver.base}/location" );
         repository.setLayout( "default" );
         repository.setRefreshCronExpression( "* 0/5 * * * ?" );
         repository.setDaysOlder( 31 );

@@ -20,11 +20,13 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.registry.Registry;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +45,14 @@ public abstract class AbstractManagedRepositoriesAction
      * @plexus.requirement role-hint="default"
      */
     protected RoleManager roleManager;
-    
+
+    /**
+     * Plexus registry to read the configuration from.
+     *
+     * @plexus.requirement role-hint="commons-configuration"
+     */
+    private Registry registry;
+
     public static final String CONFIRM = "confirm";
     
     public RoleManager getRoleManager()
@@ -54,6 +63,11 @@ public abstract class AbstractManagedRepositoriesAction
     public void setRoleManager( RoleManager roleManager )
     {
         this.roleManager = roleManager;
+    }
+
+    public void setRegistry( Registry registry )
+    {
+        this.registry = registry;
     }
 
     protected void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
@@ -128,5 +142,14 @@ public abstract class AbstractManagedRepositoriesAction
         }
 
         log.debug( "removed user roles associated with repository " + repoId );
+    }
+
+    protected String removeExpressions( String directory )
+    {
+        String value = StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base",
+                                                                                                "${appserver.base}" ) );
+        value = StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home",
+                                                                                     "${appserver.home}" ) );
+        return value;
     }
 }

@@ -53,6 +53,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.slf4j.Logger;
@@ -96,13 +97,16 @@ public class AdministrationServiceImpl
 
     private RepositorySessionFactory repositorySessionFactory;
 
+    private Registry registry;
+
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
                                       RepositoryContentFactory repoFactory,
                                       RepositorySessionFactory repositorySessionFactory,
                                       RepositoryArchivaTaskScheduler repositoryTaskScheduler,
                                       Collection<RepositoryListener> listeners,
                                       RepositoryStatisticsManager repositoryStatisticsManager,
-                                      RepositoryMerger repositoryMerger, AuditListener auditListener )
+                                      RepositoryMerger repositoryMerger, AuditListener auditListener,
+                                      Registry registry )
     {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
@@ -113,6 +117,7 @@ public class AdministrationServiceImpl
         this.repositoryStatisticsManager = repositoryStatisticsManager;
         this.repositoryMerger = repositoryMerger;
         this.auditListener = auditListener;
+        this.registry = registry;
     }
 
     /**
@@ -389,7 +394,7 @@ public class AdministrationServiceImpl
         repository.setReleases( releasesIncluded );
         repository.setSnapshots( snapshotsIncluded );
         repository.setName( name );
-        repository.setLocation( location );
+        repository.setLocation( removeExpressions( location ) );
         repository.setLayout( layout );
         repository.setRefreshCronExpression( cronExpression );
 
@@ -729,5 +734,14 @@ public class AdministrationServiceImpl
         stagingRepository.setScanned( repository.isScanned() );
         stagingRepository.setSnapshots( repository.isSnapshots() );
         return stagingRepository;
+    }
+
+    private String removeExpressions( String directory )
+    {
+        String value = StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base",
+                                                                                                "${appserver.base}" ) );
+        value = StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home",
+                                                                                     "${appserver.home}" ) );
+        return value;
     }
 }

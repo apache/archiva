@@ -74,6 +74,8 @@ public class AddManagedRepositoryAction
 
     public String commit()
     {
+        repository.setLocation( removeExpressions( repository.getLocation() ) );
+
         File location = new File( repository.getLocation() );
         if( location.exists() )
         {
