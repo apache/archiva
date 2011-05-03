@@ -19,6 +19,8 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
+import com.opensymphony.xwork2.Validateable;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
@@ -38,7 +40,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
  */
 public class EditOrganisationInfoAction
     extends AbstractAppearanceAction
-    implements SecureAction
+    implements SecureAction, Validateable
 {
     @Override
     public String execute()
@@ -69,5 +71,29 @@ public class EditOrganisationInfoAction
         bundle.setRequiresAuthentication( true );
         bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
         return bundle;
+    }
+    
+    public void validate()
+    {
+        // trim all unecessary trailing/leading white-spaces; always put this statement before the closing braces(after all validation).
+        trimAllRequestParameterValues();
+    }
+    
+    private void trimAllRequestParameterValues()
+    {
+        if(StringUtils.isNotEmpty(super.getOrganisationName()))
+        {
+            super.setOrganisationName(super.getOrganisationName().trim());
+        }
+
+        if(StringUtils.isNotEmpty(super.getOrganisationUrl()))
+        {
+            super.setOrganisationUrl(super.getOrganisationUrl().trim());
+        }
+
+        if(StringUtils.isNotEmpty(super.getOrganisationLogo()))
+        {
+            super.setOrganisationLogo(super.getOrganisationLogo().trim());
+        }
     }
 }

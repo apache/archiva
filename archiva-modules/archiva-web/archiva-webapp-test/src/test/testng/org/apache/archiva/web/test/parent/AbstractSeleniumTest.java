@@ -399,5 +399,14 @@ public abstract class AbstractSeleniumTest {
 	{
 	   Assert.assertFalse( getSelenium().isChecked( locator ) );
 	}
-	    
+
+        public void assertXpathCount(String locator, int expectedCount)
+        {
+            Assert.assertEquals( getSelenium().getXpathCount(locator).intValue(), expectedCount );
+        }
+
+        public void assertElementValue(String locator, String expectedValue)
+        {
+            Assert.assertEquals(getSelenium().getValue(locator), expectedValue);
+        }
 }

@@ -19,6 +19,7 @@
 
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <html>
 <head>
@@ -30,7 +31,14 @@
 
 <h1>Admin: Delete Managed Repository</h1>
 
-<s:actionerror/>
+<%-- changed the structure of displaying errorMessages in order for them to be escaped. --%>
+<s:if test="hasActionErrors()">
+      <ul>
+      <s:iterator value="actionErrors">
+          <li><span class="errorMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+</s:if>
 
 <div id="contentArea">
 
@@ -44,19 +52,20 @@
     Are you sure you want to delete the following managed repository?
   </p>
 
+  <%-- used c:out in displaying EL's so that they are escaped --%>
   <div class="infobox">
     <table class="infotable">
       <tr>
         <td>ID:</td>
-        <td><code>${repository.id}</code></td>
+        <td><code><c:out value="${repository.id}" /></code></td>
       </tr>
       <tr>
         <td>Name:</td>
-        <td>${repository.name}</td>
+        <td><c:out value="${repository.name}" /></td>
       </tr>
       <tr>
         <td>Directory:</td>
-        <td>${repository.location}</td>
+        <td><c:out value="${repository.location}" /></td>
       </tr>
     </table>
   </div>

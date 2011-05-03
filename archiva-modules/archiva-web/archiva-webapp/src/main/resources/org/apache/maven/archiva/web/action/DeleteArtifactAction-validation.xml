@@ -21,20 +21,40 @@
 <!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
+<!-- validate temporarily-trimmed inputs, actual values are then carried over to the action class to be trimmed once more. -->
 <validators>
   <field name="groupId">
     <field-validator type="requiredstring">
       <message>You must enter a groupId.</message>
+    </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[a-zA-Z0-9._-]+$</param>
+        <message>Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>
   <field name="artifactId">
     <field-validator type="requiredstring">
       <message>You must enter an artifactId.</message>
     </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[a-zA-Z0-9._-]+$</param>
+        <message>Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
+    </field-validator>
   </field>
+  <!-- version's validation is inside the validate() method of the action class -->
   <field name="version">
     <field-validator type="requiredstring">
       <message>You must enter a version.</message>
     </field-validator>
-  </field>   
+  </field>
+  <field name="repositoryId">
+    <!-- no requiredstring validation, because there was none before(being consistent). -->
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[a-zA-Z0-9._-]*$</param>
+        <message>Repository id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
+    </field-validator>
+  </field>
 </validators>

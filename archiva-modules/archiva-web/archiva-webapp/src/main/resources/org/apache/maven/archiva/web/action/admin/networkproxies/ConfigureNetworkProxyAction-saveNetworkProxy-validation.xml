@@ -35,17 +35,32 @@
       <param name="trim">true</param>
       <message>You must enter an identifier of 4 or more than 4 characters.</message>
     </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[a-zA-Z0-9._-]+$</param>
+        <message>Proxy id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
+    </field-validator>
   </field>
   <field name="proxy.protocol">
     <field-validator type="requiredstring">
       <param name="trim">true</param>
       <message>You must enter a protocol.</message>
     </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[-a-zA-Z0-9./:\\]+$</param>
+        <message>Protocol must only contain alphanumeric characters, forward-slashes(/), back-slashes(\), dots(.), colons(:), and dashes(-).</message>
+    </field-validator>
   </field>
   <field name="proxy.host">
     <field-validator type="requiredstring">
       <param name="trim">true</param>
       <message>You must enter a host.</message>
+    </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[-a-zA-Z0-9._/~:?!&amp;=\\]+$</param>
+        <message>Host must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).</message>
     </field-validator>
   </field>
   <field name="proxy.port">
@@ -59,6 +74,19 @@
       <message>Port needs to be between ${min} and ${max}</message>
 -->
       <message>Port needs to be larger than ${min}</message>
+    </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[0-9]+$</param>
+        <message>Port must only contain numeric characters.</message>
+    </field-validator>
+  </field>
+  <field name="proxy.username">
+    <!-- no requiredstring validation, because there was none before(being consistent). -->
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[-a-zA-Z0-9.@/_\\]*$</param>
+        <message>Username must only contain alphanumeric characters, at's(@), forward-slashes(/), back-slashes(\), underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>
 </validators>

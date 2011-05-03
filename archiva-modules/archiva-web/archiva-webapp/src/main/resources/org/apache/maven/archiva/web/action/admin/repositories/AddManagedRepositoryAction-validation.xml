@@ -26,15 +26,38 @@
     <field-validator type="requiredstring">
       <message>You must enter a repository identifier.</message>
     </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[a-zA-Z0-9._-]+$</param>
+        <message>Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
+    </field-validator>
   </field>
   <field name="repository.location">
     <field-validator type="requiredstring">
       <message>You must enter a directory.</message>
     </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[-a-zA-Z0-9._/~:?!&amp;=\\]+$</param>
+        <message>Directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).</message>
+    </field-validator>
+  </field>
+  <field name="repository.indexDir">
+    <!-- no requiredstring validation, because there was none before(being consistent). -->
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^[-a-zA-Z0-9._/~:?!&amp;=\\]*$</param>
+        <message>Index directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).</message>
+    </field-validator>
   </field>
   <field name="repository.name">
     <field-validator type="requiredstring">
       <message>You must enter a repository name.</message>
+    </field-validator>
+    <field-validator type="regex">
+        <param name="trim">true</param>
+        <param name="expression">^([a-zA-Z0-9.)/_(-]|\s)+$</param>
+        <message>Repository Name must only contain alphanumeric characters, white-spaces(' '), forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>   
   <field name="repository.retentionCount">

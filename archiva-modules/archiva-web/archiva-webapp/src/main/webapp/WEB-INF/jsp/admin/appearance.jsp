@@ -40,29 +40,30 @@
   <a href="<s:url action='editAppearance' />">Change your appearance</a>
 </p>
 
+<%-- used c:out in displaying EL's so that they are escaped --%>
 <h3>Organization Information</h3>
 <table>
   <tr>
     <th>Name</th>
-    <td>${organisationName}</td>
+    <td><c:out value="${organisationName}" /></td>
   </tr>
   <tr>
     <th>URL</th>
-    <td><a href="${organisationUrl}">
-      <code>${organisationUrl}</code>
+    <td><a href='<c:out value="${organisationUrl}" />'>
+      <code><c:out value="${organisationUrl}" /></code>
     </a></td>
   </tr>
   <tr>
     <th>Logo URL</th>
     <td>
-      <code>${organisationLogo}</code>
+      <code><c:out value="${organisationLogo}" /></code>
     </td>
   </tr>
   <c:if test="${!empty (organisationLogo)}">
     <tr>
       <th>&nbsp;</th>
-      <td><img src="${organisationLogo}"
-        title="${organisationName}" border="0" alt="" /></td>
+      <td><img src='<c:out value="${organisationLogo}" />'
+               title='<c:out value="${organisationName}" />' border="0" alt="" /></td>
     </tr>
   </c:if>
 </table>

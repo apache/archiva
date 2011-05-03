@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
  */
 public class ConfigureNetworkProxyAction
     extends PlexusActionSupport
-    implements SecureAction, Preparable
+    implements SecureAction, Preparable, Validateable
 {
     /**
      * @plexus.requirement
@@ -169,6 +170,12 @@ public class ConfigureNetworkProxyAction
         return saveConfiguration();
     }
 
+    public void validate()
+    {
+        // trim all unecessary trailing/leading white-spaces; always put this statement before the closing braces(after all validation).
+        trimAllRequestParameterValues();
+    }
+
     public void setMode( String mode )
     {
         this.mode = mode;
@@ -224,5 +231,33 @@ public class ConfigureNetworkProxyAction
         }
 
         return SUCCESS;
+    }
+
+    private void trimAllRequestParameterValues()
+    {
+        if(StringUtils.isNotEmpty(proxy.getId()))
+        {
+            proxy.setId(proxy.getId().trim());
+        }
+        
+        if(StringUtils.isNotEmpty(proxy.getHost()))
+        {
+            proxy.setHost(proxy.getHost().trim());
+        }
+
+        if(StringUtils.isNotEmpty(proxy.getPassword()))
+        {
+            proxy.setPassword(proxy.getPassword().trim());
+        }
+
+        if(StringUtils.isNotEmpty(proxy.getProtocol()))
+        {
+            proxy.setProtocol(proxy.getProtocol().trim());
+        }
+
+        if(StringUtils.isNotEmpty(proxy.getUsername()))
+        {
+            proxy.setUsername(proxy.getUsername().trim());
+        }
     }
 }
