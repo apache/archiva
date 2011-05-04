@@ -48,8 +48,22 @@
 
 <div id="contentArea">
 
-<s:actionerror/>
-<s:actionmessage/>
+  <%-- changed the structure of displaying errorMessages & actionMessages in order for them to be escaped. --%>
+  <s:if test="hasActionErrors()">
+      <ul>
+      <s:iterator value="actionErrors">
+          <li><span class="errorMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
+  <s:actionmessage />
+  <s:if test="hasActionMessages()">
+      <ul>
+      <s:iterator value="actionMessages">
+          <li><span class="actionMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
 
 <div class="admin">
 <div class="controls">
@@ -86,11 +100,11 @@
 <div class="controls">
     <%-- TODO: make some icons --%>
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-    <s:url id="editRepositoryUrl" action="editRepository">
+      <s:url id="editRepositoryUrl" encode="true" action="editRepository">
       <s:param name="repoid" value="%{#attr.repository.id}"/>
     </s:url>
     <s:token/>
-    <s:url id="deleteRepositoryUrl" action="confirmDeleteRepository">
+    <s:url id="deleteRepositoryUrl" encode="true" action="confirmDeleteRepository">
       <s:param name="repoid" value="%{#attr.repository.id}"/>
       <s:param name="struts.token.name">struts.token</s:param>
       <s:param name="struts.token"><s:property value="struts.token"/></s:param>
@@ -105,43 +119,44 @@
     </s:a>
   </redback:ifAnyAuthorized>
   <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
-  <a href="/archiva/feeds/${repository.id}">
+  <a href='/archiva/feeds/<c:out value="${repository.id}" />'>
 	<img src="${rssFeedIconUrl}" />
   </a>
 </div>
 
+<%-- used c:out in displaying EL's for them to be escaped.  --%>
 <div style="float: left">
   <img src="<c:url value="/images/archiva-splat-32.gif"/>" alt="" width="32" height="32"/>
 </div>
 
-<h3 class="repository">${repository.name}</h3>
+<h3 class="repository"><c:out value="${repository.name}" /></h3>
 
 <table class="infoTable">
 <tr>
   <th>Identifier</th>
   <td>
-    <code>${repository.id}</code>
+    <code><c:out value="${repository.id}" /></code>
   </td>
 </tr>
 <tr>
   <th>Name</th>
   <td>
-    <code>${repository.name}</code>
+    <code><c:out value="${repository.name}" /></code>
   </td>
 </tr>
 <tr>
   <th>Directory</th>
-  <td>${repository.location}</td>
+  <td><c:out value="${repository.location}" /></td>
 </tr>
 <c:if test="${!empty (repository.indexDir)}">
 	<tr>
 	  <th>Index Directory</th>
-	  <td>${repository.indexDir}</td>
+	  <td><c:out value="${repository.indexDir}" /></td>
 	</tr>
 </c:if>
 <tr>
   <th>WebDAV URL</th>
-  <td><a href="${baseUrl}/${repository.id}/">${baseUrl}/${repository.id}/</a></td>
+  <td><a href='<c:out value="${baseUrl}" />/<c:out value="${repository.id}" />/' ><c:out value="${baseUrl}" />/<c:out value="${repository.id}" />/</a></td>
 </tr>
 <tr>
   <th>Type</th>
@@ -162,7 +177,7 @@
     <th>Groups</th>
     <td>
       <c:forEach items="${repositoryToGroupMap[repository.id]}" varStatus="i" var="group">
-        ${group}<c:if test="${!i.last}">,</c:if>
+        <c:out value="${group}" /><c:if test="${!i.last}">,</c:if>
       </c:forEach>
     </td>
   </tr>
@@ -182,11 +197,11 @@
   </tr>
   <tr>
     <th>Repository Purge By Days Older Than</th>
-    <td>${repository.daysOlder}</td>
+    <td><c:out value="${repository.daysOlder}" /></td>
   </tr>
   <tr>
     <th>Repository Purge By Retention Count</th>
-    <td>${repository.retentionCount}</td>
+    <td><c:out value="${repository.retentionCount}" /></td>
   </tr>
 </c:if>
 <tr>
@@ -196,7 +211,7 @@
 <c:if test="${repository.scanned}">
   <tr>
     <th>Scanning Cron</th>
-    <td>${repository.refreshCronExpression}</td>
+    <td><c:out value="${repository.refreshCronExpression}" /></td>
   </tr>
   <tr>
     <th>
@@ -230,19 +245,19 @@
           <table>
             <tr>
               <th>Last Scanned</th>
-              <td>${stats.scanStartTime}</td>
+              <td><c:out value="${stats.whenGathered}" /></td>
             </tr>
             <tr>
               <th>Duration</th>
-              <td>${stats.duration} ms</td>
+              <td><c:out value="${stats.duration}" /> ms</td>
             </tr>
             <tr>
               <th>Total File Count</th>
-              <td>${stats.totalFileCount}
+              <td><c:out value="${stats.totalFileCount}" />
             </tr>
             <tr>
               <th>New Files Found</th>
-              <td>${stats.newFileCount}
+              <td><c:out value="${stats.newFileCount}" />
             </tr>
           </table>
         </c:otherwise>
@@ -337,15 +352,15 @@
 
         <div class="controls">
           <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-            <s:url id="editRepositoryUrl" action="editRemoteRepository">
-              <s:param name="repoid" value="%{#attr.repository.id}"/>
+              <s:url id="editRepositoryUrl" encode="true" action="editRemoteRepository">
+                <s:param name="repoid" value="%{#attr.repository.id}"/>
             </s:url>
             <s:a href="%{editRepositoryUrl}">
               <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
               Edit
             </s:a>
             <s:token/>
-            <s:url id="deleteRepositoryUrl" action="confirmDeleteRemoteRepository">
+            <s:url id="deleteRepositoryUrl" encode="true" action="confirmDeleteRemoteRepository">
               <s:param name="repoid" value="%{#attr.repository.id}"/>
               <s:param name="struts.token.name">struts.token</s:param>
               <s:param name="struts.token"><s:property value="struts.token"/></s:param>
@@ -361,24 +376,24 @@
           <img src="<c:url value="/images/archiva-world.png"/>" alt="" width="32" height="32"/>
         </div>
 
-        <h3 class="repository">${repository.name}</h3>
+        <h3 class="repository"><c:out value="${repository.name}" /></h3>
 
         <table class="infoTable">
           <tr>
             <th>Identifier</th>
             <td>
-              <code>${repository.id}</code>
+              <code><c:out value="${repository.id}" /></code>
             </td>
           </tr>
           <tr>
             <th>Name</th>
             <td>
-              <code>${repository.name}</code>
+              <code><c:out value="${repository.name}" /></code>
             </td>
           </tr>
           <tr>
             <th>URL</th>
-            <td>${repository.url}</td>
+            <td><c:out value="${repository.url}" /></td>
           </tr>
           <tr>
             <th>Type</th>

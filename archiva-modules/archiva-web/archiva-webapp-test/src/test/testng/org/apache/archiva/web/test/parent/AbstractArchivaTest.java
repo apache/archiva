@@ -562,6 +562,104 @@ public abstract class AbstractArchivaTest
         clickButtonWithValue( "Add Repository" );
     }
 
+    // artifact management
+    public void assertDeleteArtifactPage()
+    {
+        assertPage( "Apache Archiva \\ Delete Artifact" );
+        assertTextPresent( "Delete Artifact" );
+        assertTextPresent( "Group Id*:" );
+        assertTextPresent( "Artifact Id*:" );
+        assertTextPresent( "Version*:" );
+        assertTextPresent( "Repository Id:" );
+        assertElementPresent( "groupId" );
+        assertElementPresent( "artifactId" );
+        assertElementPresent( "version" );
+        assertElementPresent( "repositoryId" );
+        assertButtonWithValuePresent( "Submit" );
+    }
+
+    // network proxies
+    public void goToNetworkProxiesPage()
+    {
+        clickLinkWithText( "Network Proxies" );
+        assertNetworkProxiesPage();
+    }
+
+    public void assertNetworkProxiesPage()
+    {
+	assertPage( "Apache Archiva \\ Administration - Network Proxies" );
+        assertTextPresent( "Administration - Network Proxies" );
+        assertTextPresent( "Network Proxies" );
+        assertLinkPresent( "Add Network Proxy" );
+    }
+
+    public void addNetworkProxy( String identifier, String protocol, String hostname, String port, String username, String password )
+    {
+        //goToNetworkProxiesPage();
+        clickLinkWithText( "Add Network Proxy" );
+        assertAddNetworkProxy();
+        setFieldValue( "proxy.id" , identifier );
+        setFieldValue( "proxy.protocol" , protocol );
+        setFieldValue( "proxy.host" , hostname );
+        setFieldValue( "proxy.port" , port );
+        setFieldValue( "proxy.username" , username );
+        setFieldValue( "proxy.password" , password );
+        clickButtonWithValue( "Save Network Proxy" );
+    }
+
+    public void assertAddNetworkProxy()
+    {
+        assertPage( "Apache Archiva \\ Admin: Add Network Proxy" );
+        assertTextPresent( "Admin: Add Network Proxy" );
+        assertTextPresent( "Add network proxy:" );
+        assertTextPresent( "Identifier*:" );
+        assertTextPresent( "Protocol*:" );
+        assertTextPresent( "Hostname*:" );
+        assertTextPresent( "Port*:" );
+        assertTextPresent( "Username:" );
+        assertTextPresent( "Password:" );
+        assertButtonWithValuePresent( "Save Network Proxy" );
+    }
+
+    // Legacy Support
+    public void goToLegacySupportPage()
+    {
+        getSelenium().open( "/archiva/admin/legacyArtifactPath.action" );
+        assertLegacySupportPage();
+    }
+
+    public void assertLegacySupportPage()
+    {
+	assertPage( "Apache Archiva \\ Administration - Legacy Support" );
+	assertTextPresent( "Administration - Legacy Artifact Path Resolution" );
+	assertTextPresent( "Path Mappings" );
+	assertLinkPresent( "Add" );
+    }
+
+    public void addLegacyArtifactPath( String path, String groupId, String artifactId, String version, String classifier, String type)
+    {
+        assertAddLegacyArtifactPathPage();
+        setFieldValue( "legacyArtifactPath.path" , path );
+        setFieldValue( "groupId" , groupId );
+        setFieldValue( "artifactId" , artifactId );
+        setFieldValue( "version" , version );
+        setFieldValue( "classifier" , classifier );
+        setFieldValue( "type" , type );
+        clickButtonWithValue( "Add Legacy Artifact Path" );
+    }
+
+    public void assertAddLegacyArtifactPathPage()
+    {
+        assertPage( "Apache Archiva \\ Admin: Add Legacy Artifact Path" );
+        assertTextPresent( "Admin: Add Legacy Artifact Path" );
+        assertTextPresent( "Enter the legacy path to map to a particular artifact reference, then adjust the fields as necessary." );
+        String element = "addLegacyArtifactPath_legacyArtifactPath_path,addLegacyArtifactPath_groupId,addLegacyArtifactPath_artifactId,addLegacyArtifactPath_version,addLegacyArtifactPath_classifier,addLegacyArtifactPath_type";
+        String[] arrayElement = element.split( "," );
+        for ( String arrayelement : arrayElement )
+                assertElementPresent( arrayelement );
+        assertButtonWithValuePresent( "Add Legacy Artifact Path" );
+    }
+
     // add managed repository and its staging repository
     public void addStagingRepository( String identifier, String name, String directory, String indexDirectory,
                                       String type, String cron, String daysOlder, String retentionCount )

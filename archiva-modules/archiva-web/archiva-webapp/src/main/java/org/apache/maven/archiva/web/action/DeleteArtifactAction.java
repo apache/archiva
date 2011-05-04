@@ -31,6 +31,7 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -390,6 +391,9 @@ public class DeleteArtifactAction
         {
             addActionError( e.getMessage() );
         }
+
+        // trims all request parameter values, since the trailing/leading white-spaces are ignored during validation.
+        trimAllRequestParameterValues();
     }
 
     private List<String> getManagableRepos()
@@ -412,6 +416,29 @@ public class DeleteArtifactAction
             log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
+    }
+
+    private void trimAllRequestParameterValues()
+    {
+        if( StringUtils.isNotEmpty(groupId))
+        {
+            groupId = groupId.trim();
+        }
+
+        if(StringUtils.isNotEmpty(artifactId))
+        {
+            artifactId = artifactId.trim();
+        }
+
+        if(StringUtils.isNotEmpty(version))
+        {
+            version = version.trim();
+        }
+
+        if(StringUtils.isNotEmpty(repositoryId))
+        {
+            repositoryId = repositoryId.trim();
+        }
     }
 
     public List<RepositoryListener> getListeners()

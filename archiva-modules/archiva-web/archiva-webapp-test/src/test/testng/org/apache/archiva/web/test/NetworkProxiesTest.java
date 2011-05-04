@@ -60,7 +60,59 @@ public class NetworkProxiesTest
         assertTextPresent( "You must enter a host." );
     }
 
-    @Test( dependsOnMethods = { "testAddNetworkProxiesNullHostname" } )
+    @Test (dependsOnMethods = { "testAddNetworkProxiesNullHostname" } )
+	public void testAddNetworkProxiesInvalidValues()
+	{
+		goToNetworkProxiesPage();
+		addNetworkProxy( "<> \\/~+[ ]'\"", "<> ~+[ ]'\"", "<> ~+[ ]'\"", "0", "<> ~+[ ]'\"", "");
+		assertTextPresent( "Proxy id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        assertTextPresent( "Protocol must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), dots(.), colons(:), and dashes(-)." );
+        assertTextPresent( "Host must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
+        assertTextPresent( "Port needs to be larger than 1" );
+        assertTextPresent( "Username must only contain alphanumeric characters, at's(@), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
+	}
+
+    @Test (dependsOnMethods = { "testAddNetworkProxiesInvalidValues" } )
+	public void testAddNetworkProxiesInvalidIdentifier()
+	{
+		goToNetworkProxiesPage();
+		addNetworkProxy( "<> \\/~+[ ]'\"", "http", "localhost", "8080", "", "");
+		assertTextPresent( "Proxy id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+	}
+
+    @Test (dependsOnMethods = { "testAddNetworkProxiesInvalidIdentifier" } )
+	public void testAddNetworkProxiesInvalidProtocol()
+	{
+		goToNetworkProxiesPage();
+		addNetworkProxy( "testing123", "<> ~+[ ]'\"", "localhost", "8080", "", "");
+		assertTextPresent( "Protocol must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), dots(.), colons(:), and dashes(-)." );
+	}
+
+    @Test (dependsOnMethods = { "testAddNetworkProxiesInvalidProtocol" } )
+	public void testAddNetworkProxiesInvalidHostname()
+	{
+		goToNetworkProxiesPage();
+		addNetworkProxy( "testing123", "http", "<> ~+[ ]'\"", "8080", "", "");
+		assertTextPresent( "Host must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
+	}
+
+    @Test (dependsOnMethods = { "testAddNetworkProxiesInvalidHostname" } )
+	public void testAddNetworkProxiesInvalidPort()
+	{
+		goToNetworkProxiesPage();
+		addNetworkProxy( "testing123", "http", "localhost", "0", "", "");
+		assertTextPresent( "Port needs to be larger than 1" );
+	}
+
+    @Test (dependsOnMethods = { "testAddNetworkProxiesInvalidPort" } )
+	public void testAddNetworkProxiesInvalidUsername()
+	{
+		goToNetworkProxiesPage();
+		addNetworkProxy( "testing123", "http", "localhost", "8080", "<> ~+[ ]'\"", "");
+		assertTextPresent( "Username must only contain alphanumeric characters, at's(@), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
+    }
+
+    @Test (dependsOnMethods = { "testAddNetworkProxiesInvalidUsername" } )
     public void testAddNetworkProxiesValidValues()
     {
         goToNetworkProxiesPage();

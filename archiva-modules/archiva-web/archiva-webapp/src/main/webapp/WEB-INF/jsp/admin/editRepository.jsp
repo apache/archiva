@@ -30,11 +30,24 @@
 
 <h1>Admin: Edit Managed Repository</h1>
 
-<s:actionerror/>
+<%-- changed the structure of displaying errorMessages & actionMessages in order for them to be escaped. --%>
+<s:if test="hasActionErrors()">
+      <ul>
+      <s:iterator value="actionErrors">
+          <li><span class="errorMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+</s:if>
 
 <div id="contentArea">
 
-  <s:actionmessage/>
+  <s:if test="hasActionMessages()">
+      <ul>
+      <s:iterator value="actionMessages">
+          <li><span class="actionMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
   <s:form method="post" action="editRepository!commit" namespace="/admin" validate="false">
     <s:hidden name="repository.id"/>
     <s:label label="ID" name="repository.id" />

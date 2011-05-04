@@ -28,6 +28,8 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.codehaus.plexus.registry.RegistryException;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.web.action.PlexusActionSupport;
 
 /**
@@ -38,7 +40,7 @@ import org.apache.maven.archiva.web.action.PlexusActionSupport;
  */
 public class AddLegacyArtifactPathAction
     extends PlexusActionSupport
-    implements Preparable
+    implements Preparable, Validateable
 {
     /**
      * @plexus.requirement
@@ -110,6 +112,12 @@ public class AddLegacyArtifactPathAction
         this.legacyArtifactPath = legacyArtifactPath;
     }
 
+    public void validate()
+    {
+        // trim all unecessary trailing/leading white-spaces; always put this statement before the closing braces(after all validation).
+        trimAllRequestParameterValues();
+    }
+
     protected String saveConfiguration( Configuration configuration )
     {
         try
@@ -129,6 +137,39 @@ public class AddLegacyArtifactPathAction
         }
 
         return SUCCESS;
+    }
+
+    private void trimAllRequestParameterValues()
+    {
+        if(StringUtils.isNotEmpty(legacyArtifactPath.getPath()))
+        {
+            legacyArtifactPath.setPath(legacyArtifactPath.getPath().trim());
+        }
+
+        if(StringUtils.isNotEmpty(groupId))
+        {
+            groupId = groupId.trim();
+        }
+
+        if(StringUtils.isNotEmpty(artifactId))
+        {
+            artifactId = artifactId.trim();
+        }
+
+        if(StringUtils.isNotEmpty(version))
+        {
+            version = version.trim();
+        }
+
+        if(StringUtils.isNotEmpty(classifier))
+        {
+            classifier = classifier.trim();
+        }
+
+        if(StringUtils.isNotEmpty(type))
+        {
+            type = type.trim();
+        }
     }
 
     public String getGroupId()

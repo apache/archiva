@@ -26,6 +26,11 @@
         <field-validator type="requiredstring">
             <message>You must enter a name</message>
         </field-validator>
+        <field-validator type="regex">
+            <param name="trim">true</param>
+            <param name="expression">^([-a-zA-Z0-9._/~:?!&amp;=\\]|\s)+$</param>
+            <message>Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).</message>
+        </field-validator>
     </field>
     <field name="organisationUrl">
         <field-validator type="url">

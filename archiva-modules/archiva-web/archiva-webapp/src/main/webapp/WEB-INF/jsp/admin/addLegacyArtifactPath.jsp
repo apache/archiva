@@ -66,8 +66,22 @@
   }
   </script>
 
-  <s:actionmessage/>
-  <s:actionerror/>
+  <%-- changed the structure of displaying errorMessages & actionMessages in order for them to be escaped. --%>
+  <s:if test="hasActionErrors()">
+      <ul>
+      <s:iterator value="actionErrors">
+          <li><span class="errorMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
+  <s:if test="hasActionMessages()">
+      <ul>
+      <s:iterator value="actionMessages">
+          <li><span class="actionMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
+
   <s:form method="post" action="addLegacyArtifactPath!commit" namespace="/admin" validate="true">
     <s:textfield name="legacyArtifactPath.path" label="Path" size="50" required="true" onchange="parse( this.value )"/>
     <s:textfield name="groupId" label="GroupId" size="20" required="true"/>

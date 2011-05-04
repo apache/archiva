@@ -232,6 +232,31 @@ public class EditManagedRepositoryAction
         {
             addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
         }
+
+        trimAllRequestParameterValues();
+    }
+
+    private void trimAllRequestParameterValues()
+    {
+        if(StringUtils.isNotEmpty(repository.getId()))
+        {
+            repository.setId(repository.getId().trim());
+        }
+
+        if(StringUtils.isNotEmpty(repository.getName()))
+        {
+            repository.setName(repository.getName().trim());
+        }
+
+        if(StringUtils.isNotEmpty(repository.getLocation()))
+        {
+            repository.setLocation(repository.getLocation().trim());
+        }
+
+        if(StringUtils.isNotEmpty(repository.getIndexDir()))
+        {
+            repository.setIndexDir(repository.getIndexDir().trim());
+        }
     }
 
     public String getRepoid()
@@ -261,6 +286,7 @@ public class EditManagedRepositoryAction
 
     public void setStageNeeded( boolean stageNeeded )
     {
+        
         this.stageNeeded = stageNeeded;
     }
 

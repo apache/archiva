@@ -181,48 +181,6 @@ public abstract class AbstractRepositoryTest
     // /////////////////////////////
     // network proxies
     // /////////////////////////////
-    public void goToNetworkProxiesPage()
-    {
-        clickLinkWithText( "Network Proxies" );
-        assertNetworkProxiesPage();
-    }
-
-    public void assertNetworkProxiesPage()
-    {
-        assertPage( "Apache Archiva \\ Administration - Network Proxies" );
-        assertTextPresent( "Administration - Network Proxies" );
-        assertTextPresent( "Network Proxies" );
-        assertLinkPresent( "Add Network Proxy" );
-    }
-
-    public void assertAddNetworkProxy()
-    {
-        assertPage( "Apache Archiva \\ Admin: Add Network Proxy" );
-        assertTextPresent( "Admin: Add Network Proxy" );
-        assertTextPresent( "Add network proxy:" );
-        assertTextPresent( "Identifier*:" );
-        assertTextPresent( "Protocol*:" );
-        assertTextPresent( "Hostname*:" );
-        assertTextPresent( "Port*:" );
-        assertTextPresent( "Username:" );
-        assertTextPresent( "Password:" );
-        assertButtonWithValuePresent( "Save Network Proxy" );
-    }
-
-    public void addNetworkProxy( String identifier, String protocol, String hostname, String port, String username,
-                                 String password )
-    {
-        // goToNetworkProxiesPage();
-        clickLinkWithText( "Add Network Proxy" );
-        assertAddNetworkProxy();
-        setFieldValue( "proxy.id", identifier );
-        setFieldValue( "proxy.protocol", protocol );
-        setFieldValue( "proxy.host", hostname );
-        setFieldValue( "proxy.port", port );
-        setFieldValue( "proxy.username", username );
-        setFieldValue( "proxy.password", password );
-        clickButtonWithValue( "Save Network Proxy" );
-    }
 
     public void editNetworkProxies( String fieldName, String value )
     {
@@ -304,6 +262,21 @@ public abstract class AbstractRepositoryTest
         assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
         setFieldValue( fieldName, value );
         // TODO
+        clickButtonWithValue( "Update Repository" );
+    }
+
+    public void editManagedRepository(String name, String directory, String indexDirectory, String type, String cron, String daysOlder, String retentionCount)
+    {
+        goToRepositoriesPage();
+        clickLinkWithXPath( "//div[@id='contentArea']/div/div[5]/div[1]/a[1]/img" );
+        assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
+        setFieldValue( "repository.name" , name );
+        setFieldValue( "repository.location" , directory );
+        setFieldValue( "repository.indexDir" , indexDirectory );
+        selectValue( "repository.layout", type );
+        setFieldValue( "repository.refreshCronExpression" , cron );
+        setFieldValue( "repository.daysOlder" , daysOlder );
+        setFieldValue( "repository.retentionCount" , retentionCount );
         clickButtonWithValue( "Update Repository" );
     }
 

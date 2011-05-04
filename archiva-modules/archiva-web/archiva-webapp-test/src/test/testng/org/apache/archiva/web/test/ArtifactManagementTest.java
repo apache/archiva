@@ -165,4 +165,25 @@ public class ArtifactManagementTest
         deleteArtifact( "delete", "delete", "asdf", "internal" );
         assertTextPresent( "Invalid version." );
     }
+
+    // HTML select should have the proper value, else it will cause a selenium error: Option with label 'customValue' not found
+    public void testDeleteArtifactInvalidValues()
+	{
+		deleteArtifact( "<> \\/~+[ ]'\"", "<> \\/~+[ ]'\"", "<>", "internal");
+		assertTextPresent( "Invalid version." );
+        assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+	}
+
+    public void testDeleteArtifactInvalidGroupId()
+	{
+		deleteArtifact( "<> \\/~+[ ]'\"", "delete", "1.0", "internal");
+		assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+	}
+
+    public void testDeleteArtifactInvalidArtifactId()
+	{
+		deleteArtifact( "delete", "<> \\/~+[ ]'\"", "1.0", "internal");
+		assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+	}
 }

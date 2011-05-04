@@ -20,18 +20,23 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.audit.AuditListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.AbstractActionTestCase;
+import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.validator.utils.ValidatorUtil;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
@@ -42,7 +47,7 @@ import org.easymock.MockControl;
  * @version $Id$
  */
 public class AddManagedRepositoryActionTest
-    extends AbstractActionTestCase
+    extends AbstractManagedRepositoryActionTest
 {
     private AddManagedRepositoryAction action;
 
@@ -57,11 +62,7 @@ public class AddManagedRepositoryActionTest
     private MockControl registryControl;
 
     private ArchivaConfiguration archivaConfiguration;
-    
-    private static final String REPO_ID = "repo-ident";
 
-    private File location;
-    
     @Override
     protected void setUp()
         throws Exception
@@ -69,7 +70,7 @@ public class AddManagedRepositoryActionTest
         super.setUp();
 
         action = new AddManagedRepositoryAction();
-
+        
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
@@ -198,21 +199,133 @@ public class AddManagedRepositoryActionTest
         assertEquals( location.getCanonicalPath(), new File( repository.getLocation() ).getCanonicalPath() );
         registryControl.verify();
     }
-    
-    private void populateRepository( ManagedRepositoryConfiguration repository )
+
+    public void testStruts2ValidationFrameworkWithNullInputs() throws Exception
     {
-        repository.setId( REPO_ID );
-        repository.setName( "repo name" );
-        repository.setLocation( "${appserver.base}/location" );
-        repository.setLayout( "default" );
-        repository.setRefreshCronExpression( "* 0/5 * * * ?" );
-        repository.setDaysOlder( 31 );
-        repository.setRetentionCount( 20 );
-        repository.setReleases( true );
-        repository.setSnapshots( true );
-        repository.setScanned( false );
-        repository.setDeleteReleasedSnapshots( true );
+        // prep
+        // 0 is the default value for primitive int; null for objects
+        ManagedRepositoryConfiguration managedRepositoryConfiguration = createManagedRepositoryConfiguration(null, null, null, null);
+        action.setRepository(managedRepositoryConfiguration);
+
+        // test
+        actionValidatorManager.validate(action, EMPTY_STRING);
+
+        // verify
+        assertTrue(action.hasFieldErrors());
+
+        Map<String, List<String>> fieldErrors = action.getFieldErrors();
+
+        // make an expected field error object
+        Map<String, List<String>> expectedFieldErrors = new HashMap<String, List<String>>();
+
+        // populate
+        List<String> expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("You must enter a repository identifier.");
+        expectedFieldErrors.put("repository.id", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("You must enter a directory.");
+        expectedFieldErrors.put("repository.location", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("You must enter a repository name.");
+        expectedFieldErrors.put("repository.name", expectedErrorMessages);
+
+        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
     }
+
+    public void testStruts2ValidationFrameworkWithBlankInputs() throws Exception
+    {
+        // prep
+        // 0 is the default value for primitive int
+        ManagedRepositoryConfiguration managedRepositoryConfiguration = createManagedRepositoryConfiguration(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING);
+        action.setRepository(managedRepositoryConfiguration);
+
+        // test
+        actionValidatorManager.validate(action, EMPTY_STRING);
+
+        // verify
+        assertTrue(action.hasFieldErrors());
+
+        Map<String, List<String>> fieldErrors = action.getFieldErrors();
+
+        // make an expected field error object
+        Map<String, List<String>> expectedFieldErrors = new HashMap<String, List<String>>();
+
+        // populate
+        List<String> expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("You must enter a repository identifier.");
+        expectedFieldErrors.put("repository.id", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("You must enter a directory.");
+        expectedFieldErrors.put("repository.location", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("You must enter a repository name.");
+        expectedFieldErrors.put("repository.name", expectedErrorMessages);
+
+        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
+    }
+
+    public void testStruts2ValidationFrameworkWithInvalidInputs() throws Exception
+    {
+        // prep
+        ManagedRepositoryConfiguration managedRepositoryConfiguration = createManagedRepositoryConfiguration(REPOSITORY_ID_INVALID_INPUT, REPOSITORY_NAME_INVALID_INPUT, REPOSITORY_LOCATION_INVALID_INPUT, REPOSITORY_INDEX_DIR_INVALID_INPUT, REPOSITORY_DAYS_OLDER_INVALID_INPUT, REPOSITORY_RETENTION_COUNT_INVALID_INPUT);
+        action.setRepository(managedRepositoryConfiguration);
+
+        // test
+        actionValidatorManager.validate(action, EMPTY_STRING);
+
+        // verify
+        assertTrue(action.hasFieldErrors());
+
+        Map<String, List<String>> fieldErrors = action.getFieldErrors();
+
+        // make an expected field error object
+        Map<String, List<String>> expectedFieldErrors = new HashMap<String, List<String>>();
+
+        // populate
+        List<String> expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).");
+        expectedFieldErrors.put("repository.id", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("Directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).");
+        expectedFieldErrors.put("repository.location", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("Repository Name must only contain alphanumeric characters, white-spaces(' '), forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-).");
+        expectedFieldErrors.put("repository.name", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("Index directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).");
+        expectedFieldErrors.put("repository.indexDir", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("Repository Purge By Retention Count needs to be between 1 and 100.");
+        expectedFieldErrors.put("repository.retentionCount", expectedErrorMessages);
+
+        expectedErrorMessages = new ArrayList<String>();
+        expectedErrorMessages.add("Repository Purge By Days Older Than needs to be larger than 0.");
+        expectedFieldErrors.put("repository.daysOlder", expectedErrorMessages);
+
+        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
+    }
+
+    public void testStruts2ValidationFrameworkWithValidInputs() throws Exception
+    {
+        // prep
+        ManagedRepositoryConfiguration managedRepositoryConfiguration = createManagedRepositoryConfiguration(REPOSITORY_ID_VALID_INPUT, REPOSITORY_NAME_VALID_INPUT, REPOSITORY_LOCATION_VALID_INPUT, REPOSITORY_INDEX_DIR_VALID_INPUT, REPOSITORY_DAYS_OLDER_VALID_INPUT, REPOSITORY_RETENTION_COUNT_VALID_INPUT);
+        action.setRepository(managedRepositoryConfiguration);
+
+        // test
+        actionValidatorManager.validate(action, EMPTY_STRING);
+
+        // verify
+        assertFalse(action.hasFieldErrors());
+    }
+
 
     // TODO: test errors during add, other actions
 }
