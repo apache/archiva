@@ -245,7 +245,7 @@
           <table>
             <tr>
               <th>Last Scanned</th>
-              <td><c:out value="${stats.whenGathered}" /></td>
+              <td><c:out value="${stats.scanStartTime}" /></td>
             </tr>
             <tr>
               <th>Duration</th>
