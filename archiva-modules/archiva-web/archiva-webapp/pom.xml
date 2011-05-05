@@ -395,6 +395,33 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <configuration>
+          <port>9091</port>
+          <path>/archiva</path>
+          <contextFile>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</contextFile>
+          <systemProperties>
+            <plexus.home>${basedir}/appserver-base</plexus.home>
+            <appserver.base>${basedir}/appserver-base</appserver.base>
+            <appserver.home>${project.build.directory}/appserver-home</appserver.home>
+            <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
+          </systemProperties>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.1.3.1</version>
+          </dependency>
+          <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
         <version>${jetty.version}</version>
@@ -570,6 +597,119 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <!-- profile for tomcat plugin dev an log output in the console -->
+      <id>dev</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>override-log4j-with-console-output</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+
+                    <copy overwrite="true" file="${basedir}/src/test/resources/log4j.xml" todir="${basedir}/src/main/webapp/WEB-INF/classes" />
+
+					          <copy overwrite="true" file="${basedir}/src/test/resources/log4j.xml" todir="${project.build.directory}/classes" />
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.2</version>
+            <executions>
+              <execution>
+                <id>copy</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <skip>true</skip>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>${project.groupId}</groupId>
+                      <artifactId>archiva-applet</artifactId>
+                      <version>${project.version}</version>
+                      <outputDirectory>src/main/webapp</outputDirectory>
+                      <destFileName>archiva-applet.jar</destFileName>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+              <execution>
+                <id>unpack-redback-war</id>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <phase>compile</phase>
+                <configuration>
+                  <artifactItems combine.self="override">
+                    <artifactItem>
+                      <groupId>org.codehaus.redback</groupId>
+                      <artifactId>redback-struts2-content</artifactId>
+                      <version>${redback.version}</version>
+                      <type>war</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>${basedir}/src/main/webapp</outputDirectory>
+                      <excludes>**/web.xml,lib</excludes>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!--plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.5</version>
+            <executions>
+              <execution>
+                <id>copy-redback-resources</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${basedir}/src/main/webapp/WEB-INF/classes</directory>
+                      <filtering>false</filtering>
+                      <includes>
+                        <include>struts-security.xml</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin-->
+        </plugins>
+      </build>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.archiva</groupId>
+          <artifactId>metadata-store-file</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.codehaus.redback</groupId>
+          <artifactId>redback-struts2-integration</artifactId>
+          <version>${redback.version}</version>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 </project>
