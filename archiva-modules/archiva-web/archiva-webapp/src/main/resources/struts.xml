@@ -228,9 +228,11 @@
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
+    <!-- disabled for now to avoid too much cpu usage (see MRM-1457)
     <action name="showArtifactDependencyTree" class="showArtifactAction" method="dependencyTree">
       <result>/WEB-INF/jsp/artifact/dependencyTree.jsp</result>
     </action>
+    -->
 
   </package>
 
