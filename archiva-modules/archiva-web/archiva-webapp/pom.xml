@@ -614,9 +614,6 @@
                 </goals>
                 <configuration>
                   <tasks>
-
-                    <copy overwrite="true" file="${basedir}/src/test/resources/log4j.xml" todir="${basedir}/src/main/webapp/WEB-INF/classes" />
-
 					          <copy overwrite="true" file="${basedir}/src/test/resources/log4j.xml" todir="${project.build.directory}/classes" />
                   </tasks>
                 </configuration>
@@ -628,6 +625,7 @@
             <artifactId>maven-dependency-plugin</artifactId>
             <version>2.2</version>
             <executions>
+              <!-- redefine to skip its execution in Tomcat -->
               <execution>
                 <id>copy</id>
                 <phase>process-resources</phase>
@@ -647,6 +645,7 @@
                   </artifactItems>
                 </configuration>
               </execution>
+              <!-- redefine to override exclude configuration (and add back struts-security.xml -->
               <execution>
                 <id>unpack-redback-war</id>
                 <goals>
@@ -669,45 +668,14 @@
               </execution>
             </executions>
           </plugin>
-
-          <!--plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>2.5</version>
-            <executions>
-              <execution>
-                <id>copy-redback-resources</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>copy-resources</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                  <resources>
-                    <resource>
-                      <directory>${basedir}/src/main/webapp/WEB-INF/classes</directory>
-                      <filtering>false</filtering>
-                      <includes>
-                        <include>struts-security.xml</include>
-                      </includes>
-                    </resource>
-                  </resources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin-->
         </plugins>
       </build>
       <dependencies>
+        <!-- TODO: Bug in the Tomcat plugin - it doesn't seem to respect runtime dependencies, so we redeclare it as compile -->
         <dependency>
           <groupId>org.apache.archiva</groupId>
           <artifactId>metadata-store-file</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.codehaus.redback</groupId>
-          <artifactId>redback-struts2-integration</artifactId>
-          <version>${redback.version}</version>
+          <scope>compile</scope>
         </dependency>
       </dependencies>
     </profile>
