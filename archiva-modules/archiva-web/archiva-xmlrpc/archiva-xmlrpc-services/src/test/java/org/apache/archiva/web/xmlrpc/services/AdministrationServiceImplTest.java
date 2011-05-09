@@ -953,6 +953,146 @@ public class AdministrationServiceImplTest
         registryControl.verify();
     }
 
+    public void testAddManagedRepositoryInvalidId()
+        throws Exception
+    {
+        String projId = "org.apache.archiva";
+        String repoId = projId + "<script>alert('xss')</script>";
+        String layout = "default";
+        String name = projId + " Releases";
+
+        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
+        RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
+                                                                           "http://repo1.maven.org/maven2" );
+        List<String> repositories = new ArrayList<String>();
+        repositories.add( managedRepo.getName() );
+        RepositoryGroupConfiguration repoGroup = createRepoGroupConfig( "repoGroup", repositories );
+        Map<String, ManagedRepositoryConfiguration> managedRepoMap =
+            new HashMap<String, ManagedRepositoryConfiguration>();
+        Map<String, RemoteRepositoryConfiguration> remoteRepoMap = new HashMap<String, RemoteRepositoryConfiguration>();
+        Map<String, RepositoryGroupConfiguration> repoGroupMap = new HashMap<String, RepositoryGroupConfiguration>();
+        managedRepoMap.put( "repo1", managedRepo );
+        remoteRepoMap.put( "repo1", remoteRepo );
+        repoGroupMap.put( "repo1", repoGroup );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
+        configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
+        configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
+
+        archivaConfigControl.replay();
+        configControl.replay();
+
+        try
+        {
+            service.addManagedRepository( repoId, layout, name, "${appserver.base}/test-repository/" + projId + ".releases", true, true, false, true,
+                                                        "0 15 3 * * ? *" );
+            fail( "An exception should have been thrown! Repository ID is not valid." );
+        }
+        catch( Exception e )
+        {
+            assertEquals( "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).",
+                          e.getMessage() );    
+        }
+    }
+
+    public void testAddManagedRepositoryInvalidName()
+        throws Exception
+    {
+        String projId = "org.apache.archiva";
+        String repoId = projId + ".releases";
+        String layout = "default";
+        String name = projId + " <script>alert('xss')</script>";
+
+        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
+        RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
+                                                                           "http://repo1.maven.org/maven2" );
+        List<String> repositories = new ArrayList<String>();
+        repositories.add( managedRepo.getName() );
+        RepositoryGroupConfiguration repoGroup = createRepoGroupConfig( "repoGroup", repositories );
+        Map<String, ManagedRepositoryConfiguration> managedRepoMap =
+            new HashMap<String, ManagedRepositoryConfiguration>();
+        Map<String, RemoteRepositoryConfiguration> remoteRepoMap = new HashMap<String, RemoteRepositoryConfiguration>();
+        Map<String, RepositoryGroupConfiguration> repoGroupMap = new HashMap<String, RepositoryGroupConfiguration>();
+        managedRepoMap.put( "repo1", managedRepo );
+        remoteRepoMap.put( "repo1", remoteRepo );
+        repoGroupMap.put( "repo1", repoGroup );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
+        configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
+        configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
+
+        archivaConfigControl.replay();
+        configControl.replay();
+
+        try
+        {
+            service.addManagedRepository( repoId, layout, name, "${appserver.base}/test-repository/" + projId + ".releases", true, true, false, true,
+                                                        "0 15 3 * * ? *" );
+            fail( "An exception should have been thrown! Repository name is not valid." );
+        }
+        catch( Exception e )
+        {
+            assertEquals( "Invalid repository name. Repository Name must only contain alphanumeric characters, white-spaces(' '), " +
+                "forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-).",
+                          e.getMessage() );
+        }
+    }
+
+    public void testAddManagedRepositoryInvalidLocation()
+        throws Exception
+    {
+        String projId = "org.apache.archiva";
+        String repoId = projId + ".releases";
+        String layout = "default";
+        String name = projId + " Releases";
+        String appserverBase = "target";
+
+        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
+        RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
+                                                                           "http://repo1.maven.org/maven2" );
+        List<String> repositories = new ArrayList<String>();
+        repositories.add( managedRepo.getName() );
+        RepositoryGroupConfiguration repoGroup = createRepoGroupConfig( "repoGroup", repositories );
+        Map<String, ManagedRepositoryConfiguration> managedRepoMap =
+            new HashMap<String, ManagedRepositoryConfiguration>();
+        Map<String, RemoteRepositoryConfiguration> remoteRepoMap = new HashMap<String, RemoteRepositoryConfiguration>();
+        Map<String, RepositoryGroupConfiguration> repoGroupMap = new HashMap<String, RepositoryGroupConfiguration>();
+        managedRepoMap.put( "repo1", managedRepo );
+        remoteRepoMap.put( "repo1", remoteRepo );
+        repoGroupMap.put( "repo1", repoGroup );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
+        configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
+        configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
+        registryControl.expectAndReturn( registry.getString( "appserver.base", "${appserver.base}" ), appserverBase );
+        registryControl.expectAndReturn( registry.getString( "appserver.home", "${appserver.home}" ), appserverBase );
+
+        archivaConfigControl.replay();
+        configControl.replay();
+        registryControl.replay();
+
+        try
+        {
+            service.addManagedRepository( repoId, layout, name, "${appserver.base}/<script>alert('xss')</script>" + projId + ".releases", true, true, false, true,
+                                                        "0 15 3 * * ? *" );
+            fail( "An exception should have been thrown! Repository location is not valid." );
+        }
+        catch( Exception e )
+        {
+            assertEquals( "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), " +
+                "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).",
+                          e.getMessage() );
+        }
+
+        registryControl.verify();
+    }
+
     /* private methods */
 
     private void assertRemoteRepo( RemoteRepository remoteRepo, RemoteRepositoryConfiguration expectedRepoConfig )

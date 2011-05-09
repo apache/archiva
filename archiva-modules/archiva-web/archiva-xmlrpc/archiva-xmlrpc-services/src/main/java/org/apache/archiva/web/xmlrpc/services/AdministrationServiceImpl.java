@@ -38,6 +38,7 @@ import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.GenericValidator;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -98,6 +99,12 @@ public class AdministrationServiceImpl
     private RepositorySessionFactory repositorySessionFactory;
 
     private Registry registry;
+
+    private static final String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
+
+    private static final String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
+
+    private static final String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
 
     public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
                                       RepositoryContentFactory repoFactory,
@@ -387,6 +394,25 @@ public class AdministrationServiceImpl
             throw new Exception( "Invalid cron expression." );
         }
 
+        if( !GenericValidator.matchRegexp( repoId, REPOSITORY_ID_VALID_EXPRESSION ) )
+        {
+            throw new Exception( "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        }
+
+        if( !GenericValidator.matchRegexp( name, REPOSITORY_NAME_VALID_EXPRESSION ) )
+        {
+            throw new Exception( "Invalid repository name. Repository Name must only contain alphanumeric characters, white-spaces(' '), " +
+                "forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-)." );
+        }
+
+        String repoLocation = removeExpressions( location );
+
+        if( !GenericValidator.matchRegexp( repoLocation, REPOSITORY_LOCATION_VALID_EXPRESSION ) )
+        {
+            throw new Exception( "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), " +
+                "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
+        }
+
         ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
 
         repository.setId( repoId );
@@ -394,7 +420,7 @@ public class AdministrationServiceImpl
         repository.setReleases( releasesIncluded );
         repository.setSnapshots( snapshotsIncluded );
         repository.setName( name );
-        repository.setLocation( removeExpressions( location ) );
+        repository.setLocation( repoLocation );
         repository.setLayout( layout );
         repository.setRefreshCronExpression( cronExpression );
 
