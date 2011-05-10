@@ -377,6 +377,15 @@
       <timezone>+8</timezone>
     </developer>
     <developer>
+      <id>olamy</id>
+      <name>Olivier Lamy</name>
+      <email>olamy@apache.org</email>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
       <id>jzurbano</id>
       <name>Jevica Arianne B. Zurbano</name>
       <email>jzurbano@apache.org</email>
