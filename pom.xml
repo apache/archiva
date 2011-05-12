@@ -1102,7 +1102,7 @@
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-5</wagon.version>
-    <redback.version>1.2.8-SNAPSHOT</redback.version>
+    <redback.version>1.2.8</redback.version>
     <jetty.version>6.1.19</jetty.version>
     <slf4j.version>1.5.8</slf4j.version>
     <binder.version>0.9</binder.version>
