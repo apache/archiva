@@ -204,7 +204,7 @@
         </executions>
         <configuration>
           <descriptor>src/main/assembly/bin.xml</descriptor>
-          <finalName>apache-archiva-${version}</finalName>
+          <finalName>apache-archiva-${project.version}</finalName>
         </configuration>
       </plugin>
       <plugin>
