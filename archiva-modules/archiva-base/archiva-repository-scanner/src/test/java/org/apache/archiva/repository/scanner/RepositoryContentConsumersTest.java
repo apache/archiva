@@ -21,6 +21,7 @@ package org.apache.archiva.repository.scanner;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -497,6 +498,23 @@ public class RepositoryContentConsumersTest
         }
 
         public Resource getResource(String location) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public <T> T getBean( Class<T> tClass )
+            throws BeansException
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public Map<String, Object> getBeansWithAnnotation( Class<? extends Annotation> aClass )
+            throws BeansException
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass )
+        {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }
