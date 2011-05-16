@@ -40,7 +40,7 @@ public class RoleManagerTest
     {
         super.setUp();
         
-        roleManager = (RoleManager) lookup( RoleManager.ROLE, "default" );    
+        roleManager = (RoleManager) lookup( RoleManager.class.getName(), "default" );
     }
     
     public void testExpectedRoles()
