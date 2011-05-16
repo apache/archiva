@@ -76,6 +76,7 @@
                     <exclude>org.codehaus.plexus:plexus-container-default</exclude>
                     <exclude>org.codehaus.plexus:plexus-log4j-logging</exclude>
                     <exclude>org.codehaus.plexus:plexus-spring</exclude>
+                    <exclude>org.codehaus.redback:plexus-spring</exclude>
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>org.slf4j:jcl104-over-slf4j</exclude>
                     <exclude>velocity:velocity-dep</exclude>
@@ -532,7 +533,7 @@
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.codehaus.redback.components</groupId>
         <artifactId>plexus-spring</artifactId>
         <version>1.3-SNAPSHOT</version>
         <exclusions>

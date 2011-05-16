@@ -29,7 +29,7 @@
   <name>Archiva Base :: Configuration</name>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.redback.components</groupId>
       <artifactId>plexus-spring</artifactId>
       <scope>test</scope>
     </dependency>

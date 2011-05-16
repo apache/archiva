@@ -38,7 +38,7 @@
       <artifactId>archiva-checksum</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.codehaus.redback.components</groupId>
       <artifactId>plexus-spring</artifactId>
       <scope>test</scope>
     </dependency>
