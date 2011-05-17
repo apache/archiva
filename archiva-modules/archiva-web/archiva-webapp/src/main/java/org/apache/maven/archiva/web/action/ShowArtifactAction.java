@@ -677,7 +677,7 @@ public class ShowArtifactAction
                 }
             }
 
-            DecimalFormat df = new DecimalFormat( "#,###.##", DecimalFormatSymbols.getInstance( Locale.US) );
+            DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US) );
             size = df.format( s ) + " " + symbol;
             id = artifact.getId();
             version = artifact.getVersion();
