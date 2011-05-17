@@ -29,12 +29,12 @@
       <s:set name="organisationUrl" value="organisationUrl"/>
       <c:choose>
         <c:when test="${!empty (organisationUrl)}">
-          <a href="${organisationUrl}">
-            <img src="${organisationLogo}" title="${organisationName}"/>
+          <a href='<c:out value="${organisationUrl}" />'>
+            <img src='<c:out value="${organisationLogo}" />' title='<c:out value="${organisationName}" />'/>
           </a>
         </c:when>
         <c:otherwise>
-          <img src="${organisationLogo}" title="${organisationName}"/>
+          <img src='<c:out value="${organisationLogo}" />' title='<c:out value="${organisationName}" />'/>
         </c:otherwise>
       </c:choose>
     </c:when>

@@ -59,6 +59,10 @@ public class DownloadArtifact
     extends Component
 {
     private static final String DEFAULT_DOWNLOAD_IMAGE = "download-type-other.png";
+    
+    private static final double KILO_BYTE = 1024.0;
+    private static final double MEGA_BYTE = 1048576.0;
+    private static final double GIGA_BYTE = 1073741824.0;
 
     /**
      * @plexus.requirement role-hint="jdo"
@@ -100,7 +104,7 @@ public class DownloadArtifact
     public DownloadArtifact( ValueStack stack, PageContext pageContext )
     {
         super( stack );
-        decimalFormat = new DecimalFormat( "#,#00" );
+        decimalFormat = new DecimalFormat( "#,##0.00" );
         this.req = (HttpServletRequest) pageContext.getRequest();
         this.res = (HttpServletResponse) pageContext.getResponse();
         try
@@ -290,13 +294,34 @@ public class DownloadArtifact
     {
         String type = artifact.getType();
         String linkText = StringUtils.capitalize( type );
+        
+        if( artifact.getModel().getClassifier() != null && !artifact.getModel().getClassifier().trim().equals( "" ) ) 
+        {
+            linkText = new StringBuilder(linkText).append(" (").append(artifact.getModel().getClassifier()).append(")").toString();
+        }
 
         appendLink( sb, prefix, repo, artifact, linkText );
     }
 
     private void appendFilesize( StringBuffer sb, ArchivaArtifact artifact )
     {
-        sb.append( decimalFormat.format( artifact.getModel().getSize() ) );
+        long size = artifact.getModel().getSize();
+        if( size > GIGA_BYTE )
+        {
+            sb.append( decimalFormat.format( artifact.getModel().getSize() / GIGA_BYTE ) ).append(" GB");        
+        }
+        else if( size > MEGA_BYTE )
+        {
+            sb.append( decimalFormat.format( artifact.getModel().getSize() / MEGA_BYTE ) ).append(" MB");        
+        }
+        else if( size > KILO_BYTE )
+        {
+            sb.append( decimalFormat.format( artifact.getModel().getSize() / KILO_BYTE ) ).append(" KB");        
+        }
+        else
+        {
+            sb.append( decimalFormat.format( artifact.getModel().getSize() ) ).append(" B");        
+        }
     }
 
     public void setArtifactId( String artifactId )

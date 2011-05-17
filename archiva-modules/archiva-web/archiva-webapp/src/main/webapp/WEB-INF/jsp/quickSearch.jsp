@@ -94,7 +94,7 @@
 
   <c:url var="iconCreateUrl" value="/images/icons/create.png" />
   
-  <s:form method="post" id="quickSearch" action="quickSearch" validate="true">    
+  <s:form method="get" id="quickSearch" action="quickSearch" validate="true">    
     <s:textfield label="Search for" size="50" name="q"/> 
     <s:hidden name="completeQueryString" value="%{completeQueryString}"/>  
     <s:submit value="Search"/>      	
@@ -111,7 +111,7 @@
     </tr>
     <tr>
       <td>    
-        <s:form id="filteredSearch" method="post" action="filteredSearch" validate="true">
+        <s:form id="filteredSearch" method="get" action="filteredSearch" validate="true">  
           <label><strong>Advanced Search Fields: </strong></label><s:select name="searchField" list="searchFields" theme="simple"/> 
           <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
             <img src="${iconCreateUrl}" />

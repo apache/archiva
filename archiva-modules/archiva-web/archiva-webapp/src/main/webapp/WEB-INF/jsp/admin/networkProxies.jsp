@@ -35,7 +35,21 @@
 
 <div id="contentArea">
 
-<s:actionerror /> <s:actionmessage />
+  <%-- changed the structure of displaying errorMessages & actionMessages in order for them to be escaped. --%>
+  <s:if test="hasActionErrors()">
+      <ul>
+      <s:iterator value="actionErrors">
+          <li><span class="errorMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
+  <s:if test="hasActionMessages()">
+      <ul>
+      <s:iterator value="actionMessages">
+          <li><span class="actionMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
 
 <div class="admin">
 <div class="controls">
@@ -71,11 +85,14 @@
       <div class="controls">
       <redback:ifAnyAuthorized
         permissions="archiva-manage-configuration">
-        <s:url id="editNetworkProxyUrl" action="editNetworkProxy">
+        <s:token/>
+        <s:url id="editNetworkProxyUrl" encode="true" action="editNetworkProxy">
           <s:param name="proxyid" value="%{#attr.proxy.id}" />
         </s:url>
-        <s:url id="deleteNetworkProxyUrl" action="deleteNetworkProxy" method="confirm">
+        <s:url id="deleteNetworkProxyUrl" encode="true" action="deleteNetworkProxy" method="confirm">
           <s:param name="proxyid" value="%{#attr.proxy.id}" />
+          <s:param name="struts.token.name">struts.token</s:param>
+          <s:param name="struts.token"><s:property value="struts.token"/></s:param>
         </s:url>
         <s:a href="%{editNetworkProxyUrl}">
           <img src="<c:url value="/images/icons/edit.png" />" />
@@ -85,27 +102,28 @@
             Delete Network Proxy</s:a>
       </redback:ifAnyAuthorized></div>
 
+      <%-- used c:out in displaying EL's for them to be escaped.  --%>
       <table class="infoTable">
         <tr>
           <th>Identifier</th>
-          <td><code>${proxy.id}</code></td>
+          <td><code><c:out value="${proxy.id}" /></code></td>
         </tr>
         <tr>
           <th>Protocol</th>
-          <td>${proxy.protocol}</td>
+          <td><c:out value="${proxy.protocol}" /></td>
         </tr>
         <tr>
           <th>Host</th>
-          <td>${proxy.host}</td>
+          <td><c:out value="${proxy.host}" /></td>
         </tr>
         <tr>
           <th>Port</th>
-          <td>${proxy.port}</td>
+          <td><c:out value="${proxy.port}" /></td>
         </tr>
         <c:if test="${not empty (proxy.username)}">
           <tr>
             <th>Username</th>
-            <td>${proxy.username}</td>
+            <td><c:out value="${proxy.username}" /></td>
           </tr>
           <c:if test="${not empty (proxy.password)}">
             <tr>

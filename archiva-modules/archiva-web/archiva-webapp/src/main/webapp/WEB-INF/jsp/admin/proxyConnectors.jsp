@@ -113,6 +113,7 @@
   <div class="connector ${rowColor}"> 
     <div class="controls">
       <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
+        <s:token/>
         <s:url id="sortDownProxyConnectorUrl" action="sortDownProxyConnector">
           <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
           <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
@@ -128,6 +129,8 @@
         <s:url id="deleteProxyConnectorUrl" action="deleteProxyConnector" method="confirmDelete">
           <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
           <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+          <s:param name="struts.token.name">struts.token</s:param>
+          <s:param name="struts.token"><s:property value="struts.token"/></s:param>
         </s:url>
         <s:url id="enableProxyConnectorUrl" action="enableProxyConnector" method="confirmEnable">
           <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
@@ -136,6 +139,8 @@
         <s:url id="disableProxyConnectorUrl" action="disableProxyConnector" method="confirmDisable">
           <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
           <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
+          <s:param name="struts.token.name">struts.token</s:param>
+          <s:param name="struts.token"><s:property value="struts.token"/></s:param>
         </s:url>
         <c:if test="${connector.disabled}">
             <s:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">

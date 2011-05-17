@@ -1102,7 +1102,7 @@
   <properties>
     <maven.version>2.0.8</maven.version>
     <wagon.version>1.0-beta-5</wagon.version>
-    <redback.version>1.2.7</redback.version>
+    <redback.version>1.2.8</redback.version>
     <jetty.version>6.1.19</jetty.version>
     <slf4j.version>1.5.8</slf4j.version>
     <binder.version>0.9</binder.version>
@@ -1187,6 +1187,25 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>snapshots-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>redback.snapshots</id>
+          <name>Codehaus Redback Snapshots Repository</name>
+          <url>http://snapshots.repository.codehaus.org/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
     </profile>
   </profiles>
   <!-- TODO: we need to push this into the parent, and also upgrade to the latest ASF parent POM -->

@@ -35,6 +35,7 @@ import java.util.TimeZone;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -461,12 +462,7 @@ public class UploadAction
 
         try
         {
-            int i;
-            while ( ( i = input.read() ) != -1 )
-            {
-                out.write( i );
-            }
-            out.flush();
+            IOUtils.copy( input, out );
         }
         finally
         {

@@ -50,6 +50,7 @@
     <s:form action="addRepositoryGroup" namespace="/admin">
       <span class="label">Identifier<span style="color:red">*</span>:</span> 
       <s:textfield size="10" label="Identifier" theme="simple" name="repositoryGroup.id"/>
+      <s:token/>
       <s:submit value="Add Group" theme="simple" cssClass="button"/>
     </s:form>
   </redback:ifAnyAuthorized>
@@ -71,8 +72,11 @@
   <div class="managedRepo">
     
     <div style="float:right">
+      <s:token/>
       <s:url id="deleteRepositoryGroupUrl" action="confirmDeleteRepositoryGroup">
         <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}" />
+        <s:param name="struts.token.name">struts.token</s:param>
+        <s:param name="struts.token"><s:property value="struts.token"/></s:param>
       </s:url>
       <s:a href="%{deleteRepositoryGroupUrl}" cssClass="delete">
         <img src="${iconDeleteUrl}"/>

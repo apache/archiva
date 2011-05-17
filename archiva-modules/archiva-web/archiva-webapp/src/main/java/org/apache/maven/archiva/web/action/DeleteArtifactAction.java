@@ -60,6 +60,7 @@ import org.apache.maven.archiva.security.UserRepositories;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Delete an artifact. Metadata will be updated if one exists, otherwise it would be created.
@@ -381,6 +382,9 @@ public class DeleteArtifactAction
         {
             addActionError( e.getMessage() );
         }
+
+        // trims all request parameter values, since the trailing/leading white-spaces are ignored during validation.
+        trimAllRequestParameterValues();
     }
 
     private List<String> getManagableRepos()
@@ -403,5 +407,28 @@ public class DeleteArtifactAction
             log.warn( e.getMessage(), e );
         }
         return Collections.emptyList();
+    }
+
+    private void trimAllRequestParameterValues()
+    {
+        if(StringUtils.isNotEmpty(groupId))
+        {
+            groupId = groupId.trim();
+        }
+
+        if(StringUtils.isNotEmpty(artifactId))
+        {
+            artifactId = artifactId.trim();
+        }
+
+        if(StringUtils.isNotEmpty(version))
+        {
+            version = version.trim();
+        }
+
+        if(StringUtils.isNotEmpty(repositoryId))
+        {
+            repositoryId = repositoryId.trim();
+        }
     }
 }

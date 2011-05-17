@@ -29,6 +29,7 @@ import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import java.io.File;
 import java.io.IOException;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * AddManagedRepositoryAction 
@@ -134,6 +135,32 @@ public class AddManagedRepositoryAction
         if ( !validator.validate( repository.getRefreshCronExpression() ) )
         {
             addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
+        }
+
+        // trim all unecessary trailing/leading white-spaces; always put this statement before the closing braces(after all validation).
+        trimAllRequestParameterValues();
+    }
+
+    private void trimAllRequestParameterValues()
+    {
+        if(StringUtils.isNotEmpty(repository.getId()))
+        {
+            repository.setId(repository.getId().trim());
+        }
+
+        if(StringUtils.isNotEmpty(repository.getName()))
+        {
+            repository.setName(repository.getName().trim());
+        }
+
+        if(StringUtils.isNotEmpty(repository.getLocation()))
+        {
+            repository.setLocation(repository.getLocation().trim());
+        }
+        
+        if(StringUtils.isNotEmpty(repository.getIndexDir()))
+        {
+            repository.setIndexDir(repository.getIndexDir().trim());
         }
     }
 

@@ -35,7 +35,14 @@
 </p>
 
 <s:set name="editOrganisationInfo" value="editOrganisationInfo"/>
-<s:actionmessage/>
+<%-- changed the structure of displaying actionMessages in order for them to be escaped. --%>
+<s:if test="hasActionMessages()">
+      <ul>
+      <s:iterator value="actionMessages">
+          <li><span class="actionMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+</s:if>
 <s:form method="post" action="saveAppearance" namespace="/admin" validate="true" theme="xhtml">
     <s:textfield name="organisationName" value="%{#attr.organisationName}" label="Name" size="50"  />
     <s:textfield name="organisationUrl" value="%{#attr.organisationUrl}" label="URL" size="50"/>

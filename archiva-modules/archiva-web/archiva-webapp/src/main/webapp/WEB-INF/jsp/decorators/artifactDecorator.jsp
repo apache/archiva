@@ -97,6 +97,8 @@
         </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Dependencies</my:currentWWUrl>
+
+      <%-- disabled for now to avoid too much cpu usage (see MRM-1457)
       <c:set var="url">
         <s:url action="showArtifactDependencyTree">
           <s:param name="groupId" value="%{groupId}"/>
@@ -105,6 +107,8 @@
         </s:url>
       </c:set>
       <my:currentWWUrl url="${url}">Dependency Tree</my:currentWWUrl>
+      --%>
+
       <c:set var="url">
         <s:url action="showArtifactDependees">
           <s:param name="groupId" value="%{groupId}"/>

@@ -46,23 +46,24 @@
     the following managed repository?
   </p>
 
+  <%-- used c:out in displaying EL's so that they are escaped --%>
   <div class="infobox">
     <table class="infotable">
       <tr>
         <td>ID:</td>
-        <td><code>${repository.id}</code></td>
+        <td><code><c:out value="${repository.id}" /></code></td>
       </tr>
       <tr>
         <td>Name:</td>
-        <td>${repository.name}</td>
+        <td><c:out value="${repository.name}" /></td>
       </tr>
       <tr>
         <td>Directory:</td>
-        <td>${repository.location}</td>
+        <td><c:out value="${repository.location}" /></td>
       </tr>
       <tr>
         <td>Index Directory:</td>
-        <td>${repository.indexDir}</td>
+        <td><c:out value="${repository.indexDir}" /></td>
       </tr>
       <tr>
         <td>Type:</td>
@@ -80,15 +81,15 @@
       </tr>
       <tr>
         <td>Cron:</td>
-        <td>${repository.refreshCronExpression}</td>
+        <td><c:out value="${repository.refreshCronExpression}" /></td>
       </tr>
       <tr>
         <td>Repository Purge By Days Older Than:</td>
-        <td>${repository.daysOlder}</td>
+        <td><c:out value="${repository.daysOlder}" /></td>
       </tr>
       <tr>
         <td>Repository Purge By Retention Count:</td>
-        <td>${repository.retentionCount}</td>
+        <td><c:out value="${repository.retentionCount}" /></td>
       </tr>
       <tr>
         <td>Releases Included:</td>

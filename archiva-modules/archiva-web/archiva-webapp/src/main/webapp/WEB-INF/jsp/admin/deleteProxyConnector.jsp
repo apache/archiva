@@ -47,6 +47,7 @@
   <s:form method="post" action="deleteProxyConnector!delete" namespace="/admin" validate="true">
     <s:hidden name="target"/>
     <s:hidden name="source"/>
+    <s:token/>
     <s:submit value="Delete"/>
   </s:form>
 </div>

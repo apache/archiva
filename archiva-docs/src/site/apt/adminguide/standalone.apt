@@ -17,7 +17,9 @@ Installing Standalone Distribution of Apache Archiva
       interactively, or <<<start>>> to run in the background (in this case, run the script with <<<stop>>> to later stop the server). The logs
       are available in the <<<logs>>> directory where Archiva is installed.
 
-    []
+  There is an issue with regard to the version of <<<tr>>> installed/used by default on Solaris so you might encounter a series of <<<Bad String>>> errors
+  when you run the Archiva binaries in Solaris. You need to use a different version of <<<tr>>> in order to get it to work. See
+  {{{http://jira.codehaus.org/browse/MRM-1467} MRM-1467}} for more details.
 
 * Installing as a Service on Windows
 

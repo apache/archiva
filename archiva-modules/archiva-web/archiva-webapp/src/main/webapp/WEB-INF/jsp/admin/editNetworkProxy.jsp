@@ -43,13 +43,27 @@
 
 <div id="contentArea">
 
-  <h2>${addedit} network proxy: ${networkProxyName}</h2>
+  <h2>${addedit} network proxy: <c:out value="${networkProxyName}" /></h2>
 
-  <s:actionerror/> 
-  <s:actionmessage/>
+  <%-- changed the structure of displaying errorMessages & actionMessages in order for them to be escaped. --%>
+  <s:if test="hasActionErrors()">
+      <ul>
+      <s:iterator value="actionErrors">
+          <li><span class="errorMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
+  <s:if test="hasActionMessages()">
+      <ul>
+      <s:iterator value="actionMessages">
+          <li><span class="actionMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
   
   <s:form method="post" action="saveNetworkProxy" namespace="/admin">
     <s:hidden name="mode"/>
+    <s:token/>
     
 	<c:choose>
 	  <c:when test="${mode == 'edit'}">
@@ -65,7 +79,7 @@
   </s:form>
 
   <script type="text/javascript">
-    document.getElementById("saveNetworkProxy_host").focus();
+        document.getElementById("saveNetworkProxy_host").focus();
   </script>
 
 </div>

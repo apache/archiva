@@ -19,6 +19,7 @@
 
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
@@ -30,7 +31,14 @@
 
 <h1>Admin: Delete Network Proxy</h1>
 
-<s:actionerror/>
+  <%-- changed the structure of displaying errorMessages in order for them to be escaped. --%>
+  <s:if test="hasActionErrors()">
+      <ul>
+      <s:iterator value="actionErrors">
+          <li><span class="errorMessage"><s:property escape="true" /></span></li>
+      </s:iterator>
+      </ul>
+  </s:if>
 
 <div id="contentArea">
 
@@ -39,13 +47,14 @@
   <blockquote>
     <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
   </blockquote>
-
+  <%-- used c:out in displaying EL's for them to be escaped.  --%>
   <p>
-    Are you sure you want to delete network proxy <code>${proxyid}</code> ?
+      Are you sure you want to delete network proxy <code><c:out value="${proxyid}" /></code> ?
   </p>
 
   <s:form method="post" action="deleteNetworkProxy!delete" namespace="/admin" validate="true">
     <s:hidden name="proxyid"/>
+    <s:token/>
     <s:submit value="Delete"/>
   </s:form>
 </div>

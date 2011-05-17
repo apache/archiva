@@ -45,7 +45,7 @@
 	font-weight: bold;
 	margin: 15px auto 0px auto;
 	height: auto;
-	width: 150px;
+	width: 280px;
 	min-width: 120px;
 	display: block;
 }
@@ -113,7 +113,7 @@
 
 .download table {
   margin-left: 2px;
-  width: 140px;
+  width: 270px;
 }
 
 .download .icon {
@@ -122,7 +122,7 @@
 
 .download .type {
   font-size: 0.9em;
-  text-align: center;
+  text-align: left;
 }
 
 .download .size {
