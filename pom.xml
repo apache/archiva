@@ -63,7 +63,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.0-alpha-4</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
@@ -75,8 +75,10 @@
                   <excludes>
                     <exclude>org.codehaus.plexus:plexus-container-default</exclude>
                     <exclude>org.codehaus.plexus:plexus-log4j-logging</exclude>
+                    <!--
                     <exclude>org.codehaus.plexus:plexus-spring</exclude>
                     <exclude>org.codehaus.redback:plexus-spring</exclude>
+                    -->
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>org.slf4j:jcl104-over-slf4j</exclude>
                     <exclude>velocity:velocity-dep</exclude>
