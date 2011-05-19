@@ -46,21 +46,21 @@
    
 <script type="text/javascript">
 <!--
-  function removeFiletypePattern(filetypeId, pattern)
+  function removeFiletypePattern(action, filetypeId, pattern)
   {
      var f = document.getElementById('filetypeForm');
      
-     f.action = "${removeFiletypePatternUrl}";
+     f.action = action;
      f['pattern'].value = pattern;
      f['fileTypeId'].value = filetypeId;
      f.submit();
   }
   
-  function addFiletypePattern(filetypeId, newPatternId)
+  function addFiletypePattern(action, filetypeId, newPatternId)
   {
      var f = document.forms['filetypeForm'];
           
-     f.action = "${addFiletypePatternUrl}";     
+     f.action = action;
      f.elements['pattern'].value = document.getElementById(newPatternId).value;
      f.elements['fileTypeId'].value = filetypeId;
      f.submit();
@@ -114,7 +114,7 @@
             </td>
             <td class="controls ${bgcolor}">
               <s:a href="#" title="Remove [%{#attr.escapedPattern}] Pattern from [%{#attr.filetypeId}]"
-                    onclick="removeFiletypePattern( '%{#attr.filetypeId}', '%{#attr.escapedPattern}' )"
+                    onclick="removeFiletypePattern( '%{#attr.removeFiletypePatternUrl}', '%{#attr.filetypeId}', '%{#attr.escapedPattern}' )" 
                     theme="simple">
                 <img src="${iconDeleteUrl}" />
               </s:a>
@@ -130,7 +130,7 @@
           <td>
             <s:a href="#" 
                   title="Add Pattern to [%{#attr.filetypeId}]"
-                  onclick="addFiletypePattern( '%{#attr.filetypeId}', 'newpattern_%{#attr.j.index}' )"
+                  onclick="addFiletypePattern( '%{#attr.addFiletypePatternUrl}', '%{#attr.filetypeId}', 'newpattern_%{#attr.j.index}' )"
                   theme="simple">
               <img src="${iconCreateUrl}" />
             </s:a>
@@ -213,7 +213,7 @@
 
     <s:form method="post" action="repositoryScanning!updateInvalidConsumers" 
              namespace="/admin" validate="false" theme="simple">
-    <s:token/>         
+    <s:token/>
     <table class="consumers">
       <tr>
         <th>&nbsp;</th>
