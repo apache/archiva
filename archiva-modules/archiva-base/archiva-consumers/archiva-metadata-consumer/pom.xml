@@ -58,8 +58,8 @@
       <artifactId>plexus-component-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.registry</groupId>
-      <artifactId>plexus-registry-api</artifactId>
+      <groupId>org.codehaus.redback.components.registry</groupId>
+      <artifactId>spring-registry-api</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -37,7 +37,7 @@ public interface UserRepositories
      * @throws AccessDeniedException
      * @throws ArchivaSecurityException
      */
-    public List<String> getObservableRepositoryIds( String principal )
+    List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException;
     
     /**
@@ -49,7 +49,7 @@ public interface UserRepositories
      * @throws AccessDeniedException
      * @throws ArchivaSecurityException
      */
-    public List<String> getManagableRepositoryIds( String principal )
+    List<String> getManagableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException;
     
     /**
@@ -58,7 +58,7 @@ public interface UserRepositories
      * @param repoId the repository id to work off of.
      * @throws ArchivaSecurityException if there was a problem creating the repository roles.
      */
-    public void createMissingRepositoryRoles( String repoId )
+    void createMissingRepositoryRoles( String repoId )
         throws ArchivaSecurityException;
     
     /**
@@ -70,7 +70,7 @@ public interface UserRepositories
      * @throws PrincipalNotFoundException
      * @throws ArchivaSecurityException
      */
-    public boolean isAuthorizedToUploadArtifacts( String principal, String repoId)
+    boolean isAuthorizedToUploadArtifacts( String principal, String repoId)
         throws PrincipalNotFoundException, ArchivaSecurityException;
      
     /**
@@ -82,7 +82,7 @@ public interface UserRepositories
      * @throws ArchivaSecurityException 
      * @throws AccessDeniedException 
      */
-    public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
+    boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
         throws AccessDeniedException, ArchivaSecurityException;
     
 }

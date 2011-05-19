@@ -160,20 +160,36 @@
       <artifactId>struts2-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.registry</groupId>
-      <artifactId>plexus-registry-api</artifactId>
+      <groupId>org.codehaus.redback.components.registry</groupId>
+      <artifactId>spring-registry-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.registry</groupId>
-      <artifactId>plexus-registry-commons</artifactId>
+      <groupId>org.codehaus.redback.components.registry</groupId>
+      <artifactId>spring-registry-commons</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.cache</groupId>
-      <artifactId>plexus-cache-api</artifactId>
+      <groupId>org.codehaus.redback.components.cache</groupId>
+      <artifactId>spring-cache-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.cache</groupId>
-      <artifactId>plexus-cache-ehcache</artifactId>
+      <groupId>org.codehaus.redback.components.cache</groupId>
+      <artifactId>spring-cache-ehcache</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>

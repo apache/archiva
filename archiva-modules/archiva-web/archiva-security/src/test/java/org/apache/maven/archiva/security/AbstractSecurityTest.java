@@ -19,8 +19,7 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import java.io.File;
-
+import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -29,15 +28,24 @@ import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
 
 /**
- * AbstractSecurityTest 
+ * AbstractSecurityTest
  *
  * @version $Id: AbstractSecurityTest
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractSecurityTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     protected static final String USER_GUEST = "guest";
 
@@ -45,14 +53,21 @@ public abstract class AbstractSecurityTest
 
     protected static final String USER_ALPACA = "alpaca";
 
+    @Inject
+    @Named( value = "securitySystem#testable" )
     protected SecuritySystem securitySystem;
 
+    @Inject
+    @Named( value = "rBACManager#memory" )
     private RBACManager rbacManager;
 
+    @Inject
     protected RoleManager roleManager;
 
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
+    @Inject
     protected UserRepositories userRepos;
 
     protected void setupRepository( String repoId )
@@ -62,7 +77,7 @@ public abstract class AbstractSecurityTest
         ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( repoId );
         repoConfig.setName( "Testable repo <" + repoId + ">" );
-        repoConfig.setLocation( getTestPath( "target/test-repo/" + repoId ) );
+        repoConfig.setLocation( new File( "./target/test-repo/" + repoId ).getPath() );
         archivaConfiguration.getConfiguration().addManagedRepository( repoConfig );
 
         // Add repo roles to security.
@@ -88,24 +103,19 @@ public abstract class AbstractSecurityTest
     }
 
     @Override
+    @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        File srcConfig = getTestFile( "src/test/resources/repository-archiva.xml" );
-        File destConfig = getTestFile( "target/test-conf/archiva.xml" );
+        File srcConfig = new File( "./src/test/resources/repository-archiva.xml" );
+        File destConfig = new File( "./target/test-conf/archiva.xml" );
 
         destConfig.getParentFile().mkdirs();
         destConfig.delete();
 
         FileUtils.copyFile( srcConfig, destConfig );
-
-        securitySystem = (SecuritySystem) lookup( SecuritySystem.class, "testable" );
-        rbacManager = (RBACManager) lookup( RBACManager.class, "memory" );
-        roleManager = (RoleManager) lookup( RoleManager.class, "default" );
-        userRepos = (UserRepositories) lookup( UserRepositories.class, "default" );
-        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
 
         // Some basic asserts.
         assertNotNull( securitySystem );

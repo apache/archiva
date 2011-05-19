@@ -36,14 +36,16 @@ import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
 import org.codehaus.plexus.evaluator.EvaluatorException;
 import org.codehaus.plexus.evaluator.ExpressionEvaluator;
 import org.codehaus.plexus.evaluator.sources.SystemPropertyExpressionSource;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,18 +83,21 @@ import java.util.Set;
  * before reading it from the registry.
  * </p>
  *
- * @plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
+ * plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
  */
+@Service("archivaConfiguration")
 public class DefaultArchivaConfiguration
-    implements ArchivaConfiguration, RegistryListener, Initializable
+    implements ArchivaConfiguration, RegistryListener
+    //, Initializable
 {
     private Logger log = LoggerFactory.getLogger( DefaultArchivaConfiguration.class );
 
     /**
      * Plexus registry to read the configuration from.
      *
-     * @plexus.requirement role-hint="commons-configuration"
+     * plexus.requirement role-hint="commons-configuration"
      */
+    @Inject
     private Registry registry;
 
     /**
@@ -101,24 +106,26 @@ public class DefaultArchivaConfiguration
     private Configuration configuration;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+     * plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
      * @todo these don't strictly belong in here
      */
     private Map<String, PreDownloadPolicy> prePolicies;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+     * plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
      * @todo these don't strictly belong in here
      */
     private Map<String, PostDownloadPolicy> postPolicies;
 
     /**
-     * @plexus.configuration default-value="${user.home}/.m2/archiva.xml"
+     * TODO take about default value with spring
+     * plexus.configuration default-value="${user.home}/.m2/archiva.xml"
      */
     private String userConfigFilename;
 
     /**
-     * @plexus.configuration default-value="${appserver.base}/conf/archiva.xml"
+     * * TODO take about default value with spring
+     * plexus.configuration default-value="${appserver.base}/conf/archiva.xml"
      */
     private String altConfigFilename;
 
@@ -401,7 +408,7 @@ public class DefaultArchivaConfiguration
 
     @SuppressWarnings("unchecked")
     public synchronized void save( Configuration configuration )
-        throws RegistryException, IndeterminateConfigurationException
+        throws IndeterminateConfigurationException, RegistryException
     {
         Registry section = registry.getSection( KEY + ".user" );
         Registry baseSection = registry.getSection( KEY + ".base" );
@@ -531,19 +538,14 @@ public class DefaultArchivaConfiguration
             }
         }
 
-        try
-        {
-            ( (Initializable) registry ).initialize();
 
-            for ( RegistryListener regListener : registryListeners )
-            {
-                addRegistryChangeListener( regListener );
-            }
-        }
-        catch ( InitializationException e )
+        ( (CommonsConfigurationRegistry) registry ).initialize();
+
+        for ( RegistryListener regListener : registryListeners )
         {
-            throw new RegistryException( "Unable to reinitialize configuration: " + e.getMessage(), e );
+            addRegistryChangeListener( regListener );
         }
+
 
         triggerEvent( ConfigurationEvent.SAVED );
 
@@ -638,8 +640,8 @@ public class DefaultArchivaConfiguration
         }
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         // Resolve expressions in the userConfigFilename and altConfigFilename
         try
@@ -652,7 +654,7 @@ public class DefaultArchivaConfiguration
         }
         catch ( EvaluatorException e )
         {
-            throw new InitializationException( "Unable to evaluate expressions found in "
+            throw new RuntimeException( "Unable to evaluate expressions found in "
                 + "userConfigFilename or altConfigFilename." );
         }
         registry.addChangeListener( this );

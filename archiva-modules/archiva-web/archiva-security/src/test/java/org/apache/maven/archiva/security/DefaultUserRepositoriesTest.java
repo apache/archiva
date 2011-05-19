@@ -22,6 +22,7 @@ package org.apache.maven.archiva.security;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 
 /**
  * DefaultUserRepositoriesTest 
@@ -31,12 +32,12 @@ import org.apache.commons.lang.StringUtils;
 public class DefaultUserRepositoriesTest
     extends AbstractSecurityTest
 {   
-    @Override
     protected String getPlexusConfigLocation()
     {
         return "org/apache/maven/archiva/security/DefaultUserRepositoriesTest.xml";
     }
-    
+
+    @Test
     public void testGetObservableRepositoryIds()
         throws Exception
     {

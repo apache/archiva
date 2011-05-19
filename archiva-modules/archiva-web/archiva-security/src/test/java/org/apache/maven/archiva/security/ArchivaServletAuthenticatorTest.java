@@ -19,6 +19,7 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -30,6 +31,8 @@ import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
 
 import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * ArchivaServletAuthenticatorTest
@@ -39,19 +42,18 @@ import org.easymock.MockControl;
 public class ArchivaServletAuthenticatorTest
     extends AbstractSecurityTest
 {
+    @Inject
     private ServletAuthenticator servletAuth;
 
     private MockControl httpServletRequestControl;
 
     private HttpServletRequest request;
 
-    @Override
+    @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
-
-        servletAuth = (ServletAuthenticator) lookup( ServletAuthenticator.class, "default" );
 
         httpServletRequestControl = MockControl.createControl( HttpServletRequest.class );
         request = (HttpServletRequest) httpServletRequestControl.getMock();
@@ -59,7 +61,6 @@ public class ArchivaServletAuthenticatorTest
         setupRepository( "corporate" );
     }
 
-    @Override
     protected String getPlexusConfigLocation()
     {
         return "org/apache/maven/archiva/security/ArchivaServletAuthenticatorTest.xml";
@@ -71,6 +72,7 @@ public class ArchivaServletAuthenticatorTest
         roleManager.assignTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId, principal );
     }
 
+    @Test
     public void testIsAuthenticatedUserExists()
         throws Exception
     {
@@ -80,6 +82,7 @@ public class ArchivaServletAuthenticatorTest
         assertTrue( isAuthenticated );
     }
 
+    @Test
     public void testIsAuthenticatedUserDoesNotExist()
         throws Exception
     {
@@ -95,6 +98,7 @@ public class ArchivaServletAuthenticatorTest
         }
     }
 
+    @Test
     public void testIsAuthorizedUserHasWriteAccess()
         throws Exception
     {
@@ -114,6 +118,7 @@ public class ArchivaServletAuthenticatorTest
         assertTrue( isAuthorized );
     }
 
+    @Test
     public void testIsAuthorizedUserHasNoWriteAccess()
         throws Exception
     {
@@ -145,6 +150,7 @@ public class ArchivaServletAuthenticatorTest
         httpServletRequestControl.verify();
     }
 
+    @Test
     public void testIsAuthorizedUserHasReadAccess()
         throws Exception
     {
@@ -164,6 +170,7 @@ public class ArchivaServletAuthenticatorTest
         assertTrue( isAuthorized );
     }
 
+    @Test
     public void testIsAuthorizedUserHasNoReadAccess()
         throws Exception
     {
@@ -186,6 +193,7 @@ public class ArchivaServletAuthenticatorTest
         }
     }
 
+    @Test
     public void testIsAuthorizedGuestUserHasWriteAccess()
         throws Exception
     {
@@ -196,6 +204,7 @@ public class ArchivaServletAuthenticatorTest
         assertTrue( isAuthorized );
     }
 
+    @Test
     public void testIsAuthorizedGuestUserHasNoWriteAccess()
         throws Exception
     {
@@ -206,6 +215,7 @@ public class ArchivaServletAuthenticatorTest
         assertFalse( isAuthorized );
     }
 
+    @Test
     public void testIsAuthorizedGuestUserHasReadAccess()
         throws Exception
     {
@@ -217,6 +227,7 @@ public class ArchivaServletAuthenticatorTest
         assertTrue( isAuthorized );
     }
 
+    @Test
     public void testIsAuthorizedGuestUserHasNoReadAccess()
         throws Exception
     {

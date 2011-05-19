@@ -19,6 +19,20 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.configuration.CombinedConfiguration;
+import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
+import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
+import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.registry.RegistryListener;
+import org.codehaus.plexus.util.SelectorUtils;
+import org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,29 +41,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.configuration.CombinedConfiguration;
-import org.apache.maven.archiva.common.utils.Slf4JPlexusLogger;
-import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
-import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.registry.RegistryListener;
-import org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry;
-import org.codehaus.plexus.util.SelectorUtils;
-
 /**
  * FileTypes 
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.configuration.FileTypes"
+ * plexus.component role="org.apache.maven.archiva.configuration.FileTypes"
  */
+@Service("fileTypes")
 public class FileTypes
-    implements Initializable, RegistryListener
+    implements RegistryListener
 {
     public static final String ARTIFACTS = "artifacts";
 
@@ -60,8 +61,9 @@ public class FileTypes
     public static final String IGNORED = "ignored";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
@@ -165,8 +167,8 @@ public class FileTypes
         return false;
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         // TODO: why is this done by hand?
         
@@ -182,7 +184,6 @@ public class FileTypes
             Field fld = commonsRegistry.getClass().getDeclaredField( "configuration" );
             fld.setAccessible( true );
             fld.set( commonsRegistry, new CombinedConfiguration() );
-            commonsRegistry.enableLogging( new Slf4JPlexusLogger( FileTypes.class ) );
             commonsRegistry.addConfigurationFromResource( "org/apache/maven/archiva/configuration/default-archiva.xml" );
 
             // Read configuration as it was intended.
@@ -193,23 +194,23 @@ public class FileTypes
         }
         catch ( RegistryException e )
         {
-            throw new InitializationException( errMsg + e.getMessage(), e );
+            throw new RuntimeException( errMsg + e.getMessage(), e );
         }
         catch ( SecurityException e )
         {
-            throw new InitializationException( errMsg + e.getMessage(), e );
+            throw new RuntimeException( errMsg + e.getMessage(), e );
         }
         catch ( NoSuchFieldException e )
         {
-            throw new InitializationException( errMsg + e.getMessage(), e );
+            throw new RuntimeException( errMsg + e.getMessage(), e );
         }
         catch ( IllegalArgumentException e )
         {
-            throw new InitializationException( errMsg + e.getMessage(), e );
+            throw new RuntimeException( errMsg + e.getMessage(), e );
         }
         catch ( IllegalAccessException e )
         {
-            throw new InitializationException( errMsg + e.getMessage(), e );
+            throw new RuntimeException( errMsg + e.getMessage(), e );
         }
 
         this.archivaConfiguration.addChangeListener( this );

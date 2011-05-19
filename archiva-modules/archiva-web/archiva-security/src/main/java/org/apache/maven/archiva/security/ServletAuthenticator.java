@@ -44,7 +44,7 @@ public interface ServletAuthenticator
      * @throws AccountLockedException
      * @throws MustChangePasswordException
      */
-    public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result )
+    boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException;
 
     /**
@@ -58,7 +58,7 @@ public interface ServletAuthenticator
      * @throws AuthorizationException
      * @throws UnauthorizedException
      */
-    public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
+    boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
         String permission ) throws AuthorizationException, UnauthorizedException;
     
     /**
@@ -74,6 +74,6 @@ public interface ServletAuthenticator
      * @return
      * @throws UnauthorizedException
      */
-    public boolean isAuthorized( String principal, String repoId, String permission )
+    boolean isAuthorized( String principal, String repoId, String permission )
         throws UnauthorizedException;
 }

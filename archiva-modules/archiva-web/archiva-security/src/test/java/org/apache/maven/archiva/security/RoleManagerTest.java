@@ -19,20 +19,29 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import junit.framework.TestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 /**
  * RoleProfilesTest 
  *
  * @version $Id: RoleManagerTest.java 4330 2007-05-10 17:28:56Z jmcconnell $
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class RoleManagerTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     /**
      * @plexus.requirement role-hint="default"
      */
+    @Inject
     RoleManager roleManager;
     
     protected void setUp()
@@ -40,9 +49,10 @@ public class RoleManagerTest
     {
         super.setUp();
         
-        roleManager = (RoleManager) lookup( RoleManager.class.getName(), "default" );
+
     }
-    
+
+    @Test
     public void testExpectedRoles()
         throws Exception
     {

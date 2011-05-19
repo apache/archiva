@@ -19,6 +19,7 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -35,11 +36,13 @@ import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * @version
  * @plexus.component role="org.apache.maven.archiva.security.ServletAuthenticator" role-hint="default"
  */
+@Service("servletAuthenticator")
 public class ArchivaServletAuthenticator
     implements ServletAuthenticator
 {
@@ -48,6 +51,7 @@ public class ArchivaServletAuthenticator
     /**
      * @plexus.requirement
      */
+    @Inject
     private SecuritySystem securitySystem;
 
     public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result )
@@ -113,4 +117,7 @@ public class ArchivaServletAuthenticator
             throw new UnauthorizedException( e.getMessage() );
         }
     }
+
+
+
 }

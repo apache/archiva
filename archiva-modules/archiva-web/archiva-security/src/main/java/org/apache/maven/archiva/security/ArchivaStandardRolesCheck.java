@@ -25,6 +25,10 @@ import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * ArchivaStandardRolesCheck tests for the existance of expected / standard roles and permissions. 
@@ -34,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @plexus.component role="org.codehaus.plexus.redback.system.check.EnvironmentCheck"
  *                   role-hint="required-roles"
  */
+@Service("environmentCheck#required-roles")
 public class ArchivaStandardRolesCheck
     implements EnvironmentCheck
 {
@@ -42,6 +47,7 @@ public class ArchivaStandardRolesCheck
     /**
      * @plexus.requirement role-hint="cached"
      */
+    @Inject @Named(value = "rBACManager#cached")
     private RBACManager rbacManager;
 
     /**

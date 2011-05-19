@@ -34,12 +34,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.registry</groupId>
-      <artifactId>plexus-registry-api</artifactId>
+      <groupId>org.codehaus.redback.components.registry</groupId>
+      <artifactId>spring-registry-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.registry</groupId>
-      <artifactId>plexus-registry-commons</artifactId>
+      <groupId>org.codehaus.redback.components.registry</groupId>
+      <artifactId>spring-registry-commons</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>

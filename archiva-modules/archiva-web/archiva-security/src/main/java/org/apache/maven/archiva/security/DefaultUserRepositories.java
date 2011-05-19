@@ -35,6 +35,9 @@ import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * DefaultUserRepositories
@@ -42,22 +45,26 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.security.UserRepositories" role-hint="default"
  */
+@Service("userRepositories")
 public class DefaultUserRepositories
     implements UserRepositories
 {
     /**
      * @plexus.requirement
      */
+    @Inject
     private SecuritySystem securitySystem;
 
     /**
      * @plexus.requirement role-hint="default"
      */
+    @Inject
     private RoleManager roleManager;
 
     /**
      * @plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
     
     private Logger log = LoggerFactory.getLogger( DefaultUserRepositories.class );
@@ -191,5 +198,35 @@ public class DefaultUserRepositories
         {
             throw new ArchivaSecurityException( e.getMessage() );
         }
+    }
+
+    public SecuritySystem getSecuritySystem()
+    {
+        return securitySystem;
+    }
+
+    public void setSecuritySystem( SecuritySystem securitySystem )
+    {
+        this.securitySystem = securitySystem;
+    }
+
+    public RoleManager getRoleManager()
+    {
+        return roleManager;
+    }
+
+    public void setRoleManager( RoleManager roleManager )
+    {
+        this.roleManager = roleManager;
+    }
+
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }
