@@ -61,4 +61,9 @@ public class StubConfiguration
     {
         throw new UnsupportedOperationException();
     }
+
+    public void reload()
+    {
+        // no op
+    }
 }

@@ -78,5 +78,11 @@ public interface ArchivaConfiguration
      * TODO: Remove in future.
      */
     void addChangeListener( RegistryListener listener );
+
+    /**
+     * reload configuration from file included registry
+     * @since 1.4-M1
+     */
+    void reload();
 }
 

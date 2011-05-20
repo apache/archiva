@@ -20,6 +20,9 @@ package org.apache.maven.archiva.configuration;
  */
 
 import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,11 +31,13 @@ import java.util.Map;
 /**
  * Test the generated Configuration class from Modello. This is primarily to test the hand coded methods.
  */
+@RunWith( JUnit4.class )
 public class ConfigurationTest
     extends TestCase
 {
     private Configuration configuration = new Configuration();
 
+    @Test
     public void testNetworkProxyRetrieval()
     {
         NetworkProxyConfiguration proxy1 = createNetworkProxy( "id1", "host1", 8080 );
@@ -58,6 +63,7 @@ public class ConfigurationTest
         return proxy;
     }
 
+    @Test
     public void testRemoteRepositoryRetrieval()
     {
         RemoteRepositoryConfiguration repo1 = createRemoteRepository( "id1", "name 1", "url 1" );
@@ -87,6 +93,7 @@ public class ConfigurationTest
         return repo;
     }
 
+    @Test
     public void testManagedRepositoryRetrieval()
     {
         ManagedRepositoryConfiguration repo1 = createManagedRepository( "id1", "name 1", "path 1", false );
@@ -117,6 +124,7 @@ public class ConfigurationTest
         return repo;
     }
 
+    @Test
     public void testNetworkProxyRetrievalWhenEmpty()
     {
         Map<String, NetworkProxyConfiguration> map = configuration.getNetworkProxiesAsMap();
@@ -124,6 +132,7 @@ public class ConfigurationTest
         assertTrue( map.isEmpty() );
     }
 
+    @Test
     public void testRemoteRepositoryRetrievalWhenEmpty()
     {
         Map<String, RemoteRepositoryConfiguration> map = configuration.getRemoteRepositoriesAsMap();
@@ -133,6 +142,7 @@ public class ConfigurationTest
         assertNull( configuration.findRemoteRepositoryById( "id" ) );
     }
 
+    @Test
     public void testManagedRepositoryRetrievalWhenEmpty()
     {
         Map<String, ManagedRepositoryConfiguration> map = configuration.getManagedRepositoriesAsMap();

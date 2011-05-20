@@ -19,34 +19,38 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
 /**
  */
+@RunWith( JUnit4.class )
 public class MavenProxyPropertyLoaderTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private MavenProxyPropertyLoader loader;
 
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
-     */
+
+    // TODO to remove
     protected String getSpringConfigLocation()
     {
         return "org/apache/maven/archiva/configuration/spring-context.xml";
     }
 
+    @Test
     public void testLoadValidMavenProxyConfiguration()
         throws IOException, InvalidConfigurationException
     {
-        File confFile = getTestFile( "src/test/conf/maven-proxy-complete.conf" );
+        File confFile = ArchivaConfigurationTest.getTestFile( "src/test/conf/maven-proxy-complete.conf" );
 
         Configuration configuration = new Configuration();
         NetworkProxyConfiguration proxy = new NetworkProxyConfiguration();
@@ -84,6 +88,7 @@ public class MavenProxyPropertyLoaderTest
         assertEquals( "Repository url", expectedUrl, repo.getUrl() );
     }
 
+    @Test
     public void testInvalidConfiguration()
     {
         Configuration configuration = new Configuration();
@@ -98,7 +103,8 @@ public class MavenProxyPropertyLoaderTest
         }
     }
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();

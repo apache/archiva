@@ -19,11 +19,20 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml"} )
 public class FileTypesTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+    @Inject
     private FileTypes filetypes;
 
     protected void setUp()
@@ -31,9 +40,9 @@ public class FileTypesTest
     {
         super.setUp();
 
-        filetypes = (FileTypes) lookup( FileTypes.class );
     }
 
+    @Test
     public void testIsArtifact()
     {
         assertTrue( filetypes.matchesArtifactPattern( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
@@ -52,7 +61,8 @@ public class FileTypesTest
         assertFalse( filetypes.matchesArtifactPattern( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml" ) );
         assertFalse( filetypes.matchesArtifactPattern( "org/apache/derby/derby/maven-metadata.xml" ) );
     }
-    
+
+    @Test
     public void testDefaultExclusions()
     {
         assertTrue( filetypes.matchesDefaultExclusions( "repository/test/.index/nexus-maven-repository-index.gz" ) );

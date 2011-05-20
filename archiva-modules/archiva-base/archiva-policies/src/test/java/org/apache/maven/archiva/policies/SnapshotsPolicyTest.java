@@ -19,19 +19,28 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.Properties;
-
-import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * SnapshotsPolicyTest 
  *
  * @version $Id$
  */
+@RunWith( value = SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class SnapshotsPolicyTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private static final String PATH_VERSION_METADATA = "org/apache/archiva/archiva-testable/1.0-SNAPSHOT/maven-metadata.xml";
 
@@ -63,6 +72,17 @@ public class SnapshotsPolicyTest
 
     private long generatedLocalFileUpdateDelta = 0;
 
+
+    @Inject @Named(value="preDownloadPolicy#snapshots")
+    PreDownloadPolicy policy;
+
+    private PreDownloadPolicy lookupPolicy()
+        throws Exception
+    {
+        return policy;
+    }
+
+    @Test
     public void testSnapshotPolicyDailyProjectMetadata()
         throws Exception
     {
@@ -79,6 +99,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.DAILY, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyDailyReleaseArtifact()
         throws Exception
     {
@@ -94,6 +115,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.DAILY, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyDailySnapshotArtifact()
         throws Exception
     {
@@ -109,6 +131,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicyViolation( SnapshotsPolicy.DAILY, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyDailyVersionedMetadata()
         throws Exception
     {
@@ -125,6 +148,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.DAILY, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyRejectProjectMetadata()
         throws Exception
     {
@@ -133,6 +157,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyRejectReleaseArtifact()
         throws Exception
     {
@@ -140,6 +165,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyRejectSnapshotArtifact()
         throws Exception
     {
@@ -147,6 +173,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicyViolation( SnapshotsPolicy.NEVER, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyRejectVersionedMetadata()
         throws Exception
     {
@@ -155,6 +182,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyHourlyProjectMetadata()
         throws Exception
     {
@@ -171,6 +199,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.HOURLY, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyHourlyReleaseArtifact()
         throws Exception
     {
@@ -186,6 +215,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.HOURLY, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyHourlySnapshotArtifact()
         throws Exception
     {
@@ -201,6 +231,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicyViolation( SnapshotsPolicy.HOURLY, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyHourlyVersionedMetadata()
         throws Exception
     {
@@ -217,6 +248,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.HOURLY, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyAlwaysProjectMetadata()
         throws Exception
     {
@@ -225,6 +257,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyAlwaysReleaseArtifact()
         throws Exception
     {
@@ -232,6 +265,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyAlwaysSnapshotArtifact()
         throws Exception
     {
@@ -239,6 +273,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyAlwaysVersionedMetadata()
         throws Exception
     {
@@ -247,6 +282,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyOnceProjectMetadata()
         throws Exception
     {
@@ -255,6 +291,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.ONCE, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyOnceReleaseArtifact()
         throws Exception
     {
@@ -262,6 +299,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.ONCE, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyOnceSnapshotArtifact()
         throws Exception
     {
@@ -269,6 +307,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicyViolation( SnapshotsPolicy.ONCE, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testSnapshotPolicyOnceVersionedMetadata()
         throws Exception
     {
@@ -294,7 +333,7 @@ public class SnapshotsPolicyTest
             request.setProperty( "version", "2.0" );
         }
 
-        File targetDir = getTestFile( "target/test-policy/" );
+        File targetDir = ChecksumPolicyTest.getTestFile( "target/test-policy/" );
         File localFile = new File( targetDir, path );
 
         if ( localFile.exists() )
@@ -326,16 +365,11 @@ public class SnapshotsPolicyTest
         }
     }
 
-    private PreDownloadPolicy lookupPolicy()
-        throws Exception
-    {
-        PreDownloadPolicy policy = (PreDownloadPolicy) lookup( PreDownloadPolicy.class.getName(), "snapshots" );
-        assertNotNull( policy );
-        return policy;
-    }
+
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();

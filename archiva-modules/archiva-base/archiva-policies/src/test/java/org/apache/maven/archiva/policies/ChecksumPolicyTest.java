@@ -19,134 +19,171 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
-
-import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * ChecksumPolicyTest
  *
  * @version $Id$
  */
+@RunWith( value = SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class ChecksumPolicyTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private static final String GOOD = "good";
 
     private static final String BAD = "bad";
 
+    @Inject
+    @Named(value="postDownloadPolicy#checksum")
+    PostDownloadPolicy downloadPolicy;
+
+    private PostDownloadPolicy lookupPolicy()
+        throws Exception
+    {
+        return downloadPolicy;
+    }
+
+    @Test
     public void testFailOnFileOnly()
         throws Exception
     {
         assertFailSetting( false, null, null );
     }
 
+    @Test
     public void testFailOnFileWithBadMd5AndBadSha1()
         throws Exception
     {
         assertFailSetting( false, BAD, BAD );
     }
 
+    @Test
     public void testFailOnFileWithBadMd5AndGoodSha1()
         throws Exception
     {
         assertFailSetting( false, BAD, GOOD );
     }
 
+    @Test
     public void testFailOnFileWithBadMd5Only()
         throws Exception
     {
         assertFailSetting( false, BAD, null );
     }
 
+    @Test
     public void testFailOnFileWithBadSha1Only()
         throws Exception
     {
         assertFailSetting( false, null, BAD );
     }
 
+    @Test
     public void testFailOnFileWithGoodMd5AndBadSha1()
         throws Exception
     {
         assertFailSetting( false, GOOD, BAD );
     }
 
+    @Test
     public void testFailOnFileWithGoodMd5AndGoodSha1()
         throws Exception
     {
         assertFailSetting( true, GOOD, GOOD );
     }
 
+    @Test
     public void testFailOnFileWithGoodMd5Only()
         throws Exception
     {
         assertFailSetting( true, GOOD, null );
     }
 
+    @Test
     public void testFailOnFileWithGoodSha1Only()
         throws Exception
     {
         assertFailSetting( true, null, GOOD );
     }
 
+    @Test
     public void testFixOnFileOnly()
         throws Exception
     {
         assertFixSetting( true, null, null );
     }
 
+    @Test
     public void testFixOnFileWithBadMd5AndBadSha1()
         throws Exception
     {
         assertFixSetting( true, BAD, BAD );
     }
 
+    @Test
     public void testFixOnFileWithBadMd5AndGoodSha1()
         throws Exception
     {
         assertFixSetting( true, BAD, GOOD );
     }
 
+    @Test
     public void testFixOnFileWithBadMd5Only()
         throws Exception
     {
         assertFixSetting( true, BAD, null );
     }
 
+    @Test
     public void testFixOnFileWithBadSha1Only()
         throws Exception
     {
         assertFixSetting( true, null, BAD );
     }
 
+    @Test
     public void testFixOnFileWithGoodMd5AndBadSha1()
         throws Exception
     {
         assertFixSetting( true, GOOD, BAD );
     }
 
+    @Test
     public void testFixOnFileWithGoodMd5AndGoodSha1()
         throws Exception
     {
         assertFixSetting( true, GOOD, GOOD );
     }
 
+    @Test
     public void testFixOnFileWithGoodMd5Only()
         throws Exception
     {
         assertFixSetting( true, GOOD, null );
     }
 
+    @Test
     public void testFixOnFileWithGoodSha1Only()
         throws Exception
     {
         assertFixSetting( true, null, GOOD );
     }
 
+    @Test
     public void testIgnore()
         throws Exception
     {
@@ -320,12 +357,22 @@ public class ChecksumPolicyTest
         return localFile;
     }
 
-    private PostDownloadPolicy lookupPolicy()
-        throws Exception
+
+
+    public static String getBasedir()
     {
-        PostDownloadPolicy policy = (PostDownloadPolicy) lookup( PostDownloadPolicy.class.getName(), "checksum" );
-        assertNotNull( policy );
-        return policy;
+        String basedir = System.getProperty( "basedir" );
+        if ( basedir == null )
+        {
+            basedir = new File( "" ).getAbsolutePath();
+        }
+
+        return basedir;
+    }
+
+    public static File getTestFile( String path )
+    {
+        return new File( getBasedir(), path );
     }
 
 }

@@ -28,6 +28,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * {@link PreDownloadPolicy} to check if the requested url has failed before.
@@ -36,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
  * role-hint="cache-failures"
  */
+@Service("preDownloadPolicy#cache-failures")
 public class CachedFailuresPolicy
     implements PreDownloadPolicy
 {
@@ -56,6 +60,7 @@ public class CachedFailuresPolicy
     /**
      * @plexus.requirement
      */
+    @Inject
     private UrlFailureCache urlFailureCache;
 
     private List<String> options = new ArrayList<String>();

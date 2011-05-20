@@ -1,0 +1,280 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       default-lazy-init="true">
+
+  <context:property-placeholder system-properties-mode="OVERRIDE"/>
+
+  <bean name="archivaConfiguration#test-defaults-default-repo-location-exists" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#empty"/>
+  </bean>
+
+  <bean name="archivaConfiguration#test-defaults" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#empty"/>
+  </bean>
+  <bean name="registry#empty" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry"/>
+
+  <bean name="archivaConfiguration#test-upgrade-09"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-upgrade-09"/>
+  </bean>
+
+  <bean name="registry#test-upgrade-09" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+            <xml fileName="${basedir}/src/test/conf/archiva-0.9.xml"
+                 config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="archivaConfiguration#test-configuration"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#configured"/>
+  </bean>
+
+  <bean name="registry#configured" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+            <system/>
+            <xml fileName="${basedir}/src/test/conf/repository-manager.xml"
+                 config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+
+  <bean name="archivaConfiguration#test-autodetect-v1"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-autodetect-v1"/>
+  </bean>
+
+  <bean name="registry#test-autodetect-v1" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+            <system/>
+            <xml fileName="${basedir}/target/test-autodetect-v1/archiva-user.xml" config-optional="true"
+                 config-name="org.apache.maven.archiva.user"
+                 config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="archivaConfiguration#test-archiva-v1"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-archiva-v1"/>
+  </bean>
+
+  <bean name="registry#test-archiva-v1" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+            <system/>
+            <xml fileName="${basedir}/src/test/conf/archiva-v1.xml"
+                 config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="archivaConfiguration#test-save"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-save"/>
+  </bean>
+
+  <bean name="registry#test-save" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+            <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+                 config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="archivaConfiguration#test-save-user"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-save-user"/>
+  </bean>
+
+  <bean name="registry#test-save-user" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+      <configuration>
+          <xml fileName="${basedir}/target/test/test-file-user.xml" config-optional="true" config-forceCreate="false"
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+          <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+      </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+
+  <bean name="archivaConfiguration#test-configuration-both"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-configuration-both"/>
+  </bean>
+
+  <bean name="registry#test-configuration-both" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+      <configuration>
+          <xml fileName="${basedir}/src/test/conf/conf-user.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+          <xml fileName="${basedir}/src/test/conf/conf-base.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+      </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+
+  <bean name="archivaConfiguration#test-read-saved"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-read-saved"/>
+  </bean>
+
+  <bean name="registry#test-read-saved" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+            <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+                 config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+
+  <bean name="archivaConfiguration#test-cron-expressions"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-cron-expressions"/>
+    <property name="userConfigFilename" value="${basedir}/target/test/test-file.xml"/>
+  </bean>
+
+  <bean name="registry#test-cron-expressions" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+            <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+                 config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+
+  <bean name="archivaConfiguration#test-remove-central"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-remove-central"/>
+  </bean>
+
+  <bean name="registry#test-remove-central" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+      <configuration>
+          <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+      </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+
+  <bean name="archivaConfiguration#test-not-allowed-to-write-to-both"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-not-allowed-to-write-to-both"/>
+    <property name="userConfigFilename" value="${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml"/>
+    <property name="altConfigFilename" value="${basedir}/target/*intentionally:invalid*/conf/archiva.xml"/>
+  </bean>
+
+  <bean name="registry#test-not-allowed-to-write-to-both" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+      <configuration>
+          <xml fileName="${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml" config-optional="true"
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+          <xml fileName="${basedir}/target/*intentionally:invalid*/conf/archiva.xml" config-optional="true"
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+      </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="archivaConfiguration#test-not-allowed-to-write-to-user"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test-not-allowed-to-write-to-user"/>
+    <property name="userConfigFilename" value="${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml"/>
+    <property name="altConfigFilename" value="${basedir}/target/test-appserver-base/conf/archiva.xml"/>
+  </bean>
+
+  <bean name="registry#test-not-allowed-to-write-to-user" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+      <configuration>
+          <xml fileName="${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml" config-optional="true"
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+          <xml fileName="${basedir}/target/test-appserver-base/conf/archiva.xml" config-optional="true"
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+      </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="cache#url-failures-cache" class="org.codehaus.plexus.cache.ehcache.EhcacheCache">
+    <property name="diskExpiryThreadIntervalSeconds" value="600"/>
+    <property name="diskPersistent" value="false"/>
+    <property name="eternal" value="false"/>
+    <property name="maxElementsInMemory" value="1000"/>
+    <property name="memoryEvictionPolicy" value="LRU"/>
+    <property name="name" value="cache"/>
+    <property name="overflowToDisk" value="false"/>
+    <property name="timeToIdleSeconds" value="2700"/>
+    <property name="timeToLiveSeconds" value="1800"/>
+  </bean>
+
+</beans>

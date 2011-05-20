@@ -61,4 +61,9 @@ public class TestConfiguration
     {
         throw new UnsupportedOperationException();
     }
+
+    public void reload()
+    {
+        // no op
+    }
 }

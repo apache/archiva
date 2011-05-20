@@ -19,38 +19,75 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.redback.components.springutils.ComponentContainer;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.easymock.MockControl;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.custommonkey.xmlunit.XMLAssert;
-import org.easymock.MockControl;
-
 /**
  * Test the configuration store.
- *
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
 public class ArchivaConfigurationTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+
+    @Inject
+    private ComponentContainer componentContainer;
+
+    public static String getBasedir()
+    {
+        String basedir = System.getProperty( "basedir" );
+        if ( basedir == null )
+        {
+            basedir = new File( "" ).getAbsolutePath();
+        }
+
+        return basedir;
+    }
+
+    public static File getTestFile( String path )
+    {
+        return new File( getBasedir(), path );
+    }
+
     /**
-     * {@inheritDoc}
-     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
+     * @TODO to remove
      */
     protected String getSpringConfigLocation()
     {
         return "org/apache/maven/archiva/configuration/spring-context.xml";
     }
 
+    protected <T> T lookup(Class<T> clazz, String hint)
+    {
+        return componentContainer.getComponent( clazz, hint );
+    }
+
+    protected <T> T lookup(Class<T> clazz)
+    {
+        return componentContainer.getComponent( clazz );
+    }
+
+    @Test
     public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource()
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-configuration" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertConfiguration( configuration );
@@ -67,11 +104,12 @@ public class ArchivaConfigurationTest
         assertTrue( "check managed repositories", repository.isScanned() );
     }
 
+    @Test
     public void testGetConfigurationFromDefaults()
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-defaults" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-defaults" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertConfiguration( configuration );
@@ -87,48 +125,50 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isScanned() );
     }
-    
+
     // test for [MRM-789]
+    @Test
     public void testGetConfigurationFromDefaultsWithDefaultRepoLocationAlreadyExisting()
         throws Exception
     {
         File repo = new File( getBasedir(), "/target/test-classes/existing_snapshots" );
         repo.mkdirs();
-        
+
         repo = new File( getBasedir(), "/target/test-classes/existing_internal" );
         repo.mkdirs();
-        
-        String existingTestDefaultArchivaConfigFile = 
-            FileUtils.readFileToString( getTestFile( "target/test-classes/org/apache/maven/archiva/configuration/test-default-archiva.xml" ) ) ;        
-        existingTestDefaultArchivaConfigFile = StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", getBasedir() );
-        
+
+        String existingTestDefaultArchivaConfigFile = FileUtils.readFileToString(
+            getTestFile( "target/test-classes/org/apache/maven/archiva/configuration/test-default-archiva.xml" ) );
+        existingTestDefaultArchivaConfigFile =
+            StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", getBasedir() );
+
         File generatedTestDefaultArchivaConfigFile =
             new File( getBasedir(), "target/test-classes/org/apache/maven/archiva/configuration/default-archiva.xml" );
-                
-        FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile, existingTestDefaultArchivaConfigFile, null );
-                
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), 
-                                           "test-defaults-default-repo-location-exists" );
+
+        FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile, existingTestDefaultArchivaConfigFile,
+                                     null );
+
+        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class,
+                                                                                   "test-defaults-default-repo-location-exists" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertConfiguration( configuration );
-        
+
         ManagedRepositoryConfiguration repository =
-            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );        
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
         assertTrue( "check managed repositories", repository.getLocation().endsWith( "data/repositories/internal" ) );
-        
+
         generatedTestDefaultArchivaConfigFile.delete();
         assertFalse( generatedTestDefaultArchivaConfigFile.exists() );
     }
-    
+
     /**
      * Ensures that the provided configuration matches the details present in the archiva-default.xml file.
      */
     private void assertConfiguration( Configuration configuration )
         throws Exception
     {
-        FileTypes filetypes = (FileTypes) lookup( FileTypes.class.getName() );
+        FileTypes filetypes = (FileTypes) lookup( FileTypes.class );
 
         assertEquals( "check repositories", 2, configuration.getManagedRepositories().size() );
         assertEquals( "check repositories", 2, configuration.getRemoteRepositories().size() );
@@ -158,11 +198,12 @@ public class ArchivaConfigurationTest
         assertTrue( "check appletFindEnabled", ui.isAppletFindEnabled() );
     }
 
+    @Test
     public void testGetConfigurationFromRegistryWithTwoConfigurationResources()
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration-both" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-configuration-both" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
 
@@ -183,6 +224,7 @@ public class ArchivaConfigurationTest
         assertFalse( "check appletFindEnabled", ui.isAppletFindEnabled() );
     }
 
+    @Test
     public void testGetConfigurationSystemOverride()
         throws Exception
     {
@@ -190,7 +232,9 @@ public class ArchivaConfigurationTest
         System.setProperty( "org.apache.maven.archiva.webapp.ui.appletFindEnabled", "false" );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-configuration" );
+
+        archivaConfiguration.reload();
 
         try
         {
@@ -204,6 +248,7 @@ public class ArchivaConfigurationTest
         }
     }
 
+    @Test
     public void testStoreConfiguration()
         throws Exception
     {
@@ -212,11 +257,13 @@ public class ArchivaConfigurationTest
         assertFalse( file.exists() );
 
         // TODO: remove with commons-configuration 1.4
-        file.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( file, "<configuration/>", null );
+        //file.getParentFile().mkdirs();
+        //FileUtils.writeStringToFile( file, "<configuration/>", null );
 
         DefaultArchivaConfiguration archivaConfiguration =
-            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save" );
+            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = new Configuration();
         configuration.setVersion( "1" );
@@ -246,7 +293,9 @@ public class ArchivaConfigurationTest
 
         // read it back
         archivaConfiguration =
-            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-saved" );
+            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-read-saved" );
+
+        archivaConfiguration.reload();
         configuration = archivaConfiguration.getConfiguration();
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
@@ -256,6 +305,7 @@ public class ArchivaConfigurationTest
         return MockControl.createControl( ConfigurationListener.class );
     }
 
+    @Test
     public void testStoreConfigurationUser()
         throws Exception
     {
@@ -271,7 +321,7 @@ public class ArchivaConfigurationTest
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
 
         Configuration configuration = new Configuration();
         configuration.setWebapp( new WebappConfiguration() );
@@ -288,6 +338,7 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
 
+    @Test
     public void testStoreConfigurationLoadedFromDefaults()
         throws Exception
     {
@@ -300,7 +351,9 @@ public class ArchivaConfigurationTest
         assertFalse( userFile.exists() );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = new Configuration();
         configuration.setWebapp( new WebappConfiguration() );
@@ -330,11 +383,14 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
 
+    @Test
     public void testDefaultUserConfigFilename()
         throws Exception
     {
         DefaultArchivaConfiguration archivaConfiguration =
-            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
+            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "default" );
+
+        archivaConfiguration.reload();
 
         assertEquals( System.getProperty( "user.home" ) + "/.m2/archiva.xml",
                       archivaConfiguration.getUserConfigFilename() );
@@ -342,6 +398,7 @@ public class ArchivaConfigurationTest
                       archivaConfiguration.getAltConfigFilename() );
     }
 
+    @Test
     public void testStoreConfigurationFallback()
         throws Exception
     {
@@ -357,7 +414,9 @@ public class ArchivaConfigurationTest
         FileUtils.writeStringToFile( baseFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = new Configuration();
         configuration.setWebapp( new WebappConfiguration() );
@@ -369,11 +428,13 @@ public class ArchivaConfigurationTest
         assertTrue( "Check file exists", baseFile.exists() );
         assertFalse( "Check file not created", userFile.exists() );
 
+
         // check it
         configuration = archivaConfiguration.getConfiguration();
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
 
+    @Test
     public void testStoreConfigurationFailsWhenReadFromBothLocationsNoLists()
         throws Exception
     {
@@ -392,7 +453,9 @@ public class ArchivaConfigurationTest
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
@@ -413,6 +476,7 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
 
+    @Test
     public void testStoreConfigurationFailsWhenReadFromBothLocationsUserHasLists()
         throws Exception
     {
@@ -431,7 +495,9 @@ public class ArchivaConfigurationTest
         FileUtils.writeStringToFile( baseFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertTrue( "check value", configuration.getWebapp().getUi().isShowFindArtifacts() );
@@ -452,6 +518,7 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isShowFindArtifacts() );
     }
 
+    @Test
     public void testStoreConfigurationFailsWhenReadFromBothLocationsAppserverHasLists()
         throws Exception
     {
@@ -470,7 +537,9 @@ public class ArchivaConfigurationTest
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
@@ -490,11 +559,12 @@ public class ArchivaConfigurationTest
         }
     }
 
+    @Test
     public void testLoadConfigurationFromInvalidBothLocationsOnDisk()
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-not-allowed-to-write-to-both" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-not-allowed-to-write-to-both" );
         Configuration config = archivaConfiguration.getConfiguration();
 
         try
@@ -508,6 +578,7 @@ public class ArchivaConfigurationTest
         }
     }
 
+    @Test
     public void testLoadConfigurationFromInvalidUserLocationOnDisk()
         throws Exception
     {
@@ -515,18 +586,19 @@ public class ArchivaConfigurationTest
         testConfDir.mkdirs();
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-not-allowed-to-write-to-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-not-allowed-to-write-to-user" );
         Configuration config = archivaConfiguration.getConfiguration();
         archivaConfiguration.save( config );
         // No Exception == test passes.
         // Expected Path is: Should not have thrown an exception.
     }
 
+    @Test
     public void testConfigurationUpgradeFrom09()
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-upgrade-09" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-upgrade-09" );
 
         // we just use the defaults when upgrading from 0.9 at this point.
         Configuration configuration = archivaConfiguration.getConfiguration();
@@ -544,6 +616,7 @@ public class ArchivaConfigurationTest
         assertTrue( "check managed repositories", repository.isScanned() );
     }
 
+    @Test
     public void testAutoDetectV1()
         throws Exception
     {
@@ -557,7 +630,9 @@ public class ArchivaConfigurationTest
 
         // Load the original (unconverted) archiva.xml
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-autodetect-v1" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertConfiguration( configuration );
@@ -582,11 +657,11 @@ public class ArchivaConfigurationTest
         archivaConfiguration.save( configuration );
 
         // Release existing
-        release( archivaConfiguration );
+        //release( archivaConfiguration );
 
         // Reload.
         archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-autodetect-v1" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
         configuration = archivaConfiguration.getConfiguration();
 
         // Test that only 1 set of repositories exist.
@@ -601,11 +676,12 @@ public class ArchivaConfigurationTest
         XMLAssert.assertXpathNotExists( "//configuration/repositories", actualXML );
     }
 
+    @Test
     public void testArchivaV1()
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-archiva-v1" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-archiva-v1" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertConfiguration( configuration );
@@ -635,6 +711,7 @@ public class ArchivaConfigurationTest
         assertTrue( "check managed repositories", repository.isSnapshots() );
     }
 
+    @Test
     public void testCronExpressionsWithComma()
         throws Exception
     {
@@ -653,7 +730,9 @@ public class ArchivaConfigurationTest
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         final ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-cron-expressions" );
+            lookup( ArchivaConfiguration.class, "test-cron-expressions" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = archivaConfiguration.getConfiguration();
 
@@ -696,6 +775,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check cron expression", "0 0,20 0 * * ?", repository.getRefreshCronExpression() );
     }
 
+    @Test
     public void testRemoveLastElements()
         throws Exception
     {
@@ -714,15 +794,16 @@ public class ArchivaConfigurationTest
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-remove-central" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-remove-central" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
-       
-        RepositoryGroupConfiguration repositoryGroup = ( RepositoryGroupConfiguration ) configuration.getRepositoryGroups().get( 0 );
+
+        RepositoryGroupConfiguration repositoryGroup =
+            (RepositoryGroupConfiguration) configuration.getRepositoryGroups().get( 0 );
         assertNotNull( repositoryGroup );
         configuration.removeRepositoryGroup( repositoryGroup );
         assertTrue( configuration.getRepositoryGroups().isEmpty() );
-        
+
         RemoteRepositoryConfiguration repository = configuration.getRemoteRepositoriesAsMap().get( "central" );
         assertNotNull( repository );
         configuration.removeRemoteRepository( repository );
@@ -772,8 +853,7 @@ public class ArchivaConfigurationTest
 
         archivaConfiguration.save( configuration );
 
-        archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-saved" );
+        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-read-saved" );
         configuration = archivaConfiguration.getConfiguration();
         assertNull( configuration.getRemoteRepositoriesAsMap().get( "central" ) );
         assertTrue( configuration.getRepositoryGroups().isEmpty() );
@@ -792,21 +872,24 @@ public class ArchivaConfigurationTest
     /**
      * [MRM-582] Remote Repositories with empty <username> and <password> fields shouldn't be created in configuration.
      */
+    @Test
     public void testGetConfigurationFixEmptyRemoteRepoUsernamePassword()
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup(
-                                                                                   ArchivaConfiguration.class.getName(),
-                                                                                   "test-configuration" );
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-configuration" );
 
+        archivaConfiguration.reload();
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertConfiguration( configuration );
         assertEquals( "check remote repositories", 2, configuration.getRemoteRepositories().size() );
 
-        RemoteRepositoryConfiguration repository = (RemoteRepositoryConfiguration) configuration
-            .getRemoteRepositoriesAsMap().get( "maven2-repository.dev.java.net" );
+        RemoteRepositoryConfiguration repository =
+            (RemoteRepositoryConfiguration) configuration.getRemoteRepositoriesAsMap().get(
+                "maven2-repository.dev.java.net" );
 
-        assertEquals( "remote repository.url", "https://maven2-repository.dev.java.net/nonav/repository", repository.getUrl() );
+        assertEquals( "remote repository.url", "https://maven2-repository.dev.java.net/nonav/repository",
+                      repository.getUrl() );
         assertEquals( "remote repository.name", "Java.net Repository for Maven 2", repository.getName() );
         assertEquals( "remote repository.id", "maven2-repository.dev.java.net", repository.getId() );
         assertEquals( "remote repository.layout", "default", repository.getLayout() );

@@ -29,6 +29,7 @@ import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * ChecksumPolicy - a policy applied after the download to see if the file has been downloaded
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @plexus.component role="org.apache.maven.archiva.policies.PostDownloadPolicy"
  *                   role-hint="checksum"
  */
+@Service("postDownloadPolicy#checksum")
 public class ChecksumPolicy
     implements PostDownloadPolicy
 {

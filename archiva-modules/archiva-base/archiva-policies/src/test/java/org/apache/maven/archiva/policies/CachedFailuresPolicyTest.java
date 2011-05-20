@@ -19,24 +19,40 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.Properties;
-
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * CachedFailuresPolicyTest
  *
  * @version $Id$
  */
+@RunWith( value = SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class CachedFailuresPolicyTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+
+
+    @Inject
+    private UrlFailureCache urlFailureCache;
+
+    @Inject @Named(value="preDownloadPolicy#cache-failures")
+    DownloadPolicy downloadPolicy;
+
     private DownloadPolicy lookupPolicy()
         throws Exception
     {
-        return (DownloadPolicy) lookup( PreDownloadPolicy.class, "cache-failures" );
+        return downloadPolicy;
     }
 
     private File getFile()
@@ -51,6 +67,7 @@ public class CachedFailuresPolicyTest
         return request;
     }
 
+    @Test
     public void testPolicyNo()
         throws Exception
     {
@@ -63,9 +80,13 @@ public class CachedFailuresPolicyTest
         policy.applyPolicy( CachedFailuresPolicy.NO, request, localFile );
     }
 
+    @Test
     public void testPolicyYesNotInCache()
         throws Exception
     {
+
+        //CacheManager.getInstance().clearAll();
+
         DownloadPolicy policy = lookupPolicy();
         File localFile = getFile();
         Properties request = createRequest();
@@ -75,6 +96,7 @@ public class CachedFailuresPolicyTest
         policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );
     }
 
+    @Test
     public void testPolicyYesInCache()
         throws Exception
     {
@@ -84,7 +106,7 @@ public class CachedFailuresPolicyTest
 
         String url = "http://a.bad.hostname.maven.org/path/to/resource.txt";
 
-        UrlFailureCache urlFailureCache = (UrlFailureCache) lookup( "urlFailureCache" );
+
         urlFailureCache.cacheFailure( url );
 
         request.setProperty( "url", url );

@@ -20,6 +20,8 @@ package org.apache.maven.archiva.policies;
  */
 
 
+import org.springframework.stereotype.Service;
+
 /**
  * {@link PreDownloadPolicy} to apply for released versions.
  *
@@ -28,6 +30,7 @@ package org.apache.maven.archiva.policies;
  * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
  *                   role-hint="releases"
  */
+@Service("preDownloadPolicy#releases")
 public class ReleasesPolicy
     extends AbstractUpdatePolicy
     implements PreDownloadPolicy

@@ -28,6 +28,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * PropagateErrorsPolicy - a policy applied on error to determine how to treat the error.
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * @plexus.component role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
  * role-hint="propagate-errors"
  */
+@Service("downloadErrorPolicy#propagate-errors")
 public class PropagateErrorsDownloadPolicy
     implements DownloadErrorPolicy
 {

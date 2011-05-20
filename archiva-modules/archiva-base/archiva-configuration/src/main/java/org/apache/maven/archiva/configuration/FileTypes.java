@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,13 +43,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * FileTypes 
+ * FileTypes
  *
  * @version $Id$
- * 
- * plexus.component role="org.apache.maven.archiva.configuration.FileTypes"
+ *          <p/>
+ *          plexus.component role="org.apache.maven.archiva.configuration.FileTypes"
  */
-@Service("fileTypes")
+@Service( "fileTypes" )
 public class FileTypes
     implements RegistryListener
 {
@@ -64,6 +65,7 @@ public class FileTypes
      * plexus.requirement
      */
     @Inject
+    @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration archivaConfiguration;
 
     /**
@@ -91,14 +93,14 @@ public class FileTypes
      * <p>
      * Get the list of patterns for a specified filetype.
      * </p>
-     *
+     * <p/>
      * <p>
      * You will always get a list.  In this order.
-     *   <ul>
-     *     <li>The Configured List</li>
-     *     <li>The Default List</li>
-     *     <li>A single item list of <code>"**<span>/</span>*"</code></li>
-     *   </ul>
+     * <ul>
+     * <li>The Configured List</li>
+     * <li>The Default List</li>
+     * <li>A single item list of <code>"**<span>/</span>*"</code></li>
+     * </ul>
      * </p>
      *
      * @param id the id to lookup.
@@ -108,8 +110,8 @@ public class FileTypes
     {
         Configuration config = archivaConfiguration.getConfiguration();
         Predicate selectedFiletype = new FiletypeSelectionPredicate( id );
-        FileType filetype = (FileType) CollectionUtils.find( config.getRepositoryScanning().getFileTypes(),
-                                                             selectedFiletype );
+        FileType filetype =
+            (FileType) CollectionUtils.find( config.getRepositoryScanning().getFileTypes(), selectedFiletype );
 
         if ( ( filetype != null ) && CollectionUtils.isNotEmpty( filetype.getPatterns() ) )
         {
@@ -171,7 +173,7 @@ public class FileTypes
     public void initialize()
     {
         // TODO: why is this done by hand?
-        
+
         // TODO: ideally, this would be instantiated by configuration instead, and not need to be a component
 
         String errMsg = "Unable to load default archiva configuration for FileTypes: ";
@@ -184,7 +186,8 @@ public class FileTypes
             Field fld = commonsRegistry.getClass().getDeclaredField( "configuration" );
             fld.setAccessible( true );
             fld.set( commonsRegistry, new CombinedConfiguration() );
-            commonsRegistry.addConfigurationFromResource( "org/apache/maven/archiva/configuration/default-archiva.xml" );
+            commonsRegistry.addConfigurationFromResource(
+                "org/apache/maven/archiva/configuration/default-archiva.xml" );
 
             // Read configuration as it was intended.
             ConfigurationRegistryReader configReader = new ConfigurationRegistryReader();

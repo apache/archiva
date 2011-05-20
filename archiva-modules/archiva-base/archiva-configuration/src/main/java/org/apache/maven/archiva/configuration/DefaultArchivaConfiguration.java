@@ -21,6 +21,7 @@ package org.apache.maven.archiva.configuration;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator;
@@ -40,12 +41,14 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry;
+import org.codehaus.redback.components.springutils.ComponentContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,10 +85,10 @@ import java.util.Set;
  * If the configuration is outdated, it will be upgraded when it is loaded. This is done by checking the version flag
  * before reading it from the registry.
  * </p>
- *
+ * <p/>
  * plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
  */
-@Service("archivaConfiguration")
+@Service( "archivaConfiguration#default" )
 public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener
     //, Initializable
@@ -94,11 +97,15 @@ public class DefaultArchivaConfiguration
 
     /**
      * Plexus registry to read the configuration from.
-     *
+     * <p/>
      * plexus.requirement role-hint="commons-configuration"
      */
     @Inject
+    @Named( value = "commons-configuration" )
     private Registry registry;
+
+    @Inject
+    private ComponentContainer componentContainer;
 
     /**
      * The configuration that has been converted.
@@ -106,28 +113,32 @@ public class DefaultArchivaConfiguration
     private Configuration configuration;
 
     /**
+     * see #initialize
      * plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+     *
      * @todo these don't strictly belong in here
      */
     private Map<String, PreDownloadPolicy> prePolicies;
 
     /**
+     * see #initialize
      * plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+     *
      * @todo these don't strictly belong in here
      */
     private Map<String, PostDownloadPolicy> postPolicies;
 
     /**
-     * TODO take about default value with spring
+     * see #initialize
      * plexus.configuration default-value="${user.home}/.m2/archiva.xml"
      */
-    private String userConfigFilename;
+    private String userConfigFilename = "${user.home}/.m2/archiva.xml";
 
     /**
-     * * TODO take about default value with spring
+     * see #initialize
      * plexus.configuration default-value="${appserver.base}/conf/archiva.xml"
      */
-    private String altConfigFilename;
+    private String altConfigFilename = "${appserver.base}/conf/archiva.xml";
 
     /**
      * Configuration Listeners we've registered.
@@ -158,7 +169,7 @@ public class DefaultArchivaConfiguration
         {
             configuration = load();
             configuration = unescapeExpressions( configuration );
-            if( isConfigurationDefaulted )
+            if ( isConfigurationDefaulted )
             {
                 configuration = checkRepositoryLocations( configuration );
             }
@@ -167,9 +178,9 @@ public class DefaultArchivaConfiguration
         return configuration;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private Configuration load()
-    {   
+    {
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
         Registry subset = registry.getSubset( KEY );
         if ( subset.getString( "version" ) == null )
@@ -181,8 +192,8 @@ public class DefaultArchivaConfiguration
                 subset = readDefaultConfiguration();
             }
         }
-        
-        Configuration config = new ConfigurationRegistryReader().read( subset );        
+
+        Configuration config = new ConfigurationRegistryReader().read( subset );
 
         if ( !config.getRepositories().isEmpty() )
         {
@@ -190,7 +201,7 @@ public class DefaultArchivaConfiguration
             {
                 V1RepositoryConfiguration r = i.next();
                 r.setScanned( r.isIndexed() );
-                
+
                 if ( r.getUrl().startsWith( "file://" ) )
                 {
                     r.setLocation( r.getUrl().substring( 7 ) );
@@ -319,8 +330,8 @@ public class DefaultArchivaConfiguration
             }
 
             // Normalize the order fields in the proxy connectors.
-            Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap = config
-                .getProxyConnectorAsMap();
+            Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap =
+                config.getProxyConnectorAsMap();
 
             for ( List<ProxyConnectorConfiguration> connectors : proxyConnectorMap.values() )
             {
@@ -400,13 +411,12 @@ public class DefaultArchivaConfiguration
         catch ( RegistryException e )
         {
             throw new ConfigurationRuntimeException(
-                                                     "Fatal error: Unable to find the built-in default configuration and load it into the registry",
-                                                     e );
+                "Fatal error: Unable to find the built-in default configuration and load it into the registry", e );
         }
         return registry.getSubset( KEY );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public synchronized void save( Configuration configuration )
         throws IndeterminateConfigurationException, RegistryException
     {
@@ -444,7 +454,7 @@ public class DefaultArchivaConfiguration
                 this.configuration = null;
 
                 throw new IndeterminateConfigurationException(
-                                                               "Configuration can not be saved when it is loaded from two sources" );
+                    "Configuration can not be saved when it is loaded from two sources" );
             }
         }
 
@@ -452,48 +462,50 @@ public class DefaultArchivaConfiguration
         escapeCronExpressions( configuration );
 
         // [MRM-661] Due to a bug in the modello registry writer, we need to take these out by hand. They'll be put back by the writer.
-        if ( configuration.getManagedRepositories().isEmpty() )
+        if ( configuration.getManagedRepositories().isEmpty() && section != null )
         {
             section.removeSubset( "managedRepositories" );
         }
-        if ( configuration.getRemoteRepositories().isEmpty() )
+        if ( configuration.getRemoteRepositories().isEmpty() && section != null )
         {
             section.removeSubset( "remoteRepositories" );
+
         }
-        if ( configuration.getProxyConnectors().isEmpty() )
+        if ( configuration.getProxyConnectors().isEmpty() && section != null )
         {
             section.removeSubset( "proxyConnectors" );
         }
-        if ( configuration.getNetworkProxies().isEmpty() )
+        if ( configuration.getNetworkProxies().isEmpty() && section != null )
         {
             section.removeSubset( "networkProxies" );
         }
-        if ( configuration.getLegacyArtifactPaths().isEmpty() )
+        if ( configuration.getLegacyArtifactPaths().isEmpty() && section != null )
         {
             section.removeSubset( "legacyArtifactPaths" );
         }
-        if ( configuration.getRepositoryGroups().isEmpty() )        	
+        if ( configuration.getRepositoryGroups().isEmpty() && section != null )
         {
             section.removeSubset( "repositoryGroups" );
         }
         if ( configuration.getRepositoryScanning() != null )
         {
-            if ( configuration.getRepositoryScanning().getKnownContentConsumers().isEmpty() )
+            if ( configuration.getRepositoryScanning().getKnownContentConsumers().isEmpty() && section != null )
             {
                 section.removeSubset( "repositoryScanning.knownContentConsumers" );
             }
-            if ( configuration.getRepositoryScanning().getInvalidContentConsumers().isEmpty() )
+            if ( configuration.getRepositoryScanning().getInvalidContentConsumers().isEmpty() && section != null )
             {
                 section.removeSubset( "repositoryScanning.invalidContentConsumers" );
             }
         }
         if ( configuration.getDatabaseScanning() != null )
         {
-            if ( configuration.getDatabaseScanning().getCleanupConsumers().isEmpty() )
+            if ( configuration.getDatabaseScanning().getCleanupConsumers().isEmpty() && section != null )
             {
                 section.removeSubset( "databaseScanning.cleanupConsumers" );
+
             }
-            if ( configuration.getDatabaseScanning().getUnprocessedConsumers().isEmpty() )
+            if ( configuration.getDatabaseScanning().getUnprocessedConsumers().isEmpty() && section != null )
             {
                 section.removeSubset( "databaseScanning.unprocessedConsumers" );
             }
@@ -532,12 +544,14 @@ public class DefaultArchivaConfiguration
         {
             if ( !writeFile( "alternative configuration", altConfigFilename, contents ) )
             {
-                throw new RegistryException( "Unable to create configuration file in either user ["
-                    + userConfigFilename + "] or alternative [" + altConfigFilename
-                    + "] locations on disk, usually happens when not allowed to write to those locations." );
+                throw new RegistryException(
+                    "Unable to create configuration file in either user [" + userConfigFilename + "] or alternative ["
+                        + altConfigFilename
+                        + "] locations on disk, usually happens when not allowed to write to those locations." );
             }
         }
 
+        ( (CommonsConfigurationRegistry) registry ).setProperties( contents );
 
         ( (CommonsConfigurationRegistry) registry ).initialize();
 
@@ -546,19 +560,19 @@ public class DefaultArchivaConfiguration
             addRegistryChangeListener( regListener );
         }
 
-
         triggerEvent( ConfigurationEvent.SAVED );
 
-        return registry.getSection( KEY + ".user" );
+        Registry section = registry.getSection( KEY + ".user" );
+        return section == null ? new CommonsConfigurationRegistry( new BaseConfiguration() ) : section;
     }
 
     /**
      * Attempts to write the contents to a file, if an IOException occurs, return false.
-     * 
+     * <p/>
      * The file will be created if the directory to the file exists, otherwise this will return false.
-     * 
+     *
      * @param filetype the filetype (freeform text) to use in logging messages when failure to write.
-     * @param path the path to write to.
+     * @param path     the path to write to.
      * @param contents the contents to write.
      * @return true if write successful.
      */
@@ -643,6 +657,9 @@ public class DefaultArchivaConfiguration
     @PostConstruct
     public void initialize()
     {
+
+        this.postPolicies = componentContainer.buildMapWithRole( PostDownloadPolicy.class );
+        this.prePolicies = componentContainer.buildMapWithRole( PreDownloadPolicy.class );
         // Resolve expressions in the userConfigFilename and altConfigFilename
         try
         {
@@ -654,10 +671,24 @@ public class DefaultArchivaConfiguration
         }
         catch ( EvaluatorException e )
         {
-            throw new RuntimeException( "Unable to evaluate expressions found in "
-                + "userConfigFilename or altConfigFilename." );
+            throw new RuntimeException(
+                "Unable to evaluate expressions found in " + "userConfigFilename or altConfigFilename." );
         }
         registry.addChangeListener( this );
+    }
+
+    public void reload()
+    {
+        this.configuration = null;
+        try
+        {
+            this.registry.initialize();
+        }
+        catch ( RegistryException e )
+        {
+            throw new ConfigurationRuntimeException( e.getMessage(), e );
+        }
+        this.initialize();
     }
 
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
@@ -672,10 +703,10 @@ public class DefaultArchivaConfiguration
 
     private String removeExpressions( String directory )
     {
-        String value = StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base",
-                                                                                                "${appserver.base}" ) );
-        value = StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home",
-                                                                                     "${appserver.home}" ) );
+        String value = StringUtils.replace( directory, "${appserver.base}",
+                                            registry.getString( "appserver.base", "${appserver.base}" ) );
+        value = StringUtils.replace( value, "${appserver.home}",
+                                     registry.getString( "appserver.home", "${appserver.home}" ) );
         return value;
     }
 
@@ -708,22 +739,23 @@ public class DefaultArchivaConfiguration
 
         return config;
     }
-    
+
     private Configuration checkRepositoryLocations( Configuration config )
     {
         // additional check for [MRM-789], ensure that the location of the default repositories 
         // are not installed in the server installation        
-        for( ManagedRepositoryConfiguration repo : (List<ManagedRepositoryConfiguration>) config.getManagedRepositories() )
+        for ( ManagedRepositoryConfiguration repo : (List<ManagedRepositoryConfiguration>) config.getManagedRepositories() )
         {
             String repoPath = repo.getLocation();
-            File repoLocation = new File( repoPath );            
-            
-            if( repoLocation.exists() && repoLocation.isDirectory() && !repoPath.endsWith( "data/repositories/" + repo.getId() ) )
+            File repoLocation = new File( repoPath );
+
+            if ( repoLocation.exists() && repoLocation.isDirectory() && !repoPath.endsWith(
+                "data/repositories/" + repo.getId() ) )
             {
                 repo.setLocation( repoPath + "/data/repositories/" + repo.getId() );
             }
         }
-        
+
         return config;
     }
 
@@ -740,5 +772,26 @@ public class DefaultArchivaConfiguration
     public boolean isDefaulted()
     {
         return this.isConfigurationDefaulted;
+    }
+
+    public Registry getRegistry()
+    {
+        return registry;
+    }
+
+    public void setRegistry( Registry registry )
+    {
+        this.registry = registry;
+    }
+
+
+    public void setUserConfigFilename( String userConfigFilename )
+    {
+        this.userConfigFilename = userConfigFilename;
+    }
+
+    public void setAltConfigFilename( String altConfigFilename )
+    {
+        this.altConfigFilename = altConfigFilename;
     }
 }

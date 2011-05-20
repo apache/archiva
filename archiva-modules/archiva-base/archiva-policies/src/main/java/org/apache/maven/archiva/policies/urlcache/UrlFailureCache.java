@@ -32,7 +32,7 @@ public interface UrlFailureCache
      * 
      * @param url the url to store. 
      */
-    public void cacheFailure( String url );
+    void cacheFailure( String url );
     
     /**
      * Test if a specified URL has failed before.
@@ -43,5 +43,5 @@ public interface UrlFailureCache
      * @param url the URL to test.
      * @return true if it has failed before, false if not.
      */
-    public boolean hasFailedBefore( String url );
+    boolean hasFailedBefore( String url );
 }

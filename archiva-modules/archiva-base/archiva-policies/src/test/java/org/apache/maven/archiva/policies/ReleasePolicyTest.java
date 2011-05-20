@@ -19,9 +19,16 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.Properties;
 
@@ -30,8 +37,10 @@ import java.util.Properties;
  *
  * @version $Id$
  */
+@RunWith( value = SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class ReleasePolicyTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private static final String PATH_VERSION_METADATA = "org/apache/archiva/archiva-testable/1.0-SNAPSHOT/maven-metadata.xml";
 
@@ -63,6 +72,17 @@ public class ReleasePolicyTest
 
     private long generatedLocalFileUpdateDelta = 0;
 
+
+    @Inject @Named(value = "preDownloadPolicy#releases")
+    PreDownloadPolicy preDownloadPolicy;
+
+    private PreDownloadPolicy lookupPolicy()
+        throws Exception
+    {
+        return preDownloadPolicy;
+    }
+
+    @Test
     public void testReleasePolicyDailyProjectMetadata()
         throws Exception
     {
@@ -79,6 +99,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.DAILY, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyDailyReleaseArtifact()
         throws Exception
     {
@@ -94,6 +115,7 @@ public class ReleasePolicyTest
         assertReleasesPolicyViolation( ReleasesPolicy.DAILY, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyDailySnapshotArtifact()
         throws Exception
     {
@@ -109,6 +131,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.DAILY, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyDailyVersionedMetadata()
         throws Exception
     {
@@ -125,6 +148,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.DAILY, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyRejectProjectMetadata()
         throws Exception
     {
@@ -133,6 +157,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyRejectReleaseArtifact()
         throws Exception
     {
@@ -140,6 +165,7 @@ public class ReleasePolicyTest
         assertReleasesPolicyViolation( ReleasesPolicy.NEVER, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyRejectSnapshotArtifact()
         throws Exception
     {
@@ -147,6 +173,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyRejectVersionedMetadata()
         throws Exception
     {
@@ -155,6 +182,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyHourlyProjectMetadata()
         throws Exception
     {
@@ -171,6 +199,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.HOURLY, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyHourlyReleaseArtifact()
         throws Exception
     {
@@ -186,6 +215,7 @@ public class ReleasePolicyTest
         assertReleasesPolicyViolation( ReleasesPolicy.HOURLY, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyHourlySnapshotArtifact()
         throws Exception
     {
@@ -201,6 +231,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.HOURLY, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyHourlyVersionedMetadata()
         throws Exception
     {
@@ -217,6 +248,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.HOURLY, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyAlwaysProjectMetadata()
         throws Exception
     {
@@ -225,6 +257,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyAlwaysReleaseArtifact()
         throws Exception
     {
@@ -232,6 +265,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyAlwaysSnapshotArtifact()
         throws Exception
     {
@@ -239,6 +273,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyAlwaysVersionedMetadata()
         throws Exception
     {
@@ -247,6 +282,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyOnceProjectMetadata()
         throws Exception
     {
@@ -255,6 +291,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.ONCE, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyOnceReleaseArtifact()
         throws Exception
     {
@@ -262,6 +299,7 @@ public class ReleasePolicyTest
         assertReleasesPolicyViolation( ReleasesPolicy.ONCE, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyOnceSnapshotArtifact()
         throws Exception
     {
@@ -269,6 +307,7 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.ONCE, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
+    @Test
     public void testReleasePolicyOnceVersionedMetadata()
         throws Exception
     {
@@ -294,7 +333,7 @@ public class ReleasePolicyTest
             request.setProperty( "version", "2.0" );
         }
 
-        File targetDir = getTestFile( "target/test-policy/" );
+        File targetDir = ChecksumPolicyTest.getTestFile( "target/test-policy/" );
         File localFile = new File( targetDir, path );
 
         if ( localFile.exists() )
@@ -326,16 +365,10 @@ public class ReleasePolicyTest
         }
     }
 
-    private PreDownloadPolicy lookupPolicy()
-        throws Exception
-    {
-        PreDownloadPolicy policy = (PreDownloadPolicy) lookup( PreDownloadPolicy.class.getName(), "releases" );
-        assertNotNull( policy );
-        return policy;
-    }
 
-    @Override
-    protected void setUp()
+
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();

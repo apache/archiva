@@ -20,17 +20,22 @@ package org.apache.maven.archiva.configuration;
  */
 
 import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Test the generated LegacyArtifactPath class from Modello. This is primarily to test the hand coded methods.
  * @since 1.1
  */
+@RunWith( JUnit4.class )
 public class LegacyArtifactPathTest
     extends TestCase
 {
 
     private LegacyArtifactPath legacyArtifactPath = new LegacyArtifactPath();
 
+    @Test
     public void testLegacyArtifactPathWithClassifierResolution()
     {
         legacyArtifactPath.setArtifact( "groupId:artifactId:version:classifier:type" );
@@ -42,7 +47,7 @@ public class LegacyArtifactPathTest
         assertEquals( "type", legacyArtifactPath.getType() );
     }
 
-
+    @Test
     public void testLegacyArtifactPathWithoutClassifierResolution()
     {
         legacyArtifactPath.setArtifact( "groupId:artifactId:version::type" );

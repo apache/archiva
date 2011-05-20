@@ -101,4 +101,9 @@ public class MockConfiguration
     {
         return false;
     }
+
+    public void reload()
+    {
+        // no op
+    }
 }
