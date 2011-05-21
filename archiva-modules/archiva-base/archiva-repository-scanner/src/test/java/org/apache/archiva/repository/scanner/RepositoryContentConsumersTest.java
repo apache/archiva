@@ -291,7 +291,7 @@ public class RepositoryContentConsumersTest
         knownControl.reset();
         invalidControl.reset();
 
-        File notIncludedTestFile = new File( "./target/test-repo/path/to/test-file.xml" );
+        File notIncludedTestFile = new File( "target/test-repo/path/to/test-file.xml" );
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
         selectedKnownConsumer.getExcludes();
