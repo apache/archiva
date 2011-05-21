@@ -75,8 +75,9 @@
                   <excludes>
                     <exclude>org.codehaus.plexus:plexus-container-default</exclude>
                     <exclude>org.codehaus.plexus:plexus-log4j-logging</exclude>
-                    <!--
+
                     <exclude>org.codehaus.plexus:plexus-spring</exclude>
+                    <!--
                     <exclude>org.codehaus.redback:plexus-spring</exclude>
                     -->
                     <exclude>commons-logging:commons-logging</exclude>
