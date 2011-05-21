@@ -540,8 +540,12 @@ public class DefaultArchivaConfiguration
         // UPDATE: Upgrading to commons-configuration 1.4 breaks half the unit tests. 2007-10-11 (joakime)
 
         String contents = "<configuration />";
+
+        String fileLocation = userConfigFilename;
+
         if ( !writeFile( "user configuration", userConfigFilename, contents ) )
         {
+            fileLocation = altConfigFilename;
             if ( !writeFile( "alternative configuration", altConfigFilename, contents ) )
             {
                 throw new RegistryException(
@@ -550,6 +554,11 @@ public class DefaultArchivaConfiguration
                         + "] locations on disk, usually happens when not allowed to write to those locations." );
             }
         }
+
+        // olamy hackish I know :-)
+        contents = "<configuration><xml fileName=\"" + fileLocation +"\" config-forceCreate=\"true\" config-name=\"org.apache.maven.archiva.user\"/>"
+                    + "</configuration>";
+
 
         ( (CommonsConfigurationRegistry) registry ).setProperties( contents );
 

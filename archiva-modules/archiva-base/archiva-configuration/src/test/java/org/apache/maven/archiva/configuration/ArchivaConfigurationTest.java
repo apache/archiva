@@ -351,7 +351,7 @@ public class ArchivaConfigurationTest
         assertFalse( userFile.exists() );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user-defaults" );
 
         archivaConfiguration.reload();
 
@@ -366,8 +366,8 @@ public class ArchivaConfigurationTest
         archivaConfiguration.addListener( listener );
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
-        // once from default creation, and again from manual call to save
-        control.setVoidCallable( 2 );
+
+        control.setVoidCallable( 1 );
 
         control.replay();
 
@@ -414,7 +414,7 @@ public class ArchivaConfigurationTest
         FileUtils.writeStringToFile( baseFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user-fallback" );
 
         archivaConfiguration.reload();
 
@@ -795,6 +795,8 @@ public class ArchivaConfigurationTest
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-remove-central" );
+
+        archivaConfiguration.reload();
 
         Configuration configuration = archivaConfiguration.getConfiguration();
 
