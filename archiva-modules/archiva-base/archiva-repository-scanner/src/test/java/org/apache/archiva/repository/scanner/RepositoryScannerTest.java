@@ -19,6 +19,19 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -29,30 +42,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
 /**
  * RepositoryScannerTest
  *
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
 public class RepositoryScannerTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
-     */
-    @Override
-    protected String getSpringConfigLocation()
-    {
-        return "org/apache/maven/archiva/repository/spring-context.xml";
-    }
+
+    @Inject
+    ApplicationContext applicationContext;
 
     protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
     {
@@ -73,11 +75,11 @@ public class RepositoryScannerTest
     }
 
     private static final String[] ARTIFACT_PATTERNS =
-        new String[]{"**/*.jar", "**/*.pom", "**/*.rar", "**/*.zip", "**/*.war", "**/*.tar.gz"};
+        new String[]{ "**/*.jar", "**/*.pom", "**/*.rar", "**/*.zip", "**/*.war", "**/*.tar.gz" };
 
     private ManagedRepositoryConfiguration createDefaultRepository()
     {
-        File repoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
+        File repoDir = new File( "src/test/repositories/default-repository" );
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -87,9 +89,9 @@ public class RepositoryScannerTest
     private ManagedRepositoryConfiguration createSimpleRepository()
         throws IOException, ParseException
     {
-        File srcDir = new File( getBasedir(), "src/test/repositories/simple-repository" );
+        File srcDir = new File( "src/test/repositories/simple-repository" );
 
-        File repoDir = getTestFile( "target/test-repos/simple-repository" );
+        File repoDir = new File( "target/test-repos/simple-repository" );
 
         FileUtils.deleteDirectory( repoDir );
 
@@ -114,7 +116,7 @@ public class RepositoryScannerTest
 
     private ManagedRepositoryConfiguration createLegacyRepository()
     {
-        File repoDir = new File( getBasedir(), "src/test/repositories/legacy-repository" );
+        File repoDir = new File( "src/test/repositories/legacy-repository" );
 
         assertTrue( "Legacy Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -128,15 +130,15 @@ public class RepositoryScannerTest
     {
         if ( actualCount < minimumHitCount )
         {
-            fail( "Minimum hit count on " + msg + " not satisfied.  Expected more than <" + minimumHitCount +
-                ">, but actually got <" + actualCount + ">." );
+            fail( "Minimum hit count on " + msg + " not satisfied.  Expected more than <" + minimumHitCount
+                      + ">, but actually got <" + actualCount + ">." );
         }
     }
 
     private RepositoryScanner lookupRepositoryScanner()
         throws Exception
     {
-        return (RepositoryScanner) lookup( RepositoryScanner.class );
+        return applicationContext.getBean( RepositoryScanner.class );
     }
 
     private List<String> getIgnoreList()
@@ -146,6 +148,7 @@ public class RepositoryScannerTest
         return ignores;
     }
 
+    @Test
     public void testTimestampRepositoryScanner()
         throws Exception
     {
@@ -163,7 +166,7 @@ public class RepositoryScannerTest
         RepositoryScanner scanner = lookupRepositoryScanner();
 
         RepositoryScanStatistics stats = scanner.scan( repository, knownConsumers, invalidConsumers, getIgnoreList(),
-                                                          getTimestampAsMillis( "20061101.000000" ) );
+                                                       getTimestampAsMillis( "20061101.000000" ) );
 
         assertNotNull( "Stats should not be null.", stats );
         assertEquals( "Stats.totalFileCount", 4, stats.getTotalFileCount() );
@@ -172,6 +175,7 @@ public class RepositoryScannerTest
         assertEquals( "Processed Count (of invalid items)", 1, badconsumer.getProcessCount() );
     }
 
+    @Test
     public void testTimestampRepositoryScannerFreshScan()
         throws Exception
     {
@@ -197,6 +201,7 @@ public class RepositoryScannerTest
         assertEquals( "Processed Count (of invalid items)", 1, badconsumer.getProcessCount() );
     }
 
+    @Test
     public void testTimestampRepositoryScannerProcessUnmodified()
         throws Exception
     {
@@ -214,7 +219,7 @@ public class RepositoryScannerTest
 
         RepositoryScanner scanner = lookupRepositoryScanner();
         RepositoryScanStatistics stats = scanner.scan( repository, knownConsumers, invalidConsumers, getIgnoreList(),
-                                                          getTimestampAsMillis( "20061101.000000" ) );
+                                                       getTimestampAsMillis( "20061101.000000" ) );
 
         assertNotNull( "Stats should not be null.", stats );
         assertEquals( "Stats.totalFileCount", 4, stats.getTotalFileCount() );
@@ -223,6 +228,7 @@ public class RepositoryScannerTest
         assertEquals( "Processed Count (of invalid items)", 1, badconsumer.getProcessCount() );
     }
 
+    @Test
     public void testDefaultRepositoryScanner()
         throws Exception
     {
@@ -230,8 +236,9 @@ public class RepositoryScannerTest
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();
-        consumer.setIncludes( new String[]{"**/*.jar", "**/*.war", "**/*.pom", "**/maven-metadata.xml", "**/*-site.xml",
-            "**/*.zip", "**/*.tar.gz", "**/*.sha1", "**/*.md5"} );
+        consumer.setIncludes(
+            new String[]{ "**/*.jar", "**/*.war", "**/*.pom", "**/maven-metadata.xml", "**/*-site.xml", "**/*.zip",
+                "**/*.tar.gz", "**/*.sha1", "**/*.md5" } );
         knownConsumers.add( consumer );
 
         List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
@@ -248,6 +255,7 @@ public class RepositoryScannerTest
         assertEquals( "Processed Count (of invalid items)", 6, badconsumer.getProcessCount() );
     }
 
+    @Test
     public void testDefaultRepositoryArtifactScanner()
         throws Exception
     {
@@ -305,6 +313,7 @@ public class RepositoryScannerTest
         assertMinimumHits( "Processed Count", actualArtifactPaths.size(), consumer.getProcessCount() );
     }
 
+    @Test
     public void testDefaultRepositoryMetadataScanner()
         throws Exception
     {
@@ -325,7 +334,7 @@ public class RepositoryScannerTest
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer knownConsumer = new KnownScanConsumer();
-        knownConsumer.setIncludes( new String[]{"**/maven-metadata*.xml"} );
+        knownConsumer.setIncludes( new String[]{ "**/maven-metadata*.xml" } );
         knownConsumers.add( knownConsumer );
 
         List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
@@ -341,6 +350,7 @@ public class RepositoryScannerTest
         assertMinimumHits( "Processed Count", actualMetadataPaths.size(), knownConsumer.getProcessCount() );
     }
 
+    @Test
     public void testDefaultRepositoryProjectScanner()
         throws Exception
     {
@@ -361,7 +371,7 @@ public class RepositoryScannerTest
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();
-        consumer.setIncludes( new String[]{"**/*.pom"} );
+        consumer.setIncludes( new String[]{ "**/*.pom" } );
         knownConsumers.add( consumer );
 
         List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
@@ -377,6 +387,7 @@ public class RepositoryScannerTest
         assertMinimumHits( "Processed Count", actualProjectPaths.size(), consumer.getProcessCount() );
     }
 
+    @Test
     public void testLegacyRepositoryArtifactScanner()
         throws Exception
     {

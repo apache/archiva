@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+ * plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
  *                   role-hint="snapshots"
  */
 @Service("preDownloadPolicy#snapshots")

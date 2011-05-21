@@ -32,26 +32,31 @@ import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.codehaus.plexus.util.DirectoryWalker;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import javax.swing.*;
 
 /**
  * DefaultRepositoryScanner
  *
  * @version $Id$
- * @plexus.component role="org.apache.archiva.repository.scanner.RepositoryScanner"
+ * plexus.component role="org.apache.archiva.repository.scanner.RepositoryScanner"
  */
+@Service("repositoryScanner#default")
 public class DefaultRepositoryScanner
     implements RepositoryScanner
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private FileTypes filetypes;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryContentConsumers consumerUtil;
 
     private Set<RepositoryScannerInstance> inProgressScans = new LinkedHashSet<RepositoryScannerInstance>();

@@ -36,7 +36,7 @@ import javax.inject.Inject;
  * {@link PreDownloadPolicy} to check if the requested url has failed before.
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+ * plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
  * role-hint="cache-failures"
  */
 @Service("preDownloadPolicy#cache-failures")
@@ -58,7 +58,7 @@ public class CachedFailuresPolicy
     public static final String YES = "yes";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     @Inject
     private UrlFailureCache urlFailureCache;

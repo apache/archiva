@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+ * plexus.component role="org.apache.maven.archiva.policies.PostDownloadPolicy"
  *                   role-hint="checksum"
  */
 @Service("postDownloadPolicy#checksum")

@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 /**
  * PropagateErrorsPolicy - a policy applied on error to determine how to treat the error.
  *
- * @plexus.component role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
+ * plexus.component role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
  *                   role-hint="propagate-errors-on-update"
  */
 @Service("downloadErrorPolicy#propagate-errors-on-update")

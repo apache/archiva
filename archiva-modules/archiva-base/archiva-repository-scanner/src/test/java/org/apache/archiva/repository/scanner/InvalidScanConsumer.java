@@ -37,7 +37,7 @@ public class InvalidScanConsumer
     implements InvalidRepositoryContentConsumer
 {
     /**
-     * @plexus.configuration default-value="unset-id"
+     * plexus.configuration default-value="unset-id"
      */
     private String id = "unset-id";
     
@@ -110,5 +110,10 @@ public class InvalidScanConsumer
     public void setProcessCount( int processCount )
     {
         this.processCount = processCount;
+    }
+
+    public void setId( String id )
+    {
+        this.id = id;
     }
 }

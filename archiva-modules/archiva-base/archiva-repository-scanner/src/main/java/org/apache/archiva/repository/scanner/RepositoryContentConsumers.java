@@ -19,13 +19,6 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
@@ -43,27 +36,35 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- * RepositoryContentConsumerUtil 
+ * RepositoryContentConsumerUtil
  *
  * @version $Id$
  */
-public class RepositoryContentConsumers implements ApplicationContextAware
+public class RepositoryContentConsumers
+    implements ApplicationContextAware
 {
     private ApplicationContext applicationContext;
-    
+
     private ArchivaConfiguration archivaConfiguration;
 
     private List<KnownRepositoryContentConsumer> selectedKnownConsumers;
 
     private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
 
-    public RepositoryContentConsumers(ArchivaConfiguration archivaConfiguration)
+    public RepositoryContentConsumers( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
     }
 
-    public void setApplicationContext(ApplicationContext applicationContext)
+    public void setApplicationContext( ApplicationContext applicationContext )
         throws BeansException
     {
         this.applicationContext = applicationContext;
@@ -74,12 +75,12 @@ public class RepositoryContentConsumers implements ApplicationContextAware
      * Get the list of Ids associated with those {@link KnownRepositoryContentConsumer} that have
      * been selected in the configuration to execute.
      * </p>
-     * 
+     * <p/>
      * <p>
      * NOTE: This list can be larger and contain entries that might not exist or be available
      * in the classpath, or as a component.
      * </p>
-     * 
+     *
      * @return the list of consumer ids that have been selected by the configuration.
      */
     public List<String> getSelectedKnownConsumerIds()
@@ -93,12 +94,12 @@ public class RepositoryContentConsumers implements ApplicationContextAware
      * Get the list of Ids associated with those {@link InvalidRepositoryContentConsumer} that have
      * been selected in the configuration to execute.
      * </p>
-     * 
+     * <p/>
      * <p>
      * NOTE: This list can be larger and contain entries that might not exist or be available
      * in the classpath, or as a component.
      * </p>
-     * 
+     *
      * @return the list of consumer ids that have been selected by the configuration.
      */
     public List<String> getSelectedInvalidConsumerIds()
@@ -109,8 +110,8 @@ public class RepositoryContentConsumers implements ApplicationContextAware
 
     /**
      * Get the map of {@link String} ids to {@link KnownRepositoryContentConsumer} implementations,
-     * for those consumers that have been selected according to the active configuration. 
-     * 
+     * for those consumers that have been selected according to the active configuration.
+     *
      * @return the map of String ids to {@link KnownRepositoryContentConsumer} objects.
      */
     public Map<String, KnownRepositoryContentConsumer> getSelectedKnownConsumersMap()
@@ -127,13 +128,14 @@ public class RepositoryContentConsumers implements ApplicationContextAware
 
     /**
      * Get the map of {@link String} ids to {@link InvalidRepositoryContentConsumer} implementations,
-     * for those consumers that have been selected according to the active configuration. 
-     * 
+     * for those consumers that have been selected according to the active configuration.
+     *
      * @return the map of String ids to {@link InvalidRepositoryContentConsumer} objects.
      */
     public Map<String, InvalidRepositoryContentConsumer> getSelectedInvalidConsumersMap()
     {
-        Map<String, InvalidRepositoryContentConsumer> consumerMap = new HashMap<String, InvalidRepositoryContentConsumer>();
+        Map<String, InvalidRepositoryContentConsumer> consumerMap =
+            new HashMap<String, InvalidRepositoryContentConsumer>();
 
         for ( InvalidRepositoryContentConsumer consumer : getSelectedInvalidConsumers() )
         {
@@ -146,7 +148,7 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     /**
      * Get the list of {@link KnownRepositoryContentConsumer} objects that are
      * selected according to the active configuration.
-     * 
+     *
      * @return the list of {@link KnownRepositoryContentConsumer} that have been selected
      *         by the active configuration.
      */
@@ -173,7 +175,7 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     /**
      * Get the list of {@link InvalidRepositoryContentConsumer} objects that are
      * selected according to the active configuration.
-     * 
+     *
      * @return the list of {@link InvalidRepositoryContentConsumer} that have been selected
      *         by the active configuration.
      */
@@ -200,58 +202,61 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     /**
      * Get the list of {@link KnownRepositoryContentConsumer} objects that are
      * available and present in the classpath and as components in the IoC.
-     * 
-     * @return the list of all available {@link KnownRepositoryContentConsumer} present in the classpath 
+     *
+     * @return the list of all available {@link KnownRepositoryContentConsumer} present in the classpath
      *         and as a component in the IoC.
      */
     public List<KnownRepositoryContentConsumer> getAvailableKnownConsumers()
     {
-        return new ArrayList<KnownRepositoryContentConsumer>( applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class ).values() );
+        return new ArrayList<KnownRepositoryContentConsumer>(
+            applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class ).values() );
     }
 
     /**
      * Get the list of {@link InvalidRepositoryContentConsumer} objects that are
      * available and present in the classpath and as components in the IoC.
-     * 
-     * @return the list of all available {@link InvalidRepositoryContentConsumer} present in the classpath 
+     *
+     * @return the list of all available {@link InvalidRepositoryContentConsumer} present in the classpath
      *         and as a component in the IoC.
      */
     public List<InvalidRepositoryContentConsumer> getAvailableInvalidConsumers()
     {
-        return new ArrayList<InvalidRepositoryContentConsumer>( applicationContext.getBeansOfType( InvalidRepositoryContentConsumer.class ).values() );
+        return new ArrayList<InvalidRepositoryContentConsumer>(
+            applicationContext.getBeansOfType( InvalidRepositoryContentConsumer.class ).values() );
     }
 
     /**
-     * A convienence method to execute all of the active selected consumers for a 
+     * A convienence method to execute all of the active selected consumers for a
      * particular arbitrary file.
      * NOTE: Make sure that there is no repository scanning task executing before invoking this so as to prevent
      * the index writer/reader of the current index-content consumer executing from getting closed. For an example,
      * see ArchivaDavResource#executeConsumers( File ).
-     * 
-     * @param repository the repository configuration to use.
-     * @param localFile the local file to execute the consumers against.
+     *
+     * @param repository             the repository configuration to use.
+     * @param localFile              the local file to execute the consumers against.
      * @param updateRelatedArtifacts TODO
      */
-    public void executeConsumers( ManagedRepositoryConfiguration repository, File localFile, boolean updateRelatedArtifacts )
+    public void executeConsumers( ManagedRepositoryConfiguration repository, File localFile,
+                                  boolean updateRelatedArtifacts )
     {
         // Run the repository consumers
         try
-        {   
+        {
             Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime(), false );
 
             List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
 
             // MRM-1212/MRM-1197 
             // - do not create missing/fix invalid checksums and update metadata when deploying from webdav since these are uploaded by maven
-            if( updateRelatedArtifacts == false )
+            if ( updateRelatedArtifacts == false )
             {
                 List<KnownRepositoryContentConsumer> clone = new ArrayList<KnownRepositoryContentConsumer>();
                 clone.addAll( selectedKnownConsumers );
 
-                for( KnownRepositoryContentConsumer consumer : clone )
+                for ( KnownRepositoryContentConsumer consumer : clone )
                 {
-                    if( consumer.getId().equals( "create-missing-checksums" ) ||
-                                    consumer.getId().equals( "metadata-updater" ) )
+                    if ( consumer.getId().equals( "create-missing-checksums" ) || consumer.getId().equals(
+                        "metadata-updater" ) )
                     {
                         selectedKnownConsumers.remove( consumer );
                     }
@@ -272,7 +277,7 @@ public class RepositoryContentConsumers implements ApplicationContextAware
             ConsumerProcessFileClosure closure = new ConsumerProcessFileClosure();
             closure.setBasefile( baseFile );
             closure.setExecuteOnEntireRepo( false );
-            
+
             Closure processIfWanted = IfClosure.getInstance( predicate, closure );
 
             CollectionUtils.forAllDo( selectedKnownConsumers, processIfWanted );
@@ -305,12 +310,12 @@ public class RepositoryContentConsumers implements ApplicationContextAware
     {
         this.selectedInvalidConsumers = selectedInvalidConsumers;
     }
-    
+
     protected Date getStartTime()
-    {   
+    {
         return new Date( System.currentTimeMillis() );
     }
-    
+
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;

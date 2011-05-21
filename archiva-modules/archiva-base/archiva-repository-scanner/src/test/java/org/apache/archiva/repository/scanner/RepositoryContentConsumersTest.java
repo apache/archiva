@@ -19,6 +19,29 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.commons.lang.SystemUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.easymock.MockControl;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
+import org.springframework.core.io.Resource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -30,41 +53,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.SystemUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.easymock.MockControl;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.core.io.Resource;
-
 /**
  * RepositoryContentConsumersTest
  *
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class RepositoryContentConsumersTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
-     */
-    @Override
-    protected String getSpringConfigLocation()
-    {
-        return "org/apache/maven/archiva/repository/spring-context.xml";
-    }
+
+    @Inject
+    ApplicationContext applicationContext;
 
     protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
     {
@@ -87,42 +88,43 @@ public class RepositoryContentConsumersTest
     private RepositoryContentConsumers lookupRepositoryConsumers()
         throws Exception
     {
-        ArchivaConfiguration configuration = (ArchivaConfiguration)lookup(ArchivaConfiguration.class);
 
-        RepositoryContentConsumers consumerUtilStub = new RepositoryContentConsumersStub(configuration);
-               
-        RepositoryContentConsumers consumerUtil = (RepositoryContentConsumers) lookup( RepositoryContentConsumers.class
-                                                                                           .getName() );
-        ApplicationContext context = new MockApplicationContext(consumerUtil.getAvailableKnownConsumers(), consumerUtil.getAvailableInvalidConsumers());
+        ArchivaConfiguration configuration =
+            applicationContext.getBean( "archivaConfiguration#test-conf", ArchivaConfiguration.class );
 
-        consumerUtilStub.setApplicationContext(context);
+        RepositoryContentConsumers consumerUtilStub = new RepositoryContentConsumersStub( configuration );
+
+        RepositoryContentConsumers consumerUtil =
+            (RepositoryContentConsumers) applicationContext.getBean( "repositoryContentConsumers#test",
+                                                                     RepositoryContentConsumers.class );
+        ApplicationContext context = new MockApplicationContext( consumerUtil.getAvailableKnownConsumers(),
+                                                                 consumerUtil.getAvailableInvalidConsumers() );
+
+        consumerUtilStub.setApplicationContext( context );
         consumerUtilStub.setSelectedInvalidConsumers( consumerUtil.getSelectedInvalidConsumers() );
-        consumerUtilStub.setSelectedKnownConsumers( consumerUtil.getSelectedKnownConsumers() );        
+        consumerUtilStub.setSelectedKnownConsumers( consumerUtil.getSelectedKnownConsumers() );
         consumerUtilStub.setArchivaConfiguration( configuration );
-        
+
         assertNotNull( "RepositoryContentConsumers should not be null.", consumerUtilStub );
-        
+
         return consumerUtilStub;
     }
 
+    @Test
     public void testGetSelectedKnownIds()
         throws Exception
     {
         RepositoryContentConsumers consumerutil = lookupRepositoryConsumers();
 
-        String expectedKnownIds[] = new String[] {
-            "update-db-artifact",
-            "create-missing-checksums",
-            "update-db-repository-metadata",
-            "validate-checksum",
-            "validate-signature",
-            "index-content",
-            "auto-remove",
-            "auto-rename" };
-
+        String expectedKnownIds[] =
+            new String[]{ "update-db-artifact", "create-missing-checksums", "update-db-repository-metadata",
+                "validate-checksum", "validate-signature", "index-content", "auto-remove", "auto-rename" };
+//update-db-artifact, create-missing-checksums, update-db-repository-metadata,
+//validate-checksum, validate-signature, index-content, auto-remove, auto-rename,
+//metadata-updater
         List<String> knownConsumers = consumerutil.getSelectedKnownConsumerIds();
         assertNotNull( "Known Consumer IDs should not be null", knownConsumers );
-        assertEquals( "Known Consumer IDs.size", expectedKnownIds.length, knownConsumers.size() );
+        assertEquals( "Known Consumer IDs.size " + knownConsumers, expectedKnownIds.length, knownConsumers.size() );
 
         for ( String expectedId : expectedKnownIds )
         {
@@ -130,12 +132,13 @@ public class RepositoryContentConsumersTest
         }
     }
 
+    @Test
     public void testGetSelectedInvalidIds()
         throws Exception
     {
         RepositoryContentConsumers consumerutil = lookupRepositoryConsumers();
 
-        String expectedInvalidIds[] = new String[] { "update-db-bad-content" };
+        String expectedInvalidIds[] = new String[]{ "update-db-bad-content" };
 
         List<String> invalidConsumers = consumerutil.getSelectedInvalidConsumerIds();
         assertNotNull( "Invalid Consumer IDs should not be null", invalidConsumers );
@@ -147,19 +150,15 @@ public class RepositoryContentConsumersTest
         }
     }
 
+    @Test
     public void testGetSelectedKnownConsumerMap()
         throws Exception
     {
         RepositoryContentConsumers consumerutil = lookupRepositoryConsumers();
 
-        String expectedSelectedKnownIds[] = new String[] {
-            "update-db-artifact",
-            "create-missing-checksums",
-            "update-db-repository-metadata",
-            "validate-checksum",
-            "index-content",
-            "auto-remove",
-            "auto-rename" };
+        String expectedSelectedKnownIds[] =
+            new String[]{ "update-db-artifact", "create-missing-checksums", "update-db-repository-metadata",
+                "validate-checksum", "index-content", "auto-remove", "auto-rename" };
 
         Map<String, KnownRepositoryContentConsumer> knownConsumerMap = consumerutil.getSelectedKnownConsumersMap();
         assertNotNull( "Known Consumer Map should not be null", knownConsumerMap );
@@ -173,15 +172,16 @@ public class RepositoryContentConsumersTest
         }
     }
 
+    @Test
     public void testGetSelectedInvalidConsumerMap()
         throws Exception
     {
         RepositoryContentConsumers consumerutil = lookupRepositoryConsumers();
 
-        String expectedSelectedInvalidIds[] = new String[] { "update-db-bad-content" };
+        String expectedSelectedInvalidIds[] = new String[]{ "update-db-bad-content" };
 
-        Map<String, InvalidRepositoryContentConsumer> invalidConsumerMap = consumerutil
-            .getSelectedInvalidConsumersMap();
+        Map<String, InvalidRepositoryContentConsumer> invalidConsumerMap =
+            consumerutil.getSelectedInvalidConsumersMap();
         assertNotNull( "Invalid Consumer Map should not be null", invalidConsumerMap );
         assertEquals( "Invalid Consumer Map.size", expectedSelectedInvalidIds.length, invalidConsumerMap.size() );
 
@@ -193,20 +193,15 @@ public class RepositoryContentConsumersTest
         }
     }
 
+    @Test
     public void testGetAvailableKnownList()
         throws Exception
     {
         RepositoryContentConsumers consumerutil = lookupRepositoryConsumers();
 
-        String expectedKnownIds[] = new String[] {
-            "update-db-artifact",
-            "create-missing-checksums",
-            "update-db-repository-metadata",
-            "validate-checksum",
-            "index-content",
-            "auto-remove",
-            "auto-rename",
-            "available-but-unselected" };
+        String expectedKnownIds[] =
+            new String[]{ "update-db-artifact", "create-missing-checksums", "update-db-repository-metadata",
+                "validate-checksum", "index-content", "auto-remove", "auto-rename", "available-but-unselected" };
 
         List<KnownRepositoryContentConsumer> knownConsumers = consumerutil.getAvailableKnownConsumers();
         assertNotNull( "known consumers should not be null.", knownConsumers );
@@ -220,12 +215,13 @@ public class RepositoryContentConsumersTest
         }
     }
 
+    @Test
     public void testGetAvailableInvalidList()
         throws Exception
     {
         RepositoryContentConsumers consumerutil = lookupRepositoryConsumers();
 
-        String expectedInvalidIds[] = new String[] { "update-db-bad-content", "move-to-trash-then-notify" };
+        String expectedInvalidIds[] = new String[]{ "update-db-bad-content", "move-to-trash-then-notify" };
 
         List<InvalidRepositoryContentConsumer> invalidConsumers = consumerutil.getAvailableInvalidConsumers();
         assertNotNull( "invalid consumers should not be null.", invalidConsumers );
@@ -234,12 +230,13 @@ public class RepositoryContentConsumersTest
         List<String> expectedIds = Arrays.asList( expectedInvalidIds );
         for ( InvalidRepositoryContentConsumer consumer : invalidConsumers )
         {
-            assertTrue( "Consumer [" + consumer.getId()
-                + "] returned by .getAvailableInvalidConsumers() is unexpected.", expectedIds.contains( consumer
-                .getId() ) );
+            assertTrue(
+                "Consumer [" + consumer.getId() + "] returned by .getAvailableInvalidConsumers() is unexpected.",
+                expectedIds.contains( consumer.getId() ) );
         }
     }
 
+    @Test
     public void testExecution()
         throws Exception
     {
@@ -250,7 +247,8 @@ public class RepositoryContentConsumersTest
             (KnownRepositoryContentConsumer) MockControl.createNiceControl(
                 KnownRepositoryContentConsumer.class ).getMock();
 
-        consumers.setApplicationContext(new MockApplicationContext(Arrays.asList( selectedKnownConsumer, unselectedKnownConsumer ), null));
+        consumers.setApplicationContext(
+            new MockApplicationContext( Arrays.asList( selectedKnownConsumer, unselectedKnownConsumer ), null ) );
 
         consumers.setSelectedKnownConsumers( Collections.singletonList( selectedKnownConsumer ) );
 
@@ -261,12 +259,13 @@ public class RepositoryContentConsumersTest
             (InvalidRepositoryContentConsumer) MockControl.createControl(
                 InvalidRepositoryContentConsumer.class ).getMock();
 
-        consumers.setApplicationContext( new MockApplicationContext(null, Arrays.asList( selectedInvalidConsumer, unselectedInvalidConsumer )));
+        consumers.setApplicationContext(
+            new MockApplicationContext( null, Arrays.asList( selectedInvalidConsumer, unselectedInvalidConsumer ) ) );
 
         consumers.setSelectedInvalidConsumers( Collections.singletonList( selectedInvalidConsumer ) );
 
-        ManagedRepositoryConfiguration repo = createRepository( "id", "name", getTestFile( "target/test-repo" ) );
-        File testFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
+        ManagedRepositoryConfiguration repo = createRepository( "id", "name", new File( "target/test-repo" ) );
+        File testFile = new File( "target/test-repo/path/to/test-file.txt" );
 
         Date startTime = new Date( System.currentTimeMillis() );
         startTime.setTime( 12345678 );
@@ -292,7 +291,7 @@ public class RepositoryContentConsumersTest
         knownControl.reset();
         invalidControl.reset();
 
-        File notIncludedTestFile = getTestFile( "target/test-repo/path/to/test-file.xml" );
+        File notIncludedTestFile = new File( "./target/test-repo/path/to/test-file.xml" );
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
         selectedKnownConsumer.getExcludes();
@@ -317,7 +316,7 @@ public class RepositoryContentConsumersTest
         knownControl.reset();
         invalidControl.reset();
 
-        File excludedTestFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
+        File excludedTestFile = new File( "target/test-repo/path/to/test-file.txt" );
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
         selectedKnownConsumer.getExcludes();
@@ -351,171 +350,216 @@ public class RepositoryContentConsumersTest
         return path;
     }
 
-    private static Map convertToMap(List objects)
+    private static Map convertToMap( List objects )
     {
         HashMap map = new HashMap();
-        for (Object o : objects)
+        for ( Object o : objects )
         {
-            map.put(o, o);
+            map.put( o, o );
         }
         return map;
     }
 
-    public class MockApplicationContext implements ApplicationContext
+    public class MockApplicationContext
+        implements ApplicationContext
     {
         private List<KnownRepositoryContentConsumer> knownRepositoryContentConsumer;
 
         private List<InvalidRepositoryContentConsumer> invalidRepositoryContentConsumers;
 
-        public MockApplicationContext(List<KnownRepositoryContentConsumer> knownRepositoryContentConsumer, List<InvalidRepositoryContentConsumer> invalidRepositoryContentConsumers)
+        public MockApplicationContext( List<KnownRepositoryContentConsumer> knownRepositoryContentConsumer,
+                                       List<InvalidRepositoryContentConsumer> invalidRepositoryContentConsumers )
         {
             this.knownRepositoryContentConsumer = knownRepositoryContentConsumer;
             this.invalidRepositoryContentConsumers = invalidRepositoryContentConsumers;
         }
 
-        public AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public AutowireCapableBeanFactory getAutowireCapableBeanFactory()
+            throws IllegalStateException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getDisplayName() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getDisplayName()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getId() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getId()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public ApplicationContext getParent() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public ApplicationContext getParent()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public long getStartupDate() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public long getStartupDate()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean containsBeanDefinition(String beanName) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean containsBeanDefinition( String beanName )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public int getBeanDefinitionCount() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public int getBeanDefinitionCount()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String[] getBeanDefinitionNames() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String[] getBeanDefinitionNames()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String[] getBeanNamesForType(Class type) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String[] getBeanNamesForType( Class type )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String[] getBeanNamesForType(Class type, boolean includeNonSingletons, boolean allowEagerInit) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String[] getBeanNamesForType( Class type, boolean includeNonSingletons, boolean allowEagerInit )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Map getBeansOfType(Class type) throws BeansException {
-            if (type == KnownRepositoryContentConsumer.class)
+        public Map getBeansOfType( Class type )
+            throws BeansException
+        {
+            if ( type == KnownRepositoryContentConsumer.class )
             {
-                return convertToMap(knownRepositoryContentConsumer);
+                return convertToMap( knownRepositoryContentConsumer );
             }
-            if (type == InvalidRepositoryContentConsumer.class)
+            if ( type == InvalidRepositoryContentConsumer.class )
             {
-                return convertToMap(invalidRepositoryContentConsumers);
+                return convertToMap( invalidRepositoryContentConsumers );
             }
-            throw new UnsupportedOperationException("Should not have been called");
+            throw new UnsupportedOperationException( "Should not have been called" );
         }
 
-        public Map getBeansOfType(Class type, boolean includeNonSingletons, boolean allowEagerInit) throws BeansException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Map getBeansOfType( Class type, boolean includeNonSingletons, boolean allowEagerInit )
+            throws BeansException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean containsBean(String name) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean containsBean( String name )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String[] getAliases(String name) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String[] getAliases( String name )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Object getBean(String name) throws BeansException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Object getBean( String name )
+            throws BeansException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Object getBean(String name, Class requiredType) throws BeansException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Object getBean( String name, Class requiredType )
+            throws BeansException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Object getBean(String name, Object[] args) throws BeansException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Object getBean( String name, Object[] args )
+            throws BeansException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Class getType(String name) throws NoSuchBeanDefinitionException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Class getType( String name )
+            throws NoSuchBeanDefinitionException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isPrototype(String name) throws NoSuchBeanDefinitionException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean isPrototype( String name )
+            throws NoSuchBeanDefinitionException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean isSingleton( String name )
+            throws NoSuchBeanDefinitionException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isTypeMatch(String name, Class targetType) throws NoSuchBeanDefinitionException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean isTypeMatch( String name, Class targetType )
+            throws NoSuchBeanDefinitionException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean containsLocalBean(String name) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean containsLocalBean( String name )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public BeanFactory getParentBeanFactory() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public BeanFactory getParentBeanFactory()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getMessage( String code, Object[] args, String defaultMessage, Locale locale )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getMessage( String code, Object[] args, Locale locale )
+            throws NoSuchMessageException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getMessage( MessageSourceResolvable resolvable, Locale locale )
+            throws NoSuchMessageException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public void publishEvent(ApplicationEvent event) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public void publishEvent( ApplicationEvent event )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Resource[] getResources(String locationPattern) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Resource[] getResources( String locationPattern )
+            throws IOException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public ClassLoader getClassLoader() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public ClassLoader getClassLoader()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Resource getResource(String location) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Resource getResource( String location )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public <T> T getBean( Class<T> tClass )
             throws BeansException
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public Map<String, Object> getBeansWithAnnotation( Class<? extends Annotation> aClass )
             throws BeansException
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
     }
 }

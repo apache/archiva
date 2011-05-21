@@ -32,7 +32,7 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *                   role-hint="sample-known"
  */
 public class SampleKnownConsumer
@@ -40,7 +40,7 @@ public class SampleKnownConsumer
     implements KnownRepositoryContentConsumer
 {
     /**
-     * @plexus.configuration default-value="unset-id"
+     * plexus.configuration default-value="unset-id"
      */
     private String id = "unset-id";
     
@@ -101,5 +101,10 @@ public class SampleKnownConsumer
     public boolean isPermanent()
     {
         return false;
+    }
+
+    public void setId( String id )
+    {
+        this.id = id;
     }
 }
