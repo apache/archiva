@@ -41,12 +41,16 @@
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>configured</role-hint>
-      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <implementation>org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry</implementation>
       <configuration>
         <properties>
+        <![CDATA[
+      <configuration>
           <system/>
           <xml fileName="${basedir}/src/test/resources/scanner-archiva.xml"
                config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+      </configuration>
+        ]]>
         </properties>
       </configuration>
     </component>
