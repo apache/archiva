@@ -29,9 +29,7 @@
 
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.maven.archiva.configuration"/>
-<<<<<<< HEAD
-=======
   <!-- olamy could be removed as only here temporary for plexus-spring -->
   <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
->>>>>>> fae223b927f9c5616587cd0aa9b759856e779bed
+
 </beans>
