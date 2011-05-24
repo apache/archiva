@@ -35,7 +35,6 @@
     <module>archiva-core-consumers</module>
     <module>archiva-lucene-consumers</module>
     <module>archiva-signature-consumers</module>
-    <module>archiva-dependency-tree-consumer</module>
     <module>archiva-metadata-consumer</module>
   </modules>
 
