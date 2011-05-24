@@ -167,6 +167,7 @@ public abstract class AbstractRepositoryTest
         selectValue( "connector.proxyId", networkProxy );
         selectValue( "connector.sourceRepoId", managedRepo );
         selectValue( "connector.targetRepoId", remoteRepo );
+        clickButtonWithValue( "Add Proxy Connector" );
     }
 
     public void deleteProxyConnector()

@@ -247,6 +247,15 @@ public class RepositoryTest
         addRemoteRepository( "remoterepo", "Remote Repository Sample", "", "", "", "", "Maven 2.x Repository" );
         assertTextPresent( "You must enter a url." );
     }
+    
+    @Test( dependsOnMethods = { "testAddRemoteRepoNullURL" } )
+    public void testAddProxyConnectorValidValues() throws Exception
+    {
+        getSelenium().open( "/archiva/admin/addProxyConnector.action" );
+        addProxyConnector( "(direct connection)", "internal", "remoterepo" );
+        assertTextPresent( "remoterepo" );
+        assertTextPresent( "Remote Repository Sample" );
+    }
 
     @Test( dependsOnMethods = { "testDeleteManageRepo" } )
     public void testAddRemoteRepoValidValues()
