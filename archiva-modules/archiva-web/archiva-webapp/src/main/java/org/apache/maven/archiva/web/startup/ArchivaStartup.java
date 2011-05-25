@@ -19,7 +19,6 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
-import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
@@ -34,9 +33,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import java.lang.reflect.Field;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.lang.reflect.Field;
+import java.util.concurrent.ExecutorService;
 
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order.
