@@ -19,12 +19,6 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -34,8 +28,12 @@ import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
-import javax.swing.*;
 
 /**
  * DefaultRepositoryScanner
