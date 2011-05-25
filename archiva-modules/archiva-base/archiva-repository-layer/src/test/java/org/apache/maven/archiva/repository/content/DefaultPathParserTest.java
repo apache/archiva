@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.junit.Test;
 
 /**
  * DefaultPathParserTest
@@ -36,39 +37,46 @@ public class DefaultPathParserTest
 {
     private PathParser parser = new DefaultPathParser();
 
+    @Test
     public void testBadPathMissingType()
     {
         // TODO: should we allow this instead?
         assertBadPath( "invalid/invalid/1/invalid-1", "missing type" );
     }
 
+    @Test
     public void testBadPathReleaseInSnapshotDir()
     {
         assertBadPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar",
                        "non snapshot artifact inside of a snapshot dir" );
     }
 
+    @Test
     public void testBadPathTimestampedSnapshotNotInSnapshotDir()
     {
         assertBadPath( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar",
                        "Timestamped Snapshot artifact not inside of an Snapshot dir" );
     }
 
+    @Test
     public void testBadPathTooShort()
     {
         assertBadPath( "invalid/invalid-1.0.jar", "path is too short" );
     }
 
+    @Test
     public void testBadPathVersionMismatchA()
     {
         assertBadPath( "invalid/invalid/1.0/invalid-2.0.jar", "version mismatch between path and artifact" );
     }
 
+    @Test
     public void testBadPathVersionMismatchB()
     {
         assertBadPath( "invalid/invalid/1.0/invalid-1.0b.jar", "version mismatch between path and artifact" );
     }
 
+    @Test
     public void testBadPathWrongArtifactId()
     {
         assertBadPath( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar",
@@ -78,6 +86,7 @@ public class DefaultPathParserTest
     /**
      * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
      */
+    @Test
     public void testGoodButDualExtensions()
         throws LayoutException
     {
@@ -91,6 +100,7 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodButDualExtensionsWithClassifier()
         throws LayoutException
     {
@@ -104,6 +114,7 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodButDualExtensionsTarGz()
         throws LayoutException
     {
@@ -117,6 +128,7 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodButDualExtensionsTarGzAndClassifier()
         throws LayoutException
     {
@@ -136,6 +148,7 @@ public class DefaultPathParserTest
      *
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecGanymedSsh2()
         throws LayoutException
     {
@@ -155,6 +168,7 @@ public class DefaultPathParserTest
      *
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecJavaxComm()
         throws LayoutException
     {
@@ -195,6 +209,7 @@ public class DefaultPathParserTest
      *
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecJavaxPersistence()
         throws LayoutException
     {
@@ -215,6 +230,7 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodComFooTool()
         throws LayoutException
     {
@@ -228,6 +244,7 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodCommonsLang()
         throws LayoutException
     {
@@ -241,6 +258,7 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testWindowsPathSeparator()
         throws LayoutException
     {
@@ -257,6 +275,7 @@ public class DefaultPathParserTest
     /**
      * [MRM-486] Can not deploy artifact test.maven-arch:test-arch due to "No ArtifactID Detected"
      */
+    @Test
     public void testGoodDashedArtifactId()
         throws LayoutException
     {
@@ -273,6 +292,7 @@ public class DefaultPathParserTest
     /**
      * It may seem odd, but this is a valid artifact.
      */
+    @Test
     public void testGoodDotNotationArtifactId()
         throws LayoutException
     {
@@ -289,6 +309,7 @@ public class DefaultPathParserTest
     /**
      * It may seem odd, but this is a valid artifact.
      */
+    @Test
     public void testGoodDotNotationSameGroupIdAndArtifactId()
         throws LayoutException
     {
@@ -308,6 +329,7 @@ public class DefaultPathParserTest
      *
      * @throws LayoutException
      */
+    @Test
     public void testGoodFooLibSources()
         throws LayoutException
     {
@@ -326,6 +348,7 @@ public class DefaultPathParserTest
      *
      * @throws LayoutException
      */
+    @Test
     public void testGoodSnapshotMavenTest()
         throws LayoutException
     {
@@ -345,6 +368,7 @@ public class DefaultPathParserTest
      *
      * @throws LayoutException
      */
+    @Test
     public void testGoodLongSnapshotMavenTest()
         throws LayoutException
     {
@@ -361,6 +385,7 @@ public class DefaultPathParserTest
     /**
      * A timestamped versioned artifact but without release version part. Like on axiom trunk.
      */
+    @Test
     public void testBadSnapshotWithoutReleasePart()
     {
         assertBadPath( "org/apache/ws/commons/axiom/axiom/SNAPSHOT/axiom-20070912.093446-2.pom",
@@ -372,6 +397,7 @@ public class DefaultPathParserTest
      *
      * @throws LayoutException
      */
+    @Test
     public void testClassifiedSnapshotMavenTest()
         throws LayoutException
     {
@@ -389,6 +415,7 @@ public class DefaultPathParserTest
      * [MRM-519] version identifiers within filename cause misidentification of version.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */
+    @Test
     public void testGoodVersionKeywordInArtifactId()
         throws LayoutException
     {
@@ -406,6 +433,7 @@ public class DefaultPathParserTest
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */
+    @Test
     public void testGoodDetectMavenTestPlugin()
         throws LayoutException
     {
@@ -422,6 +450,7 @@ public class DefaultPathParserTest
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
+    @Test
     public void testGoodDetectCoberturaMavenPlugin()
         throws LayoutException
     {
@@ -435,6 +464,7 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testToArtifactOnEmptyPath()
     {
         try
@@ -448,6 +478,7 @@ public class DefaultPathParserTest
         }
     }
 
+    @Test
     public void testToArtifactOnNullPath()
     {
         try
@@ -461,6 +492,7 @@ public class DefaultPathParserTest
         }
     }
 
+    @Test
     public void testToArtifactReferenceOnEmptyPath()
     {
         try
@@ -474,6 +506,7 @@ public class DefaultPathParserTest
         }
     }
 
+    @Test
     public void testToArtifactReferenceOnNullPath()
     {
         try

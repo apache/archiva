@@ -59,8 +59,8 @@
       <artifactId>spring-registry-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-taskqueue</artifactId>
+      <groupId>org.codehaus.redback.components</groupId>
+      <artifactId>spring-taskqueue</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>

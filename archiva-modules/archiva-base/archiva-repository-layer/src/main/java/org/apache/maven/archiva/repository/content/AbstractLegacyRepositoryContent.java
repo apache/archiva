@@ -24,6 +24,8 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,8 +51,10 @@ public abstract class AbstractLegacyRepositoryContent
     }
 
     /**
-     * @plexus.requirement role-hint="legacy"
+     * plexus.requirement role-hint="legacy"
      */
+    @Inject
+    @Named( value = "pathParser#legacy" )
     private PathParser legacyPathParser;
 
     public ArtifactReference toArtifactReference( String path )
@@ -66,8 +70,8 @@ public abstract class AbstractLegacyRepositoryContent
             throw new IllegalArgumentException( "Artifact reference cannot be null" );
         }
 
-        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), reference
-            .getClassifier(), reference.getType() );
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
+                       reference.getClassifier(), reference.getType() );
     }
 
     public String toPath( ArtifactReference reference )
@@ -77,8 +81,8 @@ public abstract class AbstractLegacyRepositoryContent
             throw new IllegalArgumentException( "Artifact reference cannot be null" );
         }
 
-        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), reference
-            .getClassifier(), reference.getType() );
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
+                       reference.getClassifier(), reference.getType() );
     }
 
     private String toPath( String groupId, String artifactId, String version, String classifier, String type )
@@ -115,7 +119,7 @@ public abstract class AbstractLegacyRepositoryContent
         // Default process.
         return type + "s";
     }
-    
+
     public void setLegacyPathParser( PathParser parser )
     {
         this.legacyPathParser = parser;

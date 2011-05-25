@@ -22,7 +22,6 @@ package org.apache.maven.archiva.repository.metadata;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.model.ProjectReference;
@@ -38,8 +37,12 @@ import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 import org.xml.sax.SAXException;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
@@ -53,27 +56,30 @@ import java.util.Set;
  *
  * @version $Id$
  */
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-metadata-tools-test.xml" } )
 public class MetadataToolsTest
     extends AbstractRepositoryLayerTestCase
 {
+    @Inject @Named(value = "metadataTools#test")
     private MetadataTools tools;
 
+    @Inject
+    @Named( value = "archivaConfiguration#mock" )
     protected MockConfiguration config;
 
+
+    @Test
     public void testGatherSnapshotVersionsA()
         throws Exception
     {
-        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", new String[] {
-            "1.0-alpha-11-SNAPSHOT",
-            "1.0-alpha-11-20070221.194724-2",
-            "1.0-alpha-11-20070302.212723-3",
-            "1.0-alpha-11-20070303.152828-4",
-            "1.0-alpha-11-20070305.215149-5",
-            "1.0-alpha-11-20070307.170909-6",
-            "1.0-alpha-11-20070314.211405-9",
-            "1.0-alpha-11-20070316.175232-11" } );
+        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT",
+                                new String[]{ "1.0-alpha-11-SNAPSHOT", "1.0-alpha-11-20070221.194724-2",
+                                    "1.0-alpha-11-20070302.212723-3", "1.0-alpha-11-20070303.152828-4",
+                                    "1.0-alpha-11-20070305.215149-5", "1.0-alpha-11-20070307.170909-6",
+                                    "1.0-alpha-11-20070314.211405-9", "1.0-alpha-11-20070316.175232-11" } );
     }
 
+    @Test
     public void testGatherSnapshotVersionsAWithProxies()
         throws Exception
     {
@@ -83,31 +89,28 @@ public class MetadataToolsTest
         createProxyConnector( "test-repo", "internal-snapshots" );
         createProxyConnector( "test-repo", "snapshots.codehaus.org" );
 
-        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", new String[] {
-            "1.0-alpha-11-SNAPSHOT",
-            "1.0-alpha-11-20070221.194724-2",
-            "1.0-alpha-11-20070302.212723-3",
-            "1.0-alpha-11-20070303.152828-4",
-            "1.0-alpha-11-20070305.215149-5",
-            "1.0-alpha-11-20070307.170909-6",
-            "1.0-alpha-11-20070314.211405-9",
-            "1.0-alpha-11-20070315.033030-10" /* Arrives in via snapshots.codehaus.org proxy */,
-            "1.0-alpha-11-20070316.175232-11" } );
+        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT",
+                                new String[]{ "1.0-alpha-11-SNAPSHOT", "1.0-alpha-11-20070221.194724-2",
+                                    "1.0-alpha-11-20070302.212723-3", "1.0-alpha-11-20070303.152828-4",
+                                    "1.0-alpha-11-20070305.215149-5", "1.0-alpha-11-20070307.170909-6",
+                                    "1.0-alpha-11-20070314.211405-9", "1.0-alpha-11-20070315.033030-10"
+                                    /* Arrives in via snapshots.codehaus.org proxy */,
+                                    "1.0-alpha-11-20070316.175232-11" } );
     }
 
+    @Test
     public void testGetRepositorySpecificName()
         throws Exception
     {
-        RemoteRepositoryContent repoJavaNet = createRemoteRepositoryContent( "maven2-repository.dev.java.net",
-                                                                             "Java.net Repository for Maven 2",
-                                                                             "http://download.java.net/maven/2/",
-                                                                             "default" );
-        RemoteRepositoryContent repoCentral = createRemoteRepositoryContent( "central", "Central Global Repository",
-                                                                             "http://repo1.maven.org/maven2/",
-                                                                             "default" );
+        RemoteRepositoryContent repoJavaNet =
+            createRemoteRepositoryContent( "maven2-repository.dev.java.net", "Java.net Repository for Maven 2",
+                                           "http://download.java.net/maven/2/", "default" );
+        RemoteRepositoryContent repoCentral =
+            createRemoteRepositoryContent( "central", "Central Global Repository", "http://repo1.maven.org/maven2/",
+                                           "default" );
 
-        String convertedName = tools.getRepositorySpecificName( repoJavaNet,
-                                                                "commons-lang/commons-lang/maven-metadata.xml" );
+        String convertedName =
+            tools.getRepositorySpecificName( repoJavaNet, "commons-lang/commons-lang/maven-metadata.xml" );
         assertMetadataPath( "commons-lang/commons-lang/maven-metadata-maven2-repository.dev.java.net.xml",
                             convertedName );
 
@@ -130,6 +133,7 @@ public class MetadataToolsTest
 //        }
 //    }
 
+    @Test
     public void testUpdateProjectNonExistingVersion()
         throws Exception
     {
@@ -139,32 +143,28 @@ public class MetadataToolsTest
         reference.setArtifactId( "missing_artifact" );
 
         prepTestRepo( testRepo, reference );
-        
+
         // check metadata prior to update -- should contain the non-existing artifact version
-        assertProjectMetadata( testRepo, reference, "missing_artifact", new String[] {
-            "1.0-SNAPSHOT",
-            "1.1-SNAPSHOT",
-            "1.2-SNAPSHOT" }, "1.2-SNAPSHOT" , null );
+        assertProjectMetadata( testRepo, reference, "missing_artifact",
+                               new String[]{ "1.0-SNAPSHOT", "1.1-SNAPSHOT", "1.2-SNAPSHOT" }, "1.2-SNAPSHOT", null );
 
         tools.updateMetadata( testRepo, reference );
-        
+
         // metadata should not contain the non-existing artifact version -- 1.1-SNAPSHOT
-        assertProjectMetadata( testRepo, reference, "missing_artifact", new String[] {
-            "1.0-SNAPSHOT",
-            "1.2-SNAPSHOT" }, "1.2-SNAPSHOT" , null );
+        assertProjectMetadata( testRepo, reference, "missing_artifact", new String[]{ "1.0-SNAPSHOT", "1.2-SNAPSHOT" },
+                               "1.2-SNAPSHOT", null );
     }
 
+    @Test
     public void testUpdateProjectMissingMultipleVersions()
         throws Exception
     {
-        assertUpdatedProjectMetadata( "missing_metadata_b", new String[] {
-            "1.0",
-            "1.0.1",
-            "2.0",
-            "2.0.1",
-            "2.0-20070821-dev" }, "2.0-20070821-dev" , "2.0-20070821-dev" );
+        assertUpdatedProjectMetadata( "missing_metadata_b",
+                                      new String[]{ "1.0", "1.0.1", "2.0", "2.0.1", "2.0-20070821-dev" },
+                                      "2.0-20070821-dev", "2.0-20070821-dev" );
     }
 
+    @Test
     public void testUpdateProjectMissingMultipleVersionsWithProxies()
         throws Exception
     {
@@ -174,56 +174,58 @@ public class MetadataToolsTest
         createProxyConnector( "test-repo", "central" );
         createProxyConnector( "test-repo", "java.net" );
 
-        assertUpdatedProjectMetadata( "proxied_multi", new String[] {
-            "1.0-spec" /* in java.net */,
-            "1.0" /* in managed, and central */,
-            "1.0.1" /* in central */,
-            "1.1" /* in managed */,
-            "2.0-proposal-beta" /* in java.net */,
-            "2.0-spec" /* in java.net */,
-            "2.0" /* in central, and java.net */,
-            "2.0.1" /* in java.net */,
-            "2.1" /* in managed */,
-            "3.0" /* in central */,
-            "3.1" /* in central */}, "3.1", "3.1" );
+        assertUpdatedProjectMetadata( "proxied_multi",
+                                      new String[]{ "1.0-spec" /* in java.net */, "1.0" /* in managed, and central */,
+                                          "1.0.1" /* in central */, "1.1" /* in managed */, "2.0-proposal-beta"
+                                          /* in java.net */, "2.0-spec" /* in java.net */, "2.0"
+                                          /* in central, and java.net */, "2.0.1" /* in java.net */, "2.1"
+                                          /* in managed */, "3.0" /* in central */, "3.1" /* in central */ }, "3.1",
+                                      "3.1" );
     }
 
+    @Test
     public void testUpdateProjectSimpleYetIncomplete()
         throws Exception
     {
-        assertUpdatedProjectMetadata( "incomplete_metadata_a", new String[] { "1.0" }, "1.0", "1.0" );
+        assertUpdatedProjectMetadata( "incomplete_metadata_a", new String[]{ "1.0" }, "1.0", "1.0" );
     }
 
+    @Test
     public void testUpdateProjectSimpleYetMissing()
         throws Exception
     {
-        assertUpdatedProjectMetadata( "missing_metadata_a", new String[] { "1.0" }, "1.0", "1.0" );
+        assertUpdatedProjectMetadata( "missing_metadata_a", new String[]{ "1.0" }, "1.0", "1.0" );
     }
 
+    @Test
     public void testUpdateVersionSimple10()
         throws Exception
     {
         assertUpdatedReleaseVersionMetadata( "missing_metadata_a", "1.0" );
     }
 
+    @Test
     public void testUpdateVersionSimple20()
         throws Exception
     {
         assertUpdatedReleaseVersionMetadata( "missing_metadata_b", "2.0" );
     }
 
+    @Test
     public void testUpdateVersionSimple20NotSnapshot()
         throws Exception
     {
         assertUpdatedReleaseVersionMetadata( "missing_metadata_b", "2.0-20070821-dev" );
     }
 
+    @Test
     public void testUpdateVersionSnapshotA()
         throws Exception
     {
         assertUpdatedSnapshotVersionMetadata( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", "20070316", "175232", "11" );
     }
 
+    @Test
     public void testToPathFromVersionReference()
     {
         VersionedReference reference = new VersionedReference();
@@ -234,6 +236,7 @@ public class MetadataToolsTest
         assertEquals( "com/foo/foo-tool/1.0/maven-metadata.xml", tools.toPath( reference ) );
     }
 
+    @Test
     public void testToPathFromProjectReference()
     {
         ProjectReference reference = new ProjectReference();
@@ -243,12 +246,14 @@ public class MetadataToolsTest
         assertEquals( "com/foo/foo-tool/maven-metadata.xml", tools.toPath( reference ) );
     }
 
+    @Test
     public void testToProjectReferenceFooTools()
         throws RepositoryMetadataException
     {
         assertProjectReference( "com.foo", "foo-tools", "com/foo/foo-tools/maven-metadata.xml" );
     }
 
+    @Test
     public void testToProjectReferenceAReallyLongPath()
         throws RepositoryMetadataException
     {
@@ -259,6 +264,7 @@ public class MetadataToolsTest
         assertProjectReference( groupId, artifactId, path );
     }
 
+    @Test
     public void testToProjectReferenceCommonsLang()
         throws RepositoryMetadataException
     {
@@ -279,6 +285,7 @@ public class MetadataToolsTest
         assertEquals( "ProjectReference.artifactId", artifactId, reference.getArtifactId() );
     }
 
+    @Test
     public void testToVersionedReferenceFooTool()
         throws RepositoryMetadataException
     {
@@ -290,6 +297,7 @@ public class MetadataToolsTest
         assertVersionedReference( groupId, artifactId, version, path );
     }
 
+    @Test
     public void testToVersionedReferenceAReallyLongPath()
         throws RepositoryMetadataException
     {
@@ -301,6 +309,7 @@ public class MetadataToolsTest
         assertVersionedReference( groupId, artifactId, version, path );
     }
 
+    @Test
     public void testToVersionedReferenceCommonsLang()
         throws RepositoryMetadataException
     {
@@ -312,6 +321,7 @@ public class MetadataToolsTest
         assertVersionedReference( groupId, artifactId, version, path );
     }
 
+    @Test
     public void testToVersionedReferenceSnapshot()
         throws RepositoryMetadataException
     {
@@ -344,10 +354,10 @@ public class MetadataToolsTest
         reference.setArtifactId( artifactId );
         reference.setVersion( version );
 
-        ManagedRepositoryConfiguration repo = createRepository( "test-repo", "Test Repository: " + getName(),
-                                                                repoRootDir );
-        ManagedRepositoryContent repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class,
-                                                                                  "default" );
+        ManagedRepositoryConfiguration repo =
+            createRepository( "test-repo", "Test Repository: " + getName(), repoRootDir );
+        ManagedRepositoryContent repoContent =
+            applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
         repoContent.setRepository( repo );
 
         Set<String> testedVersionSet = tools.gatherSnapshotVersions( repoContent, reference );
@@ -446,15 +456,16 @@ public class MetadataToolsTest
         assertMetadata( buf.toString(), testRepo, reference );
     }
 
-    private void assertProjectMetadata( ManagedRepositoryContent testRepo, ProjectReference reference, String artifactId,
-                                        String[] expectedVersions, String latestVersion, String releaseVersion )
+    private void assertProjectMetadata( ManagedRepositoryContent testRepo, ProjectReference reference,
+                                        String artifactId, String[] expectedVersions, String latestVersion,
+                                        String releaseVersion )
         throws Exception
     {
         StringBuilder buf = new StringBuilder();
         buf.append( "<metadata>\n" );
         buf.append( "  <groupId>" ).append( reference.getGroupId() ).append( "</groupId>\n" );
         buf.append( "  <artifactId>" ).append( reference.getArtifactId() ).append( "</artifactId>\n" );
-        
+
         if ( expectedVersions != null )
         {
             buf.append( "  <versioning>\n" );
@@ -571,11 +582,11 @@ public class MetadataToolsTest
 
         repoRoot.mkdirs();
 
-        ManagedRepositoryConfiguration repoConfig = createRepository( "test-repo", "Test Repository: " + getName(),
-                                                                      repoRoot );
+        ManagedRepositoryConfiguration repoConfig =
+            createRepository( "test-repo", "Test Repository: " + getName(), repoRoot );
 
-        ManagedRepositoryContent repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class,
-                                                                                  "default" );
+        ManagedRepositoryContent repoContent =
+            applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
         repoContent.setRepository( repoConfig );
         return repoContent;
     }
@@ -606,12 +617,5 @@ public class MetadataToolsTest
         prepTestRepo( repo, projectRef );
     }
 
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
 
-        config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
-        tools = (MetadataTools) lookup( MetadataTools.class );
-    }
 }

@@ -31,7 +31,11 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +45,7 @@ import java.util.List;
  */
 public abstract class AbstractDefaultRepositoryContent
 {
-    protected Logger log = LoggerFactory.getLogger( AbstractDefaultRepositoryContent.class );
+    protected Logger log = LoggerFactory.getLogger( getClass() );
 
     public static final String MAVEN_METADATA = "maven-metadata.xml";
 
@@ -56,9 +60,19 @@ public abstract class AbstractDefaultRepositoryContent
     private PathParser defaultPathParser = new DefaultPathParser();
 
     /**
-     * @plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
+     * plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
      */
     protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
+
+    @Inject
+    protected ApplicationContext applicationContext;
+
+    @PostConstruct
+    protected void initialize()
+    {
+        artifactMappingProviders = new ArrayList<ArtifactMappingProvider>(
+            applicationContext.getBeansOfType( ArtifactMappingProvider.class ).values() );
+    }
 
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
@@ -127,8 +141,8 @@ public abstract class AbstractDefaultRepositoryContent
     {
         if ( baseVersion != null )
         {
-            return pathTranslator.toPath( groupId, artifactId, baseVersion, constructId( artifactId, version,
-                                                                                         classifier, type ) );
+            return pathTranslator.toPath( groupId, artifactId, baseVersion,
+                                          constructId( artifactId, version, classifier, type ) );
         }
         else
         {

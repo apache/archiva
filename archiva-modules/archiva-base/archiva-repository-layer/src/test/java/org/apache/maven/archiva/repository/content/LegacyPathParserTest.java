@@ -25,6 +25,11 @@ import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * LegacyPathParserTest
@@ -34,18 +39,23 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 public class LegacyPathParserTest
     extends AbstractRepositoryLayerTestCase
 {
-    private LegacyPathParser parser = new LegacyPathParser();
+    private LegacyPathParser parser;
+
+    @Inject
+    @Named( value = "archivaConfiguration#default" )
+    ArchivaConfiguration config;
 
     /**
      * Configure the ArchivaConfiguration
      * {@inheritDoc}
-     * @see org.codehaus.plexus.PlexusTestCase#setUp()
      */
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
-        ArchivaConfiguration config = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+
+        parser = new LegacyPathParser( config );
         LegacyArtifactPath jaxen = new LegacyArtifactPath();
         jaxen.setPath( "jaxen/jars/jaxen-1.0-FCS-full.jar" );
         jaxen.setArtifact( "jaxen:jaxen:1.0-FCS:full:jar" );
@@ -53,28 +63,32 @@ public class LegacyPathParserTest
         parser.configuration = config;
     }
 
-
+    @Test
     public void testBadPathArtifactIdMissingA()
     {
         assertBadPath( "groupId/jars/-1.0.jar", "artifactId is missing" );
     }
 
+    @Test
     public void testBadPathArtifactIdMissingB()
     {
         assertBadPath( "groupId/jars/1.0.jar", "artifactId is missing" );
     }
 
+    @Test
     public void testBadPathMissingType()
     {
         assertBadPath( "invalid/invalid/1/invalid-1", "missing type" );
     }
 
+    @Test
     public void testBadPathTooShort()
     {
         // NEW
         assertBadPath( "invalid/invalid-1.0.jar", "path is too short" );
     }
 
+    @Test
     public void testBadPathWrongPackageExtension()
     {
         assertBadPath( "org.apache.maven.test/jars/artifactId-1.0.war", "wrong package extension" );
@@ -83,6 +97,7 @@ public class LegacyPathParserTest
     /**
      * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
      */
+    @Test
     public void testGoodButDualExtensions()
         throws LayoutException
     {
@@ -98,8 +113,10 @@ public class LegacyPathParserTest
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecGanymedSsh2()
         throws LayoutException
     {
@@ -115,8 +132,10 @@ public class LegacyPathParserTest
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecJavaxComm()
         throws LayoutException
     {
@@ -132,8 +151,10 @@ public class LegacyPathParserTest
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecJavaxPersistence()
         throws LayoutException
     {
@@ -151,6 +172,7 @@ public class LegacyPathParserTest
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+    @Test
     public void testGoodCommonsLang()
         throws LayoutException
     {
@@ -163,6 +185,7 @@ public class LegacyPathParserTest
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+    @Test
     public void testGoodDerby()
         throws LayoutException
     {
@@ -197,8 +220,10 @@ public class LegacyPathParserTest
 
     /**
      * Test the classifier.
+     *
      * @throws LayoutException
      */
+    @Test
     public void testGoodFooLibJavadoc()
         throws LayoutException
     {
@@ -211,13 +236,16 @@ public class LegacyPathParserTest
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
 
-        assertLayout( "com.foo.lib/javadocs/foo-lib-2.1-alpha-1-javadoc.jar", "com.foo.lib", "foo-lib", "2.1-alpha-1", "javadoc", "javadoc" );
+        assertLayout( "com.foo.lib/javadocs/foo-lib-2.1-alpha-1-javadoc.jar", "com.foo.lib", "foo-lib", "2.1-alpha-1",
+                      "javadoc", "javadoc" );
     }
 
     /**
      * Test the classifier, and java-source type spec.
+     *
      * @throws LayoutException
      */
+    @Test
     public void testGoodFooLibSources()
         throws LayoutException
     {
@@ -225,7 +253,7 @@ public class LegacyPathParserTest
         String artifactId = "foo-lib";
         String version = "2.1-alpha-1";
         String type = "java-source"; // oddball type-spec (should result in jar extension)
-        String classifier= "sources";
+        String classifier = "sources";
         String path = "com.foo.lib/java-sources/foo-lib-2.1-alpha-1-sources.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
@@ -233,8 +261,10 @@ public class LegacyPathParserTest
 
     /**
      * Test the classifier, and java-source type spec.
+     *
      * @throws LayoutException
      */
+    @Test
     public void testBadClassifierFooLibSources()
         throws LayoutException
     {
@@ -245,8 +275,10 @@ public class LegacyPathParserTest
 
     /**
      * Test the classifier, and java-source type spec.
+     *
      * @throws LayoutException
      */
+    @Test
     public void testGoodFooLibTestSources()
         throws LayoutException
     {
@@ -260,6 +292,7 @@ public class LegacyPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodFooTool()
         throws LayoutException
     {
@@ -272,6 +305,7 @@ public class LegacyPathParserTest
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+    @Test
     public void testGoodGeronimoEjbSpec()
         throws LayoutException
     {
@@ -284,6 +318,7 @@ public class LegacyPathParserTest
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+    @Test
     public void testGoodLdapClientsPom()
         throws LayoutException
     {
@@ -298,8 +333,10 @@ public class LegacyPathParserTest
 
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     *
      * @throws LayoutException
      */
+    @Test
     public void testGoodSnapshotMavenTest()
         throws LayoutException
     {
@@ -316,6 +353,7 @@ public class LegacyPathParserTest
      * [MRM-519] version identifiers within filename cause misidentification of version.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */
+    @Test
     public void testGoodVersionKeywordInArtifactId()
         throws LayoutException
     {
@@ -333,6 +371,7 @@ public class LegacyPathParserTest
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */
+    @Test
     public void testGoodDetectPluginMavenTest()
         throws LayoutException
     {
@@ -348,6 +387,7 @@ public class LegacyPathParserTest
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
+    @Test
     public void testGoodDetectPluginAvalonMeta()
         throws LayoutException
     {
@@ -363,6 +403,7 @@ public class LegacyPathParserTest
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
+    @Test
     public void testGoodDetectPluginCactusMaven()
         throws LayoutException
     {
@@ -378,6 +419,7 @@ public class LegacyPathParserTest
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
+    @Test
     public void testGoodDetectPluginGeronimoPackaging()
         throws LayoutException
     {
@@ -392,8 +434,10 @@ public class LegacyPathParserTest
 
     /**
      * [MRM-594] add some hook in LegacyPathParser to allow exceptions in artifact resolution
-	 * @since 1.1
+     *
+     * @since 1.1
      */
+    @Test
     public void testCustomExceptionsInArtifactResolution()
         throws LayoutException
     {
@@ -410,7 +454,8 @@ public class LegacyPathParserTest
     /**
      * Perform a path to artifact reference lookup, and verify the results.
      */
-    private void assertLayout( String path, String groupId, String artifactId, String version, String classifier, String type )
+    private void assertLayout( String path, String groupId, String artifactId, String version, String classifier,
+                               String type )
         throws LayoutException
     {
         // Path to Artifact Reference.
@@ -421,7 +466,8 @@ public class LegacyPathParserTest
     private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
                                           String version, String classifier, String type )
     {
-        String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
+        String expectedId =
+            "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
 
         assertNotNull( expectedId + " - Should not be null.", actualReference );
 
@@ -437,7 +483,8 @@ public class LegacyPathParserTest
         try
         {
             parser.toArtifactReference( path );
-            fail( "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
+            fail(
+                "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
         catch ( LayoutException e )
         {

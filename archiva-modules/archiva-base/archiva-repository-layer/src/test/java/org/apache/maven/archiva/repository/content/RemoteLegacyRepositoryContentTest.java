@@ -23,29 +23,35 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.junit.Before;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
- * RemoteLegacyRepositoryContentTest 
+ * RemoteLegacyRepositoryContentTest
  *
  * @version $Id$
  */
 public class RemoteLegacyRepositoryContentTest
     extends AbstractLegacyRepositoryContentTestCase
 {
+    @Inject
+    @Named( value = "remoteRepositoryContent#legacy" )
     private RemoteRepositoryContent repoContent;
 
-    @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
 
-        RemoteRepositoryConfiguration repository = createRemoteRepository( "testRemoteLegacyRepo",
-                                                                           "Unit Test Remote Legacy Repo",
-                                                                           "http://repo1.maven.org/maven/" );
+        RemoteRepositoryConfiguration repository =
+            createRemoteRepository( "testRemoteLegacyRepo", "Unit Test Remote Legacy Repo",
+                                    "http://repo1.maven.org/maven/" );
         repository.setLayout( "legacy" );
 
-        repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, "legacy" );
+        //repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, "legacy" );
         repoContent.setRepository( repository );
     }
 

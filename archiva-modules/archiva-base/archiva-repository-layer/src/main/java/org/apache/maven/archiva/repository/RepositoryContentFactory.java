@@ -23,55 +23,55 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLifecycleException;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.codehaus.plexus.context.Context;
-import org.codehaus.plexus.context.ContextException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * RepositoryContentRequest 
+ * RepositoryContentRequest
  *
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.repository.RepositoryContentFactory"
+ *          <p/>
+ *          plexus.component
+ *          role="org.apache.maven.archiva.repository.RepositoryContentFactory"
  */
+@Service( "repositoryContentFactory#default" )
 public class RepositoryContentFactory
-    implements Contextualizable, RegistryListener, Initializable
+    implements RegistryListener
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    private ApplicationContext applicationContext;
 
     private final Map<String, ManagedRepositoryContent> managedContentMap;
 
     private final Map<String, RemoteRepositoryContent> remoteContentMap;
 
-    private PlexusContainer container;
 
     public RepositoryContentFactory()
     {
-        managedContentMap = new HashMap<String, ManagedRepositoryContent>();
-        remoteContentMap = new HashMap<String, RemoteRepositoryContent>();
+        managedContentMap = new ConcurrentHashMap<String, ManagedRepositoryContent>();
+        remoteContentMap = new ConcurrentHashMap<String, RemoteRepositoryContent>();
     }
 
     /**
      * Get the ManagedRepositoryContent object for the repository Id specified.
-     * 
+     *
      * @param repoId the repository id to fetch.
      * @return the ManagedRepositoryContent object associated with the repository id.
      * @throws RepositoryNotFoundException if the repository id does not exist within the configuration.
-     * @throws RepositoryException the repository content object cannot be loaded due to configuration issue.
+     * @throws RepositoryException         the repository content object cannot be loaded due to configuration issue.
      */
     public ManagedRepositoryContent getManagedRepositoryContent( String repoId )
         throws RepositoryNotFoundException, RepositoryException
@@ -83,24 +83,17 @@ public class RepositoryContentFactory
             return repo;
         }
 
-        ManagedRepositoryConfiguration repoConfig = archivaConfiguration.getConfiguration()
-            .findManagedRepositoryById( repoId );
+        ManagedRepositoryConfiguration repoConfig =
+            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
         if ( repoConfig == null )
         {
             throw new RepositoryNotFoundException( "Unable to find managed repository configuration for id:" + repoId );
         }
 
-        try
-        {
-            repo = (ManagedRepositoryContent) container.lookup( ManagedRepositoryContent.class, repoConfig.getLayout() );
-            repo.setRepository( repoConfig );
-            managedContentMap.put( repoId, repo );
-        }
-        catch ( ComponentLookupException e )
-        {
-            throw new RepositoryException( "Specified layout [" + repoConfig.getLayout()
-                + "] on managed repository id [" + repoId + "] is not valid.", e );
-        }
+        repo = applicationContext.getBean( "managedRepositoryContent#" + repoConfig.getLayout(),
+                                           ManagedRepositoryContent.class );
+        repo.setRepository( repoConfig );
+        managedContentMap.put( repoId, repo );
 
         return repo;
     }
@@ -115,38 +108,26 @@ public class RepositoryContentFactory
             return repo;
         }
 
-        RemoteRepositoryConfiguration repoConfig = archivaConfiguration.getConfiguration()
-            .findRemoteRepositoryById( repoId );
+        RemoteRepositoryConfiguration repoConfig =
+            archivaConfiguration.getConfiguration().findRemoteRepositoryById( repoId );
         if ( repoConfig == null )
         {
             throw new RepositoryNotFoundException( "Unable to find remote repository configuration for id:" + repoId );
         }
 
-        try
-        {
-            repo = (RemoteRepositoryContent) container.lookup( RemoteRepositoryContent.class, repoConfig.getLayout() );
-            repo.setRepository( repoConfig );
-            remoteContentMap.put( repoId, repo );
-        }
-        catch ( ComponentLookupException e )
-        {
-            throw new RepositoryException( "Specified layout [" + repoConfig.getLayout()
-                + "] on remote repository id [" + repoId + "] is not valid.", e );
-        }
+        repo = applicationContext.getBean( "RemoteRepositoryContent#" + repoConfig.getLayout(),
+                                           RemoteRepositoryContent.class );
+        repo.setRepository( repoConfig );
+        remoteContentMap.put( repoId, repo );
 
         return repo;
     }
 
-    public void contextualize( Context context )
-        throws ContextException
-    {
-        container = (PlexusContainer) context.get( "plexus" );
-    }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isManagedRepositories( propertyName )
-            || ConfigurationNames.isRemoteRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) || ConfigurationNames.isRemoteRepositories(
+            propertyName ) )
         {
             initMaps();
         }
@@ -157,50 +138,33 @@ public class RepositoryContentFactory
         /* do nothing */
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         archivaConfiguration.addChangeListener( this );
     }
 
     private void initMaps()
     {
-        synchronized ( managedContentMap )
-        {
-            // First, return any references to the container.
-            for ( ManagedRepositoryContent repo : managedContentMap.values() )
-            {
-                try
-                {
-                    container.release( repo );
-                }
-                catch ( ComponentLifecycleException e )
-                {
-                    /* ignore */
-                }
-            }
+        // olamy we use concurent so no need of synchronize
+        //synchronized ( managedContentMap )
+        //{
+        managedContentMap.clear();
+        //}
 
-            // Next clear the map.
-            managedContentMap.clear();
-        }
+        //synchronized ( remoteContentMap )
+        //{
+        remoteContentMap.clear();
+        //}
+    }
 
-        synchronized ( remoteContentMap )
-        {
-            // First, return any references to the container.
-            for ( RemoteRepositoryContent repo : remoteContentMap.values() )
-            {
-                try
-                {
-                    container.release( repo );
-                }
-                catch ( ComponentLifecycleException e )
-                {
-                    /* ignore */
-                }
-            }
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
 
-            // Next clear the map.
-            remoteContentMap.clear();
-        }
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }

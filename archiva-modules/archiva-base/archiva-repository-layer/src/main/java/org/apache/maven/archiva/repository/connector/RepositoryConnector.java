@@ -31,15 +31,15 @@ import java.util.List;
  */
 public interface RepositoryConnector
 {
-    public ManagedRepositoryContent getSourceRepository();
+    ManagedRepositoryContent getSourceRepository();
 
-    public RemoteRepositoryContent getTargetRepository();
+    RemoteRepositoryContent getTargetRepository();
 
-    public List<String> getBlacklist();
+    List<String> getBlacklist();
     
-    public List<String> getWhitelist();
+    List<String> getWhitelist();
     
-    public boolean isDisabled();
+    boolean isDisabled();
     
-    public void setDisabled(boolean disabled);
+    void setDisabled(boolean disabled);
 }

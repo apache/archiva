@@ -22,6 +22,7 @@ package org.apache.maven.archiva.repository.content;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.junit.Test;
 
 /**
  * AbstractLegacyRepositoryContentTestCase
@@ -31,27 +32,32 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 public abstract class AbstractLegacyRepositoryContentTestCase
     extends AbstractRepositoryLayerTestCase
 {
+    @Test
     public void testBadPathArtifactIdMissingA()
     {
         assertBadPath( "groupId/jars/-1.0.jar", "artifactId is missing" );
     }
 
+    @Test
     public void testBadPathArtifactIdMissingB()
     {
         assertBadPath( "groupId/jars/1.0.jar", "artifactId is missing" );
     }
 
+    @Test
     public void testBadPathMissingType()
     {
         assertBadPath( "invalid/invalid/1/invalid-1", "missing type" );
     }
 
+    @Test
     public void testBadPathTooShort()
     {
         // NEW
         assertBadPath( "invalid/invalid-1.0.jar", "path is too short" );
     }
 
+    @Test
     public void testBadPathWrongPackageExtension()
     {
         assertBadPath( "org.apache.maven.test/jars/artifactId-1.0.war", "wrong package extension" );
@@ -62,6 +68,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
      * Example of an oddball / unusual version spec.
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecGanymedSsh2()
         throws LayoutException
     {
@@ -79,6 +86,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
      * Example of an oddball / unusual version spec.
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecJavaxComm()
         throws LayoutException
     {
@@ -96,6 +104,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
      * Example of an oddball / unusual version spec.
      * @throws LayoutException
      */
+    @Test
     public void testGoodButOddVersionSpecJavaxPersistence()
         throws LayoutException
     {
@@ -113,6 +122,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+    @Test
     public void testGoodCommonsLang()
         throws LayoutException
     {
@@ -125,6 +135,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+    @Test
     public void testGoodDerby()
         throws LayoutException
     {
@@ -161,6 +172,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
      * Test the classifier.
      * @throws LayoutException
      */
+    @Test
     public void testGoodFooLibJavadoc()
         throws LayoutException
     {
@@ -178,6 +190,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
      * Test the classifier, and java-source type spec.
      * @throws LayoutException
      */
+    @Test
     public void testGoodFooLibSources()
         throws LayoutException
     {
@@ -191,6 +204,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodFooTool()
         throws LayoutException
     {
@@ -203,6 +217,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+    @Test
     public void testGoodGeronimoEjbSpec()
         throws LayoutException
     {
@@ -215,6 +230,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
+    @Test
     public void testGoodLdapClientsPom()
         throws LayoutException
     {
@@ -231,6 +247,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
      * @throws LayoutException
      */
+    @Test
     public void testGoodSnapshotMavenTest()
         throws LayoutException
     {
@@ -247,6 +264,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
      * [MRM-519] version identifiers within filename cause misidentification of version.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */
+    @Test
     public void testGoodVersionKeywordInArtifactId()
         throws LayoutException
     {
@@ -264,6 +282,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */
+    @Test
     public void testGoodDetectPluginMavenTest()
         throws LayoutException
     {
@@ -279,6 +298,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
+    @Test
     public void testGoodDetectPluginAvalonMeta()
         throws LayoutException
     {
@@ -294,6 +314,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
+    @Test
     public void testGoodDetectPluginCactusMaven()
         throws LayoutException
     {
@@ -309,6 +330,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
+    @Test
     public void testGoodDetectPluginGeronimoPackaging()
         throws LayoutException
     {
@@ -325,6 +347,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
 	 * [MRM-768] Artifact type "maven-plugin" does not distinguish maven1 and maven2 plugins. 
 	 * This produces conflicts when m2 plugins are stored in legacy-layout repository
 	 */
+    @Test
 	public void testMaven1Maven2PluginTypeDistinc()
 	    throws Exception
     {

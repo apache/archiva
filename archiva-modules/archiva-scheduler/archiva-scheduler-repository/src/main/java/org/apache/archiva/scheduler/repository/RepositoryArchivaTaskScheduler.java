@@ -35,6 +35,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.codehaus.plexus.scheduler.Scheduler;
+import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.quartz.CronTrigger;
@@ -43,7 +44,10 @@ import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,36 +59,42 @@ import java.util.Set;
  *
  * @plexus.component role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
  */
+@Service("archivaTaskScheduler#repository")
 public class RepositoryArchivaTaskScheduler
     implements ArchivaTaskScheduler<RepositoryTask>, Startable, ConfigurationListener
 {
     private Logger log = LoggerFactory.getLogger( RepositoryArchivaTaskScheduler.class );
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private Scheduler scheduler;
 
     /**
-     * @plexus.requirement role-hint="repository-scanning"
+     * plexus.requirement role-hint="repository-scanning"
      */
+    @Inject @Named(value = "taskQueue#repository-scanning")
     private TaskQueue repositoryScanningQueue;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     /**
      * TODO: could have multiple implementations
      *
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
     private static final String REPOSITORY_SCAN_GROUP = "rg";

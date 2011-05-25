@@ -19,10 +19,13 @@ package org.apache.maven.archiva.repository.metadata;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -32,13 +35,16 @@ import java.io.StringWriter;
  *
  * @version $Id$
  */
+@RunWith( JUnit4.class )
 public class RepositoryMetadataWriterTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+
+    @Test
     public void testWriteSimple()
         throws Exception
     {
-        File defaultRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
+        File defaultRepoDir = new File( "src/test/repositories/default-repository" );
         File expectedFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
         String expectedContent = FileUtils.readFileToString( expectedFile, null );
 

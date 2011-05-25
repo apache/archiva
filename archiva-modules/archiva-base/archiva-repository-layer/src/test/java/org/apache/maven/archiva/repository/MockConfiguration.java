@@ -26,6 +26,7 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.easymock.MockControl;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,9 +36,10 @@ import java.util.Set;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
+ * plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
  *                   role-hint="mock"
  */
+@Service("archivaConfiguration#mock")
 public class MockConfiguration
     implements ArchivaConfiguration
 {

@@ -20,15 +20,20 @@ package org.apache.maven.archiva.repository.content;
  */
 
 import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * FilenameParserTest
  *
  * @version $Id$
  */
+@RunWith( JUnit4.class )
 public class FilenameParserTest
     extends TestCase
 {
+    @Test
     public void testNameExtensionJar()
     {
         FilenameParser parser = new FilenameParser( "maven-test-plugin-1.8.3.jar" );
@@ -37,6 +42,7 @@ public class FilenameParserTest
         assertEquals( "jar", parser.getExtension() );
     }
 
+    @Test
     public void testNameExtensionTarGz()
     {
         FilenameParser parser = new FilenameParser( "archiva-1.0-beta-2-bin.tar.gz" );
@@ -45,6 +51,7 @@ public class FilenameParserTest
         assertEquals( "tar.gz", parser.getExtension() );
     }
 
+    @Test
     public void testNameExtensionTarBz2()
     {
         FilenameParser parser = new FilenameParser( "archiva-1.0-SNAPSHOT-src.tar.bz2" );
@@ -53,6 +60,7 @@ public class FilenameParserTest
         assertEquals( "tar.bz2", parser.getExtension() );
     }
 
+    @Test
     public void testNameExtensionCapitolizedTarGz()
     {
         FilenameParser parser = new FilenameParser( "ARCHIVA-1.0-BETA-2-BIN.TAR.GZ" );
@@ -61,6 +69,7 @@ public class FilenameParserTest
         assertEquals( "TAR.GZ", parser.getExtension() );
     }
 
+    @Test
     public void testNext()
     {
         FilenameParser parser = new FilenameParser( "maven-test-plugin-1.8.3.jar" );
@@ -75,6 +84,7 @@ public class FilenameParserTest
         assertNull( parser.next() );
     }
 
+    @Test
     public void testExpect()
     {
         FilenameParser parser = new FilenameParser( "maven-test-plugin-1.8.3.jar" );
@@ -87,6 +97,7 @@ public class FilenameParserTest
         assertNull( parser.expect( "jar" ) );
     }
 
+    @Test
     public void testExpectWithRemaining()
     {
         FilenameParser parser = new FilenameParser( "ganymede-ssh2-build250-sources.jar" );
@@ -102,6 +113,7 @@ public class FilenameParserTest
         assertNull( parser.expect( "jar" ) );
     }
 
+    @Test
     public void testExpectWithRemainingDualExtensions()
     {
         FilenameParser parser = new FilenameParser( "example-presentation-3.2.xml.zip" );
@@ -116,6 +128,7 @@ public class FilenameParserTest
 
     }
 
+    @Test
     public void testNextNonVersion()
     {
         FilenameParser parser = new FilenameParser( "maven-test-plugin-1.8.3.jar" );
@@ -124,6 +137,7 @@ public class FilenameParserTest
         assertEquals( "1.8.3", parser.remaining() );
     }
 
+    @Test
     public void testNextArbitraryNonVersion()
     {
         FilenameParser parser = new FilenameParser( "maven-jdk-1.4-plugin-1.0-20070828.123456-42.jar" );
@@ -132,6 +146,7 @@ public class FilenameParserTest
         assertEquals( "1.0-20070828.123456-42", parser.remaining() );
     }
 
+    @Test
     public void testNextJython()
     {
         FilenameParser parser = new FilenameParser( "jython-20020827-no-oro.jar" );
@@ -141,6 +156,7 @@ public class FilenameParserTest
         assertEquals( "no-oro", parser.remaining() );
     }
 
+    @Test
     public void testLongExtension()
     {
         FilenameParser parser = new FilenameParser( "libfobs4jmf-0.4.1.4-20080217.211715-4.jnilib" );
@@ -149,6 +165,7 @@ public class FilenameParserTest
         assertEquals( "jnilib", parser.getExtension() );
     }
 
+    @Test
     public void testInterveningVersion()
     {
         FilenameParser parser = new FilenameParser( "artifact-id-1.0-abc-1.1-20080221.062205-9.pom" );
@@ -160,6 +177,7 @@ public class FilenameParserTest
         assertEquals( "pom", parser.getExtension() );
     }
 
+    @Test
     public void testExpectWrongSnapshot()
     {
         FilenameParser parser = new FilenameParser( "artifact-id-1.0-20080221.062205-9.pom" );
@@ -168,6 +186,7 @@ public class FilenameParserTest
         assertNull( parser.expect( "2.0-SNAPSHOT" ) );
     }
 
+    @Test
     public void testExpectWrongSnapshot2()
     {
         // tests parsing axiom snapshots without exceptions
@@ -177,6 +196,7 @@ public class FilenameParserTest
         assertNull( parser.expect( "SNAPSHOT" ) );
     }
 
+    @Test
     public void testClassifier()
     {
         FilenameParser parser = new FilenameParser( "artifact-id-1.0-20070219.171202-34-test-sources.jar" );
@@ -188,6 +208,7 @@ public class FilenameParserTest
         assertEquals( "jar", parser.getExtension() );
     }
 
+    @Test
     public void testNoExtension()
     {
         FilenameParser parser = new FilenameParser( "foo_bar" );

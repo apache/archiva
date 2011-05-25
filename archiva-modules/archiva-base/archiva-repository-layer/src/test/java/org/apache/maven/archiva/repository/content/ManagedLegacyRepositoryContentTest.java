@@ -26,7 +26,11 @@ import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.junit.Before;
+import org.junit.Test;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,27 +45,43 @@ import java.util.Set;
 public class ManagedLegacyRepositoryContentTest
     extends AbstractLegacyRepositoryContentTestCase
 {
+    @Inject
+    @Named( value = "managedRepositoryContent#legacy" )
     private ManagedRepositoryContent repoContent;
 
+    @Before
+    public void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        File repoDir = new File( "src/test/repositories/legacy-repository" );
+
+        ManagedRepositoryConfiguration repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
+        repository.setLayout( "legacy" );
+
+        //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "legacy" );
+        repoContent.setRepository( repository );
+    }
+
+    @Test
     public void testGetVersionsFromProjectReference()
         throws Exception
     {
-        assertVersions( "org.apache.maven", "testing", new String[] {
-            "UNKNOWN",
+        assertVersions( "org.apache.maven", "testing", new String[]{ "UNKNOWN",
 //            "1.0-javadoc",
 //            "1.0-sources",
-            "1.0",
-            "1.0-20050611.112233-1" } );
+            "1.0", "1.0-20050611.112233-1" } );
     }
 
+    @Test
     public void testGetVersionsFromVersionedReference()
         throws Exception
     {
-        assertVersions( "org.apache.maven", "testing", "1.0", new String[] {
+        assertVersions( "org.apache.maven", "testing", "1.0", new String[]{
 //            "1.0-javadoc",
 //            "1.0-sources",
-            "1.0",
-            "1.0-20050611.112233-1" } );
+            "1.0", "1.0-20050611.112233-1" } );
     }
 
     private void assertVersions( String groupId, String artifactId, String[] expectedVersions )
@@ -115,6 +135,7 @@ public class ManagedLegacyRepositoryContentTest
         }
     }
 
+    @Test
     public void testGetRelatedArtifacts()
         throws Exception
     {
@@ -123,13 +144,10 @@ public class ManagedLegacyRepositoryContentTest
         Set<ArtifactReference> related = repoContent.getRelatedArtifacts( reference );
         assertNotNull( related );
 
-        String expected[] = new String[] {
-            "org.apache.maven/jars/testing-1.0.jar",
+        String expected[] = new String[]{ "org.apache.maven/jars/testing-1.0.jar",
             "org.apache.maven/java-sources/testing-1.0-sources.jar",
-            "org.apache.maven/jars/testing-1.0-20050611.112233-1.jar",
-            "org.apache.maven/poms/testing-1.0.pom",
-            "org.apache.maven/distributions/testing-1.0.tar.gz",
-            "org.apache.maven/distributions/testing-1.0.zip",
+            "org.apache.maven/jars/testing-1.0-20050611.112233-1.jar", "org.apache.maven/poms/testing-1.0.pom",
+            "org.apache.maven/distributions/testing-1.0.tar.gz", "org.apache.maven/distributions/testing-1.0.zip",
             "org.apache.maven/javadoc.jars/testing-1.0-javadoc.jar" };
 
         StringBuffer relatedDebugString = new StringBuffer();
@@ -156,26 +174,12 @@ public class ManagedLegacyRepositoryContentTest
             if ( !found )
             {
                 fail( "Unable to find expected artifact [" + expectedPath + "] in list of related artifacts. "
-                    + "Related <" + relatedDebugString + ">" );
+                          + "Related <" + relatedDebugString + ">" );
             }
         }
         assertEquals( "Related <" + relatedDebugString + ">:", expected.length, related.size() );
     }
 
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        File repoDir = getTestFile( "src/test/repositories/legacy-repository" );
-
-        ManagedRepositoryConfiguration repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
-        repository.setLayout( "legacy" );
-
-        repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "legacy" );
-        repoContent.setRepository( repository );
-    }
 
     @Override
     protected ArtifactReference toArtifactReference( String path )

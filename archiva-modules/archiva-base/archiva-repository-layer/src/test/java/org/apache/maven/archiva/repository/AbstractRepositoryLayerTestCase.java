@@ -19,10 +19,15 @@ package org.apache.maven.archiva.repository;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.io.File;
 
 /**
@@ -30,18 +35,14 @@ import java.io.File;
  *
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractRepositoryLayerTestCase
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
-     */
-    @Override
-    protected String getSpringConfigLocation()
-    {
-        return "org/apache/maven/archiva/repository/spring-context.xml";
-    }
+
+    @Inject
+    protected ApplicationContext applicationContext;
 
     protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
     {
@@ -61,7 +62,8 @@ public abstract class AbstractRepositoryLayerTestCase
         return repo;
     }
 
-    protected ManagedRepositoryContent createManagedRepositoryContent( String id, String name, File location, String layout )
+    protected ManagedRepositoryContent createManagedRepositoryContent( String id, String name, File location,
+                                                                       String layout )
         throws Exception
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
@@ -70,7 +72,8 @@ public abstract class AbstractRepositoryLayerTestCase
         repo.setLocation( location.getAbsolutePath() );
         repo.setLayout( layout );
 
-        ManagedRepositoryContent repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, layout );
+        ManagedRepositoryContent repoContent =
+            applicationContext.getBean( "managedRepositoryContent#" + layout, ManagedRepositoryContent.class );
         repoContent.setRepository( repo );
 
         return repoContent;
@@ -85,7 +88,8 @@ public abstract class AbstractRepositoryLayerTestCase
         repo.setUrl( url );
         repo.setLayout( layout );
 
-        RemoteRepositoryContent repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, layout );
+        RemoteRepositoryContent repoContent =
+            applicationContext.getBean( "remoteRepositoryContent#" + layout, RemoteRepositoryContent.class );
         repoContent.setRepository( repo );
 
         return repoContent;

@@ -19,20 +19,26 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Collection;
@@ -46,39 +52,43 @@ import static org.mockito.Mockito.mock;
  *
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaRepositoryScanningTaskExecutorTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+    @Inject
+    @Named( value = "taskExecutor#test-repository-scanning" )
     private TaskExecutor taskExecutor;
+
+    @Inject @Named(value = "archivaConfiguration#test-repository-scanning")
+    private ArchivaConfiguration archivaConfig;
+
+    @Inject
+    private RepositoryStatisticsManager repositoryStatisticsManager;
+
+    @Inject
+    @Named( value = "knownRepositoryContentConsumer#test-consumer" )
+    private TestConsumer testConsumer;
+
+    @Inject
+    @Named( value = "repositorySessionFactory#test" )
+    private TestRepositorySessionFactory factory;
 
     private File repoDir;
 
     private static final String TEST_REPO_ID = "testRepo";
 
-    private RepositoryStatisticsManager repositoryStatisticsManager;
-
-    private TestConsumer testConsumer;
-
     private MetadataRepository metadataRepository;
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
 
-        try
-        {
-            taskExecutor = (TaskExecutor) lookup( TaskExecutor.class, "test-repository-scanning" );
-        }
-        catch ( Exception e )
-        {
-            // TODO: handle cleanup in plexus-spring lookup method instead
-            applicationContext.close();
-            throw e;
-        }
-
-        File sourceRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
-        repoDir = new File( getBasedir(), "target/default-repository" );
+        File sourceRepoDir = new File( "./src/test/repositories/default-repository" );
+        repoDir = new File( "./target/default-repository" );
 
         FileUtils.deleteDirectory( repoDir );
         assertFalse( "Default Test Repository should not exist.", repoDir.exists() );
@@ -101,7 +111,6 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
-        ArchivaConfiguration archivaConfig = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         assertNotNull( archivaConfig );
 
         // Create it
@@ -112,16 +121,13 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         archivaConfig.getConfiguration().getManagedRepositories().clear();
         archivaConfig.getConfiguration().addManagedRepository( repositoryConfiguration );
 
-        repositoryStatisticsManager = (RepositoryStatisticsManager) lookup( RepositoryStatisticsManager.class );
-        testConsumer = (TestConsumer) lookup( KnownRepositoryContentConsumer.class, "test-consumer" );
-
         metadataRepository = mock( MetadataRepository.class );
 
-        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
         factory.setRepository( metadataRepository );
     }
 
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         FileUtils.deleteDirectory( repoDir );
@@ -131,6 +137,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         super.tearDown();
     }
 
+    @Test
     public void testExecutor()
         throws Exception
     {
@@ -146,6 +153,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         assertEquals( "Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );
     }
 
+    @Test
     public void testExecutorScanOnlyNewArtifacts()
         throws Exception
     {
@@ -166,8 +174,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
                       unprocessedResultList.size() );
 
         // check correctness of new stats
-        RepositoryStatistics newStats = repositoryStatisticsManager.getLastStatistics( metadataRepository,
-                                                                                       TEST_REPO_ID );
+        RepositoryStatistics newStats =
+            repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertEquals( 0, newStats.getNewFileCount() );
         assertEquals( 31, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
@@ -178,7 +186,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
 
-        FileUtils.copyDirectoryStructure( new File( getBasedir(), "target/test-classes/test-repo/org/apache/archiva" ),
+        FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
                                           newArtifactGroup );
 
         // update last modified date
@@ -198,8 +206,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
                       unprocessedResultList.size() );
 
         // check correctness of new stats
-        RepositoryStatistics updatedStats = repositoryStatisticsManager.getLastStatistics( metadataRepository,
-                                                                                           TEST_REPO_ID );
+        RepositoryStatistics updatedStats =
+            repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertEquals( 2, updatedStats.getNewFileCount() );
         assertEquals( 33, updatedStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
@@ -209,6 +217,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 //        assertEquals( 19301, updatedStats.getTotalArtifactFileSize() );
     }
 
+    @Test
     public void testExecutorScanOnlyNewArtifactsChangeTimes()
         throws Exception
     {
@@ -221,7 +230,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
 
-        FileUtils.copyDirectoryStructure( new File( getBasedir(), "target/test-classes/test-repo/org/apache/archiva" ),
+        FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
                                           newArtifactGroup );
 
         // update last modified date, placing shortly after last scan
@@ -243,8 +252,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
                       unprocessedResultList.size() );
 
         // check correctness of new stats
-        RepositoryStatistics newStats = repositoryStatisticsManager.getLastStatistics( metadataRepository,
-                                                                                       TEST_REPO_ID );
+        RepositoryStatistics newStats =
+            repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertEquals( 2, newStats.getNewFileCount() );
         assertEquals( 33, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
@@ -254,6 +263,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 //        assertEquals( 19301, newStats.getTotalArtifactFileSize() );
     }
 
+    @Test
     public void testExecutorScanOnlyNewArtifactsMidScan()
         throws Exception
     {
@@ -266,7 +276,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
 
-        FileUtils.copyDirectoryStructure( new File( getBasedir(), "target/test-classes/test-repo/org/apache/archiva" ),
+        FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
                                           newArtifactGroup );
 
         // update last modified date, placing in middle of last scan
@@ -288,8 +298,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
                       unprocessedResultList.size() );
 
         // check correctness of new stats
-        RepositoryStatistics newStats = repositoryStatisticsManager.getLastStatistics( metadataRepository,
-                                                                                       TEST_REPO_ID );
+        RepositoryStatistics newStats =
+            repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertEquals( 2, newStats.getNewFileCount() );
         assertEquals( 33, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
@@ -299,6 +309,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
 //        assertEquals( 19301, newStats.getTotalArtifactFileSize() );
     }
 
+    @Test
     public void testExecutorForceScanAll()
         throws Exception
     {
@@ -308,8 +319,8 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         repoTask.setScanAll( true );
 
         Date date = Calendar.getInstance().getTime();
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, new Date(
-            date.getTime() - 1234567 ), date, 8, 8 );
+        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+                                                            new Date( date.getTime() - 1234567 ), date, 8, 8 );
 
         taskExecutor.executeTask( repoTask );
 
@@ -333,7 +344,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         stats.setTotalProjectCount( 5 );
         stats.setTotalArtifactFileSize( 38545 );
 
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, new Date(
-            date.getTime() - 1234567 ), date, 31, 31 );
+        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+                                                            new Date( date.getTime() - 1234567 ), date, 31, 31 );
     }
 }

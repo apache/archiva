@@ -22,6 +22,7 @@ package org.apache.maven.archiva.repository.metadata;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -42,13 +43,15 @@ import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -66,19 +69,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
-import org.apache.commons.io.FileUtils;
 
 /**
  * MetadataTools
  *
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.repository.metadata.MetadataTools"
+ *          <p/>
+ *          plexus.component role="org.apache.maven.archiva.repository.metadata.MetadataTools"
  */
+@Service( "metadataTools#default" )
 public class MetadataTools
-    implements RegistryListener, Initializable
+    implements RegistryListener
 {
-    private static Logger log = LoggerFactory.getLogger( MetadataTools.class );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     public static final String MAVEN_METADATA = "maven-metadata.xml";
 
@@ -87,22 +90,25 @@ public class MetadataTools
     private static final char GROUP_SEPARATOR = '.';
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
+    @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private FileTypes filetypes;
-    
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
-    
+
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+
     private List<String> artifactPatterns;
 
     private Map<String, Set<String>> proxies;
 
-    private static final char NUMS[] = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    private static final char NUMS[] = new char[]{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
     private SimpleDateFormat lastUpdatedFormat;
 
@@ -130,9 +136,10 @@ public class MetadataTools
      *
      * @return the Set of snapshot artifact versions found.
      * @throws LayoutException
-     * @throws ContentNotFoundException 
+     * @throws ContentNotFoundException
      */
-    public Set<String> gatherSnapshotVersions( ManagedRepositoryContent managedRepository, VersionedReference reference )
+    public Set<String> gatherSnapshotVersions( ManagedRepositoryContent managedRepository,
+                                               VersionedReference reference )
         throws LayoutException, IOException, ContentNotFoundException
     {
         Set<String> foundVersions = managedRepository.getVersions( reference );
@@ -209,7 +216,7 @@ public class MetadataTools
         {
             // Scary check, but without it, all paths are version references;
             throw new RepositoryMetadataException(
-                                                   "Not a versioned reference, as version id on path has no number in it." );
+                "Not a versioned reference, as version id on path has no number in it." );
         }
 
         reference.setArtifactId( pathParts[artifactIdOffset] );
@@ -336,8 +343,8 @@ public class MetadataTools
         return ret.toString();
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         this.artifactPatterns = new ArrayList<String>();
         this.proxies = new HashMap<String, Set<String>>();
@@ -351,7 +358,7 @@ public class MetadataTools
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
-        
+
         if ( !metadataFile.exists() || !metadataFile.isFile() )
         {
             // Nothing to do. return null.
@@ -370,13 +377,13 @@ public class MetadataTools
             return null;
         }
     }
-    
+
     public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
                                                         String logicalResource, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, logicalResource );
         File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
-        
+
         if ( !metadataFile.exists() || !metadataFile.isFile() )
         {
             // Nothing to do. return null.
@@ -401,7 +408,7 @@ public class MetadataTools
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
-        
+
         if ( !metadataFile.exists() || !metadataFile.isFile() )
         {
             // Nothing to do. return null.
@@ -420,112 +427,116 @@ public class MetadataTools
             return null;
         }
     }
-    
-    public void updateMetadata( ManagedRepositoryContent managedRepository, String logicalResource) throws RepositoryMetadataException
+
+    public void updateMetadata( ManagedRepositoryContent managedRepository, String logicalResource )
+        throws RepositoryMetadataException
     {
-        final File metadataFile = new File(managedRepository.getRepoRoot(), logicalResource);
+        final File metadataFile = new File( managedRepository.getRepoRoot(), logicalResource );
         ArchivaRepositoryMetadata metadata = null;
-        
+
         //Gather and merge all metadata available
-        List<ArchivaRepositoryMetadata> metadatas = getMetadatasForManagedRepository(managedRepository, logicalResource);
-        for (ArchivaRepositoryMetadata proxiedMetadata : metadatas)
+        List<ArchivaRepositoryMetadata> metadatas =
+            getMetadatasForManagedRepository( managedRepository, logicalResource );
+        for ( ArchivaRepositoryMetadata proxiedMetadata : metadatas )
         {
-            if (metadata == null)
+            if ( metadata == null )
             {
                 metadata = proxiedMetadata;
                 continue;
             }
-            metadata = RepositoryMetadataMerge.merge(metadata, proxiedMetadata);
+            metadata = RepositoryMetadataMerge.merge( metadata, proxiedMetadata );
         }
-        
-        if (metadata == null)
+
+        if ( metadata == null )
         {
-            log.debug("No metadata to update for " + logicalResource);
+            log.debug( "No metadata to update for " + logicalResource );
             return;
         }
-        
+
         Set<String> availableVersions = new HashSet<String>();
         List<String> metadataAvailableVersions = metadata.getAvailableVersions();
-        if (metadataAvailableVersions != null)
+        if ( metadataAvailableVersions != null )
         {
-            availableVersions.addAll(metadataAvailableVersions);
+            availableVersions.addAll( metadataAvailableVersions );
         }
-        availableVersions = findPossibleVersions(availableVersions, metadataFile.getParentFile());
+        availableVersions = findPossibleVersions( availableVersions, metadataFile.getParentFile() );
 
-        if (availableVersions.size() > 0)
+        if ( availableVersions.size() > 0 )
         {
-            updateMetadataVersions(availableVersions, metadata);
+            updateMetadataVersions( availableVersions, metadata );
         }
-        
-        RepositoryMetadataWriter.write(metadata, metadataFile);
-        
+
+        RepositoryMetadataWriter.write( metadata, metadataFile );
+
         ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
     }
-    
+
     /**
-     * Skims the parent directory of a metadata in vain hope of finding 
+     * Skims the parent directory of a metadata in vain hope of finding
      * subdirectories that contain poms.
-     * 
+     *
      * @param metadataParentDirectory
      * @return origional set plus newley found versions
      */
-    private Set<String> findPossibleVersions(Set<String> versions, File metadataParentDirectory)
+    private Set<String> findPossibleVersions( Set<String> versions, File metadataParentDirectory )
     {
-        Set<String> result = new HashSet<String>(versions);
-        for (File directory : metadataParentDirectory.listFiles())
+        Set<String> result = new HashSet<String>( versions );
+        for ( File directory : metadataParentDirectory.listFiles() )
         {
-            if (directory.isDirectory())
+            if ( directory.isDirectory() )
             {
-                for (File possiblePom : directory.listFiles())
+                for ( File possiblePom : directory.listFiles() )
                 {
-                    if (possiblePom.getName().endsWith(".pom"))
+                    if ( possiblePom.getName().endsWith( ".pom" ) )
                     {
-                        result.add(directory.getName());
+                        result.add( directory.getName() );
                     }
                 }
             }
         }
         return result;
     }
-    
-    private List<ArchivaRepositoryMetadata> getMetadatasForManagedRepository( ManagedRepositoryContent managedRepository, String logicalResource )
+
+    private List<ArchivaRepositoryMetadata> getMetadatasForManagedRepository(
+        ManagedRepositoryContent managedRepository, String logicalResource )
     {
         List<ArchivaRepositoryMetadata> metadatas = new ArrayList<ArchivaRepositoryMetadata>();
-        File file = new File(managedRepository.getRepoRoot(), logicalResource);
-        if (file.exists())
+        File file = new File( managedRepository.getRepoRoot(), logicalResource );
+        if ( file.exists() )
         {
             try
             {
-               ArchivaRepositoryMetadata existingMetadata = RepositoryMetadataReader.read(file);
-               if (existingMetadata != null)
-               {
-                    metadatas.add(existingMetadata);
-               }
+                ArchivaRepositoryMetadata existingMetadata = RepositoryMetadataReader.read( file );
+                if ( existingMetadata != null )
+                {
+                    metadatas.add( existingMetadata );
+                }
             }
-            catch (RepositoryMetadataException e)
+            catch ( RepositoryMetadataException e )
             {
-                log.debug("Could not read metadata at " + file.getAbsolutePath() + ". Metadata will be removed.");
-                FileUtils.deleteQuietly(file);
+                log.debug( "Could not read metadata at " + file.getAbsolutePath() + ". Metadata will be removed." );
+                FileUtils.deleteQuietly( file );
             }
         }
-        
-        Set<String> proxyIds = proxies.get(managedRepository.getId());
-        if (proxyIds != null)
+
+        Set<String> proxyIds = proxies.get( managedRepository.getId() );
+        if ( proxyIds != null )
         {
-            for (String proxyId : proxyIds)
+            for ( String proxyId : proxyIds )
             {
-                ArchivaRepositoryMetadata proxyMetadata = readProxyMetadata( managedRepository, logicalResource, proxyId );
-                if (proxyMetadata != null)
+                ArchivaRepositoryMetadata proxyMetadata =
+                    readProxyMetadata( managedRepository, logicalResource, proxyId );
+                if ( proxyMetadata != null )
                 {
-                    metadatas.add(proxyMetadata);
+                    metadatas.add( proxyMetadata );
                 }
             }
         }
-        
+
         return metadatas;
     }
-    
+
 
     /**
      * Update the metadata to represent the all versions/plugins of
@@ -533,16 +544,16 @@ public class MetadataTools
      * based off of information present in the repository,
      * the maven-metadata.xml files, and the proxy/repository specific
      * metadata file contents.
-     *
+     * <p/>
      * We must treat this as a group or a project metadata file as there is no way to know in advance
      *
-     * @deprecated 
      * @param managedRepository the managed repository where the metadata is kept.
      * @param reference         the reference to update.
      * @throws LayoutException
      * @throws RepositoryMetadataException
      * @throws IOException
-     * @throws ContentNotFoundException 
+     * @throws ContentNotFoundException
+     * @deprecated
      */
     public void updateMetadata( ManagedRepositoryContent managedRepository, ProjectReference reference )
         throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
@@ -596,7 +607,7 @@ public class MetadataTools
 
         if ( !allVersions.isEmpty() )
         {
-            updateMetadataVersions( allVersions ,metadata );
+            updateMetadataVersions( allVersions, metadata );
         }
         else
         {
@@ -619,44 +630,44 @@ public class MetadataTools
         checksum.fixChecksums( algorithms );
     }
 
-    private void updateMetadataVersions(Collection<String> allVersions, ArchivaRepositoryMetadata metadata) 
+    private void updateMetadataVersions( Collection<String> allVersions, ArchivaRepositoryMetadata metadata )
     {
         // Sort the versions
-        List<String> sortedVersions = new ArrayList<String>(allVersions);
-        Collections.sort(sortedVersions, VersionComparator.getInstance());
+        List<String> sortedVersions = new ArrayList<String>( allVersions );
+        Collections.sort( sortedVersions, VersionComparator.getInstance() );
 
         // Split the versions into released and snapshots.
         List<String> releasedVersions = new ArrayList<String>();
         List<String> snapshotVersions = new ArrayList<String>();
 
-        for (String version : sortedVersions) 
+        for ( String version : sortedVersions )
         {
-            if (VersionUtil.isSnapshot(version)) 
+            if ( VersionUtil.isSnapshot( version ) )
             {
-                snapshotVersions.add(version);
+                snapshotVersions.add( version );
             }
-            else 
+            else
             {
-                releasedVersions.add(version);
+                releasedVersions.add( version );
             }
         }
 
-        Collections.sort(releasedVersions, VersionComparator.getInstance());
-        Collections.sort(snapshotVersions, VersionComparator.getInstance());
+        Collections.sort( releasedVersions, VersionComparator.getInstance() );
+        Collections.sort( snapshotVersions, VersionComparator.getInstance() );
 
-        String latestVersion = sortedVersions.get(sortedVersions.size() - 1);
+        String latestVersion = sortedVersions.get( sortedVersions.size() - 1 );
         String releaseVersion = null;
 
-        if (CollectionUtils.isNotEmpty(releasedVersions)) 
+        if ( CollectionUtils.isNotEmpty( releasedVersions ) )
         {
-            releaseVersion = releasedVersions.get(releasedVersions.size() - 1);
+            releaseVersion = releasedVersions.get( releasedVersions.size() - 1 );
         }
 
         // Add the versions to the metadata model.
-        metadata.setAvailableVersions(sortedVersions);
+        metadata.setAvailableVersions( sortedVersions );
 
-        metadata.setLatestVersion(latestVersion);
-        metadata.setReleasedVersion(releaseVersion);
+        metadata.setLatestVersion( latestVersion );
+        metadata.setReleasedVersion( releaseVersion );
     }
 
     private Date toLastUpdatedDate( long lastUpdated )
@@ -666,7 +677,7 @@ public class MetadataTools
 
         return cal.getTime();
     }
-    
+
     private long toLastUpdatedLong( String timestampString )
     {
         try
@@ -739,13 +750,13 @@ public class MetadataTools
      * 2) If this is a RELEASE reference, and the metadata file does not exist, then
      * create the metadata file with contents required of the VersionedReference
      *
-     * @deprecated
      * @param managedRepository the managed repository where the metadata is kept.
      * @param reference         the versioned reference to update
      * @throws LayoutException
      * @throws RepositoryMetadataException
      * @throws IOException
-     * @throws ContentNotFoundException 
+     * @throws ContentNotFoundException
+     * @deprecated
      */
     public void updateMetadata( ManagedRepositoryContent managedRepository, VersionedReference reference )
         throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
@@ -757,7 +768,7 @@ public class MetadataTools
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
         metadata.setArtifactId( reference.getArtifactId() );
-        
+
         if ( VersionUtil.isSnapshot( reference.getVersion() ) )
         {
             // Do SNAPSHOT handling.
@@ -769,8 +780,8 @@ public class MetadataTools
 
             if ( snapshotVersions.isEmpty() )
             {
-                throw new ContentNotFoundException( "No snapshot versions found on reference ["
-                    + VersionedReference.toKey( reference ) + "]." );
+                throw new ContentNotFoundException(
+                    "No snapshot versions found on reference [" + VersionedReference.toKey( reference ) + "]." );
             }
 
             // sort the list to determine to aide in determining the Latest version.
@@ -797,11 +808,11 @@ public class MetadataTools
                     {
                         String tsDate = mtimestamp.group( 1 );
                         String tsTime = mtimestamp.group( 2 );
-                        
+
                         long snapshotLastUpdated = toLastUpdatedLong( tsDate + tsTime );
-                        
+
                         lastUpdated = Math.max( lastUpdated, snapshotLastUpdated );
-                        
+
                         metadata.getSnapshotVersion().setTimestamp( m.group( 2 ) );
                     }
                 }
@@ -837,8 +848,8 @@ public class MetadataTools
             }
             else
             {
-                throw new RepositoryMetadataException( "Unable to process snapshot version <" + latestVersion
-                    + "> reference <" + reference + ">" );
+                throw new RepositoryMetadataException(
+                    "Unable to process snapshot version <" + latestVersion + "> reference <" + reference + ">" );
             }
         }
         else
@@ -873,7 +884,7 @@ public class MetadataTools
             this.proxies.clear();
 
             List<ProxyConnectorConfiguration> proxyConfigs = configuration.getConfiguration().getProxyConnectors();
-            for( ProxyConnectorConfiguration proxyConfig: proxyConfigs )
+            for ( ProxyConnectorConfiguration proxyConfig : proxyConfigs )
             {
                 String key = proxyConfig.getSourceRepoId();
 
@@ -901,7 +912,8 @@ public class MetadataTools
      * @throws IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
      * @throws LayoutException
      */
-    public ArtifactReference getFirstArtifact( ManagedRepositoryContent managedRepository, VersionedReference reference )
+    public ArtifactReference getFirstArtifact( ManagedRepositoryContent managedRepository,
+                                               VersionedReference reference )
         throws LayoutException, IOException
     {
         String path = toPath( reference );
@@ -917,13 +929,13 @@ public class MetadataTools
         if ( !repoDir.exists() )
         {
             throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+                                       + repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new IOException(
+                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         File repoFiles[] = repoDir.listFiles();
@@ -947,5 +959,25 @@ public class MetadataTools
 
         // No artifact was found.
         return null;
+    }
+
+    public ArchivaConfiguration getConfiguration()
+    {
+        return configuration;
+    }
+
+    public void setConfiguration( ArchivaConfiguration configuration )
+    {
+        this.configuration = configuration;
+    }
+
+    public FileTypes getFiletypes()
+    {
+        return filetypes;
+    }
+
+    public void setFiletypes( FileTypes filetypes )
+    {
+        this.filetypes = filetypes;
     }
 }

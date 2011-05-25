@@ -39,7 +39,11 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.Date;
 
 /**
@@ -49,42 +53,49 @@ import java.util.Date;
  * @plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor"
  * role-hint="repository-scanning"
  */
+@Service("taskExecutor#repository-scanning")
 public class ArchivaRepositoryScanningTaskExecutor
     implements TaskExecutor, Initializable
 {
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
      * The repository scanner component.
      *
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryScanner repoScanner;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryContentConsumers consumers;
 
     private Task task;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     /**
      * TODO: may be different implementations
      *
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
+    @PostConstruct
     public void initialize()
         throws InitializationException
     {
@@ -120,12 +131,12 @@ public class ArchivaRepositoryScanningTaskExecutor
         // execute consumers on resource file if set
         if ( repoTask.getResourceFile() != null )
         {
-            log.debug( "Executing task from queue with job name: " + repoTask );
+            log.debug( "Executing task from queue with job name: {}", repoTask );
             consumers.executeConsumers( arepo, repoTask.getResourceFile(), repoTask.isUpdateRelatedArtifacts() );
         }
         else
         {
-            log.info( "Executing task from queue with job name: " + repoTask );
+            log.info( "Executing task from queue with job name: {}", repoTask );
 
             // otherwise, execute consumers on whole repository
             if ( arepo == null )
@@ -188,7 +199,7 @@ public class ArchivaRepositoryScanningTaskExecutor
 //                metadataRepository.findAllProjects();
             // FIXME: do something
 
-            log.info( "Finished repository task: " + repoTask );
+            log.info( "Finished repository task: {}", repoTask );
 
             this.task = null;
         }
@@ -197,5 +208,55 @@ public class ArchivaRepositoryScanningTaskExecutor
     public Task getCurrentTaskInExecution()
     {
         return task;
+    }
+
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public RepositoryScanner getRepoScanner()
+    {
+        return repoScanner;
+    }
+
+    public void setRepoScanner( RepositoryScanner repoScanner )
+    {
+        this.repoScanner = repoScanner;
+    }
+
+    public RepositoryContentConsumers getConsumers()
+    {
+        return consumers;
+    }
+
+    public void setConsumers( RepositoryContentConsumers consumers )
+    {
+        this.consumers = consumers;
+    }
+
+    public RepositorySessionFactory getRepositorySessionFactory()
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
+    }
+
+    public RepositoryStatisticsManager getRepositoryStatisticsManager()
+    {
+        return repositoryStatisticsManager;
+    }
+
+    public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
+    {
+        this.repositoryStatisticsManager = repositoryStatisticsManager;
     }
 }

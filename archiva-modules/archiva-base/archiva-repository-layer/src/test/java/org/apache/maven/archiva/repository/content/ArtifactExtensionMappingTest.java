@@ -25,6 +25,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProv
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
+import org.junit.Test;
 
 import java.util.Collections;
 
@@ -39,6 +40,7 @@ public class ArtifactExtensionMappingTest
     private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator(
         Collections.<ArtifactMappingProvider>emptyList() );
 
+    @Test
     public void testIsMavenPlugin()
     {
         assertMavenPlugin( "maven-test-plugin" );

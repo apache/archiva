@@ -24,19 +24,20 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
- * RemoteLegacyRepositoryContent 
+ * RemoteLegacyRepositoryContent
  *
  * @version $Id$
- * 
  * @todo no need to be a component once legacy path parser is not
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.repository.RemoteRepositoryContent"
- *      role-hint="legacy"
- *      instantiation-strategy="per-lookup"
+ * plexus.component role="org.apache.maven.archiva.repository.RemoteRepositoryContent"
+ * role-hint="legacy"
+ * instantiation-strategy="per-lookup"
  */
+@Service( "remoteRepositoryContent#legacy" )
+@Scope( "prototype" )
 public class RemoteLegacyRepositoryContent
     extends AbstractLegacyRepositoryContent
     implements RemoteRepositoryContent
@@ -65,7 +66,7 @@ public class RemoteLegacyRepositoryContent
 
     /**
      * Convert a path to an artifact reference.
-     * 
+     *
      * @param path the path to convert. (relative or full url path)
      * @throws LayoutException if the path cannot be converted to an artifact reference.
      */

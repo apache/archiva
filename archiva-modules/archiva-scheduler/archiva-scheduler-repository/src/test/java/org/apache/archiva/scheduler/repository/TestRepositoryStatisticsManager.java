@@ -22,6 +22,7 @@ package org.apache.archiva.scheduler.repository;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service("repositoryStatisticsManager#test")
 public class TestRepositoryStatisticsManager
     implements RepositoryStatisticsManager
 {

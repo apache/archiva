@@ -31,7 +31,10 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -43,18 +46,18 @@ import java.util.Set;
  *
  * @version $Id$
  * 
- * @plexus.component 
+ * plexus.component
  *      role="org.apache.maven.archiva.repository.ManagedRepositoryContent"
  *      role-hint="default"
  *      instantiation-strategy="per-lookup"
  */
+@Service("managedRepositoryContent#default")
+@Scope("prototype")
 public class ManagedDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
-    /**
-     * @plexus.requirement
-     */
+    @Inject
     private FileTypes filetypes;
 
     private ManagedRepositoryConfiguration repository;
@@ -352,7 +355,6 @@ public class ManagedDefaultRepositoryContent
     /**
      * Get the first Artifact found in the provided VersionedReference location.
      *
-     * @param managedRepository the repository to search within.
      * @param reference         the reference to the versioned reference to search within
      * @return the ArtifactReference to the first artifact located within the versioned reference. or null if
      *         no artifact was found within the versioned reference.

@@ -24,7 +24,7 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
  * PathParser interface.
- * 
+ *
  * @version $Id$
  */
 public interface PathParser
@@ -32,12 +32,12 @@ public interface PathParser
 
     /**
      * Take a path and get the ArtifactReference associated with it.
-     * 
+     *
      * @param path the relative path to parse.
      * @return the ArtifactReference for the provided path. (never null)
      * @throws LayoutException if there was a problem parsing the path.
      */
-    public ArtifactReference toArtifactReference( String path )
+    ArtifactReference toArtifactReference( String path )
         throws LayoutException;
 
 }

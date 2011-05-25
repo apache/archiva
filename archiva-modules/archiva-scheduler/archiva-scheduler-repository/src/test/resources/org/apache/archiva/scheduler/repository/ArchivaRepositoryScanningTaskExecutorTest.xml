@@ -29,6 +29,7 @@
         <requirement>
           <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
           <field-name>archivaConfiguration</field-name>
+          <role-hint>test-repository-scanning</role-hint>
         </requirement>
         <requirement>
           <role>org.apache.archiva.repository.scanner.RepositoryScanner</role>
@@ -46,10 +47,11 @@
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <role-hint>test-repository-scanning</role-hint>
       <requirements>
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
-          <role-hint>configured</role-hint>
+          <role-hint>test-configured</role-hint>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
@@ -64,13 +66,17 @@
 
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
-      <role-hint>configured</role-hint>
-      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <role-hint>test-configured</role-hint>
+      <implementation>org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry</implementation>
       <configuration>
         <properties>
+          <![CDATA[
+          <configuration>
           <system/>
           <xml fileName="${basedir}/src/test/resources/archiva-test.xml"
                config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+          </configuration>
+          ]]>
         </properties>
       </configuration>
     </component>

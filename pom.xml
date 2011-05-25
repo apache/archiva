@@ -96,6 +96,7 @@
                     <exclude>net.sf.ehcache:ehcache</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-api</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-commons</exclude>
+                    <exclude>>org.codehaus.plexus:plexus-taskqueue</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -782,9 +783,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-taskqueue</artifactId>
-        <version>1.0-alpha-8</version>
+        <groupId>org.codehaus.redback.components</groupId>
+        <artifactId>spring-taskqueue</artifactId>
+        <version>1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>

@@ -24,17 +24,21 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
- * RemoteDefaultRepositoryContent 
+ * RemoteDefaultRepositoryContent
  *
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.repository.RemoteRepositoryContent"
- *      role-hint="default"
- *      instantiation-strategy="per-lookup"
+ *          <p/>
+ *          plexus.component
+ *          role="org.apache.maven.archiva.repository.RemoteRepositoryContent"
+ *          role-hint="default"
+ *          instantiation-strategy="per-lookup"
  */
+@Service( "remoteRepositoryContent#default" )
+@Scope( "prototype" )
 public class RemoteDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
     implements RemoteRepositoryContent
@@ -63,7 +67,7 @@ public class RemoteDefaultRepositoryContent
 
     /**
      * Convert a path to an artifact reference.
-     * 
+     *
      * @param path the path to convert. (relative or full url path)
      * @throws LayoutException if the path cannot be converted to an artifact reference.
      */

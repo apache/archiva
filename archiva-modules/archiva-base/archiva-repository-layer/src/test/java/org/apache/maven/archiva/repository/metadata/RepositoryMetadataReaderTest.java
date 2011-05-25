@@ -19,21 +19,28 @@ package org.apache.maven.archiva.repository.metadata;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.File;
 
 /**
- * RepositoryMetadataReaderTest 
+ * RepositoryMetadataReaderTest
  *
  * @version $Id$
  */
-public class RepositoryMetadataReaderTest extends PlexusInSpringTestCase
+@RunWith( JUnit4.class )
+public class RepositoryMetadataReaderTest
+    extends TestCase
 {
-    public void testLoadSimple() throws RepositoryMetadataException
+    @Test
+    public void testLoadSimple()
+        throws RepositoryMetadataException
     {
-        File defaultRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
+        File defaultRepoDir = new File( "src/test/repositories/default-repository" );
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
         ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( metadataFile );
@@ -46,10 +53,12 @@ public class RepositoryMetadataReaderTest extends PlexusInSpringTestCase
         assertTrue( "Available version 1.0", metadata.getAvailableVersions().contains( "1.0" ) );
         assertTrue( "Available version 1.1", metadata.getAvailableVersions().contains( "1.1" ) );
     }
-    
-    public void testLoadComplex() throws RepositoryMetadataException
+
+    @Test
+    public void testLoadComplex()
+        throws RepositoryMetadataException
     {
-        File defaultRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
+        File defaultRepoDir = new File( "src/test/repositories/default-repository" );
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/samplejar/maven-metadata.xml" );
 
         ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( metadataFile );
@@ -60,7 +69,8 @@ public class RepositoryMetadataReaderTest extends PlexusInSpringTestCase
         assertEquals( "Released Version", "2.0", metadata.getReleasedVersion() );
         assertEquals( "Latest Version", "6.0-SNAPSHOT", metadata.getLatestVersion() );
         assertEquals( "List of Available Versions", 18, metadata.getAvailableVersions().size() );
-        assertTrue( "Available version 6.0-20060311.183228-10", metadata.getAvailableVersions().contains( "6.0-20060311.183228-10" ) );
+        assertTrue( "Available version 6.0-20060311.183228-10",
+                    metadata.getAvailableVersions().contains( "6.0-20060311.183228-10" ) );
         assertTrue( "Available version 6.0-SNAPSHOT", metadata.getAvailableVersions().contains( "6.0-SNAPSHOT" ) );
     }
 }

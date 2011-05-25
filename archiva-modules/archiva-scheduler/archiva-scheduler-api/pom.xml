@@ -11,8 +11,8 @@
   <name>Archiva Base :: Scheduled Tasks :: API</name>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-taskqueue</artifactId>
+      <groupId>org.codehaus.redback.components</groupId>
+      <artifactId>spring-taskqueue</artifactId>
     </dependency>
   </dependencies>
 </project>

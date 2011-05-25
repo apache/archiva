@@ -19,13 +19,6 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -35,14 +28,25 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Service( "knownRepositoryContentConsumer#test-consumer" )
 public class TestConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
     private Set<ArtifactReference> consumed = new HashSet<ArtifactReference>();
 
-    // injected
+    @Inject
     private RepositoryContentFactory factory;
 
     private ManagedRepositoryContent repository;

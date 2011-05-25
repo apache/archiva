@@ -24,26 +24,29 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * RepositoryRequest is used to determine the type of request that is incoming, and convert it to an appropriate
  * ArtifactReference.
  *
  * @version $Id$
- *
  * @todo no need to be a component once legacy path parser is not
- *
- * @plexus.component
- *      role="org.apache.maven.archiva.repository.content.RepositoryRequest"
+ * <p/>
  */
 public class RepositoryRequest
 {
     private PathParser defaultPathParser = new DefaultPathParser();
 
-    /**
-     * @plexus.requirement role-hint="legacy"
-     */
     private PathParser legacyPathParser;
+
+    public RepositoryRequest (LegacyPathParser legacyPathParser)
+    {
+        this.legacyPathParser = legacyPathParser;
+    }
 
     /**
      * Takes an incoming requested path (in "/" format) and gleans the layout
@@ -135,18 +138,18 @@ public class RepositoryRequest
 
     public boolean isMetadataSupportFile( String requestedPath )
     {
-        if( isSupportFile( requestedPath ) )
+        if ( isSupportFile( requestedPath ) )
         {
             String basefilePath = StringUtils.substring( requestedPath, 0, requestedPath.lastIndexOf( '.' ) );
-            if( isMetadata( basefilePath ) )
+            if ( isMetadata( basefilePath ) )
             {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a default layout request.
@@ -168,31 +171,31 @@ public class RepositoryRequest
             return false;
         }
 
-        String pathParts[] = StringUtils.splitPreserveAllTokens( requestedPath, '/' );        
-        if( pathParts.length > 3 )
+        String pathParts[] = StringUtils.splitPreserveAllTokens( requestedPath, '/' );
+        if ( pathParts.length > 3 )
         {
             return true;
         }
         else if ( pathParts.length == 3 )
-        {            
+        {
             // check if artifact-level metadata (ex. eclipse/jdtcore/maven-metadata.xml)
-            if( isMetadata( requestedPath ) )
+            if ( isMetadata( requestedPath ) )
             {
                 return true;
             }
-            else 
+            else
             {
                 // check if checksum of artifact-level metadata (ex. eclipse/jdtcore/maven-metadata.xml.sha1)
-                int idx = requestedPath.lastIndexOf( '.' );               
+                int idx = requestedPath.lastIndexOf( '.' );
                 if ( idx > 0 )
                 {
                     String base = requestedPath.substring( 0, idx );
-                    if( isMetadata( base ) && isSupportFile( requestedPath ) )
+                    if ( isMetadata( base ) && isSupportFile( requestedPath ) )
                     {
                         return true;
                     }
                 }
-                
+
                 return false;
             }
         }
@@ -231,11 +234,12 @@ public class RepositoryRequest
      * Adjust the requestedPath to conform to the native layout of the provided {@link ManagedRepositoryContent}.
      *
      * @param requestedPath the incoming requested path.
-     * @param repository the repository to adjust to.
+     * @param repository    the repository to adjust to.
      * @return the adjusted (to native) path.
      * @throws LayoutException if the path cannot be parsed.
      */
-    public String toNativePath( String requestedPath, ManagedRepositoryContent repository ) throws LayoutException
+    public String toNativePath( String requestedPath, ManagedRepositoryContent repository )
+        throws LayoutException
     {
         if ( StringUtils.isBlank( requestedPath ) )
         {
@@ -247,7 +251,7 @@ public class RepositoryRequest
         String supportfile = "";
 
         // Figure out support file, and actual referencedResource.
-        if( isSupportFile( requestedPath ) )
+        if ( isSupportFile( requestedPath ) )
         {
             int idx = requestedPath.lastIndexOf( '.' );
             referencedResource = requestedPath.substring( 0, idx );

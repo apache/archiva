@@ -29,7 +29,11 @@ import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.junit.Before;
+import org.junit.Test;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,59 +42,92 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * ManagedDefaultRepositoryContentTest 
+ * ManagedDefaultRepositoryContentTest
  *
  * @version $Id$
  */
 public class ManagedDefaultRepositoryContentTest
     extends AbstractDefaultRepositoryContentTestCase
 {
+    @Inject
+    @Named( value = "managedRepositoryContent#default" )
     private ManagedRepositoryContent repoContent;
 
+    @Inject
+    FileTypes fileTypes;
+
+    @Inject @Named(value = "archivaConfiguration#default")
+    ArchivaConfiguration archivaConfiguration;
+
+    @Before
+    public void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        File repoDir = new File( "src/test/repositories/default-repository" );
+
+        ManagedRepositoryConfiguration repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
+
+
+        FileType fileType =
+            (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+        fileType.addPattern( "**/*.xml" );
+        assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
+
+        fileTypes.afterConfigurationChange( null, "fileType", null );
+
+        //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
+        repoContent.setRepository( repository );
+    }
+
+    @Test
     public void testGetVersionsBadArtifact()
         throws Exception
     {
         assertGetVersions( "bad_artifact", Collections.<String>emptyList() );
     }
 
+    @Test
     public void testGetVersionsMissingMultipleVersions()
         throws Exception
     {
         assertGetVersions( "missing_metadata_b", Arrays.asList( "1.0", "1.0.1", "2.0", "2.0.1", "2.0-20070821-dev" ) );
     }
 
+    @Test
     public void testGetVersionsSimple()
         throws Exception
     {
-        assertVersions( "proxied_multi", "2.1", new String[] { "2.1" } );
+        assertVersions( "proxied_multi", "2.1", new String[]{ "2.1" } );
     }
 
+    @Test
     public void testGetVersionsSimpleYetIncomplete()
         throws Exception
     {
         assertGetVersions( "incomplete_metadata_a", Collections.singletonList( "1.0" ) );
     }
 
+    @Test
     public void testGetVersionsSimpleYetMissing()
         throws Exception
     {
         assertGetVersions( "missing_metadata_a", Collections.singletonList( "1.0" ) );
     }
 
+    @Test
     public void testGetVersionsSnapshotA()
         throws Exception
     {
-        assertVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", new String[] {
-            "1.0-alpha-11-SNAPSHOT",
-            "1.0-alpha-11-20070221.194724-2",
-            "1.0-alpha-11-20070302.212723-3",
-            "1.0-alpha-11-20070303.152828-4",
-            "1.0-alpha-11-20070305.215149-5",
-            "1.0-alpha-11-20070307.170909-6",
-            "1.0-alpha-11-20070314.211405-9",
-            "1.0-alpha-11-20070316.175232-11" } );
+        assertVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT",
+                        new String[]{ "1.0-alpha-11-SNAPSHOT", "1.0-alpha-11-20070221.194724-2",
+                            "1.0-alpha-11-20070302.212723-3", "1.0-alpha-11-20070303.152828-4",
+                            "1.0-alpha-11-20070305.215149-5", "1.0-alpha-11-20070307.170909-6",
+                            "1.0-alpha-11-20070314.211405-9", "1.0-alpha-11-20070316.175232-11" } );
     }
 
+    @Test
     public void testToMetadataPathFromProjectReference()
     {
         ProjectReference reference = new ProjectReference();
@@ -100,6 +137,7 @@ public class ManagedDefaultRepositoryContentTest
         assertEquals( "com/foo/foo-tool/maven-metadata.xml", repoContent.toMetadataPath( reference ) );
     }
 
+    @Test
     public void testToMetadataPathFromVersionReference()
     {
         VersionedReference reference = new VersionedReference();
@@ -110,6 +148,7 @@ public class ManagedDefaultRepositoryContentTest
         assertEquals( "com/foo/foo-tool/1.0/maven-metadata.xml", repoContent.toMetadataPath( reference ) );
     }
 
+    @Test
     public void testToPathOnNullArtifactReference()
     {
         try
@@ -124,10 +163,11 @@ public class ManagedDefaultRepositoryContentTest
         }
     }
 
+    @Test
     public void testExcludeMetadataFile()
         throws Exception
     {
-        assertVersions( "include_xml", "1.0", new String[] { "1.0" } );
+        assertVersions( "include_xml", "1.0", new String[]{ "1.0" } );
     }
 
     private void assertGetVersions( String artifactId, List<String> expectedVersions )
@@ -139,7 +179,7 @@ public class ManagedDefaultRepositoryContentTest
 
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
-        File repoDir = getTestFile( "src/test/repositories/metadata-repository" );
+        File repoDir = new File( "src/test/repositories/metadata-repository" );
         repoContent.getRepository().setLocation( repoDir.getAbsolutePath() );
 
         // Request the versions.
@@ -164,7 +204,7 @@ public class ManagedDefaultRepositoryContentTest
 
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
-        File repoDir = getTestFile( "src/test/repositories/metadata-repository" );
+        File repoDir = new File( "src/test/repositories/metadata-repository" );
         repoContent.getRepository().setLocation( repoDir.getAbsolutePath() );
 
         // Request the versions.
@@ -185,27 +225,6 @@ public class ManagedDefaultRepositoryContentTest
         }
     }
 
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        File repoDir = getTestFile( "src/test/repositories/default-repository" );
-
-        ManagedRepositoryConfiguration repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
-
-        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.ROLE );
-        FileType fileType = (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
-        fileType.addPattern( "**/*.xml" );
-        assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
-
-        FileTypes fileTypes = (FileTypes) lookup( FileTypes.class );
-        fileTypes.afterConfigurationChange( null, "fileType", null );
-
-        repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
-        repoContent.setRepository( repository );
-    }
 
     @Override
     protected ArtifactReference toArtifactReference( String path )

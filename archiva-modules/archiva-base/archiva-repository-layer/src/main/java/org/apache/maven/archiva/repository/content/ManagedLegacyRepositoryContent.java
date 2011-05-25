@@ -31,7 +31,10 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,13 +51,16 @@ import java.util.Set;
  *      role-hint="legacy"
  *      instantiation-strategy="per-lookup"
  */
+@Service("managedRepositoryContent#legacy")
+@Scope("prototype")
 public class ManagedLegacyRepositoryContent
     extends AbstractLegacyRepositoryContent
     implements ManagedRepositoryContent
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private FileTypes filetypes;
 
     private ManagedRepositoryConfiguration repository;

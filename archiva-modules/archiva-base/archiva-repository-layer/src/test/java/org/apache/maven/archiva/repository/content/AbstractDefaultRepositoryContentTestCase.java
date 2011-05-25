@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.junit.Test;
 
 /**
  * AbstractDefaultRepositoryContentTestCase 
@@ -32,37 +33,44 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 public abstract class AbstractDefaultRepositoryContentTestCase
     extends AbstractRepositoryLayerTestCase
 {
+    @Test
     public void testBadPathMissingType()
     {
         assertBadPath( "invalid/invalid/1/invalid-1", "missing type" );
     }
 
+    @Test
     public void testBadPathReleaseInSnapshotDir()
     {
         assertBadPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar", "non snapshot artifact inside of a snapshot dir" );
     }
 
+    @Test
     public void testBadPathTimestampedSnapshotNotInSnapshotDir()
     {
         assertBadPath( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar",
                        "Timestamped Snapshot artifact not inside of an Snapshot dir" );
     }
 
+    @Test
     public void testBadPathTooShort()
     {
         assertBadPath( "invalid/invalid-1.0.jar", "path is too short" );
     }
 
+    @Test
     public void testBadPathVersionMismatchA()
     {
         assertBadPath( "invalid/invalid/1.0/invalid-2.0.jar", "version mismatch between path and artifact" );
     }
 
+    @Test
     public void testBadPathVersionMismatchB()
     {
         assertBadPath( "invalid/invalid/1.0/invalid-1.0b.jar", "version mismatch between path and artifact" );
     }
 
+    @Test
     public void testBadPathWrongArtifactId()
     {
         assertBadPath( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar",
@@ -74,6 +82,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * Example of an oddball / unusual version spec.
      * @throws LayoutException 
      */
+    @Test
     public void testGoodButOddVersionSpecGanymedSsh2()
         throws LayoutException
     {
@@ -92,6 +101,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * Example of an oddball / unusual version spec.
      * @throws LayoutException 
      */
+    @Test
     public void testGoodButOddVersionSpecJavaxComm()
         throws LayoutException
     {
@@ -131,6 +141,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * Example of an oddball / unusual version spec.
      * @throws LayoutException 
      */
+    @Test
     public void testGoodButOddVersionSpecJavaxPersistence()
         throws LayoutException
     {
@@ -151,6 +162,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodComFooTool()
         throws LayoutException
     {
@@ -164,6 +176,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testGoodCommonsLang()
         throws LayoutException
     {
@@ -180,6 +193,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     /**
      * [MRM-486] Can not deploy artifact test.maven-arch:test-arch due to "No ArtifactID Detected"
      */
+    @Test
     public void testGoodDashedArtifactId()
         throws LayoutException
     {
@@ -196,6 +210,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     /**
      * It may seem odd, but this is a valid artifact.
      */
+    @Test
     public void testGoodDotNotationArtifactId()
         throws LayoutException
     {
@@ -212,6 +227,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     /**
      * It may seem odd, but this is a valid artifact.
      */
+    @Test
     public void testGoodDotNotationSameGroupIdAndArtifactId()
         throws LayoutException
     {
@@ -229,6 +245,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * Test the classifier, and java-source type spec.
      * @throws LayoutException 
      */
+    @Test
     public void testGoodFooLibSources()
         throws LayoutException
     {
@@ -246,6 +263,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
      * @throws LayoutException 
      */
+    @Test
     public void testGoodSnapshotMavenTest()
         throws LayoutException
     {
@@ -263,6 +281,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * [MRM-519] version identifiers within filename cause misidentification of version.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */
+    @Test
     public void testGoodVersionKeywordInArtifactId()
         throws LayoutException
     {
@@ -280,6 +299,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */
+    @Test
     public void testGoodDetectMavenTestPlugin()
         throws LayoutException
     {
@@ -296,6 +316,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
+    @Test
     public void testGoodDetectCoberturaMavenPlugin()
         throws LayoutException
     {
@@ -309,6 +330,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    @Test
     public void testToArtifactOnEmptyPath()
     {
         try
@@ -322,6 +344,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         }
     }
 
+    @Test
     public void testToArtifactOnNullPath()
     {
         try
@@ -335,6 +358,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         }
     }
 
+    @Test
     public void testToArtifactReferenceOnEmptyPath()
     {
         try
@@ -348,6 +372,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         }
     }
 
+    @Test
     public void testToArtifactReferenceOnNullPath()
     {
         try
@@ -361,6 +386,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         }
     }
 
+    @Test
     public void testToPathOnNullArtifactReference()
 
     {

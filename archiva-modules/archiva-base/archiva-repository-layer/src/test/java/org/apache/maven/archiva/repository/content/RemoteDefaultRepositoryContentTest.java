@@ -23,6 +23,10 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.junit.Before;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * RemoteDefaultRepositoryContentTest 
@@ -32,10 +36,11 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 public class RemoteDefaultRepositoryContentTest
     extends AbstractDefaultRepositoryContentTestCase
 {
+    @Inject @Named(value = "remoteRepositoryContent#default")
     private RemoteRepositoryContent repoContent;
 
-    @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -43,7 +48,7 @@ public class RemoteDefaultRepositoryContentTest
         RemoteRepositoryConfiguration repository = createRemoteRepository( "testRemoteRepo", "Unit Test Remote Repo",
                                                                            "http://repo1.maven.org/maven2/" );
 
-        repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, "default" );
+        //repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, "default" );
         repoContent.setRepository( repository );
     }
 
