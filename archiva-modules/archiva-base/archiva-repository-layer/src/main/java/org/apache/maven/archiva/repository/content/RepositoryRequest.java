@@ -34,7 +34,6 @@ import javax.inject.Named;
  * ArtifactReference.
  *
  * @version $Id$
- * @todo no need to be a component once legacy path parser is not
  * <p/>
  */
 public class RepositoryRequest

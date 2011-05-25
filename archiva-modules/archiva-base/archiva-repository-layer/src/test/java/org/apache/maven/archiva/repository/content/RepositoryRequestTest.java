@@ -38,12 +38,14 @@ import java.io.File;
  *
  * @version $Id$
  */
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-repo-request-test.xml" } )
+@ContextConfiguration(
+    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-repo-request-test.xml" } )
 public class RepositoryRequestTest
     extends AbstractRepositoryLayerTestCase
 {
 
-    @Inject @Named(value = "archivaConfiguration#repo-request-test")
+    @Inject
+    @Named( value = "archivaConfiguration#repo-request-test" )
     private ArchivaConfiguration archivaConfiguration;
 
     private RepositoryRequest repoRequest;
@@ -367,7 +369,7 @@ public class RepositoryRequestTest
     private ManagedRepositoryContent createManagedRepo( String layout )
         throws Exception
     {
-        File repoRoot = new File( "target/test-repo" );
+        File repoRoot = new File( getBasedir() + "/target/test-repo" );
         return createManagedRepositoryContent( "test-internal", "Internal Test Repo", repoRoot, layout );
     }
 
@@ -444,8 +446,8 @@ public class RepositoryRequestTest
         ManagedRepositoryContent repository = createManagedRepo( "default" );
 
         // Test (pom) legacy to default
-        assertEquals( "mygroup/myejb/1.0/myejb-1.0.jar",
-                      repoRequest.toNativePath( "mygroup/ejbs/myejb-1.0.jar", repository ) );
+        String result = repoRequest.toNativePath( "mygroup/ejbs/myejb-1.0.jar", repository );
+        assertEquals( "mygroup/myejb/1.0/myejb-1.0.jar", result );
     }
 
     @Test
