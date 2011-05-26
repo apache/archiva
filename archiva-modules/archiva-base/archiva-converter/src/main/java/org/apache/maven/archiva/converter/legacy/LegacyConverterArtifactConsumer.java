@@ -20,6 +20,7 @@ package org.apache.maven.archiva.converter.legacy;
  */
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -33,7 +34,6 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -83,7 +83,7 @@ public class LegacyConverterArtifactConsumer
 
     @Inject
     public LegacyConverterArtifactConsumer( PlexusSisuBridge plexusSisuBridge )
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
         includes = new ArrayList<String>();
         includes.add( "**/*.jar" );

@@ -20,6 +20,7 @@ package org.apache.archiva.dependency.tree.maven2;
  */
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -65,7 +66,6 @@ import org.apache.maven.shared.dependency.tree.traversal.BuildingDependencyNodeV
 import org.apache.maven.shared.dependency.tree.traversal.CollectingDependencyNodeVisitor;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.apache.maven.shared.dependency.tree.traversal.FilteringDependencyNodeVisitor;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -139,7 +139,7 @@ public class DefaultDependencyTreeBuilder
 
     @PostConstruct
     public void initialize()
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
         factory = plexusSisuBridge.lookup( ArtifactFactory.class );
         collector = plexusSisuBridge.lookup( ArtifactCollector.class );

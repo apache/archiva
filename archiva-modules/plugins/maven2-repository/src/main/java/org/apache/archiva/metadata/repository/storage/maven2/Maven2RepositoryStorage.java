@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -46,7 +47,6 @@ import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -75,7 +75,7 @@ import java.util.List;
  * <p/>
  * plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryStorage" role-hint="maven2"
  */
-@Service("repositoryStorage#maven2")
+@Service( "repositoryStorage#maven2" )
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
@@ -107,7 +107,7 @@ public class Maven2RepositoryStorage
 
     @PostConstruct
     public void initialize()
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
         builder = plexusSisuBridge.lookup( ModelBuilder.class );
     }

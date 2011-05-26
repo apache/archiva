@@ -20,6 +20,7 @@ package org.apache.maven.archiva.converter.legacy;
  */
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.maven.archiva.common.utils.PathUtil;
@@ -30,7 +31,6 @@ import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -77,7 +77,7 @@ public class DefaultLegacyRepositoryConverter
 
     @Inject
     public DefaultLegacyRepositoryConverter( PlexusSisuBridge plexusSisuBridge )
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
         artifactRepositoryFactory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
         defaultLayout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );

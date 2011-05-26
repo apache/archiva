@@ -20,6 +20,7 @@ package org.apache.maven.archiva.converter.artifact;
  */
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.transaction.FileTransaction;
@@ -42,11 +43,8 @@ import org.apache.maven.model.Relocation;
 import org.apache.maven.model.converter.ModelConverter;
 import org.apache.maven.model.converter.PomTranslationException;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.digest.Md5Digester;
-import org.codehaus.plexus.digest.Sha1Digester;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +57,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +112,7 @@ public class LegacyToDefaultConverter
 
     @PostConstruct
     public void initialize()
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
         this.digesters = plexusSisuBridge.lookupList( Digester.class );
         translator = plexusSisuBridge.lookup( ModelConverter.class );

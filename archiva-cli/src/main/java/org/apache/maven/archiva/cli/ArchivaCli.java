@@ -19,21 +19,10 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
@@ -47,8 +36,20 @@ import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.maven.artifact.manager.WagonManager;
-import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * ArchivaCli
@@ -67,7 +68,7 @@ public class ArchivaCli
     public static final String TARGET_REPO_PATH = "targetRepositoryPath";
 
     public static final String BLACKLISTED_PATTERNS = "blacklistPatterns";
-    
+
     public static final String POM_PROPERTIES = "/META-INF/maven/org.apache.archiva/archiva-cli/pom.properties";
 
     private static String getVersion()
@@ -91,12 +92,12 @@ public class ArchivaCli
         }
     }
 
-    private PlexusClassPathXmlApplicationContext applicationContext;
+    private ClassPathXmlApplicationContext applicationContext;
 
     public ArchivaCli()
     {
-        applicationContext = new PlexusClassPathXmlApplicationContext(
-            new String[]{"classpath*:/META-INF/spring-context.xml", "classpath*:/META-INF/plexus/components.xml"} );
+        applicationContext =
+            new ClassPathXmlApplicationContext( new String[]{ "classpath*:/META-INF/spring-context.xml" } );
     }
 
     public static void main( String[] args )
@@ -155,12 +156,12 @@ public class ArchivaCli
     }
 
     private void doScan( String path, String[] consumers )
-        throws ConsumerException, MalformedURLException
+        throws ConsumerException, MalformedURLException, PlexusSisuBridgeException
     {
         // hack around poorly configurable project builder by pointing all repositories back at this location to be self
         // contained
-        WagonManager wagonManager = (WagonManager) applicationContext.getBean(
-            PlexusToSpringUtils.buildSpringId( WagonManager.class.getName() ) );
+        PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
+        WagonManager wagonManager = plexusSisuBridge.lookup( WagonManager.class );
         wagonManager.addMirror( "internal", "*", new File( path ).toURL().toExternalForm() );
 
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
@@ -193,12 +194,14 @@ public class ArchivaCli
     }
 
     private Object lookup( Class<?> clazz )
+        throws PlexusSisuBridgeException
     {
-        return applicationContext.getBean( PlexusToSpringUtils.buildSpringId( clazz.getName(), null ) );
+        PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
+        return plexusSisuBridge.lookup( clazz );
     }
 
     private List<KnownRepositoryContentConsumer> getConsumerList( String[] consumers )
-        throws ConsumerException
+        throws ConsumerException, PlexusSisuBridgeException
     {
         List<KnownRepositoryContentConsumer> consumerList = new ArrayList<KnownRepositoryContentConsumer>();
 
@@ -220,6 +223,7 @@ public class ArchivaCli
     }
 
     private void dumpAvailableConsumers()
+        throws PlexusSisuBridgeException
     {
         Map<String, KnownRepositoryContentConsumer> availableConsumers = getConsumers();
 
@@ -234,14 +238,16 @@ public class ArchivaCli
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private Map<String, KnownRepositoryContentConsumer> getConsumers()
+        throws PlexusSisuBridgeException
     {
-        return PlexusToSpringUtils.lookupMap( "knownRepositoryContentConsumer", applicationContext );
+        PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
+        return plexusSisuBridge.lookupMap( KnownRepositoryContentConsumer.class );
     }
 
     private void doConversion( String properties )
-        throws FileNotFoundException, IOException, RepositoryConversionException
+        throws FileNotFoundException, IOException, RepositoryConversionException, PlexusSisuBridgeException
     {
         LegacyRepositoryConverter legacyRepositoryConverter =
             (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.class );
@@ -280,30 +286,30 @@ public class ArchivaCli
 
     private static class Commands
     {
-        @Argument(description = "Display help information", value = "help", alias = "h")
+        @Argument( description = "Display help information", value = "help", alias = "h" )
         private boolean help;
 
-        @Argument(description = "Display version information", value = "version", alias = "v")
+        @Argument( description = "Display version information", value = "version", alias = "v" )
         private boolean version;
 
-        @Argument(description = "List available consumers", value = "listconsumers", alias = "l")
+        @Argument( description = "List available consumers", value = "listconsumers", alias = "l" )
         private boolean listConsumers;
 
-        @Argument(description = "The consumers to use (comma delimited)", value = "consumers", alias = "u")
+        @Argument( description = "The consumers to use (comma delimited)", value = "consumers", alias = "u" )
         private String consumers = "count-artifacts";
 
-        @Argument(description = "Scan the specified repository", value = "scan", alias = "s")
+        @Argument( description = "Scan the specified repository", value = "scan", alias = "s" )
         private boolean scan;
 
         @Argument(
             description = "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion",
-            value = "convert", alias = "c")
+            value = "convert", alias = "c" )
         private boolean convert;
 
-        @Argument(description = "The properties file for the conversion", value = "properties")
+        @Argument( description = "The properties file for the conversion", value = "properties" )
         private String properties = "conversion.properties";
 
-        @Argument(description = "The repository to scan", value = "repository")
+        @Argument( description = "The repository to scan", value = "repository" )
         private String repository;
     }
 }

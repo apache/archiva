@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simple component which will initiate the plexus shim component
@@ -39,7 +40,7 @@ import java.util.List;
  *
  * @author Olivier Lamy
  */
-@Service("plexusSisuBridge")
+@Service( "plexusSisuBridge" )
 public class PlexusSisuBridge
 {
 
@@ -55,7 +56,7 @@ public class PlexusSisuBridge
 
     @PostConstruct
     public void initialize()
-        throws PlexusContainerException
+        throws PlexusSisuBridgeException
     {
         DefaultContainerConfiguration conf = new DefaultContainerConfiguration();
 
@@ -72,24 +73,65 @@ public class PlexusSisuBridge
 
         conf.setClassWorld( classWorld );
 
-        plexusContainer = new DefaultPlexusContainer( conf );
+        try
+        {
+            plexusContainer = new DefaultPlexusContainer( conf );
+        }
+        catch ( PlexusContainerException e )
+        {
+            throw new PlexusSisuBridgeException( e.getMessage(), e );
+        }
     }
 
     public <T> T lookup( Class<T> clazz )
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
-        return plexusContainer.lookup( clazz );
+        try
+        {
+            return plexusContainer.lookup( clazz );
+        }
+        catch ( ComponentLookupException e )
+        {
+            throw new PlexusSisuBridgeException( e.getMessage(), e );
+        }
     }
 
     public <T> T lookup( Class<T> clazz, String hint )
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
-        return plexusContainer.lookup( clazz, hint );
+        try
+        {
+            return plexusContainer.lookup( clazz, hint );
+        }
+        catch ( ComponentLookupException e )
+        {
+            throw new PlexusSisuBridgeException( e.getMessage(), e );
+        }
     }
 
     public <T> List<T> lookupList( Class<T> clazz )
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
-        return plexusContainer.lookupList( clazz );
+        try
+        {
+            return plexusContainer.lookupList( clazz );
+        }
+        catch ( ComponentLookupException e )
+        {
+            throw new PlexusSisuBridgeException( e.getMessage(), e );
+        }
+    }
+
+    public <T> Map<String, T> lookupMap( Class<T> clazz )
+        throws PlexusSisuBridgeException
+    {
+        try
+        {
+            return plexusContainer.lookupMap( clazz );
+        }
+        catch ( ComponentLookupException e )
+        {
+            throw new PlexusSisuBridgeException( e.getMessage(), e );
+        }
     }
 }
