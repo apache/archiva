@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -41,13 +42,14 @@ import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Organization;
 import org.apache.maven.model.Scm;
-import org.apache.maven.model.building.DefaultModelBuilder;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -67,41 +69,47 @@ import java.util.List;
  * deal with rather than being instantiated per-repository.
  * FIXME: instantiate one per repository and allocate permanently from a factory (which can be obtained within the session).
  * TODO: finish Maven 1 implementation to prove this API
- *
+ * <p/>
  * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
  * within the session in the context of a single managed repository's resolution needs.
- *
+ * <p/>
  * plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryStorage" role-hint="maven2"
  */
+@Service("repositoryStorage#maven2")
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
-    private ModelBuilder builders;
+    private ModelBuilder builder;
 
     /**
      * plexus.requirement
      */
-    @Inject @Named(value = "archivaConfiguration#default")
+    @Inject
+    @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration archivaConfiguration;
 
     /**
      * plexus.requirement role-hint="maven2"
      */
-    @Inject @Named(value = "repositoryPathTranslator#maven2")
+    @Inject
+    @Named( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
 
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
     @PostConstruct
     public void initialize()
+        throws ComponentLookupException
     {
-        //
-        ou ou
+        builder = plexusSisuBridge.lookup( ModelBuilder.class );
     }
 
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
@@ -122,8 +130,8 @@ public class Maven2RepositoryStorage
         File basedir = new File( repositoryConfiguration.getLocation() );
         if ( VersionUtil.isSnapshot( projectVersion ) )
         {
-            File metadataFile = pathTranslator.toFile( basedir, namespace, projectId, projectVersion,
-                                                       METADATA_FILENAME );
+            File metadataFile =
+                pathTranslator.toFile( basedir, namespace, projectId, projectVersion, METADATA_FILENAME );
             try
             {
                 MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
@@ -132,8 +140,8 @@ public class Maven2RepositoryStorage
                 MavenRepositoryMetadata.Snapshot snapshotVersion = metadata.getSnapshotVersion();
                 if ( snapshotVersion != null )
                 {
-                    artifactVersion = artifactVersion.substring( 0, artifactVersion.length() -
-                        8 ); // remove SNAPSHOT from end
+                    artifactVersion =
+                        artifactVersion.substring( 0, artifactVersion.length() - 8 ); // remove SNAPSHOT from end
                     artifactVersion =
                         artifactVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
                 }
@@ -443,8 +451,8 @@ public class Maven2RepositoryStorage
     private ArtifactMetadata getArtifactFromFile( String repoId, String namespace, String projectId,
                                                   String projectVersion, File file )
     {
-        ArtifactMetadata metadata = pathTranslator.getArtifactFromId( repoId, namespace, projectId, projectVersion,
-                                                                      file.getName() );
+        ArtifactMetadata metadata =
+            pathTranslator.getArtifactFromId( repoId, namespace, projectId, projectVersion, file.getName() );
 
         populateArtifactMetadataFromFile( metadata, file );
 

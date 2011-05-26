@@ -19,8 +19,12 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.maven.archiva.xml.XMLException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.File;
 import java.util.Arrays;
@@ -30,11 +34,13 @@ import java.util.Arrays;
  *
  * @version $Id$
  */
+@RunWith( JUnit4.class )
 public class MavenRepositoryMetadataReaderTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private File defaultRepoDir;
 
+    @Test
     public void testGroupMetadata()
         throws XMLException
     {
@@ -69,6 +75,7 @@ public class MavenRepositoryMetadataReaderTest
         assertEquals( Arrays.asList( cleanPlugin, compilerPlugin, surefirePlugin ), metadata.getPlugins() );
     }
 
+    @Test
     public void testProjectMetadata()
         throws XMLException
     {
@@ -86,6 +93,7 @@ public class MavenRepositoryMetadataReaderTest
         assertEquals( "20061212214311", metadata.getLastUpdated() );
     }
 
+    @Test
     public void testProjectVersionMetadata()
         throws XMLException
     {
@@ -105,10 +113,11 @@ public class MavenRepositoryMetadataReaderTest
         assertEquals( "20080801151215", metadata.getLastUpdated() );
     }
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
-        defaultRepoDir = new File( getBasedir(), "target/test-repository" );
+        defaultRepoDir = new File( "target/test-repository" );
     }
 }

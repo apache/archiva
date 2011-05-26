@@ -6,6 +6,7 @@ import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.springframework.stereotype.Service;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,6 +27,7 @@ import org.codehaus.plexus.registry.RegistryListener;
  * under the License.
  */
 
+@Service("archivaConfiguration#test")
 public class TestConfiguration
     implements ArchivaConfiguration
 {

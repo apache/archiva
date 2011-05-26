@@ -19,6 +19,7 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -26,6 +27,7 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.RepositoryModelResolver;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.Slf4JPlexusLogger;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.artifact.Artifact;
@@ -63,8 +65,14 @@ import org.apache.maven.shared.dependency.tree.traversal.BuildingDependencyNodeV
 import org.apache.maven.shared.dependency.tree.traversal.CollectingDependencyNodeVisitor;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.apache.maven.shared.dependency.tree.traversal.FilteringDependencyNodeVisitor;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,50 +87,71 @@ import java.util.Set;
  * Default implementation of <code>DependencyTreeBuilder</code>. Customized wrapper for maven-dependency-tree to use
  * maven-model-builder instead of maven-project. Note that the role must differ to avoid conflicting with the
  * maven-shared implementation.
- *
- * @plexus.component role="org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder" role-hint="maven2"
+ * <p/>
+ * plexus.component role="org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder" role-hint="maven2"
  */
+@Service( "dependencyTreeBuilder#maven2" )
 public class DefaultDependencyTreeBuilder
-    extends AbstractLogEnabled
     implements DependencyTreeBuilder
 {
+
+    private Logger log = LoggerFactory.getLogger( getClass() );
+
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private ArtifactFactory factory;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private ArtifactCollector collector;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private ModelBuilder builder;
 
     /**
      * TODO: can have other types, and this might eventually come through from the main request
-     *
-     * @plexus.requirement
+     * <p/>
+     * plexus.requirement
      */
+    @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
     /**
-     * @plexus.requirement role-hint="maven2"
+     * plexus.requirement role-hint="maven2"
      */
+    @Inject
+    @Named( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
+    @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
+    @PostConstruct
+    public void initialize()
+        throws ComponentLookupException
+    {
+        factory = plexusSisuBridge.lookup( ArtifactFactory.class );
+        collector = plexusSisuBridge.lookup( ArtifactCollector.class );
+        builder = plexusSisuBridge.lookup( ModelBuilder.class );
+    }
 
     public void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
                                      DependencyNodeVisitor nodeVisitor )
         throws DependencyTreeBuilderException
     {
-        DependencyTreeResolutionListener listener = new DependencyTreeResolutionListener( getLogger() );
+        DependencyTreeResolutionListener listener =
+            new DependencyTreeResolutionListener( new Slf4JPlexusLogger( getClass() ) );
 
         Artifact projectArtifact = factory.createProjectArtifact( groupId, artifactId, version );
         File basedir = findArtifactInRepositories( repositoryIds, projectArtifact );
@@ -135,8 +164,8 @@ public class DefaultDependencyTreeBuilder
 
         try
         {
-            Model model = buildProject( new RepositoryModelResolver( basedir, pathTranslator ), groupId, artifactId,
-                                        version );
+            Model model =
+                buildProject( new RepositoryModelResolver( basedir, pathTranslator ), groupId, artifactId, version );
 
             Map managedVersions = createManagedVersionMap( model );
 
@@ -145,8 +174,8 @@ public class DefaultDependencyTreeBuilder
             RepositorySession repositorySession = repositorySessionFactory.createSession();
             try
             {
-                ArtifactMetadataSource metadataSource = new MetadataArtifactMetadataSource( repositoryIds,
-                                                                                            repositorySession );
+                ArtifactMetadataSource metadataSource =
+                    new MetadataArtifactMetadataSource( repositoryIds, repositorySession );
 
                 // Note that we don't permit going to external repositories. We don't need to pass in a local and remote
                 // since our metadata source has control over them
@@ -164,12 +193,12 @@ public class DefaultDependencyTreeBuilder
             DependencyNodeVisitor visitor = new BuildingDependencyNodeVisitor( nodeVisitor );
 
             CollectingDependencyNodeVisitor collectingVisitor = new CollectingDependencyNodeVisitor();
-            DependencyNodeVisitor firstPassVisitor = new FilteringDependencyNodeVisitor( collectingVisitor,
-                                                                                         StateDependencyNodeFilter.INCLUDED );
+            DependencyNodeVisitor firstPassVisitor =
+                new FilteringDependencyNodeVisitor( collectingVisitor, StateDependencyNodeFilter.INCLUDED );
             rootNode.accept( firstPassVisitor );
 
-            DependencyNodeFilter secondPassFilter = new AncestorOrSelfDependencyNodeFilter(
-                collectingVisitor.getNodes() );
+            DependencyNodeFilter secondPassFilter =
+                new AncestorOrSelfDependencyNodeFilter( collectingVisitor.getNodes() );
             visitor = new FilteringDependencyNodeVisitor( visitor, secondPassFilter );
 
             rootNode.accept( visitor );
@@ -202,8 +231,8 @@ public class DefaultDependencyTreeBuilder
             File repoDir = new File( repositoryConfiguration.getLocation() );
             File file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
                                                projectArtifact.getBaseVersion(),
-                                               projectArtifact.getArtifactId() + "-" + projectArtifact.getVersion() +
-                                                   ".pom" );
+                                               projectArtifact.getArtifactId() + "-" + projectArtifact.getVersion()
+                                                   + ".pom" );
 
             if ( file.exists() )
             {
@@ -245,10 +274,10 @@ public class DefaultDependencyTreeBuilder
             }
 
             VersionRange versionRange = VersionRange.createFromVersionSpec( dependency.getVersion() );
-            Artifact artifact = factory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(),
-                                                                  versionRange, dependency.getType(),
-                                                                  dependency.getClassifier(), scope, null,
-                                                                  dependency.isOptional() );
+            Artifact artifact =
+                factory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(), versionRange,
+                                                  dependency.getType(), dependency.getClassifier(), scope, null,
+                                                  dependency.isOptional() );
 
             if ( Artifact.SCOPE_SYSTEM.equals( scope ) )
             {
@@ -307,8 +336,8 @@ public class DefaultDependencyTreeBuilder
 
         Map<String, Artifact> map = null;
         List<Dependency> deps;
-        if ( ( dependencyManagement != null ) && ( ( deps = dependencyManagement.getDependencies() ) != null ) &&
-            ( deps.size() > 0 ) )
+        if ( ( dependencyManagement != null ) && ( ( deps = dependencyManagement.getDependencies() ) != null ) && (
+            deps.size() > 0 ) )
         {
             map = new ManagedVersionMap( map );
 
@@ -317,14 +346,12 @@ public class DefaultDependencyTreeBuilder
 
                 VersionRange versionRange = VersionRange.createFromVersionSpec( dependency.getVersion() );
 
-                Artifact artifact = factory.createDependencyArtifact( dependency.getGroupId(),
-                                                                      dependency.getArtifactId(), versionRange,
-                                                                      dependency.getType(), dependency.getClassifier(),
-                                                                      dependency.getScope(), dependency.isOptional() );
-                if ( getLogger().isDebugEnabled() )
-                {
-                    getLogger().debug( "  " + artifact );
-                }
+                Artifact artifact =
+                    factory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(), versionRange,
+                                                      dependency.getType(), dependency.getClassifier(),
+                                                      dependency.getScope(), dependency.isOptional() );
+
+                log.debug( "artifact {}", artifact );
 
                 // If the dependencyManagement section listed exclusions,
                 // add them to the managed artifacts here so that transitive
@@ -379,8 +406,9 @@ public class DefaultDependencyTreeBuilder
             // TODO: we removed relocation support here. This is something that might need to be generically handled
             //       throughout this module
 
-            Artifact pomArtifact = factory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                                                  artifact.getVersion(), artifact.getScope() );
+            Artifact pomArtifact =
+                factory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                                               artifact.getScope() );
 
             File basedir = findArtifactInRepositories( repositoryIds, pomArtifact );
 
@@ -389,8 +417,9 @@ public class DefaultDependencyTreeBuilder
             {
                 try
                 {
-                    project = buildProject( new RepositoryModelResolver( basedir, pathTranslator ),
-                                            artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
+                    project =
+                        buildProject( new RepositoryModelResolver( basedir, pathTranslator ), artifact.getGroupId(),
+                                      artifact.getArtifactId(), artifact.getVersion() );
                 }
                 catch ( ModelBuildingException e )
                 {
@@ -459,5 +488,10 @@ public class DefaultDependencyTreeBuilder
 
             return new ArrayList<ArtifactVersion>( versions );
         }
+    }
+
+    public ArtifactFactory getFactory()
+    {
+        return factory;
     }
 }

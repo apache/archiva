@@ -19,6 +19,7 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -28,14 +29,25 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.shared.dependency.tree.DependencyNode;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
 import java.util.Collections;
 
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
 public class DependencyTreeBuilderTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+    @Inject
+    @Named (value = "dependencyTreeBuilder#maven2")
     private DependencyTreeBuilder builder;
 
     private static final String TEST_REPO_ID = "test";
@@ -48,25 +60,26 @@ public class DependencyTreeBuilderTest
 
     private ArtifactFactory artifactFactory;
 
-    @Override
-    protected void setUp()
+    @Inject  @Named(value = "archivaConfiguration#test")
+    ArchivaConfiguration config;
+
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
 
-        ArchivaConfiguration config = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
-
         Configuration configuration = new Configuration();
         ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( TEST_REPO_ID );
-        repoConfig.setLocation( getTestPath( "target/test-repository" ) );
+        repoConfig.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
         configuration.addManagedRepository( repoConfig );
         config.save( configuration );
 
-        builder = (DependencyTreeBuilder) lookup( DependencyTreeBuilder.class, "maven2" );
-        artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.class );
+        artifactFactory = ((DefaultDependencyTreeBuilder)this.builder).getFactory();
     }
 
+    @Test
     public void testBuilder()
         throws DependencyTreeBuilderException
     {
@@ -250,6 +263,7 @@ public class DependencyTreeBuilderTest
         return createArtifact( groupId, artifactId, version, Artifact.SCOPE_COMPILE );
     }
 
+    @Test
     public void testBuilderMissingDependency()
         throws DependencyTreeBuilderException
     {

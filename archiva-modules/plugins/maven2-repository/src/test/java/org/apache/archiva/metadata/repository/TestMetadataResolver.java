@@ -22,10 +22,12 @@ package org.apache.archiva.metadata.repository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 // FIXME: remove - this is useless, better to mock it or avoid needing it
+@Service( "metadataResolver#test" )
 public class TestMetadataResolver
     implements MetadataResolver
 {

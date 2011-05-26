@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.License;
@@ -27,14 +28,20 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
-import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,11 +49,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
 public class Maven2RepositoryMetadataResolverTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
+    @Inject
+    @Named(value = "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -61,22 +72,27 @@ public class Maven2RepositoryMetadataResolverTest
 
     private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
+    @Inject
+    private ArchivaConfiguration configuration;
+
+    @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        //ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( getTestPath( "target/test-repository" ) );
+        testRepo.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
         c.addManagedRepository( testRepo );
         configuration.save( c );
 
-        storage = (Maven2RepositoryStorage) lookup( RepositoryStorage.class, "maven2" );
+        //storage = (Maven2RepositoryStorage) lookup( RepositoryStorage.class, "maven2" );
     }
 
+    @Test
     public void testGetProjectVersionMetadata()
         throws Exception
     {
@@ -131,6 +147,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertDependency( dependencies.get( 9 ), "easymock", "easymockclassextension", "1.2", "test" );
     }
 
+    @Test
     public void testGetArtifactMetadata()
         throws Exception
     {
@@ -173,6 +190,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( "pom", facet.getType() );
     }
 
+    @Test
     public void testGetArtifactMetadataSnapshots()
         throws Exception
     {
@@ -256,6 +274,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertNull( dependency.getSystemPath() );
     }
 
+    @Test
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
         throws Exception
     {
@@ -293,6 +312,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( Collections.<Dependency>emptyList(), metadata.getDependencies() );
     }
 
+    @Test
     public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()
         throws Exception
     {
@@ -307,6 +327,7 @@ public class Maven2RepositoryMetadataResolverTest
         }
     }
 
+    @Test
     public void testGetProjectVersionMetadataForTimestampedSnapshotMalformedMetadata()
         throws Exception
     {
@@ -322,6 +343,7 @@ public class Maven2RepositoryMetadataResolverTest
         }
     }
 
+    @Test
     public void testGetProjectVersionMetadataForTimestampedSnapshotIncompleteMetadata()
         throws Exception
     {
@@ -337,6 +359,7 @@ public class Maven2RepositoryMetadataResolverTest
         }
     }
 
+    @Test
     public void testGetProjectVersionMetadataForInvalidPom()
         throws Exception
     {
@@ -351,6 +374,7 @@ public class Maven2RepositoryMetadataResolverTest
         }
     }
 
+    @Test
     public void testGetProjectVersionMetadataForMislocatedPom()
         throws Exception
     {
@@ -365,6 +389,7 @@ public class Maven2RepositoryMetadataResolverTest
         }
     }
 
+    @Test
     public void testGetProjectVersionMetadataForMissingPom()
         throws Exception
     {
@@ -379,11 +404,13 @@ public class Maven2RepositoryMetadataResolverTest
         }
     }
 
+    @Test
     public void testGetRootNamespaces()
     {
         assertEquals( Arrays.asList( "com", "org" ), storage.listRootNamespaces( TEST_REPO_ID, ALL ) );
     }
 
+    @Test
     public void testGetNamespaces()
     {
         assertEquals( Arrays.asList( "example" ), storage.listNamespaces( TEST_REPO_ID, "com", ALL ) );
@@ -407,6 +434,7 @@ public class Maven2RepositoryMetadataResolverTest
                                                                                ALL ) );
     }
 
+    @Test
     public void testGetProjects()
     {
         assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "com", ALL ) );
@@ -427,6 +455,7 @@ public class Maven2RepositoryMetadataResolverTest
                                                                                  "org.apache.maven.shared", ALL ) );
     }
 
+    @Test
     public void testGetProjectVersions()
     {
         assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
@@ -458,6 +487,7 @@ public class Maven2RepositoryMetadataResolverTest
                                                                                     "maven-downloader", ALL ) );
     }
 
+    @Test
     public void testGetArtifacts()
     {
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata( TEST_REPO_ID,
@@ -480,6 +510,7 @@ public class Maven2RepositoryMetadataResolverTest
                         "f83aa25f016212a551a4b2249985effc" );
     }
 
+    @Test
     public void testGetArtifactsFiltered()
     {
         ExcludesFilter<String> filter = new ExcludesFilter<String>( Collections.singletonList(
@@ -502,6 +533,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertArtifact( artifacts.get( 1 ), "plexus-spring-1.2.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
     }
 
+    @Test
     public void testGetArtifactsTimestampedSnapshots()
     {
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata( TEST_REPO_ID,
