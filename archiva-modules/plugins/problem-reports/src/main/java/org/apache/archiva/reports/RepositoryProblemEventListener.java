@@ -27,12 +27,14 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataE
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Process repository management events and respond appropriately.
- *
- * @plexus.component role="org.apache.archiva.repository.events.RepositoryListener" role-hint="problem-reports"
+ * <p/>
+ * plexus.component role="org.apache.archiva.repository.events.RepositoryListener" role-hint="problem-reports"
  */
+@Service( "repositoryListener#problem-reports" )
 public class RepositoryProblemEventListener
     implements RepositoryListener
 {
@@ -68,8 +70,8 @@ public class RepositoryProblemEventListener
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Unable to remove repository problem facets for the version being corrected in the repository: " +
-                          e.getMessage(), e );
+            log.warn( "Unable to remove repository problem facets for the version being corrected in the repository: "
+                          + e.getMessage(), e );
         }
     }
 

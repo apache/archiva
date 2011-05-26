@@ -19,6 +19,7 @@ package org.apache.archiva.reports.consumers;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -28,21 +29,32 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Date;
 
 import static org.mockito.Mockito.*;
 
-@SuppressWarnings( {"ThrowableInstanceNeverThrown"} )
+@SuppressWarnings( { "ThrowableInstanceNeverThrown" } )
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class DuplicateArtifactsConsumerTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+    @Inject
+    @Named( value = "knownRepositoryContentConsumer#duplicate-artifacts" )
     private DuplicateArtifactsConsumer consumer;
 
     private ManagedRepositoryConfiguration config;
@@ -64,37 +76,44 @@ public class DuplicateArtifactsConsumerTest
 
     private static final ArtifactMetadata TEST_METADATA = createMetadata( TEST_VERSION );
 
+    @Inject
+    @Named( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
+    @Inject
+    ApplicationContext applicationContext;
+
+
+    @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        consumer = (DuplicateArtifactsConsumer) lookup( KnownRepositoryContentConsumer.class, "duplicate-artifacts" );
         assertNotNull( consumer );
 
         config = new ManagedRepositoryConfiguration();
         config.setId( TEST_REPO );
-        config.setLocation( getTestFile( "target/test-repository" ).getAbsolutePath() );
+        config.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
 
         metadataRepository = mock( MetadataRepository.class );
 
         RepositorySession session = mock( RepositorySession.class );
         when( session.getRepository() ).thenReturn( metadataRepository );
 
-        RepositorySessionFactory factory = (RepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        RepositorySessionFactory factory = applicationContext.getBean( RepositorySessionFactory.class );
+        //(RepositorySessionFactory) lookup( RepositorySessionFactory.class );
         when( factory.createSession() ).thenReturn( session );
 
-        pathTranslator = (RepositoryPathTranslator) lookup( RepositoryPathTranslator.class, "maven2" );
         when( pathTranslator.getArtifactForPath( TEST_REPO, TEST_FILE ) ).thenReturn( TEST_METADATA );
     }
 
+    @Test
     public void testConsumerArtifactNotDuplicated()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn( Arrays.asList(
-            TEST_METADATA ) );
+        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+            Arrays.asList( TEST_METADATA ) );
 
         consumer.beginScan( config, new Date() );
         consumer.processFile( TEST_FILE );
@@ -117,11 +136,12 @@ public class DuplicateArtifactsConsumerTest
 //        verify( metadataRepository, never() ).addMetadataFacet( eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
 //    }
 
+    @Test
     public void testConsumerArtifactDuplicated()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn( Arrays.asList(
-            TEST_METADATA, createMetadata( "1.0" ) ) );
+        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+            Arrays.asList( TEST_METADATA, createMetadata( "1.0" ) ) );
 
         consumer.beginScan( config, new Date() );
         consumer.processFile( TEST_FILE );
@@ -133,11 +153,12 @@ public class DuplicateArtifactsConsumerTest
         assertProblem( problem );
     }
 
+    @Test
     public void testConsumerArtifactDuplicatedButSelfNotInMetadataRepository()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn( Arrays.asList(
-            createMetadata( "1.0" ) ) );
+        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+            Arrays.asList( createMetadata( "1.0" ) ) );
 
         consumer.beginScan( config, new Date() );
         consumer.processFile( TEST_FILE );
@@ -149,6 +170,7 @@ public class DuplicateArtifactsConsumerTest
         assertProblem( problem );
     }
 
+    @Test
     public void testConsumerArtifactFileNotExist()
         throws Exception
     {
@@ -170,6 +192,7 @@ public class DuplicateArtifactsConsumerTest
         verify( metadataRepository, never() ).addMetadataFacet( eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
+    @Test
     public void testConsumerArtifactNotAnArtifactPathNoResults()
         throws Exception
     {
@@ -181,11 +204,12 @@ public class DuplicateArtifactsConsumerTest
         verify( metadataRepository, never() ).addMetadataFacet( eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
+    @Test
     public void testConsumerArtifactNotAnArtifactPathResults()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( eq( TEST_REPO ), anyString() ) ).thenReturn( Arrays.asList(
-            TEST_METADATA, createMetadata( "1.0" ) ) );
+        when( metadataRepository.getArtifactsByChecksum( eq( TEST_REPO ), anyString() ) ).thenReturn(
+            Arrays.asList( TEST_METADATA, createMetadata( "1.0" ) ) );
 
         // override, this feels a little overspecified though
         when( pathTranslator.getArtifactForPath( TEST_REPO, "com/example/invalid-artifact.txt" ) ).thenThrow(

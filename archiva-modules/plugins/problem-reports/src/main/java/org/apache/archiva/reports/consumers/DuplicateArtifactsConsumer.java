@@ -36,13 +36,16 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,45 +55,50 @@ import java.util.List;
 
 /**
  * Search the database of known SHA1 Checksums for potential duplicate artifacts.
- *
+ * <p/>
  * TODO: no need for this to be a scanner - we can just query the database / content repository to get a full list
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="duplicate-artifacts"
- * instantiation-strategy="per-lookup"
+ *          plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ *          role-hint="duplicate-artifacts"
+ *          instantiation-strategy="per-lookup"
  */
+@Service( "knownRepositoryContentConsumer#duplicate-artifacts" )
+@Scope( "prototype" )
 public class DuplicateArtifactsConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( DuplicateArtifactsConsumer.class );
 
     /**
-     * @plexus.configuration default-value="duplicate-artifacts"
+     * plexus.configuration default-value="duplicate-artifacts"
      */
-    private String id;
+    private String id = "duplicate-artifacts";
 
     /**
-     * @plexus.configuration default-value="Check for Duplicate Artifacts via SHA1 Checksums"
+     * plexus.configuration default-value="Check for Duplicate Artifacts via SHA1 Checksums"
      */
-    private String description;
+    private String description = "Check for Duplicate Artifacts via SHA1 Checksums";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private FileTypes filetypes;
 
     /**
      * FIXME: can be of other types
-     *
-     * @plexus.requirement
+     * <p/>
+     * plexus.requirement
      */
+    @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
     private List<String> includes = new ArrayList<String>();
@@ -101,9 +109,11 @@ public class DuplicateArtifactsConsumer
 
     /**
      * FIXME: needs to be selected based on the repository in question
-     *
-     * @plexus.requirement role-hint="maven2"
+     * <p/>
+     * plexus.requirement role-hint="maven2"
      */
+    @Inject
+    @Named( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     private RepositorySession repositorySession;
@@ -195,10 +205,10 @@ public class DuplicateArtifactsConsumer
             for ( ArtifactMetadata dupArtifact : results )
             {
                 String id = path.substring( path.lastIndexOf( "/" ) + 1 );
-                if ( dupArtifact.getId().equals( id ) && dupArtifact.getNamespace().equals(
-                    originalArtifact.getNamespace() ) && dupArtifact.getProject().equals(
-                    originalArtifact.getProject() ) && dupArtifact.getVersion().equals(
-                    originalArtifact.getVersion() ) )
+                if ( dupArtifact.getId().equals( id )
+                    && dupArtifact.getNamespace().equals( originalArtifact.getNamespace() )
+                    && dupArtifact.getProject().equals( originalArtifact.getProject() )
+                    && dupArtifact.getVersion().equals( originalArtifact.getVersion() ) )
                 {
                     // Skip reference to itself.
                     if ( log.isDebugEnabled() )
@@ -270,8 +280,8 @@ public class DuplicateArtifactsConsumer
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         initIncludes();
         configuration.addChangeListener( this );
