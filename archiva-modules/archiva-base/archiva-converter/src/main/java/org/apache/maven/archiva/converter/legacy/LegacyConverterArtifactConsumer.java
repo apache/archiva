@@ -19,10 +19,7 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -36,53 +33,63 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
  * LegacyConverterArtifactConsumer - convert artifacts as they are found
- * into the destination repository. 
+ * into the destination repository.
  *
  * @version $Id$
- * 
- * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *     role-hint="artifact-legacy-to-default-converter"
- *     instantiation-strategy="per-lookup"
+ *          <p/>
+ *          plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ *          role-hint="artifact-legacy-to-default-converter"
+ *          instantiation-strategy="per-lookup"
  */
-@Service("knownRepositoryContentConsumer#artifact-legacy-to-default-converter")
-@Scope("prototype")
+@Service( "knownRepositoryContentConsumer#artifact-legacy-to-default-converter" )
+@Scope( "prototype" )
 public class LegacyConverterArtifactConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
     private Logger log = LoggerFactory.getLogger( LegacyConverterArtifactConsumer.class );
-    
+
     /**
-     * @plexus.requirement role-hint="legacy-to-default"
+     * plexus.requirement role-hint="legacy-to-default"
      */
+    @Inject
     private ArtifactConverter artifactConverter;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private ArtifactFactory artifactFactory;
 
     private ManagedRepositoryContent managedRepository;
-    
+
     private ArtifactRepository destinationRepository;
 
     private List<String> includes;
 
     private List<String> excludes;
 
-    public LegacyConverterArtifactConsumer()
+    @Inject
+    public LegacyConverterArtifactConsumer( PlexusSisuBridge plexusSisuBridge )
+        throws ComponentLookupException
     {
         includes = new ArrayList<String>();
         includes.add( "**/*.jar" );
         includes.add( "**/*.ear" );
         includes.add( "**/*.war" );
+        artifactFactory = plexusSisuBridge.lookup( ArtifactFactory.class );
     }
 
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
@@ -100,7 +107,7 @@ public class LegacyConverterArtifactConsumer
 
     public void completeScan()
     {
-
+        // no op
     }
 
     public void completeScan( boolean executeOnEntireRepo )

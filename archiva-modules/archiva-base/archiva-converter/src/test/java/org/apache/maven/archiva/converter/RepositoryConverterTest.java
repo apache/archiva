@@ -19,18 +19,26 @@ package org.apache.maven.archiva.converter;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test the repository converter.
@@ -40,32 +48,43 @@ import org.codehaus.plexus.spring.PlexusInSpringTestCase;
  * @todo should reject if dependencies are missing - rely on reporting?
  * @todo group metadata
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
 public class RepositoryConverterTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private ArtifactRepository sourceRepository;
 
     private ManagedRepositoryConfiguration targetRepository;
 
+    @Inject
+    @Named(value = "legacyRepositoryConverter#default")
     private LegacyRepositoryConverter repositoryConverter;
 
-    protected void setUp()
+    @Inject
+    PlexusSisuBridge plexusSisuBridge;
+
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
 
-        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+        ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
+            //(ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
 
-        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
+        ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
+            //(ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
 
-        File sourceBase = getTestFile( "src/test/source-repository" );
+        File sourceBase = new File( "src/test/source-repository" );
         sourceRepository = factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null,
                                                              null );
 
-        layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
+        layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
+            //(ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
 
-        File targetBase = getTestFile( "target/test-target-repository" );
-        copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
+        File targetBase = new File( "target/test-target-repository" );
+        copyDirectoryStructure( new File( "src/test/target-repository" ), targetBase );
 
         targetRepository = new ManagedRepositoryConfiguration();
         targetRepository.setId( "target" );
@@ -73,7 +92,7 @@ public class RepositoryConverterTest
         targetRepository.setLocation( targetBase.getAbsolutePath() );
         targetRepository.setLayout( "default" );
 
-        repositoryConverter = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE, "default" );
+        //repositoryConverter = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE, "default" );
     }
 
     protected void tearDown()
@@ -129,6 +148,7 @@ public class RepositoryConverterTest
         }
     }
 
+    @Test
     public void testLegacyConversion()
         throws IOException, RepositoryConversionException
     {

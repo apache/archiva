@@ -19,12 +19,7 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.maven.archiva.common.utils.PathUtil;
@@ -35,38 +30,58 @@ import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
- * DefaultLegacyRepositoryConverter 
+ * DefaultLegacyRepositoryConverter
  *
  * @version $Id$
- * plexus.component
+ *          plexus.component
  */
-@Service("legacyRepositoryConverter#default")
+@Service( "legacyRepositoryConverter#default" )
 public class DefaultLegacyRepositoryConverter
     implements LegacyRepositoryConverter
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private ArtifactRepositoryFactory artifactRepositoryFactory;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
     private ArtifactRepositoryLayout defaultLayout;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer" 
-     *                     role-hint="artifact-legacy-to-default-converter"
+     * plexus.requirement role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+     * role-hint="artifact-legacy-to-default-converter"
      */
+    @Inject
+    @Named( value = "knownRepositoryContentConsumer#artifact-legacy-to-default-converter" )
     private LegacyConverterArtifactConsumer legacyConverterConsumer;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryScanner repoScanner;
+
+    @Inject
+    public DefaultLegacyRepositoryConverter( PlexusSisuBridge plexusSisuBridge )
+        throws ComponentLookupException
+    {
+        artifactRepositoryFactory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
+        defaultLayout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
+    }
 
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
                                          List<String> fileExclusionPatterns )
@@ -77,15 +92,14 @@ public class DefaultLegacyRepositoryConverter
             String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
 
             ManagedRepositoryConfiguration legacyRepository = new ManagedRepositoryConfiguration();
-            legacyRepository.setId( "legacy");
+            legacyRepository.setId( "legacy" );
             legacyRepository.setName( "Legacy Repository" );
             legacyRepository.setLocation( legacyRepositoryDirectory.getAbsolutePath() );
             legacyRepository.setLayout( "legacy" );
 
-            ArtifactRepository repository = artifactRepositoryFactory.createArtifactRepository( "default",
-                                                                                                defaultRepositoryUrl,
-                                                                                                defaultLayout, null,
-                                                                                                null );
+            ArtifactRepository repository =
+                artifactRepositoryFactory.createArtifactRepository( "default", defaultRepositoryUrl, defaultLayout,
+                                                                    null, null );
             legacyConverterConsumer.setExcludes( fileExclusionPatterns );
             legacyConverterConsumer.setDestinationRepository( repository );
 
