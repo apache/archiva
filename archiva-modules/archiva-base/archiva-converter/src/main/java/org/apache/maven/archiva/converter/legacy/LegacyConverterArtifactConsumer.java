@@ -38,6 +38,8 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
  * LegacyConverterArtifactConsumer - convert artifacts as they are found
@@ -45,10 +47,12 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *     role-hint="artifact-legacy-to-default-converter"
  *     instantiation-strategy="per-lookup"
  */
+@Service("knownRepositoryContentConsumer#artifact-legacy-to-default-converter")
+@Scope("prototype")
 public class LegacyConverterArtifactConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer

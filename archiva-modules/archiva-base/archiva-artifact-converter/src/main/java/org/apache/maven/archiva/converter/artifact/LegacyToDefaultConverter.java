@@ -19,19 +19,7 @@ package org.apache.maven.archiva.converter.artifact;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.transaction.FileTransaction;
@@ -54,30 +42,52 @@ import org.apache.maven.model.Relocation;
 import org.apache.maven.model.converter.ModelConverter;
 import org.apache.maven.model.converter.PomTranslationException;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
+import org.codehaus.plexus.digest.Md5Digester;
+import org.codehaus.plexus.digest.Sha1Digester;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
 
 /**
- * LegacyToDefaultConverter 
+ * LegacyToDefaultConverter
  *
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.converter.artifact.ArtifactConverter" 
- *      role-hint="legacy-to-default"
+ * @plexus.component role="org.apache.maven.archiva.converter.artifact.ArtifactConverter"
+ * role-hint="legacy-to-default"
  */
+@Service( "artifactConverter#legacy-to-default" )
 public class LegacyToDefaultConverter
     implements ArtifactConverter
 {
     /**
-     * {@link List}&lt;{@link Digester}>
-     * 
-     * @plexus.requirement role="org.codehaus.plexus.digest.Digester"
+     * {@link List}&lt;{@link Digester}
+     * plexus.requirement role="org.codehaus.plexus.digest.Digester"
      */
     private List<Digester> digesters;
 
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private ModelConverter translator;
 
@@ -92,16 +102,26 @@ public class LegacyToDefaultConverter
     private ArtifactHandlerManager artifactHandlerManager;
 
     /**
-     * @plexus.configuration default-value="false"
+     * plexus.configuration default-value="false"
      */
     private boolean force;
 
     /**
-     * @plexus.configuration default-value="false"
+     * plexus.configuration default-value="false"
      */
     private boolean dryrun;
 
-    private Map<Artifact,List<String>> warnings = new HashMap<Artifact,List<String>>();
+    private Map<Artifact, List<String>> warnings = new HashMap<Artifact, List<String>>();
+
+    @PostConstruct
+    public void initialize()
+        throws ComponentLookupException
+    {
+        this.digesters = plexusSisuBridge.lookupList( Digester.class );
+        translator = plexusSisuBridge.lookup( ModelConverter.class );
+        artifactFactory = plexusSisuBridge.lookup( ArtifactFactory.class );
+        artifactHandlerManager = plexusSisuBridge.lookup( ArtifactHandlerManager.class );
+    }
 
     public void convert( Artifact artifact, ArtifactRepository targetRepository )
         throws ArtifactConversionException
@@ -162,17 +182,18 @@ public class LegacyToDefaultConverter
             }
             catch ( TransactionException e )
             {
-                throw new ArtifactConversionException( Messages.getString( "transaction.failure", e.getMessage() ), e ); //$NON-NLS-1$
+                throw new ArtifactConversionException( Messages.getString( "transaction.failure", e.getMessage() ),
+                                                       e ); //$NON-NLS-1$
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
         throws ArtifactConversionException
     {
-        Artifact pom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact
-            .getVersion() );
+        Artifact pom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
+                                                              artifact.getVersion() );
         pom.setBaseVersion( artifact.getBaseVersion() );
         ArtifactRepository repository = artifact.getRepository();
         File file = new File( repository.getBasedir(), repository.pathOf( pom ) );
@@ -197,7 +218,7 @@ public class LegacyToDefaultConverter
             catch ( IOException e )
             {
                 throw new ArtifactConversionException(
-                                                       Messages.getString( "unable.to.read.source.pom", e.getMessage() ), e ); //$NON-NLS-1$
+                    Messages.getString( "unable.to.read.source.pom", e.getMessage() ), e ); //$NON-NLS-1$
             }
 
             if ( checksumsValid && contents.indexOf( "modelVersion" ) >= 0 ) //$NON-NLS-1$
@@ -218,8 +239,8 @@ public class LegacyToDefaultConverter
                 }
                 catch ( IOException e )
                 {
-                    throw new ArtifactConversionException( Messages
-                        .getString( "unable.to.write.target.pom", e.getMessage() ), e ); //$NON-NLS-1$
+                    throw new ArtifactConversionException(
+                        Messages.getString( "unable.to.write.target.pom", e.getMessage() ), e ); //$NON-NLS-1$
                 }
             }
             else
@@ -229,20 +250,22 @@ public class LegacyToDefaultConverter
                 StringWriter writer = null;
                 try
                 {
-                    org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader v3Reader = new org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader();
+                    org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader v3Reader =
+                        new org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader();
                     org.apache.maven.model.v3_0_0.Model v3Model = v3Reader.read( stringReader );
 
                     if ( doRelocation( artifact, v3Model, targetRepository, transaction ) )
                     {
-                        Artifact relocatedPom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact
-                            .getArtifactId(), artifact.getVersion() );
+                        Artifact relocatedPom =
+                            artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
+                                                                   artifact.getVersion() );
                         targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( relocatedPom ) );
                     }
 
                     Model v4Model = translator.translate( v3Model );
 
-                    translator.validateV4Basics( v4Model, v3Model.getGroupId(), v3Model.getArtifactId(), v3Model
-                        .getVersion(), v3Model.getPackage() );
+                    translator.validateV4Basics( v4Model, v3Model.getGroupId(), v3Model.getArtifactId(),
+                                                 v3Model.getVersion(), v3Model.getPackage() );
 
                     writer = new StringWriter();
                     MavenXpp3Writer Xpp3Writer = new MavenXpp3Writer();
@@ -264,7 +287,8 @@ public class LegacyToDefaultConverter
                 }
                 catch ( IOException e )
                 {
-                    throw new ArtifactConversionException( Messages.getString( "unable.to.write.converted.pom" ), e ); //$NON-NLS-1$
+                    throw new ArtifactConversionException( Messages.getString( "unable.to.write.converted.pom" ),
+                                                           e ); //$NON-NLS-1$
                 }
                 catch ( PomTranslationException e )
                 {
@@ -290,8 +314,10 @@ public class LegacyToDefaultConverter
         boolean result = true;
         for ( Digester digester : digesters )
         {
-            result &= verifyChecksum( file, file.getName() + "." + getDigesterFileExtension( digester ), digester, //$NON-NLS-1$
-                                      artifact, "failure.incorrect." + getDigesterFileExtension( digester ) ); //$NON-NLS-1$
+            result &= verifyChecksum( file, file.getName() + "." + getDigesterFileExtension( digester ), digester,
+                                      //$NON-NLS-1$
+                                      artifact,
+                                      "failure.incorrect." + getDigesterFileExtension( digester ) ); //$NON-NLS-1$
         }
         return result;
     }
@@ -395,15 +421,18 @@ public class LegacyToDefaultConverter
         }
         catch ( FileNotFoundException e )
         {
-            throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ), e ); //$NON-NLS-1$
+            throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ),
+                                                   e ); //$NON-NLS-1$
         }
         catch ( IOException e )
         {
-            throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ), e ); //$NON-NLS-1$
+            throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ),
+                                                   e ); //$NON-NLS-1$
         }
         catch ( XmlPullParserException e )
         {
-            throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ), e ); //$NON-NLS-1$
+            throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ),
+                                                   e ); //$NON-NLS-1$
         }
         finally
         {
@@ -420,7 +449,8 @@ public class LegacyToDefaultConverter
         boolean result = true;
 
         RepositoryMetadata repositoryMetadata = new ArtifactRepositoryMetadata( artifact );
-        File file = new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
+        File file =
+            new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
         if ( file.exists() )
         {
             Metadata metadata = readMetadata( file );
@@ -438,7 +468,7 @@ public class LegacyToDefaultConverter
         return result;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact )
     {
         String groupIdKey;
@@ -544,8 +574,8 @@ public class LegacyToDefaultConverter
                                  Metadata newMetadata, FileTransaction transaction )
         throws ArtifactConversionException
     {
-        File file = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File file = new File( targetRepository.getBasedir(),
+                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
 
         Metadata metadata;
         boolean changed;
@@ -576,7 +606,8 @@ public class LegacyToDefaultConverter
             }
             catch ( IOException e )
             {
-                throw new ArtifactConversionException( Messages.getString( "error.writing.target.metadata" ), e ); //$NON-NLS-1$
+                throw new ArtifactConversionException( Messages.getString( "error.writing.target.metadata" ),
+                                                       e ); //$NON-NLS-1$
             }
             finally
             {
@@ -590,13 +621,15 @@ public class LegacyToDefaultConverter
         throws IOException
     {
         Properties properties = v3Model.getProperties();
-        if ( properties.containsKey( "relocated.groupId" ) || properties.containsKey( "relocated.artifactId" ) //$NON-NLS-1$ //$NON-NLS-2$
+        if ( properties.containsKey( "relocated.groupId" ) || properties.containsKey( "relocated.artifactId" )
+            //$NON-NLS-1$ //$NON-NLS-2$
             || properties.containsKey( "relocated.version" ) ) //$NON-NLS-1$
         {
             String newGroupId = properties.getProperty( "relocated.groupId", v3Model.getGroupId() ); //$NON-NLS-1$
             properties.remove( "relocated.groupId" ); //$NON-NLS-1$
 
-            String newArtifactId = properties.getProperty( "relocated.artifactId", v3Model.getArtifactId() ); //$NON-NLS-1$
+            String newArtifactId =
+                properties.getProperty( "relocated.artifactId", v3Model.getArtifactId() ); //$NON-NLS-1$
             properties.remove( "relocated.artifactId" ); //$NON-NLS-1$
 
             String newVersion = properties.getProperty( "relocated.version", v3Model.getVersion() ); //$NON-NLS-1$
@@ -683,5 +716,66 @@ public class LegacyToDefaultConverter
     public Map<Artifact, List<String>> getWarnings()
     {
         return warnings;
+    }
+
+
+    public List<Digester> getDigesters()
+    {
+        return digesters;
+    }
+
+    public void setDigesters( List<Digester> digesters )
+    {
+        this.digesters = digesters;
+    }
+
+    public ModelConverter getTranslator()
+    {
+        return translator;
+    }
+
+    public void setTranslator( ModelConverter translator )
+    {
+        this.translator = translator;
+    }
+
+    public ArtifactFactory getArtifactFactory()
+    {
+        return artifactFactory;
+    }
+
+    public void setArtifactFactory( ArtifactFactory artifactFactory )
+    {
+        this.artifactFactory = artifactFactory;
+    }
+
+    public ArtifactHandlerManager getArtifactHandlerManager()
+    {
+        return artifactHandlerManager;
+    }
+
+    public void setArtifactHandlerManager( ArtifactHandlerManager artifactHandlerManager )
+    {
+        this.artifactHandlerManager = artifactHandlerManager;
+    }
+
+    public boolean isForce()
+    {
+        return force;
+    }
+
+    public void setForce( boolean force )
+    {
+        this.force = force;
+    }
+
+    public boolean isDryrun()
+    {
+        return dryrun;
+    }
+
+    public void setDryrun( boolean dryrun )
+    {
+        this.dryrun = dryrun;
     }
 }

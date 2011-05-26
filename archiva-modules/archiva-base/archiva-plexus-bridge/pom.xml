@@ -19,32 +19,31 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva-modules</artifactId>
+    <artifactId>archiva-base</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>archiva-plexus-bridge</artifactId>
+  <name>Archiva Base :: Plexus Bridge</name>
+  <dependencies>
 
-  <artifactId>archiva-base</artifactId>
-  <name>Archiva Base</name>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>archiva-checksum</module>
-    <module>archiva-common</module>
-    <module>archiva-plexus-bridge</module>
-    <module>archiva-policies</module>
-    <module>archiva-configuration</module>
-    <module>archiva-consumers</module>
-    <module>archiva-indexer</module>
-    <module>archiva-model</module>
-    <module>archiva-repository-layer</module>
-    <module>archiva-xml-tools</module>
-    <module>archiva-proxy</module>
-    <module>archiva-transaction</module>
-    <module>archiva-artifact-converter</module>
-    <module>archiva-converter</module>
-    <module>archiva-repository-scanner</module>
-  </modules>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.sisu</groupId>
+      <artifactId>sisu-inject-plexus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback.components</groupId>
+      <artifactId>spring-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+  </dependencies>
 </project>

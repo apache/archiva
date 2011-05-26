@@ -19,15 +19,8 @@ package org.apache.maven.archiva.converter.artifact;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-
+import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -37,15 +30,32 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
 
 /**
- * LegacyToDefaultConverterTest 
+ * LegacyToDefaultConverterTest
  *
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class LegacyToDefaultConverterTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private ArtifactRepository sourceRepository;
 
@@ -55,38 +65,58 @@ public class LegacyToDefaultConverterTest
 
     private ArtifactFactory artifactFactory;
 
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    private ApplicationContext applicationContext;
+
     private static final int SLEEP_MILLIS = 100;
 
-    protected void setUp()
+    @Before
+    public void init()
         throws Exception
     {
         super.setUp();
 
-        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+        ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
 
-        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
+        ArtifactRepositoryLayout layout =
+            (ArtifactRepositoryLayout) plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
 
         File sourceBase = getTestFile( "src/test/source-repository" );
-        sourceRepository = factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null,
-                                                             null );
+        sourceRepository =
+            factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
 
-        layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
+        layout = (ArtifactRepositoryLayout) plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
 
         File targetBase = getTestFile( "target/test-target-repository" );
         copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
 
-        targetRepository = factory.createArtifactRepository( "target", targetBase.toURL().toString(), layout, null,
-                                                             null );
+        targetRepository =
+            factory.createArtifactRepository( "target", targetBase.toURL().toString(), layout, null, null );
 
-        artifactConverter = (ArtifactConverter) lookup( ArtifactConverter.ROLE, "legacy-to-default" );
+        artifactConverter =
+            applicationContext.getBean( "artifactConverter#legacy-to-default", ArtifactConverter.class );
 
-        artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+        artifactConverter.clearWarnings();
+        artifactFactory = (ArtifactFactory) plexusSisuBridge.lookup( ArtifactFactory.class );
     }
 
-    protected void tearDown()
-        throws Exception
+    public static File getTestFile( String path )
     {
-        super.tearDown();
+        return new File( getBasedir(), path );
+    }
+
+    public static String getBasedir()
+    {
+        String basedir = System.getProperty( "basedir" );
+        if ( basedir == null )
+        {
+            basedir = new File( "" ).getAbsolutePath();
+        }
+
+        return basedir;
     }
 
     private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
@@ -123,8 +153,8 @@ public class LegacyToDefaultConverterTest
                 {
                     if ( !destination.exists() && !destination.mkdirs() )
                     {
-                        throw new IOException( "Could not create destination directory '"
-                            + destination.getAbsolutePath() + "'." );
+                        throw new IOException(
+                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
                     }
                     copyDirectoryStructure( file, destination );
                 }
@@ -136,6 +166,7 @@ public class LegacyToDefaultConverterTest
         }
     }
 
+    @Test
     public void testV4PomConvert()
         throws Exception
     {
@@ -143,13 +174,13 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v4artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -181,6 +212,7 @@ public class LegacyToDefaultConverterTest
         compareFiles( expectedMetadataFile, versionMetadataFile );
     }
 
+    @Test
     public void testV3PomConvert()
         throws Exception
     {
@@ -188,13 +220,13 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
         artifactConverter.convert( artifact, targetRepository );
@@ -224,18 +256,19 @@ public class LegacyToDefaultConverterTest
         compareFiles( expectedMetadataFile, versionMetadataFile );
     }
 
+    @Test
     public void testV3PomConvertWithRelocation()
         throws Exception
     {
         Artifact artifact = createArtifact( "test", "relocated-v3artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
         artifactConverter.convert( artifact, targetRepository );
@@ -243,7 +276,8 @@ public class LegacyToDefaultConverterTest
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check if relocated artifact created", artifactFile.exists() );
-        assertTrue( "Check if relocated artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        assertTrue( "Check if relocated artifact matches",
+                    FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
         Artifact pomArtifact = createArtifact( "relocated-test", "relocated-v3artifact", "1.0.0", "1.0.0", "pom" );
         File pomFile = getTestFile( "src/test/expected-files/" + targetRepository.pathOf( pomArtifact ) );
         File testFile = getTestFile( "target/test-target-repository/" + targetRepository.pathOf( pomArtifact ) );
@@ -256,6 +290,7 @@ public class LegacyToDefaultConverterTest
         compareFiles( artifactFile, testFile );
     }
 
+    @Test
     public void testV3PomWarningsOnConvert()
         throws Exception
     {
@@ -263,13 +298,13 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v3-warnings-artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
         artifactConverter.convert( artifact, targetRepository );
@@ -296,13 +331,13 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v4artifact", version );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
         artifactConverter.convert( artifact, targetRepository );
@@ -332,6 +367,7 @@ public class LegacyToDefaultConverterTest
         compareFiles( expectedMetadataFile, snapshotMetadataFile );
     }
 
+    @Test
     public void testV3SnapshotPomConvert()
         throws Exception
     {
@@ -339,13 +375,13 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0-SNAPSHOT" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
         artifactConverter.convert( artifact, targetRepository );
@@ -375,6 +411,7 @@ public class LegacyToDefaultConverterTest
         compareFiles( expectedMetadataFile, snapshotMetadataFile );
     }
 
+    @Test
     public void testV4SnapshotPomConvert()
         throws Exception
     {
@@ -383,6 +420,7 @@ public class LegacyToDefaultConverterTest
         assertTrue( true );
     }
 
+    @Test
     public void testV4TimestampedSnapshotPomConvert()
         throws Exception
     {
@@ -392,12 +430,14 @@ public class LegacyToDefaultConverterTest
         assertTrue( true );
     }
 
+    @Test
     public void testMavenOnePluginConversion()
         throws Exception
     {
-        Artifact artifact = createArtifact( "org.apache.maven.plugins", "maven-foo-plugin", "1.0", "1.0",
-                                            "maven-plugin" );
-        artifact.setFile( new File( getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
+        Artifact artifact =
+            createArtifact( "org.apache.maven.plugins", "maven-foo-plugin", "1.0", "1.0", "maven-plugin" );
+        artifact.setFile(
+            new File( getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
         artifactConverter.convert( artifact, targetRepository );
         // There is a warning but I can't figure out how to look at it. Eyeballing the results it appears
         // the plugin is being coverted correctly.
@@ -418,6 +458,7 @@ public class LegacyToDefaultConverterTest
          */
     }
 
+    @Test
     public void testV3TimestampedSnapshotPomConvert()
         throws Exception
     {
@@ -425,13 +466,13 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0-20060105.130101-3" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
         artifactConverter.convert( artifact, targetRepository );
@@ -461,6 +502,7 @@ public class LegacyToDefaultConverterTest
         compareFiles( expectedMetadataFile, snapshotMetadataFile );
     }
 
+    @Test
     public void testNoPomConvert()
         throws Exception
     {
@@ -484,6 +526,7 @@ public class LegacyToDefaultConverterTest
         assertFalse( "No source POM", sourcePomFile.exists() );
     }
 
+    @Test
     public void testIncorrectSourceChecksumMd5()
         throws Exception
     {
@@ -501,11 +544,12 @@ public class LegacyToDefaultConverterTest
         assertFalse( "Check artifact not created", file.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
+    @Test
     public void testIncorrectSourceChecksumSha1()
         throws Exception
     {
@@ -523,11 +567,12 @@ public class LegacyToDefaultConverterTest
         assertFalse( "Check artifact not created", file.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
+    @Test
     public void testUnmodifiedArtifact()
         throws Exception, InterruptedException
     {
@@ -563,6 +608,7 @@ public class LegacyToDefaultConverterTest
         assertEquals( "Check POM unmodified", origPomTime, targetPomFile.lastModified() );
     }
 
+    @Test
     public void testModifedArtifactFails()
         throws Exception
     {
@@ -598,17 +644,19 @@ public class LegacyToDefaultConverterTest
         assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
+    @Test
     public void testForcedUnmodifiedArtifact()
         throws Exception
     {
         // test unmodified artifact is still converted when set to force
 
-        artifactConverter = (ArtifactConverter) lookup( ArtifactConverter.ROLE, "force-repository-converter" );
+        artifactConverter =
+            applicationContext.getBean( "artifactConverter#force-repository-converter", ArtifactConverter.class );
 
         Artifact artifact = createArtifact( "test", "unmodified-artifact", "1.0.0" );
         Artifact pomArtifact = createPomArtifact( artifact );
@@ -636,17 +684,19 @@ public class LegacyToDefaultConverterTest
         assertFalse( "Check modified", origTime == targetPomFile.lastModified() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertTrue( "Check metadata created", metadataFile.exists() );
     }
 
+    @Test
     public void testDryRunSuccess()
         throws Exception
     {
         // test dry run does nothing on a run that will be successful, and returns success
 
-        artifactConverter = (ArtifactConverter) lookup( ArtifactConverter.ROLE, "dryrun-repository-converter" );
+        artifactConverter =
+            applicationContext.getBean( "artifactConverter#dryrun-repository-converter", ArtifactConverter.class );
 
         Artifact artifact = createArtifact( "test", "dryrun-artifact", "1.0.0" );
         Artifact pomArtifact = createPomArtifact( artifact );
@@ -666,17 +716,19 @@ public class LegacyToDefaultConverterTest
         assertFalse( "Check target POM doesn't exist", targetPomFile.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
+    @Test
     public void testDryRunFailure()
         throws Exception
     {
         // test dry run does nothing on a run that will fail, and returns failure
 
-        artifactConverter = (ArtifactConverter) lookup( ArtifactConverter.ROLE, "dryrun-repository-converter" );
+        artifactConverter =
+            applicationContext.getBean( "artifactConverter#dryrun-repository-converter", ArtifactConverter.class );
 
         Artifact artifact = createArtifact( "test", "modified-artifact", "1.0.0" );
         Artifact pomArtifact = createPomArtifact( artifact );
@@ -707,11 +759,12 @@ public class LegacyToDefaultConverterTest
         assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
+    @Test
     public void testRollbackArtifactCreated()
         throws Exception
     {
@@ -719,13 +772,13 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "rollback-created-artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         FileUtils.deleteDirectory( artifactMetadataFile.getParentFile() );
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
 
@@ -744,7 +797,7 @@ public class LegacyToDefaultConverterTest
                     break;
                 }
             }
-            
+
             if ( found )
             {
                 break;
@@ -758,6 +811,7 @@ public class LegacyToDefaultConverterTest
         assertFalse( "check metadata rolled back", versionMetadataFile.exists() );
     }
 
+    @Test
     public void testMultipleArtifacts()
         throws Exception
     {
@@ -782,14 +836,15 @@ public class LegacyToDefaultConverterTest
 
             artifact = createPomArtifact( artifact );
             File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-            File expectedPomFile = getTestFile( "src/test/expected-files/converted-" + artifact.getArtifactId()
-                + ".pom" );
+            File expectedPomFile =
+                getTestFile( "src/test/expected-files/converted-" + artifact.getArtifactId() + ".pom" );
             assertTrue( "Check POM created", pomFile.exists() );
 
             compareFiles( expectedPomFile, pomFile );
         }
     }
 
+    @Test
     public void testInvalidSourceArtifactMetadata()
         throws Exception
     {
@@ -804,16 +859,18 @@ public class LegacyToDefaultConverterTest
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
 
-        assertHasWarningReason( artifactConverter, Messages.getString( "failure.incorrect.artifactMetadata.versions" ) );
+        assertHasWarningReason( artifactConverter,
+                                Messages.getString( "failure.incorrect.artifactMetadata.versions" ) );
 
         assertFalse( "Check artifact not created", file.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
+    @Test
     public void testInvalidSourceSnapshotMetadata()
         throws Exception
     {
@@ -828,16 +885,18 @@ public class LegacyToDefaultConverterTest
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
 
-        assertHasWarningReason( artifactConverter, Messages.getString( "failure.incorrect.snapshotMetadata.snapshot" ) );
+        assertHasWarningReason( artifactConverter,
+                                Messages.getString( "failure.incorrect.snapshotMetadata.snapshot" ) );
 
         assertFalse( "Check artifact not created", file.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
+    @Test
     public void testMergeArtifactMetadata()
         throws Exception
     {
@@ -859,8 +918,8 @@ public class LegacyToDefaultConverterTest
         compareFiles( sourcePomFile, pomFile );
 
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
-            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
 
         File expectedMetadataFile = getTestFile( "src/test/expected-files/newversion-artifact-metadata.xml" );
@@ -868,15 +927,17 @@ public class LegacyToDefaultConverterTest
         compareFiles( expectedMetadataFile, artifactMetadataFile );
     }
 
+    @Test
     public void testSourceAndTargetRepositoriesMatch()
         throws Exception
     {
         // test that it fails if the same
 
-        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+        ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
 
-        sourceRepository = factory.createArtifactRepository( "source", targetRepository.getUrl(), targetRepository
-            .getLayout(), null, null );
+        sourceRepository =
+            factory.createArtifactRepository( "source", targetRepository.getUrl(), targetRepository.getLayout(), null,
+                                              null );
 
         Artifact artifact = createArtifact( "test", "repository-artifact", "1.0" );
 
@@ -908,7 +969,8 @@ public class LegacyToDefaultConverterTest
         return createArtifact( groupId, artifactId, baseVersion, version, "jar" );
     }
 
-    private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version, String type )
+    private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version,
+                                     String type )
     {
         Artifact artifact = artifactFactory.createArtifact( groupId, artifactId, version, null, type );
         artifact.setBaseVersion( baseVersion );
@@ -919,21 +981,24 @@ public class LegacyToDefaultConverterTest
 
     private Artifact createPomArtifact( Artifact artifact )
     {
-        return createArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion(), artifact
-            .getVersion(), "pom" );
+        return createArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion(),
+                               artifact.getVersion(), "pom" );
     }
 
     private static void compareFiles( File expectedPomFile, File pomFile )
         throws IOException
     {
-        String expectedContent = normalizeString( org.apache.commons.io.FileUtils.readFileToString( expectedPomFile, null ) );
+        String expectedContent =
+            normalizeString( org.apache.commons.io.FileUtils.readFileToString( expectedPomFile, null ) );
         String targetContent = normalizeString( org.apache.commons.io.FileUtils.readFileToString( pomFile, null ) );
-        assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent, targetContent );
+        assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent,
+                      targetContent );
     }
 
     private static String normalizeString( String path )
     {
-        return path.trim().replaceAll( "\r\n", "\n" ).replace( '\r', '\n' ).replaceAll( "<\\?xml .+\\?>", "" ).replaceAll("^\\s+", "");
+        return path.trim().replaceAll( "\r\n", "\n" ).replace( '\r', '\n' ).replaceAll( "<\\?xml .+\\?>",
+                                                                                        "" ).replaceAll( "^\\s+", "" );
     }
 
     private void checkSuccess( ArtifactConverter converter )
@@ -974,11 +1039,11 @@ public class LegacyToDefaultConverterTest
 
         /* didn't find it. */
 
-        for ( Map.Entry<Artifact,List<String>> entry : converter.getWarnings().entrySet() )
+        for ( Map.Entry<Artifact, List<String>> entry : converter.getWarnings().entrySet() )
         {
             Artifact artifact = (Artifact) entry.getKey();
-            System.out.println( "-Artifact: " + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
-                + artifact.getVersion() );
+            System.out.println(
+                "-Artifact: " + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
             List<String> messages = entry.getValue();
             for ( String message : messages )
             {
@@ -991,12 +1056,12 @@ public class LegacyToDefaultConverterTest
     private void createModernSourceRepository()
         throws Exception
     {
-        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+        ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
 
-        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
+        ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
 
         File sourceBase = getTestFile( "src/test/source-modern-repository" );
-        sourceRepository = factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null,
-                                                             null );
+        sourceRepository =
+            factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
     }
 }

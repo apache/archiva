@@ -35,13 +35,15 @@ import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.springframework.stereotype.Service;
 
 /**
  * DefaultLegacyRepositoryConverter 
  *
  * @version $Id$
- * @plexus.component 
+ * plexus.component
  */
+@Service("legacyRepositoryConverter#default")
 public class DefaultLegacyRepositoryConverter
     implements LegacyRepositoryConverter
 {

@@ -36,6 +36,7 @@ public class Messages
 
     private Messages()
     {
+        // no op
     }
 
     public static String getString( String key )
