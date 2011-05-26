@@ -27,6 +27,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,8 +48,9 @@ import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager" role-hint="default"
+ * plexus.component role="org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager" role-hint="default"
  */
+@Service("repositoryStatisticsManager#default")
 public class DefaultRepositoryStatisticsManager
     implements RepositoryStatisticsManager
 {

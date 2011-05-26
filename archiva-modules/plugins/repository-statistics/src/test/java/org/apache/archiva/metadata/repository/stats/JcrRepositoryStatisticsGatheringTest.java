@@ -19,17 +19,12 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.core.TransientRepository;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.zip.GZIPInputStream;
 import javax.jcr.ImportUUIDBehavior;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
@@ -39,11 +34,16 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.Workspace;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
+import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.zip.GZIPInputStream;
 
 import static org.mockito.Mockito.*;
 
 public class JcrRepositoryStatisticsGatheringTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private static final int TOTAL_FILE_COUNT = 1000;
 
@@ -63,8 +63,8 @@ public class JcrRepositoryStatisticsGatheringTest
     {
         super.setUp();
 
-        File confFile = getTestFile( "src/test/repository.xml" );
-        File dir = getTestFile( "target/jcr" );
+        File confFile = new File( "src/test/repository.xml" );
+        File dir = new File( "target/jcr" );
         FileUtils.deleteDirectory( dir );
 
         TransientRepository repository = new TransientRepository( confFile, dir );

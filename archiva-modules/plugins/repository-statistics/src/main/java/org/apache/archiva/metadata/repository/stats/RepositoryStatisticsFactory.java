@@ -21,10 +21,12 @@ package org.apache.archiva.metadata.repository.stats;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.springframework.stereotype.Service;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.metadata.repository.stats"
+ * plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.metadata.repository.stats"
  */
+@Service( "metadataFacetFactory#org.apache.archiva.metadata.repository.stats" )
 public class RepositoryStatisticsFactory
     implements MetadataFacetFactory
 {
