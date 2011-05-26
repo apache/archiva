@@ -16,12 +16,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.redback.components</groupId>
-      <artifactId>plexus-spring</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

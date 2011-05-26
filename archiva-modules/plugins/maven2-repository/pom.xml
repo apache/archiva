@@ -38,9 +38,13 @@
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback.components</groupId>
-      <artifactId>plexus-spring</artifactId>
-      <scope>test</scope>
+      <groupId>org.sonatype.sisu</groupId>
+      <artifactId>sisu-inject-plexus</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.sonatype.sisu</groupId>
+      <artifactId>sisu-guice</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -92,7 +96,7 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
-        <version>3.0-alpha-4</version>
+        <version>3.0.3</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

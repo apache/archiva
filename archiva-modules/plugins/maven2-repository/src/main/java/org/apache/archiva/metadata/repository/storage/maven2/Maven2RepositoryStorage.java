@@ -41,6 +41,7 @@ import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Organization;
 import org.apache.maven.model.Scm;
+import org.apache.maven.model.building.DefaultModelBuilder;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
@@ -48,6 +49,9 @@ import org.apache.maven.model.building.ModelBuildingRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -67,7 +71,7 @@ import java.util.List;
  * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
  * within the session in the context of a single managed repository's resolution needs.
  *
- * @plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryStorage" role-hint="maven2"
+ * plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryStorage" role-hint="maven2"
  */
 public class Maven2RepositoryStorage
     implements RepositoryStorage
@@ -75,21 +79,30 @@ public class Maven2RepositoryStorage
     /**
      * @plexus.requirement
      */
-    private ModelBuilder builder;
+    private ModelBuilder builders;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role-hint="maven2"
+     * plexus.requirement role-hint="maven2"
      */
+    @Inject @Named(value = "repositoryPathTranslator#maven2")
     private RepositoryPathTranslator pathTranslator;
 
     private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
+
+    @PostConstruct
+    public void initialize()
+    {
+        //
+        ou ou
+    }
 
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
     {

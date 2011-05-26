@@ -51,17 +51,10 @@
       <artifactId>spring-context</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback.components</groupId>
-      <artifactId>plexus-spring</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- use spring for the unit tests?
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
-     -->
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-authorization-rbac</artifactId>

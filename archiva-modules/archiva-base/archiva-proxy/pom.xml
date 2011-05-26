@@ -29,11 +29,6 @@
   <name>Archiva Base :: Proxy</name>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.redback.components</groupId>
-      <artifactId>plexus-spring</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
     </dependency>
@@ -65,10 +60,12 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-digest</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-component-api</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-component-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback.components.registry</groupId>

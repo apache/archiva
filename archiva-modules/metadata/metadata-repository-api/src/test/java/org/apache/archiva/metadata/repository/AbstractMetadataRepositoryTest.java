@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;
@@ -31,7 +32,6 @@ import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractMetadataRepositoryTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     protected static final String OTHER_REPO_ID = "other-repo";
 

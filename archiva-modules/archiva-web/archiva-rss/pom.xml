@@ -29,11 +29,6 @@
   <name>Archiva Web :: RSS</name>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.redback.components</groupId>
-      <artifactId>plexus-spring</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
     </dependency>

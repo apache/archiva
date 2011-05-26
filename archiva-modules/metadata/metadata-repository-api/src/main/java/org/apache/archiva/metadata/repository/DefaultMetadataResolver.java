@@ -30,7 +30,12 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataN
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,42 +43,57 @@ import java.util.List;
 /**
  * Default implementation of the metadata resolver API. At present it will handle updating the content repository
  * from new or changed information in the model and artifacts from the repository storage.
- *
+ * <p/>
  * This is a singleton component to allow an alternate implementation to be provided. It is intended to be the same
  * system-wide for the whole content repository instead of on a per-managed-repository basis. Therefore, the session is
  * passed in as an argument to obtain any necessary resources, rather than the class being instantiated within the
  * session in the context of a single managed repository's resolution needs.
- *
+ * <p/>
  * Note that the caller is responsible for the session, such as closing and saving (which is implied by the resolver
  * being obtained from within the session). The {@link RepositorySession#markDirty()} method is used as a hint to ensure
  * that the session knows we've made changes at close. We cannot ensure the changes will be persisted if the caller
  * chooses to revert first. This is preferable to storing the metadata immediately - a separate session would require
  * having a bi-directional link with the session factory, and saving the existing session might save other changes
  * unknowingly by the caller.
- *
- * @plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver"
+ * <p/>
+ * plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver"
  */
+@Service( "metadataResolver#default" )
 public class DefaultMetadataResolver
     implements MetadataResolver
 {
+
+    private Logger log = LoggerFactory.getLogger( DefaultMetadataResolver.class );
+
     /**
      * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
      * factory, and perhaps retrieve from the session. We should avoid creating one per request, however.
-     *
+     * <p/>
      * TODO: Also need to accommodate availability of proxy module
      * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
      * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
      *
      * @plexus.requirement role-hint="maven2"
      */
+    @Inject
+    @Named( value = "repositoryStorage#maven2" )
     private RepositoryStorage repositoryStorage;
 
     /**
-     * @plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
+     * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
      */
     private List<RepositoryListener> listeners;
 
-    private static final Logger log = LoggerFactory.getLogger( DefaultMetadataResolver.class );
+
+    @Inject
+    private ApplicationContext applicationContext;
+
+    @PostConstruct
+    private void initialize()
+    {
+        listeners =
+            new ArrayList<RepositoryListener>( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
+    }
 
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
                                                          String projectId, String projectVersion )
@@ -81,8 +101,8 @@ public class DefaultMetadataResolver
     {
         MetadataRepository metadataRepository = session.getRepository();
 
-        ProjectVersionMetadata metadata = metadataRepository.getProjectVersion( repoId, namespace, projectId,
-                                                                                projectVersion );
+        ProjectVersionMetadata metadata =
+            metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
         // TODO: do we want to detect changes as well by comparing timestamps? isProjectVersionNewerThan(updated)
         //       in such cases we might also remove/update stale metadata, including adjusting plugin-based facets
         //       This would also be better than checking for completeness - we can then refresh only when fixed (though
@@ -159,8 +179,8 @@ public class DefaultMetadataResolver
     {
         MetadataRepository metadataRepository = session.getRepository();
         Collection<String> namespaces = metadataRepository.getRootNamespaces( repoId );
-        Collection<String> storageNamespaces = repositoryStorage.listRootNamespaces( repoId, new ExcludesFilter<String>(
-            namespaces ) );
+        Collection<String> storageNamespaces =
+            repositoryStorage.listRootNamespaces( repoId, new ExcludesFilter<String>( namespaces ) );
         if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
             if ( log.isDebugEnabled() )
@@ -193,9 +213,8 @@ public class DefaultMetadataResolver
         Collection<String> namespaces = metadataRepository.getNamespaces( repoId, namespace );
         Collection<String> exclusions = new ArrayList<String>( namespaces );
         exclusions.addAll( metadataRepository.getProjects( repoId, namespace ) );
-        Collection<String> storageNamespaces = repositoryStorage.listNamespaces( repoId, namespace,
-                                                                                 new ExcludesFilter<String>(
-                                                                                     exclusions ) );
+        Collection<String> storageNamespaces =
+            repositoryStorage.listNamespaces( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
         if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
         {
             if ( log.isDebugEnabled() )
@@ -228,8 +247,8 @@ public class DefaultMetadataResolver
         Collection<String> projects = metadataRepository.getProjects( repoId, namespace );
         Collection<String> exclusions = new ArrayList<String>( projects );
         exclusions.addAll( metadataRepository.getNamespaces( repoId, namespace ) );
-        Collection<String> storageProjects = repositoryStorage.listProjects( repoId, namespace,
-                                                                             new ExcludesFilter<String>( exclusions ) );
+        Collection<String> storageProjects =
+            repositoryStorage.listProjects( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
         if ( storageProjects != null && !storageProjects.isEmpty() )
         {
             if ( log.isDebugEnabled() )
@@ -278,10 +297,8 @@ public class DefaultMetadataResolver
             {
                 try
                 {
-                    ProjectVersionMetadata versionMetadata = repositoryStorage.readProjectVersionMetadata( repoId,
-                                                                                                           namespace,
-                                                                                                           projectId,
-                                                                                                           projectVersion );
+                    ProjectVersionMetadata versionMetadata =
+                        repositoryStorage.readProjectVersionMetadata( repoId, namespace, projectId, projectVersion );
                     for ( RepositoryListener listener : listeners )
                     {
                         listener.addArtifact( session, repoId, namespace, projectId, versionMetadata );
@@ -295,8 +312,8 @@ public class DefaultMetadataResolver
                 }
                 catch ( RepositoryStorageMetadataInvalidException e )
                 {
-                    log.warn( "Not update project in metadata repository due to an error resolving it from storage: " +
-                                  e.getMessage() );
+                    log.warn( "Not update project in metadata repository due to an error resolving it from storage: "
+                                  + e.getMessage() );
 
                     for ( RepositoryListener listener : listeners )
                     {
@@ -324,13 +341,11 @@ public class DefaultMetadataResolver
         throws MetadataResolutionException
     {
         MetadataRepository metadataRepository = session.getRepository();
-        Collection<ArtifactMetadata> artifacts = metadataRepository.getArtifacts( repoId, namespace, projectId,
-                                                                                  projectVersion );
+        Collection<ArtifactMetadata> artifacts =
+            metadataRepository.getArtifacts( repoId, namespace, projectId, projectVersion );
         ExcludesFilter<String> filter = new ExcludesFilter<String>( createArtifactIdList( artifacts ) );
-        Collection<ArtifactMetadata> storageArtifacts = repositoryStorage.readArtifactsMetadata( repoId, namespace,
-                                                                                                 projectId,
-                                                                                                 projectVersion,
-                                                                                                 filter );
+        Collection<ArtifactMetadata> storageArtifacts =
+            repositoryStorage.readArtifactsMetadata( repoId, namespace, projectId, projectVersion, filter );
         if ( storageArtifacts != null && !storageArtifacts.isEmpty() )
         {
             if ( log.isDebugEnabled() )

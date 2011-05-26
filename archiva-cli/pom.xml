@@ -34,12 +34,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-dependency-tree-consumer</artifactId>
-      <version>1.4-SNAPSHOT</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-metadata-consumer</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -63,10 +57,6 @@
       <groupId>com.google.code.cli-parser</groupId>
       <artifactId>cli</artifactId>
       <version>7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.redback.components</groupId>
-      <artifactId>plexus-spring</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>

@@ -22,15 +22,21 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator" role-hint="maven2"
+ * plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator" role-hint="maven2"
  */
+@Service( "repositoryPathTranslator#maven2" )
 public class Maven2RepositoryPathTranslator
     implements RepositoryPathTranslator
 {
@@ -40,14 +46,28 @@ public class Maven2RepositoryPathTranslator
 
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "([0-9]{8}.[0-9]{6})-([0-9]+).*" );
 
+    @Inject
+    private ApplicationContext applicationContext;
+
     /**
-     * @plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
+     * plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
+     * see #initialize
      */
     private List<ArtifactMappingProvider> artifactMappingProviders;
 
     public Maven2RepositoryPathTranslator()
     {
+        // noop
     }
+
+    @PostConstruct
+    public void initialize()
+    {
+        artifactMappingProviders = new ArrayList<ArtifactMappingProvider>(
+            applicationContext.getBeansOfType( ArtifactMappingProvider.class ).values() );
+
+    }
+
 
     public Maven2RepositoryPathTranslator( List<ArtifactMappingProvider> artifactMappingProviders )
     {
@@ -165,8 +185,8 @@ public class Maven2RepositoryPathTranslator
     {
         if ( !id.startsWith( projectId + "-" ) )
         {
-            throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + id +
-                                                    "' doesn't start with artifact ID '" + projectId + "'" );
+            throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + id
+                                                    + "' doesn't start with artifact ID '" + projectId + "'" );
         }
 
         MavenArtifactFacet facet = new MavenArtifactFacet();
@@ -201,17 +221,17 @@ public class Maven2RepositoryPathTranslator
             }
             catch ( IllegalStateException e )
             {
-                throw new IllegalArgumentException(
-                    "Not a valid artifact path in a Maven 2 repository, filename '" + id +
-                        "' doesn't contain a timestamped version matching snapshot '" + projectVersion + "'" );
+                throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + id
+                                                        + "' doesn't contain a timestamped version matching snapshot '"
+                                                        + projectVersion + "'" );
             }
         }
         else
         {
             // invalid
             throw new IllegalArgumentException(
-                "Not a valid artifact path in a Maven 2 repository, filename '" + id + "' doesn't contain version '" +
-                    projectVersion + "'" );
+                "Not a valid artifact path in a Maven 2 repository, filename '" + id + "' doesn't contain version '"
+                    + projectVersion + "'" );
         }
 
         String classifier;
@@ -249,9 +269,9 @@ public class Maven2RepositoryPathTranslator
             }
             else
             {
-                throw new IllegalArgumentException(
-                    "Not a valid artifact path in a Maven 2 repository, filename '" + id +
-                        "' expected classifier or extension but got '" + id.substring( index ) + "'" );
+                throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + id
+                                                        + "' expected classifier or extension but got '"
+                                                        + id.substring( index ) + "'" );
             }
         }
 
