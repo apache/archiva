@@ -19,31 +19,44 @@ package org.apache.maven.archiva.transaction;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.plexus.digest.Digester;
+import org.codehaus.plexus.digest.Md5Digester;
+import org.codehaus.plexus.digest.Sha1Digester;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * 
  * @version $Id$
  */
 public abstract class AbstractFileEventTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     protected List<Digester> digesters;
 
-    @SuppressWarnings("unchecked")
+    public static String getBasedir()
+    {
+
+        String basedir = System.getProperty( "basedir" );
+        if (basedir == null)
+        {
+            basedir = new File( "" ).getAbsolutePath();
+        }
+        return basedir;
+
+    }
+
+    @SuppressWarnings( "unchecked" )
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        digesters = PlexusToSpringUtils.lookupList( PlexusToSpringUtils.buildSpringId( Digester.class.getName() ), getApplicationContext() );
+        digesters = Arrays.asList( (Digester) new Md5Digester(), (Digester) new Sha1Digester() );
     }
 
     protected void assertChecksumExists( File file, String algorithm )
