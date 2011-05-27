@@ -115,7 +115,7 @@ public class RepositoryContentFactory
             throw new RepositoryNotFoundException( "Unable to find remote repository configuration for id:" + repoId );
         }
 
-        repo = applicationContext.getBean( "RemoteRepositoryContent#" + repoConfig.getLayout(),
+        repo = applicationContext.getBean( "remoteRepositoryContent#" + repoConfig.getLayout(),
                                            RemoteRepositoryContent.class );
         repo.setRepository( repoConfig );
         remoteContentMap.put( repoId, repo );
