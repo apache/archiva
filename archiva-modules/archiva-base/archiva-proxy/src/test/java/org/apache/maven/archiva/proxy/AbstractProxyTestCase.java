@@ -20,6 +20,7 @@ package org.apache.maven.archiva.proxy;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -118,9 +119,10 @@ public abstract class AbstractProxyTestCase
 
     protected MockConfiguration config;
 
-    @Inject
-    @Named( value = "wagon#test" )
     WagonDelegate delegate;
+
+    @Inject
+    PlexusSisuBridge plexusSisuBridge;
 
     @Before
     public void setUp()
@@ -179,6 +181,8 @@ public abstract class AbstractProxyTestCase
         // Setup the wagon mock.
         wagonMockControl = MockControl.createNiceControl( Wagon.class );
         wagonMock = (Wagon) wagonMockControl.getMock();
+
+        delegate = (WagonDelegate) plexusSisuBridge.lookup( Wagon.class, "test" );
 
         delegate.setDelegate( wagonMock );
 
