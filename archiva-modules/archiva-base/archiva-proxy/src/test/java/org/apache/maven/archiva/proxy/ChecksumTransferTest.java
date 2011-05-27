@@ -26,6 +26,7 @@ import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -37,6 +38,7 @@ import java.io.File;
 public class ChecksumTransferTest
     extends AbstractProxyTestCase
 {
+    @Test
     public void testGetChecksumWhenConnectorIsDisabled()
         throws Exception
     {
@@ -57,7 +59,8 @@ public class ChecksumTransferTest
         
         assertNull(downloadedFile);
     }
-    
+
+    @Test
     public void testGetChecksumBothCorrect()
         throws Exception
     {
@@ -83,6 +86,7 @@ public class ChecksumTransferTest
                          "e58f30c6a150a2e843552438d18e15cb *get-checksum-both-right-1.0.jar" );
     }
 
+    @Test
     public void testGetChecksumCorrectSha1NoMd5()
         throws Exception
     {
@@ -108,6 +112,7 @@ public class ChecksumTransferTest
                          null );
     }
 
+    @Test
     public void testGetChecksumNoSha1CorrectMd5()
         throws Exception
     {
@@ -132,6 +137,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, null, "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
     }
 
+    @Test
     public void testGetWithNoChecksumsUsingIgnoredSetting()
         throws Exception
     {
@@ -156,6 +162,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, null, null );
     }
 
+    @Test
     public void testGetChecksumBadSha1BadMd5IgnoredSetting()
         throws Exception
     {
@@ -180,6 +187,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
     }
 
+    @Test
     public void testGetChecksumBadSha1BadMd5FailSetting()
         throws Exception
     {
@@ -202,6 +210,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, null, null );
     }
 
+    @Test
     public void testGetChecksumBadSha1BadMd5FixSetting()
         throws Exception
     {
@@ -227,6 +236,7 @@ public class ChecksumTransferTest
                          "a292491a35925465e693a44809a078b5  get-checksum-both-bad-1.0.jar" );
     }
 
+    @Test
     public void testGetChecksumCorrectSha1BadMd5UsingFailSetting()
         throws Exception
     {
@@ -249,6 +259,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, null, null );
     }
 
+    @Test
     public void testGetChecksumNoSha1CorrectMd5UsingFailSetting()
         throws Exception
     {
@@ -274,6 +285,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, null, "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
     }
 
+    @Test
     public void testGetWithNoChecksumsUsingFailSetting()
         throws Exception
     {
@@ -296,6 +308,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, null, null );
     }
 
+    @Test
     public void testGetChecksumCorrectSha1BadMd5UsingIgnoredSetting()
         throws Exception
     {
@@ -321,6 +334,7 @@ public class ChecksumTransferTest
                          "invalid checksum file" );
     }
 
+    @Test
     public void testGetChecksumCorrectSha1BadMd5UsingFixSetting()
         throws Exception
     {
@@ -346,6 +360,7 @@ public class ChecksumTransferTest
                          "c35f3b76268b73a4ba617f6f275c49ab  get-checksum-sha1-bad-md5-1.0.jar" );
     }
 
+    @Test
     public void testGetChecksumNoSha1CorrectMd5UsingFixSetting()
         throws Exception
     {
@@ -371,6 +386,7 @@ public class ChecksumTransferTest
                          "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
     }
 
+    @Test
     public void testGetWithNoChecksumsUsingFixSetting()
         throws Exception
     {
@@ -396,6 +412,7 @@ public class ChecksumTransferTest
                          "3f7341545f21226b6f49a3c2704cb9be  get-default-layout-1.0.jar" );
     }
 
+    @Test
     public void testGetChecksumNotFoundOnRemote()
         throws Exception
     {
@@ -444,6 +461,7 @@ public class ChecksumTransferTest
                          null );
     }
 
+    @Test
     public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingIgnoredSetting()
         throws Exception
     {
@@ -470,6 +488,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
     }
 
+    @Test
     public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingFailSetting()
         throws Exception
     {
@@ -497,6 +516,7 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
     }
 
+    @Test
     public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingFixSetting()
         throws Exception
     {

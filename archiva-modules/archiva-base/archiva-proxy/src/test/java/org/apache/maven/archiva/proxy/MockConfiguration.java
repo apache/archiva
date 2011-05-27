@@ -22,28 +22,45 @@ package org.apache.maven.archiva.proxy;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
+import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.easymock.MockControl;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
- * MockConfiguration 
+ * MockConfiguration
  *
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
- *                   role-hint="mock"
+ *          <p/>
+ *          plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
+ *          role-hint="mock"
  */
+@Service( "archivaConfiguration#mock" )
 public class MockConfiguration
     implements ArchivaConfiguration
 {
+
+    @Inject
+    protected ApplicationContext applicationContext;
+
     private Configuration configuration = new Configuration();
 
     private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
+
     private Set<ConfigurationListener> configListeners = new HashSet<ConfigurationListener>();
 
     private MockControl registryControl;
@@ -54,6 +71,44 @@ public class MockConfiguration
     {
         registryControl = MockControl.createNiceControl( Registry.class );
         registryMock = (Registry) registryControl.getMock();
+    }
+
+    @PostConstruct
+    public void initialize()
+        throws Exception
+    {
+
+        // random name or cleanup ??
+        String repoPath = "target/test-repository/managed/" + "foo";//getName();
+        File repoLocation = new File( repoPath );
+        ManagedRepositoryContent managedDefaultRepository =
+            createRepository( AbstractProxyTestCase.ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath,
+                              "default" );
+        ManagedRepositoryConfiguration repoConfig = managedDefaultRepository.getRepository();
+        configuration.addManagedRepository( repoConfig );
+
+        configuration.setRepositoryScanning( new RepositoryScanningConfiguration(){
+            @Override
+            public List<FileType> getFileTypes()
+            {
+                return Collections.emptyList();
+            }
+        } );
+    }
+
+    protected ManagedRepositoryContent createRepository( String id, String name, String path, String layout )
+        throws Exception
+    {
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setLocation( path );
+        repo.setLayout( layout );
+
+        ManagedRepositoryContent repoContent =
+            applicationContext.getBean( "managedRepositoryContent#" + layout, ManagedRepositoryContent.class );
+        repoContent.setRepository( repo );
+        return repoContent;
     }
 
     public void addChangeListener( RegistryListener listener )
@@ -74,7 +129,7 @@ public class MockConfiguration
 
     public void triggerChange( String name, String value )
     {
-        for(RegistryListener listener: registryListeners)
+        for ( RegistryListener listener : registryListeners )
         {
             try
             {
@@ -89,7 +144,7 @@ public class MockConfiguration
 
     public void addListener( ConfigurationListener listener )
     {
-        configListeners.add(listener);
+        configListeners.add( listener );
     }
 
     public void removeListener( ConfigurationListener listener )

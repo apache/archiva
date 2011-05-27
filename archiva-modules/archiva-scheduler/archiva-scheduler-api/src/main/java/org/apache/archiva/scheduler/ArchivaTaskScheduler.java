@@ -24,7 +24,6 @@ import org.codehaus.plexus.taskqueue.TaskQueueException;
 
 /**
  * The component that takes care of scheduling in the application.
- *
  */
 public interface ArchivaTaskScheduler<T extends Task>
 {
@@ -35,10 +34,10 @@ public interface ArchivaTaskScheduler<T extends Task>
 
     /**
      * Adds the task to the scanning queue.
-     * 
+     *
      * @param task
      * @throws TaskQueueException
      */
-    public void queueTask( T task )
+    void queueTask( T task )
         throws TaskQueueException;
 }

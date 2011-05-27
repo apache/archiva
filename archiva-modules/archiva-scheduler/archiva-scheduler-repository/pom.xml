@@ -16,6 +16,24 @@
       <artifactId>archiva-scheduler-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.redback.components</groupId>
+      <artifactId>spring-quartz</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>c3p0</groupId>
+          <artifactId>c3p0</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.transaction</groupId>
+          <artifactId>jta</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>repository-statistics</artifactId>
     </dependency>
@@ -31,10 +49,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-quartz</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

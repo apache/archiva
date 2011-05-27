@@ -19,6 +19,7 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -33,25 +34,35 @@ import org.apache.maven.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
-import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Integration test for connecting over a HTTP proxy.
  *
  * @version $Id: ManagedDefaultTransferTest.java 677852 2008-07-18 08:16:24Z brett $
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class HttpProxyTransferTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private static final String PROXY_ID = "proxy";
 
@@ -67,13 +78,21 @@ public class HttpProxyTransferTest
 
     private ManagedRepositoryContent managedDefaultRepository;
 
+    @Inject
+    private ApplicationContext applicationContext;
+
     private Server server;
 
-    @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
+
+        proxyHandler = applicationContext.getBean( RepositoryProxyConnectors.class );
+
+        config =
+            (MockConfiguration) applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );
 
         // Setup source repository (using default layout)
         String repoPath = "target/test-repository/managed/" + getName();
@@ -95,12 +114,12 @@ public class HttpProxyTransferTest
         repo.setLocation( repoPath );
         repo.setLayout( "default" );
 
-        ManagedRepositoryContent repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class,
-                                                                                  "default" );
+        ManagedRepositoryContent repoContent =
+            applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
+
         repoContent.setRepository( repo );
         managedDefaultRepository = repoContent;
 
-        config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
         config.getConfiguration().addManagedRepository( repo );
 
         Handler handler = new AbstractHandler()
@@ -140,21 +159,11 @@ public class HttpProxyTransferTest
 
         config.getConfiguration().addRemoteRepository( repoConfig );
 
-        // Setup the proxy handler.
-        try
-        {
-            proxyHandler = (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
-        }
-        catch ( Exception e )
-        {
-            server.stop();
-            applicationContext.close();
-            throw e;
-        }
+
     }
 
-    @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
@@ -162,6 +171,7 @@ public class HttpProxyTransferTest
         server.stop();
     }
 
+    @Test
     public void testGetOverHttpProxy()
         throws Exception
     {

@@ -38,11 +38,13 @@ import org.apache.maven.wagon.proxy.ProxyInfoProvider;
 import org.apache.maven.wagon.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * A dummy wagon implementation
  *
  */
+@Service("wagon#test")
 public class WagonDelegate
     implements Wagon
 {

@@ -19,24 +19,43 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.maven.wagon.Wagon;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 /**
  * Test the WagonFactory works through Spring to be bound into the RepositoryProxyConnectors implementation.
  * 
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
 public class WagonFactoryTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+
+    @Inject
+    WagonFactory factory;
+
+    @Test
     public void testLookupSuccessiveWagons()
+        throws Exception
     {
-        WagonFactory factory = (WagonFactory) lookup( WagonFactory.class );
-        
+
         Wagon first = factory.getWagon( "wagon#file" );
         
         Wagon second = factory.getWagon( "wagon#file" );
+
+        // ensure we support only protocol name too
+        Wagon third = factory.getWagon( "file" );
         
         assertNotSame( first, second );
+
+        assertNotSame( first, third );
     }
 }

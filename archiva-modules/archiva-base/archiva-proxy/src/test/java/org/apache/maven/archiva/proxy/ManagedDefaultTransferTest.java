@@ -27,6 +27,7 @@ import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -38,6 +39,7 @@ import java.io.File;
 public class ManagedDefaultTransferTest
     extends AbstractProxyTestCase
 {
+    @Test
     public void testGetDefaultLayoutNotPresentConnectorOffline()
         throws Exception
     {
@@ -58,7 +60,8 @@ public class ManagedDefaultTransferTest
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         assertNull("File should not have been downloaded", downloadedFile);
     }
-    
+
+    @Test
     public void testGetDefaultLayoutNotPresent()
         throws Exception
     {
@@ -83,6 +86,7 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetDefaultLayoutNotPresentPassthrough()
         throws Exception
     {
@@ -116,6 +120,7 @@ public class ManagedDefaultTransferTest
      *
      * @throws Exception
      */
+    @Test
     public void testGetDefaultLayoutAlreadyPresentPolicyOnce()
         throws Exception
     {
@@ -146,6 +151,7 @@ public class ManagedDefaultTransferTest
      *
      * @throws Exception
      */
+    @Test
     public void testGetDefaultLayoutAlreadyPresentPassthrough()
         throws Exception
     {
@@ -189,6 +195,7 @@ public class ManagedDefaultTransferTest
      *
      * @throws Exception
      */
+    @Test
     public void testGetDefaultLayoutAlreadyPresentNewerThanRemotePolicyIgnored()
         throws Exception
     {
@@ -234,6 +241,7 @@ public class ManagedDefaultTransferTest
      *
      * @throws Exception
      */
+    @Test
     public void testGetDefaultLayoutAlreadyPresentOlderThanRemotePolicyIgnored()
         throws Exception
     {
@@ -269,6 +277,7 @@ public class ManagedDefaultTransferTest
      *
      * @throws Exception
      */
+    @Test
     public void testGetDefaultLayoutRemoteUpdate()
         throws Exception
     {
@@ -293,6 +302,7 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetWhenInBothProxiedRepos()
         throws Exception
     {
@@ -323,6 +333,7 @@ public class ManagedDefaultTransferTest
                      StringUtils.equals( actualContents, badContents ) );
     }
 
+    @Test
     public void testGetInSecondProxiedRepo()
         throws Exception
     {
@@ -346,6 +357,7 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testNotFoundInAnyProxies()
         throws Exception
     {
@@ -370,6 +382,7 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetInSecondProxiedRepoFirstFails()
         throws Exception
     {
@@ -403,6 +416,7 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetAllRepositoriesFail()
         throws Exception
     {
@@ -446,6 +460,7 @@ public class ManagedDefaultTransferTest
         // TODO: How much information on each failure should we pass back to the user vs. logging in the proxy? 
     }
 
+    @Test
     public void testGetFromLegacyProxyAlreadyPresentInManaged_NewerThanRemote()
         throws Exception
     {
@@ -473,7 +488,8 @@ public class ManagedDefaultTransferTest
         assertNotModified( expectedFile, expectedTimestamp );
         assertNoTempFiles( expectedFile );
     }
-    
+
+    @Test
     public void testGetFromLegacyProxyAlreadyPresentInManaged_OlderThanRemote()
         throws Exception
     {
@@ -501,6 +517,7 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetFromLegacyProxyNotPresentInManaged()
         throws Exception
     {
@@ -523,6 +540,7 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetFromLegacyProxyPluginNotPresentInManaged()
         throws Exception
     {

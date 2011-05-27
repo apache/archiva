@@ -30,22 +30,22 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
-import org.codehaus.plexus.scheduler.CronExpressionValidator;
-import org.codehaus.plexus.scheduler.Scheduler;
-import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.codehaus.redback.components.scheduler.CronExpressionValidator;
+import org.codehaus.redback.components.scheduler.Scheduler;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.ParseException;
@@ -56,12 +56,12 @@ import java.util.Set;
 
 /**
  * Default implementation of a scheduling component for archiva.
- *
+ * <p/>
  * plexus.component role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
  */
-@Service("archivaTaskScheduler#repository")
+@Service( "archivaTaskScheduler#repository" )
 public class RepositoryArchivaTaskScheduler
-    implements ArchivaTaskScheduler<RepositoryTask>, Startable, ConfigurationListener
+    implements ArchivaTaskScheduler<RepositoryTask>, ConfigurationListener
 {
     private Logger log = LoggerFactory.getLogger( RepositoryArchivaTaskScheduler.class );
 
@@ -71,10 +71,14 @@ public class RepositoryArchivaTaskScheduler
     @Inject
     private Scheduler scheduler;
 
+    @Inject
+    CronExpressionValidator cronValidator;
+
     /**
      * plexus.requirement role-hint="repository-scanning"
      */
-    @Inject @Named(value = "taskQueue#repository-scanning")
+    @Inject
+    @Named( value = "taskQueue#repository-scanning" )
     private TaskQueue repositoryScanningQueue;
 
     /**
@@ -87,12 +91,12 @@ public class RepositoryArchivaTaskScheduler
      * plexus.requirement
      */
     @Inject
-    @Named(value = "repositoryStatisticsManager#default")
+    @Named( value = "repositoryStatisticsManager#default" )
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     /**
      * TODO: could have multiple implementations
-     *
+     * <p/>
      * plexus.requirement
      */
     @Inject
@@ -114,24 +118,12 @@ public class RepositoryArchivaTaskScheduler
 
     private List<String> queuedRepos = new ArrayList<String>();
 
+    @PostConstruct
     public void startup()
         throws ArchivaException
     {
         archivaConfiguration.addListener( this );
 
-        try
-        {
-            start();
-        }
-        catch ( StartingException e )
-        {
-            throw new ArchivaException( e.getMessage(), e );
-        }
-    }
-
-    public void start()
-        throws StartingException
-    {
         List<ManagedRepositoryConfiguration> repositories =
             archivaConfiguration.getConfiguration().getManagedRepositories();
 
@@ -149,7 +141,7 @@ public class RepositoryArchivaTaskScheduler
                     }
                     catch ( SchedulerException e )
                     {
-                        throw new StartingException( "Unable to start scheduler: " + e.getMessage(), e );
+                        throw new ArchivaException( "Unable to start scheduler: " + e.getMessage(), e );
                     }
 
                     try
@@ -161,8 +153,8 @@ public class RepositoryArchivaTaskScheduler
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: " +
-                                      e.getMessage(), e );
+                        log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: "
+                                      + e.getMessage(), e );
                     }
                 }
             }
@@ -171,24 +163,21 @@ public class RepositoryArchivaTaskScheduler
         {
             repositorySession.close();
         }
+
     }
 
+
+    @PreDestroy
     public void stop()
-        throws StoppingException
+        throws SchedulerException
     {
-        try
+        for ( String job : jobs )
         {
-            for ( String job : jobs )
-            {
-                scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
-            }
-            jobs.clear();
-            queuedRepos.clear();
+            scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
         }
-        catch ( SchedulerException e )
-        {
-            throw new StoppingException( "Unable to unschedule tasks", e );
-        }
+        jobs.clear();
+        queuedRepos.clear();
+
     }
 
     @SuppressWarnings( "unchecked" )
@@ -252,7 +241,7 @@ public class RepositoryArchivaTaskScheduler
         {
             if ( isProcessingRepositoryTask( task ) )
             {
-                log.debug( "Repository task '" + task + "' is already queued. Skipping task." );
+                log.debug( "Repository task '{}' is already queued. Skipping task.", task );
             }
             else
             {
@@ -348,35 +337,32 @@ public class RepositoryArchivaTaskScheduler
         // get the cron string for these database scanning jobs
         String cronString = repoConfig.getRefreshCronExpression();
 
-        CronExpressionValidator cronValidator = new CronExpressionValidator();
         if ( !cronValidator.validate( cronString ) )
         {
-            log.warn( "Cron expression [" + cronString + "] for repository [" + repoConfig.getId() +
-                          "] is invalid.  Defaulting to hourly." );
+            log.warn( "Cron expression [" + cronString + "] for repository [" + repoConfig.getId()
+                          + "] is invalid.  Defaulting to hourly." );
             cronString = CRON_HOURLY;
         }
 
         // setup the unprocessed artifact job
-        JobDetail repositoryJob = new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
-                                                 RepositoryTaskJob.class );
+        JobDetailImpl repositoryJob =
+            new JobDetailImpl( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, RepositoryTaskJob.class );
 
-        JobDataMap dataMap = new JobDataMap();
-        dataMap.put( TASK_QUEUE, repositoryScanningQueue );
-        dataMap.put( TASK_REPOSITORY, repoConfig.getId() );
-        repositoryJob.setJobDataMap( dataMap );
+        repositoryJob.getJobDataMap().put( TASK_QUEUE, repositoryScanningQueue );
+        repositoryJob.getJobDataMap().put( TASK_REPOSITORY, repoConfig.getId() );
 
         try
         {
-            CronTrigger trigger = new CronTrigger( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(),
-                                                   REPOSITORY_SCAN_GROUP, cronString );
+            CronTriggerImpl trigger =
+                new CronTriggerImpl( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, cronString );
 
             jobs.add( REPOSITORY_JOB + ":" + repoConfig.getId() );
             scheduler.scheduleJob( repositoryJob, trigger );
         }
         catch ( ParseException e )
         {
-            log.error( "ParseException in repository scanning cron expression, disabling repository scanning for '" +
-                           repoConfig.getId() + "': " + e.getMessage() );
+            log.error( "ParseException in repository scanning cron expression, disabling repository scanning for '"
+                           + repoConfig.getId() + "': " + e.getMessage() );
         }
 
     }

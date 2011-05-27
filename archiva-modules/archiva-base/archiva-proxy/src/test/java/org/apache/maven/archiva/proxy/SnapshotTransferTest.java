@@ -24,6 +24,7 @@ import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -35,6 +36,7 @@ import java.io.File;
 public class SnapshotTransferTest
     extends AbstractProxyTestCase
 {
+    @Test
     public void testSnapshotNonExistant()
         throws Exception
     {
@@ -55,6 +57,7 @@ public class SnapshotTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testTimestampDrivenSnapshotNotPresentAlready()
         throws Exception
     {
@@ -77,6 +80,7 @@ public class SnapshotTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testNewerTimestampDrivenSnapshotOnFirstRepo()
         throws Exception
     {
@@ -99,6 +103,7 @@ public class SnapshotTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testOlderTimestampDrivenSnapshotOnFirstRepo()
         throws Exception
     {
@@ -190,6 +195,7 @@ public class SnapshotTransferTest
         assertNoTempFiles( expectedFile );
     } */
 
+    @Test
     public void testTimestampDrivenSnapshotNotExpired()
         throws Exception
     {
@@ -213,6 +219,7 @@ public class SnapshotTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testTimestampDrivenSnapshotNotUpdated()
         throws Exception
     {
@@ -237,6 +244,7 @@ public class SnapshotTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testTimestampDrivenSnapshotNotPresentAlreadyExpiredCacheFailure()
         throws Exception
     {
@@ -262,6 +270,7 @@ public class SnapshotTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testMetadataDrivenSnapshotNotPresentAlready()
         throws Exception
     {
@@ -284,6 +293,7 @@ public class SnapshotTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetMetadataDrivenSnapshotRemoteUpdate()
         throws Exception
     {

@@ -30,6 +30,7 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.authorization.AuthorizationException;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -55,6 +56,7 @@ public class ErrorHandlingTest
 
     private static final String NAME_MOCKED_PROXIED2 = "Bad Proxied 2";
 
+    @Test
     public void testPropagateErrorImmediatelyWithErrorThenSuccess()
         throws Exception
     {
@@ -69,6 +71,7 @@ public class ErrorHandlingTest
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
 
+    @Test
     public void testPropagateErrorImmediatelyWithNotFoundThenError()
         throws Exception
     {
@@ -85,6 +88,7 @@ public class ErrorHandlingTest
         confirmSingleFailure( path, ID_MOCKED_PROXIED2 );
     }
 
+    @Test
     public void testPropagateErrorImmediatelyWithSuccessThenError()
         throws Exception
     {
@@ -98,6 +102,7 @@ public class ErrorHandlingTest
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED1 );
     }
 
+    @Test
     public void testPropagateErrorImmediatelyWithNotFoundThenSuccess()
         throws Exception
     {
@@ -113,6 +118,7 @@ public class ErrorHandlingTest
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED2 );
     }
 
+    @Test
     public void testPropagateErrorAtEndWithErrorThenSuccess()
         throws Exception
     {
@@ -128,6 +134,7 @@ public class ErrorHandlingTest
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
 
+    @Test
     public void testPropagateErrorAtEndWithSuccessThenError()
         throws Exception
     {
@@ -141,6 +148,7 @@ public class ErrorHandlingTest
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED1 );
     }
 
+    @Test
     public void testPropagateErrorAtEndWithNotFoundThenError()
         throws Exception
     {
@@ -158,6 +166,7 @@ public class ErrorHandlingTest
         confirmSingleFailure( path, ID_MOCKED_PROXIED2 );
     }
 
+    @Test
     public void testPropagateErrorAtEndWithErrorThenNotFound()
         throws Exception
     {
@@ -175,6 +184,7 @@ public class ErrorHandlingTest
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
 
+    @Test
     public void testPropagateErrorAtEndWithErrorThenError()
         throws Exception
     {
@@ -192,6 +202,7 @@ public class ErrorHandlingTest
         confirmFailures( path, new String[]{ID_MOCKED_PROXIED1, ID_MOCKED_PROXIED2} );
     }
 
+    @Test
     public void testPropagateErrorAtEndWithNotFoundThenSuccess()
         throws Exception
     {
@@ -207,6 +218,7 @@ public class ErrorHandlingTest
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED2 );
     }
 
+    @Test
     public void testIgnoreErrorWithErrorThenSuccess()
         throws Exception
     {
@@ -222,6 +234,7 @@ public class ErrorHandlingTest
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED2 );
     }
 
+    @Test
     public void testIgnoreErrorWithSuccessThenError()
         throws Exception
     {
@@ -235,6 +248,7 @@ public class ErrorHandlingTest
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED1 );
     }
 
+    @Test
     public void testIgnoreErrorWithNotFoundThenError()
         throws Exception
     {
@@ -252,6 +266,7 @@ public class ErrorHandlingTest
         confirmNotDownloadedNoError( path );
     }
 
+    @Test
     public void testIgnoreErrorWithErrorThenNotFound()
         throws Exception
     {
@@ -269,6 +284,7 @@ public class ErrorHandlingTest
         confirmNotDownloadedNoError( path );
     }
 
+    @Test
     public void testIgnoreErrorWithErrorThenError()
         throws Exception
     {
@@ -286,6 +302,7 @@ public class ErrorHandlingTest
         confirmNotDownloadedNoError( path );
     }
 
+    @Test
     public void testPropagateOnUpdateAlwaysArtifactNotPresent()
         throws Exception
     {
@@ -302,6 +319,7 @@ public class ErrorHandlingTest
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
 
+    @Test
     public void testPropagateOnUpdateAlwaysArtifactPresent()
         throws Exception
     {
@@ -318,6 +336,7 @@ public class ErrorHandlingTest
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
 
+    @Test
     public void testPropagateOnUpdateAlwaysQueueArtifactNotPresent()
         throws Exception
     {
@@ -335,6 +354,7 @@ public class ErrorHandlingTest
         confirmFailures( path, new String[] { ID_MOCKED_PROXIED1, ID_MOCKED_PROXIED2 } );
     }
 
+    @Test
     public void testPropagateOnUpdateAlwaysQueueArtifactPresent()
         throws Exception
     {
@@ -352,6 +372,7 @@ public class ErrorHandlingTest
         confirmFailures( path, new String[] { ID_MOCKED_PROXIED1, ID_MOCKED_PROXIED2 } );
     }
 
+    @Test
     public void testPropagateOnUpdateAlwaysIgnoreArtifactNotPresent()
         throws Exception
     {
@@ -369,6 +390,7 @@ public class ErrorHandlingTest
         confirmNotDownloadedNoError( path );
     }
 
+    @Test
     public void testPropagateOnUpdateAlwaysIgnoreArtifactPresent()
         throws Exception
     {
@@ -387,6 +409,7 @@ public class ErrorHandlingTest
         assertTrue( expectedFile.exists() );
     }
 
+    @Test
     public void testPropagateOnUpdateNotPresentArtifactNotPresent()
         throws Exception
     {
@@ -403,6 +426,7 @@ public class ErrorHandlingTest
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
 
+    @Test
     public void testPropagateOnUpdateNotPresentArtifactPresent()
         throws Exception
     {
@@ -420,6 +444,7 @@ public class ErrorHandlingTest
         assertTrue( expectedFile.exists() );
     }
 
+    @Test
     public void testPropagateOnUpdateNotPresentQueueArtifactNotPresent()
         throws Exception
     {
@@ -437,6 +462,7 @@ public class ErrorHandlingTest
         confirmFailures( path, new String[] { ID_MOCKED_PROXIED1, ID_MOCKED_PROXIED2 } );
     }
 
+    @Test
     public void testPropagateOnUpdateNotPresentQueueArtifactPresent()
         throws Exception
     {
@@ -455,6 +481,7 @@ public class ErrorHandlingTest
         assertTrue( expectedFile.exists() );
     }
 
+    @Test
     public void testPropagateOnUpdateNotPresentIgnoreArtifactNotPresent()
         throws Exception
     {
@@ -472,6 +499,7 @@ public class ErrorHandlingTest
         confirmNotDownloadedNoError( path );
     }
 
+    @Test
     public void testPropagateOnUpdateNotPresentIgnoreArtifactPresent()
         throws Exception
     {

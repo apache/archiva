@@ -24,6 +24,7 @@ import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -39,6 +40,7 @@ public class ManagedLegacyTransferTest
      * Incoming request on a Managed Legacy repository, for content that does not
      * exist in the managed legacy repository, but does exist on a remote default layout repository.
      */
+    @Test
     public void testManagedLegacyNotPresentRemoteDefaultPresent()
         throws Exception
     {
@@ -63,6 +65,7 @@ public class ManagedLegacyTransferTest
      * Incoming request on a Managed Legacy repository, for content that already
      * exist in the managed legacy repository, and also exist on a remote default layout repository.
      */
+    @Test
     public void testManagedLegacyPresentRemoteDefaultPresent()
         throws Exception
     {
@@ -90,6 +93,7 @@ public class ManagedLegacyTransferTest
      * Incoming request on a Managed Legacy repository, for content that does not
      * exist in the managed legacy repository, and does not exist on a remote legacy layout repository.
      */
+    @Test
     public void testManagedLegacyNotPresentRemoteLegacyPresent()
         throws Exception
     {
@@ -113,6 +117,7 @@ public class ManagedLegacyTransferTest
      * Incoming request on a Managed Legacy repository, for content that does exist in the 
      * managed legacy repository, and also exists on a remote legacy layout repository. 
      */
+    @Test
     public void testManagedLegacyPresentRemoteLegacyPresent()
         throws Exception
     {
@@ -137,6 +142,7 @@ public class ManagedLegacyTransferTest
      * Incoming request on a Managed Legacy repository, for content that does exist in the 
      * managed legacy repository, and does not exist on a remote legacy layout repository. 
      */
+    @Test
     public void testManagedLegacyPresentRemoteLegacyNotPresent()
         throws Exception
     {
@@ -159,6 +165,7 @@ public class ManagedLegacyTransferTest
      * Incoming request on a Managed Legacy repository, for content that does exist in the 
      * managed legacy repository, and does not exists on a remote default layout repository. 
      */
+    @Test
     public void testManagedLegacyPresentRemoteDefaultNotPresent()
         throws Exception
     {
@@ -181,6 +188,7 @@ public class ManagedLegacyTransferTest
      * Incoming request on a Managed Legacy repository, for content that does not exist in the 
      * managed legacy repository, and does not exists on a remote legacy layout repository. 
      */
+    @Test
     public void testManagedLegacyNotPresentRemoteLegacyNotPresent()
         throws Exception
     {
@@ -203,6 +211,7 @@ public class ManagedLegacyTransferTest
      * Incoming request on a Managed Legacy repository, for content that does not exist in the 
      * managed legacy repository, and does not exists on a remote default layout repository. 
      */
+    @Test
     public void testManagedLegacyNotPresentRemoteDefaultNotPresent()
         throws Exception
     {

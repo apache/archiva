@@ -27,7 +27,9 @@ import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.junit.Test;
 
+import javax.inject.Inject;
 import java.io.File;
 
 /**
@@ -41,6 +43,7 @@ public class CacheFailuresTransferTest
     // TODO: test some hard failures (eg TransferFailedException)
     // TODO: test the various combinations of fetchFrom* (note: need only test when caching is enabled)
 
+    @Test
     public void testGetWithCacheFailuresOn()
         throws Exception
     {
@@ -64,7 +67,7 @@ public class CacheFailuresTransferTest
 
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
 
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+        wagonMockControl.setMatcher( customWagonGetMatcher );
 
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
 
@@ -84,6 +87,7 @@ public class CacheFailuresTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetWithCacheFailuresOff()
         throws Exception
     {
@@ -101,13 +105,13 @@ public class CacheFailuresTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false  );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false  );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
 
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+        wagonMockControl.setMatcher( customWagonGetMatcher );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
 
         wagonMockControl.replay();
@@ -120,7 +124,7 @@ public class CacheFailuresTransferTest
         wagonMockControl.reset();
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
 
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+        wagonMockControl.setMatcher( customWagonGetMatcher );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
         wagonMockControl.replay();
 
@@ -132,6 +136,7 @@ public class CacheFailuresTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Test
     public void testGetWhenInBothProxiedButFirstCacheFailure()
         throws Exception
     {
@@ -163,10 +168,13 @@ public class CacheFailuresTransferTest
         assertNoTempFiles( expectedFile );
     }
 
+    @Inject
+    UrlFailureCache urlFailureCache;
+
     protected UrlFailureCache lookupUrlFailureCache()
         throws Exception
     {
-        UrlFailureCache urlFailureCache = (UrlFailureCache) lookup( "urlFailureCache" );
+        //UrlFailureCache urlFailureCache = (UrlFailureCache) lookup( "urlFailureCache" );
         assertNotNull( "URL Failure Cache cannot be null.", urlFailureCache );
         return urlFailureCache;
     }

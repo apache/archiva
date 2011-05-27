@@ -22,17 +22,17 @@ package org.apache.maven.archiva.proxy;
 import org.apache.maven.wagon.Wagon;
 
 /**
- * Create a Wagon instance for the given protocol. Implementation will be provided by a Spring service locator.
- * 
+ * Create a Wagon instance for the given protocol.
  */
 public interface WagonFactory
 {
     /**
      * Create a new Wagon instance for the given protocol.
-     * 
-     * @param   protocol the protocol to find the Wagon for, which must be prefixed with <code>wagon#</code>, for example 
-     *          <code>wagon#http</code>.
-     * @return  the Wagon instance
+     *
+     * @param protocol the protocol to find the Wagon for, which must be prefixed with <code>wagon#</code>, for example
+     *                 <code>wagon#http</code>.
+     * @return the Wagon instance
      */
-    Wagon getWagon( String protocol );
+    Wagon getWagon( String protocol )
+        throws WagonFactoryException;
 }

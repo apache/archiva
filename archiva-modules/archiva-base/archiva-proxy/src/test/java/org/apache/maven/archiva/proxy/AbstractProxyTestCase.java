@@ -19,6 +19,7 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -33,10 +34,16 @@ import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.wagon.Wagon;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.ArgumentsMatcher;
 import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -53,9 +60,15 @@ import java.util.Locale;
  *
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractProxyTestCase
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+
+    @Inject
+    protected ApplicationContext applicationContext;
+
     protected static final String ID_LEGACY_PROXIED = "legacy-proxied";
 
     protected static final String ID_PROXIED1 = "proxied1";
@@ -88,6 +101,90 @@ public abstract class AbstractProxyTestCase
 
     protected static final String REPOPATH_LEGACY_MANAGED_TARGET = "target/test-repository/legacy-managed";
 
+    protected MockControl wagonMockControl;
+
+    protected Wagon wagonMock;
+
+
+    protected RepositoryProxyConnectors proxyHandler;
+
+    protected ManagedRepositoryContent managedDefaultRepository;
+
+    protected File managedDefaultDir;
+
+    protected ManagedRepositoryContent managedLegacyRepository;
+
+    protected File managedLegacyDir;
+
+    protected MockConfiguration config;
+
+    @Inject
+    @Named( value = "wagon#test" )
+    WagonDelegate delegate;
+
+    @Before
+    public void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        proxyHandler = applicationContext.getBean( RepositoryProxyConnectors.class );
+
+        config =
+            (MockConfiguration) applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );
+
+        // Setup source repository (using default layout)
+        String repoPath = "target/test-repository/managed/" + getName();
+        File repoLocation = new File( repoPath );
+
+        managedDefaultRepository =
+            createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath, "default" );
+
+        managedDefaultDir = new File( managedDefaultRepository.getRepoRoot() );
+
+        ManagedRepositoryConfiguration repoConfig = managedDefaultRepository.getRepository();
+
+        config.getConfiguration().addManagedRepository( repoConfig );
+
+        // Setup source repository (using legacy layout)
+        repoLocation = new File( REPOPATH_LEGACY_MANAGED_TARGET );
+        FileUtils.deleteDirectory( repoLocation );
+        copyDirectoryStructure( new File( REPOPATH_LEGACY_MANAGED ), repoLocation );
+
+        managedLegacyRepository =
+            createRepository( ID_LEGACY_MANAGED, "Legacy Managed Repository", REPOPATH_LEGACY_MANAGED_TARGET,
+                              "legacy" );
+
+        managedLegacyDir = new File( managedLegacyRepository.getRepoRoot() );
+
+        repoConfig = managedLegacyRepository.getRepository();
+
+        config.getConfiguration().addManagedRepository( repoConfig );
+
+        // Setup target (proxied to) repository.
+        saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",
+                                    new File( REPOPATH_PROXIED1 ).toURL().toExternalForm(), "default" );
+
+        // Setup target (proxied to) repository.
+        saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2",
+                                    new File( REPOPATH_PROXIED2 ).toURL().toExternalForm(), "default" );
+
+        // Setup target (proxied to) repository using legacy layout.
+        saveRemoteRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository",
+                                    new File( REPOPATH_PROXIED_LEGACY ).toURL().toExternalForm(), "legacy" );
+
+        // Setup the proxy handler.
+        //proxyHandler = applicationContext.getBean (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
+
+        // Setup the wagon mock.
+        wagonMockControl = MockControl.createNiceControl( Wagon.class );
+        wagonMock = (Wagon) wagonMockControl.getMock();
+
+        delegate.setDelegate( wagonMock );
+
+        System.out.println( "\n.\\ " + getName() + "() \\._________________________________________\n" );
+    }
+
     protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher()
     {
 
@@ -97,8 +194,8 @@ public abstract class AbstractProxyTestCase
             {
                 return false;
             }
-            return MockControl.ARRAY_MATCHER.matches( ArrayUtils.remove( expected, 1 ), ArrayUtils.remove( actual,
-                                                                                                           1 ) );
+            return MockControl.ARRAY_MATCHER.matches( ArrayUtils.remove( expected, 1 ),
+                                                      ArrayUtils.remove( actual, 1 ) );
         }
 
         public String toString( Object[] arguments )
@@ -140,21 +237,6 @@ public abstract class AbstractProxyTestCase
         }
     };
 
-    protected MockControl wagonMockControl;
-
-    protected Wagon wagonMock;
-
-    protected RepositoryProxyConnectors proxyHandler;
-
-    protected ManagedRepositoryContent managedDefaultRepository;
-
-    protected File managedDefaultDir;
-
-    protected ManagedRepositoryContent managedLegacyRepository;
-
-    protected File managedLegacyDir;
-
-    protected MockConfiguration config;
 
     protected void assertChecksums( File expectedFile, String expectedSha1Contents, String expectedMd5Contents )
         throws Exception
@@ -215,7 +297,7 @@ public abstract class AbstractProxyTestCase
             return;
         }
 
-        Collection<File> tmpFiles = FileUtils.listFiles( workingDir, new String[]{"tmp"}, false );
+        Collection<File> tmpFiles = FileUtils.listFiles( workingDir, new String[]{ "tmp" }, false );
         if ( !tmpFiles.isEmpty() )
         {
             StringBuffer emsg = new StringBuffer();
@@ -309,8 +391,8 @@ public abstract class AbstractProxyTestCase
         repo.setLocation( path );
         repo.setLayout( layout );
 
-        ManagedRepositoryContent repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class,
-                                                                                  layout );
+        ManagedRepositoryContent repoContent =
+            applicationContext.getBean( "managedRepositoryContent#" + layout, ManagedRepositoryContent.class );
         repoContent.setRepository( repo );
         return repoContent;
     }
@@ -392,10 +474,10 @@ public abstract class AbstractProxyTestCase
         config.triggerChange( prefix + ".policies.checksum", connectorConfig.getPolicy( "checksum", "" ) );
         config.triggerChange( prefix + ".policies.snapshots", connectorConfig.getPolicy( "snapshots", "" ) );
         config.triggerChange( prefix + ".policies.cache-failures", connectorConfig.getPolicy( "cache-failures", "" ) );
-        config.triggerChange( prefix + ".policies.propagate-errors", connectorConfig.getPolicy( "propagate-errors",
-                                                                                                "" ) );
-        config.triggerChange( prefix + ".policies.propagate-errors-on-update", connectorConfig.getPolicy(
-            "propagate-errors-on-update", "" ) );
+        config.triggerChange( prefix + ".policies.propagate-errors",
+                              connectorConfig.getPolicy( "propagate-errors", "" ) );
+        config.triggerChange( prefix + ".policies.propagate-errors-on-update",
+                              connectorConfig.getPolicy( "propagate-errors-on-update", "" ) );
     }
 
     protected void saveManagedRepositoryConfig( String id, String name, String path, String layout )
@@ -440,99 +522,21 @@ public abstract class AbstractProxyTestCase
     protected File saveTargetedRepositoryConfig( String id, String originalPath, String targetPath, String layout )
         throws IOException
     {
-        File repoLocation = getTestFile( targetPath );
+        File repoLocation = new File( targetPath );
         FileUtils.deleteDirectory( repoLocation );
-        copyDirectoryStructure( getTestFile( originalPath ), repoLocation );
+        copyDirectoryStructure( new File( originalPath ), repoLocation );
 
         saveRemoteRepositoryConfig( id, "Target Repo-" + id, targetPath, layout );
 
         return repoLocation;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getConfigLocation()
-     */
-    @Override
-    protected String getSpringConfigLocation()
-    {
-        return "org/apache/maven/archiva/proxy/spring-context.xml";
-    }
-
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
-
-        // Setup source repository (using default layout)
-        String repoPath = "target/test-repository/managed/" + getName();
-        File repoLocation = getTestFile( repoPath );
-
-        managedDefaultRepository = createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath,
-                                                     "default" );
-
-        managedDefaultDir = new File( managedDefaultRepository.getRepoRoot() );
-
-        ManagedRepositoryConfiguration repoConfig = managedDefaultRepository.getRepository();
-
-        config.getConfiguration().addManagedRepository( repoConfig );
-
-        // Setup source repository (using legacy layout)
-        repoLocation = getTestFile( REPOPATH_LEGACY_MANAGED_TARGET );
-        FileUtils.deleteDirectory( repoLocation );
-        copyDirectoryStructure( getTestFile( REPOPATH_LEGACY_MANAGED ), repoLocation );
-
-        managedLegacyRepository = createRepository( ID_LEGACY_MANAGED, "Legacy Managed Repository",
-                                                    REPOPATH_LEGACY_MANAGED_TARGET, "legacy" );
-
-        managedLegacyDir = new File( managedLegacyRepository.getRepoRoot() );
-
-        repoConfig = managedLegacyRepository.getRepository();
-
-        config.getConfiguration().addManagedRepository( repoConfig );
-
-        // Setup target (proxied to) repository.
-        saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1", new File(
-            REPOPATH_PROXIED1 ).toURL().toExternalForm(), "default" );
-
-        // Setup target (proxied to) repository.
-        saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2", new File(
-            REPOPATH_PROXIED2 ).toURL().toExternalForm(), "default" );
-
-        // Setup target (proxied to) repository using legacy layout.
-        saveRemoteRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository", new File(
-            REPOPATH_PROXIED_LEGACY ).toURL().toExternalForm(), "legacy" );
-
-        // Setup the proxy handler.
-        try
-        {
-            proxyHandler = (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
-        }
-        catch ( Exception e )
-        {
-            // TODO: handle in plexus-spring instead
-            applicationContext.close();
-            throw e;
-        }
-
-        // Setup the wagon mock.
-        wagonMockControl = MockControl.createNiceControl( Wagon.class );
-        wagonMock = (Wagon) wagonMockControl.getMock();
-        WagonDelegate delegate = (WagonDelegate) lookup( Wagon.ROLE, "test" );
-        delegate.setDelegate( wagonMock );
-
-        System.out.println( "\n.\\ " + getName() + "() \\._________________________________________\n" );
-    }
 
     /**
      * Copy the specified resource directory from the src/test/repository/managed/ to
      * the testable directory under target/test-repository/managed/${testName}/
      *
-     * @param resourceDir
+     * @param resourcePath
      * @throws IOException
      */
     protected void setupTestableManagedRepository( String resourcePath )
@@ -610,9 +614,9 @@ public abstract class AbstractProxyTestCase
         String managedLegacyPath = managedLegacyDir.getCanonicalPath();
         String testFile = file.getCanonicalPath();
 
-        assertTrue( "Unit Test Failure: File <" + testFile +
-                        "> should be have been defined within the legacy managed path of <" + managedLegacyPath + ">",
-                    testFile.startsWith( managedLegacyPath ) );
+        assertTrue(
+            "Unit Test Failure: File <" + testFile + "> should be have been defined within the legacy managed path of <"
+                + managedLegacyPath + ">", testFile.startsWith( managedLegacyPath ) );
 
         assertFalse( "File < " + testFile + "> should not exist in managed legacy repository.", file.exists() );
     }
@@ -623,9 +627,9 @@ public abstract class AbstractProxyTestCase
         String managedDefaultPath = managedDefaultDir.getCanonicalPath();
         String testFile = file.getCanonicalPath();
 
-        assertTrue( "Unit Test Failure: File <" + testFile +
-                        "> should be have been defined within the managed default path of <" + managedDefaultPath + ">",
-                    testFile.startsWith( managedDefaultPath ) );
+        assertTrue( "Unit Test Failure: File <" + testFile
+                        + "> should be have been defined within the managed default path of <" + managedDefaultPath
+                        + ">", testFile.startsWith( managedDefaultPath ) );
 
         assertFalse( "File < " + testFile + "> should not exist in managed default repository.", file.exists() );
     }

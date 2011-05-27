@@ -19,9 +19,9 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.codehaus.plexus.scheduler.AbstractJob;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.codehaus.redback.components.scheduler.AbstractJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

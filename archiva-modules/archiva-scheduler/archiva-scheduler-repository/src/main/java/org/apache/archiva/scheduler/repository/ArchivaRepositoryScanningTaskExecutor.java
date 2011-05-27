@@ -101,7 +101,7 @@ public class ArchivaRepositoryScanningTaskExecutor
     public void initialize()
         throws InitializationException
     {
-        log.info( "Initialized " + this.getClass().getName() );
+        log.info( "Initialized {}", this.getClass().getName() );
     }
 
     @SuppressWarnings( "unchecked" )
