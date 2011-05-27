@@ -44,13 +44,14 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Date;
 
 /**
  * ArchivaRepositoryScanningTaskExecutor
  *
  * @version $Id$
- * @plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor"
+ * plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor"
  * role-hint="repository-scanning"
  */
 @Service("taskExecutor#repository-scanning")
@@ -63,6 +64,7 @@ public class ArchivaRepositoryScanningTaskExecutor
      * plexus.requirement
      */
     @Inject
+    @Named(value="archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
     /**

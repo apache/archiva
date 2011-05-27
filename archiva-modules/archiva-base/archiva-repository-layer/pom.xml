@@ -30,6 +30,10 @@
   <name>Archiva Repository Interface Layer</name>
   <dependencies>
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-model</artifactId>
     </dependency>

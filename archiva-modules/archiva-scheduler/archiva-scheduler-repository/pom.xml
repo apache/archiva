@@ -51,27 +51,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-component-metadata</artifactId>
-        <executions>
-          <execution>
-            <id>merge</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>merge-metadata</goal>
-            </goals>
-            <configuration>
-              <descriptors>
-                <descriptor>${basedir}/src/main/components-fragment.xml</descriptor>
-                <descriptor>${project.build.outputDirectory}/META-INF/plexus/components.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

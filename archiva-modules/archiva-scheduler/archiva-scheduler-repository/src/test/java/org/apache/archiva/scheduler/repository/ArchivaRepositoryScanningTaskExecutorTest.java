@@ -65,6 +65,7 @@ public class ArchivaRepositoryScanningTaskExecutorTest
     private ArchivaConfiguration archivaConfig;
 
     @Inject
+    @Named(value = "repositoryStatisticsManager#test")
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     @Inject

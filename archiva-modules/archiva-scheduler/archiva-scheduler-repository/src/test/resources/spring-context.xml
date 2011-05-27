@@ -38,6 +38,8 @@
     <property name="archivaConfiguration" ref="archivaConfiguration#test-repository-scanning"/>
   </bean>
 
+  <alias name="repositoryStatisticsManager#test" alias="repositoryStatisticsManager#default"/>
+
   <!--
     <component>
       <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
@@ -81,5 +83,6 @@
       </value>
     </property>
   </bean>
+  <alias name="archivaConfiguration#test-repository-scanning" alias="archivaConfiguration#default"/>
 
 </beans>

@@ -57,7 +57,7 @@ import java.util.Set;
 /**
  * Default implementation of a scheduling component for archiva.
  *
- * @plexus.component role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
+ * plexus.component role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
  */
 @Service("archivaTaskScheduler#repository")
 public class RepositoryArchivaTaskScheduler
@@ -87,6 +87,7 @@ public class RepositoryArchivaTaskScheduler
      * plexus.requirement
      */
     @Inject
+    @Named(value = "repositoryStatisticsManager#default")
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     /**
