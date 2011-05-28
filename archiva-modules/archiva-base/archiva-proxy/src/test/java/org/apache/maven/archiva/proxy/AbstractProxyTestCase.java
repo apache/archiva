@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
@@ -187,6 +188,12 @@ public abstract class AbstractProxyTestCase
         delegate.setDelegate( wagonMock );
 
         System.out.println( "\n.\\ " + getName() + "() \\._________________________________________\n" );
+    }
+
+    @Override
+    public String getName()
+    {
+        return StringUtils.substringAfterLast( getClass().getName(), "." );
     }
 
     protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher()

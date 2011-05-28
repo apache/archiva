@@ -85,7 +85,7 @@ public class MockConfiguration
             createRepository( AbstractProxyTestCase.ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath,
                               "default" );
         ManagedRepositoryConfiguration repoConfig = managedDefaultRepository.getRepository();
-        configuration.addManagedRepository( repoConfig );
+        //configuration.addManagedRepository( repoConfig );
 
         configuration.setRepositoryScanning( new RepositoryScanningConfiguration(){
             @Override
