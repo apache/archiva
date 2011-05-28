@@ -21,6 +21,7 @@ package org.apache.maven.archiva.proxy;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.Plugin;
 import org.apache.maven.archiva.model.ProjectReference;
@@ -42,6 +43,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -198,9 +200,12 @@ public class MetadataTransferTest
     public void testGetProjectMetadataNotProxiedOnLocal()
         throws Exception
     {
+
         // Project metadata that exists and has multiple versions
         String requestedResource = "org/apache/maven/test/get-project-metadata/maven-metadata.xml";
         setupTestableManagedRepository( requestedResource );
+
+        config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>( ) );
 
         assertResourceExists( requestedResource );
 
@@ -321,10 +326,13 @@ public class MetadataTransferTest
     public void testGetProjectMetadataProxiedOnLocalNotRemote()
         throws Exception
     {
+
         // Project metadata that exist locally, and does not exist in remote repos.
         String requestedResource = "org/apache/maven/test/get-not-on-remotes/maven-metadata.xml";
         setupTestableManagedRepository( requestedResource );
 
+
+        config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>( ) );
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
