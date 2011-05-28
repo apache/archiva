@@ -41,6 +41,7 @@ import org.custommonkey.xmlunit.Diff;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -95,14 +96,15 @@ public class MetadataTransferTest
     extends AbstractProxyTestCase
 {
 
+    @Inject
     private MetadataTools metadataTools;
 
     @Before
     public void init()
         throws Exception
     {
-        super.setUp();
-        metadataTools = applicationContext.getBean( MetadataTools.class );
+        //super.setUp();
+        //metadataTools = applicationContext.getBean( MetadataTools.class );
     }
 
     @Test
@@ -186,6 +188,8 @@ public class MetadataTransferTest
         // The artifactId "get-default-metadata-nonexistant" does not exist (intentionally).
         String requestedResource = "org/apache/maven/test/get-default-metadata-nonexistant/maven-metadata.xml";
         setupTestableManagedRepository( requestedResource );
+
+        config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>( ) );
 
         assertResourceNotFound( requestedResource );
 

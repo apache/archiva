@@ -40,6 +40,8 @@ import org.easymock.ArgumentsMatcher;
 import org.easymock.MockControl;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -120,6 +122,8 @@ public abstract class AbstractProxyTestCase
 
     protected MockConfiguration config;
 
+    protected Logger log = LoggerFactory.getLogger( getClass() );
+
     WagonDelegate delegate;
 
     @Inject
@@ -187,7 +191,7 @@ public abstract class AbstractProxyTestCase
 
         delegate.setDelegate( wagonMock );
 
-        System.out.println( "\n.\\ " + getName() + "() \\._________________________________________\n" );
+        log.info( "\n.\\ " + getName() + "() \\._________________________________________\n" );
     }
 
     @Override
