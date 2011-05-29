@@ -91,7 +91,6 @@ import java.util.Set;
 @Service( "archivaConfiguration#default" )
 public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener
-    //, Initializable
 {
     private Logger log = LoggerFactory.getLogger( DefaultArchivaConfiguration.class );
 

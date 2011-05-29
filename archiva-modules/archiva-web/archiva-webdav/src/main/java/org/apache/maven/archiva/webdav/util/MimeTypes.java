@@ -19,6 +19,13 @@ package org.apache.maven.archiva.webdav.util;
  * under the License.
  */
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,22 +38,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * MimeTypes 
  *
  * @version $Id: MimeTypes.java 7010 2007-10-25 23:35:02Z joakime $
  * 
- * @plexus.component role="org.apache.maven.archiva.webdav.util.MimeTypes"
+ * plexus.component role="org.apache.maven.archiva.webdav.util.MimeTypes"
  */
+@Service("mimeTpes")
 public class MimeTypes
-    implements Initializable
 {
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
 
@@ -85,8 +85,8 @@ public class MimeTypes
 
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         load( resource );
     }

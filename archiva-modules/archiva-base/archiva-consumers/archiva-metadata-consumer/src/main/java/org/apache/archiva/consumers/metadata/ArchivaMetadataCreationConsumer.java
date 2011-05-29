@@ -37,13 +37,16 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,31 +55,35 @@ import java.util.List;
  * Take an artifact off of disk and put it into the metadata repository.
  *
  * @version $Id: ArtifactUpdateDatabaseConsumer.java 718864 2008-11-19 06:33:35Z brett $
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  * role-hint="create-archiva-metadata" instantiation-strategy="per-lookup"
  */
+@Service("knownRepositoryContentConsumer#create-archiva-metadata")
+@Scope("prototype")
 public class ArchivaMetadataCreationConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener
 {
     /**
-     * @plexus.configuration default-value="create-archiva-metadata"
+     * plexus.configuration default-value="create-archiva-metadata"
      */
-    private String id;
+    private String id = "create-archiva-metadata";
 
     /**
-     * @plexus.configuration default-value="Create basic metadata for Archiva to be able to reference the artifact"
+     * plexus.configuration default-value="Create basic metadata for Archiva to be able to reference the artifact"
      */
-    private String description;
+    private String description = "Create basic metadata for Archiva to be able to reference the artifact";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private FileTypes filetypes;
 
     private Date whenGathered;
@@ -88,14 +95,17 @@ public class ArchivaMetadataCreationConsumer
      *
      * @plexus.requirement
      */
+    @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
     /**
      * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
      * factory.
      *
-     * @plexus.requirement role-hint="maven2"
+     * plexus.requirement role-hint="maven2"
      */
+    @Inject
+    @Named(value = "repositoryStorage#maven2")
     private RepositoryStorage repositoryStorage;
 
     private static final Logger log = LoggerFactory.getLogger( ArchivaMetadataCreationConsumer.class );
@@ -243,8 +253,8 @@ public class ArchivaMetadataCreationConsumer
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         configuration.addChangeListener( this );
 

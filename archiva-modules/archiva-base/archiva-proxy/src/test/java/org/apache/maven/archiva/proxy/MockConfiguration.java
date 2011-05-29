@@ -31,11 +31,11 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.easymock.MockControl;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -50,12 +50,10 @@ import java.util.Set;
  *          role-hint="mock"
  */
 @Service( "archivaConfiguration#mock" )
+@Scope( "prototype" )
 public class MockConfiguration
     implements ArchivaConfiguration
 {
-
-    @Inject
-    protected ApplicationContext applicationContext;
 
     private Configuration configuration = new Configuration();
 
@@ -77,38 +75,14 @@ public class MockConfiguration
     public void initialize()
         throws Exception
     {
-
-        // random name or cleanup ??
-        String repoPath = "target/test-repository/managed/" + "foo";//getName();
-        File repoLocation = new File( repoPath );
-        ManagedRepositoryContent managedDefaultRepository =
-            createRepository( AbstractProxyTestCase.ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath,
-                              "default" );
-        ManagedRepositoryConfiguration repoConfig = managedDefaultRepository.getRepository();
-        //configuration.addManagedRepository( repoConfig );
-
-        configuration.setRepositoryScanning( new RepositoryScanningConfiguration(){
+        configuration.setRepositoryScanning( new RepositoryScanningConfiguration()
+        {
             @Override
             public List<FileType> getFileTypes()
             {
                 return Collections.emptyList();
             }
         } );
-    }
-
-    protected ManagedRepositoryContent createRepository( String id, String name, String path, String layout )
-        throws Exception
-    {
-        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
-        repo.setId( id );
-        repo.setName( name );
-        repo.setLocation( path );
-        repo.setLayout( layout );
-
-        ManagedRepositoryContent repoContent =
-            applicationContext.getBean( "managedRepositoryContent#" + layout, ManagedRepositoryContent.class );
-        repoContent.setRepository( repo );
-        return repoContent;
     }
 
     public void addChangeListener( RegistryListener listener )

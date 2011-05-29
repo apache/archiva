@@ -77,18 +77,24 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 
 /**
- * @plexus.component role="org.apache.maven.archiva.webdav.ArchivaDavResourceFactory"
+ * plexus.component role="org.apache.maven.archiva.webdav.ArchivaDavResourceFactory"
  */
+@Service( "davResourceFactory#archiva" )
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
@@ -99,48 +105,58 @@ public class ArchivaDavResourceFactory
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
     /**
-     * @plexus.requirement role="org.apache.archiva.audit.AuditListener"
+     * plexus.requirement role="org.apache.archiva.audit.AuditListener"
      */
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryRequest repositoryRequest;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
+    @Inject
+    @Named( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private MetadataTools metadataTools;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private MimeTypes mimeTypes;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ServletAuthenticator servletAuth;
 
     /**
-     * @plexus.requirement role-hint="basic"
+     * plexus.requirement role-hint="basic"
      */
+    @Inject
+    @Named( value = "httpAuthenticator#basic" )
     private HttpAuthenticator httpAuth;
 
     /**
@@ -149,24 +165,41 @@ public class ArchivaDavResourceFactory
     private final LockManager lockManager = new SimpleLockManager();
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ChecksumFile checksum;
 
     /**
-     * @plexus.requirement role-hint="sha1"
+     * plexus.requirement role-hint="sha1"
      */
+    @Inject
+    @Named( value = "digester#sha1" )
     private Digester digestSha1;
 
     /**
-     * @plexus.requirement role-hint="md5";
+     * plexus.requirement role-hint="md5";
      */
+    @Inject
+    @Named( value = "digester#md5" )
     private Digester digestMd5;
 
     /**
-     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
+     * plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
+    @Inject
+    @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
+
+    @Inject
+    private ApplicationContext applicationContext;
+
+    @PostConstruct
+    public void initialize()
+    {
+        this.auditListeners =
+            new ArrayList<AuditListener>( applicationContext.getBeansOfType( AuditListener.class ).values() );
+    }
 
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
@@ -231,8 +264,8 @@ public class ArchivaDavResourceFactory
             resource = processRepository( request, archivaLocator, activePrincipal, managedRepository );
 
             String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
-            resourcesInAbsolutePath.add( new File( managedRepository.getRepoRoot(),
-                                                   logicalResource ).getAbsolutePath() );
+            resourcesInAbsolutePath.add(
+                new File( managedRepository.getRepoRoot(), logicalResource ).getAbsolutePath() );
         }
 
         String requestedResource = request.getRequestURI();
@@ -249,24 +282,25 @@ public class ArchivaDavResourceFactory
                 artifactId = StringUtils.substringAfterLast( artifactId, "/" );
 
                 ArchivaDavResource res = (ArchivaDavResource) resource;
-                String filePath = StringUtils.substringBeforeLast( res.getLocalResource().getAbsolutePath().replace(
-                    '\\', '/' ), "/" );
+                String filePath =
+                    StringUtils.substringBeforeLast( res.getLocalResource().getAbsolutePath().replace( '\\', '/' ),
+                                                     "/" );
                 filePath = filePath + "/maven-metadata-" + repoGroupConfig.getId() + ".xml";
 
                 // for MRM-872 handle checksums of the merged metadata files
                 if ( repositoryRequest.isSupportFile( requestedResource ) )
                 {
-                    File metadataChecksum = new File( filePath + "." + StringUtils.substringAfterLast(
-                        requestedResource, "." ) );
+                    File metadataChecksum =
+                        new File( filePath + "." + StringUtils.substringAfterLast( requestedResource, "." ) );
                     if ( metadataChecksum.exists() )
                     {
-                        LogicalResource logicalResource = new LogicalResource( RepositoryPathUtil.getLogicalResource(
-                            locator.getResourcePath() ) );
+                        LogicalResource logicalResource =
+                            new LogicalResource( RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
 
-                        resource = new ArchivaDavResource( metadataChecksum.getAbsolutePath(),
-                                                           logicalResource.getPath(), null, request.getRemoteAddr(),
-                                                           activePrincipal, request.getDavSession(), archivaLocator,
-                                                           this, mimeTypes, auditListeners, scheduler );
+                        resource =
+                            new ArchivaDavResource( metadataChecksum.getAbsolutePath(), logicalResource.getPath(), null,
+                                                    request.getRemoteAddr(), activePrincipal, request.getDavSession(),
+                                                    archivaLocator, this, mimeTypes, auditListeners, scheduler );
                     }
                 }
                 else
@@ -297,10 +331,11 @@ public class ArchivaDavResourceFactory
                             LogicalResource logicalResource = new LogicalResource(
                                 RepositoryPathUtil.getLogicalResource( locator.getResourcePath() ) );
 
-                            resource = new ArchivaDavResource( resourceFile.getAbsolutePath(),
-                                                               logicalResource.getPath(), null, request.getRemoteAddr(),
-                                                               activePrincipal, request.getDavSession(), archivaLocator,
-                                                               this, mimeTypes, auditListeners, scheduler );
+                            resource =
+                                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), null,
+                                                        request.getRemoteAddr(), activePrincipal,
+                                                        request.getDavSession(), archivaLocator, this, mimeTypes,
+                                                        auditListeners, scheduler );
                         }
                         catch ( RepositoryMetadataException r )
                         {
@@ -359,8 +394,8 @@ public class ArchivaDavResourceFactory
 
             try
             {
-                DavResource updatedResource = processRepository( request, archivaLocator, activePrincipal,
-                                                                 managedRepository );
+                DavResource updatedResource =
+                    processRepository( request, archivaLocator, activePrincipal, managedRepository );
                 if ( resource == null )
                 {
                     resource = updatedResource;
@@ -371,8 +406,8 @@ public class ArchivaDavResourceFactory
                 {
                     logicalResource = logicalResource.substring( 1 );
                 }
-                resourcesInAbsolutePath.add( new File( managedRepository.getRepoRoot(),
-                                                       logicalResource ).getAbsolutePath() );
+                resourcesInAbsolutePath.add(
+                    new File( managedRepository.getRepoRoot(), logicalResource ).getAbsolutePath() );
             }
             catch ( DavException e )
             {
@@ -443,15 +478,14 @@ public class ArchivaDavResourceFactory
                         {
                             // Perform an adjustment of the resource to the managed
                             // repository expected path.
-                            String localResourcePath = repositoryRequest.toNativePath( logicalResource.getPath(),
-                                                                                       managedRepository );
+                            String localResourcePath =
+                                repositoryRequest.toNativePath( logicalResource.getPath(), managedRepository );
                             resourceFile = new File( managedRepository.getRepoRoot(), localResourcePath );
-                            resource = new ArchivaDavResource( resourceFile.getAbsolutePath(),
-                                                               logicalResource.getPath(),
-                                                               managedRepository.getRepository(),
-                                                               request.getRemoteAddr(), activePrincipal,
-                                                               request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                               auditListeners, scheduler );
+                            resource =
+                                new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(),
+                                                        managedRepository.getRepository(), request.getRemoteAddr(),
+                                                        activePrincipal, request.getDavSession(), archivaLocator, this,
+                                                        mimeTypes, auditListeners, scheduler );
                         }
                         catch ( LayoutException e )
                         {
@@ -463,11 +497,11 @@ public class ArchivaDavResourceFactory
 
                         if ( fromProxy )
                         {
-                            String event = ( previouslyExisted ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE ) +
-                                PROXIED_SUFFIX;
+                            String event = ( previouslyExisted ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE )
+                                + PROXIED_SUFFIX;
 
-                            log.debug( "Proxied artifact '" + resourceFile.getName() + "' in repository '" +
-                                managedRepository.getId() + "' (current user '" + activePrincipal + "')" );
+                            log.debug( "Proxied artifact '" + resourceFile.getName() + "' in repository '"
+                                           + managedRepository.getId() + "' (current user '" + activePrincipal + "')" );
 
                             triggerAuditEvent( request.getRemoteAddr(), archivaLocator.getRepositoryId(),
                                                logicalResource.getPath(), event, activePrincipal );
@@ -487,8 +521,8 @@ public class ArchivaDavResourceFactory
 
                 // check if target repo is enabled for releases
                 // we suppose that release-artifacts can be deployed only to repos enabled for releases
-                if ( managedRepository.getRepository().isReleases() && !repositoryRequest.isMetadata( resourcePath ) &&
-                    !repositoryRequest.isSupportFile( resourcePath ) )
+                if ( managedRepository.getRepository().isReleases() && !repositoryRequest.isMetadata( resourcePath )
+                    && !repositoryRequest.isSupportFile( resourcePath ) )
                 {
                     ArtifactReference artifact = null;
                     try
@@ -498,11 +532,11 @@ public class ArchivaDavResourceFactory
                         if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
                         {
                             // check if artifact already exists and if artifact re-deployment to the repository is allowed
-                            if ( managedRepository.hasContent( artifact ) &&
-                                managedRepository.getRepository().isBlockRedeployments() )
+                            if ( managedRepository.hasContent( artifact )
+                                && managedRepository.getRepository().isBlockRedeployments() )
                             {
-                                log.warn( "Overwriting released artifacts in repository '" + managedRepository.getId() +
-                                    "' is not allowed." );
+                                log.warn( "Overwriting released artifacts in repository '" + managedRepository.getId()
+                                              + "' is not allowed." );
                                 throw new DavException( HttpServletResponse.SC_CONFLICT,
                                                         "Overwriting released artifacts is not allowed." );
                             }
@@ -530,8 +564,8 @@ public class ArchivaDavResourceFactory
                     String relPath = PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
 
                     log.debug(
-                        "Creating destination directory '" + destDir.getName() + "' (current user '" + activePrincipal +
-                            "')" );
+                        "Creating destination directory '" + destDir.getName() + "' (current user '" + activePrincipal
+                            + "')" );
 
                     triggerAuditEvent( request.getRemoteAddr(), managedRepository.getId(), relPath,
                                        AuditEvent.CREATE_DIR, activePrincipal );
@@ -567,9 +601,9 @@ public class ArchivaDavResourceFactory
             logicalResource = logicalResource.substring( 1 );
         }
         File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource );
-        DavResource resource = new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource,
-                                                       managedRepository.getRepository(), davSession, archivaLocator,
-                                                       this, mimeTypes, auditListeners, scheduler );
+        DavResource resource =
+            new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource, managedRepository.getRepository(),
+                                    davSession, archivaLocator, this, mimeTypes, auditListeners, scheduler );
 
         resource.addLockManager( lockManager );
         return resource;
@@ -607,8 +641,8 @@ public class ArchivaDavResourceFactory
 
                 resource.setPath( managedRepository.toPath( artifact ) );
 
-                log.debug( "Proxied artifact '" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" +
-                    artifact.getVersion() + "'" );
+                log.debug( "Proxied artifact '" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
+                               + artifact.getVersion() + "'" );
 
                 return ( proxiedFile != null );
             }
@@ -630,7 +664,7 @@ public class ArchivaDavResourceFactory
      * A relocation capable client will request the POM prior to the artifact, and will then read meta-data and do
      * client side relocation. A simplier client (like maven 1) will only request the artifact and not use the
      * metadatas.
-     * <p>
+     * <p/>
      * For such clients, archiva does server-side relocation by reading itself the &lt;relocation&gt; element in
      * metadatas and serving the expected artifact.
      */
@@ -916,8 +950,8 @@ public class ArchivaDavResourceFactory
                         {
                             // TODO: review exception handling
                             log.debug(
-                                "Skipping repository '" + managedRepository + "' for user '" + activePrincipal + "': " +
-                                    e.getMessage() );
+                                "Skipping repository '" + managedRepository + "' for user '" + activePrincipal + "': "
+                                    + e.getMessage() );
                         }
                     }
                     else
@@ -937,8 +971,8 @@ public class ArchivaDavResourceFactory
                         {
                             // TODO: review exception handling
                             log.debug(
-                                "Skipping repository '" + managedRepository + "' for user '" + activePrincipal + "': " +
-                                    e.getMessage() );
+                                "Skipping repository '" + managedRepository + "' for user '" + activePrincipal + "': "
+                                    + e.getMessage() );
                         }
                     }
                 }
@@ -949,9 +983,9 @@ public class ArchivaDavResourceFactory
             throw new UnauthorizedDavException( locator.getRepositoryId(), "User not authorized." );
         }
 
-        ArchivaVirtualDavResource resource = new ArchivaVirtualDavResource( mergedRepositoryContents,
-                                                                            logicalResource.getPath(), mimeTypes,
-                                                                            locator, this );
+        ArchivaVirtualDavResource resource =
+            new ArchivaVirtualDavResource( mergedRepositoryContents, logicalResource.getPath(), mimeTypes, locator,
+                                           this );
 
         // compatibility with MRM-440 to ensure browsing the repository group works ok
         if ( resource.isCollection() && !request.getRequestURI().endsWith( "/" ) )
@@ -1005,8 +1039,8 @@ public class ArchivaDavResourceFactory
             {
                 try
                 {
-                    if ( servletAuth.isAuthorized( activePrincipal, repository, WebdavMethodUtil.getMethodPermission(
-                        request.getMethod() ) ) )
+                    if ( servletAuth.isAuthorized( activePrincipal, repository,
+                                                   WebdavMethodUtil.getMethodPermission( request.getMethod() ) ) )
                     {
                         allow = true;
                         break;

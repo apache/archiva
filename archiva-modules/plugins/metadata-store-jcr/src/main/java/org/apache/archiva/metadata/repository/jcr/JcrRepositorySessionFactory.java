@@ -24,32 +24,41 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import java.util.Map;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.repository.RepositorySessionFactory" role-hint="jcr"
+ * plexus.component role="org.apache.archiva.metadata.repository.RepositorySessionFactory" role-hint="jcr"
  */
+@Service( "repositorySessionFactory#jcr" )
 public class JcrRepositorySessionFactory
-    implements RepositorySessionFactory, Initializable
+    implements RepositorySessionFactory
 {
+
+    @Inject
+    private ApplicationContext applicationContext;
+
     /**
-     * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
+     * plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
      */
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private Repository repository;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private MetadataResolver metadataResolver;
 
     public RepositorySession createSession()
@@ -72,9 +81,11 @@ public class JcrRepositorySessionFactory
         }
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
+        metadataFacetFactories = applicationContext.getBeansOfType( MetadataFacetFactory.class );
+
         JcrMetadataRepository metadataRepository = null;
         try
         {
@@ -83,7 +94,7 @@ public class JcrRepositorySessionFactory
         }
         catch ( RepositoryException e )
         {
-            throw new InitializationException( e.getMessage(), e );
+            throw new RuntimeException( e.getMessage(), e );
         }
         finally
         {
