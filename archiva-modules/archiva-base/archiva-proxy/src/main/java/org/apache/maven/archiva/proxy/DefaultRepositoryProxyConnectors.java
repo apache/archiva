@@ -1170,4 +1170,83 @@ public class DefaultRepositoryProxyConnectors
         /* do nothing */
     }
 
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public RepositoryContentFactory getRepositoryFactory()
+    {
+        return repositoryFactory;
+    }
+
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    public MetadataTools getMetadataTools()
+    {
+        return metadataTools;
+    }
+
+    public void setMetadataTools( MetadataTools metadataTools )
+    {
+        this.metadataTools = metadataTools;
+    }
+
+    public UrlFailureCache getUrlFailureCache()
+    {
+        return urlFailureCache;
+    }
+
+    public void setUrlFailureCache( UrlFailureCache urlFailureCache )
+    {
+        this.urlFailureCache = urlFailureCache;
+    }
+
+    public WagonFactory getWagonFactory()
+    {
+        return wagonFactory;
+    }
+
+    public void setWagonFactory( WagonFactory wagonFactory )
+    {
+        this.wagonFactory = wagonFactory;
+    }
+
+    public Map<String, PreDownloadPolicy> getPreDownloadPolicies()
+    {
+        return preDownloadPolicies;
+    }
+
+    public void setPreDownloadPolicies( Map<String, PreDownloadPolicy> preDownloadPolicies )
+    {
+        this.preDownloadPolicies = preDownloadPolicies;
+    }
+
+    public Map<String, PostDownloadPolicy> getPostDownloadPolicies()
+    {
+        return postDownloadPolicies;
+    }
+
+    public void setPostDownloadPolicies( Map<String, PostDownloadPolicy> postDownloadPolicies )
+    {
+        this.postDownloadPolicies = postDownloadPolicies;
+    }
+
+    public Map<String, DownloadErrorPolicy> getDownloadErrorPolicies()
+    {
+        return downloadErrorPolicies;
+    }
+
+    public void setDownloadErrorPolicies( Map<String, DownloadErrorPolicy> downloadErrorPolicies )
+    {
+        this.downloadErrorPolicies = downloadErrorPolicies;
+    }
 }

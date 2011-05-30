@@ -26,7 +26,19 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
-    <bean id="logger" class="org.apache.maven.archiva.common.utils.Slf4JPlexusLogger">
-      <constructor-arg type="java.lang.Class"><value>org.sonatype.nexus.index.DefaultNexusIndexer</value></constructor-arg>
-    </bean>
+  <context:annotation-config/>
+  <context:component-scan base-package="org.apache.archiva.scheduler.indexing"/>
+
+  <bean id="logger" class="org.apache.maven.archiva.common.utils.Slf4JPlexusLogger">
+    <constructor-arg type="java.lang.Class"><value>org.sonatype.nexus.index.DefaultNexusIndexer</value></constructor-arg>
+  </bean>
+
+  <bean name="taskQueue#indexing" class="org.codehaus.plexus.taskqueue.DefaultTaskQueue"/>
+
+  <bean name="taskQueueExecutor#indexing" class="org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor">
+    <property name="executor" ref="taskExecutor#indexing"/>
+    <property name="queue" ref="taskQueue#indexing"/>
+    <property name="name" value="indexing"/>
+  </bean>
+
 </beans>

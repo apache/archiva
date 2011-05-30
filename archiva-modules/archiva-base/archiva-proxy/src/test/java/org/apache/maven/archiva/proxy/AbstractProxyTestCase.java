@@ -135,7 +135,7 @@ public abstract class AbstractProxyTestCase
     {
         super.setUp();
 
-        proxyHandler = applicationContext.getBean( RepositoryProxyConnectors.class );
+        proxyHandler = applicationContext.getBean("repositoryProxyConnectors#default", RepositoryProxyConnectors.class );
 
         config =
             (MockConfiguration) applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );

@@ -29,6 +29,7 @@
       <role-hint>mock</role-hint>
       <implementation>org.apache.maven.archiva.proxy.MockConfiguration</implementation>
     </component>
+
     <component>
       <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
       <role-hint>mocked</role-hint>

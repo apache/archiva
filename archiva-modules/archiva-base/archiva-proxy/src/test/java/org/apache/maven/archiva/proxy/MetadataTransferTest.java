@@ -103,7 +103,7 @@ public class MetadataTransferTest
     public void init()
         throws Exception
     {
-        //super.setUp();
+        super.setUp();
         //metadataTools = applicationContext.getBean( MetadataTools.class );
     }
 

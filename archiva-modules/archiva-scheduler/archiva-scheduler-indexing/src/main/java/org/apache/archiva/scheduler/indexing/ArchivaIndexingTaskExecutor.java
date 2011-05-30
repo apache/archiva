@@ -19,16 +19,13 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
@@ -44,31 +41,51 @@ import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 import org.sonatype.nexus.index.packer.IndexPacker;
 import org.sonatype.nexus.index.packer.IndexPackingRequest;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
  * all performed by this executor. Add and update artifact in index tasks are added in the indexing task queue by the
  * NexusIndexerConsumer while remove artifact from index tasks are added by the LuceneCleanupRemoveIndexedConsumer.
- * 
- * @plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexing"
- *                   instantiation-strategy="singleton"
+ * <p/>
+ * plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexing"
+ * instantiation-strategy="singleton"
  */
+@Service( "taskExecutor#indexing" )
 public class ArchivaIndexingTaskExecutor
-    implements TaskExecutor, Initializable
+    implements TaskExecutor
 {
     private Logger log = LoggerFactory.getLogger( ArchivaIndexingTaskExecutor.class );
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private IndexerEngine indexerEngine;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private IndexPacker indexPacker;
 
     private ArtifactContextProducer artifactContextProducer;
+
+    private PlexusSisuBridge plexusSisuBridge;
+
+    public void initialize()
+        throws PlexusSisuBridgeException
+    {
+        log.info( "Initialized {}", this.getClass().getName() );
+
+        artifactContextProducer = new DefaultArtifactContextProducer();
+
+        indexerEngine = plexusSisuBridge.lookup( IndexerEngine.class );
+
+        indexPacker = plexusSisuBridge.lookup( IndexPacker.class );
+    }
 
     public void executeTask( Task task )
         throws TaskExecutionException
@@ -89,22 +106,23 @@ public class ArchivaIndexingTaskExecutor
             else
             {
                 // create context if not a repo scan request
-                if( !indexingTask.isExecuteOnEntireRepo() )
+                if ( !indexingTask.isExecuteOnEntireRepo() )
                 {
                     try
                     {
-                        log.debug( "Creating indexing context on resource: " + indexingTask.getResourceFile().getPath() );
+                        log.debug(
+                            "Creating indexing context on resource: {}", indexingTask.getResourceFile().getPath() );
                         context = ArtifactIndexingTask.createContext( repository );
                     }
-                    catch( IOException e )
+                    catch ( IOException e )
                     {
                         log.error( "Error occurred while creating context: " + e.getMessage() );
                         throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage() );
                     }
-                    catch( UnsupportedExistingLuceneIndexException e )
+                    catch ( UnsupportedExistingLuceneIndexException e )
                     {
                         log.error( "Error occurred while creating context: " + e.getMessage() );
-                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage() );    
+                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage() );
                     }
                 }
 
@@ -112,7 +130,7 @@ public class ArchivaIndexingTaskExecutor
                 {
                     throw new TaskExecutionException( "Trying to index an artifact but the context is already closed" );
                 }
-                
+
                 try
                 {
                     File artifactFile = indexingTask.getResourceFile();
@@ -127,27 +145,28 @@ public class ArchivaIndexingTaskExecutor
                             TopDocs d = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), 1 );
                             if ( d.totalHits == 0 )
                             {
-                                log.debug( "Adding artifact '" + ac.getArtifactInfo() + "' to index.." );
+                                log.debug( "Adding artifact '{}' to index..", ac.getArtifactInfo() );
                                 indexerEngine.index( context, ac );
                                 context.getIndexWriter().commit();
                             }
                             else
                             {
-                                log.debug( "Updating artifact '" + ac.getArtifactInfo() + "' in index.." );
+                                log.debug( "Updating artifact '{}' in index..", ac.getArtifactInfo() );
                                 indexerEngine.update( context, ac );
                                 context.getIndexWriter().commit();
                             }
 
                             // close the context if not a repo scan request
-                            if( !indexingTask.isExecuteOnEntireRepo() )
+                            if ( !indexingTask.isExecuteOnEntireRepo() )
                             {
-                                log.debug( "Finishing indexing task on resource file : " + indexingTask.getResourceFile().getPath() );
-                                finishIndexingTask( indexingTask, repository, context );   
+                                log.debug( "Finishing indexing task on resource file : {}",
+                                               indexingTask.getResourceFile().getPath() );
+                                finishIndexingTask( indexingTask, repository, context );
                             }
                         }
                         else
                         {
-                            log.debug( "Removing artifact '" + ac.getArtifactInfo() + "' from index.." );
+                            log.debug( "Removing artifact '{}' from index..", ac.getArtifactInfo() );
                             indexerEngine.remove( context, ac );
                             context.getIndexWriter().commit();
                         }
@@ -155,9 +174,10 @@ public class ArchivaIndexingTaskExecutor
                 }
                 catch ( IOException e )
                 {
-                    log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
-                    throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
-                        + "'", e );
+                    log.error(
+                        "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
+                    throw new TaskExecutionException(
+                        "Error occurred while executing indexing task '" + indexingTask + "'", e );
                 }
                 catch ( IllegalArtifactCoordinateException e )
                 {
@@ -181,13 +201,13 @@ public class ArchivaIndexingTaskExecutor
             IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
             indexPacker.packIndex( request );
 
-            log.debug( "Index file packaged at '" + indexLocation.getPath() + "'." );
+            log.debug( "Index file packaged at '{}'.", indexLocation.getPath() );
         }
         catch ( IOException e )
         {
             log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
-            throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask
-                + "'", e );
+            throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'",
+                                              e );
         }
         finally
         {
@@ -206,13 +226,7 @@ public class ArchivaIndexingTaskExecutor
         }
     }
 
-    public void initialize()
-        throws InitializationException
-    {
-        log.info( "Initialized " + this.getClass().getName() );
 
-        artifactContextProducer = new DefaultArtifactContextProducer();
-    }
 
     public void setIndexerEngine( IndexerEngine indexerEngine )
     {

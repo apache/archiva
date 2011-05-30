@@ -24,6 +24,10 @@ import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Default implementation of a scheduling component for archiva.
@@ -31,14 +35,17 @@ import org.slf4j.LoggerFactory;
  * @todo TODO - consider just folding in, not really scheduled
  * @plexus.component role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="indexing"
  */
+@Service("archivaTaskScheduler#indexing")
 public class IndexingArchivaTaskScheduler
     implements ArchivaTaskScheduler<ArtifactIndexingTask>
 {
     private Logger log = LoggerFactory.getLogger( IndexingArchivaTaskScheduler.class );
 
     /**
-     * @plexus.requirement role-hint="indexing"
+     * plexus.requirement role-hint="indexing"
      */
+    @Inject
+    @Named(value = "taskQueue#indexing")
     private TaskQueue indexingQueue;
 
     public void queueTask( ArtifactIndexingTask task )

@@ -57,7 +57,7 @@ public class WagonDelegate
     public void get( String resourceName, File destination )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        log.debug( ".get(" + resourceName + ", " + destination + ")" );
+        log.debug( ".get({}, {})", resourceName, destination );
         delegate.get( resourceName, destination );
         create( destination );
     }

@@ -19,6 +19,29 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.commons.io.FileUtils;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TopDocs;
+import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.sonatype.nexus.index.ArtifactInfo;
+import org.sonatype.nexus.index.FlatSearchRequest;
+import org.sonatype.nexus.index.FlatSearchResponse;
+import org.sonatype.nexus.index.IndexerEngine;
+import org.sonatype.nexus.index.NexusIndexer;
+import org.sonatype.nexus.index.context.IndexingContext;
+import org.sonatype.nexus.index.packer.IndexPacker;
+import org.springframework.test.context.ContextConfiguration;
+
+import javax.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,28 +53,12 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TopDocs;
-import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.sonatype.nexus.index.ArtifactInfo;
-import org.sonatype.nexus.index.FlatSearchRequest;
-import org.sonatype.nexus.index.FlatSearchResponse;
-import org.sonatype.nexus.index.IndexerEngine;
-import org.sonatype.nexus.index.NexusIndexer;
-import org.sonatype.nexus.index.context.IndexingContext;
-import org.sonatype.nexus.index.packer.IndexPacker;
-
 /**
  * ArchivaIndexingTaskExecutorTest
  */
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath*:/spring-context.xml"} )
 public class ArchivaIndexingTaskExecutorTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private ArchivaIndexingTaskExecutor indexingExecutor;
 
@@ -67,7 +74,11 @@ public class ArchivaIndexingTaskExecutorTest
 
     private IndexingContext context;
 
-    protected void setUp()
+    @Inject
+    PlexusSisuBridge plexusSisuBridge;
+
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -77,7 +88,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
-        repositoryConfig.setLocation( getBasedir() + "/target/test-classes/test-repo" );
+        repositoryConfig.setLocation( "/target/test-classes/test-repo" );
         repositoryConfig.setLayout( "default" );
         repositoryConfig.setName( "Test Repository" );
         repositoryConfig.setScanned( true );
@@ -87,9 +98,9 @@ public class ArchivaIndexingTaskExecutorTest
         configuration = new Configuration();
         configuration.addManagedRepository( repositoryConfig );
 
-        indexer = (NexusIndexer) lookup( NexusIndexer.class );
-        indexerEngine = (IndexerEngine) lookup( IndexerEngine.class );
-        indexPacker = (IndexPacker) lookup( IndexPacker.class );
+        indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        indexerEngine = plexusSisuBridge.lookup( IndexerEngine.class );
+        indexPacker = plexusSisuBridge.lookup( IndexPacker.class );
 
         indexingExecutor.setIndexerEngine( indexerEngine );
         indexingExecutor.setIndexPacker( indexPacker );
@@ -97,7 +108,8 @@ public class ArchivaIndexingTaskExecutorTest
         context = ArtifactIndexingTask.createContext( repositoryConfig );
     }
 
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         context.close( true );
@@ -115,6 +127,7 @@ public class ArchivaIndexingTaskExecutorTest
         super.tearDown();
     }
 
+    @Test
     public void testAddArtifactToIndex()
         throws Exception
     {
@@ -155,6 +168,7 @@ public class ArchivaIndexingTaskExecutorTest
         context.close( true );
     }
 
+    @Test
     public void testUpdateArtifactInIndex()
         throws Exception
     {
@@ -184,6 +198,7 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( 1, topDocs.totalHits );
     }
 
+    @Test
     public void testRemoveArtifactFromIndex()
         throws Exception
     {
@@ -241,6 +256,7 @@ public class ArchivaIndexingTaskExecutorTest
         // TODO: test it was removed from the packaged index also
     }
 
+    @Test
     public void testPackagedIndex()
         throws Exception
     {

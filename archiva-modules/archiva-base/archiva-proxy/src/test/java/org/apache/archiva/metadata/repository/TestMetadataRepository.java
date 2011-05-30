@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +32,8 @@ import java.util.Date;
 import java.util.List;
 
 // TODO: remove, it does nothing
+
+@Service
 public class TestMetadataRepository
     implements MetadataRepository
 {

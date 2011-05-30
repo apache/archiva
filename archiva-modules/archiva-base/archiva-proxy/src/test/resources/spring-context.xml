@@ -45,4 +45,14 @@
     </property>
   </bean>
 
+  <bean name="repositoryProxyConnectors#default" class="org.apache.maven.archiva.proxy.DefaultRepositoryProxyConnectors">
+    <property name="archivaConfiguration" ref="archivaConfiguration#mock"/>
+  </bean>
+
+  <bean name="metadataTools#default" class="org.apache.maven.archiva.repository.metadata.MetadataTools">
+    <property name="configuration" ref="archivaConfiguration#mock"/>
+  </bean>
+
+
+
 </beans>
