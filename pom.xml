@@ -29,196 +29,17 @@
 
   <groupId>org.apache.archiva</groupId>
   <artifactId>archiva-parent</artifactId>
-  <packaging>pom</packaging>
-  <name>Archiva Common Parent Project</name>
   <version>7-SNAPSHOT</version>
-  <inceptionYear>2006</inceptionYear>
+  <packaging>pom</packaging>
+
+  <name>Archiva Common Parent Project</name>
   <description>
-    Archiva is an application for managing one or more remote
-    repositories, including administration, artifact handling,
-    browsing and searching.
+      Archiva is an application for managing one or more remote
+      repositories, including administration, artifact handling,
+      browsing and searching.
   </description>
   <url>http://archiva.apache.org/</url>
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.codehaus.org/browse/MRM</url>
-  </issueManagement>
-  <mailingLists>
-    <mailingList>
-      <name>Archiva User List</name>
-      <subscribe>users-subscribe@archiva.apache.org</subscribe>
-      <unsubscribe>users-unsubscribe@archiva.apache.org</unsubscribe>
-      <post>users@archiva.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/archiva-users/</archive>
-      <otherArchives>
-        <otherArchive>http://www.mail-archive.com/users@archiva.apache.org</otherArchive>
-        <otherArchive>http://old.nabble.com/archiva-users-f16426.html</otherArchive>
-        <otherArchive>http://markmail.org/list/org.apache.archiva.users</otherArchive>
-      </otherArchives>
-    </mailingList>
-    <mailingList>
-      <name>Archiva Developer List</name>
-      <subscribe>dev-subscribe@archiva.apache.org</subscribe>
-      <unsubscribe>dev-unsubscribe@archiva.apache.org</unsubscribe>
-      <post>dev@archiva.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/archiva-dev</archive>
-      <otherArchives>
-        <otherArchive>http://www.mail-archive.com/dev@archiva.apache.org</otherArchive>
-        <otherArchive>http://old.nabble.com/archiva-dev-f16427.html</otherArchive>
-        <otherArchive>http://markmail.org/list/org.apache.archiva.dev</otherArchive>
-      </otherArchives>
-    </mailingList>
-    <mailingList>
-      <name>Archiva Commits List</name>
-      <subscribe>commits-subscribe@archiva.apache.org</subscribe>
-      <unsubscribe>commits-unsubscribe@archiva.apache.org</unsubscribe>
-      <archive>http://mail-archives.apache.org/mod_mbox/archiva-commits</archive>
-      <otherArchives>
-        <otherArchive>http://www.mail-archive.com/commits@archiva.apache.org</otherArchive>
-        <otherArchive>http://markmail.org/list/org.apache.archiva.commits</otherArchive>
-      </otherArchives>
-    </mailingList>
-    <mailingList>
-      <name>Archiva Issues List</name>
-      <subscribe>issues-subscribe@archiva.apache.org</subscribe>
-      <unsubscribe>issues-unsubscribe@archiva.apache.org</unsubscribe>
-      <archive>http://mail-archives.apache.org/mod_mbox/archiva-issues</archive>
-      <otherArchives>
-        <otherArchive>http://www.mail-archive.com/issues@archiva.apache.org</otherArchive>
-        <otherArchive>http://old.nabble.com/Archiva---Issues-f29617.html</otherArchive>
-      </otherArchives>
-    </mailingList>
-   </mailingLists>
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/archiva/parent</url>
-  </scm>
-  <properties>
-    <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
-  </properties>
-  <ciManagement>
-    <system>continuum</system>
-    <url>http://vmbuild.apache.org/continuum</url>
-  </ciManagement>
-  <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <configuration>
-              <passphrase>${gpg.passphrase}</passphrase>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <configuration>
-              <altDeploymentRepository>${deploy.altRepository}</altDeploymentRepository>
-              <updateReleaseInfo>true</updateReleaseInfo>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
-  <build>
-    <plugins>
-      <!-- We want to package up license resources in the JARs produced -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <resourceBundles>
-                <resourceBundle>org.apache:apache-jar-resource-bundle:1.3</resourceBundle>
-              </resourceBundles>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <!-- set versions of common plugins for reproducibility, ordered alphabetically -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>2.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-gpg-plugin</artifactId>
-          <version>1.0-alpha-4</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.3</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.0-beta-7</version>
-          <configuration>
-            <tagBase>https://svn.apache.org/repos/asf/archiva/tags/</tagBase>
-            <useReleaseProfile>false</useReleaseProfile>
-            <arguments>-Prelease</arguments>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>2.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.0.3</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+  <inceptionYear>2006</inceptionYear>
 
   <!-- Developers listed by PMC Chair, PMC, Committers, Contributers, all alphabetical-->
   <developers>
@@ -288,7 +109,7 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
-	<developer>
+    <developer>
       <id>jdumay</id>
       <name>James William Dumay</name>
       <email>james@atlassian.com</email>
@@ -532,19 +353,19 @@
     </contributor>
     <contributor>
       <name>Catalino Pineda Jr.</name>
-    </contributor> 
+    </contributor>
     <contributor>
       <name>Warner Pinero</name>
-    </contributor> 
+    </contributor>
     <contributor>
       <name>Dave Brosius</name>
-    </contributor> 
+    </contributor>
     <contributor>
       <name>Jim Sellers</name>
-    </contributor> 
+    </contributor>
     <contributor>
       <name>Igor Galic</name>
-    </contributor> 
+    </contributor>
     <contributor>
       <name>Mark Struberg</name>
     </contributor>
@@ -555,6 +376,195 @@
       <name>Lucien Weller</name>
     </contributor>
   </contributors>
+
+  <mailingLists>
+    <mailingList>
+      <name>Archiva User List</name>
+      <subscribe>users-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>users-unsubscribe@archiva.apache.org</unsubscribe>
+      <post>users@archiva.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-users/</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/users@archiva.apache.org</otherArchive>
+        <otherArchive>http://old.nabble.com/archiva-users-f16426.html</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.users</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Archiva Developer List</name>
+      <subscribe>dev-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@archiva.apache.org</unsubscribe>
+      <post>dev@archiva.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-dev</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/dev@archiva.apache.org</otherArchive>
+        <otherArchive>http://old.nabble.com/archiva-dev-f16427.html</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.dev</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Archiva Commits List</name>
+      <subscribe>commits-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>commits-unsubscribe@archiva.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-commits</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/commits@archiva.apache.org</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.commits</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Archiva Issues List</name>
+      <subscribe>issues-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>issues-unsubscribe@archiva.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-issues</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/issues@archiva.apache.org</otherArchive>
+        <otherArchive>http://old.nabble.com/Archiva---Issues-f29617.html</otherArchive>
+      </otherArchives>
+    </mailingList>
+  </mailingLists>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/archiva/parent</url>
+  </scm>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.codehaus.org/browse/MRM</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>continuum</system>
+    <url>http://vmbuild.apache.org/continuum</url>
+  </ciManagement>
+
+  <properties>
+    <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
+  </properties>
+
+
+
+  <build>
+    <plugins>
+      <!-- We want to package up license resources in the JARs produced -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.apache:apache-jar-resource-bundle:1.3</resourceBundle>
+              </resourceBundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <!-- set versions of common plugins for reproducibility, ordered alphabetically -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.0-alpha-4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.0-beta-7</version>
+          <configuration>
+            <tagBase>https://svn.apache.org/repos/asf/archiva/tags/</tagBase>
+            <useReleaseProfile>false</useReleaseProfile>
+            <arguments>-Prelease</arguments>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.0.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <configuration>
+              <passphrase>${gpg.passphrase}</passphrase>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <altDeploymentRepository>${deploy.altRepository}</altDeploymentRepository>
+              <updateReleaseInfo>true</updateReleaseInfo>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
 
