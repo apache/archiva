@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       default-lazy-init="true">
+
+  <context:annotation-config/>
+  <context:component-scan base-package="org.apache.archiva.metadata.repository"/>
+
+  <!-- for testing repo purge using retention count -->
+
+  <bean name="knownRepositoryContentConsumer#repo-purge-consumer-by-retention-count" class="org.apache.maven.archiva.consumers.core.repository.RepositoryPurgeConsumer">
+    <property name="configuration" ref="archivaConfiguration#retention-count"/>
+    <property name="repositoryContentFactory" ref="repositoryContentFactory#retention-count"/>
+    <property name="filetypes" ref="filetypes#retention-count"/>
+  </bean>
+
+  <bean name="archivaConfiguration#retention-count" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#retention-count"/>
+  </bean>
+
+  <bean name="repositoryContentFactory#retention-count" class="org.apache.maven.archiva.repository.RepositoryContentFactory">
+    <property name="archivaConfiguration" ref="archivaConfiguration#retention-count"/>
+  </bean>
+
+  <bean name="registry#retention-count" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <xml fileName="${basedir}/src/test/conf/repository-manager.xml"
+               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="filetypes#retention-count" class="org.apache.maven.archiva.configuration.FileTypes">
+    <property name="archivaConfiguration" ref="archivaConfiguration#retention-count"/>
+  </bean>
+
+  <!-- for testing repo purge by # of days old and delete cleanupSnapshots -->
+  <bean name="knownRepositoryContentConsumer#repo-purge-consumer-by-days-old" class="org.apache.maven.archiva.consumers.core.repository.RepositoryPurgeConsumer">
+    <property name="configuration" ref="archivaConfiguration#days-old"/>
+    <property name="repositoryContentFactory" ref="repositoryContentFactory#days-old"/>
+    <property name="filetypes" ref="filetypes#days-old"/>
+  </bean>
+
+  <bean name="archivaConfiguration#days-old" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#days-old"/>
+  </bean>
+
+  <bean name="repositoryContentFactory#days-old" class="org.apache.maven.archiva.repository.RepositoryContentFactory">
+    <property name="archivaConfiguration" ref="archivaConfiguration#days-old"/>
+  </bean>
+
+  <bean name="registry#days-old" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <xml fileName="${basedir}/src/test/conf/repository-manager-daysOld.xml"
+               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="filetypes#days-old" class="org.apache.maven.archiva.configuration.FileTypes">
+    <property name="archivaConfiguration" ref="archivaConfiguration#days-old"/>
+  </bean>
+
+
+</beans>
