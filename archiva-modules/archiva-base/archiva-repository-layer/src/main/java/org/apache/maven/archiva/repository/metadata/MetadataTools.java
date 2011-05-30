@@ -222,7 +222,7 @@ public class MetadataTools
 
         reference.setArtifactId( pathParts[artifactIdOffset] );
 
-        StringBuffer gid = new StringBuffer();
+        StringBuilder gid = new StringBuilder();
         for ( int i = 0; i <= groupIdEnd; i++ )
         {
             if ( i > 0 )
@@ -262,7 +262,7 @@ public class MetadataTools
 
         reference.setArtifactId( pathParts[artifactIdOffset] );
 
-        StringBuffer gid = new StringBuffer();
+        StringBuilder gid = new StringBuilder();
         for ( int i = 0; i <= groupIdEnd; i++ )
         {
             if ( i > 0 )
@@ -279,7 +279,7 @@ public class MetadataTools
 
     public String toPath( ProjectReference reference )
     {
-        StringBuffer path = new StringBuffer();
+        StringBuilder path = new StringBuilder();
 
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
@@ -290,7 +290,7 @@ public class MetadataTools
 
     public String toPath( VersionedReference reference )
     {
-        StringBuffer path = new StringBuffer();
+        StringBuilder path = new StringBuilder();
 
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
@@ -330,7 +330,7 @@ public class MetadataTools
      */
     public String getRepositorySpecificName( String proxyId, String path )
     {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
 
         int idx = path.lastIndexOf( "/" );
         if ( idx > 0 )

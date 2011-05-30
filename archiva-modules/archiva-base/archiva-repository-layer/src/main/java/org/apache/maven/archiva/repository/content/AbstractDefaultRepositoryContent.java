@@ -82,7 +82,7 @@ public abstract class AbstractDefaultRepositoryContent
 
     public String toMetadataPath( ProjectReference reference )
     {
-        StringBuffer path = new StringBuffer();
+        StringBuilder path = new StringBuilder();
 
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
@@ -93,7 +93,7 @@ public abstract class AbstractDefaultRepositoryContent
 
     public String toMetadataPath( VersionedReference reference )
     {
-        StringBuffer path = new StringBuffer();
+        StringBuilder path = new StringBuilder();
 
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );

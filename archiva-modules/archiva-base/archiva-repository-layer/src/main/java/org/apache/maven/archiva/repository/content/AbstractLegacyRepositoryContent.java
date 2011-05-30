@@ -87,7 +87,7 @@ public abstract class AbstractLegacyRepositoryContent
 
     private String toPath( String groupId, String artifactId, String version, String classifier, String type )
     {
-        StringBuffer path = new StringBuffer();
+        StringBuilder path = new StringBuilder();
 
         path.append( groupId ).append( PATH_SEPARATOR );
         path.append( getDirectory( type ) ).append( PATH_SEPARATOR );
