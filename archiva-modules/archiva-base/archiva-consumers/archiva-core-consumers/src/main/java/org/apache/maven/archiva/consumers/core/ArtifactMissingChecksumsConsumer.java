@@ -204,6 +204,7 @@ public class ArtifactMissingChecksumsConsumer
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
+    @PostConstruct
     public void initialize()
     {
         configuration.addChangeListener( this );
