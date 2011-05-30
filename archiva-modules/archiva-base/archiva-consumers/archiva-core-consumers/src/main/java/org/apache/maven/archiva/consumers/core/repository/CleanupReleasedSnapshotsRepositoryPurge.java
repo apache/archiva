@@ -198,7 +198,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         }
         catch ( LayoutException e )
         {
-            log.debug( "Not processing file that is not an artifact: " + e.getMessage() );
+            log.debug( "Not processing file that is not an artifact: {}", e.getMessage() );
         }
         catch ( ContentNotFoundException e )
         {

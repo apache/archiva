@@ -48,6 +48,7 @@ public class RepositoryPurgeConsumerTest
         throws Exception
     {
         assertNotConsumed( "org/apache/maven/plugins/maven-plugin-plugin/2.4.1/maven-metadata.xml" );
+        cleanupFileTypes();
     }
 
     @Test
@@ -55,6 +56,16 @@ public class RepositoryPurgeConsumerTest
         throws Exception
     {
         assertNotConsumed( "org/apache/maven/plugins/maven-plugin-plugin/2.4.1/maven-metadata-central.xml" );
+        cleanupFileTypes();
+    }
+
+    private void cleanupFileTypes()
+    {
+        ArchivaConfiguration archivaConfiguration =
+            applicationContext.getBean( "archivaConfiguration#default", ArchivaConfiguration.class );
+
+        FileType fileType = archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+        fileType.removePattern( "**/*.xml" );
     }
 
     private void assertNotConsumed( String path )
@@ -68,9 +79,11 @@ public class RepositoryPurgeConsumerTest
         fileType.addPattern( "**/*.xml" );
 
         // trigger reload
-        FileTypes fileTypes = applicationContext.getBean( FileTypes.class );
-        fileTypes.afterConfigurationChange( null, "repositoryScanning.fileTypes", null );
-
+        //FileTypes fileTypes = applicationContext.getBean( FileTypes.class );
+        for ( FileTypes fileTypes : applicationContext.getBeansOfType( FileTypes.class ).values() )
+        {
+            fileTypes.afterConfigurationChange( null, "repositoryScanning.fileTypes", null );
+        }
         KnownRepositoryContentConsumer repoPurgeConsumer =
             applicationContext.getBean( "knownRepositoryContentConsumer#repository-purge",
                                         KnownRepositoryContentConsumer.class );
@@ -146,6 +159,8 @@ public class RepositoryPurgeConsumerTest
         assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom" );
         assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.md5" );
         assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.sha1" );
+
+        removeRepoFromConfiguration( "retention-count", repoConfiguration );
     }
 
     private void addRepoToConfiguration( String configHint, ManagedRepositoryConfiguration repoConfiguration )
@@ -154,8 +169,27 @@ public class RepositoryPurgeConsumerTest
         ArchivaConfiguration archivaConfiguration =
             applicationContext.getBean( "archivaConfiguration#" + configHint, ArchivaConfiguration.class );
         Configuration configuration = archivaConfiguration.getConfiguration();
-        configuration.removeManagedRepository( configuration.findManagedRepositoryById( repoConfiguration.getId() ) );
+        ManagedRepositoryConfiguration managedRepositoryConfiguration =
+            configuration.findManagedRepositoryById( repoConfiguration.getId() );
+        if ( managedRepositoryConfiguration != null )
+        {
+            configuration.removeManagedRepository( managedRepositoryConfiguration );
+        }
         configuration.addManagedRepository( repoConfiguration );
+    }
+
+    private void removeRepoFromConfiguration( String configHint, ManagedRepositoryConfiguration repoConfiguration )
+        throws Exception
+    {
+        ArchivaConfiguration archivaConfiguration =
+            applicationContext.getBean( "archivaConfiguration#" + configHint, ArchivaConfiguration.class );
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        ManagedRepositoryConfiguration managedRepositoryConfiguration =
+            configuration.findManagedRepositoryById( repoConfiguration.getId() );
+        if ( managedRepositoryConfiguration != null )
+        {
+            configuration.removeManagedRepository( managedRepositoryConfiguration );
+        }
     }
 
     @Test
@@ -207,6 +241,8 @@ public class RepositoryPurgeConsumerTest
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom" );
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.md5" );
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.sha1" );
+
+        removeRepoFromConfiguration( "days-old", repoConfiguration );
     }
 
     /**
@@ -255,6 +291,8 @@ public class RepositoryPurgeConsumerTest
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
                                      "//metadata/versioning/versions/version", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
+
+        removeRepoFromConfiguration( "retention-count", repoConfiguration );
     }
 
     @Test
@@ -299,6 +337,8 @@ public class RepositoryPurgeConsumerTest
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
                                      "//metadata/versioning/versions/version", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
+
+        removeRepoFromConfiguration( "days-old", repoConfiguration );
     }
 
     @Before
