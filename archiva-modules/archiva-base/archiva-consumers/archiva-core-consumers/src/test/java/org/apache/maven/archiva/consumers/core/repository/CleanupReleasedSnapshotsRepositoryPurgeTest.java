@@ -152,7 +152,12 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         listenerControl.replay();
 
         File file = new File( repoRoot, INDEX_PATH );
-        file.createNewFile();
+        if (!file.exists())
+        {
+            // help windauze to create directory with .
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+        }
         assertTrue( file.exists() );
 
         repoPurge.process( INDEX_PATH );
