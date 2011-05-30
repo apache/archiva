@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -75,12 +76,14 @@ public class RepositoryPurgeConsumer
      * plexus.requirement
      */
     @Inject
+    @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
 
     /**
      * plexus.requirement
      */
     @Inject
+    @Named(value = "repositoryContentFactory#default")
     private RepositoryContentFactory repositoryContentFactory;
 
     /**
@@ -93,6 +96,7 @@ public class RepositoryPurgeConsumer
      * plexus.requirement
      */
     @Inject
+    @Named(value = "fileTypes")
     private FileTypes filetypes;
 
     private List<String> includes = new ArrayList<String>();
@@ -113,7 +117,7 @@ public class RepositoryPurgeConsumer
 
     /**
      * TODO: this could be multiple implementations and needs to be configured.
-     *
+     * <p/>
      * plexus.requirement
      */
     @Inject

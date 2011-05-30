@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -58,6 +59,7 @@ public class ManagedDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
     @Inject
+    @Named(value = "fileTypes" )
     private FileTypes filetypes;
 
     private ManagedRepositoryConfiguration repository;

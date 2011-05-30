@@ -19,7 +19,6 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
@@ -39,7 +38,8 @@ import java.io.File;
 
 /**
  */
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-purge-consumer-test.xml" } )
+@ContextConfiguration(
+    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-purge-consumer-test.xml" } )
 public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest
 {
@@ -60,10 +60,10 @@ public class RepositoryPurgeConsumerTest
     private void assertNotConsumed( String path )
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
+        ArchivaConfiguration archivaConfiguration =
+            applicationContext.getBean( "archivaConfiguration#default", ArchivaConfiguration.class );
 
-        FileType fileType =
-            (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+        FileType fileType = archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
         assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
         fileType.addPattern( "**/*.xml" );
 
@@ -307,7 +307,7 @@ public class RepositoryPurgeConsumerTest
     {
         super.setUp();
 
-        TestRepositorySessionFactory factory =  applicationContext.getBean( TestRepositorySessionFactory.class );
+        TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class );
         factory.setRepository( metadataRepository );
     }
 }

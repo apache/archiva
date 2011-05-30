@@ -42,6 +42,9 @@
     <property name="registry" ref="registry#retention-count"/>
   </bean>
 
+  <alias name="archivaConfiguration#retention-count" alias="archivaConfiguration"/>
+  <alias name="archivaConfiguration#retention-count" alias="archivaConfiguration#default"/>
+
   <bean name="repositoryContentFactory#retention-count" class="org.apache.maven.archiva.repository.RepositoryContentFactory">
     <property name="archivaConfiguration" ref="archivaConfiguration#retention-count"/>
   </bean>
@@ -62,6 +65,8 @@
   <bean name="filetypes#retention-count" class="org.apache.maven.archiva.configuration.FileTypes">
     <property name="archivaConfiguration" ref="archivaConfiguration#retention-count"/>
   </bean>
+
+  <alias name="filetypes#retention-count" alias="filetypes"/>
 
   <!-- for testing repo purge by # of days old and delete cleanupSnapshots -->
   <bean name="knownRepositoryContentConsumer#repo-purge-consumer-by-days-old" class="org.apache.maven.archiva.consumers.core.repository.RepositoryPurgeConsumer">

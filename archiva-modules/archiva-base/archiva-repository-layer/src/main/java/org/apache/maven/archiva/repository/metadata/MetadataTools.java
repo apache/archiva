@@ -100,6 +100,7 @@ public class MetadataTools
      * plexus.requirement
      */
     @Inject
+    @Named(value = "fileTypes")
     private FileTypes filetypes;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
