@@ -128,7 +128,7 @@ public abstract class AbstractUpdatePolicy
         if ( ALWAYS.equals( policySetting ) )
         {
             // Skip means ok to update.
-            log.debug( "OK to update, " + getUpdateMode() + " policy set to ALWAYS." );
+            log.debug( "OK to update, {} policy set to ALWAYS.", getUpdateMode() );
             return;
         }
 
