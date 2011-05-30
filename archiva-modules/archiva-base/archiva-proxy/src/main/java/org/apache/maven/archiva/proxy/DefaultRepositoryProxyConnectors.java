@@ -58,9 +58,9 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.util.SelectorUtils;
-import org.codehaus.redback.components.springutils.ComponentContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -69,6 +69,7 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -111,7 +112,7 @@ public class DefaultRepositoryProxyConnectors
     private MetadataTools metadataTools;
 
     @Inject
-    private ComponentContainer componentContainer;
+    private ApplicationContext applicationContext;
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
@@ -156,9 +157,9 @@ public class DefaultRepositoryProxyConnectors
     {
         initConnectorsAndNetworkProxies();
         archivaConfiguration.addChangeListener( this );
-        this.postDownloadPolicies = componentContainer.buildMapWithRole( PostDownloadPolicy.class );
-        this.preDownloadPolicies = componentContainer.buildMapWithRole( PreDownloadPolicy.class );
-        this.downloadErrorPolicies = componentContainer.buildMapWithRole( DownloadErrorPolicy.class );
+        this.postDownloadPolicies = applicationContext.getBeansOfType( PostDownloadPolicy.class );
+        this.preDownloadPolicies = applicationContext.getBeansOfType( PreDownloadPolicy.class );
+        this.downloadErrorPolicies = applicationContext.getBeansOfType( DownloadErrorPolicy.class );
     }
 
     @SuppressWarnings( "unchecked" )
@@ -290,19 +291,19 @@ public class DefaultRepositoryProxyConnectors
 
                 if ( fileExists( downloadedFile ) )
                 {
-                    log.debug( "Successfully transferred: " + downloadedFile.getAbsolutePath() );
+                    log.debug( "Successfully transferred: {}", downloadedFile.getAbsolutePath() );
                     return downloadedFile;
                 }
             }
             catch ( NotFoundException e )
             {
-                log.debug( "Artifact " + Keys.toKey( artifact ) + " not found on repository \""
-                               + targetRepository.getRepository().getId() + "\"." );
+                log.debug( "Artifact {} not found on repository \"{}\".", Keys.toKey( artifact ),
+                           targetRepository.getRepository().getId() );
             }
             catch ( NotModifiedException e )
             {
-                log.debug( "Artifact " + Keys.toKey( artifact ) + " not updated on repository \""
-                               + targetRepository.getRepository().getId() + "\"." );
+                log.debug( "Artifact {} not updated on repository \"{}\".", Keys.toKey( artifact ),
+                           targetRepository.getRepository().getId() );
             }
             catch ( ProxyException e )
             {
@@ -317,7 +318,7 @@ public class DefaultRepositoryProxyConnectors
                                               previousExceptions );
         }
 
-        log.debug( "Exhausted all target repositories, artifact " + Keys.toKey( artifact ) + " not found." );
+        log.debug( "Exhausted all target repositories, artifact {} not found.", Keys.toKey( artifact ) );
 
         return null;
     }
@@ -357,20 +358,19 @@ public class DefaultRepositoryProxyConnectors
 
                 if ( fileExists( downloadedFile ) )
                 {
-                    log.debug( "Successfully transferred: " + downloadedFile.getAbsolutePath() );
+                    log.debug( "Successfully transferred: {}", downloadedFile.getAbsolutePath() );
                     return downloadedFile;
                 }
             }
             catch ( NotFoundException e )
             {
-                log.debug( "Resource " + path + " not found on repository \"" + targetRepository.getRepository().getId()
-                               + "\"." );
+                log.debug( "Resource {} not found on repository \"{}\".", path,
+                           targetRepository.getRepository().getId() );
             }
             catch ( NotModifiedException e )
             {
-                log.debug(
-                    "Resource " + path + " not updated on repository \"" + targetRepository.getRepository().getId()
-                        + "\"." );
+                log.debug( "Resource {} not updated on repository \"{}\".", path,
+                           targetRepository.getRepository().getId() );
             }
             catch ( ProxyException e )
             {
@@ -381,7 +381,7 @@ public class DefaultRepositoryProxyConnectors
             }
         }
 
-        log.debug( "Exhausted all target repositories, resource " + path + " not found." );
+        log.debug( "Exhausted all target repositories, resource {} not found.", path );
 
         return null;
     }
@@ -420,13 +420,19 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( NotFoundException e )
             {
-                log.debug( "Metadata " + logicalPath + " not found on remote repository \""
-                               + targetRepository.getRepository().getId() + "\".", e );
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( "Metadata " + logicalPath + " not found on remote repository \""
+                                   + targetRepository.getRepository().getId() + "\".", e );
+                }
             }
             catch ( NotModifiedException e )
             {
-                log.debug( "Metadata " + logicalPath + " not updated on remote repository \""
-                               + targetRepository.getRepository().getId() + "\".", e );
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( "Metadata " + logicalPath + " not updated on remote repository \""
+                                   + targetRepository.getRepository().getId() + "\".", e );
+                }
             }
             catch ( ProxyException e )
             {
@@ -775,7 +781,7 @@ public class DefaultRepositoryProxyConnectors
         try
         {
             transferSimpleFile( wagon, remoteRepository, remotePath + ext, repository, resource, destFile );
-            log.debug( "Checksum " + url + " Downloaded: " + destFile + " to move to " + resource );
+            log.debug( "Checksum {} Downloaded: {} to move to {}", Arrays.asList( url, destFile, resource ).toArray() );
         }
         catch ( NotFoundException e )
         {
@@ -887,7 +893,7 @@ public class DefaultRepositoryProxyConnectors
             String defaultSetting = policy.getDefaultOption();
             String setting = StringUtils.defaultString( settings.get( key ), defaultSetting );
 
-            log.debug( "Applying [" + key + "] policy with [" + setting + "]" );
+            log.debug( "Applying [{}] policy with [{}]", key, setting );
             try
             {
                 policy.applyPolicy( setting, request, localFile );
@@ -1002,8 +1008,8 @@ public class DefaultRepositoryProxyConnectors
             {
                 if ( target.exists() )
                 {
-                    log.debug( "Tried to copy file " + temp.getName() + " to " + target.getAbsolutePath()
-                                   + " but file with this name already exists." );
+                    log.debug( "Tried to copy file {} to {} but file with this name already exists.", temp.getName(),
+                               target.getAbsolutePath() );
                 }
                 else
                 {
@@ -1062,7 +1068,7 @@ public class DefaultRepositoryProxyConnectors
 
         if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
         {
-            log.debug( "Using username " + username + " to connect to remote repository " + remoteRepository.getURL() );
+            log.debug( "Using username {} to connect to remote repository {}", username, remoteRepository.getURL() );
             authInfo = new AuthenticationInfo();
             authInfo.setUserName( username );
             authInfo.setPassword( password );
