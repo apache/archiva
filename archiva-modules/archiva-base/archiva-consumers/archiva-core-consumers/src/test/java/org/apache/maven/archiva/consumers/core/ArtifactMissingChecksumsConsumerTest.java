@@ -39,7 +39,7 @@ public class ArtifactMissingChecksumsConsumerTest
     public void setUp()
         throws Exception
     {
-        //super.setUp();
+        super.setUp();
 
         repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( "test-repo" );

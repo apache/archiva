@@ -29,6 +29,7 @@ public class MetadataUpdateConsumerTest
     public void setUp()
         throws Exception
     {
+        super.setUp();
         consumer = applicationContext.getBean( "knownRepositoryContentConsumer#metadata-updater",
                                                KnownRepositoryContentConsumer.class );
     }
