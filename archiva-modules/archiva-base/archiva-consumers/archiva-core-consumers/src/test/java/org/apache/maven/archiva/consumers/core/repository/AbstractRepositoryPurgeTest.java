@@ -19,15 +19,23 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
@@ -36,8 +44,10 @@ import static org.mockito.Mockito.when;
 
 /**
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractRepositoryPurgeTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     public static final String TEST_REPO_ID = "test-repo";
 
@@ -80,8 +90,11 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected MetadataRepository metadataRepository;
 
-    @Override
-    protected void setUp()
+    @Inject
+    protected ApplicationContext applicationContext;
+
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -95,8 +108,8 @@ public abstract class AbstractRepositoryPurgeTest
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
     }
 
-    @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
@@ -110,7 +123,7 @@ public abstract class AbstractRepositoryPurgeTest
         config.setId( repoId );
         config.setName( repoName );
         config.setDaysOlder( TEST_DAYS_OLDER );
-        config.setLocation( getTestFile( "target/test-" + getName() + "/" + repoId ).getAbsolutePath() );
+        config.setLocation( new File( "target/test-" + getName() + "/" + repoId ).getAbsolutePath() );
         config.setReleases( true );
         config.setSnapshots( true );
         config.setDeleteReleasedSnapshots( true );
@@ -124,7 +137,7 @@ public abstract class AbstractRepositoryPurgeTest
     {
         if ( repo == null )
         {
-            repo = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
+            repo = applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
             repo.setRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
         }
 
@@ -143,7 +156,7 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected File getTestRepoRoot()
     {
-        return getTestFile( "target/test-" + getName() + "/" + TEST_REPO_ID );
+        return new File( "target/test-" + getName() + "/" + TEST_REPO_ID );
     }
 
     protected String prepareTestRepos()
@@ -151,12 +164,18 @@ public abstract class AbstractRepositoryPurgeTest
     {
         File testDir = getTestRepoRoot();
         FileUtils.deleteDirectory( testDir );
-        FileUtils.copyDirectory( getTestFile( "target/test-classes/" + TEST_REPO_ID ), testDir );
+        FileUtils.copyDirectory( new File( "target/test-classes/" + TEST_REPO_ID ), testDir );
 
-        File releasesTestDir = getTestFile( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID );
+        File releasesTestDir = new File( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID );
         FileUtils.deleteDirectory( releasesTestDir );
-        FileUtils.copyDirectory( getTestFile( "target/test-classes/" + RELEASES_TEST_REPO_ID ), releasesTestDir );
+        FileUtils.copyDirectory( new File( "target/test-classes/" + RELEASES_TEST_REPO_ID ), releasesTestDir );
 
         return testDir.getAbsolutePath();
+    }
+
+    @Override
+    public String getName()
+    {
+        return StringUtils.substringAfterLast( getClass().getName(), "." );
     }
 }

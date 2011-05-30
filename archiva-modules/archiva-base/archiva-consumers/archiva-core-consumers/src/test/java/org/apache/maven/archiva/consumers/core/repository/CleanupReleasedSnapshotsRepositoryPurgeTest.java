@@ -27,7 +27,11 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +39,8 @@ import java.util.List;
 
 /**
  */
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml",
+    "classpath:/spring-context-cleanup-released-snapshots.xml" } )
 public class CleanupReleasedSnapshotsRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
@@ -51,27 +57,31 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public static final String PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO =
         "org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar";
 
-    @Override
-    protected void setUp()
+    @Inject
+    MetadataTools metadataTools;
+
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
 
-        MetadataTools metadataTools = (MetadataTools) lookup( MetadataTools.class );
-        RepositoryContentFactory factory = (RepositoryContentFactory) lookup( RepositoryContentFactory.class,
-                                                                              "cleanup-released-snapshots" );
+        RepositoryContentFactory factory =
+            applicationContext.getBean( "repositoryContentFactory#cleanup-released-snapshots", RepositoryContentFactory.class );
 
-        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class,
-                                                              "cleanup-released-snapshots" );
+        archivaConfiguration =
+            applicationContext.getBean( "archivaConfiguration#cleanup-released-snapshots", ArchivaConfiguration.class );
 
         listenerControl = MockControl.createControl( RepositoryListener.class );
 
         listener = (RepositoryListener) listenerControl.getMock();
         List<RepositoryListener> listeners = Collections.singletonList( listener );
-        repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools, archivaConfiguration,
-                                                                 factory, repositorySession, listeners );
+        repoPurge =
+            new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools, archivaConfiguration, factory,
+                                                         repositorySession, listeners );
     }
 
+    @Test
     public void testReleasedSnapshotsExistsInSameRepo()
         throws Exception
     {
@@ -128,6 +138,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
     }
 
+    @Test
     public void testNonArtifactFile()
         throws Exception
     {
@@ -151,6 +162,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertTrue( file.exists() );
     }
 
+    @Test
     public void testReleasedSnapshotsExistsInDifferentRepo()
         throws Exception
     {
@@ -182,9 +194,9 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.pom.md5" );
         assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.pom.sha1" );
 
-        String releasesProjectRoot = getTestFile(
-            "target/test-" + getName() + "/releases-test-repo-one" ).getAbsolutePath() +
-            "/org/apache/archiva/released-artifact-in-diff-repo";
+        String releasesProjectRoot =
+            new File( "target/test-" + getName() + "/releases-test-repo-one" ).getAbsolutePath()
+                + "/org/apache/archiva/released-artifact-in-diff-repo";
 
         // check if the released version was not removed
         assertExists( releasesProjectRoot + "/1.0" );
@@ -196,6 +208,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.pom.sha1" );
     }
 
+    @Test
     public void testHigherSnapshotExistsInSameRepo()
         throws Exception
     {
@@ -237,8 +250,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
 
-        String expectedVersions = "<expected><versions><version>2.0.3-SNAPSHOT</version>" +
-            "<version>2.0.4-SNAPSHOT</version></versions></expected>";
+        String expectedVersions = "<expected><versions><version>2.0.3-SNAPSHOT</version>"
+            + "<version>2.0.4-SNAPSHOT</version></versions></expected>";
 
         XMLAssert.assertXpathEvaluatesTo( "2.0.4-SNAPSHOT", "//metadata/versioning/latest", metadataXml );
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,

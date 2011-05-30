@@ -34,11 +34,14 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -47,43 +50,49 @@ import java.util.List;
 /**
  * Consumer for removing old snapshots in the repository based on the criteria
  * specified by the user.
- *
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * <p/>
+ * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  * role-hint="repository-purge"
  * instantiation-strategy="per-lookup"
  */
+@Service( "knownRepositoryContentConsumer#repository-purge" )
+@Scope( "prototype" )
 public class RepositoryPurgeConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener
 {
     /**
-     * @plexus.configuration default-value="repository-purge"
+     * plexus.configuration default-value="repository-purge"
      */
-    private String id;
+    private String id = "repository-purge";
 
     /**
-     * @plexus.configuration default-value="Purge repository of old snapshots"
+     * plexus.configuration default-value="Purge repository of old snapshots"
      */
-    private String description;
+    private String description = "Purge repository of old snapshots";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
-    private RepositoryContentFactory repositoryFactory;
+    @Inject
+    private RepositoryContentFactory repositoryContentFactory;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private MetadataTools metadataTools;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private FileTypes filetypes;
 
     private List<String> includes = new ArrayList<String>();
@@ -94,16 +103,20 @@ public class RepositoryPurgeConsumer
 
     private boolean deleteReleasedSnapshots;
 
+    @Inject
+    private ApplicationContext applicationContext;
+
     /**
-     * @plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
+     * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
      */
     private List<RepositoryListener> listeners = Collections.emptyList();
 
     /**
      * TODO: this could be multiple implementations and needs to be configured.
      *
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
     private RepositorySession repositorySession;
@@ -139,7 +152,7 @@ public class RepositoryPurgeConsumer
         ManagedRepositoryContent repositoryContent;
         try
         {
-            repositoryContent = repositoryFactory.getManagedRepositoryContent( repository.getId() );
+            repositoryContent = repositoryContentFactory.getManagedRepositoryContent( repository.getId() );
         }
         catch ( RepositoryNotFoundException e )
         {
@@ -159,12 +172,13 @@ public class RepositoryPurgeConsumer
         }
         else
         {
-            repoPurge = new RetentionCountRepositoryPurge( repositoryContent, repository.getRetentionCount(),
-                                                           repositorySession, listeners );
+            repoPurge =
+                new RetentionCountRepositoryPurge( repositoryContent, repository.getRetentionCount(), repositorySession,
+                                                   listeners );
         }
 
         cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, configuration,
-                                                               repositoryFactory, repositorySession, listeners );
+                                                               repositoryContentFactory, repositorySession, listeners );
 
         deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
     }
@@ -229,9 +243,11 @@ public class RepositoryPurgeConsumer
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
+        this.listeners =
+            new ArrayList<RepositoryListener>( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
         configuration.addChangeListener( this );
 
         initIncludes();
@@ -241,5 +257,95 @@ public class RepositoryPurgeConsumer
     {
         // we need to check all files for deletion, especially if not modified
         return true;
+    }
+
+    public ArchivaConfiguration getConfiguration()
+    {
+        return configuration;
+    }
+
+    public void setConfiguration( ArchivaConfiguration configuration )
+    {
+        this.configuration = configuration;
+    }
+
+    public RepositoryContentFactory getRepositoryContentFactory()
+    {
+        return repositoryContentFactory;
+    }
+
+    public void setRepositoryContentFactory( RepositoryContentFactory repositoryContentFactory )
+    {
+        this.repositoryContentFactory = repositoryContentFactory;
+    }
+
+    public MetadataTools getMetadataTools()
+    {
+        return metadataTools;
+    }
+
+    public void setMetadataTools( MetadataTools metadataTools )
+    {
+        this.metadataTools = metadataTools;
+    }
+
+    public FileTypes getFiletypes()
+    {
+        return filetypes;
+    }
+
+    public void setFiletypes( FileTypes filetypes )
+    {
+        this.filetypes = filetypes;
+    }
+
+    public RepositoryPurge getRepoPurge()
+    {
+        return repoPurge;
+    }
+
+    public void setRepoPurge( RepositoryPurge repoPurge )
+    {
+        this.repoPurge = repoPurge;
+    }
+
+    public RepositoryPurge getCleanUp()
+    {
+        return cleanUp;
+    }
+
+    public void setCleanUp( RepositoryPurge cleanUp )
+    {
+        this.cleanUp = cleanUp;
+    }
+
+    public boolean isDeleteReleasedSnapshots()
+    {
+        return deleteReleasedSnapshots;
+    }
+
+    public void setDeleteReleasedSnapshots( boolean deleteReleasedSnapshots )
+    {
+        this.deleteReleasedSnapshots = deleteReleasedSnapshots;
+    }
+
+    public RepositorySessionFactory getRepositorySessionFactory()
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
+    }
+
+    public RepositorySession getRepositorySession()
+    {
+        return repositorySession;
+    }
+
+    public void setRepositorySession( RepositorySession repositorySession )
+    {
+        this.repositorySession = repositorySession;
     }
 }

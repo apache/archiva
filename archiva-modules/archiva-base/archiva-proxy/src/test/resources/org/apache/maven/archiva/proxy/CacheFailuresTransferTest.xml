@@ -59,7 +59,7 @@
         <requirement>
           <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
           <role-hint>mocked</role-hint>
-          <field-name>repositoryFactory</field-name>
+          <field-name>repositoryContentFactory</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>

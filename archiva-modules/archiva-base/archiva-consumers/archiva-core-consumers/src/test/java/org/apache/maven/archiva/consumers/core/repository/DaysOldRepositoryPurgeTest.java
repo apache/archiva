@@ -22,6 +22,8 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.junit.After;
+import org.junit.Test;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -46,6 +48,7 @@ public class DaysOldRepositoryPurgeTest
         }
     }
 
+    @Test
     public void testByLastModified()
         throws Exception
     {
@@ -107,6 +110,7 @@ public class DaysOldRepositoryPurgeTest
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.sha1" );
     }
 
+    @Test
     public void testOrderOfDeletion()
         throws Exception
     {
@@ -157,6 +161,7 @@ public class DaysOldRepositoryPurgeTest
         assertExists( projectRoot + "/1.1.2-SNAPSHOT/maven-assembly-plugin-1.1.2-20070615.105019-3.pom.md5" );
     }
 
+    @Test
     public void testMetadataDrivenSnapshots()
         throws Exception
     {
@@ -218,7 +223,8 @@ public class DaysOldRepositoryPurgeTest
         }
     }
 
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         super.tearDown();

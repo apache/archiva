@@ -4,6 +4,9 @@ import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.util.Calendar;
@@ -32,21 +35,23 @@ public class ArtifactMissingChecksumsConsumerTest
 {
     private ManagedRepositoryConfiguration repoConfig;
 
-    @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
-        super.setUp();
+        //super.setUp();
 
         repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( "test-repo" );
         repoConfig.setName( "Test Repository" );
         repoConfig.setLayout( "default" );
-        repoConfig.setLocation( new File( getBasedir(), "target/test-classes/test-repo/" ).getPath() );
+        repoConfig.setLocation( new File( "target/test-classes/test-repo/" ).getPath() );
 
-        consumer = (ArtifactMissingChecksumsConsumer) lookup( "artifactMissingChecksumsConsumer" );
+        consumer = applicationContext.getBean( "knownRepositoryContentConsumer#artifact-missing-checksums-consumer",
+                                               KnownRepositoryContentConsumer.class );
     }
 
+    @Test
     public void testNoExistingChecksums()
         throws Exception
     {
@@ -69,10 +74,11 @@ public class ArtifactMissingChecksumsConsumerTest
         assertTrue( md5File.exists() );
     }
 
+    @Test
     public void testExistingIncorrectChecksums()
         throws Exception
     {
-        File newLocation = getTestFile( "target/test-repo" );
+        File newLocation = new File( "target/test-repo" );
         FileUtils.deleteDirectory( newLocation );
         FileUtils.copyDirectory( new File( repoConfig.getLocation() ), newLocation );
         repoConfig.setLocation( newLocation.getAbsolutePath() );

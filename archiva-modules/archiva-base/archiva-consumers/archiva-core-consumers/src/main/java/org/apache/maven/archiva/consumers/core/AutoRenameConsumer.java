@@ -24,6 +24,8 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,23 +40,25 @@ import java.util.Map;
  * AutoRenameConsumer
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  * role-hint="auto-rename"
  * instantiation-strategy="per-lookup"
  */
+@Service("knownRepositoryContentConsumer#auto-rename")
+@Scope("prototype")
 public class AutoRenameConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
     /**
-     * @plexus.configuration default-value="auto-rename"
+     * plexus.configuration default-value="auto-rename"
      */
-    private String id;
+    private String id = "auto-rename";
 
     /**
-     * @plexus.configuration default-value="Automatically rename common artifact mistakes."
+     * plexus.configuration default-value="Automatically rename common artifact mistakes."
      */
-    private String description;
+    private String description = "Automatically rename common artifact mistakes.";
 
     private static final String RENAME_FAILURE = "rename_failure";
 

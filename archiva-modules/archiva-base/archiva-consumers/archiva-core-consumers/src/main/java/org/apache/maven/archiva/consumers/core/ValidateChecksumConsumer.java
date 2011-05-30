@@ -19,6 +19,8 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -26,9 +28,11 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,13 +45,15 @@ import java.util.List;
  * ValidateChecksumConsumer - validate the provided checksum against the file it represents.
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="validate-checksum"
- * instantiation-strategy="per-lookup"
+ *          plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ *          role-hint="validate-checksum"
+ *          instantiation-strategy="per-lookup"
  */
+@Service( "knownRepositoryContentConsumer#validate-checksum" )
+@Scope( "prototype" )
 public class ValidateChecksumConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, Initializable
+    implements KnownRepositoryContentConsumer
 {
     private static final String NOT_VALID_CHECKSUM = "checksum-not-valid";
 
@@ -58,24 +64,28 @@ public class ValidateChecksumConsumer
     private static final String CHECKSUM_IO_ERROR = "checksum-io-error";
 
     /**
-     * @plexus.configuration default-value="validate-checksums"
+     * plexus.configuration default-value="validate-checksums"
      */
-    private String id;
+    private String id = "validate-checksums";
 
     /**
-     * @plexus.configuration default-value="Validate checksums against file."
+     * plexus.configuration default-value="Validate checksums against file."
      */
-    private String description;
+    private String description = "Validate checksums against file.";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ChecksumFile checksum;
 
     /**
-     * @plexus.requirement role="org.codehaus.plexus.digest.Digester"
+     * plexus.requirement role="org.codehaus.plexus.digest.Digester"
      */
     private List<Digester> digesterList;
+
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
 
     private File repositoryDir;
 
@@ -160,9 +170,11 @@ public class ValidateChecksumConsumer
         processFile( path );
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
+        throws PlexusSisuBridgeException
     {
+        digesterList = plexusSisuBridge.lookupList( Digester.class );
         for ( Iterator<Digester> itDigesters = digesterList.iterator(); itDigesters.hasNext(); )
         {
             Digester digester = itDigesters.next();

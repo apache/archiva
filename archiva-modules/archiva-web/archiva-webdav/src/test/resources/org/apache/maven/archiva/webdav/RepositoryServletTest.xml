@@ -115,7 +115,7 @@
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
-          <field-name>repositoryFactory</field-name>
+          <field-name>repositoryContentFactory</field-name>
         </requirement>        
         <requirement>
           <role>org.apache.maven.archiva.repository.content.RepositoryRequest</role>

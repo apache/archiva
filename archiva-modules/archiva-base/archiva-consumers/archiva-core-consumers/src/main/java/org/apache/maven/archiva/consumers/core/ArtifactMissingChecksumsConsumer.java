@@ -28,11 +28,10 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ import java.util.List;
  */
 public class ArtifactMissingChecksumsConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener
 {   
     private String id;
 
@@ -76,6 +75,10 @@ public class ArtifactMissingChecksumsConsumer
         this.description = description;
         this.configuration = configuration;
         this.filetypes = filetypes;
+
+        configuration.addChangeListener( this );
+
+        initIncludes();
     }
 
     public String getId()
@@ -202,7 +205,6 @@ public class ArtifactMissingChecksumsConsumer
     }
 
     public void initialize()
-        throws InitializationException
     {
         configuration.addChangeListener( this );
         

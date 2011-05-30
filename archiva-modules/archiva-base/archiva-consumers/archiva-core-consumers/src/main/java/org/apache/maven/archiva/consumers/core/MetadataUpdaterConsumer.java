@@ -43,55 +43,64 @@ import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * MetadataUpdaterConsumer will create and update the metadata present within the repository.
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  * role-hint="metadata-updater"
  * instantiation-strategy="per-lookup"
  */
+@Service("knownRepositoryContentConsumer#metadata-updater")
+@Scope("prototype")
 public class MetadataUpdaterConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( MetadataUpdaterConsumer.class );
     
     /**
-     * @plexus.configuration default-value="metadata-updater"
+     * plexus.configuration default-value="metadata-updater"
      */
-    private String id;
+    private String id = "metadata-updater";
 
     /**
-     * @plexus.configuration default-value="Update / Create maven-metadata.xml files"
+     * plexus.configuration default-value="Update / Create maven-metadata.xml files"
      */
-    private String description;
+    private String description = "Update / Create maven-metadata.xml files";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private MetadataTools metadataTools;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private FileTypes filetypes;
 
     private static final String TYPE_METADATA_BAD_INTERNAL_REF = "metadata-bad-internal-ref";
@@ -309,8 +318,8 @@ public class MetadataUpdaterConsumer
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         configuration.addChangeListener( this );
 

@@ -28,11 +28,13 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,32 +44,36 @@ import java.util.List;
  * AutoRemoveConsumer
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  * role-hint="auto-remove"
  * instantiation-strategy="per-lookup"
  */
+@Service("knownRepositoryContentConsumer#auto-remove")
+@Scope("prototype")
 public class AutoRemoveConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener
 {
     /**
-     * @plexus.configuration default-value="auto-remove"
+     * plexus.configuration default-value="auto-remove"
      */
-    private String id;
+    private String id = "auto-remove";
 
     /**
-     * @plexus.configuration default-value="Automatically Remove File from Filesystem."
+     * plexus.configuration default-value="Automatically Remove File from Filesystem."
      */
-    private String description;
+    private String description = "Automatically Remove File from Filesystem.";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private FileTypes filetypes;
 
     private File repositoryDir;
@@ -158,9 +164,9 @@ public class AutoRemoveConsumer
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
-    {     
+    {
         configuration.addChangeListener( this );
 
         initIncludes();

@@ -21,6 +21,8 @@ package org.apache.maven.archiva.consumers.core.repository;
 
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +33,8 @@ import java.util.List;
 public class RetentionCountRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -45,6 +48,7 @@ public class RetentionCountRepositoryPurgeTest
     /**
      * Test if the artifact to be processed was a jar.
      */
+    @Test
     public void testIfAJarWasFound()
         throws Exception
     {
@@ -101,6 +105,7 @@ public class RetentionCountRepositoryPurgeTest
     /**
      * Test if the artifact to be processed is a pom
      */
+    @Test
     public void testIfAPomWasFound()
         throws Exception
     {
@@ -149,6 +154,7 @@ public class RetentionCountRepositoryPurgeTest
         assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2-sources.jar.sha1" );
     }
 
+    @Test
     public void testOrderOfDeletion()
         throws Exception
     {

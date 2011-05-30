@@ -19,37 +19,53 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
-import java.io.File;
-
+import junit.framework.TestCase;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileType;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.functors.ConsumerWantsFilePredicate;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import java.io.File;
+
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
 public abstract class AbstractArtifactConsumerTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private File repoLocation;
 
     protected KnownRepositoryContentConsumer consumer;
 
-    protected void setUp()
+    @Inject
+    protected ApplicationContext applicationContext;
+
+    @Inject
+    ArchivaConfiguration archivaConfiguration;
+
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
 
-        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.ROLE );
         FileType fileType =
             (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
         assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
         fileType.addPattern( "**/*.xml" );
 
-        repoLocation = getTestFile( "target/test-" + getName() + "/test-repo" );
+        repoLocation = new File( "target/test-" + getName() + "/test-repo" );
     }
 
+    @Test
     public void testConsumption()
     {
         File localFile =
@@ -62,6 +78,7 @@ public abstract class AbstractArtifactConsumerTest
         assertFalse( predicate.evaluate( consumer ) );
     }
 
+    @Test
     public void testConsumptionOfOtherMetadata()
     {
         File localFile =

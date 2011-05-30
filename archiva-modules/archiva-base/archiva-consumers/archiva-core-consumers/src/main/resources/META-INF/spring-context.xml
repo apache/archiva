@@ -27,6 +27,9 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
+  <context:annotation-config/>
+  <context:component-scan base-package="org.apache.maven.archiva.consumers.core"/>
+
   <bean id="artifactMissingChecksumsConsumer" class="org.apache.maven.archiva.consumers.core.ArtifactMissingChecksumsConsumer" scope="prototype">
    <constructor-arg>
      <value>create-missing-checksums</value>
@@ -41,4 +44,5 @@
      <ref bean="fileTypes"/>
    </constructor-arg>
   </bean>
+  <alias name="artifactMissingChecksumsConsumer" alias="knownRepositoryContentConsumer#artifact-missing-checksums-consumer"/>
 </beans>

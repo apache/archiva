@@ -27,8 +27,6 @@ import org.codehaus.plexus.registry.RegistryListener;
  */
 public interface ArchivaConfiguration
 {
-    String ROLE = ArchivaConfiguration.class.getName();
-
     /**
      * Get the configuration.
      *

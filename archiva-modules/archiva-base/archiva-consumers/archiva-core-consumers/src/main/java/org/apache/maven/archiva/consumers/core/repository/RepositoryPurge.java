@@ -29,7 +29,7 @@ public interface RepositoryPurge
      *
      * @param path          path to the scanned artifact
      */
-    public void process( String path )
+    void process( String path )
         throws RepositoryPurgeException;
 
 }

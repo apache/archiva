@@ -20,16 +20,16 @@ package org.apache.maven.archiva.consumers.core;
  */
 
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.junit.Before;
 
 public class MetadataUpdateConsumerTest
     extends AbstractArtifactConsumerTest
 {
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
-        super.setUp();
-
-        consumer = (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class.getName(),
-                                                            "metadata-updater" );
+        consumer = applicationContext.getBean( "knownRepositoryContentConsumer#metadata-updater",
+                                               KnownRepositoryContentConsumer.class );
     }
 }
