@@ -450,7 +450,7 @@ public class MetadataTools
 
         if ( metadata == null )
         {
-            log.debug( "No metadata to update for " + logicalResource );
+            log.debug( "No metadata to update for {}", logicalResource );
             return;
         }
 
@@ -516,7 +516,7 @@ public class MetadataTools
             }
             catch ( RepositoryMetadataException e )
             {
-                log.debug( "Could not read metadata at " + file.getAbsolutePath() + ". Metadata will be removed." );
+                log.debug( "Could not read metadata at {}. Metadata will be removed.", file.getAbsolutePath() );
                 FileUtils.deleteQuietly( file );
             }
         }
