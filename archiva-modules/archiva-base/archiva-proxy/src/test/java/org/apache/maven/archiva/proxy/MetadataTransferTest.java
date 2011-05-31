@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -97,6 +98,7 @@ public class MetadataTransferTest
 {
 
     @Inject
+    @Named(value = "metadataTools#mocked")
     private MetadataTools metadataTools;
 
     @Before

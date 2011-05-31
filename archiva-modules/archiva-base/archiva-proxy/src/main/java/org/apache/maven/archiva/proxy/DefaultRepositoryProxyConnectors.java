@@ -110,6 +110,7 @@ public class DefaultRepositoryProxyConnectors
      * plexus.requirement
      */
     @Inject
+    @Named(value="metadataTools#default")
     private MetadataTools metadataTools;
 
     @Inject
