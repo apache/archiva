@@ -47,13 +47,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -135,10 +135,12 @@ public abstract class AbstractProxyTestCase
     {
         super.setUp();
 
-        proxyHandler = applicationContext.getBean("repositoryProxyConnectors#default", RepositoryProxyConnectors.class );
-
         config =
             (MockConfiguration) applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );
+
+        config.getConfiguration().setManagedRepositories( new ArrayList<ManagedRepositoryConfiguration>() );
+        config.getConfiguration().setRemoteRepositories( new ArrayList<RemoteRepositoryConfiguration>() );
+        config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );
 
         // Setup source repository (using default layout)
         String repoPath = "target/test-repository/managed/" + getName();
@@ -162,6 +164,8 @@ public abstract class AbstractProxyTestCase
             createRepository( ID_LEGACY_MANAGED, "Legacy Managed Repository", REPOPATH_LEGACY_MANAGED_TARGET,
                               "legacy" );
 
+
+
         managedLegacyDir = new File( managedLegacyRepository.getRepoRoot() );
 
         repoConfig = managedLegacyRepository.getRepository();
@@ -182,6 +186,9 @@ public abstract class AbstractProxyTestCase
 
         // Setup the proxy handler.
         //proxyHandler = applicationContext.getBean (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
+
+        proxyHandler =
+            applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyConnectors.class );
 
         // Setup the wagon mock.
         wagonMockControl = MockControl.createNiceControl( Wagon.class );

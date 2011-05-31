@@ -103,6 +103,7 @@ public class DefaultRepositoryProxyConnectors
      * plexus.requirement
      */
     @Inject
+    @Named(value = "repositoryContentFactory#default")
     private RepositoryContentFactory repositoryFactory;
 
     /**
@@ -115,17 +116,17 @@ public class DefaultRepositoryProxyConnectors
     private ApplicationContext applicationContext;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+     * plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
      */
     private Map<String, PreDownloadPolicy> preDownloadPolicies;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+     * plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
      */
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
+     * plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
      */
     private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
 

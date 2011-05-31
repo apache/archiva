@@ -50,7 +50,7 @@ import java.util.Set;
  *          role-hint="mock"
  */
 @Service( "archivaConfiguration#mock" )
-@Scope( "prototype" )
+//Scope( "prototype" )
 public class MockConfiguration
     implements ArchivaConfiguration
 {

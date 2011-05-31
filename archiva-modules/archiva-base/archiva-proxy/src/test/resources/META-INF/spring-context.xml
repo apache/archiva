@@ -27,5 +27,4 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
-  <bean id="repositorySessionFactory" class="org.apache.archiva.metadata.repository.TestRepositorySessionFactory"/>
 </beans>
