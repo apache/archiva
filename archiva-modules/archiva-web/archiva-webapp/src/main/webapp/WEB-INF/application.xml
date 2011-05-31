@@ -102,6 +102,11 @@
             <name>org.jpox.rdbms.dateTimezone</name>
             <value>JDK_DEFAULT_TIMEZONE</value>
           </property>
+          <!-- NEEDED FOR MYSQL UTF-8 Databases -->
+          <property>
+            <name>org.jpox.rdbms.stringDefaultLength</name>
+            <value>255</value>
+          </property>
           <!-- NEEDED FOR POSTGRES, But causes problems in other JDBC implementations.
           <property>
             <name>org.jpox.identifier.case</name>
