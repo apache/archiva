@@ -10,8 +10,8 @@
   </parent>
   <groupId>org.apache.archiva</groupId>
   <artifactId>stage-repository-merge</artifactId>
-  <name>stage-repository-merge</name>
-  <url>http://maven.apache.org</url>
+  <name>Stage Repository Merge</name>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -54,9 +54,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   <build>
     <plugins>
       <plugin>
