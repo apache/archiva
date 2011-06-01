@@ -32,6 +32,10 @@ import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +47,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath*:/spring-context.xml"} )
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase
 {
@@ -104,6 +110,7 @@ public abstract class AbstractMetadataRepositoryTest
         return factories;
     }
 
+    @Test
     public void testRootNamespaceWithNoMetadataRepository()
         throws Exception
     {
@@ -111,6 +118,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.<String>emptyList(), namespaces );
     }
 
+    @Test
     public void testGetNamespaceOnly()
         throws Exception
     {
@@ -121,6 +129,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( TEST_NAMESPACE ), repository.getRootNamespaces( TEST_REPO_ID ) );
     }
 
+    @Test
     public void testGetProjectOnly()
         throws Exception
     {
@@ -141,6 +150,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( TEST_NAMESPACE ), repository.getRootNamespaces( TEST_REPO_ID ) );
     }
 
+    @Test
     public void testGetProjectVersionOnly()
         throws Exception
     {
@@ -163,6 +173,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( TEST_NAMESPACE, projectMetadata.getNamespace() );
     }
 
+    @Test
     public void testGetArtifactOnly()
         throws Exception
     {
@@ -193,6 +204,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( TEST_PROJECT_VERSION, projectVersionMetadata.getId() );
     }
 
+    @Test
     public void testUpdateProjectVersionMetadataWithNoOtherArchives()
         throws Exception
     {
@@ -212,6 +224,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.<String>emptyList(), mailingList.getOtherArchives() );
     }
 
+    @Test
     public void testUpdateProjectVersionMetadataWithAllElements()
         throws Exception
     {
@@ -306,6 +319,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( d.isOptional() );
     }
 
+    @Test
     public void testGetRepositories()
         throws Exception
     {
@@ -318,6 +332,7 @@ public abstract class AbstractMetadataRepositoryTest
             repository.getRepositories() ) );
     }
 
+    @Test
     public void testUpdateProjectVersionMetadataIncomplete()
         throws Exception
     {
@@ -341,6 +356,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( metadata.getDependencies().isEmpty() );
     }
 
+    @Test
     public void testUpdateProjectVersionMetadataWithExistingFacets()
         throws Exception
     {
@@ -363,6 +379,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( "baz", testFacet.getValue() );
     }
 
+    @Test
     public void testUpdateProjectVersionMetadataWithNoExistingFacets()
         throws Exception
     {
@@ -381,6 +398,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
     }
 
+    @Test
     public void testUpdateProjectVersionMetadataWithExistingFacetsFacetPropertyWasRemoved()
         throws Exception
     {
@@ -415,6 +433,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
     }
 
+    @Test
     public void testGetArtifactsDoesntReturnProjectVersionMetadataFacets()
         throws Exception
     {
@@ -446,6 +465,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
     }
 
+    @Test
     public void testUpdateArtifactMetadataWithExistingFacetsFacetPropertyWasRemoved()
         throws Exception
     {
@@ -484,6 +504,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
     }
 
+    @Test
     public void testUpdateArtifactMetadataWithExistingFacets()
         throws Exception
     {
@@ -506,6 +527,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( "baz", testFacet.getValue() );
     }
 
+    @Test
     public void testUpdateArtifactMetadataWithNoExistingFacets()
         throws Exception
     {
@@ -524,6 +546,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
     }
 
+    @Test
     public void testGetMetadataFacet()
         throws Exception
     {
@@ -533,12 +556,14 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                         TEST_NAME ) );
     }
 
+    @Test
     public void testGetMetadataFacetWhenEmpty()
         throws Exception
     {
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
     }
 
+    @Test
     public void testGetMetadataFacetWhenUnknownName()
         throws Exception
     {
@@ -547,6 +572,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, UNKNOWN ) );
     }
 
+    @Test
     public void testGetMetadataFacetWhenDefaultValue()
         throws Exception
     {
@@ -557,12 +583,14 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                  TEST_NAME ) );
     }
 
+    @Test
     public void testGetMetadataFacetWhenUnknownFacetId()
         throws Exception
     {
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME ) );
     }
 
+    @Test
     public void testGetMetadataFacets()
         throws Exception
     {
@@ -572,17 +600,17 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                             TEST_FACET_ID ) );
     }
 
+    @Test
     public void testGetMetadataFacetsWhenEmpty()
         throws Exception
-
     {
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
         assertTrue( facets.isEmpty() );
     }
 
+    @Test
     public void testRemoveFacets()
         throws Exception
-
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
@@ -595,6 +623,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( facets.isEmpty() );
     }
 
+    @Test
     public void testRemoveFacetsWhenEmpty()
         throws Exception
     {
@@ -607,6 +636,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( facets.isEmpty() );
     }
 
+    @Test
     public void testRemoveFacetsWhenUnknown()
         throws Exception
     {
@@ -614,6 +644,7 @@ public abstract class AbstractMetadataRepositoryTest
         repository.removeMetadataFacets( TEST_REPO_ID, UNKNOWN );
     }
 
+    @Test
     public void testRemoveFacetWhenUnknown()
         throws Exception
     {
@@ -621,6 +652,7 @@ public abstract class AbstractMetadataRepositoryTest
         repository.removeMetadataFacet( TEST_REPO_ID, UNKNOWN, TEST_NAME );
     }
 
+    @Test
     public void testRemoveFacet()
         throws Exception
     {
@@ -638,6 +670,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( facets.isEmpty() );
     }
 
+    @Test
     public void testRemoveFacetWhenEmpty()
         throws Exception
     {
@@ -652,6 +685,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
     }
 
+    @Test
     public void testGetArtifacts()
         throws Exception
     {
@@ -673,6 +707,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Arrays.asList( artifact1, artifact2 ), actual );
     }
 
+    @Test
     public void testGetArtifactVersions()
         throws Exception
     {
@@ -694,6 +729,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Arrays.asList( version1, version2 ), versions );
     }
 
+    @Test
     public void testGetArtifactVersionsMultipleArtifactsSingleVersion()
         throws Exception
     {
@@ -710,6 +746,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                      TEST_PROJECT_VERSION ) );
     }
 
+    @Test
     public void testGetArtifactsByDateRangeOpen()
         throws Exception
     {
@@ -721,6 +758,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                  null ) );
     }
 
+    @Test
     public void testGetArtifactsByDateRangeSparseNamespace()
         throws Exception
     {
@@ -734,6 +772,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                  null ) );
     }
 
+    @Test
     public void testGetArtifactsByDateRangeLowerBound()
         throws Exception
     {
@@ -746,6 +785,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                  null ) );
     }
 
+    @Test
     public void testGetArtifactsByDateRangeLowerBoundOutOfRange()
         throws Exception
     {
@@ -756,6 +796,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( repository.getArtifactsByDateRange( TEST_REPO_ID, date, null ).isEmpty() );
     }
 
+    @Test
     public void testGetArtifactsByDateRangeLowerAndUpperBound()
         throws Exception
     {
@@ -769,6 +810,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                  upper ) );
     }
 
+    @Test
     public void testGetArtifactsByDateRangeUpperBound()
         throws Exception
     {
@@ -781,6 +823,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                  upper ) );
     }
 
+    @Test
     public void testGetArtifactsByDateRangeUpperBoundOutOfRange()
         throws Exception
     {
@@ -792,6 +835,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( repository.getArtifactsByDateRange( TEST_REPO_ID, null, upper ).isEmpty() );
     }
 
+    @Test
     public void testGetArtifactsByRepoId()
         throws Exception
     {
@@ -802,6 +846,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( artifact ), repository.getArtifacts( TEST_REPO_ID ) );
     }
 
+    @Test
     public void testGetArtifactsByRepoIdMultipleCopies()
         throws Exception
     {
@@ -818,6 +863,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifacts( OTHER_REPO_ID ) );
     }
 
+    @Test
     public void testGetArtifactsByDateRangeMultipleCopies()
         throws Exception
     {
@@ -836,6 +882,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                        null, null ) );
     }
 
+    @Test
     public void testGetArtifactsByChecksumMultipleCopies()
         throws Exception
     {
@@ -858,6 +905,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                       TEST_MD5 ) );
     }
 
+    @Test
     public void testGetNamespacesWithSparseDepth()
         throws Exception
     {
@@ -869,6 +917,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Arrays.asList( "shared" ), repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) );
     }
 
+    @Test
     public void testGetNamespacesWithProjectsPresent()
         throws Exception
     {
@@ -882,6 +931,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.<String>emptyList(), repository.getNamespaces( TEST_REPO_ID, namespace ) );
     }
 
+    @Test
     public void testGetProjectsWithOtherNamespacesPresent()
         throws Exception
     {
@@ -896,6 +946,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                          "org.apache.maven" ) );
     }
 
+    @Test
     public void testGetProjectVersionsWithOtherNamespacesPresent()
         throws Exception
     {
@@ -915,6 +966,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                        TEST_PROJECT ) );
     }
 
+    @Test
     public void testGetArtifactsByChecksumSingleResultMd5()
         throws Exception
     {
@@ -926,6 +978,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                 TEST_MD5 ) );
     }
 
+    @Test
     public void testGetArtifactsByChecksumSingleResultSha1()
         throws Exception
     {
@@ -937,6 +990,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                 TEST_SHA1 ) );
     }
 
+    @Test
     public void testGetArtifactsByChecksumDeepNamespace()
         throws Exception
     {
@@ -952,6 +1006,7 @@ public abstract class AbstractMetadataRepositoryTest
                                                                                                 TEST_MD5 ) );
     }
 
+    @Test
     public void testGetArtifactsByChecksumMultipleResult()
         throws Exception
     {
@@ -974,6 +1029,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
     }
 
+    @Test
     public void testGetArtifactsByChecksumNoResult()
         throws Exception
     {
@@ -984,6 +1040,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.<ArtifactMetadata>emptyList(), artifactsByChecksum );
     }
 
+    @Test
     public void testDeleteArtifact()
         throws Exception
     {
@@ -1001,6 +1058,7 @@ public abstract class AbstractMetadataRepositoryTest
                                              TEST_PROJECT_VERSION ).isEmpty() );
     }
 
+    @Test
     public void testDeleteRepository()
         throws Exception
     {

@@ -22,8 +22,13 @@ package org.apache.archiva.metadata.repository.jcr;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.springframework.context.ApplicationContext;
 
+import java.io.File;
 import java.util.Map;
+import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -33,17 +38,25 @@ public class JcrMetadataRepositoryTest
 {
     private JcrMetadataRepository jcrMetadataRepository;
 
+    @Inject
+    private ApplicationContext applicationContext;
+
+    @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        FileUtils.deleteDirectory( getTestFile( "target/test-repositories" ) );
+        File directory = new File( "target/test-repositories" );
+        if (directory.exists())
+        {
+            FileUtils.deleteDirectory( directory );
+        }
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
         // TODO: probably don't need to use Spring for this
-        Repository repository = (Repository) lookup( Repository.class );
+        Repository repository = applicationContext.getBean( Repository.class );
         jcrMetadataRepository = new JcrMetadataRepository( factories, repository );
 
         try
@@ -64,8 +77,8 @@ public class JcrMetadataRepositoryTest
         this.repository = jcrMetadataRepository;
     }
 
-    @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         jcrMetadataRepository.close();

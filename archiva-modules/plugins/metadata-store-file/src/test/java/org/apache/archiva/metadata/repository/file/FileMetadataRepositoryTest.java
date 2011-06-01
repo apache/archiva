@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.junit.Before;
 
 import java.io.File;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class FileMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
 {
 
+    @Before
     public void setUp()
         throws Exception
     {
