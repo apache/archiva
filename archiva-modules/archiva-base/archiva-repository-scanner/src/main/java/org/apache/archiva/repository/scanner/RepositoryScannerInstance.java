@@ -140,7 +140,7 @@ public class RepositoryScannerInstance
 
     public void directoryWalkStep( int percentage, File file )
     {
-        log.debug( "Walk Step: " + percentage + ", " + file );
+        log.debug( "Walk Step: {}, {}", percentage, file );
 
         stats.increaseFileCount();
 
@@ -184,7 +184,7 @@ public class RepositoryScannerInstance
      */
     public void debug( String message )
     {
-        log.debug( "Repository Scanner: " + message );
+        log.debug( "Repository Scanner: {}", message );
     }
     
     public ManagedRepositoryConfiguration getRepository()

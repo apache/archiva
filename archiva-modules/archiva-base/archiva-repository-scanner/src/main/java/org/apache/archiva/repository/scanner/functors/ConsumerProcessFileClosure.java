@@ -55,7 +55,7 @@ public class ConsumerProcessFileClosure
             String id = consumer.getId();
             try
             {
-                log.debug( "Sending to consumer: " + id );
+                log.debug( "Sending to consumer: {}", id );
 
                 long startTime = System.currentTimeMillis();
                 consumer.processFile( basefile.getRelativePath(), executeOnEntireRepo );
