@@ -157,7 +157,10 @@ public abstract class AbstractProxyTestCase
 
         // Setup source repository (using legacy layout)
         repoLocation = new File( REPOPATH_LEGACY_MANAGED_TARGET );
-        FileUtils.deleteDirectory( repoLocation );
+        if (repoLocation.exists())
+        {
+            FileUtils.deleteDirectory( repoLocation );
+        }
         copyDirectoryStructure( new File( REPOPATH_LEGACY_MANAGED ), repoLocation );
 
         managedLegacyRepository =

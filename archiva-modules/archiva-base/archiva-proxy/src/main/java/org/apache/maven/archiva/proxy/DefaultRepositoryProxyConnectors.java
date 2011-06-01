@@ -918,7 +918,10 @@ public class DefaultRepositoryProxyConnectors
         boolean process = true;
         for ( Entry<String, ? extends DownloadErrorPolicy> entry : policies.entrySet() )
         {
-            String key = entry.getKey();
+
+            // olamy with spring rolehint is now downloadPolicy#hint
+            // so substring after last # to get the hint as with plexus
+            String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
             DownloadErrorPolicy policy = entry.getValue();
             String defaultSetting = policy.getDefaultOption();
             String setting = StringUtils.defaultString( settings.get( key ), defaultSetting );
