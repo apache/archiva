@@ -19,29 +19,40 @@ package org.apache.archiva.stagerepository.merge;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
 
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class Maven2RepositoryMergerTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
 
     private static final String TEST_REPO_ID = "test";
 
+    @Inject
     private Maven2RepositoryMerger repositoryMerger;
+
+    @Inject
+    ArchivaConfiguration configuration;
 
     private MetadataRepository metadataRepository;
 
@@ -52,7 +63,6 @@ public class Maven2RepositoryMergerTest
         super.setUp();
         MockitoAnnotations.initMocks( this );
         metadataRepository = mock( MetadataRepository.class );
-        repositoryMerger = (Maven2RepositoryMerger) lookup( RepositoryMerger.class, "maven2" );
     }
 
     private List<ArtifactMetadata> getArtifacts()
@@ -69,14 +79,14 @@ public class Maven2RepositoryMergerTest
         return metadata;
     }
 
+    @Test
     public void testMerge()
         throws Exception
     {
-        ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( getTestPath( "target/test-repository" ) );
+        testRepo.setLocation( "target/test-repository" );
 
         RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
         List<String> knownContentConsumers = new ArrayList<String>();
@@ -86,7 +96,7 @@ public class Maven2RepositoryMergerTest
 
         ManagedRepositoryConfiguration targetRepo = new ManagedRepositoryConfiguration();
         targetRepo.setId( "target-rep" );
-        targetRepo.setLocation( getTestPath( "target" ) );
+        targetRepo.setLocation( "target" );
         c.addManagedRepository( testRepo );
         c.addManagedRepository( targetRepo );
         configuration.save( c );
@@ -112,16 +122,15 @@ public class Maven2RepositoryMergerTest
         sourceRepoArtifactsList.add( artifact1 );
         List<ArtifactMetadata> targetRepoArtifactsList = getArtifacts();
 
-        ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( getTestPath( "target/test-repository" ) );
+        testRepo.setLocation( "target/test-repository" );
 
         String sourceRepo = "src/test/resources/test-repository-with-conflict-artifacts";
         ManagedRepositoryConfiguration testRepoWithConflicts = new ManagedRepositoryConfiguration();
         testRepoWithConflicts.setId( sourceRepoId );
-        testRepoWithConflicts.setLocation( getTestPath( sourceRepo ) );
+        testRepoWithConflicts.setLocation( sourceRepo );
 
         RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
         List<String> knownContentConsumers = new ArrayList<String>();
@@ -133,8 +142,8 @@ public class Maven2RepositoryMergerTest
         c.addManagedRepository( testRepoWithConflicts );
         configuration.save( c );
 
-        File targetRepoFile = new File( getTestPath(
-            "/target/test-repository/com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" ) );
+        File targetRepoFile = new File(
+            "/target/test-repository/com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" );
         targetRepoFile.setReadOnly();
 
         when( metadataRepository.getArtifacts( sourceRepoId ) ).thenReturn( sourceRepoArtifactsList );

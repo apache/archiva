@@ -25,7 +25,9 @@ import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.springframework.stereotype.Service;
 
+@Service("archivaConfiguration#mocked")
 public class StubConfiguration
     implements ArchivaConfiguration
 {

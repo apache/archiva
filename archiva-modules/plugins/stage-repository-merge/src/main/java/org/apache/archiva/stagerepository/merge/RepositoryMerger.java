@@ -34,7 +34,7 @@ public interface RepositoryMerger
                 Filter<ArtifactMetadata> filter )
         throws Exception;
 
-    public List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
-                                                           String targetRepo )
+    List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
+                                                    String targetRepo )
         throws Exception;
 }

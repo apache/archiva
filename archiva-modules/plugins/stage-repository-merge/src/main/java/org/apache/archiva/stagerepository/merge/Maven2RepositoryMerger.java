@@ -35,7 +35,10 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -50,22 +53,32 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
- * @plexus.component role="org.apache.archiva.stagerepository.merge.RepositoryMerger" role-hint="maven2"
+ * plexus.component role="org.apache.archiva.stagerepository.merge.RepositoryMerger" role-hint="maven2"
  */
+@Service( "repositoryMerger#maven2" )
 public class Maven2RepositoryMerger
     implements RepositoryMerger
 {
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement role-hint="maven2"
+     * plexus.requirement role-hint="maven2"
      */
     private RepositoryPathTranslator pathTranslator;
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
+
+    @Inject
+    public Maven2RepositoryMerger(
+        @Named( value = "archivaConfiguration#default" ) ArchivaConfiguration archivaConfiguration,
+        @Named( value = "repositoryPathTranslator#maven2") RepositoryPathTranslator repositoryPathTranslator )
+    {
+        this.configuration = archivaConfiguration;
+        this.pathTranslator = repositoryPathTranslator;
+    }
 
     public void setConfiguration( ArchivaConfiguration configuration )
     {
@@ -159,10 +172,10 @@ public class Maven2RepositoryMerger
 
         String index = artifactPath.substring( lastIndex + 1 );
         int last = index.lastIndexOf( '.' );
-        File sourcePomFile = new File( sourceRepoPath, artifactPath.substring( 0, lastIndex ) + "/" +
-            artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
-        File targetPomFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) + "/" +
-            artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
+        File sourcePomFile = new File( sourceRepoPath, artifactPath.substring( 0, lastIndex ) + "/"
+            + artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
+        File targetPomFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) + "/"
+            + artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
 
         if ( !targetPomFile.exists() && sourcePomFile.exists() )
         {
@@ -174,16 +187,15 @@ public class Maven2RepositoryMerger
         {
 
             // updating version metadata files
-            File versionMetaDataFileInSourceRepo = pathTranslator.toFile( new File( sourceRepoPath ),
-                                                                          artifactMetadata.getNamespace(),
-                                                                          artifactMetadata.getProject(),
-                                                                          artifactMetadata.getVersion(),
-                                                                          METADATA_FILENAME );
+            File versionMetaDataFileInSourceRepo =
+                pathTranslator.toFile( new File( sourceRepoPath ), artifactMetadata.getNamespace(),
+                                       artifactMetadata.getProject(), artifactMetadata.getVersion(),
+                                       METADATA_FILENAME );
 
             if ( versionMetaDataFileInSourceRepo.exists() )
             {
-                String relativePathToVersionMetadataFile = versionMetaDataFileInSourceRepo.getAbsolutePath().split(
-                    sourceRepoPath )[1];
+                String relativePathToVersionMetadataFile =
+                    versionMetaDataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
                 File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
 
                 if ( !versionMetaDataFileInTargetRepo.exists() )
@@ -203,8 +215,8 @@ public class Maven2RepositoryMerger
 
             if ( projectMetadataFileInSourceRepo.exists() )
             {
-                String relativePathToProjectMetadataFile = projectMetadataFileInSourceRepo.getAbsolutePath().split(
-                    sourceRepoPath )[1];
+                String relativePathToProjectMetadataFile =
+                    projectMetadataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
                 File projectMetadataFileInTargetRepo = new File( targetRepoPath, relativePathToProjectMetadataFile );
 
                 if ( !projectMetadataFileInTargetRepo.exists() )
@@ -352,10 +364,10 @@ public class Maven2RepositoryMerger
     {
         boolean isSame = false;
 
-        if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) ) &&
-            ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) ) && ( sourceArtifact.getId().equals(
-            targetArtifact.getId() ) ) && ( sourceArtifact.getProjectVersion().equals(
-            targetArtifact.getProjectVersion() ) ) )
+        if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) )
+            && ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) )
+            && ( sourceArtifact.getId().equals( targetArtifact.getId() ) )
+            && ( sourceArtifact.getProjectVersion().equals( targetArtifact.getProjectVersion() ) ) )
 
         {
             isSame = true;
