@@ -41,9 +41,11 @@ public class FileMetadataRepositoryTest
     {
         super.setUp();
 
-        File directory = getTestFile( "target/test-repositories" );
-        FileUtils.deleteDirectory( directory );
-
+        File directory = new File( "target/test-repositories" );
+        if (directory.exists())
+        {
+            FileUtils.deleteDirectory( directory );
+        }
         ArchivaConfiguration config = createTestConfiguration( directory );
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 

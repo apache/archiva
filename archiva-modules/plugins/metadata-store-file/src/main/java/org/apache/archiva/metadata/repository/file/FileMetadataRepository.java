@@ -67,7 +67,7 @@ public class FileMetadataRepository
 
     private final ArchivaConfiguration configuration;
 
-    private static final Logger log = LoggerFactory.getLogger( FileMetadataRepository.class );
+    private Logger log = LoggerFactory.getLogger( FileMetadataRepository.class );
 
     private static final String PROJECT_METADATA_KEY = "project-metadata";
 
@@ -118,7 +118,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO!
-            e.printStackTrace();
+            log.error( e.getMessage(), e );
         }
     }
 
@@ -222,7 +222,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( e.getMessage(), e );
         }
     }
 
@@ -279,7 +279,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( e.getMessage(), e );
         }
     }
 
@@ -296,7 +296,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO!
-            e.printStackTrace();
+            log.error( e.getMessage(), e );
         }
     }
 
@@ -342,7 +342,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( e.getMessage(), e );
             return null;
         }
         MetadataFacet metadataFacet = null;
@@ -375,7 +375,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO!
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( e.getMessage(), e );
         }
     }
 
@@ -746,7 +746,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( e.getMessage(), e );
         }
         return new Properties();
     }
@@ -933,7 +933,7 @@ public class FileMetadataRepository
                     MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
                     if ( factory == null )
                     {
-                        log.error( "Attempted to load unknown project version metadata facet: " + facetId );
+                        log.error( "Attempted to load unknown project version metadata facet: {}", facetId );
                     }
                     else
                     {
