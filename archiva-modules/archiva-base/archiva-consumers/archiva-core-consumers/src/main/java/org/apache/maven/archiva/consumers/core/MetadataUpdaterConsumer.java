@@ -217,12 +217,12 @@ public class MetadataUpdaterConsumer
             if ( projectMetadata.exists() && ( projectMetadata.lastModified() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
-                log.debug( "Skipping uptodate metadata: " + this.metadataTools.toPath( projectRef ) );
+                log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( projectRef ) );
                 return;
             }
 
             metadataTools.updateMetadata( this.repository, projectRef );
-            log.debug( "Updated metadata: " + this.metadataTools.toPath( projectRef ) );
+            log.debug( "Updated metadata: {}", this.metadataTools.toPath( projectRef ) );
         }
         catch ( LayoutException e )
         {
@@ -263,12 +263,12 @@ public class MetadataUpdaterConsumer
             if ( projectMetadata.exists() && ( projectMetadata.lastModified() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
-                log.debug( "Skipping uptodate metadata: " + this.metadataTools.toPath( versionRef ) );
+                log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( versionRef ) );
                 return;
             }
 
             metadataTools.updateMetadata( this.repository, versionRef );
-            log.debug( "Updated metadata: " + this.metadataTools.toPath( versionRef ) );
+            log.debug( "Updated metadata: {}", this.metadataTools.toPath( versionRef ) );
         }
         catch ( LayoutException e )
         {
