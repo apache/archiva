@@ -19,6 +19,7 @@ package org.apache.archiva.xmlrpc.security;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.xmlrpc.XmlRpcRequest;
@@ -28,18 +29,26 @@ import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * XmlRpcAuthenticatorTest
- * 
+ *
  * @version $Id XmlRpcAuthenticatorTest.java
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class XmlRpcAuthenticatorTest
-//extends AbstractDependencyInjectionSpringContextTests
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     protected static final String USER_GUEST = "guest";
 
@@ -49,32 +58,38 @@ public class XmlRpcAuthenticatorTest
 
     private static final String PASSWORD = "password123";
 
+    @Inject
+    @Named( value = "securitySystem#testable" )
     protected SecuritySystem securitySystem;
 
+
+    @Inject
+    @Named( value = "roleManager#testable" )
     protected RoleManager roleManager;
-    
+
     private MockControl xmlRpcRequestControl;
-    
+
     private XmlRpcRequest xmlRpcRequest;
-    
+
     private XmlRpcAuthenticator authenticator;
-    
+
     private MockControl configControl;
-    
-    private XmlRpcHttpRequestConfigImpl config; 
-    
+
+    private XmlRpcHttpRequestConfigImpl config;
+
+    @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
-        
-        securitySystem = (SecuritySystem) lookup( SecuritySystem.class, "testable" );        
-        roleManager = (RoleManager) lookup( RoleManager.class, "default" );
-        
+
+        //securitySystem = (SecuritySystem) lookup( SecuritySystem.class, "testable" );
+        //roleManager = (RoleManager) lookup( RoleManager.class, "default" );
+
         // Some basic asserts.
-        assertNotNull( securitySystem );        
+        assertNotNull( securitySystem );
         assertNotNull( roleManager );
-        
+
         // Setup Admin User.
         User adminUser = createUser( USER_ADMIN, "Admin User", null );
         roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_SYSTEM_ADMIN, adminUser.getPrincipal().toString() );
@@ -82,112 +97,116 @@ public class XmlRpcAuthenticatorTest
         // Setup Guest User.
         User guestUser = createUser( USER_GUEST, "Guest User", null );
         roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_GUEST, guestUser.getPrincipal().toString() );
-        
+
         configControl = MockClassControl.createControl( XmlRpcHttpRequestConfigImpl.class );
-        config = ( XmlRpcHttpRequestConfigImpl ) configControl.getMock();
-        
+        config = (XmlRpcHttpRequestConfigImpl) configControl.getMock();
+
         xmlRpcRequestControl = MockControl.createControl( XmlRpcRequest.class );
-        xmlRpcRequest = ( XmlRpcRequest ) xmlRpcRequestControl.getMock();    
-        
-        authenticator = new XmlRpcAuthenticator( securitySystem, null );        
+        xmlRpcRequest = (XmlRpcRequest) xmlRpcRequestControl.getMock();
+
+        authenticator = new XmlRpcAuthenticator( securitySystem, null );
     }
-            
+
     private User createUser( String principal, String fullname, String password )
         throws UserNotFoundException
     {
         UserManager userManager = securitySystem.getUserManager();
-    
+
         User user = userManager.createUser( principal, fullname, principal + "@testable.archiva.apache.org" );
         securitySystem.getPolicy().setEnabled( false );
         userManager.addUser( user );
         securitySystem.getPolicy().setEnabled( true );
-        
-        user.setPassword( password );        
+
+        user.setPassword( password );
         userManager.updateUser( user );
-        
+
         return user;
     }
-    
+
+    @Test
     public void testIsAuthorizedUserExistsButNotAuthorized()
         throws Exception
     {
         createUser( USER_ALPACA, "Al 'Archiva' Paca", PASSWORD );
-        
+
         UserManager userManager = securitySystem.getUserManager();
         try
         {
-            User user  = userManager.findUser( USER_ALPACA );
+            User user = userManager.findUser( USER_ALPACA );
             assertEquals( USER_ALPACA, user.getPrincipal() );
         }
         catch ( UserNotFoundException e )
         {
-            fail( "User should exist in the database." );                        
+            fail( "User should exist in the database." );
         }
-        
+
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getConfig(), config, 2 );
-        
+
         configControl.expectAndReturn( config.getBasicUserName(), USER_ALPACA );
-        
+
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
-        
+
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
                                               "AdministrationService.getAllManagedRepositories" );
-        
+
         xmlRpcRequestControl.replay();
         configControl.replay();
-        
+
         boolean isAuthorized = authenticator.isAuthorized( xmlRpcRequest );
-        
+
         xmlRpcRequestControl.verify();
         configControl.verify();
-        
+
         assertFalse( isAuthorized );
     }
-    
+
+    @Test
     public void testIsAuthorizedUserExistsAndAuthorized()
         throws Exception
     {
         createUser( USER_ALPACA, "Al 'Archiva' Paca", PASSWORD );
-        
+
         UserManager userManager = securitySystem.getUserManager();
         try
         {
-            User user  = userManager.findUser( USER_ALPACA );
+            User user = userManager.findUser( USER_ALPACA );
             assertEquals( USER_ALPACA, user.getPrincipal() );
         }
         catch ( UserNotFoundException e )
         {
-            fail( "User should exist in the database." );                        
+            fail( "User should exist in the database." );
         }
-        
+
         //TODO cannot assign global repo manager role - it says role does not exist :|
-        
+
         //roleManager.assignRole( ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE, USER_ALPACA );
-        
+
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getConfig(), config, 2 );
-        
+
         configControl.expectAndReturn( config.getBasicUserName(), USER_ALPACA );
-        
+
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
-        
+
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
                                               "AdministrationService.getAllManagedRepositories" );
-        
+
         xmlRpcRequestControl.replay();
         configControl.replay();
-        
-        @SuppressWarnings("unused")
-        boolean isAuthorized = authenticator.isAuthorized( xmlRpcRequest );
+
+        @SuppressWarnings( "unused" ) boolean isAuthorized = authenticator.isAuthorized( xmlRpcRequest );
         // TODO: broken or bad test?
         // assertTrue( isAuthorized );
-        
+
         xmlRpcRequestControl.verify();
         configControl.verify();
+
+        userManager.deleteUser( USER_ALPACA );
     }
-    
+
+    @Test
     public void testIsAuthorizedUserDoesNotExist()
         throws Exception
-    {   
+    {
         UserManager userManager = securitySystem.getUserManager();
         try
         {
@@ -196,26 +215,26 @@ public class XmlRpcAuthenticatorTest
         }
         catch ( UserNotFoundException e )
         {
-            assertEquals( "Unable to find user 'alpaca'", e.getMessage() );            
+            assertEquals( "Unable to find user 'alpaca'", e.getMessage() );
         }
-        
+
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getConfig(), config, 2 );
-        
+
         configControl.expectAndReturn( config.getBasicUserName(), USER_ALPACA );
-        
+
         configControl.expectAndReturn( config.getBasicPassword(), PASSWORD );
-        
+
         xmlRpcRequestControl.expectAndReturn( xmlRpcRequest.getMethodName(),
                                               "AdministrationService.getAllManagedRepositories" );
-        
+
         xmlRpcRequestControl.replay();
         configControl.replay();
-        
+
         boolean isAuthorized = authenticator.isAuthorized( xmlRpcRequest );
-                
+
         xmlRpcRequestControl.verify();
         configControl.verify();
-        
+
         assertFalse( isAuthorized );
-    }    
+    }
 }
