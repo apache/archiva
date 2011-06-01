@@ -103,14 +103,14 @@ public class DefaultRepositoryProxyConnectors
      * plexus.requirement
      */
     @Inject
-    @Named(value = "repositoryContentFactory#default")
+    @Named( value = "repositoryContentFactory#default" )
     private RepositoryContentFactory repositoryFactory;
 
     /**
      * plexus.requirement
      */
     @Inject
-    @Named(value="metadataTools#default")
+    @Named( value = "metadataTools#default" )
     private MetadataTools metadataTools;
 
     @Inject
@@ -890,9 +890,12 @@ public class DefaultRepositoryProxyConnectors
     {
         for ( Entry<String, ? extends DownloadPolicy> entry : policies.entrySet() )
         {
-            String key = entry.getKey();
+            // olamy with spring rolehint is now downloadPolicy#hint
+            // so substring after last # to get the hint as with plexus
+            String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
             DownloadPolicy policy = entry.getValue();
             String defaultSetting = policy.getDefaultOption();
+
             String setting = StringUtils.defaultString( settings.get( key ), defaultSetting );
 
             log.debug( "Applying [{}] policy with [{}]", key, setting );

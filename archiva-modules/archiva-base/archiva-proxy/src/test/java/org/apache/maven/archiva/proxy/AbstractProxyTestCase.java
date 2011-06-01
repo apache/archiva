@@ -610,18 +610,33 @@ public abstract class AbstractProxyTestCase
 
     protected void setManagedNewerThanRemote( File managedFile, File remoteFile )
     {
-        assertTrue( "Managed File should exist: ", managedFile.exists() );
-        assertTrue( "Remote File should exist: ", remoteFile.exists() );
-
-        managedFile.setLastModified( remoteFile.lastModified() + 55000 );
+        setManagedNewerThanRemote(managedFile, remoteFile, 55000);
     }
 
-    protected void setManagedOlderThanRemote( File managedFile, File remoteFile )
+    protected void setManagedNewerThanRemote( File managedFile, File remoteFile, long time )
     {
         assertTrue( "Managed File should exist: ", managedFile.exists() );
         assertTrue( "Remote File should exist: ", remoteFile.exists() );
 
-        managedFile.setLastModified( remoteFile.lastModified() - 55000 );
+        managedFile.setLastModified( remoteFile.lastModified() + time );
+
+        assertTrue( managedFile.lastModified() > remoteFile.lastModified() );
+    }
+
+    protected void setManagedOlderThanRemote( File managedFile, File remoteFile )
+    {
+        setManagedOlderThanRemote(managedFile, remoteFile, 55000 );
+    }
+
+    protected void setManagedOlderThanRemote( File managedFile, File remoteFile, long time )
+    {
+        assertTrue( "Managed File should exist: ", managedFile.exists() );
+        assertTrue( "Remote File should exist: ", remoteFile.exists() );
+
+        managedFile.setLastModified( remoteFile.lastModified() - time );
+
+        assertTrue( managedFile.lastModified() < remoteFile.lastModified() );
+
     }
 
     protected void assertNotModified( File file, long expectedModificationTime )

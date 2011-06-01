@@ -23,6 +23,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -75,12 +76,16 @@ public class MockConfiguration
     public void initialize()
         throws Exception
     {
+
         configuration.setRepositoryScanning( new RepositoryScanningConfiguration()
         {
             @Override
             public List<FileType> getFileTypes()
             {
-                return Collections.emptyList();
+                FileType fileType = new FileType();
+                fileType.setId( FileTypes.ARTIFACTS );
+                fileType.setPatterns( Collections.singletonList( "**/*" ) );
+                return Collections.singletonList( fileType );
             }
         } );
     }

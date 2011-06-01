@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -85,6 +87,18 @@ public class JcrRepositorySessionFactory
     public void initialize()
     {
         metadataFacetFactories = applicationContext.getBeansOfType( MetadataFacetFactory.class );
+        // olamy with spring the "id" is now "metadataFacetFactory#hint"
+        // whereas was only hint with plexus so let remove  metadataFacetFactory#
+        Map<String, MetadataFacetFactory> cleanedMetadataFacetFactories =
+            new HashMap<String, MetadataFacetFactory>( metadataFacetFactories.size() );
+
+        for ( Map.Entry<String, MetadataFacetFactory> entry : metadataFacetFactories.entrySet() )
+        {
+            cleanedMetadataFacetFactories.put( StringUtils.substringAfterLast( entry.getKey(), "#" ),
+                                               entry.getValue() );
+        }
+
+        metadataFacetFactories = cleanedMetadataFacetFactories;
 
         JcrMetadataRepository metadataRepository = null;
         try

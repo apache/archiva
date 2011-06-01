@@ -229,7 +229,7 @@ public class SnapshotTransferTest
         File expectedFile = new File( managedDefaultDir, path );
         File remoteFile = new File( REPOPATH_PROXIED1, path );
 
-        setManagedNewerThanRemote( expectedFile, remoteFile );
+        setManagedNewerThanRemote( expectedFile, remoteFile, 12000000 );
         long expectedTimestamp = expectedFile.lastModified(); 
         
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );

@@ -39,17 +39,6 @@ import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -65,6 +54,17 @@ import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @todo below: revise storage format for project version metadata
@@ -89,7 +89,7 @@ public class JcrMetadataRepository
 
     private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    private static final Logger log = LoggerFactory.getLogger( JcrMetadataRepository.class );
+    private Logger log = LoggerFactory.getLogger( JcrMetadataRepository.class );
 
     private Repository repository;
 
@@ -856,7 +856,7 @@ public class JcrMetadataRepository
                     MetadataFacetFactory factory = metadataFacetFactories.get( name );
                     if ( factory == null )
                     {
-                        log.error( "Attempted to load unknown project version metadata facet: " + name );
+                        log.error( "Attempted to load unknown project version metadata facet: {}", name );
                     }
                     else
                     {
