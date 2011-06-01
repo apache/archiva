@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import junit.framework.TestCase;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.commons.io.FileUtils;
@@ -35,14 +36,24 @@ import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 /**
  * NexusIndexerConsumerTest
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath*:/spring-context.xml"} )
 public class NexusIndexerConsumerTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private final class ArchivaTaskSchedulerStub
         implements ArchivaTaskScheduler<ArtifactIndexingTask>
@@ -80,17 +91,22 @@ public class NexusIndexerConsumerTest
 
     private ArchivaTaskSchedulerStub scheduler;
 
+    @Inject
+    private ApplicationContext applicationContext;
+
+
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
 
         scheduler = new ArchivaTaskSchedulerStub();
 
-        ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        ArchivaConfiguration configuration = applicationContext.getBean( ArchivaConfiguration.class );
         
-        FileTypes filetypes = (FileTypes) lookup( FileTypes.class );
+        FileTypes filetypes = applicationContext.getBean( FileTypes.class );
 
         nexusIndexerConsumer = new NexusIndexerConsumer( scheduler, configuration, filetypes );
         
@@ -99,7 +115,7 @@ public class NexusIndexerConsumerTest
 
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
-        repositoryConfig.setLocation( getBasedir() + "/target/test-classes/test-repo" );
+        repositoryConfig.setLocation( "target/test-classes/test-repo" );
         repositoryConfig.setLayout( "default" );
         repositoryConfig.setName( "Test Repository" );
         repositoryConfig.setScanned( true );
@@ -108,7 +124,8 @@ public class NexusIndexerConsumerTest
     }
 
     @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         // delete created index in the repository
@@ -123,6 +140,7 @@ public class NexusIndexerConsumerTest
         super.tearDown();
     }
 
+    @Test
     public void testIndexerIndexArtifact()
         throws Exception
     {
@@ -139,6 +157,7 @@ public class NexusIndexerConsumerTest
         assertTrue( scheduler.indexed.contains( artifactFile ) );
     }
 
+    @Test
     public void testIndexerArtifactAlreadyIndexed()
         throws Exception
     {
@@ -163,6 +182,7 @@ public class NexusIndexerConsumerTest
         assertTrue( scheduler.indexed.contains( artifactFile ) );
     }
 
+    @Test
     public void testIndexerIndexArtifactThenPom()
         throws Exception
     {
@@ -191,6 +211,7 @@ public class NexusIndexerConsumerTest
     }
     
     // MRM-1275 - Include other file types for the index consumer instead of just the indexable-content
+    @Test
     public void testIncludedFileTypes()
         throws Exception
     {
@@ -203,9 +224,4 @@ public class NexusIndexerConsumerTest
         assertTrue( ".zip artifacts should be processed.", includes.contains( "**/*.zip" ) );
     }
 
-    @Override
-    protected String getPlexusConfigLocation()
-    {
-        return "/org/apache/archiva/consumers/lucene/LuceneConsumersTest.xml";
-    }
 }

@@ -32,6 +32,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.sonatype.nexus.index.ArtifactInfo;
 import org.sonatype.nexus.index.FlatSearchRequest;
 import org.sonatype.nexus.index.FlatSearchResponse;
@@ -40,6 +41,7 @@ import org.sonatype.nexus.index.NexusIndexer;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.packer.IndexPacker;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.io.BufferedInputStream;
@@ -56,10 +58,12 @@ import java.util.zip.ZipInputStream;
 /**
  * ArchivaIndexingTaskExecutorTest
  */
+@RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath*:/spring-context.xml"} )
 public class ArchivaIndexingTaskExecutorTest
     extends TestCase
 {
+    @Inject
     private ArchivaIndexingTaskExecutor indexingExecutor;
 
     private IndexerEngine indexerEngine;
@@ -83,12 +87,13 @@ public class ArchivaIndexingTaskExecutorTest
     {
         super.setUp();
 
-        indexingExecutor = new ArchivaIndexingTaskExecutor();
+        //indexingExecutor = new ArchivaIndexingTaskExecutor();
+        //indexingExecutor.setPlexusSisuBridge( plexusSisuBridge );
         indexingExecutor.initialize();
 
         repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( "test-repo" );
-        repositoryConfig.setLocation( "/target/test-classes/test-repo" );
+        repositoryConfig.setLocation( "target/test-classes/test-repo" );
         repositoryConfig.setLayout( "default" );
         repositoryConfig.setName( "Test Repository" );
         repositoryConfig.setScanned( true );

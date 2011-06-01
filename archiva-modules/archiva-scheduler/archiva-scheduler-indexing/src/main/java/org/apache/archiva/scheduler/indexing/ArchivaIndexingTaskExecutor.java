@@ -44,6 +44,7 @@ import org.sonatype.nexus.index.packer.IndexPackingRequest;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
@@ -73,8 +74,10 @@ public class ArchivaIndexingTaskExecutor
 
     private ArtifactContextProducer artifactContextProducer;
 
+    @Inject
     private PlexusSisuBridge plexusSisuBridge;
 
+    @PostConstruct
     public void initialize()
         throws PlexusSisuBridgeException
     {
@@ -236,5 +239,15 @@ public class ArchivaIndexingTaskExecutor
     public void setIndexPacker( IndexPacker indexPacker )
     {
         this.indexPacker = indexPacker;
+    }
+
+    public PlexusSisuBridge getPlexusSisuBridge()
+    {
+        return plexusSisuBridge;
+    }
+
+    public void setPlexusSisuBridge( PlexusSisuBridge plexusSisuBridge )
+    {
+        this.plexusSisuBridge = plexusSisuBridge;
     }
 }
