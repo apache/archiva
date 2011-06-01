@@ -100,7 +100,7 @@ public class ArchivaIndexingTaskExecutor
             if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() )
                 && indexingTask.isExecuteOnEntireRepo() )
             {
-                log.debug( "Finishing indexing task on repo: " + repository.getId() );
+                log.debug( "Finishing indexing task on repo: {}", repository.getId() );
                 finishIndexingTask( indexingTask, repository, context );
             }
             else
