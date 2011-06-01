@@ -21,6 +21,7 @@ package org.apache.archiva.rss.processor;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
@@ -29,7 +30,10 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.rss.RssFeedGenerator;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,8 +44,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+@RunWith( JUnit4.class )
 public class NewArtifactsRssFeedProcessorTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private static final String TEST_REPO = "test-repo";
 
@@ -49,7 +54,7 @@ public class NewArtifactsRssFeedProcessorTest
 
     private MetadataRepositoryMock metadataRepository;
 
-    @Override
+    @Before
     public void setUp()
         throws Exception
     {
@@ -62,6 +67,7 @@ public class NewArtifactsRssFeedProcessorTest
     }
 
     @SuppressWarnings( "unchecked" )
+    @Test
     public void testProcess()
         throws Exception
     {

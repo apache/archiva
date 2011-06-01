@@ -28,7 +28,9 @@ import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,8 +43,9 @@ import java.util.TimeZone;
  * The artifacts will be grouped by the date when the artifacts were gathered.
  * Each group will appear as one entry in the feed.
  *
- * @plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-artifacts"
+ * plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-artifacts"
  */
+@Service("rssFeedProcessor#new-artifacts")
 public class NewArtifactsRssFeedProcessor
     extends AbstractArtifactsRssFeedProcessor
 {
@@ -53,8 +56,9 @@ public class NewArtifactsRssFeedProcessor
     private static final String desc = "These are the new artifacts found in the repository ";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RssFeedGenerator generator;
 
     private Logger log = LoggerFactory.getLogger( NewArtifactsRssFeedProcessor.class );

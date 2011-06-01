@@ -21,11 +21,15 @@ package org.apache.archiva.rss.processor;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
+import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.rss.RssFeedGenerator;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,8 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RunWith( JUnit4.class )
 public class NewVersionsOfArtifactRssFeedProcessorTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private NewVersionsOfArtifactRssFeedProcessor newVersionsProcessor;
 
@@ -49,7 +54,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
 
     private MetadataRepository metadataRepository;
 
-    @Override
+    @Before
     public void setUp()
         throws Exception
     {
@@ -63,6 +68,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
     }
 
     @SuppressWarnings( "unchecked" )
+    @Test
     public void testProcess()
         throws Exception
     {

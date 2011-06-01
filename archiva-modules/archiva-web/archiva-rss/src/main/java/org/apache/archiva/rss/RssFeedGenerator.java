@@ -31,15 +31,19 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
  * Generates RSS feeds.
  * 
- * @plexus.component role="org.apache.archiva.rss.RssFeedGenerator" 
+ * plexus.component role="org.apache.archiva.rss.RssFeedGenerator"
  *      instantiation-strategy="per-lookup"
  * 
  * @version
  */
+@Service("rssFeedGenerator#default")
+@Scope("prototype")
 public class RssFeedGenerator
 {
     private Logger log = LoggerFactory.getLogger( RssFeedGenerator.class );
@@ -65,7 +69,7 @@ public class RssFeedGenerator
         feed.setFeedType( DEFAULT_FEEDTYPE );
         feed.setEntries( getEntries( dataEntries ) );
 
-        log.debug( "Finished generating the feed \'" + title + "\'." );
+        log.debug( "Finished generating the feed \'{}\'.", title );
         
         return feed;
     }

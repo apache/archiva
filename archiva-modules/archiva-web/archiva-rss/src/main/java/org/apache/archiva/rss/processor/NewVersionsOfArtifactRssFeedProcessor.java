@@ -29,7 +29,9 @@ import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -41,8 +43,9 @@ import java.util.Map;
  * generate a rss feed. The versions will be grouped by the date when the artifact
  * was gathered. Each group will appear as one entry in the feed.
  *
- * @plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-versions"
+ * plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-versions"
  */
+@Service("rssFeedProcessor#new-versions")
 public class NewVersionsOfArtifactRssFeedProcessor
     extends AbstractArtifactsRssFeedProcessor
 {
@@ -53,8 +56,9 @@ public class NewVersionsOfArtifactRssFeedProcessor
     private static final String desc = "These are the new versions of artifact ";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RssFeedGenerator generator;
 
     /**

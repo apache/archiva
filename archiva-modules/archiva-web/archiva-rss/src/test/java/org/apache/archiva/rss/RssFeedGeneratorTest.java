@@ -19,32 +19,41 @@ package org.apache.archiva.rss;
  * under the License.
  */
 
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-
 /**
  * @version
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml"} )
 public class RssFeedGeneratorTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+    @Inject
     private RssFeedGenerator generator;
 
+    @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        generator = (RssFeedGenerator) lookup( RssFeedGenerator.class );
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testNewFeed()
         throws Exception
     {
@@ -81,7 +90,8 @@ public class RssFeedGeneratorTest
         assertEquals( "Item 2", syndEntries.get( 1 ).getTitle() );
         assertEquals( "Item 3", syndEntries.get( 2 ).getTitle() );
     }
-    
+
+    @Test
     public void testNoDataEntries()
         throws Exception
     {
