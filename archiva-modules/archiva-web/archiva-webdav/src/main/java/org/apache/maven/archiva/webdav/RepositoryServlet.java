@@ -19,15 +19,6 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.webdav.DavMethods;
@@ -45,13 +36,20 @@ import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ServletAuthenticator;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * RepositoryServlet
@@ -165,8 +163,7 @@ public class RepositoryServlet
         WebApplicationContext wac =
             WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
 
-        configuration =
-            (ArchivaConfiguration) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaConfiguration.class.getName() ) );
+        configuration = wac.getBean( "archivaConfiguration#default", ArchivaConfiguration.class );
         configuration.addListener( this );
 
         repositoryMap = configuration.getConfiguration().getManagedRepositoriesAsMap();
@@ -186,14 +183,11 @@ public class RepositoryServlet
             }
         }
 
-        resourceFactory =
-            (DavResourceFactory) wac.getBean( PlexusToSpringUtils.buildSpringId( ArchivaDavResourceFactory.class ) );
+        resourceFactory =  wac.getBean (DavResourceFactory.class);
         locatorFactory = new ArchivaDavLocatorFactory();
 
-        ServletAuthenticator servletAuth =
-            (ServletAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( ServletAuthenticator.class.getName() ) );
-        HttpAuthenticator httpAuth =
-            (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
+        ServletAuthenticator servletAuth = wac.getBean( ServletAuthenticator.class );
+        HttpAuthenticator httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
 
         sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
     }
