@@ -20,6 +20,7 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 
+import junit.framework.TestCase;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
@@ -38,9 +39,13 @@ import org.apache.archiva.web.xmlrpc.api.SearchService;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,8 +61,10 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id: SearchServiceImplTest.java
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class SearchServiceImplTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private SearchService searchService;
 
@@ -88,6 +95,7 @@ public class SearchServiceImplTest
     private RepositorySession repositorySession;
 
     @Override
+    @Before
     public void setUp()
         throws Exception
     {
@@ -114,7 +122,7 @@ public class SearchServiceImplTest
     }
 
     // MRM-1230
-
+    @Test
     public void testQuickSearchModelPackagingIsUsed()
         throws Exception
     {
@@ -177,6 +185,7 @@ public class SearchServiceImplTest
         assertEquals( "repo1.mirror", artifact.getRepositoryId() );
     }
 
+    @Test
     public void testQuickSearchDefaultPackagingIsUsed()
         throws Exception
     {
@@ -240,6 +249,7 @@ public class SearchServiceImplTest
         assertEquals( "public.releases", artifact.getRepositoryId() );
     }
 
+    @Test
     public void testQuickSearchArtifactRegularSearch()
         throws Exception
     {
@@ -302,6 +312,7 @@ public class SearchServiceImplTest
         assertEquals( "repo1.mirror", artifact.getRepositoryId() );
     }
 
+    @Test
     public void testQuickSearchNoResults()
         throws Exception
     {
@@ -328,6 +339,7 @@ public class SearchServiceImplTest
         assertEquals( 0, artifacts.size() );
     }
 
+    @Test
     public void testGetArtifactByChecksum()
         throws Exception
     {
@@ -358,6 +370,7 @@ public class SearchServiceImplTest
         assertEquals( TEST_REPO, result.getRepositoryId() );
     }
 
+    @Test
     public void testGetArtifactVersionsArtifactExists()
         throws Exception
     {
@@ -401,18 +414,21 @@ public class SearchServiceImplTest
                                     "1.2.1-SNAPSHOT", "pom" ), artifacts.get( 5 ) );
     }
 
+    @Test
     public void testGetArtifactVersionsByDateArtifactExists()
         throws Exception
     {
         // TODO
     }
 
+    @Test
     public void testGetArtifactVersionsByDateArtifactDoesNotExist()
         throws Exception
     {
         // TODO
     }
 
+    @Test
     public void testGetDependenciesArtifactExists()
         throws Exception
     {
@@ -458,6 +474,7 @@ public class SearchServiceImplTest
         assertEquals( new Dependency( "junit", "junit", "2.4", null, null, "test" ), dependencies.get( 1 ) );
     }
 
+    @Test
     public void testGetDependenciesArtifactDoesNotExist()
         throws Exception
     {
@@ -486,18 +503,21 @@ public class SearchServiceImplTest
         metadataResolverControl.verify();
     }
 
+    @Test
     public void testGetDependencyTreeArtifactExists()
         throws Exception
     {
         // TODO
     }
 
+    @Test
     public void testGetDependencyTreeArtifactDoesNotExist()
         throws Exception
     {
         // TODO
     }
 
+    @Test
     public void testGetDependees()
         throws Exception
     {
@@ -540,6 +560,7 @@ public class SearchServiceImplTest
             1 ) );
     }
 
+    @Test
     public void testGetDependeesArtifactDoesNotExist()
         throws Exception
     {

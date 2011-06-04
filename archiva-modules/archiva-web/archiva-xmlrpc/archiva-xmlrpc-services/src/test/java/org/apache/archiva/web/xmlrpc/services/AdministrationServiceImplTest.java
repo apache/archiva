@@ -19,6 +19,7 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -53,9 +54,13 @@ import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryConten
 import org.apache.maven.archiva.repository.content.PathParser;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,8 +79,10 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id: AdministrationServiceImplTest.java
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class AdministrationServiceImplTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private MockControl archivaConfigControl;
 
@@ -139,7 +146,8 @@ public class AdministrationServiceImplTest
 
     private static final String STAGE = "-stage";
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -200,7 +208,7 @@ public class AdministrationServiceImplTest
     }
 
     /* Tests for repository consumers */
-
+    @Test
     public void testGetAllRepoConsumers()
         throws Exception
     {
@@ -224,6 +232,7 @@ public class AdministrationServiceImplTest
         assertTrue( repoConsumers.contains( "check-metadata" ) );
     }
 
+    @Test
     public void testConfigureValidRepositoryConsumer()
         throws Exception
     {
@@ -312,6 +321,7 @@ public class AdministrationServiceImplTest
         }
     }
 
+    @Test
     public void testConfigureInvalidRepositoryConsumer()
         throws Exception
     {
@@ -337,7 +347,7 @@ public class AdministrationServiceImplTest
     }
 
     /* Tests for delete artifact */
-
+    @Test
     public void testDeleteM2ArtifactArtifactExists()
         throws Exception
     {
@@ -385,6 +395,7 @@ public class AdministrationServiceImplTest
         assertTrue( new File( managedRepo.getLocation(), "org/apache/archiva/archiva-test/1.1" ).exists() );
     }
 
+    @Test
     public void testDeleteM1ArtifactArtifactExists()
         throws Exception
     {
@@ -452,6 +463,7 @@ public class AdministrationServiceImplTest
         assertTrue( new File( repo, "org.apache.archiva/poms/archiva-diff-1.0.pom" ).exists() );
     }
 
+    @Test
     public void testDeleteArtifactArtifactDoesNotExist()
         throws Exception
     {
@@ -487,9 +499,9 @@ public class AdministrationServiceImplTest
     private ManagedRepositoryConfiguration createManagedRepo( String layout, String directory )
         throws IOException
     {
-        File srcDir = new File( getBasedir(), "src/test/repositories/" + directory );
+        File srcDir = new File( "src/test/repositories/" + directory );
 
-        File repoDir = getTestFile( "target/test-repos/" + directory );
+        File repoDir = new File( "target/test-repos/" + directory );
 
         FileUtils.deleteDirectory( repoDir );
 
@@ -501,6 +513,7 @@ public class AdministrationServiceImplTest
         return managedRepo;
     }
 
+    @Test
     public void testDeleteArtifacRepositoryDoesNotExist()
         throws Exception
     {
@@ -525,7 +538,7 @@ public class AdministrationServiceImplTest
     }
 
     /* Tests for repository scanning */
-
+    @Test
     public void testExecuteRepoScannerRepoExistsAndNotBeingScanned()
         throws Exception
     {
@@ -564,6 +577,7 @@ public class AdministrationServiceImplTest
         repositoryTaskSchedulerControl.verify();
     }
 
+    @Test
     public void testExecuteRepoScannerRepoExistsButBeingScanned()
         throws Exception
     {
@@ -596,6 +610,7 @@ public class AdministrationServiceImplTest
         repositoryTaskSchedulerControl.verify();
     }
 
+    @Test
     public void testExecuteRepoScannerRepoDoesNotExist()
         throws Exception
     {
@@ -620,7 +635,7 @@ public class AdministrationServiceImplTest
     }
 
     /* Tests for querying repositories */
-
+    @Test
     public void testGetAllManagedRepositories()
         throws Exception
     {
@@ -646,6 +661,7 @@ public class AdministrationServiceImplTest
         assertManagedRepo( repos.get( 1 ), managedRepos.get( 1 ) );
     }
 
+    @Test
     public void testGetAllRemoteRepositories()
         throws Exception
     {
@@ -673,6 +689,7 @@ public class AdministrationServiceImplTest
         assertRemoteRepo( repos.get( 1 ), remoteRepos.get( 1 ) );
     }
 
+    @Test
     public void testDeleteInvalidRepositoryContent()
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
@@ -694,6 +711,7 @@ public class AdministrationServiceImplTest
         configControl.verify();
     }
 
+    @Test
     public void testDeleteRepositoryContent()
         throws Exception
     {
@@ -720,7 +738,7 @@ public class AdministrationServiceImplTest
     }
 
     /* Merge method */
-
+    @Test
     public void testMergeRepositoryWithInvalidRepository()
         throws Exception
     {
@@ -743,6 +761,7 @@ public class AdministrationServiceImplTest
         configControl.verify();
     }
 
+    @Test
     public void testMergeWithNoStagingRepository()
         throws Exception
     {
@@ -768,6 +787,7 @@ public class AdministrationServiceImplTest
         configControl.verify();
     }
 
+    @Test
     public void testMergeRepositoriesAndScan()
         throws Exception
     {
@@ -827,6 +847,7 @@ public class AdministrationServiceImplTest
         repositoryTaskSchedulerControl.verify();
     }
 
+    @Test
     public void testMergeRepositoriesWithConflictsAndScan()
         throws Exception
     {
@@ -896,6 +917,7 @@ public class AdministrationServiceImplTest
         repositoryTaskSchedulerControl.verify();
     }
 
+    @Test
     public void testAddManagedRepository()
         throws Exception
     {
@@ -953,6 +975,7 @@ public class AdministrationServiceImplTest
         registryControl.verify();
     }
 
+    @Test
     public void testAddManagedRepositoryInvalidId()
         throws Exception
     {
@@ -997,6 +1020,7 @@ public class AdministrationServiceImplTest
         }
     }
 
+    @Test
     public void testAddManagedRepositoryInvalidName()
         throws Exception
     {
@@ -1042,6 +1066,7 @@ public class AdministrationServiceImplTest
         }
     }
 
+    @Test
     public void testAddManagedRepositoryInvalidLocation()
         throws Exception
     {
