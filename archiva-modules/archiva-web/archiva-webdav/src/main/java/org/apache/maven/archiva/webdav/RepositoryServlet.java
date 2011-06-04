@@ -54,7 +54,6 @@ import java.util.Map;
 /**
  * RepositoryServlet
  * 
- * @version $Id$
  */
 public class RepositoryServlet
     extends AbstractWebdavServlet
@@ -190,6 +189,8 @@ public class RepositoryServlet
         HttpAuthenticator httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
 
         sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
+
+        log.info( "initServers done" );
     }
 
     public void configurationEvent( ConfigurationEvent event )
