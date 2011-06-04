@@ -19,18 +19,29 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
-import org.apache.maven.archiva.webdav.ArchivaDavResourceFactory;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.springframework.context.ApplicationContext;
 
 /**
  * UnauthenticatedDavResourceFactory
- * 
- * @version $Id: 
+ *
+ * @version $Id:
  */
 public class UnauthenticatedDavResourceFactory
     extends ArchivaDavResourceFactory
-{   
+{
+
+    public UnauthenticatedDavResourceFactory( ApplicationContext applicationContext, PlexusSisuBridge plexusSisuBridge,
+                                              ArchivaConfiguration archivaConfiguration )
+        throws PlexusSisuBridgeException
+    {
+        super( applicationContext, plexusSisuBridge, archivaConfiguration );
+    }
+
     @Override
     protected boolean isAuthorized( DavServletRequest request, String repositoryId )
         throws DavException

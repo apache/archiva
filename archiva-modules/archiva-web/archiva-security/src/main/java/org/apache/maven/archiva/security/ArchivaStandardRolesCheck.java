@@ -35,17 +35,17 @@ import javax.inject.Named;
  *
  * @version $Id$
  * 
- * @plexus.component role="org.codehaus.plexus.redback.system.check.EnvironmentCheck"
+ * plexus.component role="org.codehaus.plexus.redback.system.check.EnvironmentCheck"
  *                   role-hint="required-roles"
  */
-@Service("environmentCheck#required-roles")
+@Service("environmentCheck#archiva-required-roles")
 public class ArchivaStandardRolesCheck
     implements EnvironmentCheck
 {
     private Logger log = LoggerFactory.getLogger( ArchivaStandardRolesCheck.class );
     
     /**
-     * @plexus.requirement role-hint="cached"
+     * plexus.requirement role-hint="cached"
      */
     @Inject @Named(value = "rBACManager#cached")
     private RBACManager rbacManager;

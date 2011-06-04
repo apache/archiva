@@ -27,19 +27,17 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-
   <context-param>
-    <param-name>contextClass</param-name>
-    <param-value>org.codehaus.plexus.spring.PlexusWebApplicationContext</param-value>
-  </context-param>
-
-   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-        classpath*:/META-INF/plexus/components.xml
-        classpath*:/META-INF/spring-context.xml
-        target/test-classes/org/apache/maven/archiva/webdav/RepositoryServletTest.xml
+        classpath*:/META-INF/spring-context.xml,
+        classpath*:spring-context.xml
     </param-value>
   </context-param>
+
+  <!--
+  classpath*:/META-INF/plexus/components.xml
+  target/test-classes/org/apache/maven/archiva/webdav/RepositoryServletTest.xml
+  -->
 
 </web-app>

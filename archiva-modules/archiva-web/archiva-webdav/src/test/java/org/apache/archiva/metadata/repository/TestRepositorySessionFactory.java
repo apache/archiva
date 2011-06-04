@@ -19,6 +19,9 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class TestRepositorySessionFactory
     implements RepositorySessionFactory
 {

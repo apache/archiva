@@ -22,6 +22,8 @@ package org.apache.maven.archiva.webdav;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +48,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.content.LegacyPathParser;
 import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
@@ -118,7 +121,6 @@ public class ArchivaDavResourceFactory
     /**
      * plexus.requirement
      */
-    @Inject
     private RepositoryRequest repositoryRequest;
 
     /**
@@ -143,7 +145,7 @@ public class ArchivaDavResourceFactory
     /**
      * plexus.requirement
      */
-    @Inject
+    //Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
@@ -167,21 +169,21 @@ public class ArchivaDavResourceFactory
     /**
      * plexus.requirement
      */
-    @Inject
+    //Inject
     private ChecksumFile checksum;
 
     /**
      * plexus.requirement role-hint="sha1"
      */
-    @Inject
-    @Named( value = "digester#sha1" )
+    //Inject
+    //Named( value = "digester#sha1" )
     private Digester digestSha1;
 
     /**
      * plexus.requirement role-hint="md5";
      */
-    @Inject
-    @Named( value = "digester#md5" )
+    //Inject
+    //Named( value = "digester#md5" )
     private Digester digestMd5;
 
     /**
@@ -191,14 +193,31 @@ public class ArchivaDavResourceFactory
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
 
-    @Inject
+    //Inject
     private ApplicationContext applicationContext;
+
+    @Inject
+    public ArchivaDavResourceFactory( ApplicationContext applicationContext, PlexusSisuBridge plexusSisuBridge,
+                                      ArchivaConfiguration archivaConfiguration )
+        throws PlexusSisuBridgeException
+    {
+        this.archivaConfiguration = archivaConfiguration;
+        this.applicationContext = applicationContext;
+        this.checksum = plexusSisuBridge.lookup( ChecksumFile.class );
+
+        this.digestMd5 = plexusSisuBridge.lookup( Digester.class, "md5" );
+        this.digestSha1 = plexusSisuBridge.lookup( Digester.class, "sha1" );
+
+        repositoryRequest = new RepositoryRequest( new LegacyPathParser( archivaConfiguration ) );
+        this.auditListeners =
+            new ArrayList<AuditListener>( applicationContext.getBeansOfType( AuditListener.class ).values() );
+    }
 
     @PostConstruct
     public void initialize()
     {
-        this.auditListeners =
-            new ArrayList<AuditListener>( applicationContext.getBeansOfType( AuditListener.class ).values() );
+
+
     }
 
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
@@ -224,7 +243,7 @@ public class ArchivaDavResourceFactory
                                         "Write method not allowed for repository groups." );
             }
 
-            log.debug( "Repository group '" + repoGroupConfig.getId() + "' accessed by '" + activePrincipal + "'" );
+            log.debug( "Repository group '{}' accessed by '{}", repoGroupConfig.getId(), activePrincipal );
 
             // handle browse requests for virtual repos
             if ( RepositoryPathUtil.getLogicalResource( archivaLocator.getOrigResourcePath() ).endsWith( "/" ) )
@@ -259,7 +278,7 @@ public class ArchivaDavResourceFactory
                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
             }
 
-            log.debug( "Managed repository '" + managedRepository.getId() + "' accessed by '" + activePrincipal + "'" );
+            log.debug( "Managed repository '{}' accessed by '{}'", managedRepository.getId(), activePrincipal );
 
             resource = processRepository( request, archivaLocator, activePrincipal, managedRepository );
 
@@ -563,9 +582,8 @@ public class ArchivaDavResourceFactory
                     destDir.mkdirs();
                     String relPath = PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
 
-                    log.debug(
-                        "Creating destination directory '" + destDir.getName() + "' (current user '" + activePrincipal
-                            + "')" );
+                    log.debug( "Creating destination directory '{}' (current user '{}')", destDir.getName(),
+                               activePrincipal );
 
                     triggerAuditEvent( request.getRemoteAddr(), managedRepository.getId(), relPath,
                                        AuditEvent.CREATE_DIR, activePrincipal );
