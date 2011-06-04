@@ -19,22 +19,33 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 /**
  * ArchivaMimeTypesTest 
  *
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class MimeTypesLoaderTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+
+    @Inject
+    MimeTypes mimeTypes;
+
+    @Test
     public void testArchivaTypes()
         throws Exception
     {
-        lookup( MimeTypes.class );
-        MimeTypes mimeTypes = (MimeTypes) lookup( MimeTypes.class );
         assertNotNull( mimeTypes );
 
         // Test for some added types.

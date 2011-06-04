@@ -20,6 +20,8 @@ package org.apache.maven.archiva.webdav;
  */
 
 
+import org.junit.Test;
+
 /**
  * RepositoryServlet Tests, Proxied, Get of Metadata, exists on remote repository only. 
  *
@@ -28,6 +30,7 @@ package org.apache.maven.archiva.webdav;
 public class RepositoryServletProxiedMetadataRemoteOnlyTest
     extends AbstractRepositoryServletProxiedMetadataTestCase
 {
+    @Test
     public void testGetProxiedSnapshotVersionMetadataRemoteOnly()
         throws Exception
     {
@@ -57,6 +60,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
 
+    @Test
     public void testGetProxiedPluginSnapshotVersionMetadataRemoteOnly()
         throws Exception
     {
@@ -86,6 +90,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
 
+    @Test
     public void testGetProxiedVersionMetadataRemoteOnly()
         throws Exception
     {
@@ -111,6 +116,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
 
+    @Test
     public void testGetProxiedProjectMetadataRemoteOnly()
         throws Exception
     {
@@ -138,6 +144,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
 
+    @Test
     public void testGetProxiedGroupMetadataRemoteOnly()
         throws Exception
     {

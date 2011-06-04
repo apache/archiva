@@ -19,23 +19,7 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.Principal;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import junit.framework.TestCase;
-
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
 import org.apache.jackrabbit.webdav.WebdavRequestImpl;
@@ -51,10 +35,25 @@ import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 
-public class ArchivaDavSessionProviderTest extends TestCase
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Map;
+
+public class ArchivaDavSessionProviderTest
+    extends TestCase
 {
     private DavSessionProvider sessionProvider;
-    
+
     private WebdavRequest request;
 
     @Override
@@ -63,131 +62,142 @@ public class ArchivaDavSessionProviderTest extends TestCase
     {
         super.setUp();
         sessionProvider = new ArchivaDavSessionProvider( new ServletAuthenticatorMock(), new HttpAuthenticatorMock() );
-        request = new WebdavRequestImpl(new HttpServletRequestMock(), null);
+        request = new WebdavRequestImpl( new HttpServletRequestMock(), null );
     }
-    
+
     public void testAttachSession()
         throws Exception
     {
-        assertNull(request.getDavSession());
-        sessionProvider.attachSession(request);
-        assertNotNull(request.getDavSession());
+        assertNull( request.getDavSession() );
+        sessionProvider.attachSession( request );
+        assertNotNull( request.getDavSession() );
     }
-    
+
     public void testReleaseSession()
         throws Exception
     {
-        assertNull(request.getDavSession());
-        sessionProvider.attachSession(request);
-        assertNotNull(request.getDavSession());
-        
-        sessionProvider.releaseSession(request);
-        assertNull(request.getDavSession());
+        assertNull( request.getDavSession() );
+        sessionProvider.attachSession( request );
+        assertNotNull( request.getDavSession() );
+
+        sessionProvider.releaseSession( request );
+        assertNull( request.getDavSession() );
     }
-    
-    @SuppressWarnings("unchecked")
-    private class HttpServletRequestMock implements HttpServletRequest
+
+    @SuppressWarnings( "unchecked" )
+    private class HttpServletRequestMock
+        implements HttpServletRequest
     {
-        public Object getAttribute(String arg0) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Object getAttribute( String arg0 )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Enumeration getAttributeNames() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Enumeration getAttributeNames()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getCharacterEncoding() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getCharacterEncoding()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public int getContentLength() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public int getContentLength()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getContentType() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getContentType()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public ServletInputStream getInputStream()
             throws IOException
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getLocalAddr() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getLocalAddr()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getLocalName() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getLocalName()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public int getLocalPort() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public int getLocalPort()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Locale getLocale() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public Locale getLocale()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public Enumeration getLocales()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getParameter(String arg0)
+        public String getParameter( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public Map getParameterMap()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public Enumeration getParameterNames()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String[] getParameterValues(String arg0)
+        public String[] getParameterValues( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getProtocol() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public String getProtocol()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public BufferedReader getReader()
-            throws IOException 
+            throws IOException
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getRealPath(String arg0)
+        public String getRealPath( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getRemoteAddr()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getRemoteHost()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public int getRemotePort()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public RequestDispatcher getRequestDispatcher(String arg0)
+        public RequestDispatcher getRequestDispatcher( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getScheme()
@@ -197,39 +207,39 @@ public class ArchivaDavSessionProviderTest extends TestCase
 
         public String getServerName()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public int getServerPort()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public boolean isSecure()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public void removeAttribute(String arg0)
+        public void removeAttribute( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public void setAttribute(String arg0, Object arg1)
+        public void setAttribute( String arg0, Object arg1 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public void setCharacterEncoding(String arg0)
+        public void setCharacterEncoding( String arg0 )
             throws UnsupportedEncodingException
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
-        
+
 
         public String getAuthType()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getContextPath()
@@ -239,56 +249,57 @@ public class ArchivaDavSessionProviderTest extends TestCase
 
         public Cookie[] getCookies()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public long getDateHeader(String arg0) 
+        public long getDateHeader( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getHeader(String arg0) {
+        public String getHeader( String arg0 )
+        {
             return "";
         }
 
         public Enumeration getHeaderNames()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Enumeration getHeaders(String arg0) 
+        public Enumeration getHeaders( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public int getIntHeader(String arg0) 
+        public int getIntHeader( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getMethod()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getPathInfo()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getPathTranslated()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getQueryString()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getRemoteUser()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
         public String getRequestURI()
@@ -296,65 +307,66 @@ public class ArchivaDavSessionProviderTest extends TestCase
             return "/";
         }
 
-        public StringBuffer getRequestURL() 
+        public StringBuffer getRequestURL()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getRequestedSessionId() 
+        public String getRequestedSessionId()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public String getServletPath() 
+        public String getServletPath()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public HttpSession getSession(boolean arg0) 
+        public HttpSession getSession( boolean arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public HttpSession getSession() 
+        public HttpSession getSession()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public Principal getUserPrincipal() 
+        public Principal getUserPrincipal()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isRequestedSessionIdFromCookie() 
+        public boolean isRequestedSessionIdFromCookie()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isRequestedSessionIdFromURL() 
+        public boolean isRequestedSessionIdFromURL()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isRequestedSessionIdFromUrl() 
+        public boolean isRequestedSessionIdFromUrl()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isRequestedSessionIdValid() 
+        public boolean isRequestedSessionIdValid()
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
 
-        public boolean isUserInRole(String arg0) 
+        public boolean isUserInRole( String arg0 )
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
     }
-    
-    private class ServletAuthenticatorMock implements ServletAuthenticator
+
+    private class ServletAuthenticatorMock
+        implements ServletAuthenticator
     {
-        public boolean isAuthenticated(HttpServletRequest arg0, AuthenticationResult arg1)
+        public boolean isAuthenticated( HttpServletRequest arg0, AuthenticationResult arg1 )
             throws AuthenticationException, AccountLockedException, MustChangePasswordException
         {
             return true;
@@ -371,56 +383,58 @@ public class ArchivaDavSessionProviderTest extends TestCase
             throws UnauthorizedException
         {
             return true;
-        }   
+        }
     }
-    
-    private class HttpAuthenticatorMock extends HttpAuthenticator
+
+    private class HttpAuthenticatorMock
+        extends HttpAuthenticator
     {
         @Override
-        public void challenge(HttpServletRequest arg0, HttpServletResponse arg1, String arg2, AuthenticationException arg3)
+        public void challenge( HttpServletRequest arg0, HttpServletResponse arg1, String arg2,
+                               AuthenticationException arg3 )
             throws IOException
         {
             //Do nothing
         }
 
         @Override
-        public AuthenticationResult getAuthenticationResult(HttpServletRequest arg0, HttpServletResponse arg1)
-            throws AuthenticationException, AccountLockedException, MustChangePasswordException
-        {
-            return new AuthenticationResult();
-        }
-        
-
-        @Override
-        public AuthenticationResult authenticate(AuthenticationDataSource arg0, HttpSession httpSession)
+        public AuthenticationResult getAuthenticationResult( HttpServletRequest arg0, HttpServletResponse arg1 )
             throws AuthenticationException, AccountLockedException, MustChangePasswordException
         {
             return new AuthenticationResult();
         }
 
+
         @Override
-        public void authenticate(HttpServletRequest arg0, HttpServletResponse arg1)
+        public AuthenticationResult authenticate( AuthenticationDataSource arg0, HttpSession httpSession )
+            throws AuthenticationException, AccountLockedException, MustChangePasswordException
+        {
+            return new AuthenticationResult();
+        }
+
+        @Override
+        public void authenticate( HttpServletRequest arg0, HttpServletResponse arg1 )
             throws AuthenticationException
         {
             //Do nothing
         }
 
         @Override
-        public SecuritySession getSecuritySession(HttpSession httpSession)
+        public SecuritySession getSecuritySession( HttpSession httpSession )
         {
-            return super.getSecuritySession(httpSession);
+            return super.getSecuritySession( httpSession );
         }
 
         @Override
-        public User getSessionUser(HttpSession httpSession)
+        public User getSessionUser( HttpSession httpSession )
         {
-            return super.getSessionUser(httpSession);
+            return super.getSessionUser( httpSession );
         }
 
         @Override
-        public boolean isAlreadyAuthenticated(HttpSession httpSession)
+        public boolean isAlreadyAuthenticated( HttpSession httpSession )
         {
-            return super.isAlreadyAuthenticated(httpSession);
-        }        
+            return super.isAlreadyAuthenticated( httpSession );
+        }
     }
 }

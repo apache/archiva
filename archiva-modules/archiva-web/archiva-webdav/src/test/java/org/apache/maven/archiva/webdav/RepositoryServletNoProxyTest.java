@@ -23,6 +23,7 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -34,6 +35,7 @@ import java.io.File;
 public class RepositoryServletNoProxyTest
     extends AbstractRepositoryServletTestCase
 {
+    @Test
     public void testLastModifiedHeaderExists()
         throws Exception
     {
@@ -50,6 +52,7 @@ public class RepositoryServletNoProxyTest
         assertNotNull( response.getHeaderField( "last-modified" ) );
     }
 
+    @Test
     public void testGetNoProxyChecksumDefaultLayout()
         throws Exception
     {
@@ -67,6 +70,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", "dummy-checksum", response.getText() );
     }
 
+    @Test
     public void testGetNoProxyChecksumLegacyLayout()
         throws Exception
     {
@@ -85,6 +89,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", "dummy-checksum", response.getText() );
     }
 
+    @Test
     public void testGetNoProxyVersionedMetadataDefaultLayout()
         throws Exception
     {
@@ -103,6 +108,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyProjectMetadataDefaultLayout()
         throws Exception
     {
@@ -121,6 +127,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyGroupMetadataDefaultLayout()
         throws Exception
     {
@@ -139,6 +146,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyArtifactDefaultLayout()
         throws Exception
     {
@@ -157,6 +165,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyArtifactLegacyLayout()
         throws Exception
     {
@@ -176,6 +185,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxySnapshotArtifactDefaultLayout()
         throws Exception
     {
@@ -194,6 +204,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxySnapshotArtifactLegacyLayout()
         throws Exception
     {
@@ -213,6 +224,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyTimestampedSnapshotArtifactDefaultLayout()
         throws Exception
     {
@@ -231,6 +243,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyTimestampedSnapshotArtifactLegacyLayout()
         throws Exception
     {
@@ -253,6 +266,7 @@ public class RepositoryServletNoProxyTest
     /**
      * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
      */
+    @Test
     public void testGetNoProxyDualExtensionDefaultLayout()
         throws Exception
     {
@@ -271,6 +285,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyDistributionLegacyLayout()
         throws Exception
     {
@@ -290,6 +305,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyChecksumDefaultLayoutManagedLegacy()
         throws Exception
     {
@@ -307,6 +323,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", "dummy-checksum", response.getText() );
     }
 
+    @Test
     public void testGetNoProxyChecksumLegacyLayoutManagedLegacy()
         throws Exception
     {
@@ -323,6 +340,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", "dummy-checksum", response.getText() );
     }
 
+    @Test
     public void testGetNoProxyVersionedMetadataDefaultLayoutManagedLegacy()
         throws Exception
     {
@@ -342,6 +360,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyProjectMetadataDefaultLayoutManagedLegacy()
         throws Exception
     {
@@ -361,6 +380,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyGroupMetadataDefaultLayoutManagedLegacy()
         throws Exception
     {
@@ -379,6 +399,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyArtifactDefaultLayoutManagedLegacy()
         throws Exception
     {
@@ -397,6 +418,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyArtifactLegacyLayoutManagedLegacy()
         throws Exception
     {
@@ -415,6 +437,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxySnapshotArtifactDefaultLayoutManagedLegacy()
         throws Exception
     {
@@ -433,6 +456,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxySnapshotArtifactLegacyLayoutManagedLegacy()
         throws Exception
     {
@@ -451,6 +475,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyTimestampedSnapshotArtifactDefaultLayoutManagedLegacy()
         throws Exception
     {
@@ -470,6 +495,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyTimestampedSnapshotArtifactLegacyLayoutManagedLegacy()
         throws Exception
     {
@@ -491,6 +517,7 @@ public class RepositoryServletNoProxyTest
     /**
      * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
      */
+    @Test
     public void testGetNoProxyDualExtensionDefaultLayoutManagedLegacy()
         throws Exception
     {
@@ -509,6 +536,7 @@ public class RepositoryServletNoProxyTest
         assertEquals( "Expected file contents", expectedContents, response.getText() );
     }
 
+    @Test
     public void testGetNoProxyDistributionLegacyLayoutManagedLegacy()
         throws Exception
     {

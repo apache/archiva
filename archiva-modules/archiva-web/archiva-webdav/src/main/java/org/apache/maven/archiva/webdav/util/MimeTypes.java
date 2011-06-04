@@ -195,4 +195,14 @@ public class MimeTypes
             IOUtils.closeQuietly( reader );
         }
     }
+
+    public String getResource()
+    {
+        return resource;
+    }
+
+    public void setResource( String resource )
+    {
+        this.resource = resource;
+    }
 }

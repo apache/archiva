@@ -27,6 +27,7 @@ import org.apache.maven.archiva.webdav.RepositoryServlet;
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -44,6 +45,7 @@ public class RepositoryServletTest
 
     private static final String NEW_REPOSITORY_NAME = "New Repository";
 
+    @Test
     public void testGetRepository()
         throws Exception
     {
@@ -53,6 +55,7 @@ public class RepositoryServletTest
         assertRepositoryValid( servlet, REPOID_INTERNAL );
     }
 
+    @Test
     public void testGetRepositoryAfterDelete()
         throws Exception
     {
@@ -68,6 +71,7 @@ public class RepositoryServletTest
         assertNull( repository );
     }
 
+    @Test
     public void testGetRepositoryAfterAdd()
         throws Exception
     {
@@ -79,7 +83,7 @@ public class RepositoryServletTest
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( NEW_REPOSITORY_ID );
         repo.setName( NEW_REPOSITORY_NAME );
-        File repoRoot = new File( getBasedir(), "target/test-repository-root" );
+        File repoRoot = new File( "target/test-repository-root" );
         if ( !repoRoot.exists() )
         {
             repoRoot.mkdirs();
@@ -96,6 +100,7 @@ public class RepositoryServletTest
         assertRepositoryValid( servlet, REPOID_INTERNAL );
     }
 
+    @Test
     public void testGetRepositoryInvalidPathPassthroughPresent()
         throws Exception
     {
@@ -109,6 +114,7 @@ public class RepositoryServletTest
         assertEquals( "index file", response.getText() );        
     }
 
+    @Test
     public void testGetRepositoryInvalidPathPassthroughMissing()
         throws Exception
     {

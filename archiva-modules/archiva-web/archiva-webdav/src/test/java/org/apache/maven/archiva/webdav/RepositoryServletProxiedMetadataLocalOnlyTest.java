@@ -19,6 +19,8 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.junit.Test;
+
 /**
  * RepositoryServlet Tests, Proxied, Get of Metadata, exists on local managed repository only. 
  *
@@ -27,6 +29,8 @@ package org.apache.maven.archiva.webdav;
 public class RepositoryServletProxiedMetadataLocalOnlyTest
     extends AbstractRepositoryServletProxiedMetadataTestCase
 {
+
+    @Test
     public void testGetProxiedSnapshotVersionMetadataLocalOnly()
         throws Exception
     {
@@ -51,6 +55,7 @@ public class RepositoryServletProxiedMetadataLocalOnlyTest
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
 
+    @Test
     public void testGetProxiedVersionMetadataLocalOnly()
         throws Exception
     {
@@ -72,6 +77,7 @@ public class RepositoryServletProxiedMetadataLocalOnlyTest
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
 
+    @Test
     public void testGetProxiedProjectMetadataLocalOnly()
         throws Exception
     {
@@ -95,6 +101,7 @@ public class RepositoryServletProxiedMetadataLocalOnlyTest
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
 
+    @Test
     public void testGetProxiedGroupMetadataLocalOnly()
         throws Exception
     {

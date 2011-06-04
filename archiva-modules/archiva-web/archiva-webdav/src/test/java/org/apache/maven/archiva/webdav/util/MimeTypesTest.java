@@ -19,18 +19,31 @@ package org.apache.maven.archiva.webdav.util;
  * under the License.
  */
 
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 /**
- * MimeTypesTest 
+ * MimeTypesTest
  *
  * @version $Id: MimeTypesTest.java 6556 2007-06-20 20:44:46Z joakime $
  */
-public class MimeTypesTest extends PlexusInSpringTestCase
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+public class MimeTypesTest
+    extends TestCase
 {
-    public void testGetMimeType() throws Exception
+    @Inject
+    MimeTypes mime;
+
+    @Test
+    public void testGetMimeType()
+        throws Exception
     {
-        MimeTypes mime = (MimeTypes) lookup( MimeTypes.class );
         assertNotNull( "MimeTypes should not be null.", mime );
 
         assertEquals( "application/pdf", mime.getMimeType( "big-book.pdf" ) );

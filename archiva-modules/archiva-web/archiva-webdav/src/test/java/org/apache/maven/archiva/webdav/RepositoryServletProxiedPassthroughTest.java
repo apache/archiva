@@ -25,6 +25,7 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.Test;
 
 /**
  * RepositoryServlet Tests, Proxied, Get of resources that are not artifacts or metadata, with varying policy settings.
@@ -45,6 +46,7 @@ public class RepositoryServletProxiedPassthroughTest
 
     private static final String PATH_ASC = "org/apache/archiva/test/1.0/test-1.0.jar.asc";
 
+    @Test
     public void testGetProxiedManagedNewerSha1()
         throws Exception
     {
@@ -52,6 +54,7 @@ public class RepositoryServletProxiedPassthroughTest
                                   CONTENT_SHA1 );
     }
 
+    @Test
     public void testGetProxiedManagedOlderSha1()
         throws Exception
     {
@@ -59,18 +62,21 @@ public class RepositoryServletProxiedPassthroughTest
                                   CONTENT_SHA1 );
     }
 
+    @Test
     public void testGetProxiedNoManagedContentSha1()
         throws Exception
     {
         assertGetProxiedResource( EXPECT_REMOTE_CONTENTS, NO_MANAGED_COPY, PATH_SHA1, CONTENT_SHA1 );
     }
 
+    @Test
     public void testGetProxiedEqualSha1()
         throws Exception
     {
         assertGetProxiedResource( EXPECT_MANAGED_CONTENTS, HAS_MANAGED_COPY, PATH_SHA1, CONTENT_SHA1 );
     }
 
+    @Test
     public void testGetProxiedManagedNewerAsc()
         throws Exception
     {
@@ -78,6 +84,7 @@ public class RepositoryServletProxiedPassthroughTest
                                   CONTENT_ASC );
     }
 
+    @Test
     public void testGetProxiedManagedOlderAsc()
         throws Exception
     {
@@ -85,12 +92,14 @@ public class RepositoryServletProxiedPassthroughTest
                                   CONTENT_ASC );
     }
 
+    @Test
     public void testGetProxiedNoManagedContentAsc()
         throws Exception
     {
         assertGetProxiedResource( EXPECT_REMOTE_CONTENTS, NO_MANAGED_COPY, PATH_ASC, CONTENT_ASC );
     }
 
+    @Test
     public void testGetProxiedEqualAsc()
         throws Exception
     {

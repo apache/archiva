@@ -19,6 +19,7 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
@@ -36,17 +37,25 @@ import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.Collections;
 
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class DavResourceTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private DavSession session;
 
+    @Inject
     private MimeTypes mimeTypes;
 
     private ArchivaDavResourceLocator resourceLocator;
@@ -66,13 +75,13 @@ public class DavResourceTest
     private ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
     
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
         session = new ArchivaDavSession();
-        mimeTypes = (MimeTypes) getApplicationContext().getBean( PlexusToSpringUtils.buildSpringId( MimeTypes.class ) );
-        baseDir = getTestFile( "target/DavResourceTest" );
+        baseDir = new File( "target/DavResourceTest" );
         baseDir.mkdirs();
         myResource = new File( baseDir, "myresource.jar" );
         assertTrue( "Could not create " + myResource.getAbsolutePath(), myResource.createNewFile() );
@@ -85,12 +94,11 @@ public class DavResourceTest
         resource.addLockManager( lockManager );        
     }
 
-    @Override
+    @After
     protected void tearDown()
         throws Exception
     {
         super.tearDown();
-        release( mimeTypes );
         FileUtils.deleteDirectory( baseDir );
     }
 
@@ -100,6 +108,7 @@ public class DavResourceTest
                                        resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null );
     }
 
+    @Test
     public void testDeleteNonExistantResourceShould404()
         throws Exception
     {
@@ -116,6 +125,7 @@ public class DavResourceTest
         }
     }
 
+    @Test
     public void testDeleteCollection()
         throws Exception
     {
@@ -133,6 +143,7 @@ public class DavResourceTest
         }
     }
 
+    @Test
     public void testDeleteResource()
         throws Exception
     {
@@ -141,12 +152,14 @@ public class DavResourceTest
         assertFalse( myResource.exists() );
     }
 
+    @Test
     public void testIsLockable()
     {
         assertTrue( resource.isLockable( Type.WRITE, Scope.EXCLUSIVE ) );
         assertFalse( resource.isLockable( Type.WRITE, Scope.SHARED ) );
     }
 
+    @Test
     public void testLock()
         throws Exception
     {
@@ -158,6 +171,7 @@ public class DavResourceTest
         assertEquals( 1, resource.getLocks().length );
     }
 
+    @Test
     public void testLockIfResourceUnlockable()
         throws Exception
     {
@@ -176,6 +190,7 @@ public class DavResourceTest
         assertEquals( 0, resource.getLocks().length );
     }
 
+    @Test
     public void testGetLock()
         throws Exception
     {
@@ -191,6 +206,7 @@ public class DavResourceTest
         assertNull( resource.getLock( Type.WRITE, Scope.SHARED ) );
     }
 
+    @Test
     public void testRefreshLockThrowsExceptionIfNoLockIsPresent()
         throws Exception
     {
@@ -211,6 +227,7 @@ public class DavResourceTest
         assertEquals( 0, resource.getLocks().length );
     }
 
+    @Test
     public void testRefreshLock()
         throws Exception
     {
@@ -229,6 +246,7 @@ public class DavResourceTest
         assertEquals( 1, resource.getLocks().length );
     }
 
+    @Test
     public void testUnlock()
         throws Exception
     {
@@ -247,6 +265,7 @@ public class DavResourceTest
         assertEquals( 0, resource.getLocks().length );
     }
 
+    @Test
     public void testUnlockThrowsDavExceptionIfNotLocked()
         throws Exception
     {
@@ -271,6 +290,7 @@ public class DavResourceTest
         assertEquals( 1, resource.getLocks().length );
     }
 
+    @Test
     public void testUnlockThrowsDavExceptionIfResourceNotLocked()
         throws Exception
     {

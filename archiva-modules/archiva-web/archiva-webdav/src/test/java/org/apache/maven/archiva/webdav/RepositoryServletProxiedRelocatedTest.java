@@ -25,6 +25,7 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 import org.apache.maven.archiva.policies.ReleasesPolicy;
+import org.junit.Test;
 
 /**
  * RepositoryServlet Tests, Proxied, Get of Release Artifacts, with varying policy settings.
@@ -34,6 +35,8 @@ import org.apache.maven.archiva.policies.ReleasesPolicy;
 public class RepositoryServletProxiedRelocatedTest
     extends AbstractRepositoryServletProxiedTestCase
 {
+
+    @Test
     public void testGetProxiedReleaseArtifactPolicyOncePass()
         throws Exception
     {

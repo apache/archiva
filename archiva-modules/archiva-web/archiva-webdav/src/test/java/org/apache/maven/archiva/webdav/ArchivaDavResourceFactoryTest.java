@@ -19,11 +19,7 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
@@ -36,17 +32,30 @@ import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.proxy.DefaultRepositoryProxyConnectors;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.content.LegacyPathParser;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.maven.archiva.repository.content.RepositoryRequest;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ArchivaDavResourceFactoryTest
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class ArchivaDavResourceFactoryTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     private static final String RELEASES_REPO = "releases";
 
@@ -81,7 +90,8 @@ public class ArchivaDavResourceFactoryTest
     private MockControl repoContentFactoryControl;
 
     private RepositoryContentFactory repoFactory;
-    
+
+    @Before
     public void setUp()
         throws Exception
     {
@@ -98,12 +108,10 @@ public class ArchivaDavResourceFactoryTest
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         
         config = new Configuration();
-        config.addManagedRepository( createManagedRepository( RELEASES_REPO, new File( getBasedir(),
-                                                                                       "target/test-classes/" +
+        config.addManagedRepository( createManagedRepository( RELEASES_REPO, new File( "target/test-classes/" +
                                                                                            RELEASES_REPO ).getPath(),
                                                               "default" ) );
-        config.addManagedRepository( createManagedRepository( INTERNAL_REPO, new File( getBasedir(),
-                                                                                       "target/test-classes/" +
+        config.addManagedRepository( createManagedRepository( INTERNAL_REPO, new File( "target/test-classes/" +
                                                                                            INTERNAL_REPO ).getPath(),
                                                               "default" ) );
 
@@ -146,6 +154,7 @@ public class ArchivaDavResourceFactoryTest
         return repoContent;
     }
 
+    @After
     public void tearDown()
         throws Exception
     {
@@ -153,6 +162,7 @@ public class ArchivaDavResourceFactoryTest
     }
 
     // MRM-1232 - Unable to get artifacts from repositories which requires Repository Manager role using repository group
+    @Test
     public void testRepositoryGroupFirstRepositoryRequiresAuthentication()
         throws Exception
     {
@@ -210,6 +220,7 @@ public class ArchivaDavResourceFactoryTest
         }
     }
 
+    @Test
     public void testRepositoryGroupLastRepositoryRequiresAuthentication()
         throws Exception
     {
@@ -277,6 +288,7 @@ public class ArchivaDavResourceFactoryTest
         }
     }
 
+    @Test
     public void testRepositoryGroupArtifactDoesNotExistInAnyOfTheReposAuthenticationDisabled()
         throws Exception
     {
@@ -286,8 +298,7 @@ public class ArchivaDavResourceFactoryTest
                                            new ArchivaDavLocatorFactory() );
 
         config.addManagedRepository( createManagedRepository( LOCAL_MIRROR_REPO,
-                                                              new File( getBasedir(),
-                                                                        "target/test-classes/local-mirror" ).getPath(),
+                                                              new File( "target/test-classes/local-mirror" ).getPath(),
                                                               "default" ) );
 
         List<RepositoryGroupConfiguration> repoGroups = new ArrayList<RepositoryGroupConfiguration>();
@@ -359,6 +370,7 @@ public class ArchivaDavResourceFactoryTest
     }
 
     // MRM-1239
+    @Test
     public void testRequestArtifactMetadataThreePartsRepoHasDefaultLayout()
         throws Exception
     {
@@ -370,7 +382,7 @@ public class ArchivaDavResourceFactoryTest
         ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
-        RepositoryRequest repoRequest = (RepositoryRequest) lookup( RepositoryRequest.class );
+        RepositoryRequest repoRequest = new RepositoryRequest( new LegacyPathParser( this.archivaConfiguration ) );
         resourceFactory.setRepositoryRequest( repoRequest );
 
         try
@@ -411,6 +423,7 @@ public class ArchivaDavResourceFactoryTest
         }
     }
 
+    @Test
     public void testRequestArtifactMetadataTwoPartsRepoHasDefaultLayout()
         throws Exception
     {
@@ -422,7 +435,7 @@ public class ArchivaDavResourceFactoryTest
         ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
-        RepositoryRequest repoRequest = (RepositoryRequest) lookup( RepositoryRequest.class );
+        RepositoryRequest repoRequest = new RepositoryRequest( new LegacyPathParser( this.archivaConfiguration ) );
         resourceFactory.setRepositoryRequest( repoRequest );
 
         try
@@ -452,11 +465,11 @@ public class ArchivaDavResourceFactoryTest
         }
     }
 
+    @Test
     public void testRequestMetadataRepoIsLegacy()
         throws Exception
     {
-        config.addManagedRepository( createManagedRepository( LEGACY_REPO, new File( getBasedir(),
-                                                                                     "target/test-classes/" +
+        config.addManagedRepository( createManagedRepository( LEGACY_REPO, new File( "target/test-classes/" +
                                                                                          LEGACY_REPO ).getPath(),
                                                               "legacy" ) );
         DavResourceLocator locator =
@@ -466,7 +479,7 @@ public class ArchivaDavResourceFactoryTest
         ManagedRepositoryContent legacyRepo = createManagedRepositoryContent( LEGACY_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
-        RepositoryRequest repoRequest = (RepositoryRequest) lookup( RepositoryRequest.class );
+        RepositoryRequest repoRequest = new RepositoryRequest( new LegacyPathParser( this.archivaConfiguration ) );
         resourceFactory.setRepositoryRequest( repoRequest );
 
         try
@@ -527,7 +540,7 @@ public class ArchivaDavResourceFactoryTest
             File target = new File( repository.getRepoRoot(), logicalPath );
             try
             {
-                FileUtils.copyFile( new File( getBasedir(), "target/test-classes/maven-metadata.xml" ), target );
+                FileUtils.copyFile( new File( "target/test-classes/maven-metadata.xml" ), target );
             }
             catch ( IOException e )
             {

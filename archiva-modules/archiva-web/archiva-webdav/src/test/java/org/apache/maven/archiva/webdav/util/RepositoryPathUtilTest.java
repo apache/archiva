@@ -23,28 +23,29 @@ import junit.framework.TestCase;
 
 /**
  */
-public class RepositoryPathUtilTest extends TestCase
+public class RepositoryPathUtilTest
+    extends TestCase
 {
     public void testGetRepositoryId()
     {
         String href = "/path/to/my/resource";
-        assertEquals("to", RepositoryPathUtil.getRepositoryName(href));
+        assertEquals( "to", RepositoryPathUtil.getRepositoryName( href ) );
 
         href = "path/to/my/resource";
-        assertEquals("to", RepositoryPathUtil.getRepositoryName(href));
+        assertEquals( "to", RepositoryPathUtil.getRepositoryName( href ) );
 
         href = "mypath";
-        assertEquals("/", RepositoryPathUtil.getLogicalResource(href));
+        assertEquals( "/", RepositoryPathUtil.getLogicalResource( href ) );
     }
 
     public void testGetLogicalPath()
     {
         String href = "/repository/internal/org/apache/maven/someartifact.jar";
-        assertEquals("/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource(href));
+        assertEquals( "/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource( href ) );
 
         href = "repository/internal/org/apache/maven/someartifact.jar";
-        assertEquals("/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource(href));
-        
+        assertEquals( "/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource( href ) );
+
         href = "repository/internal/org/apache/maven/";
         assertEquals( "/org/apache/maven/", RepositoryPathUtil.getLogicalResource( href ) );
     }

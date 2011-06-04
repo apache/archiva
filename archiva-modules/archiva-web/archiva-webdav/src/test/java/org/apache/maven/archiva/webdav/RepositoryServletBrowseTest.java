@@ -23,6 +23,8 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -37,7 +39,8 @@ public class RepositoryServletBrowseTest
     extends AbstractRepositoryServletTestCase
 {
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception 
     {
         super.setUp();
@@ -47,7 +50,8 @@ public class RepositoryServletBrowseTest
         new File( repoRootInternal, "net/sourceforge" ).mkdirs();
         new File( repoRootInternal, "commons-lang" ).mkdirs();
     }
-    
+
+    @Test
     public void testBrowse()
         throws Exception
     {
@@ -60,7 +64,8 @@ public class RepositoryServletBrowseTest
         String expectedLinks[] = new String[] { "commons-lang/", "net/", "org/" };
         assertLinks(expectedLinks, response.getLinks());
     }
-    
+
+    @Test
     public void testBrowseSubdirectory()
         throws Exception
     {
@@ -72,6 +77,7 @@ public class RepositoryServletBrowseTest
         assertLinks(expectedLinks, response.getLinks());
     }
 
+    @Test
     public void testGetDirectoryWhichHasMatchingFile() //MRM-893
         throws Exception
     {

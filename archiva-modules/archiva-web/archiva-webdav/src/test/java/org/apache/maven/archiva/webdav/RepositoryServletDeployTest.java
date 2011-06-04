@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.webdav.httpunit.MkColMethodWebRequest;
+import org.junit.Test;
 
 
 /**
@@ -41,7 +42,8 @@ public class RepositoryServletDeployTest
     extends AbstractRepositoryServletTestCase
 {
     private static final String ARTIFACT_DEFAULT_LAYOUT = "/path/to/artifact/1.0.0/artifact-1.0.0.jar";
-	
+
+    @Test
     public void testPutWithMissingParentCollection()
         throws Exception
     {
@@ -65,6 +67,7 @@ public class RepositoryServletDeployTest
      * 
      * @throws Exception
      */
+    @Test
     public void testReleaseArtifactsRedeploymentValidPath()
         throws Exception
     {
@@ -99,7 +102,8 @@ public class RepositoryServletDeployTest
         response = sc.getResponse( request );
         assertResponseConflictError( response );        
     }
-    
+
+    @Test
     public void testReleaseArtifactsRedeploymentIsAllowed()
         throws Exception
     {
@@ -139,7 +143,8 @@ public class RepositoryServletDeployTest
         response = sc.getResponse( request );
         assertResponseNoContent( response );        
     }
-    
+
+    @Test
     public void testReleaseArtifactsRedeploymentInvalidPath()
         throws Exception
     {
@@ -174,7 +179,8 @@ public class RepositoryServletDeployTest
         response = sc.getResponse( request );
         assertResponseNoContent( response );
     } 
-    
+
+    @Test
     public void testReleaseArtifactsRedeploymentArtifactIsSnapshot()
         throws Exception
     {
@@ -209,7 +215,8 @@ public class RepositoryServletDeployTest
         response = sc.getResponse( request );
         assertResponseNoContent( response );
     } 
-    
+
+    @Test
     public void testMkColWithMissingParentCollectionFails()
         throws Exception
     {

@@ -36,6 +36,7 @@ import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.users.memory.MemoryUserManager;
+import org.springframework.stereotype.Service;
 
 /**
  * BypassSecuritySystem - used to bypass the security system for testing reasons and allow
@@ -43,9 +44,10 @@ import org.codehaus.plexus.redback.users.memory.MemoryUserManager;
  *
  * @version $Id$
  * 
- * @plexus.component 
+ * plexus.component
  *      role="org.codehaus.plexus.redback.system.SecuritySystem"
  */
+@Service("securitySystem#bypass")
 public class BypassSecuritySystem
     extends DefaultSecuritySystem
     implements SecuritySystem

@@ -25,6 +25,7 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 import org.apache.maven.archiva.policies.ReleasesPolicy;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -36,6 +37,7 @@ import java.io.File;
 public class RepositoryServletProxiedReleasePolicyTest
     extends AbstractRepositoryServletProxiedTestCase
 {
+    @Test
     public void testGetProxiedReleaseArtifactPolicyAlwaysManagedNewer()
         throws Exception
     {
@@ -43,6 +45,7 @@ public class RepositoryServletProxiedReleasePolicyTest
                                                    ( NEWER * OVER_ONE_DAY ) );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyAlwaysManagedOlder()
         throws Exception
     {
@@ -50,12 +53,14 @@ public class RepositoryServletProxiedReleasePolicyTest
                                                    ( OLDER * OVER_ONE_DAY ) );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyAlwaysNoManagedContent()
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.ALWAYS, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyDailyFail()
         throws Exception
     {
@@ -63,12 +68,14 @@ public class RepositoryServletProxiedReleasePolicyTest
                                                    ( NEWER * ONE_MINUTE ) );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyDailyNoManagedContent()
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.DAILY, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyDailyPass()
         throws Exception
     {
@@ -76,24 +83,28 @@ public class RepositoryServletProxiedReleasePolicyTest
                                                    ( OLDER * OVER_ONE_DAY ) );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyRejectFail()
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.NEVER, HAS_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyRejectNoManagedContentFail()
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_NOT_FOUND, ReleasesPolicy.NEVER, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyRejectPass()
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.NEVER, HAS_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyHourlyFail()
         throws Exception
     {
@@ -101,12 +112,14 @@ public class RepositoryServletProxiedReleasePolicyTest
                                                    ( NEWER * ONE_MINUTE ) );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyHourlyNoManagedContent()
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.HOURLY, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyHourlyPass()
         throws Exception
     {
@@ -114,18 +127,21 @@ public class RepositoryServletProxiedReleasePolicyTest
                                                    ( OLDER * OVER_ONE_HOUR ) );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyOnceFail()
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.ONCE, HAS_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyOnceNoManagedContent()
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.ONCE, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedReleaseArtifactPolicyOncePass()
         throws Exception
     {

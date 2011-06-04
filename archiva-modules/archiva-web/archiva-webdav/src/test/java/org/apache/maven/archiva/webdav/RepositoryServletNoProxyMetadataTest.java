@@ -23,6 +23,7 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -34,6 +35,7 @@ import java.io.File;
 public class RepositoryServletNoProxyMetadataTest
     extends AbstractRepositoryServletTestCase
 {
+    @Test
     public void testGetVersionMetadataDefaultLayout()
         throws Exception
     {
@@ -52,6 +54,7 @@ public class RepositoryServletNoProxyMetadataTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetProjectMetadataDefaultLayout()
         throws Exception
     {
@@ -70,6 +73,7 @@ public class RepositoryServletNoProxyMetadataTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetGroupMetadataDefaultLayout()
         throws Exception
     {
@@ -88,6 +92,7 @@ public class RepositoryServletNoProxyMetadataTest
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
     }
 
+    @Test
     public void testGetSnapshotVersionMetadataDefaultLayout()
         throws Exception
     {

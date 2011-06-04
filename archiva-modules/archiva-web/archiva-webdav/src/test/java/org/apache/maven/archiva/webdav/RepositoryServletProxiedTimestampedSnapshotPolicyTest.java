@@ -25,6 +25,7 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -36,6 +37,8 @@ import java.io.File;
 public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
     extends AbstractRepositoryServletProxiedTestCase
 {
+
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysManagedNewer()
         throws Exception
     {
@@ -43,6 +46,7 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                                                      HAS_MANAGED_COPY, ( NEWER * OVER_ONE_DAY ) );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysManagedOlder()
         throws Exception
     {
@@ -50,12 +54,14 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                                                      ( OLDER * OVER_ONE_DAY ) );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysNoManagedContent()
         throws Exception
     {
         assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.ALWAYS, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyDailyFail()
         throws Exception
     {
@@ -63,12 +69,14 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                                                      ( NEWER * ONE_MINUTE ) );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyDailyNoManagedContent()
         throws Exception
     {
         assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.DAILY, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyDailyPass()
         throws Exception
     {
@@ -76,6 +84,7 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                                                      ( OLDER * OVER_ONE_DAY ) );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyRejectFail()
         throws Exception
     {
@@ -83,12 +92,14 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                                                      HAS_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyRejectNoManagedContentFail()
         throws Exception
     {
         assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_NOT_FOUND, SnapshotsPolicy.NEVER, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyRejectPass()
         throws Exception
     {
@@ -96,6 +107,7 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                                                      HAS_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyHourlyFail()
         throws Exception
     {
@@ -103,12 +115,14 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                                                      ( NEWER * ONE_MINUTE ) );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyHourlyNoManagedContent()
         throws Exception
     {
         assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.HOURLY, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyHourlyPass()
         throws Exception
     {
@@ -116,18 +130,21 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                                                      ( OLDER * OVER_ONE_HOUR ) );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyOnceFail()
         throws Exception
     {
         assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.ONCE, HAS_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyOnceNoManagedContent()
         throws Exception
     {
         assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.ONCE, NO_MANAGED_COPY );
     }
 
+    @Test
     public void testGetProxiedSnapshotsArtifactPolicyOncePass()
         throws Exception
     {

@@ -27,6 +27,7 @@ import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.InvocationContext;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
+import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.repository.audit.TestAuditListener;
 import org.apache.commons.io.FileUtils;
@@ -43,16 +44,21 @@ import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.codehaus.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * RepositoryServletSecurityTest Test the flow of the authentication and authorization checks. This does not necessarily
@@ -60,8 +66,10 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class RepositoryServletSecurityTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     protected static final String REPOID_INTERNAL = "internal";
 
@@ -71,6 +79,7 @@ public class RepositoryServletSecurityTest
 
     private ServletRunner sr;
 
+    @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
     private DavSessionProvider davSessionProvider;
@@ -85,19 +94,19 @@ public class RepositoryServletSecurityTest
 
     private RepositoryServlet servlet;
 
+    @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
+        String appserverBase = new File( "target/appserver-base" ).getAbsolutePath();
         System.setProperty( "appserver.base", appserverBase );
 
-        File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
+        File testConf = new File( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
         FileUtils.copyFile( testConf, testConfDest );
 
-        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
         Configuration config = archivaConfiguration.getConfiguration();
 
@@ -108,7 +117,7 @@ public class RepositoryServletSecurityTest
 
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
-        sr = new ServletRunner( getTestFile( "src/test/resources/WEB-INF/repository-servlet-security-test/web.xml" ) );
+        sr = new ServletRunner( new File( "src/test/resources/WEB-INF/repository-servlet-security-test/web.xml" ) );
         sr.registerServlet( "/repository/*", RepositoryServlet.class.getName() );
         sc = sr.newClient();
 
@@ -156,12 +165,7 @@ public class RepositoryServletSecurityTest
     }
 
     @Override
-    protected String getPlexusConfigLocation()
-    {
-        return "org/apache/maven/archiva/webdav/RepositoryServletSecurityTest.xml";
-    }
-
-    @Override
+    @After
     protected void tearDown()
         throws Exception
     {

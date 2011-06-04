@@ -19,8 +19,8 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.io.File;
-
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
@@ -28,17 +28,18 @@ import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.junit.After;
+import org.junit.Before;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.ServletHandler;
 
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebResponse;
+import java.io.File;
 
 /**
- * AbstractRepositoryServletProxiedTestCase 
+ * AbstractRepositoryServletProxiedTestCase
  *
  * @version $Id$
  */
@@ -89,11 +90,11 @@ public abstract class AbstractRepositoryServletProxiedTestCase
     protected RemoteRepoInfo remoteCentral;
 
     protected RemoteRepoInfo remoteSnapshots;
-    
+
     protected RemoteRepoInfo remotePrivateSnapshots;
-    
-    @Override
-    protected void setUp()
+
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -105,7 +106,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         RemoteRepoInfo repo = new RemoteRepoInfo();
         repo.id = id;
         repo.context = "/" + id;
-        repo.root = getTestFile( "target/remote-repos/" + id + "/" );
+        repo.root = new File( "target/remote-repos/" + id + "/" );
 
         // Remove exising root contents.
         if ( repo.root.exists() )
@@ -152,7 +153,8 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         assertResponseOK( response );
     }
 
-    private void setupConnector( String repoId, RemoteRepoInfo remoteRepo, String releasesPolicy, String snapshotsPolicy )
+    private void setupConnector( String repoId, RemoteRepoInfo remoteRepo, String releasesPolicy,
+                                 String snapshotsPolicy )
     {
         ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
         connector.setSourceRepoId( repoId );
@@ -234,7 +236,8 @@ public abstract class AbstractRepositoryServletProxiedTestCase
     }
 
     @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         shutdownServer( remoteCentral );

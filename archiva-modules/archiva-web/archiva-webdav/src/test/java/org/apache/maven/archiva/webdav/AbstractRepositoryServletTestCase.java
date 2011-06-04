@@ -24,25 +24,33 @@ import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * AbstractRepositoryServletTestCase 
  *
  * @version $Id$
  */
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractRepositoryServletTestCase
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
     protected static final String REPOID_INTERNAL = "internal";
 
@@ -56,6 +64,7 @@ public abstract class AbstractRepositoryServletTestCase
 
     private ServletRunner sr;
 
+    @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
     protected void saveConfiguration()
@@ -155,19 +164,20 @@ public abstract class AbstractRepositoryServletTestCase
         archivaConfiguration.save( archivaConfiguration.getConfiguration() );
     }
 
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
 
-        String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
+        String appserverBase = new File( "target/appserver-base" ).getAbsolutePath();
         System.setProperty( "appserver.base", appserverBase );
 
-        File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
+        File testConf = new File( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
         FileUtils.copyFile( testConf, testConfDest );
 
-        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        //archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
         repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
         Configuration config = archivaConfiguration.getConfiguration();
@@ -180,19 +190,14 @@ public abstract class AbstractRepositoryServletTestCase
 
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );                
 
-        sr = new ServletRunner( getTestFile( "src/test/resources/WEB-INF/web.xml" ) );
+        sr = new ServletRunner( new File( "src/test/resources/WEB-INF/web.xml" ) );
         sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
         sc = sr.newClient();
     }
 
     @Override
-    protected String getPlexusConfigLocation()
-    {
-        return "org/apache/maven/archiva/webdav/RepositoryServletTest.xml";
-    }
-
-    @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         if ( sc != null )
@@ -215,8 +220,6 @@ public abstract class AbstractRepositoryServletTestCase
             FileUtils.deleteDirectory( repoRootLegacy );
         }
 
-        release( archivaConfiguration );
-        
         super.tearDown();
     }
 

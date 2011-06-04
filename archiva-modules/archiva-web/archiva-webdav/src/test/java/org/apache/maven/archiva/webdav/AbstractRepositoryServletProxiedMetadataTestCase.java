@@ -27,6 +27,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
+import org.junit.Before;
 
 /**
  * Abstract TestCase for RepositoryServlet Tests, Proxied, Get of Metadata. 
@@ -242,7 +243,8 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
 //        }
 //    }
 
-    protected void tearDown()
+    @Before
+    public void tearDown()
         throws Exception
     {
         shutdownServer( remotePrivateSnapshots );
