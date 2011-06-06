@@ -32,6 +32,7 @@ import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -139,6 +140,7 @@ public class RepositoryServletRepositoryGroupTest
     /*
     * Test Case 3.c
     */
+    @Test
     public void testGetFromFirstManagedRepositoryReturnOk()
         throws Exception
     {
@@ -159,6 +161,7 @@ public class RepositoryServletRepositoryGroupTest
     /*
     * Test Case 3.c
     */
+    @Test
     public void testGetFromLastManagedRepositoryReturnOk()
         throws Exception
     {
@@ -179,6 +182,7 @@ public class RepositoryServletRepositoryGroupTest
     /*
     * Test Case 3.b
     */
+    @Test
     public void testGetFromValidRepositoryGroupReturnNotFound()
         throws Exception
     {
@@ -194,6 +198,7 @@ public class RepositoryServletRepositoryGroupTest
     /*
     * Test Case 3.a
     */
+    @Test
     public void testGetInvalidManagedRepositoryInGroupReturnNotFound()
         throws Exception
     {
@@ -209,6 +214,7 @@ public class RepositoryServletRepositoryGroupTest
     /*
     * Test Case 4
     */
+    @Test
     public void testPutValidRepositoryGroupReturnBadRequest()
         throws Exception
     {
@@ -223,6 +229,7 @@ public class RepositoryServletRepositoryGroupTest
     }
 
     // MRM-872
+    @Test
     public void testGetMergedMetadata()
         throws Exception
     {
@@ -292,6 +299,7 @@ public class RepositoryServletRepositoryGroupTest
     }
 
     // MRM-901
+    @Test
     public void testBrowseWithTwoArtifactsWithSameGroupIdInRepos()
         throws Exception
     {

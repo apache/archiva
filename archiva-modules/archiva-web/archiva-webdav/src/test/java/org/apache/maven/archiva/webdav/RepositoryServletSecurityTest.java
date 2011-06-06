@@ -50,6 +50,7 @@ import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -166,7 +167,7 @@ public class RepositoryServletSecurityTest
 
     @Override
     @After
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         if ( sc != null )
@@ -191,6 +192,7 @@ public class RepositoryServletSecurityTest
 
     // test deploy with invalid user, and guest has no write access to repo
     // 401 must be returned
+    @Test
     public void testPutWithInvalidUserAndGuestHasNoWriteAccess()
         throws Exception
     {
@@ -226,6 +228,7 @@ public class RepositoryServletSecurityTest
     }
 
     // test deploy with invalid user, but guest has write access to repo
+    @Test
     public void testPutWithInvalidUserAndGuestHasWriteAccess()
         throws Exception
     {
@@ -282,6 +285,7 @@ public class RepositoryServletSecurityTest
     }
 
     // test deploy with a valid user with no write access
+    @Test
     public void testPutWithValidUserWithNoWriteAccess()
         throws Exception
     {
@@ -329,6 +333,7 @@ public class RepositoryServletSecurityTest
     }
 
     // test deploy with a valid user with write access
+    @Test
     public void testPutWithValidUserWithWriteAccess()
         throws Exception
     {
@@ -385,6 +390,7 @@ public class RepositoryServletSecurityTest
     }
 
     // test get with invalid user, and guest has read access to repo
+    @Test
     public void testGetWithInvalidUserAndGuestHasReadAccess()
         throws Exception
     {
@@ -440,6 +446,7 @@ public class RepositoryServletSecurityTest
     }
 
     // test get with invalid user, and guest has no read access to repo
+    @Test
     public void testGetWithInvalidUserAndGuestHasNoReadAccess()
         throws Exception
     {
@@ -477,6 +484,7 @@ public class RepositoryServletSecurityTest
     }
 
     // test get with valid user with read access to repo
+    @Test
     public void testGetWithAValidUserWithReadAccess()
         throws Exception
     {
@@ -527,6 +535,7 @@ public class RepositoryServletSecurityTest
     }
 
     // test get with valid user with no read access to repo
+    @Test
     public void testGetWithAValidUserWithNoReadAccess()
         throws Exception
     {
