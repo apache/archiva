@@ -65,4 +65,20 @@
   </bean>
 
 
+  <bean id="url-failures-cache" class="org.codehaus.plexus.cache.ehcache.EhcacheCache" lazy-init="true"
+        destroy-method="dispose">
+    <property name="diskExpiryThreadIntervalSeconds" value="600"/>
+    <property name="diskPersistent" value="false"/>
+    <property name="diskStorePath" value="${java.io.tmpdir}/archiva/urlcache"/>
+    <property name="maxElementsInMemory" value="1000"/>
+    <property name="memoryEvictionPolicy" value="LRU"/>
+    <property name="name" value="url-failures-cache"/>
+    <property name="overflowToDisk" value="false"/>
+    <!-- 45 minutes = 2700 seconds -->
+    <property name="timeToIdleSeconds" value="2700"/>
+    <!-- 30 minutes = 1800 seconds  -->
+    <property name="timeToLiveSeconds" value="1800"/>
+  </bean>
+
+
 </beans>
