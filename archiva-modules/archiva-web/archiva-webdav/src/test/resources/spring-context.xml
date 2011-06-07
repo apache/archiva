@@ -27,6 +27,8 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
+  <context:property-placeholder system-properties-mode="OVERRIDE"/>
+
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.maven.archiva.webdav,org.apache.archiva.metadata.repository"/>
 
@@ -39,6 +41,29 @@
         <prop key="org.quartz.threadPool.threadPriority">4</prop>
         <prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
       </props>
+    </property>
+  </bean>
+
+  <bean name="servletAuthenticator" class="org.apache.maven.archiva.webdav.MockServletAuthenticator"/>
+
+  <bean name="archivaConfiguration#default"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#default"/>
+  </bean>
+
+  <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
+
+  <bean name="registry#default" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
+          <xml fileName="${appserver.base}/conf/archiva.xml" config-forceCreate="true"
+               config-optional="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
     </property>
   </bean>
 
