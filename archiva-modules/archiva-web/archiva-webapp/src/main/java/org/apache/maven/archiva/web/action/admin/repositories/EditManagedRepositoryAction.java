@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
-import org.codehaus.plexus.scheduler.CronExpressionValidator;
+import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 
 import java.io.File;
 import java.io.IOException;

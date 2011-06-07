@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
@@ -112,9 +113,9 @@ public class DependencyTreeTag
         DependencyTree deptree;
         try
         {
-            deptree = (DependencyTree) PlexusTagUtil.lookup( pageContext, DependencyTree.class.getName() );
+            deptree = (DependencyTree) PlexusTagUtil.lookup( pageContext, DependencyTree.class );
         }
-        catch ( ComponentLookupException e )
+        catch ( PlexusSisuBridgeException e )
         {
             throw new JspException( "Unable to lookup DependencyTree: " + e.getMessage(), e );
         }

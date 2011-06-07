@@ -19,63 +19,36 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.jsp.PageContext;
 
 /**
- * PlexusTagUtil 
+ * PlexusTagUtil
  *
  * @version $Id$
  */
 public class PlexusTagUtil
 {
     public static Object lookup( PageContext pageContext, Class<?> clazz )
-        throws ComponentLookupException
+        throws PlexusSisuBridgeException
     {
         return getContainer( pageContext ).lookup( clazz );
     }
 
-    public static Object lookup( PageContext pageContext, String role )
-        throws ComponentLookupException
-    {
-        return getContainer( pageContext ).lookup( role );
-    }
-
-    public static Object lookup( PageContext pageContext, Class<?> clazz, String hint )
-        throws ComponentLookupException
-    {
-        return getContainer( pageContext ).lookup( clazz, hint );
-    }
-
-    public static Object lookup( PageContext pageContext, String role, String hint )
-        throws ComponentLookupException
-    {
-        return getContainer( pageContext ).lookup( role, hint );
-    }
-
-    public static PlexusContainer getContainer( PageContext pageContext )
-        throws ComponentLookupException
+    private static PlexusSisuBridge getContainer( PageContext pageContext )
     {
         ServletContext servletContext = pageContext.getServletContext();
 
-        PlexusContainer xworkContainer = (PlexusContainer) servletContext.getAttribute( "webwork.plexus.container" );
+        WebApplicationContext webApplicationContext =
+            WebApplicationContextUtils.getRequiredWebApplicationContext( pageContext.getServletContext() );
 
-        if ( xworkContainer != null )
-        {
-            servletContext.setAttribute( PlexusConstants.PLEXUS_KEY, xworkContainer );
+        return webApplicationContext.getBean( PlexusSisuBridge.class );
 
-            return xworkContainer;
-        }
 
-        PlexusContainer container = (PlexusContainer) servletContext.getAttribute( PlexusConstants.PLEXUS_KEY );
-        if ( container == null )
-        {
-            throw new ComponentLookupException( "PlexusContainer is null." );
-        }
-        return container;
     }
 }

@@ -34,8 +34,8 @@ public class CronExpressionValidator
     {
         String cron = (String) getFieldValue( "cron", obj );
 
-        org.codehaus.plexus.scheduler.CronExpressionValidator cronExpressionValidator =
-            new org.codehaus.plexus.scheduler.CronExpressionValidator();
+        org.codehaus.redback.components.scheduler.CronExpressionValidator cronExpressionValidator =
+            new org.codehaus.redback.components.scheduler.CronExpressionValidator();
 
         ValidatorContext ctxt = getValidatorContext();
         if ( !cronExpressionValidator.validate( String.valueOf( cron ) ) )

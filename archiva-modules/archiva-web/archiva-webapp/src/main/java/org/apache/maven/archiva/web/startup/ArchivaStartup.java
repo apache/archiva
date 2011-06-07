@@ -19,17 +19,12 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
-import org.codehaus.plexus.scheduler.DefaultScheduler;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
-import org.codehaus.plexus.spring.PlexusWebApplicationContext;
 import org.codehaus.plexus.taskqueue.Task;
-import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
 import org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.codehaus.redback.components.scheduler.DefaultScheduler;
+import org.quartz.SchedulerException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -56,20 +51,16 @@ public class ArchivaStartup
 
     public void contextInitialized( ServletContextEvent contextEvent )
     {
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(
-            contextEvent.getServletContext() );
+        WebApplicationContext wac =
+            WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
 
-        SecuritySynchronization securitySync = (SecuritySynchronization) wac.getBean( PlexusToSpringUtils.buildSpringId(
-            SecuritySynchronization.class ) );
+        SecuritySynchronization securitySync = wac.getBean( SecuritySynchronization.class );
 
-        repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) wac.getBean( PlexusToSpringUtils.buildSpringId(
-            ArchivaTaskScheduler.class, "repository" ) );
+        repositoryTaskScheduler = wac.getBean( "archivaTaskScheduler#repository", RepositoryArchivaTaskScheduler.class );
 
-        tqeRepoScanning = (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId(
-            TaskQueueExecutor.class, "repository-scanning" ) );
+        tqeRepoScanning = wac.getBean( "taskQueueExecutor#repository-scanning", ThreadedTaskQueueExecutor.class );
 
-        tqeIndexing = (ThreadedTaskQueueExecutor) wac.getBean( PlexusToSpringUtils.buildSpringId(
-            TaskQueueExecutor.class, "indexing" ) );
+        tqeIndexing = wac.getBean( "taskQueueExecutor#indexing", ThreadedTaskQueueExecutor.class );
 
         try
         {
@@ -85,14 +76,18 @@ public class ArchivaStartup
 
     public void contextDestroyed( ServletContextEvent contextEvent )
     {
-        WebApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
-            contextEvent.getServletContext() );
+        WebApplicationContext applicationContext =
+            WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
+
+        // TODO check this stop
+
+        /*
         if ( applicationContext != null && applicationContext instanceof ClassPathXmlApplicationContext )
         {
             ( (ClassPathXmlApplicationContext) applicationContext ).close();
-        }
+        } */
 
-        if ( applicationContext != null && applicationContext instanceof PlexusWebApplicationContext )
+        if ( applicationContext != null ) //&& applicationContext instanceof PlexusWebApplicationContext )
         {
             // stop task queue executors
             stopTaskQueueExecutor( tqeDbScanning );
@@ -106,7 +101,7 @@ public class ArchivaStartup
                 {
                     repositoryTaskScheduler.stop();
                 }
-                catch ( StoppingException e )
+                catch ( SchedulerException e )
                 {
                     e.printStackTrace();
                 }
@@ -127,7 +122,9 @@ public class ArchivaStartup
             }
 
             // close the application context
-            ( (PlexusWebApplicationContext) applicationContext ).close();
+            //applicationContext.close();
+            // TODO fix close call
+            //applicationContext.
         }
     }
 

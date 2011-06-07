@@ -44,23 +44,22 @@ import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.spring.PlexusToSpringUtils;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet for handling rss feed requests.
@@ -95,15 +94,11 @@ public class RssFeedServlet
     {
         super.init( servletConfig );
         wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
-        userRepositories = (UserRepositories) wac.getBean( PlexusToSpringUtils.buildSpringId(
-            UserRepositories.class.getName() ) );
-        servletAuth = (ServletAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId(
-            ServletAuthenticator.class.getName() ) );
-        httpAuth = (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE,
-                                                                                       "basic" ) );
+        userRepositories = wac.getBean( UserRepositories.class );
+        servletAuth = wac.getBean( ServletAuthenticator.class );
+        httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
         // TODO: what if there are other types?
-        repositorySessionFactory = (RepositorySessionFactory) wac.getBean( PlexusToSpringUtils.buildSpringId(
-            RepositorySessionFactory.class.getName() ) );
+        repositorySessionFactory = wac.getBean( RepositorySessionFactory.class );
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
@@ -140,16 +135,14 @@ public class RssFeedServlet
                 if ( repoId != null )
                 {
                     // new artifacts in repo feed request
-                    processor = (RssFeedProcessor) wac.getBean( PlexusToSpringUtils.buildSpringId(
-                        RssFeedProcessor.class.getName(), "new-artifacts" ) );
+                    processor = wac.getBean( "rssFeedProcessor#new-artifacts", RssFeedProcessor.class );
                     map.put( RssFeedProcessor.KEY_REPO_ID, repoId );
                 }
                 else if ( ( groupId != null ) && ( artifactId != null ) )
                 {
                     // TODO: this only works for guest - we could pass in the list of repos
                     // new versions of artifact feed request
-                    processor = (RssFeedProcessor) wac.getBean( PlexusToSpringUtils.buildSpringId(
-                        RssFeedProcessor.class.getName(), "new-versions" ) );
+                    processor = wac.getBean( "rssFeedProcessor#new-versions", RssFeedProcessor.class );
                     map.put( RssFeedProcessor.KEY_GROUP_ID, groupId );
                     map.put( RssFeedProcessor.KEY_ARTIFACT_ID, artifactId );
                 }

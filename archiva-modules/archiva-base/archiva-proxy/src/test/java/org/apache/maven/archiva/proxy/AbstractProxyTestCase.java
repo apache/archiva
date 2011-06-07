@@ -21,7 +21,6 @@ package org.apache.maven.archiva.proxy;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -36,6 +35,7 @@ import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.wagon.Wagon;
+import org.codehaus.plexus.util.FileUtils;
 import org.easymock.ArgumentsMatcher;
 import org.easymock.MockControl;
 import org.junit.Before;
@@ -303,8 +303,8 @@ public abstract class AbstractProxyTestCase
                       actualFile.getCanonicalPath() );
         assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), actualFile.getAbsolutePath() );
 
-        String expectedContents = FileUtils.readFileToString( sourceFile, null );
-        String actualContents = FileUtils.readFileToString( actualFile, null );
+        String expectedContents = org.apache.commons.io.FileUtils.readFileToString( sourceFile, null );
+        String actualContents = org.apache.commons.io.FileUtils.readFileToString( actualFile, null );
         assertEquals( "Check file contents.", expectedContents, actualContents );
     }
 
@@ -322,7 +322,7 @@ public abstract class AbstractProxyTestCase
             return;
         }
 
-        Collection<File> tmpFiles = FileUtils.listFiles( workingDir, new String[]{ "tmp" }, false );
+        Collection<File> tmpFiles = org.apache.commons.io.FileUtils.listFiles( workingDir, new String[]{ "tmp" }, false );
         if ( !tmpFiles.isEmpty() )
         {
             StringBuffer emsg = new StringBuffer();
@@ -369,7 +369,7 @@ public abstract class AbstractProxyTestCase
             {
                 destination = destination.getParentFile();
 
-                FileUtils.copyFile( file, new File( destination, file.getName() ), false );
+                org.apache.commons.io.FileUtils.copyFile( file, new File( destination, file.getName() ), false );
                 // TODO: Change when there is a FileUtils.copyFileToDirectory(file, destination, boolean) option
                 //FileUtils.copyFileToDirectory( file, destination );
             }
