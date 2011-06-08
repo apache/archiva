@@ -20,6 +20,7 @@ package org.apache.maven.archiva.proxy;
  */
 
 import junit.framework.TestCase;
+import net.sf.ehcache.CacheManager;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -200,6 +201,8 @@ public abstract class AbstractProxyTestCase
         delegate = (WagonDelegate) plexusSisuBridge.lookup( Wagon.class, "test" );
 
         delegate.setDelegate( wagonMock );
+
+        CacheManager.getInstance().clearAll();
 
         log.info( "\n.\\ " + getName() + "() \\._________________________________________\n" );
     }

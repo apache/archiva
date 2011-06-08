@@ -20,6 +20,7 @@ package org.apache.maven.archiva.proxy;
  */
 
 import junit.framework.TestCase;
+import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -158,6 +159,7 @@ public class HttpProxyTransferTest
 
         config.getConfiguration().addRemoteRepository( repoConfig );
 
+        CacheManager.getInstance().clearAll();
 
     }
 

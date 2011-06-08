@@ -267,7 +267,7 @@ public class ChecksummedFile
                     String rawChecksum = FileUtils.readFileToString( checksumFile );
                     String expectedChecksum = parseChecksum( rawChecksum, checksumAlgorithm, referenceFile.getName() );
 
-                    if ( StringUtils.equalsIgnoreCase( expectedChecksum, actualChecksum ) == false )
+                    if ( ! StringUtils.equalsIgnoreCase( expectedChecksum, actualChecksum ) )
                     {
                         // create checksum (again)
                         FileUtils.writeStringToFile( checksumFile, actualChecksum + "  " + referenceFile.getName() );
