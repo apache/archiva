@@ -74,6 +74,7 @@ public abstract class AbstractSecurityTest
     protected RoleManager roleManager;
 
     @Inject
+    @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
@@ -87,7 +88,10 @@ public abstract class AbstractSecurityTest
         repoConfig.setId( repoId );
         repoConfig.setName( "Testable repo <" + repoId + ">" );
         repoConfig.setLocation( new File( "./target/test-repo/" + repoId ).getPath() );
-        archivaConfiguration.getConfiguration().addManagedRepository( repoConfig );
+        if ( !archivaConfiguration.getConfiguration().getManagedRepositoriesAsMap().containsKey( repoId ) )
+        {
+            archivaConfiguration.getConfiguration().addManagedRepository( repoConfig );
+        }
 
         // Add repo roles to security.
         userRepos.createMissingRepositoryRoles( repoId );

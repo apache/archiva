@@ -78,32 +78,27 @@
 
   <alias name="servletAuthenticator" alias="servletAuthenticator#test"/>
 
-  <!--
+  <bean name="archivaConfiguration#default"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#test"/>
+  </bean>
+  <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
 
-    <component>
-      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.registry.Registry</role>
-          <role-hint>configured</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.registry.Registry</role>
-      <role-hint>configured</role-hint>
-      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
-      <configuration>
-        <properties>
+  <bean name="registry#test" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
           <system/>
-          <xml fileName="${basedir}/target/test-conf/archiva.xml"
+          <xml fileName="${basedir}/target/test-conf/archiva.xml" config-forceCreate="true"
+               config-optional="true"
                config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
-        </properties>
-      </configuration>
-    </component>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
 
-
+  <!--
     partially configured
 
     <component>

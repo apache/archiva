@@ -19,9 +19,7 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -38,14 +36,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DefaultUserRepositories
- * 
+ *
  * @version $Id$
- * plexus.component role="org.apache.maven.archiva.security.UserRepositories" role-hint="default"
+ *          plexus.component role="org.apache.maven.archiva.security.UserRepositories" role-hint="default"
  */
-@Service("userRepositories")
+@Service( "userRepositories" )
 public class DefaultUserRepositories
     implements UserRepositories
 {
@@ -66,7 +66,7 @@ public class DefaultUserRepositories
      */
     @Inject
     private ArchivaConfiguration archivaConfiguration;
-    
+
     private Logger log = LoggerFactory.getLogger( DefaultUserRepositories.class );
 
     public List<String> getObservableRepositoryIds( String principal )
@@ -92,8 +92,7 @@ public class DefaultUserRepositories
 
         List<String> repoIds = new ArrayList<String>();
 
-        List<ManagedRepositoryConfiguration> repos =
-            archivaConfiguration.getConfiguration().getManagedRepositories();
+        List<ManagedRepositoryConfiguration> repos = archivaConfiguration.getConfiguration().getManagedRepositories();
 
         for ( ManagedRepositoryConfiguration repo : repos )
         {
@@ -108,8 +107,11 @@ public class DefaultUserRepositories
             catch ( AuthorizationException e )
             {
                 // swallow.
-                log.debug( "Not authorizing '" + principal + "' for repository '" + repo.getId() + "': "
-                    + e.getMessage() );
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( "Not authorizing '{}' for repository '{}': {}",
+                               Lists.<Object>newArrayList( principal, repo.getId(), e.getMessage() ) );
+                }
             }
         }
 
@@ -160,8 +162,7 @@ public class DefaultUserRepositories
         }
         catch ( RoleManagerException e )
         {
-            throw new ArchivaSecurityException(
-                                                "Unable to create roles for configured repositories: " + e.getMessage(),
+            throw new ArchivaSecurityException( "Unable to create roles for configured repositories: " + e.getMessage(),
                                                 e );
         }
     }
@@ -182,7 +183,7 @@ public class DefaultUserRepositories
             throw new ArchivaSecurityException( e.getMessage() );
         }
     }
-    
+
     public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
         throws AccessDeniedException, ArchivaSecurityException
     {
