@@ -157,7 +157,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <appserver.base>${project.build.outputDirectory}</appserver.base>
+            <appserver.base>${basedir}/target/appserver-base</appserver.base>
           </systemPropertyVariables>
         </configuration>
       </plugin>

@@ -43,7 +43,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * AbstractRepositoryServletTestCase 
+ * AbstractRepositoryServletTestCase
  *
  * @version $Id$
  */
@@ -80,7 +80,7 @@ public abstract class AbstractRepositoryServletTestCase
         assertTrue( "File <" + actualFile.getAbsolutePath() + "> should exist.", actualFile.exists() );
         assertTrue( "File <" + actualFile.getAbsolutePath() + "> should be a file (not a dir/link/device/etc).",
                     actualFile.isFile() );
-    
+
         String actualContents = FileUtils.readFileToString( actualFile, null );
         assertEquals( "File Contents of <" + actualFile.getAbsolutePath() + ">", expectedContents, actualContents );
     }
@@ -90,9 +90,8 @@ public abstract class AbstractRepositoryServletTestCase
         ManagedRepositoryConfiguration repository = servlet.getRepository( repoId );
         assertNotNull( "Archiva Managed Repository id:<" + repoId + "> should exist.", repository );
         File repoRoot = new File( repository.getLocation() );
-        assertTrue( "Archiva Managed Repository id:<" + repoId + "> should have a valid location on disk.", repoRoot
-            .exists()
-            && repoRoot.isDirectory() );
+        assertTrue( "Archiva Managed Repository id:<" + repoId + "> should have a valid location on disk.",
+                    repoRoot.exists() && repoRoot.isDirectory() );
     }
 
     protected void assertResponseOK( WebResponse response )
@@ -108,21 +107,21 @@ public abstract class AbstractRepositoryServletTestCase
         Assert.assertEquals( "Should have been an OK response code for path: " + path, HttpServletResponse.SC_OK,
                              response.getResponseCode() );
     }
-    
+
     protected void assertResponseNotFound( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
-        Assert.assertEquals( "Should have been an 404/Not Found response code.", HttpServletResponse.SC_NOT_FOUND, response
-            .getResponseCode() );
+        Assert.assertEquals( "Should have been an 404/Not Found response code.", HttpServletResponse.SC_NOT_FOUND,
+                             response.getResponseCode() );
     }
 
     protected void assertResponseInternalServerError( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
-        Assert.assertEquals( "Should have been an 500/Internal Server Error response code.", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response
-            .getResponseCode() );
+        Assert.assertEquals( "Should have been an 500/Internal Server Error response code.",
+                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response.getResponseCode() );
     }
-    
+
     protected void assertResponseConflictError( WebResponse response )
     {
         assertNotNull( "Should have received a response", response );
@@ -130,14 +129,15 @@ public abstract class AbstractRepositoryServletTestCase
                              response.getResponseCode() );
     }
 
-    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location, boolean blockRedeployments )
+    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location,
+                                                                      boolean blockRedeployments )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( id );
         repo.setName( name );
         repo.setLocation( location.getAbsolutePath() );
         repo.setBlockRedeployments( blockRedeployments );
-        
+
         return repo;
     }
 
@@ -175,6 +175,10 @@ public abstract class AbstractRepositoryServletTestCase
 
         File testConf = new File( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
+        if ( testConfDest.exists() )
+        {
+            FileUtils.deleteQuietly( testConfDest );
+        }
         FileUtils.copyFile( testConf, testConfDest );
 
         //archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
@@ -182,15 +186,27 @@ public abstract class AbstractRepositoryServletTestCase
         repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
         Configuration config = archivaConfiguration.getConfiguration();
 
-        config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
-        config.addManagedRepository( createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
-        saveConfiguration( archivaConfiguration );
+        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ) )
+        {
+            config.addManagedRepository(
+                createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
+            saveConfiguration( archivaConfiguration );
+        }
+        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_LEGACY ) )
+        {
+            config.addManagedRepository(
+                createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
+            saveConfiguration( archivaConfiguration );
+        }
 
-        CacheManager.getInstance().removeCache( "url-failures-cache" );
 
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );                
+        //CacheManager.getInstance().removeCache( "url-failures-cache" );
+        CacheManager.getInstance().clearAll();
+
+        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         sr = new ServletRunner( new File( "src/test/resources/WEB-INF/web.xml" ) );
+
         sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
         sc = sr.newClient();
     }
@@ -236,8 +252,8 @@ public abstract class AbstractRepositoryServletTestCase
     protected void assertManagedFileNotExists( File repoRootInternal, String resourcePath )
     {
         File repoFile = new File( repoRootInternal, resourcePath );
-        assertFalse( "Managed Repository File <" + repoFile.getAbsolutePath() + "> should not exist.", repoFile
-            .exists() );
+        assertFalse( "Managed Repository File <" + repoFile.getAbsolutePath() + "> should not exist.",
+                     repoFile.exists() );
     }
 
     protected void setupCleanInternalRepo()
