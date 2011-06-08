@@ -52,42 +52,33 @@
 
   <bean name="roleManager" class="org.codehaus.plexus.redback.role.DefaultRoleManager">
     <property name="rbacManager" ref="rBACManager#memory"/>
+    <property name="modelProcessor" ref="roleModelProcessor"/>
+    <property name="templateProcessor" ref="roleTemplateProcessor#test"/>
   </bean>
 
   <bean name="rBACManager#cached" class="org.codehaus.plexus.redback.rbac.cached.CachedRbacManager">
     <property name="rbacImpl" ref="rBACManager#memory"/>
   </bean>
 
+  <bean name="roleModelProcessor" class="org.codehaus.plexus.redback.role.processor.DefaultRoleModelProcessor">
+    <property name="rbacManager" ref="rBACManager#memory"/>
+  </bean>
+
+  <alias name="roleModelProcessor" alias="roleModelProcessor#test"/>
+
+  <bean name="roleTemplateProcessor" class="org.codehaus.plexus.redback.role.template.DefaultRoleTemplateProcessor">
+    <property name="rbacManager" ref="rBACManager#memory"/>
+  </bean>
+
+  <alias name="roleTemplateProcessor" alias="roleTemplateProcessor#test"/>
+
+  <bean name="servletAuthenticator" class="org.apache.maven.archiva.security.ArchivaServletAuthenticator">
+    <property name="securitySystem" ref="securitySystem#testable"/>
+  </bean>
+
+  <alias name="servletAuthenticator" alias="servletAuthenticator#test"/>
+
   <!--
-
-
-    <component>
-      <role>org.codehaus.plexus.redback.role.processor.RoleModelProcessor</role>
-      <role-hint>default</role-hint>
-      <implementation>org.codehaus.plexus.redback.role.processor.DefaultRoleModelProcessor</implementation>
-      <description>DefaultRoleModelProcessor: inserts the components of the model that can be populated into the rbac manager</description>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.rbac.RBACManager</role>
-          <role-hint>memory</role-hint>
-          <field-name>rbacManager</field-name>
-        </requirement>
-      </requirements>
-    </component>
-
-    <component>
-      <role>org.codehaus.plexus.redback.role.template.RoleTemplateProcessor</role>
-      <role-hint>default</role-hint>
-      <implementation>org.codehaus.plexus.redback.role.template.DefaultRoleTemplateProcessor</implementation>
-      <description>DefaultRoleTemplateProcessor: inserts the components of a template into the rbac manager</description>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.rbac.RBACManager</role>
-          <role-hint>memory</role-hint>
-          <field-name>rbacManager</field-name>
-        </requirement>
-      </requirements>
-    </component>
 
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
@@ -112,22 +103,6 @@
       </configuration>
     </component>
 
-
-    ignored ??
-
-  	<component>
-      <role>org.apache.maven.archiva.security.ServletAuthenticator</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.security.ArchivaServletAuthenticator</implementation>
-      <description>ArchivaServletAuthenticator</description>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
-          <role-hint>testable</role-hint>
-          <field-name>securitySystem</field-name>
-        </requirement>
-      </requirements>
-    </component>
 
     partially configured
 

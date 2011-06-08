@@ -43,26 +43,26 @@ import javax.inject.Inject;
  * DefaultUserRepositories
  * 
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.security.UserRepositories" role-hint="default"
+ * plexus.component role="org.apache.maven.archiva.security.UserRepositories" role-hint="default"
  */
 @Service("userRepositories")
 public class DefaultUserRepositories
     implements UserRepositories
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     @Inject
     private SecuritySystem securitySystem;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
     @Inject
     private RoleManager roleManager;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     @Inject
     private ArchivaConfiguration archivaConfiguration;

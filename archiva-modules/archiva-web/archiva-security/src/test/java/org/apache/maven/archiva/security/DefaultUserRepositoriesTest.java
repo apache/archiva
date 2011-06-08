@@ -22,6 +22,7 @@ package org.apache.maven.archiva.security;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -31,10 +32,16 @@ import org.junit.Test;
  */
 public class DefaultUserRepositoriesTest
     extends AbstractSecurityTest
-{   
-    protected String getPlexusConfigLocation()
+{
+
+
+    @Before
+    public void setUp() throws Exception
     {
-        return "org/apache/maven/archiva/security/DefaultUserRepositoriesTest.xml";
+        super.setUp();
+        restoreGuestInitialValues( USER_ALPACA );
+        restoreGuestInitialValues( USER_GUEST );
+        restoreGuestInitialValues( USER_ADMIN );
     }
 
     @Test

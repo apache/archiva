@@ -19,30 +19,33 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-
+import com.google.common.collect.Lists;
+import net.sf.ehcache.CacheManager;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
+import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
-
 import org.easymock.MockControl;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+
 /**
  * ArchivaServletAuthenticatorTest
- * 
- * @version
  */
 public class ArchivaServletAuthenticatorTest
     extends AbstractSecurityTest
 {
     @Inject
+    @Named( value = "servletAuthenticator#test" )
     private ServletAuthenticator servletAuth;
 
     private MockControl httpServletRequestControl;
@@ -116,6 +119,8 @@ public class ArchivaServletAuthenticatorTest
             servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
 
         assertTrue( isAuthorized );
+
+        restoreGuestInitialValues( USER_ALPACA );
     }
 
     @Test
@@ -148,6 +153,8 @@ public class ArchivaServletAuthenticatorTest
         }
 
         httpServletRequestControl.verify();
+
+        restoreGuestInitialValues( USER_ALPACA );
     }
 
     @Test
@@ -168,6 +175,8 @@ public class ArchivaServletAuthenticatorTest
             servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
 
         assertTrue( isAuthorized );
+
+        restoreGuestInitialValues( USER_ALPACA );
     }
 
     @Test
@@ -191,6 +200,8 @@ public class ArchivaServletAuthenticatorTest
         {
             assertEquals( "Access denied for repository corporate", e.getMessage() );
         }
+
+        restoreGuestInitialValues( USER_ALPACA );
     }
 
     @Test
@@ -202,6 +213,10 @@ public class ArchivaServletAuthenticatorTest
             servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
 
         assertTrue( isAuthorized );
+
+        // cleanup previously add karma
+        restoreGuestInitialValues(USER_GUEST);
+
     }
 
     @Test
@@ -213,6 +228,10 @@ public class ArchivaServletAuthenticatorTest
         boolean isAuthorized =
             servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
         assertFalse( isAuthorized );
+
+        // cleanup previously add karma
+        restoreGuestInitialValues(USER_GUEST);
+
     }
 
     @Test
@@ -225,6 +244,9 @@ public class ArchivaServletAuthenticatorTest
             servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
 
         assertTrue( isAuthorized );
+
+        // cleanup previously add karma
+        restoreGuestInitialValues(USER_GUEST);
     }
 
     @Test
@@ -236,4 +258,5 @@ public class ArchivaServletAuthenticatorTest
 
         assertFalse( isAuthorized );
     }
+
 }

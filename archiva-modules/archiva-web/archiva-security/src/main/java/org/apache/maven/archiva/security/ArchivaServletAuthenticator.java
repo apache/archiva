@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @version
- * @plexus.component role="org.apache.maven.archiva.security.ServletAuthenticator" role-hint="default"
+ * plexus.component role="org.apache.maven.archiva.security.ServletAuthenticator" role-hint="default"
  */
 @Service("servletAuthenticator")
 public class ArchivaServletAuthenticator
@@ -49,7 +49,7 @@ public class ArchivaServletAuthenticator
     private Logger log = LoggerFactory.getLogger( ArchivaServletAuthenticator.class );
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     @Inject
     private SecuritySystem securitySystem;
@@ -119,5 +119,13 @@ public class ArchivaServletAuthenticator
     }
 
 
+    public SecuritySystem getSecuritySystem()
+    {
+        return securitySystem;
+    }
 
+    public void setSecuritySystem( SecuritySystem securitySystem )
+    {
+        this.securitySystem = securitySystem;
+    }
 }

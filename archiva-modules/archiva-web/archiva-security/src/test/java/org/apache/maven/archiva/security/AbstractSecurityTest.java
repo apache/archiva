@@ -19,17 +19,23 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
+import com.google.common.collect.Lists;
 import junit.framework.TestCase;
+import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.rbac.RBACManager;
+import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
+import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -47,6 +53,9 @@ import java.io.File;
 public abstract class AbstractSecurityTest
     extends TestCase
 {
+
+    protected Logger log = LoggerFactory.getLogger( getClass() );
+
     protected static final String USER_GUEST = "guest";
 
     protected static final String USER_ADMIN = "admin";
@@ -59,7 +68,7 @@ public abstract class AbstractSecurityTest
 
     @Inject
     @Named( value = "rBACManager#memory" )
-    private RBACManager rbacManager;
+    protected RBACManager rbacManager;
 
     @Inject
     protected RoleManager roleManager;
@@ -131,5 +140,23 @@ public abstract class AbstractSecurityTest
         // Setup Guest User.
         User guestUser = createUser( USER_GUEST, "Guest User" );
         roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_GUEST, guestUser.getPrincipal().toString() );
+    }
+
+    protected void restoreGuestInitialValues( String userId )
+        throws Exception
+    {
+        UserAssignment userAssignment = null;
+        try
+        {
+            userAssignment = rbacManager.getUserAssignment( userId );
+        }
+        catch ( RbacObjectNotFoundException e )
+        {
+            log.info( "ignore RbacObjectNotFoundException for id {} during restoreGuestInitialValues", userId );
+            return;
+        }
+        userAssignment.setRoleNames( Lists.newArrayList( "Guest" ) );
+        rbacManager.saveUserAssignment( userAssignment );
+        CacheManager.getInstance().clearAll();
     }
 }

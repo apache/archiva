@@ -159,8 +159,6 @@ public class HttpProxyTransferTest
 
         config.getConfiguration().addRemoteRepository( repoConfig );
 
-        CacheManager.getInstance().clearAll();
-
     }
 
     @After
