@@ -38,9 +38,7 @@ import javax.inject.Inject;
 public class RoleManagerTest
     extends TestCase
 {
-    /**
-     * @plexus.requirement role-hint="default"
-     */
+
     @Inject
     RoleManager roleManager;
     

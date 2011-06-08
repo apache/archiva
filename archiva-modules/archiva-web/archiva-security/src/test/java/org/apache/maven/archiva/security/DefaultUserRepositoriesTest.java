@@ -19,14 +19,15 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 /**
- * DefaultUserRepositoriesTest 
+ * DefaultUserRepositoriesTest
  *
  * @version $Id$
  */
@@ -36,7 +37,8 @@ public class DefaultUserRepositoriesTest
 
 
     @Before
-    public void setUp() throws Exception
+    public void setUp()
+        throws Exception
     {
         super.setUp();
         restoreGuestInitialValues( USER_ALPACA );
@@ -67,10 +69,21 @@ public class DefaultUserRepositoriesTest
         // the global repo observer role.
         assignGlobalRepositoryObserverRole( USER_ADMIN );
 
-        assertRepoIds( new String[] { "central", "corporate" }, userRepos.getObservableRepositoryIds( USER_ALPACA ) );
-        assertRepoIds( new String[] { "coporate" }, userRepos.getObservableRepositoryIds( USER_GUEST ) );
-        assertRepoIds( new String[] { "central", "internal", "corporate", "snapshots", "secret" }, userRepos
-            .getObservableRepositoryIds( USER_ADMIN ) );
+        assertRepoIds( new String[]{ "central", "corporate" }, userRepos.getObservableRepositoryIds( USER_ALPACA ) );
+        assertRepoIds( new String[]{ "coporate" }, userRepos.getObservableRepositoryIds( USER_GUEST ) );
+        assertRepoIds( new String[]{ "central", "internal", "corporate", "snapshots", "secret" },
+                       userRepos.getObservableRepositoryIds( USER_ADMIN ) );
+
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        restoreGuestInitialValues( USER_ALPACA );
+        restoreGuestInitialValues( USER_GUEST );
+        restoreGuestInitialValues( USER_ADMIN );
     }
 
     private void assertRepoIds( String[] expectedRepoIds, List<String> observableRepositoryIds )
@@ -80,8 +93,9 @@ public class DefaultUserRepositoriesTest
         if ( expectedRepoIds.length != observableRepositoryIds.size() )
         {
             fail( "Size of Observable Repository Ids wrong, expected <" + expectedRepoIds.length + "> but got <"
-                + observableRepositoryIds.size() + "> instead. \nExpected: [" + StringUtils.join( expectedRepoIds, "," )
-                + "]\nActual: [" + StringUtils.join( observableRepositoryIds.iterator(), "," ) + "]" );
+                      + observableRepositoryIds.size() + "> instead. \nExpected: ["
+                      + StringUtils.join( expectedRepoIds, "," ) + "]\nActual: ["
+                      + StringUtils.join( observableRepositoryIds.iterator(), "," ) + "]" );
         }
     }
 
