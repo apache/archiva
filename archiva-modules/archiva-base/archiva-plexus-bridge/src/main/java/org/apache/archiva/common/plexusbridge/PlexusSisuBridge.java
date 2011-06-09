@@ -26,10 +26,14 @@ import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +47,8 @@ import java.util.Map;
 @Service( "plexusSisuBridge" )
 public class PlexusSisuBridge
 {
+
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     private boolean containerAutoWiring = false;
 
@@ -70,14 +76,19 @@ public class PlexusSisuBridge
 
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
 
-        ClassRealm classRealm = new ClassRealm( classWorld, "maven", tccl )
-        {
-            public URL[] getURLs()
-            {
-                return super.getURLs();
-            }
+        ClassRealm classRealm = new ClassRealm( classWorld, "maven", tccl );
 
-        };
+        // olamy hackhish but plexus-sisu need a URLClassLoader with URL filled
+
+        if ( tccl instanceof URLClassLoader )
+        {
+            URL[] urls = ( (URLClassLoader) tccl ).getURLs();
+            for ( URL url : urls )
+            {
+                classRealm.addURL( url );
+            }
+        }
+
         conf.setRealm( classRealm );
 
         conf.setClassWorld( classWorld );
@@ -90,6 +101,26 @@ public class PlexusSisuBridge
         {
             throw new PlexusSisuBridgeException( e.getMessage(), e );
         }
+    }
+
+
+    private URL[] getClassLoaderURLs( ClassLoader classLoader )
+    {
+        try
+        {
+            // can be WebappClassLoader when using tomcat maven plugin
+            //java.net.URL[] getURLs
+            Method method = classLoader.getClass().getMethod( "getURLs", new Class[]{ } );
+            if ( method != null )
+            {
+                return (URL[]) method.invoke( classLoader, null );
+            }
+        }
+        catch ( Exception e )
+        {
+            log.info( "ignore issue trying to find url[] from classloader {}", e.getMessage() );
+        }
+        return new URL[]{ };
     }
 
     public <T> T lookup( Class<T> clazz )
