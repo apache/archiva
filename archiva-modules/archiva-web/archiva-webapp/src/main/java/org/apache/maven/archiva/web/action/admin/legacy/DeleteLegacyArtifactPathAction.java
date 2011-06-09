@@ -19,28 +19,33 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  * under the License.
  */
 
-import java.util.Iterator;
-
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.registry.RegistryException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import javax.inject.Inject;
+import java.util.Iterator;
 
 /**
  * Delete a LegacyArtifactPath to archiva configuration
  *
- *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteLegacyArtifactPathAction" instantiation-strategy="per-lookup"
+ *        plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteLegacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
+@Controller( "deleteLegacyArtifactPathAction" )
+@Scope( "prototype" )
 public class DeleteLegacyArtifactPathAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     private String path;
@@ -49,10 +54,11 @@ public class DeleteLegacyArtifactPathAction
     {
         log.info( "remove [" + path + "] from legacy artifact path resolution" );
         Configuration configuration = archivaConfiguration.getConfiguration();
-        for ( Iterator<LegacyArtifactPath> iterator = configuration.getLegacyArtifactPaths().iterator(); iterator.hasNext(); )
+        for ( Iterator<LegacyArtifactPath> iterator = configuration.getLegacyArtifactPaths().iterator();
+              iterator.hasNext(); )
         {
             LegacyArtifactPath legacyArtifactPath = (LegacyArtifactPath) iterator.next();
-            if (legacyArtifactPath.match( path ))
+            if ( legacyArtifactPath.match( path ) )
             {
                 iterator.remove();
             }

@@ -28,7 +28,7 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
 
@@ -38,20 +38,23 @@ import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
+import javax.inject.Inject;
+
 /**
  * AbstractProxyConnectorAction 
  *
  * @version $Id$
  */
 public abstract class AbstractProxyConnectorAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements SecureAction
 {
     public static final String DIRECT_CONNECTION = "(direct connection)";
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
     public SecureActionBundle getSecureActionBundle()

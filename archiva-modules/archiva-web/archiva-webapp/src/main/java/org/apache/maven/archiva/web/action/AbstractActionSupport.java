@@ -19,27 +19,33 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * LogEnabled and SessionAware ActionSupport
  */
-public abstract class PlexusActionSupport
+public abstract class AbstractActionSupport
     extends ActionSupport
     implements SessionAware, Auditable
 {
@@ -48,16 +54,27 @@ public abstract class PlexusActionSupport
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     /**
-     * @plexus.requirement role="org.apache.archiva.audit.AuditListener"
+     * plexus.requirement role="org.apache.archiva.audit.AuditListener"
      */
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     protected RepositorySessionFactory repositorySessionFactory;
 
+    @Inject
+    protected ApplicationContext applicationContext;
+
     private String principal;
+
+    @PostConstruct
+    public void initialize()
+    {
+        // TODO some caching here
+        this.auditListeners = Lists.newArrayList( applicationContext.getBeansOfType( AuditListener.class ).values() );
+    }
 
     @SuppressWarnings( "unchecked" )
     public void setSession( Map map )
@@ -142,5 +159,22 @@ public abstract class PlexusActionSupport
     public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
     {
         this.repositorySessionFactory = repositorySessionFactory;
+    }
+
+    protected <T> Map<String, T> getBeansOfType( Class<T> clazz )
+    {
+        //TODO do some caching here !!!
+        // olamy : with plexus we get only roleHint
+        // as per convention we named spring bean role#hint remove role# if exists
+        Map<String, T> springBeans = applicationContext.getBeansOfType( clazz );
+
+        Map<String, T> beans = new HashMap<String, T>( springBeans.size() );
+
+        for ( Map.Entry<String, T> entry : springBeans.entrySet() )
+        {
+            String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
+            beans.put( key, entry.getValue() );
+        }
+        return beans;
     }
 }

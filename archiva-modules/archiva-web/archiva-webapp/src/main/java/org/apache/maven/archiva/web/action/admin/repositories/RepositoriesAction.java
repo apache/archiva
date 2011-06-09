@@ -31,34 +31,40 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.maven.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Shows the Repositories Tab for the administrator.
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoriesAction" instantiation-strategy="per-lookup"
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoriesAction" instantiation-strategy="per-lookup"
  */
+@Controller( "repositoriesAction" )
+@Scope( "prototype" )
 public class RepositoriesAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements SecureAction, ServletRequestAware, Preparable
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     private List<ManagedRepositoryConfiguration> managedRepositories;
@@ -75,8 +81,9 @@ public class RepositoriesAction
     private String baseUrl;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     public void setServletRequest( HttpServletRequest request )

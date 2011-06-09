@@ -21,42 +21,57 @@ package org.apache.maven.archiva.web.action.admin;
 
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.cache.Cache;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.Map;
 
 /**
  * Shows system status information for the administrator.
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="systemStatus" instantiation-strategy="per-lookup"
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="systemStatus" instantiation-strategy="per-lookup"
  */
+@Controller( "systemStatus" )
+@Scope( "prototype" )
 public class SystemStatusAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements SecureAction
 {
     /**
-     * @plexus.requirement role="org.codehaus.plexus.taskqueue.TaskQueue"
+     * plexus.requirement role="org.codehaus.plexus.taskqueue.TaskQueue"
      */
-    private Map<String,TaskQueue> queues;
+    private Map<String, TaskQueue> queues;
 
     /**
-     * @plexus.requirement role="org.codehaus.plexus.cache.Cache"
+     * plexus.requirement role="org.codehaus.plexus.cache.Cache"
      */
-    private Map<String,Cache> caches;
+    private Map<String, Cache> caches;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryScanner scanner;
 
     private String memoryStatus;
+
+    @PostConstruct
+    public void initialize()
+    {
+        super.initialize();
+        queues = getBeansOfType( TaskQueue.class );
+        caches = getBeansOfType( Cache.class );
+    }
 
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
@@ -76,14 +91,14 @@ public class SystemStatusAction
         long total = runtime.totalMemory();
         long used = total - runtime.freeMemory();
         long max = runtime.maxMemory();
-        memoryStatus = formatMemory(used) + "/" + formatMemory(total) + " (Max: " + formatMemory(max) + ")";
-        
+        memoryStatus = formatMemory( used ) + "/" + formatMemory( total ) + " (Max: " + formatMemory( max ) + ")";
+
         return SUCCESS;
     }
 
     private static String formatMemory( long l )
     {
-      return  l / ( 1024 * 1024 ) + "M";
+        return l / ( 1024 * 1024 ) + "M";
     }
 
     public String getMemoryStatus()

@@ -30,7 +30,10 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,8 @@ import java.util.Map;
  * @version $Id$
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
+@Controller( "deleteManagedRepositoryAction" )
+@Scope( "prototype" )
 public class DeleteManagedRepositoryAction
     extends AbstractManagedRepositoriesAction
     implements Preparable
@@ -52,8 +57,9 @@ public class DeleteManagedRepositoryAction
     private String repoid;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     public void prepare()
@@ -61,8 +67,8 @@ public class DeleteManagedRepositoryAction
         if ( StringUtils.isNotBlank( repoid ) )
         {
             this.repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid );
-            this.stagingRepository = archivaConfiguration.getConfiguration().findManagedRepositoryById(
-                repoid + "-stage" );
+            this.stagingRepository =
+                archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid + "-stage" );
         }
     }
 

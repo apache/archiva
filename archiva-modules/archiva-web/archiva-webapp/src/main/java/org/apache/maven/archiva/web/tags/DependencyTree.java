@@ -19,10 +19,6 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.commons.lang.StringUtils;
@@ -36,25 +32,33 @@ import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DependencyTree
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.web.tags.DependencyTree"
+ *          plexus.component role="org.apache.maven.archiva.web.tags.DependencyTree"
  */
+@Service
 public class DependencyTree
 {
     private Logger log = LoggerFactory.getLogger( DependencyTree.class );
 
     /**
-     * @plexus.requirement role-hint="maven2"
+     * plexus.requirement role-hint="maven2"
      */
+    @Inject
     private DependencyTreeBuilder dependencyTreeBuilder;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private UserRepositories userRepositories;
 
     public static class TreeEntry
@@ -101,24 +105,24 @@ public class DependencyTree
     {
         if ( StringUtils.isBlank( groupId ) )
         {
-            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion ) +
-                "]: groupId is blank.";
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
+                + "]: groupId is blank.";
             log.error( emsg );
             throw new ArchivaException( emsg );
         }
 
         if ( StringUtils.isBlank( artifactId ) )
         {
-            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion ) +
-                "]: artifactId is blank.";
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
+                + "]: artifactId is blank.";
             log.error( emsg );
             throw new ArchivaException( emsg );
         }
 
         if ( StringUtils.isBlank( modelVersion ) )
         {
-            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion ) +
-                "]: version is blank.";
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
+                + "]: version is blank.";
             log.error( emsg );
             throw new ArchivaException( emsg );
         }

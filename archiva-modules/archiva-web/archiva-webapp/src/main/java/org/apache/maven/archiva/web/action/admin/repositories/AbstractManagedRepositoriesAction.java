@@ -28,12 +28,14 @@ import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.Registry;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 
 /**
  * Abstract ManagedRepositories Action.
- * 
+ * <p/>
  * Place for all generic methods used in Managed Repository Administration.
  *
  * @version $Id$
@@ -42,19 +44,22 @@ public abstract class AbstractManagedRepositoriesAction
     extends AbstractRepositoriesAdminAction
 {
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
+    @Inject
     protected RoleManager roleManager;
 
     /**
      * Plexus registry to read the configuration from.
-     *
-     * @plexus.requirement role-hint="commons-configuration"
+     * <p/>
+     * plexus.requirement role-hint="commons-configuration"
      */
+    @Inject
+    @Named( value = "commons-configuration" )
     private Registry registry;
 
     public static final String CONFIRM = "confirm";
-    
+
     public RoleManager getRoleManager()
     {
         return roleManager;
@@ -82,20 +87,22 @@ public abstract class AbstractManagedRepositoriesAction
         }
         if ( !file.exists() || !file.isDirectory() )
         {
-            throw new IOException( "Unable to add repository - no write access, can not create the root directory: " + file );
+            throw new IOException(
+                "Unable to add repository - no write access, can not create the root directory: " + file );
         }
 
         configuration.addManagedRepository( repository );
 
     }
 
-    protected void addRepositoryRoles( ManagedRepositoryConfiguration newRepository ) throws RoleManagerException
+    protected void addRepositoryRoles( ManagedRepositoryConfiguration newRepository )
+        throws RoleManagerException
     {
         String repoId = newRepository.getId();
-        
+
         // TODO: double check these are configured on start up
         // TODO: belongs in the business logic
-        
+
         if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
         {
             roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
@@ -130,12 +137,12 @@ public abstract class AbstractManagedRepositoriesAction
         throws RoleManagerException
     {
         String repoId = existingRepository.getId();
-        
+
         if ( roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
         {
             roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
         }
-        
+
         if ( roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
         {
             roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
@@ -146,10 +153,10 @@ public abstract class AbstractManagedRepositoriesAction
 
     protected String removeExpressions( String directory )
     {
-        String value = StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base",
-                                                                                                "${appserver.base}" ) );
-        value = StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home",
-                                                                                     "${appserver.home}" ) );
+        String value = StringUtils.replace( directory, "${appserver.base}",
+                                            registry.getString( "appserver.base", "${appserver.base}" ) );
+        value = StringUtils.replace( value, "${appserver.home}",
+                                     registry.getString( "appserver.home", "${appserver.home}" ) );
         return value;
     }
 }

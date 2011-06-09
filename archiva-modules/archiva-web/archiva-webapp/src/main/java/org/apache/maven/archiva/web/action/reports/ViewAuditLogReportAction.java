@@ -29,33 +29,39 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 /**
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="viewAuditLogReport"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="viewAuditLogReport"
  * instantiation-strategy="per-lookup"
  */
+@Controller( "viewAuditLogReport" )
+@Scope( "prototype" )
 public class ViewAuditLogReportAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements SecureAction, ServletRequestAware, Preparable
 {
     protected HttpServletRequest request;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private UserRepositories userRepositories;
 
     private String repository;
@@ -95,12 +101,13 @@ public class ViewAuditLogReportAction
     private static final String HEADER_RESULTS = "Results";
 
     private String[] datePatterns =
-        new String[]{"MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", "dd MMMMM yyyy", "dd/MM/yy",
-            "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy", "MM-dd-yy"};
+        new String[]{ "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", "dd MMMMM yyyy", "dd/MM/yy",
+            "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy", "MM-dd-yy" };
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private AuditManager auditManager;
 
     public SecureActionBundle getSecureActionBundle()
@@ -217,8 +224,9 @@ public class ViewAuditLogReportAction
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            auditLogs = auditManager.getAuditEventsInRange( repositorySession.getRepository(), repos, resource,
-                                                            startDateInDF, endDateInDF );
+            auditLogs =
+                auditManager.getAuditEventsInRange( repositorySession.getRepository(), repos, resource, startDateInDF,
+                                                    endDateInDF );
         }
         finally
         {
@@ -253,13 +261,13 @@ public class ViewAuditLogReportAction
             auditLogs.remove( rowCount );
         }
 
-        prev = request.getRequestURL() + "?page=" + ( page - 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
-            "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate=" +
-            endDate;
+        prev = request.getRequestURL() + "?page=" + ( page - 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId
+            + "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate="
+            + endDate;
 
-        next = request.getRequestURL() + "?page=" + ( page + 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
-            "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate=" +
-            endDate;
+        next = request.getRequestURL() + "?page=" + ( page + 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId
+            + "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate="
+            + endDate;
 
         prev = StringUtils.replace( prev, " ", "%20" );
         next = StringUtils.replace( next, " ", "%20" );

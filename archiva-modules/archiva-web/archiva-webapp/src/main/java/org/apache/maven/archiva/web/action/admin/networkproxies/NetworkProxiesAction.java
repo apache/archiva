@@ -20,32 +20,37 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
  */
 
 import com.opensymphony.xwork2.Preparable;
-
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
- * NetworkProxiesAction 
+ * NetworkProxiesAction
  *
  * @version $Id$
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="networkProxiesAction" instantiation-strategy="per-lookup"
+ *          <p/>
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="networkProxiesAction" instantiation-strategy="per-lookup"
  */
+@Controller( "networkProxiesAction" )
+@Scope( "prototype" )
 public class NetworkProxiesAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements Preparable, SecureAction
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     private List<NetworkProxyConfiguration> networkProxies;

@@ -19,12 +19,18 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
 /**
  * Stores the organisation information for displaying on the page.
- *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="organisationInfo" instantiation-strategy="per-lookup"
+ * <p/>
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="organisationInfo" instantiation-strategy="per-lookup"
  */
+@Controller( "organisationInfo" )
+@Scope( "prototype" )
 public class OrganisationInfoAction
     extends AbstractAppearanceAction
 {
+    // no op
 }

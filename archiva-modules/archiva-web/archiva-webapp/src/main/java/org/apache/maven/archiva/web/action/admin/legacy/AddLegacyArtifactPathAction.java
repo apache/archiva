@@ -30,26 +30,36 @@ import org.codehaus.plexus.registry.RegistryException;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Add a LegacyArtifactPath to archiva configuration
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addLegacyArtifactPathAction" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="addLegacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
+@Controller( "addLegacyArtifactPathAction" )
+@Scope( "prototype" )
 public class AddLegacyArtifactPathAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements Preparable, Validateable
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role-hint="legacy"
+     * plexus.requirement role-hint="legacy"
      */
+    @Inject
+    @Named(value = "managedRepositoryContent#legacy")
     private ManagedRepositoryContent repositoryContent;
 
 

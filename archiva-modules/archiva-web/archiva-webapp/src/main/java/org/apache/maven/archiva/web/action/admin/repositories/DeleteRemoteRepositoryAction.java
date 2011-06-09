@@ -25,16 +25,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
 /**
- * DeleteRemoteRepositoryAction 
+ * DeleteRemoteRepositoryAction
  *
  * @version $Id$
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRemoteRepositoryAction" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRemoteRepositoryAction" instantiation-strategy="per-lookup"
  */
+@Controller( "deleteRemoteRepositoryAction" )
+@Scope( "prototype" )
 public class DeleteRemoteRepositoryAction
     extends AbstractRemoteRepositoriesAction
     implements Preparable
@@ -76,7 +79,7 @@ public class DeleteRemoteRepositoryAction
         removeRepository( repoid, configuration );
         triggerAuditEvent( repoid, null, AuditEvent.DELETE_REMOTE_REPO );
         result = saveConfiguration( configuration );
-        
+
         cleanupRepositoryData( existingRepository );
 
         return result;
@@ -85,7 +88,7 @@ public class DeleteRemoteRepositoryAction
     private void cleanupRepositoryData( RemoteRepositoryConfiguration existingRepository )
     {
         // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
-        
+
         List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {

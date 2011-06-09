@@ -24,21 +24,24 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 /**
  * DeleteRepositoryGroupAction
- * 
- * @version
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRepositoryGroupAction" instantiation-strategy="per-lookup"
+ *
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRepositoryGroupAction" instantiation-strategy="per-lookup"
  */
-public class DeleteRepositoryGroupAction 
+@Controller( "deleteRepositoryGroupAction" )
+@Scope( "prototype" )
+public class DeleteRepositoryGroupAction
     extends AbstractRepositoriesAdminAction
     implements Preparable
 {
     private RepositoryGroupConfiguration repositoryGroup;
 
     private String repoGroupId;
-	
+
     public void prepare()
     {
         if ( StringUtils.isNotBlank( repoGroupId ) )
@@ -46,7 +49,7 @@ public class DeleteRepositoryGroupAction
             this.repositoryGroup = archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroupId );
         }
     }
-	
+
     public String confirmDelete()
     {
         if ( StringUtils.isBlank( repoGroupId ) )
@@ -68,12 +71,12 @@ public class DeleteRepositoryGroupAction
             addActionError( "A repository group with that id does not exist." );
             return ERROR;
         }
-		
+
         config.removeRepositoryGroup( group );
         triggerAuditEvent( AuditEvent.DELETE_REPO_GROUP + " " + repoGroupId );
         return saveConfiguration( config );
     }
-	
+
     public RepositoryGroupConfiguration getRepositoryGroup()
     {
         return repositoryGroup;

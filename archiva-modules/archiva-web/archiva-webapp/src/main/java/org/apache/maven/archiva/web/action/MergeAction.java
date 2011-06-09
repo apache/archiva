@@ -33,33 +33,44 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.web.action.admin.SchedulerAction;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="mergeAction" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="mergeAction" instantiation-strategy="per-lookup"
  */
+@Controller( "mergeAction" )
+@Scope( "prototype" )
 public class MergeAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements Validateable, Preparable, Auditable
 
 {
     /**
-     * @plexus.requirement role="org.apache.archiva.stagerepository.merge.RepositoryMerger" role-hint="maven2"
+     * plexus.requirement role="org.apache.archiva.stagerepository.merge.RepositoryMerger" role-hint="maven2"
      */
+    @Inject
+    @Named( value = "repositoryMerger#maven2" )
     private Maven2RepositoryMerger repositoryMerger;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role="com.opensymphony.xwork2.Action" role-hint="schedulerAction"
+     * TODO olamy : why using an action ???
+     * plexus.requirement role="com.opensymphony.xwork2.Action" role-hint="schedulerAction"
      */
+    @Inject
     private SchedulerAction scheduler;
 
     private ManagedRepositoryConfiguration repository;
@@ -149,8 +160,8 @@ public class MergeAction
             else
             {
 
-                Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>(
-                    sourceArtifacts );
+                Filter<ArtifactMetadata> artifactsWithOutConflicts =
+                    new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
                 repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactsWithOutConflicts );
                 for ( ArtifactMetadata metadata : sourceArtifacts )
                 {
@@ -181,8 +192,8 @@ public class MergeAction
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            conflictSourceArtifacts = repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(),
-                                                                                sourceRepoId, repoid );
+            conflictSourceArtifacts =
+                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepoId, repoid );
         }
         catch ( Exception e )
         {
@@ -216,8 +227,8 @@ public class MergeAction
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            conflictSourceArtifacts = repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(),
-                                                                                sourceRepoId, repoid );
+            conflictSourceArtifacts =
+                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepoId, repoid );
         }
         finally
         {

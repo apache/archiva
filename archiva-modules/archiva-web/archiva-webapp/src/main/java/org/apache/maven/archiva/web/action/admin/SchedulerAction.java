@@ -23,31 +23,40 @@ import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Configures the application.
- *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="schedulerAction" instantiation-strategy="per-lookup"
+ * <p/>
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="schedulerAction" instantiation-strategy="per-lookup"
  */
+@Controller( "schedulerAction" )
+@Scope( "prototype" )
 public class SchedulerAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements SecureAction
 {
     /**
-     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
+     * plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
+    @Inject
+    @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     private String repoid;
-    
+
     private boolean scanAll;
-    
+
     public String scanRepository()
     {
         if ( StringUtils.isBlank( repoid ) )
@@ -73,8 +82,8 @@ public class SchedulerAction
             }
             catch ( TaskQueueException e )
             {
-                addActionError( "Unable to queue your request to have repository [" + repoid + "] be indexed: "
-                    + e.getMessage() );
+                addActionError(
+                    "Unable to queue your request to have repository [" + repoid + "] be indexed: " + e.getMessage() );
             }
         }
 
@@ -116,7 +125,7 @@ public class SchedulerAction
     {
         this.repoid = repoid;
     }
-    
+
     public boolean getScanAll()
     {
         return scanAll;

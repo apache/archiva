@@ -21,14 +21,18 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 /**
- * AddProxyConnectorAction 
+ * AddProxyConnectorAction
  *
  * @version $Id$
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addProxyConnectorAction" instantiation-strategy="per-lookup"
+ *          <p/>
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="addProxyConnectorAction" instantiation-strategy="per-lookup"
  */
+@Controller( "addProxyConnectorAction" )
+@Scope( "prototype" )
 public class AddProxyConnectorAction
     extends AbstractProxyConnectorFormAction
 {
@@ -38,17 +42,17 @@ public class AddProxyConnectorAction
         super.prepare();
         connector = new ProxyConnectorConfiguration();
     }
-    
+
     @Override
     public String input()
     {
-        if( connector != null )
+        if ( connector != null )
         {
-         // MRM-1135
+            // MRM-1135
             connector.setBlackListPatterns( escapePatterns( connector.getBlackListPatterns() ) );
             connector.setWhiteListPatterns( escapePatterns( connector.getWhiteListPatterns() ) );
         }
-        
+
         return INPUT;
     }
 
@@ -66,18 +70,19 @@ public class AddProxyConnectorAction
         ProxyConnectorConfiguration otherConnector = findProxyConnector( sourceId, targetId );
         if ( otherConnector != null )
         {
-            addActionError( "Unable to add proxy connector, as one already exists with source repository id ["
-                + sourceId + "] and target repository id [" + targetId + "]." );
+            addActionError(
+                "Unable to add proxy connector, as one already exists with source repository id [" + sourceId
+                    + "] and target repository id [" + targetId + "]." );
         }
-        
+
         validateConnector();
 
         if ( hasActionErrors() )
         {
             return INPUT;
         }
-        
-        if( StringUtils.equals( DIRECT_CONNECTION, connector.getProxyId() ) )
+
+        if ( StringUtils.equals( DIRECT_CONNECTION, connector.getProxyId() ) )
         {
             connector.setProxyId( null );
         }
@@ -85,7 +90,7 @@ public class AddProxyConnectorAction
         // MRM-1135
         connector.setBlackListPatterns( unescapePatterns( connector.getBlackListPatterns() ) );
         connector.setWhiteListPatterns( unescapePatterns( connector.getWhiteListPatterns() ) );
-        
+
         addProxyConnector( connector );
         return saveConfiguration();
     }

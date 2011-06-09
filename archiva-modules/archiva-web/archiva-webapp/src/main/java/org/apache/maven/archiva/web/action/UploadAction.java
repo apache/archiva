@@ -54,7 +54,11 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.util.IOUtil;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -72,12 +76,14 @@ import java.util.TimeZone;
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
  * will also be updated if one exists, otherwise it would be created.
- *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="uploadAction" instantiation-strategy="per-lookup"
+ * <p/>
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="uploadAction" instantiation-strategy="per-lookup"
  */
 @SuppressWarnings( "serial" )
+@Controller( "uploadAction" )
+@Scope( "prototype" )
 public class UploadAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements Validateable, Preparable, Auditable
 {
     /**
@@ -131,26 +137,31 @@ public class UploadAction
     private List<String> managedRepoIdList;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private UserRepositories userRepositories;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * @plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
+     * lexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
      */
+    @Inject
+    @Named( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;
-    
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5};
+
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
     public void setArtifact( File file )
     {
@@ -415,17 +426,17 @@ public class UploadAction
             if ( !config.getRepositoryScanning().getKnownContentConsumers().contains( "metadata-updater" ) )
             {
                 updateProjectMetadata( targetPath.getAbsolutePath(), lastUpdatedTimestamp, timestamp, newBuildNumber,
-                                          fixChecksums );
-   
-               if ( VersionUtil.isSnapshot( version ) )
-               {
-                   updateVersionMetadata( versionMetadata, versionMetadataFile, lastUpdatedTimestamp, timestamp,
-                                          newBuildNumber, fixChecksums );
-               }
+                                       fixChecksums );
+
+                if ( VersionUtil.isSnapshot( version ) )
+                {
+                    updateVersionMetadata( versionMetadata, versionMetadataFile, lastUpdatedTimestamp, timestamp,
+                                           newBuildNumber, fixChecksums );
+                }
             }
 
-            String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
-                "\' was successfully deployed to repository \'" + repositoryId + "\'";
+            String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version
+                + "\' was successfully deployed to repository \'" + repositoryId + "\'";
 
             addActionMessage( msg );
 
@@ -507,8 +518,8 @@ public class UploadAction
         }
         return metadata;
     }
-    
-        
+
+
     /**
      * Update version level metadata for snapshot artifacts. If it does not exist, create the metadata and fix checksums
      * if necessary.
@@ -545,15 +556,15 @@ public class UploadAction
     /**
      * Update artifact level metadata. If it does not exist, create the metadata and fix checksums if necessary.
      */
-    private void updateProjectMetadata( String targetPath, Date lastUpdatedTimestamp, String timestamp,
-                                        int buildNumber, boolean fixChecksums )
+    private void updateProjectMetadata( String targetPath, Date lastUpdatedTimestamp, String timestamp, int buildNumber,
+                                        boolean fixChecksums )
         throws RepositoryMetadataException
     {
         List<String> availableVersions = new ArrayList<String>();
         String latestVersion = version;
 
         File projectDir = new File( targetPath ).getParentFile();
-        File projectMetadataFile =  new File( projectDir, MetadataTools.MAVEN_METADATA );
+        File projectMetadataFile = new File( projectDir, MetadataTools.MAVEN_METADATA );
 
         ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetadataFile );
 
@@ -582,7 +593,7 @@ public class UploadAction
         {
             projectMetadata.setGroupId( groupId );
         }
-        
+
         if ( projectMetadata.getArtifactId() == null )
         {
             projectMetadata.setArtifactId( artifactId );
@@ -671,9 +682,8 @@ public class UploadAction
         }
         catch ( TaskQueueException e )
         {
-            log.error(
-                "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName() +
-                    "']." );
+            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName()
+                           + "']." );
         }
     }
 

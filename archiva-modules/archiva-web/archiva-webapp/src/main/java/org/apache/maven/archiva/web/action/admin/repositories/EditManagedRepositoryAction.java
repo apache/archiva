@@ -30,7 +30,10 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
@@ -40,6 +43,8 @@ import java.io.IOException;
  * @version $Id$
  * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="editManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
+@Controller( "editManagedRepositoryAction" )
+@Scope( "prototype" )
 public class EditManagedRepositoryAction
     extends AbstractManagedRepositoriesAction
     implements Preparable, Validateable
@@ -58,8 +63,9 @@ public class EditManagedRepositoryAction
     private boolean stageNeeded;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     public void prepare()

@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+import org.apache.archiva.audit.AuditListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.policies.DownloadErrorPolicy;
@@ -32,6 +34,8 @@ import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 
 import com.opensymphony.xwork2.Preparable;
+
+import javax.annotation.PostConstruct;
 
 /**
  * AbstractProxyConnectorFormAction - generic fields and methods for either add or edit actions related with the 
@@ -45,17 +49,17 @@ public abstract class AbstractProxyConnectorFormAction
 {
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+     * plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
      */
     private Map<String, PreDownloadPolicy> preDownloadPolicyMap;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+     * plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
      */
     private Map<String, PostDownloadPolicy> postDownloadPolicyMap;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
+     * plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
      */
     private Map<String, DownloadErrorPolicy> downloadErrorPolicyMap;
 
@@ -108,6 +112,16 @@ public abstract class AbstractProxyConnectorFormAction
      * The model for this action.
      */
     protected ProxyConnectorConfiguration connector;
+
+
+    @PostConstruct
+    public void initialize()
+    {
+        super.initialize();
+        this.preDownloadPolicyMap = getBeansOfType( PreDownloadPolicy.class );
+        this.postDownloadPolicyMap = getBeansOfType( PostDownloadPolicy.class );
+        this.downloadErrorPolicyMap = getBeansOfType( DownloadErrorPolicy.class );
+    }
 
     protected List<String> escapePatterns( List<String> patterns )
     {   

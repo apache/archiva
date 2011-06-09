@@ -24,6 +24,8 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +36,10 @@ import java.util.Map;
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="proxyConnectorsAction" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="proxyConnectorsAction" instantiation-strategy="per-lookup"
  */
+@Controller( "proxyConnectorsAction" )
+@Scope( "prototype" )
 public class ProxyConnectorsAction
     extends AbstractProxyConnectorAction
     implements Preparable

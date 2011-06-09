@@ -27,13 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.opensymphony.xwork2.Action;
-import org.apache.archiva.audit.AuditListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
 import org.apache.maven.archiva.web.validator.utils.ValidatorUtil;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;

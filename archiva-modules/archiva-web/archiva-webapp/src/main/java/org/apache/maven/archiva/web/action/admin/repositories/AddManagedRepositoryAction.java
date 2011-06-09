@@ -27,17 +27,21 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * AddManagedRepositoryAction 
+ * AddManagedRepositoryAction
  *
  * @version $Id$
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addManagedRepositoryAction" instantiation-strategy="per-lookup"
+ *          <p/>
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="addManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
+@Controller( "addManagedRepositoryAction" )
+@Scope( "prototype" )
 public class AddManagedRepositoryAction
     extends AbstractManagedRepositoriesAction
     implements Preparable, Validateable
@@ -55,7 +59,7 @@ public class AddManagedRepositoryAction
     {
         this.repository = new ManagedRepositoryConfiguration();
         this.repository.setReleases( false );
-        this.repository.setScanned( false );      
+        this.repository.setScanned( false );
         this.repository.setBlockRedeployments( false );
     }
 
@@ -78,7 +82,7 @@ public class AddManagedRepositoryAction
         repository.setLocation( removeExpressions( repository.getLocation() ) );
 
         File location = new File( repository.getLocation() );
-        if( location.exists() )
+        if ( location.exists() )
         {
             return CONFIRM;
         }
@@ -162,15 +166,15 @@ public class AddManagedRepositoryAction
             addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
                 + "], that id already exists as a remote repository." );
         }
-        else if( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
+        else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
         {
             addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-               + "], that id already exists as a repository group." );
+                + "], that id already exists as a repository group." );
         }
         else if ( repoId.toLowerCase().contains( "stage" ) )
         {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId +
-                "], rpository  id cannot contains word stage" );
+            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
+                + "], rpository  id cannot contains word stage" );
         }
 
         if ( !validator.validate( repository.getRefreshCronExpression() ) )
@@ -184,24 +188,24 @@ public class AddManagedRepositoryAction
 
     private void trimAllRequestParameterValues()
     {
-        if(StringUtils.isNotEmpty(repository.getId()))
+        if ( StringUtils.isNotEmpty( repository.getId() ) )
         {
-            repository.setId(repository.getId().trim());
+            repository.setId( repository.getId().trim() );
         }
 
-        if(StringUtils.isNotEmpty(repository.getName()))
+        if ( StringUtils.isNotEmpty( repository.getName() ) )
         {
-            repository.setName(repository.getName().trim());
+            repository.setName( repository.getName().trim() );
         }
 
-        if(StringUtils.isNotEmpty(repository.getLocation()))
+        if ( StringUtils.isNotEmpty( repository.getLocation() ) )
         {
-            repository.setLocation(repository.getLocation().trim());
+            repository.setLocation( repository.getLocation().trim() );
         }
-        
-        if(StringUtils.isNotEmpty(repository.getIndexDir()))
+
+        if ( StringUtils.isNotEmpty( repository.getIndexDir() ) )
         {
-            repository.setIndexDir(repository.getIndexDir().trim());
+            repository.setIndexDir( repository.getIndexDir().trim() );
         }
     }
 
@@ -220,7 +224,7 @@ public class AddManagedRepositoryAction
     {
         this.stageNeeded = stageNeeded;
     }
-    
+
     public String getAction()
     {
         return action;

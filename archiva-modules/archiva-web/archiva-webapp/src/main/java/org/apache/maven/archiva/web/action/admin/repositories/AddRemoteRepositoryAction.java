@@ -25,16 +25,20 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 
 /**
- * AddRemoteRepositoryAction 
+ * AddRemoteRepositoryAction
  *
  * @version $Id$
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="addRemoteRepositoryAction" instantiation-strategy="per-lookup"
+ *          <p/>
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="addRemoteRepositoryAction" instantiation-strategy="per-lookup"
  */
+@Controller( "addRemoteRepositoryAction" )
+@Scope( "prototype" )
 public class AddRemoteRepositoryAction
     extends AbstractRemoteRepositoriesAction
     implements Preparable, Validateable
@@ -42,8 +46,8 @@ public class AddRemoteRepositoryAction
     /**
      * The model for this action.
      */
-    private RemoteRepositoryConfiguration repository;    
-    
+    private RemoteRepositoryConfiguration repository;
+
     public void prepare()
     {
         this.repository = new RemoteRepositoryConfiguration();
@@ -57,10 +61,10 @@ public class AddRemoteRepositoryAction
     public String commit()
     {
         Configuration configuration = archivaConfiguration.getConfiguration();
-        
+
         //MRM-752 - url needs trimming
-        repository.setUrl(repository.getUrl().trim());
-        
+        repository.setUrl( repository.getUrl().trim() );
+
         // Save the repository configuration.
         String result;
         try
@@ -82,14 +86,14 @@ public class AddRemoteRepositoryAction
 
         return result;
     }
-    
+
     @Override
     public void validate()
     {
         Configuration config = archivaConfiguration.getConfiguration();
-        
+
         String repoId = repository.getId();
-        
+
         if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
         {
             addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
@@ -100,13 +104,13 @@ public class AddRemoteRepositoryAction
             addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
                 + "], that id already exists as a remote repository." );
         }
-        else if( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
+        else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
         {
             addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-               + "], that id already exists as a repository group." );
+                + "], that id already exists as a repository group." );
         }
     }
-    
+
     public RemoteRepositoryConfiguration getRepository()
     {
         return repository;

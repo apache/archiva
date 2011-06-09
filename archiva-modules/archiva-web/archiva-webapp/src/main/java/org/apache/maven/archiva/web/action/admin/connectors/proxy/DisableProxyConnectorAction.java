@@ -1,6 +1,8 @@
 package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,18 +24,21 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
  */
 
 /**
- * DisableProxyConnectorAction 
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="disableProxyConnectorAction" instantiation-strategy="per-lookup"
+ * DisableProxyConnectorAction
+ *
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="disableProxyConnectorAction" instantiation-strategy="per-lookup"
  */
-public class DisableProxyConnectorAction extends AbstractProxyConnectorAction
+@Controller( "disableProxyConnectorAction" )
+@Scope( "prototype" )
+public class DisableProxyConnectorAction
+    extends AbstractProxyConnectorAction
 {
     private String source;
-    
+
     private String target;
-    
+
     private ProxyConnectorConfiguration proxyConfig;
-    
+
     public String confirmDisable()
     {
         this.proxyConfig = findProxyConnector( source, target );
@@ -41,23 +46,25 @@ public class DisableProxyConnectorAction extends AbstractProxyConnectorAction
         // Not set? Then there is nothing to delete.
         if ( this.proxyConfig == null )
         {
-            addActionError( "Unable to disable proxy configuration, configuration with source [" + source
-                + "], and target [" + target + "] does not exist." );
+            addActionError(
+                "Unable to disable proxy configuration, configuration with source [" + source + "], and target ["
+                    + target + "] does not exist." );
             return ERROR;
         }
 
         return INPUT;
     }
-    
+
     public String disable()
-    {   
+    {
         this.proxyConfig = findProxyConnector( source, target );
 
         // Not set? Then there is nothing to delete.
         if ( this.proxyConfig == null )
         {
-            addActionError( "Unable to disable proxy configuration, configuration with source [" + source
-                + "], and target [" + target + "] does not exist." );
+            addActionError(
+                "Unable to disable proxy configuration, configuration with source [" + source + "], and target ["
+                    + target + "] does not exist." );
             return ERROR;
         }
 
@@ -65,14 +72,14 @@ public class DisableProxyConnectorAction extends AbstractProxyConnectorAction
         {
             return ERROR;
         }
-        
-        proxyConfig.setDisabled(true);
-        
+
+        proxyConfig.setDisabled( true );
+
         addActionMessage( "Successfully disabled proxy connector [" + source + " , " + target + " ]" );
 
         setSource( null );
         setTarget( null );
-        
+
         return saveConfiguration();
     }
 
@@ -81,17 +88,17 @@ public class DisableProxyConnectorAction extends AbstractProxyConnectorAction
         return source;
     }
 
-    public void setSource(String source) 
+    public void setSource( String source )
     {
         this.source = source;
     }
 
-    public String getTarget() 
+    public String getTarget()
     {
         return target;
     }
 
-    public void setTarget(String target)
+    public void setTarget( String target )
     {
         this.target = target;
     }

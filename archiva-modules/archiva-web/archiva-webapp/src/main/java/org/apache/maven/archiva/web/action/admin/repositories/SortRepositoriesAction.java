@@ -19,86 +19,89 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 /**
  * SortRepositoriesAction
- * 
- * @version
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortRepositoriesAction" instantiation-strategy="per-lookup"
+ *
+ * @version plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortRepositoriesAction" instantiation-strategy="per-lookup"
  */
-public class SortRepositoriesAction 
+@Controller( "sortRepositoriesAction" )
+@Scope( "prototype" )
+public class SortRepositoriesAction
     extends AbstractRepositoriesAdminAction
 {
     private String repoGroupId;
-	
+
     private String targetRepo;
-	
+
     public String sortDown()
     {
         Configuration config = archivaConfiguration.getConfiguration();
-		
+
         List<String> repositories = getRepositoriesFromGroup();
-		
+
         int idx = findTargetRepository( repositories, targetRepo );
-		
+
         if ( idx >= 0 && validIndex( repositories, idx + 1 ) )
         {
             repositories.remove( idx );
             repositories.add( idx + 1, targetRepo );
         }
-		
+
         return saveConfiguration( config );
     }
-	
+
     public String sortUp()
     {
         Configuration config = archivaConfiguration.getConfiguration();
-		
+
         List<String> repositories = getRepositoriesFromGroup();
 
         int idx = findTargetRepository( repositories, targetRepo );
-		
+
         if ( idx >= 0 && validIndex( repositories, idx - 1 ) )
         {
             repositories.remove( idx );
             repositories.add( idx - 1, targetRepo );
         }
-		
+
         return saveConfiguration( config );
     }
-	
+
     public String getRepoGroupId()
     {
         return repoGroupId;
     }
-	
+
     public void setRepoGroupId( String repoGroupId )
     {
         this.repoGroupId = repoGroupId;
     }
-	
+
     public String getTargetRepo()
     {
         return targetRepo;
     }
-	
+
     public void setTargetRepo( String targetRepo )
     {
         this.targetRepo = targetRepo;
     }
-	
+
     private int findTargetRepository( List<String> repositories, String targetRepository )
     {
         int idx = ( -1 );
-		
+
         for ( int i = 0; i < repositories.size(); i++ )
         {
-            if ( StringUtils.equals( targetRepository, repositories.get(i) ) )
+            if ( StringUtils.equals( targetRepository, repositories.get( i ) ) )
             {
                 idx = i;
                 break;
@@ -106,16 +109,16 @@ public class SortRepositoriesAction
         }
         return idx;
     }
-	
+
     private List<String> getRepositoriesFromGroup()
     {
         Configuration config = archivaConfiguration.getConfiguration();
         RepositoryGroupConfiguration repoGroup = config.findRepositoryGroupById( repoGroupId );
         return repoGroup.getRepositories();
     }
-	
+
     private boolean validIndex( List<String> repositories, int idx )
-	{
-	    return ( idx >= 0 ) && ( idx < repositories.size() );
-	}
+    {
+        return ( idx >= 0 ) && ( idx < repositories.size() );
+    }
 }

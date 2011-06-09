@@ -27,12 +27,15 @@ import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 
+import javax.inject.Inject;
+
 public class AbstractRepositoryBasedAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private UserRepositories userRepositories;
 
     protected List<String> getObservableRepos()

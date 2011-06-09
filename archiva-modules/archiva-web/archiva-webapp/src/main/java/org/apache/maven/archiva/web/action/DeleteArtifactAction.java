@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.audit.AuditEvent;
@@ -51,7 +52,11 @@ import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -65,11 +70,13 @@ import java.util.TimeZone;
 
 /**
  * Delete an artifact. Metadata will be updated if one exists, otherwise it would be created.
- *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteArtifactAction" instantiation-strategy="per-lookup"
+ * <p/>
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteArtifactAction" instantiation-strategy="per-lookup"
  */
+@Controller( "deleteArtifactAction" )
+@Scope( "prototype" )
 public class DeleteArtifactAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements Validateable, Preparable, Auditable
 {
     /**
@@ -98,26 +105,36 @@ public class DeleteArtifactAction
     private List<String> managedRepos;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private UserRepositories userRepositories;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * @plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
+     * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
      */
     private List<RepositoryListener> listeners;
 
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5};
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+
+    @PostConstruct
+    public void initialize()
+    {
+        super.initialize();
+        listeners = Lists.newArrayList( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
+    }
 
     public String getGroupId()
     {
@@ -196,8 +213,8 @@ public class DeleteArtifactAction
         TimeZone timezone = TimeZone.getTimeZone( "UTC" );
         DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
         fmt.setTimeZone( timezone );
-        ManagedRepositoryConfiguration repoConfig = configuration.getConfiguration().findManagedRepositoryById(
-            repositoryId );
+        ManagedRepositoryConfiguration repoConfig =
+            configuration.getConfiguration().findManagedRepositoryById( repositoryId );
 
         VersionedReference ref = new VersionedReference();
         ref.setArtifactId( artifactId );
@@ -229,8 +246,8 @@ public class DeleteArtifactAction
             updateMetadata( metadata, metadataFile, lastUpdatedTimestamp );
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            Collection<ArtifactMetadata> artifacts = metadataRepository.getArtifacts( repositoryId, groupId, artifactId,
-                                                                                      version );
+            Collection<ArtifactMetadata> artifacts =
+                metadataRepository.getArtifacts( repositoryId, groupId, artifactId, version );
 
             for ( ArtifactMetadata artifact : artifacts )
             {
@@ -283,8 +300,8 @@ public class DeleteArtifactAction
             repositorySession.close();
         }
 
-        String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version +
-            "\' was successfully deleted from repository \'" + repositoryId + "\'";
+        String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version
+            + "\' was successfully deleted from repository \'" + repositoryId + "\'";
 
         addActionMessage( msg );
 
@@ -420,22 +437,22 @@ public class DeleteArtifactAction
 
     private void trimAllRequestParameterValues()
     {
-        if( StringUtils.isNotEmpty(groupId))
+        if ( StringUtils.isNotEmpty( groupId ) )
         {
             groupId = groupId.trim();
         }
 
-        if(StringUtils.isNotEmpty(artifactId))
+        if ( StringUtils.isNotEmpty( artifactId ) )
         {
             artifactId = artifactId.trim();
         }
 
-        if(StringUtils.isNotEmpty(version))
+        if ( StringUtils.isNotEmpty( version ) )
         {
             version = version.trim();
         }
 
-        if(StringUtils.isNotEmpty(repositoryId))
+        if ( StringUtils.isNotEmpty( repositoryId ) )
         {
             repositoryId = repositoryId.trim();
         }

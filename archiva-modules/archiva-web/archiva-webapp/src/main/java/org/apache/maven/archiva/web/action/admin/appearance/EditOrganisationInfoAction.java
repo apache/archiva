@@ -30,14 +30,17 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 /**
  * @version $Id: ConfigurationAction.java 480950 2006-11-30 14:58:35Z evenisse $
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action"
- *                   role-hint="editOrganisationInfo"
- *                   instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action"
+ * role-hint="editOrganisationInfo"
+ * instantiation-strategy="per-lookup"
  */
+@Controller( "editOrganisationInfo" )
+@Scope( "prototype" )
 public class EditOrganisationInfoAction
     extends AbstractAppearanceAction
     implements SecureAction, Validateable
@@ -47,23 +50,23 @@ public class EditOrganisationInfoAction
         throws RegistryException, IndeterminateConfigurationException
     {
         Configuration config = configuration.getConfiguration();
-        if (config != null)
+        if ( config != null )
         {
             OrganisationInformation orgInfo = config.getOrganisationInfo();
-            if (orgInfo == null)
+            if ( orgInfo == null )
             {
-                config.setOrganisationInfo(orgInfo);
+                config.setOrganisationInfo( orgInfo );
             }
-            
-            orgInfo.setLogoLocation(getOrganisationLogo());
-            orgInfo.setName(getOrganisationName());
-            orgInfo.setUrl(getOrganisationUrl());
-            
-            configuration.save(config);
+
+            orgInfo.setLogoLocation( getOrganisationLogo() );
+            orgInfo.setName( getOrganisationName() );
+            orgInfo.setUrl( getOrganisationUrl() );
+
+            configuration.save( config );
         }
         return SUCCESS;
     }
-    
+
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
@@ -72,28 +75,28 @@ public class EditOrganisationInfoAction
         bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
         return bundle;
     }
-    
+
     public void validate()
     {
         // trim all unecessary trailing/leading white-spaces; always put this statement before the closing braces(after all validation).
         trimAllRequestParameterValues();
     }
-    
+
     private void trimAllRequestParameterValues()
     {
-        if(StringUtils.isNotEmpty(super.getOrganisationName()))
+        if ( StringUtils.isNotEmpty( super.getOrganisationName() ) )
         {
-            super.setOrganisationName(super.getOrganisationName().trim());
+            super.setOrganisationName( super.getOrganisationName().trim() );
         }
 
-        if(StringUtils.isNotEmpty(super.getOrganisationUrl()))
+        if ( StringUtils.isNotEmpty( super.getOrganisationUrl() ) )
         {
-            super.setOrganisationUrl(super.getOrganisationUrl().trim());
+            super.setOrganisationUrl( super.getOrganisationUrl().trim() );
         }
 
-        if(StringUtils.isNotEmpty(super.getOrganisationLogo()))
+        if ( StringUtils.isNotEmpty( super.getOrganisationLogo() ) )
         {
-            super.setOrganisationLogo(super.getOrganisationLogo().trim());
+            super.setOrganisationLogo( super.getOrganisationLogo().trim() );
         }
     }
 }

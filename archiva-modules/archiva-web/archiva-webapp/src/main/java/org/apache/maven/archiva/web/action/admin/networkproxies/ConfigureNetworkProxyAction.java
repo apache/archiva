@@ -30,26 +30,33 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.functors.NetworkProxySelectionPredicate;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import javax.inject.Inject;
 
 /**
  * ConfigureNetworkProxyAction
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="configureNetworkProxyAction" instantiation-strategy="per-lookup"
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="configureNetworkProxyAction" instantiation-strategy="per-lookup"
  */
+@Controller( "configureNetworkProxyAction" )
+@Scope( "prototype" )
 public class ConfigureNetworkProxyAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements SecureAction, Preparable, Validateable
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     private String mode;
@@ -81,8 +88,8 @@ public class ConfigureNetworkProxyAction
         }
 
         NetworkProxySelectionPredicate networkProxySelection = new NetworkProxySelectionPredicate( id );
-        NetworkProxyConfiguration proxyConfig = (NetworkProxyConfiguration) CollectionUtils.find( config
-            .getNetworkProxies(), networkProxySelection );
+        NetworkProxyConfiguration proxyConfig =
+            (NetworkProxyConfiguration) CollectionUtils.find( config.getNetworkProxies(), networkProxySelection );
         if ( proxyConfig == null )
         {
             addActionError( "Unable to remove network proxy, proxy with id [" + id + "] not found." );
@@ -235,29 +242,29 @@ public class ConfigureNetworkProxyAction
 
     private void trimAllRequestParameterValues()
     {
-        if(StringUtils.isNotEmpty(proxy.getId()))
+        if ( StringUtils.isNotEmpty( proxy.getId() ) )
         {
-            proxy.setId(proxy.getId().trim());
-        }
-        
-        if(StringUtils.isNotEmpty(proxy.getHost()))
-        {
-            proxy.setHost(proxy.getHost().trim());
+            proxy.setId( proxy.getId().trim() );
         }
 
-        if(StringUtils.isNotEmpty(proxy.getPassword()))
+        if ( StringUtils.isNotEmpty( proxy.getHost() ) )
         {
-            proxy.setPassword(proxy.getPassword().trim());
+            proxy.setHost( proxy.getHost().trim() );
         }
 
-        if(StringUtils.isNotEmpty(proxy.getProtocol()))
+        if ( StringUtils.isNotEmpty( proxy.getPassword() ) )
         {
-            proxy.setProtocol(proxy.getProtocol().trim());
+            proxy.setPassword( proxy.getPassword().trim() );
         }
 
-        if(StringUtils.isNotEmpty(proxy.getUsername()))
+        if ( StringUtils.isNotEmpty( proxy.getProtocol() ) )
         {
-            proxy.setUsername(proxy.getUsername().trim());
+            proxy.setProtocol( proxy.getProtocol().trim() );
+        }
+
+        if ( StringUtils.isNotEmpty( proxy.getUsername() ) )
+        {
+            proxy.setUsername( proxy.getUsername().trim() );
         }
     }
 }

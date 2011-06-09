@@ -19,81 +19,83 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
+import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 
-import com.opensymphony.xwork2.Preparable;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import javax.inject.Inject;
 
 /**
- * AbstractAppearanceAction 
+ * AbstractAppearanceAction
  *
  * @version $Id$
  */
 public abstract class AbstractAppearanceAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements Preparable
 {
     /**
      * Archiva Application Configuration
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     protected ArchivaConfiguration configuration;
-    
+
     private String organisationLogo;
 
     private String organisationUrl;
 
     private String organisationName;
 
-    public void setConfiguration(ArchivaConfiguration configuration) 
+    public void setConfiguration( ArchivaConfiguration configuration )
     {
         this.configuration = configuration;
     }
-    
-    public String getOrganisationLogo() 
+
+    public String getOrganisationLogo()
     {
         return organisationLogo;
     }
 
-    public String getOrganisationName() 
+    public String getOrganisationName()
     {
         return organisationName;
     }
 
-    public String getOrganisationUrl() 
+    public String getOrganisationUrl()
     {
         return organisationUrl;
     }
 
-    public void setOrganisationLogo(String organisationLogo) 
+    public void setOrganisationLogo( String organisationLogo )
     {
         this.organisationLogo = organisationLogo;
     }
 
-    public void setOrganisationName(String organisationName) 
+    public void setOrganisationName( String organisationName )
     {
         this.organisationName = organisationName;
     }
 
-    public void setOrganisationUrl(String organisationUrl) 
+    public void setOrganisationUrl( String organisationUrl )
     {
         this.organisationUrl = organisationUrl;
     }
 
     public void prepare()
         throws Exception
-    {        
+    {
         Configuration config = configuration.getConfiguration();
-        if (config != null)
+        if ( config != null )
         {
             OrganisationInformation orgInfo = config.getOrganisationInfo();
-            if (orgInfo != null)
+            if ( orgInfo != null )
             {
-                setOrganisationLogo(orgInfo.getLogoLocation());
-                setOrganisationName(orgInfo.getName());
-                setOrganisationUrl(orgInfo.getUrl());
+                setOrganisationLogo( orgInfo.getLogoLocation() );
+                setOrganisationName( orgInfo.getName() );
+                setOrganisationUrl( orgInfo.getUrl() );
             }
         }
     }

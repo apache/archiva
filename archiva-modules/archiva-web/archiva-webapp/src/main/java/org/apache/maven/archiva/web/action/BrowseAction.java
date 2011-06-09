@@ -26,6 +26,8 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,8 +40,10 @@ import java.util.Set;
  * Browse the repository.
  *
  * @todo implement repository selectors (all or specific repository)
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction" instantiation-strategy="per-lookup"
  */
+@Controller( "browseAction" )
+@Scope( "prototype" )
 public class BrowseAction
     extends AbstractRepositoryBasedAction
 {
@@ -172,8 +176,8 @@ public class BrowseAction
             for ( String n : namespacesToCollapse )
             {
                 // TODO: check performance of this
-                namespaces.add( collapseNamespaces( repositorySession, metadataResolver, selectedRepos,
-                                                    groupId + "." + n ) );
+                namespaces.add(
+                    collapseNamespaces( repositorySession, metadataResolver, selectedRepos, groupId + "." + n ) );
             }
         }
         finally
@@ -224,8 +228,8 @@ public class BrowseAction
             Set<String> versions = new LinkedHashSet<String>();
             for ( String repoId : selectedRepos )
             {
-                versions.addAll( metadataResolver.resolveProjectVersions( repositorySession, repoId, groupId,
-                                                                          artifactId ) );
+                versions.addAll(
+                    metadataResolver.resolveProjectVersions( repositorySession, repoId, groupId, artifactId ) );
             }
 
             // TODO: sort by known version ordering method
@@ -262,14 +266,15 @@ public class BrowseAction
                 {
                     try
                     {
-                        versionMetadata = metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId,
-                                                                                  artifactId, version );
+                        versionMetadata =
+                            metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId, artifactId,
+                                                                    version );
                     }
                     catch ( MetadataResolutionException e )
                     {
                         log.error(
-                            "Skipping invalid metadata while compiling shared model for " + groupId + ":" + artifactId +
-                                " in repo " + repoId + ": " + e.getMessage() );
+                            "Skipping invalid metadata while compiling shared model for " + groupId + ":" + artifactId
+                                + " in repo " + repoId + ": " + e.getMessage() );
                     }
                 }
             }
@@ -286,8 +291,8 @@ public class BrowseAction
             }
             else
             {
-                MavenProjectFacet versionMetadataMavenFacet = (MavenProjectFacet) versionMetadata.getFacet(
-                    MavenProjectFacet.FACET_ID );
+                MavenProjectFacet versionMetadataMavenFacet =
+                    (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
                 if ( versionMetadataMavenFacet != null )
                 {
                     if ( mavenFacet.getPackaging() != null && !StringUtils.equalsIgnoreCase( mavenFacet.getPackaging(),
@@ -309,23 +314,23 @@ public class BrowseAction
                     sharedModel.setDescription( null );
                 }
 
-                if ( sharedModel.getIssueManagement() != null && versionMetadata.getIssueManagement() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(),
-                                                   versionMetadata.getIssueManagement().getUrl() ) )
+                if ( sharedModel.getIssueManagement() != null && versionMetadata.getIssueManagement() != null
+                    && !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(),
+                                                      versionMetadata.getIssueManagement().getUrl() ) )
                 {
                     sharedModel.setIssueManagement( null );
                 }
 
-                if ( sharedModel.getCiManagement() != null && versionMetadata.getCiManagement() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(),
-                                                   versionMetadata.getCiManagement().getUrl() ) )
+                if ( sharedModel.getCiManagement() != null && versionMetadata.getCiManagement() != null
+                    && !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(),
+                                                      versionMetadata.getCiManagement().getUrl() ) )
                 {
                     sharedModel.setCiManagement( null );
                 }
 
-                if ( sharedModel.getOrganization() != null && versionMetadata.getOrganization() != null &&
-                    !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(),
-                                                   versionMetadata.getOrganization().getName() ) )
+                if ( sharedModel.getOrganization() != null && versionMetadata.getOrganization() != null
+                    && !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(),
+                                                      versionMetadata.getOrganization().getName() ) )
                 {
                     sharedModel.setOrganization( null );
                 }

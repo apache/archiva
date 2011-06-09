@@ -25,16 +25,20 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 
 /**
- * EditRemoteRepositoryAction 
+ * EditRemoteRepositoryAction
  *
  * @version $Id$
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="editRemoteRepositoryAction" instantiation-strategy="per-lookup" 
+ *          <p/>
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="editRemoteRepositoryAction" instantiation-strategy="per-lookup"
  */
+@Controller( "editRemoteRepositoryAction" )
+@Scope( "prototype" )
 public class EditRemoteRepositoryAction
     extends AbstractRemoteRepositoriesAction
     implements Preparable
@@ -65,14 +69,14 @@ public class EditRemoteRepositoryAction
             addActionError( "Edit failure, unable to edit a repository with a blank repository id." );
             return ERROR;
         }
-        
+
         return INPUT;
     }
 
     public String commit()
     {
         Configuration configuration = archivaConfiguration.getConfiguration();
-        
+
         // We are in edit mode, remove the old repository configuration.
         removeRepository( repository.getId(), configuration );
 
@@ -97,7 +101,7 @@ public class EditRemoteRepositoryAction
 
         return result;
     }
-    
+
     public RemoteRepositoryConfiguration getRepository()
     {
         return repository;

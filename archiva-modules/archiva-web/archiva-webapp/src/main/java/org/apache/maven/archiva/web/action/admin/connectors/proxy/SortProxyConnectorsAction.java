@@ -21,16 +21,20 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
 /**
- * SortProxyConnectorsAction -  
+ * SortProxyConnectorsAction -
  *
  * @version $Id$
- * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortProxyConnectorsAction" instantiation-strategy="per-lookup"
+ *          <p/>
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortProxyConnectorsAction" instantiation-strategy="per-lookup"
  */
+@Controller( "sortProxyConnectorsAction" )
+@Scope( "prototype" )
 public class SortProxyConnectorsAction
     extends AbstractProxyConnectorAction
 {

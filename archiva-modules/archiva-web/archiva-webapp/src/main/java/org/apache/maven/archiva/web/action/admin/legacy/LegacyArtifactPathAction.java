@@ -19,38 +19,42 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.maven.archiva.web.util.ContextUtils;
-import org.codehaus.plexus.redback.rbac.Resource;
-
 import org.apache.struts2.interceptor.ServletRequestAware;
-import com.opensymphony.xwork2.Preparable;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Shows the LegacyArtifactPath Tab for the administrator.
  *
  * @since 1.1
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="legacyArtifactPathAction" instantiation-strategy="per-lookup"
+ *        plexus.component role="com.opensymphony.xwork2.Action" role-hint="legacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
+@Controller( "legacyArtifactPathAction" )
+@Scope( "prototype" )
 public class LegacyArtifactPathAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements SecureAction, ServletRequestAware, Preparable
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     private List<LegacyArtifactPath> legacyArtifactPaths;
@@ -72,8 +76,7 @@ public class LegacyArtifactPathAction
         SecureActionBundle bundle = new SecureActionBundle();
 
         bundle.setRequiresAuthentication( true );
-        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION,
-            Resource.GLOBAL );
+        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
 
         return bundle;
     }

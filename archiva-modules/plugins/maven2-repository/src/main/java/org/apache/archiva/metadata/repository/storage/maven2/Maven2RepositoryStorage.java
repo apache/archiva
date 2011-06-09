@@ -109,7 +109,7 @@ public class Maven2RepositoryStorage
     public void initialize()
         throws PlexusSisuBridgeException
     {
-        builder = plexusSisuBridge.lookup( ModelBuilder.class );
+        builder = plexusSisuBridge.lookup( ModelBuilder.class, "default" );
     }
 
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )

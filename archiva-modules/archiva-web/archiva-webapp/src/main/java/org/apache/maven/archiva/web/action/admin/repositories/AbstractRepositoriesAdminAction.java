@@ -26,32 +26,34 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Abstract AdminRepositories Action base.
- * 
+ * <p/>
  * Base class for all repository administrative functions.
  * This should be neutral to the type of action (add/edit/delete) and type of repo (managed/remote)
  *
  * @version $Id$
  */
 public abstract class AbstractRepositoriesAdminAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements SecureAction, Auditable
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
     public ArchivaConfiguration getArchivaConfiguration()
@@ -77,12 +79,12 @@ public abstract class AbstractRepositoriesAdminAction
 
     /**
      * Save the configuration.
-     * 
+     *
      * @param configuration the configuration to save.
      * @return the webwork result code to issue.
-     * @throws IOException thrown if unable to save file to disk.
+     * @throws IOException                   thrown if unable to save file to disk.
      * @throws InvalidConfigurationException thrown if configuration is invalid.
-     * @throws RegistryException thrown if configuration subsystem has a problem saving the configuration to disk.
+     * @throws RegistryException             thrown if configuration subsystem has a problem saving the configuration to disk.
      */
     protected String saveConfiguration( Configuration configuration )
     {
@@ -107,11 +109,12 @@ public abstract class AbstractRepositoriesAdminAction
 
     /**
      * Get the list of ProxyConnectors that are present in the configuration.
-     * 
+     *
      * @return a new list of ProxyConnectors present in the configuration.
      */
     protected List<ProxyConnectorConfiguration> getProxyConnectors()
     {
-        return new ArrayList<ProxyConnectorConfiguration>( archivaConfiguration.getConfiguration().getProxyConnectors() );
+        return new ArrayList<ProxyConnectorConfiguration>(
+            archivaConfiguration.getConfiguration().getProxyConnectors() );
     }
 }

@@ -300,6 +300,31 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>${maven3x.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model-builder</artifactId>
+      <version>${maven3x.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.sonatype.sisu</groupId>
+      <artifactId>sisu-inject-plexus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.sisu</groupId>
+      <artifactId>sisu-guice</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-plexus-bridge</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
@@ -536,18 +561,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-component-metadata</artifactId>
-        <configuration>
-          <roleDefaults>
-            <roleDefault>
-              <role>com.opensymphony.xwork2.Action</role>
-              <instantiation-strategy>per-lookup</instantiation-strategy>
-            </roleDefault>
-          </roleDefaults>
-        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -68,7 +68,16 @@ public class PlexusSisuBridge
 
         ClassWorld classWorld = new ClassWorld();
 
-        ClassRealm classRealm = new ClassRealm( classWorld, "maven", Thread.currentThread().getContextClassLoader() );
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+
+        ClassRealm classRealm = new ClassRealm( classWorld, "maven", tccl )
+        {
+            public URL[] getURLs()
+            {
+                return super.getURLs();
+            }
+
+        };
         conf.setRealm( classRealm );
 
         conf.setClassWorld( classWorld );

@@ -38,7 +38,10 @@ import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,8 +57,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport" instantiation-strategy="per-lookup"
  */
+@Controller( "generateReport" )
+@Scope( "prototype" )
 public class GenerateReportAction
     extends AbstractRepositoryBasedAction
     implements SecureAction, Preparable
@@ -65,21 +70,23 @@ public class GenerateReportAction
     public static final String BLANK = "blank";
 
     private static final String[] datePatterns =
-        new String[]{"MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", "dd MMMMM yyyy", "dd/MM/yy",
-            "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy", "MM-dd-yy"};
+        new String[]{ "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", "dd MMMMM yyyy", "dd/MM/yy",
+            "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy", "MM-dd-yy" };
 
     public static final String SEND_FILE = "send-file";
 
     private Logger log = LoggerFactory.getLogger( GenerateReportAction.class );
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     private String groupId;
@@ -133,14 +140,14 @@ public class GenerateReportAction
 
     /**
      * Generate the statistics report.
-     *
+     * <p/>
      * check whether single repo report or comparison report
      * 1. if it is a single repository, get all the statistics for the repository on the specified date
      * - if no date is specified, get only the latest
      * (total page = 1 --> no pagination since only the most recent stats will be displayed)
      * - otherwise, get everything within the date range (total pages = repo stats / rows per page)
      * - required params: repository, startDate, endDate
-     *
+     * <p/>
      * 2. if multiple repositories, get the latest statistics on each repository on the specified date
      * - if no date is specified, use the current date endDate
      * - required params: repositories, endDate
@@ -190,8 +197,9 @@ public class GenerateReportAction
                     List<RepositoryStatistics> stats = null;
                     try
                     {
-                        stats = repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repo,
-                                                                                  startDateInDF, endDateInDF );
+                        stats =
+                            repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repo, startDateInDF,
+                                                                              endDateInDF );
                     }
                     catch ( MetadataRepositoryException e )
                     {
@@ -324,8 +332,8 @@ public class GenerateReportAction
                 }
 
                 input = new StringBuffer(
-                    "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes," +
-                        "Jars,Wars\n" );
+                    "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,"
+                        + "Jars,Wars\n" );
 
                 // multiple repos
                 for ( String repo : selectedRepositories )
@@ -333,8 +341,9 @@ public class GenerateReportAction
                     List<RepositoryStatistics> stats = null;
                     try
                     {
-                        stats = repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repo,
-                                                                                  startDateInDF, endDateInDF );
+                        stats =
+                            repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repo, startDateInDF,
+                                                                              endDateInDF );
                     }
                     catch ( MetadataRepositoryException e )
                     {
@@ -396,8 +405,8 @@ public class GenerateReportAction
                     }
 
                     input = new StringBuffer(
-                        "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins," +
-                            "Archetypes,Jars,Wars\n" );
+                        "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,"
+                            + "Archetypes,Jars,Wars\n" );
 
                     for ( RepositoryStatistics repositoryStats : stats )
                     {
@@ -555,8 +564,10 @@ public class GenerateReportAction
                 // TODO: improve performance by navigating into a group subtree. Currently group is property, not part of name of item
                 for ( String name : metadataRepository.getMetadataFacets( repoId, RepositoryProblemFacet.FACET_ID ) )
                 {
-                    RepositoryProblemFacet metadataFacet = (RepositoryProblemFacet) metadataRepository.getMetadataFacet(
-                        repoId, RepositoryProblemFacet.FACET_ID, name );
+                    RepositoryProblemFacet metadataFacet =
+                        (RepositoryProblemFacet) metadataRepository.getMetadataFacet( repoId,
+                                                                                      RepositoryProblemFacet.FACET_ID,
+                                                                                      name );
 
                     if ( StringUtils.isEmpty( groupId ) || groupId.equals( metadataFacet.getNamespace() ) )
                     {

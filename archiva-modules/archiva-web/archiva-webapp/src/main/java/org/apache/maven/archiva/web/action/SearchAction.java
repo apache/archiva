@@ -35,6 +35,8 @@ import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.struts2.ServletActionContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -47,8 +49,10 @@ import java.util.Map;
 /**
  * Search all indexed fields by the given criteria.
  *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
  */
+@Controller( "searchAction" )
+@Scope( "prototype" )
 public class SearchAction
     extends AbstractRepositoryBasedAction
     implements Preparable
@@ -57,6 +61,7 @@ public class SearchAction
      * Query string.
      */
 
+    // FIXME olamy WTF here??
     private ArchivaConfiguration archivaConfiguration;
 
     private String q;

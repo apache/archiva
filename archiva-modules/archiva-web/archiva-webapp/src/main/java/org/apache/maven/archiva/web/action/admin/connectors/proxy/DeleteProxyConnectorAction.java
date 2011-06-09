@@ -20,14 +20,18 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 /**
  * DeleteProxyConnectorAction 
  *
  * @version $Id$
  * 
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteProxyConnectorAction" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteProxyConnectorAction" instantiation-strategy="per-lookup"
  */
+@Controller( "deleteProxyConnectorAction" )
+@Scope( "prototype" )
 public class DeleteProxyConnectorAction
     extends AbstractProxyConnectorAction
 {

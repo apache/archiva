@@ -38,6 +38,8 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -56,10 +58,12 @@ import java.util.Map;
  *
  * TODO change name to ShowVersionedAction to conform to terminology.
  *
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
  * instantiation-strategy="per-lookup"
  */
 @SuppressWarnings( "serial" )
+@Controller( "showArtifactAction" )
+@Scope( "prototype" )
 public class ShowArtifactAction
     extends AbstractRepositoryBasedAction
     implements Validateable
@@ -67,7 +71,7 @@ public class ShowArtifactAction
     /* .\ Not Exposed \._____________________________________________ */
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
 

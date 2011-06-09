@@ -19,12 +19,8 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -41,27 +37,42 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * ConfigurationSynchronization
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.web.startup.SecuritySynchronization"
+ * plexus.component role="org.apache.maven.archiva.web.startup.SecuritySynchronization"
  * role-hint="default"
  */
+@Service
 public class SecuritySynchronization
     implements RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( SecuritySynchronization.class );
 
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
+    @Inject
     private RoleManager roleManager;
 
     /**
-     * @plexus.requirement role-hint="cached"
+     * plexus.requirement role-hint="cached"
      */
+    @Inject
+    @Named( value = "rBACManager#cached" )
     private RBACManager rbacManager;
 
     /**
@@ -70,9 +81,36 @@ public class SecuritySynchronization
     private Map<String, EnvironmentCheck> checkers;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    private ApplicationContext applicationContext;
+
+    @PostConstruct
+    public void initialize()
+    {
+        checkers = getBeansOfType( EnvironmentCheck.class );
+    }
+
+    protected <T> Map<String, T> getBeansOfType( Class<T> clazz )
+    {
+        //TODO do some caching here !!!
+        // olamy : with plexus we get only roleHint
+        // as per convention we named spring bean role#hint remove role# if exists
+        Map<String, T> springBeans = applicationContext.getBeansOfType( clazz );
+
+        Map<String, T> beans = new HashMap<String, T>( springBeans.size() );
+
+        for ( Map.Entry<String, T> entry : springBeans.entrySet() )
+        {
+            String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
+            beans.put( key, entry.getValue() );
+        }
+        return beans;
+    }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
@@ -182,8 +220,8 @@ public class SecuritySynchronization
             msg.append( "======================================================================" );
             log.error( msg.toString() );
 
-            throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size() +
-                "] violation(s) encountered, See log for details." );
+            throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size()
+                                            + "] violation(s) encountered, See log for details." );
         }
     }
 
@@ -213,9 +251,8 @@ public class SecuritySynchronization
             }
             catch ( RbacManagerException e )
             {
-                log.warn(
-                    "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) + "] to " +
-                        principal + " user.", e );
+                log.warn( "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) + "] to "
+                              + principal + " user.", e );
             }
         }
     }

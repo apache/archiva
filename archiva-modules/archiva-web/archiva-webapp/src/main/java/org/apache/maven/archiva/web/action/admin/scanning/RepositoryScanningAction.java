@@ -34,13 +34,16 @@ import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,20 +53,24 @@ import java.util.Map;
  * RepositoryScanningAction
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryScanningAction" instantiation-strategy="per-lookup"
+ *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryScanningAction" instantiation-strategy="per-lookup"
  */
+@Controller( "repositoryScanningAction" )
+@Scope( "prototype" )
 public class RepositoryScanningAction
-    extends PlexusActionSupport
+    extends AbstractActionSupport
     implements Preparable, Validateable, SecureAction, Auditable
 {
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositoryContentConsumers repoconsumerUtil;
 
     private Map<String, FileType> fileTypeMap;
@@ -93,17 +100,17 @@ public class RepositoryScanningAction
     private String pattern;
 
     private String fileTypeId;
-    
+
     public void addActionError( String anErrorMessage )
     {
         super.addActionError( anErrorMessage );
-        log.warn( "[ActionError] " + anErrorMessage );
+        log.warn( "[ActionError] {}", anErrorMessage );
     }
 
     public void addActionMessage( String aMessage )
     {
         super.addActionMessage( aMessage );
-        log.info( "[ActionMessage] " + aMessage );
+        log.info( "[ActionMessage] {}", aMessage );
     }
 
     public String addFiletypePattern()
@@ -133,7 +140,7 @@ public class RepositoryScanningAction
 
         filetype.addPattern( pattern );
         addActionMessage( "Added pattern \"" + pattern + "\" to filetype " + id );
-        
+
         triggerAuditEvent( AuditEvent.ADD_PATTERN + " " + pattern );
 
         return saveConfiguration();
@@ -225,7 +232,7 @@ public class RepositoryScanningAction
         }
 
         filetype.removePattern( getPattern() );
-        
+
         triggerAuditEvent( AuditEvent.REMOVE_PATTERN + " " + pattern );
 
         return saveConfiguration();
@@ -244,16 +251,17 @@ public class RepositoryScanningAction
     public String updateInvalidConsumers()
     {
         addActionMessage( "Update Invalid Consumers" );
-        
-        List<String> oldConsumers = archivaConfiguration.getConfiguration().getRepositoryScanning().getInvalidContentConsumers();
+
+        List<String> oldConsumers =
+            archivaConfiguration.getConfiguration().getRepositoryScanning().getInvalidContentConsumers();
 
         archivaConfiguration.getConfiguration().getRepositoryScanning().setInvalidContentConsumers(
             enabledInvalidContentConsumers );
-        
+
         if ( enabledInvalidContentConsumers != null )
         {
             filterAddedConsumers( oldConsumers, enabledInvalidContentConsumers );
-            filterRemovedConsumers( oldConsumers, enabledInvalidContentConsumers );    
+            filterRemovedConsumers( oldConsumers, enabledInvalidContentConsumers );
         }
         else
         {
@@ -266,16 +274,17 @@ public class RepositoryScanningAction
     public String updateKnownConsumers()
     {
         addActionMessage( "Update Known Consumers" );
-        
-        List<String> oldConsumers = archivaConfiguration.getConfiguration().getRepositoryScanning().getKnownContentConsumers();
+
+        List<String> oldConsumers =
+            archivaConfiguration.getConfiguration().getRepositoryScanning().getKnownContentConsumers();
 
         archivaConfiguration.getConfiguration().getRepositoryScanning().setKnownContentConsumers(
             enabledKnownContentConsumers );
-        
+
         if ( enabledKnownContentConsumers != null )
         {
             filterAddedConsumers( oldConsumers, enabledKnownContentConsumers );
-            filterRemovedConsumers( oldConsumers, enabledKnownContentConsumers );            
+            filterRemovedConsumers( oldConsumers, enabledKnownContentConsumers );
         }
         else
         {
@@ -337,7 +346,7 @@ public class RepositoryScanningAction
             }
         }
     }
-    
+
     private void filterRemovedConsumers( List<String> oldList, List<String> newList )
     {
         for ( String consumer : oldList )
@@ -348,7 +357,7 @@ public class RepositoryScanningAction
             }
         }
     }
-    
+
     private void disableAllEnabledConsumers( List<String> consumers )
     {
         for ( String consumer : consumers )
@@ -376,12 +385,12 @@ public class RepositoryScanningAction
     {
         this.enabledKnownContentConsumers = enabledKnownContentConsumers;
     }
-    
+
     public ArchivaConfiguration getArchivaConfiguration()
     {
         return archivaConfiguration;
     }
-    
+
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;

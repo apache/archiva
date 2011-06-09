@@ -19,11 +19,14 @@ package org.apache.maven.archiva.web.interceptor;
  * under the License.
  */
 
-import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 
 /**
@@ -32,12 +35,15 @@ import javax.servlet.ServletContext;
  * @plexus.component role="com.opensymphony.xwork2.interceptor.Interceptor"
  * role-hint="configurationInterceptor"
  */
+@Service( "configurationInterceptor" )
+@Scope( "prototype" )
 public class ConfigurationInterceptor
     implements Interceptor
 {
     /**
-     * @plexus.requirement role-hint="default"
+     * plexus.requirement role-hint="default"
      */
+    @Inject
     private ArchivaConfiguration configuration;
 
     public String intercept( ActionInvocation actionInvocation )
