@@ -81,14 +81,17 @@ public class LegacyToDefaultConverterTest
 
         ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
 
-        ArtifactRepositoryLayout layout =
-            (ArtifactRepositoryLayout) plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
+        Map<String, ArtifactRepositoryLayout> layoutsMap = plexusSisuBridge.lookupMap( ArtifactRepositoryLayout.class );
+
+        System.out.println("hints " + layoutsMap.keySet().toString() );
+
+        ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
 
         File sourceBase = getTestFile( "src/test/source-repository" );
         sourceRepository =
             factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
 
-        layout = (ArtifactRepositoryLayout) plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
+        layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
 
         File targetBase = getTestFile( "target/test-target-repository" );
         copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
