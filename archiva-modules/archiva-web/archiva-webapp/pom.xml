@@ -178,6 +178,10 @@
       <artifactId>spring-cache-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.redback.components</groupId>
+      <artifactId>spring-jdo2</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.redback.components.cache</groupId>
       <artifactId>spring-cache-ehcache</artifactId>
       <exclusions>
