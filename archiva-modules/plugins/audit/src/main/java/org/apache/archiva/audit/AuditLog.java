@@ -21,6 +21,7 @@ package org.apache.archiva.audit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * AuditLog - Audit Log.
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  * @plexus.component role="org.apache.archiva.audit.AuditListener" role-hint="logging"
  */
+@Service("auditListener#logging")
 public class AuditLog
     implements AuditListener
 {
@@ -43,7 +45,7 @@ public class AuditLog
      */
     public void auditEvent( AuditEvent event )
     {
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         msg.append( checkNull( event.getRepositoryId() ) ).append( DELIM );
         msg.append( event.getUserId() ).append( DELIM );
         msg.append( checkNull( event.getRemoteIP() ) ).append( DELIM );

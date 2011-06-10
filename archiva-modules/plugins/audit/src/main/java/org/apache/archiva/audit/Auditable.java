@@ -31,17 +31,17 @@ public interface Auditable
      * 
      * @param the listener to add.
      */
-    public void addAuditListener( AuditListener auditListener );
+    void addAuditListener( AuditListener auditListener );
 
     /**
      * Remove an AuditListener.
      * 
      * @param the listener to remove.
      */
-    public void removeAuditListener( AuditListener auditListener );
+    void removeAuditListener( AuditListener auditListener );
 
     /**
      * Remove all registered {@link AuditListener} objects.
      */
-    public void clearAuditListeners();
+    void clearAuditListeners();
 }

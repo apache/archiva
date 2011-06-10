@@ -31,5 +31,5 @@ public interface AuditListener
      * 
      * @param event the event details.
      */
-    public void auditEvent( AuditEvent event );
+    void auditEvent( AuditEvent event );
 }

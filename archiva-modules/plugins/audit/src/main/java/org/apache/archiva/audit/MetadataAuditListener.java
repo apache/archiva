@@ -24,26 +24,32 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
- * @plexus.component role="org.apache.archiva.audit.AuditListener" role-hint="metadata"
+ * plexus.component role="org.apache.archiva.audit.AuditListener" role-hint="metadata"
  */
+@Service("uuditListener#metadata")
 public class MetadataAuditListener
     implements AuditListener
 {
     private static final Logger log = LoggerFactory.getLogger( MetadataAuditListener.class );
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private AuditManager auditManager;
 
     /**
      * FIXME: this could be multiple implementations and needs to be configured. It also starts a separate session to
      * the originator of the audit event that we may rather want to pass through.
      *
-     * @plexus.requirement
+     * plexus.requirement
      */
+    @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
     public void auditEvent( AuditEvent event )

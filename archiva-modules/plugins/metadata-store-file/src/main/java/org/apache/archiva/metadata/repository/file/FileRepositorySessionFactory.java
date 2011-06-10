@@ -43,7 +43,7 @@ public class FileRepositorySessionFactory
     implements RepositorySessionFactory
 {
     /**
-     * @plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
+     * plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
      */
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
 

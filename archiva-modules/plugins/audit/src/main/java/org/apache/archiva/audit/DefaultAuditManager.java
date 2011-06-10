@@ -23,6 +23,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,6 +38,7 @@ import java.util.TimeZone;
 /**
  * @plexus.component role="org.apache.archiva.audit.AuditManager"
  */
+@Service("auditManager#default")
 public class DefaultAuditManager
     implements AuditManager
 {
