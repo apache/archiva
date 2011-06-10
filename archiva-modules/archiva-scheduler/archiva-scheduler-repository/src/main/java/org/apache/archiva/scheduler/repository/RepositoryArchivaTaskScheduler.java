@@ -72,7 +72,7 @@ public class RepositoryArchivaTaskScheduler
     private Scheduler scheduler;
 
     @Inject
-    CronExpressionValidator cronValidator;
+    private CronExpressionValidator cronValidator;
 
     /**
      * plexus.requirement role-hint="repository-scanning"

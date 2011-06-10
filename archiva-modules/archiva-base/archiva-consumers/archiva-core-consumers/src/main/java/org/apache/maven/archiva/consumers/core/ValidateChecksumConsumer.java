@@ -76,7 +76,6 @@ public class ValidateChecksumConsumer
     /**
      * plexus.requirement
      */
-    @Inject
     private ChecksumFile checksum;
 
     /**
@@ -174,6 +173,7 @@ public class ValidateChecksumConsumer
     public void initialize()
         throws PlexusSisuBridgeException
     {
+        checksum = plexusSisuBridge.lookup( ChecksumFile.class );
         digesterList = plexusSisuBridge.lookupList( Digester.class );
         for ( Iterator<Digester> itDigesters = digesterList.iterator(); itDigesters.hasNext(); )
         {
