@@ -58,6 +58,8 @@ public class PlexusSisuBridge
 
     private URL overridingComponentsXml;
 
+    private ClassRealm containerRealm;
+
     private DefaultPlexusContainer plexusContainer;
 
     @PostConstruct
@@ -76,7 +78,7 @@ public class PlexusSisuBridge
 
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
 
-        ClassRealm classRealm = new ClassRealm( classWorld, "maven", tccl );
+        containerRealm = new ClassRealm( classWorld, "maven", tccl );
 
         // olamy hackhish but plexus-sisu need a URLClassLoader with URL filled
 
@@ -85,11 +87,11 @@ public class PlexusSisuBridge
             URL[] urls = ( (URLClassLoader) tccl ).getURLs();
             for ( URL url : urls )
             {
-                classRealm.addURL( url );
+                containerRealm.addURL( url );
             }
         }
 
-        conf.setRealm( classRealm );
+        conf.setRealm( containerRealm );
 
         //conf.setClassWorld( classWorld );
 
@@ -97,13 +99,15 @@ public class PlexusSisuBridge
 
         try
         {
-            Thread.currentThread().setContextClassLoader( classRealm );
+            Thread.currentThread().setContextClassLoader( containerRealm );
             plexusContainer = new DefaultPlexusContainer( conf );
         }
         catch ( PlexusContainerException e )
         {
             throw new PlexusSisuBridgeException( e.getMessage(), e );
-        } finally {
+        }
+        finally
+        {
             Thread.currentThread().setContextClassLoader( ori );
         }
     }
@@ -131,52 +135,79 @@ public class PlexusSisuBridge
     public <T> T lookup( Class<T> clazz )
         throws PlexusSisuBridgeException
     {
+        ClassLoader ori = Thread.currentThread().getContextClassLoader();
         try
         {
+            Thread.currentThread().setContextClassLoader( containerRealm );
             return plexusContainer.lookup( clazz );
         }
         catch ( ComponentLookupException e )
         {
             throw new PlexusSisuBridgeException( e.getMessage(), e );
         }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( ori );
+        }
     }
 
     public <T> T lookup( Class<T> clazz, String hint )
         throws PlexusSisuBridgeException
     {
+        ClassLoader ori = Thread.currentThread().getContextClassLoader();
+
         try
         {
+            Thread.currentThread().setContextClassLoader( containerRealm );
             return plexusContainer.lookup( clazz, hint );
         }
         catch ( ComponentLookupException e )
         {
             throw new PlexusSisuBridgeException( e.getMessage(), e );
         }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( ori );
+        }
     }
 
     public <T> List<T> lookupList( Class<T> clazz )
         throws PlexusSisuBridgeException
     {
+        ClassLoader ori = Thread.currentThread().getContextClassLoader();
+
         try
         {
+            Thread.currentThread().setContextClassLoader( containerRealm );
             return plexusContainer.lookupList( clazz );
         }
         catch ( ComponentLookupException e )
         {
             throw new PlexusSisuBridgeException( e.getMessage(), e );
         }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( ori );
+        }
     }
 
     public <T> Map<String, T> lookupMap( Class<T> clazz )
         throws PlexusSisuBridgeException
     {
+        ClassLoader ori = Thread.currentThread().getContextClassLoader();
+
         try
         {
+            Thread.currentThread().setContextClassLoader( containerRealm );
             return plexusContainer.lookupMap( clazz );
         }
         catch ( ComponentLookupException e )
         {
             throw new PlexusSisuBridgeException( e.getMessage(), e );
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( ori );
         }
     }
 }
