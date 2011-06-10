@@ -315,6 +315,11 @@
       <artifactId>maven-model-builder</artifactId>
       <version>${maven3x.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+      <version>${maven3x.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.sonatype.sisu</groupId>

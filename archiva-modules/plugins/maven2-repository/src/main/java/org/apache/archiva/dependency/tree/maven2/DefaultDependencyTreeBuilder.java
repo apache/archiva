@@ -39,6 +39,7 @@ import org.apache.maven.artifact.metadata.ResolutionGroup;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ResolutionListener;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ExcludesArtifactFilter;
@@ -51,11 +52,13 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.building.DefaultModelBuilderFactory;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.resolution.UnresolvableModelException;
+import org.apache.maven.repository.legacy.metadata.MetadataResolutionRequest;
 import org.apache.maven.shared.dependency.tree.DependencyNode;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.apache.maven.shared.dependency.tree.DependencyTreeResolutionListener;
@@ -141,9 +144,12 @@ public class DefaultDependencyTreeBuilder
     public void initialize()
         throws PlexusSisuBridgeException
     {
-        factory = plexusSisuBridge.lookup( ArtifactFactory.class );
-        collector = plexusSisuBridge.lookup( ArtifactCollector.class );
-        builder = plexusSisuBridge.lookup( ModelBuilder.class );
+        //factory = plexusSisuBridge.lookup( ArtifactFactory.class , "default" );
+        //collector = plexusSisuBridge.lookup( ArtifactCollector.class , "default" );
+
+
+        DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
+        builder = defaultModelBuilderFactory.newInstance();
     }
 
     public void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
@@ -179,8 +185,18 @@ public class DefaultDependencyTreeBuilder
 
                 // Note that we don't permit going to external repositories. We don't need to pass in a local and remote
                 // since our metadata source has control over them
-                collector.collect( dependencyArtifacts, projectArtifact, managedVersions, null, null, metadataSource,
-                                   null, Collections.singletonList( listener ) );
+                //collector.collect( dependencyArtifacts, projectArtifact, managedVersions, null, null, metadataSource,
+                //                   null, Collections.singletonList( listener ) );
+
+                collector.collect( dependencyArtifacts, projectArtifact, null, Collections.<ArtifactRepository>emptyList(),
+                                   metadataSource, null,  Collections.singletonList( (ResolutionListener) listener ) );
+
+                /*
+                Set<Artifact> artifacts, Artifact originatingArtifact,
+                                      ArtifactRepository localRepository, List<ArtifactRepository> remoteRepositories,
+                                      ArtifactMetadataSource source, ArtifactFilter filter,
+                                      List< ResolutionListener > listeners
+                */
             }
             finally
             {
@@ -440,11 +456,11 @@ public class DefaultDependencyTreeBuilder
                 // if the project is null, we encountered an invalid model (read: m1 POM)
                 // we'll just return an empty resolution group.
                 // or used the inherited scope (should that be passed to the buildFromRepository method above?)
-                result = new ResolutionGroup( pomArtifact, Collections.emptySet(), Collections.emptyList() );
+                result = new ResolutionGroup( pomArtifact, Collections.<Artifact>emptySet(), Collections.<ArtifactRepository>emptyList() );
             }
             else
             {
-                Set artifacts = Collections.emptySet();
+                Set<Artifact> artifacts = Collections.emptySet();
                 if ( !artifact.getArtifactHandler().isIncludesDependencies() )
                 {
                     try
@@ -457,7 +473,7 @@ public class DefaultDependencyTreeBuilder
                     }
                 }
 
-                result = new ResolutionGroup( pomArtifact, artifacts, Collections.emptyList() );
+                result = new ResolutionGroup( pomArtifact, artifacts, Collections.<ArtifactRepository>emptyList() );
             }
 
             return result;
@@ -487,6 +503,29 @@ public class DefaultDependencyTreeBuilder
             }
 
             return new ArrayList<ArtifactVersion>( versions );
+        }
+
+        public ResolutionGroup retrieve( MetadataResolutionRequest metadataResolutionRequest )
+            throws ArtifactMetadataRetrievalException
+        {
+            //TODO
+            return null;
+        }
+
+        public List<ArtifactVersion> retrieveAvailableVersions( MetadataResolutionRequest metadataResolutionRequest )
+            throws ArtifactMetadataRetrievalException
+        {
+            //TODO
+            return null;
+        }
+
+        public List<ArtifactVersion> retrieveAvailableVersionsFromDeploymentRepository( Artifact artifact,
+                                                                                        ArtifactRepository artifactRepository,
+                                                                                        ArtifactRepository artifactRepository1 )
+            throws ArtifactMetadataRetrievalException
+        {
+            // TODO
+            return null;
         }
     }
 

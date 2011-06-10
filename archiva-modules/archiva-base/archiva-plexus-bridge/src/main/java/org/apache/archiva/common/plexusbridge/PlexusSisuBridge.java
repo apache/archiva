@@ -50,9 +50,9 @@ public class PlexusSisuBridge
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    private boolean containerAutoWiring = false;
+    private boolean containerAutoWiring = true;
 
-    private String containerClassPathScanning = PlexusConstants.SCANNING_OFF;
+    private String containerClassPathScanning = PlexusConstants.SCANNING_ON;
 
     private String containerComponentVisibility = PlexusConstants.REALM_VISIBILITY;
 
@@ -91,7 +91,7 @@ public class PlexusSisuBridge
 
         conf.setRealm( classRealm );
 
-        conf.setClassWorld( classWorld );
+        //conf.setClassWorld( classWorld );
 
         try
         {

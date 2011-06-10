@@ -63,7 +63,6 @@
 
   <properties>
     <struts.version>2.1.8.1</struts.version>
-    <maven.version>2.0.8</maven.version>
     <maven3x.version>3.0.3</maven3x.version>
     <wagon.version>1.0-beta-5</wagon.version>
     <redback.version>1.3-SNAPSHOT</redback.version>
@@ -557,6 +556,16 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model-builder</artifactId>
+        <version>${maven3x.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-compat</artifactId>
+        <version>${maven3x.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
         <version>${maven3x.version}</version>
       </dependency>
       <dependency>
@@ -1066,24 +1075,13 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
-        <artifactId>maven-artifact-manager</artifactId>
-        <version>${maven.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
-        <version>${maven.version}</version>
+        <version>${maven3x.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-repository-metadata</artifactId>
-        <version>${maven.version}</version>
+        <version>${maven3x.version}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>

@@ -19,11 +19,10 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
-import java.util.List;
-
-import org.apache.maven.artifact.factory.DefaultArtifactFactory;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
+
+import java.util.List;
 
 /**
  * Builds a tree of dependencies for a given Maven project. Customized wrapper for maven-dependency-tree to use
@@ -41,7 +40,7 @@ public interface DependencyTreeBuilder
      * @param nodeVisitor   visitor to apply to all nodes discovered
      * @throws DependencyTreeBuilderException if the dependency tree cannot be resolved
      */
-    public void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
-                                     DependencyNodeVisitor nodeVisitor )
+    void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
+                              DependencyNodeVisitor nodeVisitor )
         throws DependencyTreeBuilderException;
 }

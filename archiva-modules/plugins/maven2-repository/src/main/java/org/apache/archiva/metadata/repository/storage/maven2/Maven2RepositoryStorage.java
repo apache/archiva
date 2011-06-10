@@ -21,8 +21,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -43,6 +41,7 @@ import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Organization;
 import org.apache.maven.model.Scm;
+import org.apache.maven.model.building.DefaultModelBuilderFactory;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
@@ -102,14 +101,12 @@ public class Maven2RepositoryStorage
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
 
-    @Inject
-    private PlexusSisuBridge plexusSisuBridge;
 
     @PostConstruct
     public void initialize()
-        throws PlexusSisuBridgeException
     {
-        builder = plexusSisuBridge.lookup( ModelBuilder.class, "default" );
+        DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
+        builder = defaultModelBuilderFactory.newInstance();
     }
 
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
