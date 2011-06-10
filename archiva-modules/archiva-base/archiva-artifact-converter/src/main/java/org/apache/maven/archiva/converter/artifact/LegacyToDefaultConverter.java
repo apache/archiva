@@ -89,12 +89,12 @@ public class LegacyToDefaultConverter
     private ModelConverter translator;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private ArtifactFactory artifactFactory;
 
     /**
-     * @plexus.requirement
+     * plexus.requirement
      */
     private ArtifactHandlerManager artifactHandlerManager;
 
