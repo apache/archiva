@@ -93,13 +93,18 @@ public class PlexusSisuBridge
 
         //conf.setClassWorld( classWorld );
 
+        ClassLoader ori = Thread.currentThread().getContextClassLoader();
+
         try
         {
+            Thread.currentThread().setContextClassLoader( classRealm );
             plexusContainer = new DefaultPlexusContainer( conf );
         }
         catch ( PlexusContainerException e )
         {
             throw new PlexusSisuBridgeException( e.getMessage(), e );
+        } finally {
+            Thread.currentThread().setContextClassLoader( ori );
         }
     }
 

@@ -144,8 +144,8 @@ public class DefaultDependencyTreeBuilder
     public void initialize()
         throws PlexusSisuBridgeException
     {
-        //factory = plexusSisuBridge.lookup( ArtifactFactory.class , "default" );
-        //collector = plexusSisuBridge.lookup( ArtifactCollector.class , "default" );
+        factory = plexusSisuBridge.lookup( ArtifactFactory.class , "default" );
+        collector = plexusSisuBridge.lookup( ArtifactCollector.class , "default" );
 
 
         DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
