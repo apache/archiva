@@ -61,9 +61,9 @@ public class CopyPasteSnippetTag
     public int doEndTag()
         throws JspException
     {
-        StringBuffer prefix = new StringBuffer();
-        StringBuffer buf = new StringBuffer();
-        StringBuffer suffix = new StringBuffer();
+        StringBuilder prefix = new StringBuilder();
+        StringBuilder buf = new StringBuilder();
+        StringBuilder suffix = new StringBuilder();
         
         if ( object == null )
         {
@@ -122,7 +122,7 @@ public class CopyPasteSnippetTag
         this.wrapper = wrapper;
     }
 
-    private void createSnippet( StringBuffer snippet, ManagedRepositoryConfiguration repo, PageContext pageContext )
+    private void createSnippet( StringBuilder snippet, ManagedRepositoryConfiguration repo, PageContext pageContext )
     {
         snippet.append( "<project>\n" );
         snippet.append( "  ...\n" );

@@ -76,7 +76,7 @@ public class ContextUtils
      */
     public static String getBaseURL( HttpServletRequest request, String resource )
     {
-        StringBuffer baseUrl = new StringBuffer();
+        StringBuilder baseUrl = new StringBuilder();
         
         baseUrl.append( request.getScheme() ).append( "://" );
         baseUrl.append( getServerName( request ) );

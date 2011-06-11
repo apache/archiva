@@ -189,7 +189,7 @@ public class RepositoryActionMapper
 
     private String toUri( Map<String, Object> params, boolean artifactId, boolean version, String method )
     {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         buf.append( BROWSE_PREFIX );
         buf.append( '/' );

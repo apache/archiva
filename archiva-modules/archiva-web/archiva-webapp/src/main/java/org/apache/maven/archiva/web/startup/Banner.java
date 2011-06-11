@@ -39,7 +39,7 @@ public class Banner
         // Canonicalize line ends to make them easier to process
         raw = raw.replace("\r\n", "\n").replace("\r", "\n");
 
-        StringBuffer encoded = new StringBuffer();
+        StringBuilder encoded = new StringBuilder();
         int rawlen = raw.length();
 
         for ( int i = 0; i < rawlen; i++ )
@@ -109,7 +109,7 @@ public class Banner
 
     public static String decode( String encoded )
     {
-        StringBuffer decoded = new StringBuffer();
+        StringBuilder decoded = new StringBuilder();
         int enlen = encoded.length();
         for ( int i = 0; i < enlen; i++ )
         {
@@ -192,7 +192,7 @@ public class Banner
     {
         Pattern pat = Pattern.compile( "#{2,}" );
         Matcher mat = pat.matcher( text );
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         int off = 0;
 
         while ( mat.find( off ) )

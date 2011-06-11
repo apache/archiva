@@ -307,7 +307,7 @@ public class GenerateReportAction
         selectedRepositories = parseSelectedRepositories();
         List<RepositoryStatistics> repositoryStatistics = new ArrayList<RepositoryStatistics>();
 
-        StringBuffer input;
+        StringBuilder input;
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
@@ -331,7 +331,7 @@ public class GenerateReportAction
                     return INPUT;
                 }
 
-                input = new StringBuffer(
+                input = new StringBuilder(
                     "Repository,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,Archetypes,"
                         + "Jars,Wars\n" );
 
@@ -404,7 +404,7 @@ public class GenerateReportAction
                         return ERROR;
                     }
 
-                    input = new StringBuffer(
+                    input = new StringBuilder(
                         "Date of Scan,Total File Count,Total Size,Artifact Count,Group Count,Project Count,Plugins,"
                             + "Archetypes,Jars,Wars\n" );
 

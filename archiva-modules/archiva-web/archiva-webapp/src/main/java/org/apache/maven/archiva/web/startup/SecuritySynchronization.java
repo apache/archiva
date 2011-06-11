@@ -205,7 +205,7 @@ public class SecuritySynchronization
 
         if ( CollectionUtils.isNotEmpty( violations ) )
         {
-            StringBuffer msg = new StringBuffer();
+            StringBuilder msg = new StringBuilder();
             msg.append( "EnvironmentCheck Failure.\n" );
             msg.append( "======================================================================\n" );
             msg.append( " ENVIRONMENT FAILURE !! \n" );

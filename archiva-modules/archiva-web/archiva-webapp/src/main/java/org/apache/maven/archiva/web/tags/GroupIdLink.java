@@ -66,7 +66,7 @@ public class GroupIdLink
     @Override
     public boolean end( Writer writer, String body )
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append( "<span class=\"groupId\">" );
 
