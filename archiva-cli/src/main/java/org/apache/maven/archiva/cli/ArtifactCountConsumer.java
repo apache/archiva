@@ -19,33 +19,36 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-
 /**
- * ArtifactCountConsumer 
+ * ArtifactCountConsumer
  *
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="count-artifacts"
- *                   instantiation-strategy="per-lookup"
+ * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ * role-hint="count-artifacts"
+ * instantiation-strategy="per-lookup"
  */
+@Service("knownRepositoryContentConsumer#count-artifacts")
+@Scope("prototype")
 public class ArtifactCountConsumer
     extends AbstractProgressConsumer
     implements KnownRepositoryContentConsumer
 {
     /**
-     * @plexus.configuration default-value="count-artifacts"
+     * plexus.configuration default-value="count-artifacts"
      */
-    private String id;
+    private String id = "count-artifacts";
 
     /**
-     * @plexus.configuration default-value="Count Artifacts"
+     * plexus.configuration default-value="Count Artifacts"
      */
-    private String description;
+    private String description = "Count Artifacts";
 
     private List<String> includes;
 

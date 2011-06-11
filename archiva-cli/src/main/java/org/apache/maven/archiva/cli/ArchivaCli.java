@@ -47,6 +47,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -242,8 +243,20 @@ public class ArchivaCli
     private Map<String, KnownRepositoryContentConsumer> getConsumers()
         throws PlexusSisuBridgeException
     {
-        PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
-        return plexusSisuBridge.lookupMap( KnownRepositoryContentConsumer.class );
+        Map<String, KnownRepositoryContentConsumer> beans =
+            applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class );
+        // we use a naming conventions knownRepositoryContentConsumer#hint
+        // with plexus we used only hint so remove before#
+
+        Map<String, KnownRepositoryContentConsumer> smallNames =
+            new HashMap<String, KnownRepositoryContentConsumer>( beans.size() );
+
+        for ( Map.Entry<String, KnownRepositoryContentConsumer> entry : beans.entrySet() )
+        {
+            smallNames.put( StringUtils.substringAfterLast( entry.getKey(), "#" ), entry.getValue() );
+        }
+
+        return smallNames;
     }
 
     private void doConversion( String properties )
