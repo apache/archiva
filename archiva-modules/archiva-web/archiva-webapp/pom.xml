@@ -353,6 +353,12 @@
       <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-junit-plugin</artifactId>
+      <scope>test</scope>
+      <version>${struts.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>

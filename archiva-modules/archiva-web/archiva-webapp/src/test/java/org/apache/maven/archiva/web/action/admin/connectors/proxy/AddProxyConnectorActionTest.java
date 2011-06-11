@@ -54,6 +54,20 @@ public class AddProxyConnectorActionTest
 
     private ArchivaConfiguration archivaConfiguration;
 
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        action = (AddProxyConnectorAction) getActionProxy( "addProxyConnector" ).getAction();
+        //action = (AddProxyConnectorAction) lookup( Action.class.getName(), "addProxyConnectorAction" );
+
+        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
+        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
+        action.setArchivaConfiguration( archivaConfiguration );
+    }
+
     public void testAddBlackListPattern()
         throws Exception
     {
@@ -403,16 +417,5 @@ public class AddProxyConnectorActionTest
         policies.put( "propagate-errors-on-update", new PropagateErrorsOnUpdateDownloadPolicy().getDefaultOption() );
     }
 
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
 
-        action = (AddProxyConnectorAction) lookup( Action.class.getName(), "addProxyConnectorAction" );
-
-        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
-        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
-    }
 }

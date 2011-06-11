@@ -47,7 +47,7 @@ public class BrowseActionTest
 
     public void testInstantiation()
     {
-        assertFalse( action == lookup( Action.class, ACTION_HINT ) );
+        assertFalse( action == (BrowseAction) getActionProxy( "browse" ).getAction() );
     }
 
     public void testBrowse()
@@ -390,11 +390,13 @@ public class BrowseActionTest
         throws Exception
     {
         super.setUp();
-        action = (BrowseAction) lookup( Action.class, ACTION_HINT );
+        //action = (BrowseAction) lookup( Action.class, ACTION_HINT );
+        action = (BrowseAction) getActionProxy( "browse" ).getAction();
         metadataResolver = new TestMetadataResolver();
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getResolver() ).thenReturn( metadataResolver );
-        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class  );
+        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
         factory.setRepositorySession( repositorySession );
     }
 }

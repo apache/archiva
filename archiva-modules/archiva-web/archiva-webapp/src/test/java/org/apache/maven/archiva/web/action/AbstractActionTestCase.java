@@ -42,10 +42,10 @@ import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectParent;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.apache.struts2.StrutsSpringTestCase;
 
 public abstract class AbstractActionTestCase
-    extends PlexusInSpringTestCase
+    extends StrutsSpringTestCase
 {
     protected static final String TEST_REPO = "test-repo";
 
@@ -98,10 +98,18 @@ public abstract class AbstractActionTestCase
     protected static final String TEST_GENERIC_METADATA_PROPERTY_NAME = "rating";
     
     protected static final String TEST_GENERIC_METADATA_PROPERTY_VALUE = "5 stars";
-    
+
+    UserRepositoriesStub repos = new UserRepositoriesStub();
+
+    @Override
+    protected String[] getContextLocations()
+    {
+        return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
+    }
+
     protected void setObservableRepos( List<String> repoIds )
     {
-        UserRepositoriesStub repos = (UserRepositoriesStub) lookup( UserRepositories.class );
+        //(UserRepositoriesStub) lookup( UserRepositories.class );
         repos.setObservableRepositoryIds( repoIds );
     }
 

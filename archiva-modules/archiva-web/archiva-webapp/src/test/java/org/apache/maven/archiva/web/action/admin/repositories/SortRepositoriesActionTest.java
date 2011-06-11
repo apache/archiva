@@ -22,9 +22,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.struts2.StrutsSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import com.opensymphony.xwork2.Action;
@@ -35,7 +35,7 @@ import com.opensymphony.xwork2.Action;
  * @version
  */
 public class SortRepositoriesActionTest 
-    extends PlexusInSpringTestCase
+    extends StrutsSpringTestCase
 {
     private static final String REPO_GROUP_ID = "repo-group-ident";
 	
@@ -50,14 +50,21 @@ public class SortRepositoriesActionTest
     private ArchivaConfiguration archivaConfiguration;
     
     private SortRepositoriesAction action;
-    
+
+    @Override
+    protected String[] getContextLocations()
+    {
+        return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
+    }
+
     protected void setUp()
         throws Exception
     {
         super.setUp();
 	    
-        action = (SortRepositoriesAction) lookup( Action.class.getName(), "sortRepositoriesAction" );
-	    
+        //action = (SortRepositoriesAction) lookup( Action.class.getName(), "sortRepositoriesAction" );
+
+        action = (SortRepositoriesAction) getActionProxy( "sortDownRepositoryFromGroup" ).getAction();
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );

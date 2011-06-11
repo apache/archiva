@@ -21,7 +21,7 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.apache.struts2.StrutsSpringTestCase;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -33,8 +33,16 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class AbstractWebworkTestCase
-    extends PlexusInSpringTestCase
+    extends StrutsSpringTestCase
 {
+
+
+    @Override
+    protected String[] getContextLocations()
+    {
+        return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
+    }
+
     /**
      * This is a conveinence method for mimicking how the webwork interceptors
      * operate on an action, before the request is processed.

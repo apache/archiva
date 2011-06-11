@@ -19,10 +19,16 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.config.ConfigurationManager;
+import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
+import com.opensymphony.xwork2.inject.Container;
+import com.opensymphony.xwork2.util.ValueStack;
+import com.opensymphony.xwork2.util.ValueStackFactory;
+import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.maven.archiva.common.ArchivaException;
@@ -31,24 +37,31 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.config.ConfigurationManager;
-import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
-import com.opensymphony.xwork2.inject.Container;
-import com.opensymphony.xwork2.util.ValueStack;
-import com.opensymphony.xwork2.util.ValueStackFactory;
-
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class DependencyTreeTest
-    extends PlexusInSpringTestCase
+    extends TestCase
 {
+    @Inject
     private DependencyTree tree;
+
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    private ApplicationContext applicationContext;
 
     private ArtifactFactory artifactFactory;
 
@@ -60,45 +73,53 @@ public class DependencyTreeTest
 
     private static final String TEST_ARTIFACT_ID = "artifactId";
 
+
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
-        
+
         ConfigurationManager configurationManager = new ConfigurationManager();
-        configurationManager.addContainerProvider(new XWorkConfigurationProvider());
+        configurationManager.addContainerProvider( new XWorkConfigurationProvider() );
         com.opensymphony.xwork2.config.Configuration config = configurationManager.getConfiguration();
         Container container = config.getContainer();
 
-        ValueStack stack = container.getInstance(ValueStackFactory.class).createValueStack();
-        stack.getContext().put(ActionContext.CONTAINER, container);
-        ActionContext.setContext(new ActionContext(stack.getContext()));
-        
-        assertNotNull(ActionContext.getContext());
+        ValueStack stack = container.getInstance( ValueStackFactory.class ).createValueStack();
+        stack.getContext().put( ActionContext.CONTAINER, container );
+        ActionContext.setContext( new ActionContext( stack.getContext() ) );
+
+        assertNotNull( ActionContext.getContext() );
 
         Configuration configuration = new Configuration();
         ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( TEST_REPO_ID );
-        repoConfig.setLocation( getTestPath( "src/test/repositories/test" ) );
+        repoConfig.setLocation( "src/test/repositories/test" );
         configuration.addManagedRepository( repoConfig );
 
-        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        //ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        ArchivaConfiguration archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
         archivaConfiguration.save( configuration );
 
-        tree = (DependencyTree) lookup( DependencyTree.class );
+        //tree = (DependencyTree) lookup( DependencyTree.class );
 
-        artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.class );
+        //artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.class );
 
-        TestMetadataResolver metadataResolver = (TestMetadataResolver) lookup( MetadataResolver.class );
+        artifactFactory = plexusSisuBridge.lookup( ArtifactFactory.class );
+
+        //TestMetadataResolver metadataResolver = (TestMetadataResolver) lookup( MetadataResolver.class );
+        TestMetadataResolver metadataResolver = applicationContext.getBean( TestMetadataResolver.class );
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_VERSION );
         metadataResolver.setProjectVersion( TEST_REPO_ID, TEST_GROUP_ID, TEST_ARTIFACT_ID, metadata );
 
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getResolver() ).thenReturn( metadataResolver );
-        TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
-            RepositorySessionFactory.class );
+        //TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
+        //    RepositorySessionFactory.class );
+        TestRepositorySessionFactory repositorySessionFactory =
+            applicationContext.getBean( TestRepositorySessionFactory.class );
         repositorySessionFactory.setRepositorySession( repositorySession );
     }
 
