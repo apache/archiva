@@ -310,7 +310,7 @@ public class ArchivaDavResource
             {
                 String msg =
                     "Content Header length was " + expectedContentLength + " but was " + actualContentLength;
-                log.debug( "Upload failed: " + msg );
+                log.debug( "Upload failed: {}", msg );
 
                 FileUtils.deleteQuietly( localFile );
                 throw new DavException( HttpServletResponse.SC_BAD_REQUEST, msg );

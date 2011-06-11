@@ -114,10 +114,7 @@ public class BrowseAction
         }
         if ( subNamespaces.size() != 1 )
         {
-            if ( log.isDebugEnabled() )
-            {
-                log.debug( n + " is not collapsible as it has sub-namespaces: " + subNamespaces );
-            }
+            log.debug( "{} is not collapsible as it has sub-namespaces: {}", n, subNamespaces );
             return n;
         }
         else
@@ -127,10 +124,7 @@ public class BrowseAction
                 Collection<String> projects = metadataResolver.resolveProjects( repositorySession, repoId, n );
                 if ( projects != null && !projects.isEmpty() )
                 {
-                    if ( log.isDebugEnabled() )
-                    {
-                        log.debug( n + " is not collapsible as it has projects" );
-                    }
+                    log.debug( "{} is not collapsible as it has projects", n );
                     return n;
                 }
             }

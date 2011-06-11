@@ -148,7 +148,7 @@ public abstract class AbstractManagedRepositoriesAction
             roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
         }
 
-        log.debug( "removed user roles associated with repository " + repoId );
+        log.debug( "removed user roles associated with repository {}", repoId );
     }
 
     protected String removeExpressions( String directory )
