@@ -166,6 +166,11 @@
       <artifactId>struts2-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-sitemesh-plugin</artifactId>
+      <version>${struts.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.redback.components.registry</groupId>
       <artifactId>spring-registry-api</artifactId>
     </dependency>
@@ -669,6 +674,7 @@
                 <configuration>
                   <tasks>
 					          <copy overwrite="true" file="${basedir}/src/test/resources/log4j.xml" todir="${project.build.directory}/classes" />
+                    <delete dir="${basedir}/src/main/webapp/WEB-INF/lib" />
                   </tasks>
                 </configuration>
               </execution>
@@ -715,7 +721,7 @@
                       <type>war</type>
                       <overWrite>false</overWrite>
                       <outputDirectory>${basedir}/src/main/webapp</outputDirectory>
-                      <excludes>**/web.xml,lib</excludes>
+                      <excludes>**/web.xml,**/struts*.jar,**/sitemesh*.jar</excludes>
                     </artifactItem>
                   </artifactItems>
                 </configuration>

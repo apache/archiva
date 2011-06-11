@@ -19,6 +19,8 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import com.opensymphony.module.sitemesh.Factory;
+import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;

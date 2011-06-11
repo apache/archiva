@@ -6,3 +6,7 @@ ${plexus.home}
 archiva-modules/archiva-web/archiva-webapp/appserver-base/
 archiva-modules/archiva-web/archiva-webapp/overlays/
 archiva-modules/archiva-web/archiva-webapp/src/main/webapp/archiva-applet.jar
+archiva-modules/archiva-web/archiva-webapp/src/main/webapp/META-INF/
+archiva-modules/archiva-web/archiva-webapp/src/main/webapp/css/redback/
+archiva-modules/archiva-web/archiva-webapp/src/main/webapp/images/redback/
+archiva-modules/archiva-web/archiva-webapp/src/main/webapp/template/redback/

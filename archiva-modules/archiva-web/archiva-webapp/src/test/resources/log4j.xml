@@ -27,6 +27,9 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n"/>
     </layout>
   </appender>
+  <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder">
+    <level value="error"/>
+  </logger>
 
   <root>
     <priority value ="info" />
