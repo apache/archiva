@@ -19,6 +19,7 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import com.google.common.collect.Lists;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.collections.CollectionUtils;
@@ -424,16 +425,16 @@ public class DefaultRepositoryProxyConnectors
             {
                 if ( log.isDebugEnabled() )
                 {
-                    log.debug( "Metadata " + logicalPath + " not found on remote repository \""
-                                   + targetRepository.getRepository().getId() + "\".", e );
+                    log.debug( "Metadata {} not found on remote repository \"{}\".",
+                               Lists.<Object>newArrayList( logicalPath, targetRepository.getRepository().getId() ), e );
                 }
             }
             catch ( NotModifiedException e )
             {
                 if ( log.isDebugEnabled() )
                 {
-                    log.debug( "Metadata " + logicalPath + " not updated on remote repository \""
-                                   + targetRepository.getRepository().getId() + "\".", e );
+                    log.debug( "Metadata {} not updated on remote repository \"{}\".",
+                               Lists.<Object>newArrayList( logicalPath, targetRepository.getRepository().getId() ), e );
                 }
             }
             catch ( ProxyException e )
@@ -926,7 +927,7 @@ public class DefaultRepositoryProxyConnectors
             String defaultSetting = policy.getDefaultOption();
             String setting = StringUtils.defaultString( settings.get( key ), defaultSetting );
 
-            log.debug( "Applying [" + key + "] policy with [" + setting + "]" );
+            log.debug( "Applying [{}] policy with [{}]", key, setting );
             try
             {
                 // all policies must approve the exception, any can cancel

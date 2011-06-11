@@ -217,7 +217,6 @@ public class ArchivaDavResourceFactory
     public void initialize()
     {
 
-
     }
 
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
@@ -961,7 +960,7 @@ public class ArchivaDavResourceFactory
                             if ( isAuthorized( request, repository ) )
                             {
                                 mergedRepositoryContents.add( resourceFile );
-                                log.debug( "Repository '" + repository + "' accessed by '" + activePrincipal + "'" );
+                                log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
                             }
                         }
                         catch ( DavException e )
@@ -982,7 +981,7 @@ public class ArchivaDavResourceFactory
                                                                request.getMethod() ) ) )
                             {
                                 mergedRepositoryContents.add( resourceFile );
-                                log.debug( "Repository '" + repository + "' accessed by '" + activePrincipal + "'" );
+                                log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
                             }
                         }
                         catch ( UnauthorizedException e )

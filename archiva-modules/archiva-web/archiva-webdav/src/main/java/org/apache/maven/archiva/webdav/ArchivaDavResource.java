@@ -328,7 +328,7 @@ public class ArchivaDavResource
         {
             localFile.mkdir();
 
-            log.debug( "Directory '" + resource.getDisplayName() + "' (current user '" + this.principal + "')" );
+            log.debug( "Directory '{}' (current user '{}')", resource.getDisplayName(), this.principal );
 
             triggerAuditEvent( resource, AuditEvent.CREATE_DIR );
         }
@@ -361,7 +361,7 @@ public class ArchivaDavResource
                         {
                             list.add( resource );
                         }
-                        log.debug( "Resource '" + item + "' retrieved by '" + this.principal + "'" );
+                        log.debug( "Resource '{}' retrieved by '{}'", item, this.principal );
                     }
                 }
                 catch ( DavException e )
