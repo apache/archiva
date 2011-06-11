@@ -24,10 +24,9 @@ import com.meterware.servletunit.ServletUnitClient;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.apache.struts2.StrutsSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
@@ -41,7 +40,7 @@ import static org.mockito.Mockito.when;
  * Test the repositories action returns the correct data.
  */
 public class RepositoriesActionTest
-    extends PlexusInSpringTestCase
+    extends StrutsSpringTestCase
 {
     private RepositoriesAction action;
 
@@ -50,16 +49,15 @@ public class RepositoriesActionTest
     {
         super.setUp();
 
-        try
-        {
-            action = (RepositoriesAction) lookup( Action.class.getName(), "repositoriesAction" );
-        }
-        catch ( Exception e )
-        {
-            // clean up cache - TODO: move handling to plexus-spring
-            applicationContext.close();
-            throw e;
-        }
+        //action = (RepositoriesAction) lookup( Action.class.getName(), "repositoriesAction" );
+        action = (RepositoriesAction) getActionProxy( "/admin/index"  ).getAction();
+
+    }
+
+    @Override
+    protected String[] getContextLocations()
+    {
+        return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
     }
 
     public void testGetRepositories()
@@ -81,7 +79,8 @@ public class RepositoriesActionTest
 
         RepositorySession session = mock( RepositorySession.class );
         when( session.getRepository() ).thenReturn( metadataRepository );
-        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        TestRepositorySessionFactory factory = new TestRepositorySessionFactory();
         factory.setRepositorySession( session );
 
         ServletRunner sr = new ServletRunner();

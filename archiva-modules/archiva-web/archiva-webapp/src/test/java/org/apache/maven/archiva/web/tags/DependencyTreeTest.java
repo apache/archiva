@@ -38,6 +38,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -123,6 +124,7 @@ public class DependencyTreeTest
         repositorySessionFactory.setRepositorySession( repositorySession );
     }
 
+    @Test
     public void testTree()
         throws ArchivaException
     {

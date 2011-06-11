@@ -23,10 +23,10 @@ import com.opensymphony.xwork2.validator.ActionValidatorManager;
 import java.io.File;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.apache.struts2.StrutsSpringTestCase;
 
 public abstract class AbstractManagedRepositoryActionTest
-    extends PlexusInSpringTestCase
+    extends StrutsSpringTestCase
 {
     protected static final String EMPTY_STRING = "";
 
@@ -62,6 +62,12 @@ public abstract class AbstractManagedRepositoryActionTest
     protected static final String REPO_ID = "repo-ident";
 
     protected File location;
+
+    @Override
+    protected String[] getContextLocations()
+    {
+        return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
+    }
 
     @Override
     protected void setUp() throws Exception

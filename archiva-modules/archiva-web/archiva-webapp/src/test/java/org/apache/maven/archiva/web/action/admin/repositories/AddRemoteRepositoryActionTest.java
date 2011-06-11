@@ -26,7 +26,6 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.util.Collections;
@@ -52,7 +51,8 @@ public class AddRemoteRepositoryActionTest
     {
         super.setUp();
 
-        action = (AddRemoteRepositoryAction) lookup( Action.class.getName(), "addRemoteRepositoryAction" );
+        //action = (AddRemoteRepositoryAction) lookup( Action.class.getName(), "addRemoteRepositoryAction" );
+        action = (AddRemoteRepositoryAction) getActionProxy( "/admin/addRemoteRepository" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

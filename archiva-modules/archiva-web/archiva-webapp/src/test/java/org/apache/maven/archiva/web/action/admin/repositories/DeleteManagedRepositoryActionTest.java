@@ -24,7 +24,6 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -40,7 +39,6 @@ import org.apache.maven.archiva.web.action.AuditEventArgumentsMatcher;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
@@ -90,6 +88,7 @@ public class DeleteManagedRepositoryActionTest
     {
         super.setUp();
 
+        // TODO use getAction .??
         action = new DeleteManagedRepositoryAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
@@ -99,7 +98,7 @@ public class DeleteManagedRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
-        location = getTestFile( "target/test/location" );
+        location = new File( "target/test/location" );
 
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
@@ -111,7 +110,8 @@ public class DeleteManagedRepositoryActionTest
 
         respositorySession = mock( RepositorySession.class );
         when( respositorySession.getRepository() ).thenReturn( metadataRepository );
-        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        TestRepositorySessionFactory factory = new TestRepositorySessionFactory();
         factory.setRepositorySession( respositorySession );
         action.setRepositorySessionFactory( factory );
 
