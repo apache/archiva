@@ -58,7 +58,9 @@ public class ProxyConnectorsActionTest
     {
         super.setUp();
 
-        action = (ProxyConnectorsAction) lookup( Action.class.getName(), "proxyConnectorsAction" );
+        //action = (ProxyConnectorsAction) lookup( Action.class.getName(), "proxyConnectorsAction" );
+
+        action = (ProxyConnectorsAction) getActionProxy("/admin/proxyConnectors" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

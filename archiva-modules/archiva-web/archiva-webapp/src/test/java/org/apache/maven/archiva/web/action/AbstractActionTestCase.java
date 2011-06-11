@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -222,5 +223,16 @@ public abstract class AbstractActionTestCase
         ValueStack stack = container.getInstance( ValueStackFactory.class ).createValueStack();
         stack.getContext().put( ActionContext.CONTAINER, container );
         ActionContext.setContext( new ActionContext( stack.getContext() ) );
+    }
+
+    public static String getBasedir()
+    {
+       String basedir = System.getProperty( "basedir" );
+        if ( basedir == null )
+        {
+            basedir = new File( "" ).getAbsolutePath();
+        }
+
+        return basedir;
     }
 }

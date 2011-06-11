@@ -32,7 +32,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.apache.struts2.StrutsSpringTestCase;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DeleteArtifactActionTest
-    extends PlexusInSpringTestCase
+    extends StrutsSpringTestCase
 {
     private DeleteArtifactAction action;
 
@@ -67,7 +67,13 @@ public class DeleteArtifactActionTest
 
     private static final String VERSION = "1.0";
 
-    private static final String REPO_LOCATION = getBasedir() + "/target/test-classes/test-repo";
+    private static final String REPO_LOCATION = "target/test-classes/test-repo";
+
+    @Override
+    protected String[] getContextLocations()
+    {
+        return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
+    }
 
     @Override
     protected void setUp()
@@ -75,7 +81,8 @@ public class DeleteArtifactActionTest
     {
         super.setUp();
 
-        action = (DeleteArtifactAction) lookup( Action.class.getName(), "deleteArtifactAction" );
+        //action = (DeleteArtifactAction) lookup( Action.class.getName(), "deleteArtifactAction" );
+        action = (DeleteArtifactAction) getActionProxy( "/deleteArtifact" ).getAction();
         assertNotNull( action );
 
         configurationControl = MockControl.createControl( ArchivaConfiguration.class );
@@ -90,8 +97,11 @@ public class DeleteArtifactActionTest
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
 
-        TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
-            RepositorySessionFactory.class );
+        //TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
+        //    RepositorySessionFactory.class );
+
+        TestRepositorySessionFactory repositorySessionFactory = new TestRepositorySessionFactory();
+
         repositorySessionFactory.setRepositorySession( repositorySession );
 
         action.setConfiguration( configuration );

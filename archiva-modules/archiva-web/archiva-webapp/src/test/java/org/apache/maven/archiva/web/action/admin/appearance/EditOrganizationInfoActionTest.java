@@ -19,22 +19,20 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ObjectFactory;
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
+import org.apache.maven.archiva.configuration.OrganisationInformation;
+import org.apache.maven.archiva.web.action.admin.repositories.DefaultActionValidatorManagerFactory;
+import org.apache.maven.archiva.web.validator.utils.ValidatorUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.opensymphony.xwork2.validator.DefaultActionValidatorManager;
-import org.apache.maven.archiva.configuration.OrganisationInformation;
-import org.apache.maven.archiva.web.action.admin.repositories.DefaultActionValidatorManagerFactory;
-import org.apache.maven.archiva.web.validator.utils.ValidatorUtil;
-
 /**
  */
-public class EditOrganizationInfoActionTest extends AbstractOrganizationInfoActionTest
+public class EditOrganizationInfoActionTest
+    extends AbstractOrganizationInfoActionTest
 {
     private static final String EMPTY_STRING = "";
 
@@ -56,7 +54,8 @@ public class EditOrganizationInfoActionTest extends AbstractOrganizationInfoActi
     private ActionValidatorManager actionValidatorManager;
 
     @Override
-    public void setUp() throws Exception
+    public void setUp()
+        throws Exception
     {
         super.setUp();
 
@@ -68,44 +67,45 @@ public class EditOrganizationInfoActionTest extends AbstractOrganizationInfoActi
     public void testOrganisationInfoSaves()
         throws Exception
     {
-        config.setOrganisationInfo(new OrganisationInformation());
+        config.setOrganisationInfo( new OrganisationInformation() );
         OrganisationInformation orginfo = config.getOrganisationInfo();
-        orginfo.setLogoLocation("LOGO");
-        orginfo.setName("NAME");
-        orginfo.setUrl("URL");
-        
-        configuration.save(config);
-        
+        orginfo.setLogoLocation( "LOGO" );
+        orginfo.setName( "NAME" );
+        orginfo.setUrl( "URL" );
+
+        configuration.save( config );
+
         reloadAction();
-        
+
         action.prepare();
-        
-        assertEquals("LOGO", action.getOrganisationLogo());
-        assertEquals("NAME", action.getOrganisationName());
-        assertEquals("URL", action.getOrganisationUrl());
-        
-        action.setOrganisationLogo("LOGO1");
-        action.setOrganisationName("NAME1");
-        action.setOrganisationUrl("URL1");
-        
+
+        assertEquals( "LOGO", action.getOrganisationLogo() );
+        assertEquals( "NAME", action.getOrganisationName() );
+        assertEquals( "URL", action.getOrganisationUrl() );
+
+        action.setOrganisationLogo( "LOGO1" );
+        action.setOrganisationName( "NAME1" );
+        action.setOrganisationUrl( "URL1" );
+
         action.execute();
-        
-        assertEquals("LOGO1", orginfo.getLogoLocation());
-        assertEquals("NAME1", orginfo.getName());
-        assertEquals("URL1", orginfo.getUrl());
+
+        assertEquals( "LOGO1", orginfo.getLogoLocation() );
+        assertEquals( "NAME1", orginfo.getName() );
+        assertEquals( "URL1", orginfo.getUrl() );
     }
 
-    public void testStruts2ValidationFrameworkWithNullInputs() throws Exception
+    public void testStruts2ValidationFrameworkWithNullInputs()
+        throws Exception
     {
         // prep
         action = getAction();
-        populateOrganisationValues(action, null, null, null);
+        populateOrganisationValues( action, null, null, null );
 
         // test
-        actionValidatorManager.validate(action, EMPTY_STRING);
+        actionValidatorManager.validate( action, EMPTY_STRING );
 
         // verify
-        assertTrue(action.hasFieldErrors());
+        assertTrue( action.hasFieldErrors() );
 
         Map<String, List<String>> fieldErrors = action.getFieldErrors();
 
@@ -114,23 +114,24 @@ public class EditOrganizationInfoActionTest extends AbstractOrganizationInfoActi
 
         // populate
         List<String> expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a name");
-        expectedFieldErrors.put("organisationName", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a name" );
+        expectedFieldErrors.put( "organisationName", expectedErrorMessages );
 
-        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
+        ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
-    public void testStruts2ValidationFrameworkWithBlankInputs() throws Exception
+    public void testStruts2ValidationFrameworkWithBlankInputs()
+        throws Exception
     {
         // prep
         action = getAction();
-        populateOrganisationValues(action, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING);
+        populateOrganisationValues( action, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
 
         // test
-        actionValidatorManager.validate(action, EMPTY_STRING);
+        actionValidatorManager.validate( action, EMPTY_STRING );
 
         // verify
-        assertTrue(action.hasFieldErrors());
+        assertTrue( action.hasFieldErrors() );
 
         Map<String, List<String>> fieldErrors = action.getFieldErrors();
 
@@ -139,23 +140,25 @@ public class EditOrganizationInfoActionTest extends AbstractOrganizationInfoActi
 
         // populate
         List<String> expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a name");
-        expectedFieldErrors.put("organisationName", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a name" );
+        expectedFieldErrors.put( "organisationName", expectedErrorMessages );
 
-        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
+        ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
-    public void testStruts2ValidationFrameworkWithInvalidInputs() throws Exception
+    public void testStruts2ValidationFrameworkWithInvalidInputs()
+        throws Exception
     {
         // prep
         action = getAction();
-        populateOrganisationValues(action, ORGANISATION_NAME_INVALID_INPUT, ORGANISATION_URL_INVALID_INPUT, ORGANISATION_LOGO_INVALID_INPUT);
+        populateOrganisationValues( action, ORGANISATION_NAME_INVALID_INPUT, ORGANISATION_URL_INVALID_INPUT,
+                                    ORGANISATION_LOGO_INVALID_INPUT );
 
         // test
-        actionValidatorManager.validate(action, EMPTY_STRING);
+        actionValidatorManager.validate( action, EMPTY_STRING );
 
         // verify
-        assertTrue(action.hasFieldErrors());
+        assertTrue( action.hasFieldErrors() );
 
         Map<String, List<String>> fieldErrors = action.getFieldErrors();
 
@@ -164,43 +167,48 @@ public class EditOrganizationInfoActionTest extends AbstractOrganizationInfoActi
 
         // populate
         List<String> expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).");
-        expectedFieldErrors.put("organisationName", expectedErrorMessages);
+        expectedErrorMessages.add(
+            "Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
+        expectedFieldErrors.put( "organisationName", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a URL");
-        expectedFieldErrors.put("organisationUrl", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a URL" );
+        expectedFieldErrors.put( "organisationUrl", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a URL");
-        expectedFieldErrors.put("organisationLogo", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a URL" );
+        expectedFieldErrors.put( "organisationLogo", expectedErrorMessages );
 
-        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
+        ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
-    public void testStruts2ValidationFrameworkWithValidInputs() throws Exception
+    public void testStruts2ValidationFrameworkWithValidInputs()
+        throws Exception
     {
         // prep
         action = getAction();
-        populateOrganisationValues(action, ORGANISATION_NAME_VALID_INPUT, ORGANISATION_URL_VALID_INPUT, ORGANISATION_LOGO_VALID_INPUT);
+        populateOrganisationValues( action, ORGANISATION_NAME_VALID_INPUT, ORGANISATION_URL_VALID_INPUT,
+                                    ORGANISATION_LOGO_VALID_INPUT );
 
         // test
-        actionValidatorManager.validate(action, EMPTY_STRING);
+        actionValidatorManager.validate( action, EMPTY_STRING );
 
         // verify
-        assertFalse(action.hasFieldErrors());
+        assertFalse( action.hasFieldErrors() );
     }
 
-    private void populateOrganisationValues(AbstractAppearanceAction abstractAppearanceAction , String name, String url, String logo)
+    private void populateOrganisationValues( AbstractAppearanceAction abstractAppearanceAction, String name, String url,
+                                             String logo )
     {
-        abstractAppearanceAction.setOrganisationName(name);
-        abstractAppearanceAction.setOrganisationUrl(url);
-        abstractAppearanceAction.setOrganisationLogo(logo);
+        abstractAppearanceAction.setOrganisationName( name );
+        abstractAppearanceAction.setOrganisationUrl( url );
+        abstractAppearanceAction.setOrganisationLogo( logo );
     }
 
     @Override
-    protected AbstractAppearanceAction getAction() 
+    protected AbstractAppearanceAction getAction()
     {
-        return (EditOrganisationInfoAction) lookup( Action.class.getName(), "editOrganisationInfo" );
+        //return (EditOrganisationInfoAction) lookup( Action.class.getName(), "editOrganisationInfo" );
+        return (EditOrganisationInfoAction) getActionProxy( "/admin/editOrganisationInfo" ).getAction();
     }
 }

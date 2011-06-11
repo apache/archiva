@@ -42,7 +42,7 @@ import java.util.Map;
  * DeleteManagedRepositoryAction
  *
  * @version $Id$
- * @plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction" instantiation-strategy="per-lookup"
+ * plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
 @Controller( "deleteManagedRepositoryAction" )
 @Scope( "prototype" )

@@ -39,6 +39,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -72,7 +73,7 @@ public class ShowArtifactActionTest
 
     public void testInstantiation()
     {
-        assertFalse( action == lookup( Action.class, ACTION_HINT ) );
+        assertFalse( action == getActionProxy( "/showArtifact" ).getAction() );
     }
 
     public void testGetArtifactUniqueRelease()
@@ -630,15 +631,16 @@ public class ShowArtifactActionTest
         throws Exception
     {
         super.setUp();
-        action = (ShowArtifactAction) lookup( Action.class, ACTION_HINT );
+        action = (ShowArtifactAction) getActionProxy( "/showArtifact" ).getAction();
 
         metadataResolver = new TestMetadataResolver();
         MetadataRepository repo = mock( MetadataRepository.class );
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getResolver() ).thenReturn( metadataResolver );
         when( repositorySession.getRepository() ).thenReturn( repo );
-        TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
-            RepositorySessionFactory.class );
+        //TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
+        //    RepositorySessionFactory.class );
+        TestRepositorySessionFactory repositorySessionFactory = new TestRepositorySessionFactory();
         repositorySessionFactory.setRepositorySession( repositorySession );
 
         RepositoryContentFactory factory = mock( RepositoryContentFactory.class );
@@ -646,7 +648,7 @@ public class ShowArtifactActionTest
 
         ManagedRepositoryConfiguration config = new ManagedRepositoryConfiguration();
         config.setId( TEST_REPO );
-        config.setLocation( getTestFile( "target/test-repo" ).getAbsolutePath() );
+        config.setLocation( new File( "target/test-repo" ).getAbsolutePath() );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
         content.setRepository( config );

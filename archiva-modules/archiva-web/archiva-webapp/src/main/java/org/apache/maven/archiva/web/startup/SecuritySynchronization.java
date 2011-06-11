@@ -76,7 +76,7 @@ public class SecuritySynchronization
     private RBACManager rbacManager;
 
     /**
-     * @plexus.requirement role="org.codehaus.plexus.redback.system.check.EnvironmentCheck"
+     * plexus.requirement role="org.codehaus.plexus.redback.system.check.EnvironmentCheck"
      */
     private Map<String, EnvironmentCheck> checkers;
 

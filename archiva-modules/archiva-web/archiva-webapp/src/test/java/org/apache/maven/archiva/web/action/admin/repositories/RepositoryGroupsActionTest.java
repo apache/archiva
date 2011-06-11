@@ -19,9 +19,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import java.util.Collections;
-import java.util.List;
-
+import com.meterware.servletunit.ServletRunner;
+import com.meterware.servletunit.ServletUnitClient;
+import com.opensymphony.xwork2.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -29,12 +29,10 @@ import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
-import com.opensymphony.xwork2.Action;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * RepositoryGroupsActionTest
@@ -61,7 +59,8 @@ public class RepositoryGroupsActionTest
     {
         super.setUp();
 	
-        action = (RepositoryGroupsAction) lookup( Action.class.getName(), "repositoryGroupsAction" );
+        //action = (RepositoryGroupsAction) lookup( Action.class.getName(), "repositoryGroupsAction" );
+        action = (RepositoryGroupsAction) getActionProxy( "/admin/repositoryGroups" );
 	    
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

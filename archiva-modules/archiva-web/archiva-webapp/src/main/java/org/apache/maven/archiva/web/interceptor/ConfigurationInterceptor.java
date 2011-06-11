@@ -32,7 +32,7 @@ import javax.servlet.ServletContext;
 /**
  * An interceptor that makes the configuration bits available, both to the application and the webapp
  *
- * @plexus.component role="com.opensymphony.xwork2.interceptor.Interceptor"
+ * plexus.component role="com.opensymphony.xwork2.interceptor.Interceptor"
  * role-hint="configurationInterceptor"
  */
 @Service( "configurationInterceptor" )

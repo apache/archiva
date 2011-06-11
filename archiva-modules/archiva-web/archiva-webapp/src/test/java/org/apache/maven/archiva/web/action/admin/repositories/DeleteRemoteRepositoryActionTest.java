@@ -28,13 +28,12 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.util.Collections;
 
 /**
- * DeleteRemoteRepositoryActionTest 
+ * DeleteRemoteRepositoryActionTest
  *
  * @version $Id$
  */
@@ -54,7 +53,8 @@ public class DeleteRemoteRepositoryActionTest
     {
         super.setUp();
 
-        action = (DeleteRemoteRepositoryAction) lookup( Action.class.getName(), "deleteRemoteRepositoryAction" );
+        //action = (DeleteRemoteRepositoryAction) lookup( Action.class.getName(), "deleteRemoteRepositoryAction" );
+        action = (DeleteRemoteRepositoryAction) getActionProxy( "/admin/deleteRemoteRepository" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
@@ -90,26 +90,28 @@ public class DeleteRemoteRepositoryActionTest
         throws RegistryException, IndeterminateConfigurationException
     {
         Configuration configuration = createConfigurationForEditing( createRepository() );
-        configuration.addManagedRepository( createManagedRepository( "internal", getTestPath( "target/repo/internal" ) ) );
-        configuration.addManagedRepository( createManagedRepository( "snapshots", getTestPath( "target/repo/snapshots" ) ) );
-        configuration.addProxyConnector( createProxyConnector( "internal", REPO_ID) );
-        
+        configuration.addManagedRepository(
+            createManagedRepository( "internal", "target/repo/internal" ));
+        configuration.addManagedRepository(
+            createManagedRepository( "snapshots", "target/repo/snapshots" ) );
+        configuration.addProxyConnector( createProxyConnector( "internal", REPO_ID ) );
+
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, 4 );
-        
+
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
-        
+
         action.setRepoid( REPO_ID );
-        
+
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
         RemoteRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
-        
+
         assertEquals( 1, configuration.getProxyConnectors().size() );
-        
+
         String status = action.delete();
         assertEquals( Action.SUCCESS, status );
 
@@ -151,7 +153,7 @@ public class DeleteRemoteRepositoryActionTest
         configuration.addRemoteRepository( repositoryConfiguration );
         return configuration;
     }
-    
+
     private RemoteRepositoryConfiguration createRepository()
     {
         RemoteRepositoryConfiguration r = new RemoteRepositoryConfiguration();
@@ -159,7 +161,7 @@ public class DeleteRemoteRepositoryActionTest
         populateRepository( r );
         return r;
     }
-    
+
     private void assertRepositoryEquals( RemoteRepositoryConfiguration expectedRepository,
                                          RemoteRepositoryConfiguration actualRepository )
     {
@@ -168,7 +170,7 @@ public class DeleteRemoteRepositoryActionTest
         assertEquals( expectedRepository.getUrl(), actualRepository.getUrl() );
         assertEquals( expectedRepository.getName(), actualRepository.getName() );
     }
-    
+
     private ManagedRepositoryConfiguration createManagedRepository( String string, String testPath )
     {
         ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
@@ -202,6 +204,6 @@ public class DeleteRemoteRepositoryActionTest
         repository.setUrl( "url" );
         repository.setLayout( "default" );
     }
-    
+
     // TODO: what about removing proxied content if a proxy is removed?
 }

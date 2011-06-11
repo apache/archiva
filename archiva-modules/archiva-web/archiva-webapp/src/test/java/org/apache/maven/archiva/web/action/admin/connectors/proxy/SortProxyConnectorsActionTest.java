@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Action;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -30,15 +29,15 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 import java.util.Collections;
 import java.util.List;
 
 /**
- * SortProxyConnectorsActionTest 
+ * SortProxyConnectorsActionTest
  *
  * @version $Id$
  */
@@ -81,7 +80,7 @@ public class SortProxyConnectorsActionTest
         String status = action.sortDown();
         assertEquals( Action.SUCCESS, status );
 
-        assertOrder( new String[] { JAVAX, CENTRAL, CODEHAUS } );
+        assertOrder( new String[]{ JAVAX, CENTRAL, CODEHAUS } );
     }
 
     public void testSortDownPastEnd()
@@ -97,7 +96,7 @@ public class SortProxyConnectorsActionTest
         assertEquals( Action.SUCCESS, status );
 
         // No order change.
-        assertOrder( new String[] { CENTRAL, JAVAX, CODEHAUS } );
+        assertOrder( new String[]{ CENTRAL, JAVAX, CODEHAUS } );
     }
 
     public void testSortUp()
@@ -111,11 +110,11 @@ public class SortProxyConnectorsActionTest
         String status = action.sortUp();
         assertEquals( Action.SUCCESS, status );
 
-        assertOrder( new String[] { CENTRAL, CODEHAUS, JAVAX } );
+        assertOrder( new String[]{ CENTRAL, CODEHAUS, JAVAX } );
     }
 
     public void testSortUpPastBeginning()
-    throws Exception
+        throws Exception
     {
         expectConfigurationRequests( 7 );
         archivaConfigurationControl.replay();
@@ -127,7 +126,7 @@ public class SortProxyConnectorsActionTest
         assertEquals( Action.SUCCESS, status );
 
         // No order change.
-        assertOrder( new String[] { CENTRAL, JAVAX, CODEHAUS } );
+        assertOrder( new String[]{ CENTRAL, JAVAX, CODEHAUS } );
     }
 
     private void assertOrder( String[] targetRepoOrder )
@@ -137,8 +136,8 @@ public class SortProxyConnectorsActionTest
 
         for ( ProxyConnectorConfiguration connector : connectors )
         {
-            assertEquals( "All connectors in list should have the same source id (in this test)", CORPORATE, connector
-                .getSourceRepoId() );
+            assertEquals( "All connectors in list should have the same source id (in this test)", CORPORATE,
+                          connector.getSourceRepoId() );
         }
 
         assertEquals( targetRepoOrder.length, connectors.size() );
@@ -243,7 +242,8 @@ public class SortProxyConnectorsActionTest
     {
         super.setUp();
 
-        action = (SortProxyConnectorsAction) lookup( Action.class.getName(), "sortProxyConnectorsAction" );
+        //action = (SortProxyConnectorsAction) lookup( Action.class.getName(), "sortProxyConnectorsAction" );
+        action = (SortProxyConnectorsAction) getActionProxy( "/admin/sortProxyConnectors" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

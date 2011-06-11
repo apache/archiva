@@ -140,21 +140,6 @@
           <show>private</show>
           <tags>
             <tag>
-              <name>plexus.component</name>
-              <placement>t</placement>
-              <head>Component definition:</head>
-            </tag>
-            <tag>
-              <name>plexus.configuration</name>
-              <placement>f</placement>
-              <head>Configuration:</head>
-            </tag>
-            <tag>
-              <name>plexus.requirement</name>
-              <placement>f</placement>
-              <head>Requirement:</head>
-            </tag>
-            <tag>
               <name>todo</name>
               <placement>a</placement>
               <head>To Do:</head>

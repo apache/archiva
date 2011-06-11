@@ -23,9 +23,9 @@ import com.opensymphony.xwork2.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.struts2.StrutsSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.util.Collections;
@@ -36,7 +36,7 @@ import java.util.Collections;
  * @version $Id$
  */
 public class EditRemoteRepositoryActionTest
-    extends PlexusInSpringTestCase
+    extends StrutsSpringTestCase
 {
     private static final String REPO_ID = "remote-repo-ident";
 
@@ -45,6 +45,12 @@ public class EditRemoteRepositoryActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
+
+    @Override
+    protected String[] getContextLocations()
+    {
+        return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
+    }
 
     public void testEditRemoteRepository()
         throws Exception
@@ -147,7 +153,9 @@ public class EditRemoteRepositoryActionTest
     {
         super.setUp();
 
-        action = (EditRemoteRepositoryAction) lookup( Action.class.getName(), "editRemoteRepositoryAction" );
+        //action = (EditRemoteRepositoryAction) lookup( Action.class.getName(), "editRemoteRepositoryAction" );
+
+        action = (EditRemoteRepositoryAction) getActionProxy( "editRemoteRepository" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

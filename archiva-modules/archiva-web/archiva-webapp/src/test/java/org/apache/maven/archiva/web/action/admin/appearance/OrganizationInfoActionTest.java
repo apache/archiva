@@ -21,35 +21,36 @@ package org.apache.maven.archiva.web.action.admin.appearance;
 
 import org.apache.maven.archiva.configuration.OrganisationInformation;
 
-import com.opensymphony.xwork2.Action;
-
 /**
  */
-public class OrganizationInfoActionTest extends AbstractOrganizationInfoActionTest
-{ 
+public class OrganizationInfoActionTest
+    extends AbstractOrganizationInfoActionTest
+{
     public void testOrganisationInfoLoads()
         throws Exception
     {
-        config.setOrganisationInfo(new OrganisationInformation());
+        config.setOrganisationInfo( new OrganisationInformation() );
         OrganisationInformation orginfo = config.getOrganisationInfo();
-        orginfo.setLogoLocation("LOGO");
-        orginfo.setName("NAME");
-        orginfo.setUrl("URL");
-        
-        configuration.save(config);
-        
+        orginfo.setLogoLocation( "LOGO" );
+        orginfo.setName( "NAME" );
+        orginfo.setUrl( "URL" );
+
+        configuration.save( config );
+
         reloadAction();
-        
+
         action.prepare();
-        
-        assertEquals("URL", action.getOrganisationUrl());
-        assertEquals("NAME", action.getOrganisationName());
-        assertEquals("LOGO", action.getOrganisationLogo());
+
+        assertEquals( "URL", action.getOrganisationUrl() );
+        assertEquals( "NAME", action.getOrganisationName() );
+        assertEquals( "LOGO", action.getOrganisationLogo() );
     }
 
     @Override
-    protected AbstractAppearanceAction getAction() 
+    protected AbstractAppearanceAction getAction()
     {
-        return (OrganisationInfoAction) lookup( Action.class.getName(), "organisationInfo" );
+        //return (OrganisationInfoAction) lookup( Action.class.getName(), "organisationInfo" );
+
+        return (OrganisationInfoAction) getActionProxy( "/admin/organisationInfo" ).getAction();
     }
 }

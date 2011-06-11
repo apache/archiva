@@ -25,22 +25,23 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
-public class DisableProxyConnectorActionTest extends AbstractWebworkTestCase
+public class DisableProxyConnectorActionTest
+    extends AbstractWebworkTestCase
 {
     private static final String TEST_TARGET_ID = "central";
 
     private static final String TEST_SOURCE_ID = "corporate";
-    
+
     private DisableProxyConnectorAction action;
-    
+
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
-    
+
     public void testConfirmDisableBadSourceOrTarget()
         throws Exception
     {
@@ -132,8 +133,9 @@ public class DisableProxyConnectorActionTest extends AbstractWebworkTestCase
 
         // Test the configuration.
         assertEquals( 1, archivaConfiguration.getConfiguration().getProxyConnectors().size() );
-        ProxyConnectorConfiguration config = (ProxyConnectorConfiguration)archivaConfiguration.getConfiguration().getProxyConnectors().get(0);
-        assertTrue(config.isDisabled());
+        ProxyConnectorConfiguration config =
+            (ProxyConnectorConfiguration) archivaConfiguration.getConfiguration().getProxyConnectors().get( 0 );
+        assertTrue( config.isDisabled() );
     }
 
     public void testSecureActionBundle()
@@ -146,7 +148,7 @@ public class DisableProxyConnectorActionTest extends AbstractWebworkTestCase
         assertTrue( bundle.requiresAuthentication() );
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
-    
+
     public void testConfirmEnable()
         throws Exception
     {
@@ -161,7 +163,7 @@ public class DisableProxyConnectorActionTest extends AbstractWebworkTestCase
         assertEquals( Action.INPUT, status );
         assertNoErrors( action );
     }
-    
+
     private Configuration createInitialConfiguration()
     {
         Configuration config = new Configuration();
@@ -182,8 +184,8 @@ public class DisableProxyConnectorActionTest extends AbstractWebworkTestCase
         ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
         connector.setSourceRepoId( TEST_SOURCE_ID );
         connector.setTargetRepoId( TEST_TARGET_ID );
-        
-        connector.setDisabled(false);
+
+        connector.setDisabled( false );
 
         config.addProxyConnector( connector );
 
@@ -210,7 +212,8 @@ public class DisableProxyConnectorActionTest extends AbstractWebworkTestCase
     {
         super.setUp();
 
-        action = (DisableProxyConnectorAction) lookup( Action.class.getName(), "disableProxyConnectorAction" );
+        //action = (DisableProxyConnectorAction) lookup( Action.class.getName(), "disableProxyConnectorAction" );
+        action = (DisableProxyConnectorAction) getActionProxy( "/admin/disableProxyConnector" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

@@ -29,11 +29,9 @@ import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.security.UserRepositories;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.util.ArrayList;
@@ -77,7 +75,8 @@ public class SearchActionTest
         action = new SearchAction();
 
         session = mock( RepositorySession.class );
-        TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        TestRepositorySessionFactory factory = new TestRepositorySessionFactory();
         factory.setRepositorySession( session );
         action.setRepositorySessionFactory( factory );
 
@@ -425,8 +424,8 @@ public class SearchActionTest
         control.expectAndReturn( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ),
                                  Collections.singletonList( artifact ) );
 
-        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ), Collections.singletonList(
-            TEST_REPO ) );
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ),
+                                          Collections.singletonList( TEST_REPO ) );
 
         control.replay();
         userReposControl.replay();
@@ -453,8 +452,8 @@ public class SearchActionTest
                                                           createArtifact( "archiva-indexer", "1.0" ) );
         control.expectAndReturn( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ), artifacts );
 
-        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ), Collections.singletonList(
-            TEST_REPO ) );
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ),
+                                          Collections.singletonList( TEST_REPO ) );
 
         control.replay();
         userReposControl.replay();
@@ -490,8 +489,8 @@ public class SearchActionTest
         control.expectAndReturn( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ),
                                  Collections.<ArtifactMetadata>emptyList() );
 
-        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ), Collections.singletonList(
-            TEST_REPO ) );
+        userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( GUEST ),
+                                          Collections.singletonList( TEST_REPO ) );
 
         control.replay();
         userReposControl.replay();
