@@ -34,6 +34,7 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -64,14 +65,97 @@ public abstract class AbstractRepositoryServletTestCase
 
     private ServletRunner sr;
 
-    @Inject
     protected ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    protected ApplicationContext applicationContext;
+
 
     protected void saveConfiguration()
         throws Exception
     {
         saveConfiguration( archivaConfiguration );
     }
+
+
+    @Before
+    public void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        String appserverBase = new File( "target/appserver-base" ).getAbsolutePath();
+        System.setProperty( "appserver.base", appserverBase );
+
+        File testConf = new File( "src/test/resources/repository-archiva.xml" );
+        File testConfDest = new File( appserverBase, "conf/archiva.xml" );
+        if ( testConfDest.exists() )
+        {
+            FileUtils.deleteQuietly( testConfDest );
+        }
+        FileUtils.copyFile( testConf, testConfDest );
+
+
+        archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
+
+
+        //archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        repoRootInternal = new File( appserverBase, "data/repositories/internal" );
+        repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ) )
+        {
+            config.addManagedRepository(
+                createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
+        }
+        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_LEGACY ) )
+        {
+            config.addManagedRepository(
+                createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
+        }
+
+        saveConfiguration( archivaConfiguration );
+
+        CacheManager.getInstance().clearAll();
+
+        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
+
+        sr = new ServletRunner( new File( "src/test/resources/WEB-INF/web.xml" ) );
+
+        sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
+        sc = sr.newClient();
+    }
+
+    @Override
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        if ( sc != null )
+        {
+            sc.clearContents();
+        }
+
+        if ( sr != null )
+        {
+            sr.shutDown();
+        }
+
+        if ( repoRootInternal.exists() )
+        {
+            FileUtils.deleteDirectory( repoRootInternal );
+        }
+
+        if ( repoRootLegacy.exists() )
+        {
+            FileUtils.deleteDirectory( repoRootLegacy );
+        }
+
+        super.tearDown();
+    }
+
+
 
     protected void assertFileContents( String expectedContents, File repoRoot, String path )
         throws IOException
@@ -164,80 +248,6 @@ public abstract class AbstractRepositoryServletTestCase
         archivaConfiguration.save( archivaConfiguration.getConfiguration() );
     }
 
-    @Before
-    public void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        String appserverBase = new File( "target/appserver-base" ).getAbsolutePath();
-        System.setProperty( "appserver.base", appserverBase );
-
-        File testConf = new File( "src/test/resources/repository-archiva.xml" );
-        File testConfDest = new File( appserverBase, "conf/archiva.xml" );
-        if ( testConfDest.exists() )
-        {
-            FileUtils.deleteQuietly( testConfDest );
-        }
-        FileUtils.copyFile( testConf, testConfDest );
-
-        //archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
-        repoRootInternal = new File( appserverBase, "data/repositories/internal" );
-        repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
-        Configuration config = archivaConfiguration.getConfiguration();
-
-        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ) )
-        {
-            config.addManagedRepository(
-                createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
-            saveConfiguration( archivaConfiguration );
-        }
-        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_LEGACY ) )
-        {
-            config.addManagedRepository(
-                createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
-            saveConfiguration( archivaConfiguration );
-        }
-
-
-        //CacheManager.getInstance().removeCache( "url-failures-cache" );
-        CacheManager.getInstance().clearAll();
-
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
-
-        sr = new ServletRunner( new File( "src/test/resources/WEB-INF/web.xml" ) );
-
-        sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
-        sc = sr.newClient();
-    }
-
-    @Override
-    @After
-    public void tearDown()
-        throws Exception
-    {
-        if ( sc != null )
-        {
-            sc.clearContents();
-        }
-
-        if ( sr != null )
-        {
-            sr.shutDown();
-        }
-
-        if ( repoRootInternal.exists() )
-        {
-            FileUtils.deleteDirectory( repoRootInternal );
-        }
-
-        if ( repoRootLegacy.exists() )
-        {
-            FileUtils.deleteDirectory( repoRootLegacy );
-        }
-
-        super.tearDown();
-    }
 
     protected void setupCleanRepo( File repoRootDir )
         throws IOException
