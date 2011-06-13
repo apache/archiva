@@ -195,6 +195,10 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         throws Exception
     {
         File destFile = new File( remoteRepo.root, path );
+        if (destFile.exists())
+        {
+            destFile.delete();
+        }
         destFile.getParentFile().mkdirs();
         FileUtils.writeStringToFile( destFile, contents, null );
         return destFile;
