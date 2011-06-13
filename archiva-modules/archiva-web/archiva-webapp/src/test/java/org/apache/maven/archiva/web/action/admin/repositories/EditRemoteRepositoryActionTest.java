@@ -155,7 +155,7 @@ public class EditRemoteRepositoryActionTest
 
         //action = (EditRemoteRepositoryAction) lookup( Action.class.getName(), "editRemoteRepositoryAction" );
 
-        action = (EditRemoteRepositoryAction) getActionProxy( "editRemoteRepository" ).getAction();
+        action = (EditRemoteRepositoryAction) getActionProxy( "editRemoteRepository.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

@@ -60,7 +60,7 @@ public class AddProxyConnectorActionTest
     {
         super.setUp();
 
-        action = (AddProxyConnectorAction) getActionProxy( "addProxyConnector" ).getAction();
+        action = (AddProxyConnectorAction) getActionProxy( "/admin/addProxyConnector.action" ).getAction();
         //action = (AddProxyConnectorAction) lookup( Action.class.getName(), "addProxyConnectorAction" );
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );

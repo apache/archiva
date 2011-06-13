@@ -73,7 +73,7 @@ public class ShowArtifactActionTest
 
     public void testInstantiation()
     {
-        assertFalse( action == getActionProxy( "/showArtifact" ).getAction() );
+        assertFalse( action == getActionProxy( "/showArtifact.action" ).getAction() );
     }
 
     public void testGetArtifactUniqueRelease()
@@ -631,7 +631,7 @@ public class ShowArtifactActionTest
         throws Exception
     {
         super.setUp();
-        action = (ShowArtifactAction) getActionProxy( "/showArtifact" ).getAction();
+        action = (ShowArtifactAction) getActionProxy( "/showArtifact.action" ).getAction();
 
         metadataResolver = new TestMetadataResolver();
         MetadataRepository repo = mock( MetadataRepository.class );

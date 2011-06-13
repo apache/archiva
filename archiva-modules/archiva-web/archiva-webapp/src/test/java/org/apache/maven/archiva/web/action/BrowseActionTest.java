@@ -47,7 +47,7 @@ public class BrowseActionTest
 
     public void testInstantiation()
     {
-        assertFalse( action == (BrowseAction) getActionProxy( "browse" ).getAction() );
+        assertFalse( action == (BrowseAction) getActionProxy( "browse.action" ).getAction() );
     }
 
     public void testBrowse()
@@ -391,7 +391,7 @@ public class BrowseActionTest
     {
         super.setUp();
         //action = (BrowseAction) lookup( Action.class, ACTION_HINT );
-        action = (BrowseAction) getActionProxy( "browse" ).getAction();
+        action = (BrowseAction) getActionProxy( "browse.action" ).getAction();
         metadataResolver = new TestMetadataResolver();
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getResolver() ).thenReturn( metadataResolver );

@@ -243,7 +243,7 @@ public class SortProxyConnectorsActionTest
         super.setUp();
 
         //action = (SortProxyConnectorsAction) lookup( Action.class.getName(), "sortProxyConnectorsAction" );
-        action = (SortProxyConnectorsAction) getActionProxy( "/admin/sortProxyConnectors" ).getAction();
+        action = (SortProxyConnectorsAction) getActionProxy( "/admin/sortProxyConnectors.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

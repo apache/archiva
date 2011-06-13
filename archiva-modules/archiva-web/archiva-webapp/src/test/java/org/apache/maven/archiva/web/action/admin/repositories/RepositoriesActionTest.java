@@ -50,7 +50,7 @@ public class RepositoriesActionTest
         super.setUp();
 
         //action = (RepositoriesAction) lookup( Action.class.getName(), "repositoriesAction" );
-        action = (RepositoriesAction) getActionProxy( "/admin/index"  ).getAction();
+        action = (RepositoriesAction) getActionProxy( "/admin/index.action"  ).getAction();
 
     }
 

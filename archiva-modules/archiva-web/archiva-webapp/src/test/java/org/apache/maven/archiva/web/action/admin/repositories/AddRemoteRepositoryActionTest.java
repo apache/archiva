@@ -52,7 +52,7 @@ public class AddRemoteRepositoryActionTest
         super.setUp();
 
         //action = (AddRemoteRepositoryAction) lookup( Action.class.getName(), "addRemoteRepositoryAction" );
-        action = (AddRemoteRepositoryAction) getActionProxy( "/admin/addRemoteRepository" ).getAction();
+        action = (AddRemoteRepositoryAction) getActionProxy( "/admin/addRemoteRepository.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

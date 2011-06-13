@@ -213,7 +213,7 @@ public class DisableProxyConnectorActionTest
         super.setUp();
 
         //action = (DisableProxyConnectorAction) lookup( Action.class.getName(), "disableProxyConnectorAction" );
-        action = (DisableProxyConnectorAction) getActionProxy( "/admin/disableProxyConnector" ).getAction();
+        action = (DisableProxyConnectorAction) getActionProxy( "/admin/disableProxyConnector.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

@@ -54,7 +54,7 @@ public class DeleteRemoteRepositoryActionTest
         super.setUp();
 
         //action = (DeleteRemoteRepositoryAction) lookup( Action.class.getName(), "deleteRemoteRepositoryAction" );
-        action = (DeleteRemoteRepositoryAction) getActionProxy( "/admin/deleteRemoteRepository" ).getAction();
+        action = (DeleteRemoteRepositoryAction) getActionProxy( "/admin/deleteRemoteRepository.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

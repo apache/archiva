@@ -51,6 +51,6 @@ public class OrganizationInfoActionTest
     {
         //return (OrganisationInfoAction) lookup( Action.class.getName(), "organisationInfo" );
 
-        return (OrganisationInfoAction) getActionProxy( "/admin/organisationInfo" ).getAction();
+        return (OrganisationInfoAction) getActionProxy( "/admin/organisationInfo.action" ).getAction();
     }
 }

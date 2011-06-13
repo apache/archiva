@@ -50,7 +50,7 @@ public class DeleteRepositoryGroupActionTest
         super.setUp();
 
         //action = (DeleteRepositoryGroupAction) lookup ( Action.class.getName(), "deleteRepositoryGroupAction" );
-        action = (DeleteRepositoryGroupAction) getActionProxy( "/admin/deleteRepositoryGroup" ).getAction();
+        action = (DeleteRepositoryGroupAction) getActionProxy( "/admin/deleteRepositoryGroup.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

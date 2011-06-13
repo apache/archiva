@@ -433,7 +433,7 @@ public class EditProxyConnectorActionTest
         super.setUp();
 
         //action = (EditProxyConnectorAction) lookup( Action.class.getName(), "editProxyConnectorAction" );
-        action = (EditProxyConnectorAction) getActionProxy( "/admin/editProxyConnector" ).getAction();
+        action = (EditProxyConnectorAction) getActionProxy( "/admin/editProxyConnector.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

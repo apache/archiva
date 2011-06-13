@@ -217,7 +217,7 @@ public class DeleteProxyConnectorActionTest
 
         //action = (DeleteProxyConnectorAction) lookup( Action.class.getName(), "deleteProxyConnectorAction" );
 
-        action = (DeleteProxyConnectorAction) getActionProxy( "/admin/deleteProxyConnector" ).getAction();
+        action = (DeleteProxyConnectorAction) getActionProxy( "/admin/deleteProxyConnector.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();

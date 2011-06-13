@@ -211,7 +211,7 @@ public class EnableProxyConnectorActionTest extends AbstractWebworkTestCase
 
         //action = (EnableProxyConnectorAction) lookup( Action.class.getName(), "enableProxyConnectorAction" );
 
-        action = (EnableProxyConnectorAction) getActionProxy( "/admin/enableProxyConnector" ).getAction();
+        action = (EnableProxyConnectorAction) getActionProxy( "/admin/enableProxyConnector.action" ).getAction();
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );

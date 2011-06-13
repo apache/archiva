@@ -75,7 +75,7 @@ public class GenerateReportActionTest
 
         //action = (GenerateReportAction) lookup( Action.class, "generateReport" );
 
-        action = (GenerateReportAction) getActionProxy( "/admin/generateReport" ).getAction();
+        action = (GenerateReportAction) getActionProxy( "/admin/generateReport.action" ).getAction();
 
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();

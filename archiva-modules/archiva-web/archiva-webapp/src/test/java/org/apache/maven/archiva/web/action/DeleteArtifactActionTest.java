@@ -82,7 +82,7 @@ public class DeleteArtifactActionTest
         super.setUp();
 
         //action = (DeleteArtifactAction) lookup( Action.class.getName(), "deleteArtifactAction" );
-        action = (DeleteArtifactAction) getActionProxy( "/deleteArtifact" ).getAction();
+        action = (DeleteArtifactAction) getActionProxy( "/deleteArtifact.action" ).getAction();
         assertNotNull( action );
 
         configurationControl = MockControl.createControl( ArchivaConfiguration.class );
