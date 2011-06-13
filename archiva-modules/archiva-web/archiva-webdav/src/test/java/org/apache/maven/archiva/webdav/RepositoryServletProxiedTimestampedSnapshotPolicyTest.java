@@ -25,6 +25,8 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -37,6 +39,20 @@ import java.io.File;
 public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
     extends AbstractRepositoryServletProxiedTestCase
 {
+
+    @Before
+    public void setup()
+        throws Exception
+    {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+    }
 
     @Test
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysManagedNewer()
