@@ -51,7 +51,8 @@ import java.io.IOException;
  * @version $Id$
  */
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+//ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@ContextConfiguration( locations = { "classpath*:/repository-servlet-simple.xml" } )
 public abstract class AbstractRepositoryServletTestCase
     extends TestCase
 {
