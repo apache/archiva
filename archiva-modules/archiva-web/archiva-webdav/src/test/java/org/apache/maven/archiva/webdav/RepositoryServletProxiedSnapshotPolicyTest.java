@@ -23,14 +23,18 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
- * RepositoryServlet Tests, Proxied, Get of Snapshot Artifacts, with varying policy settings. 
+ * RepositoryServlet Tests, Proxied, Get of Snapshot Artifacts, with varying policy settings.
  *
  * @version $Id$
  */
@@ -38,12 +42,31 @@ public class RepositoryServletProxiedSnapshotPolicyTest
     extends AbstractRepositoryServletProxiedTestCase
 {
 
+    @Before
+    public void setUp()
+        throws Exception
+    {
+        applicationContext.getBean( ArchivaConfiguration.class ).getConfiguration().setProxyConnectors(
+            new ArrayList<ProxyConnectorConfiguration>() );
+        super.setUp();
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        applicationContext.getBean( ArchivaConfiguration.class ).getConfiguration().setProxyConnectors(
+            new ArrayList<ProxyConnectorConfiguration>() );
+        super.tearDown();
+    }
+
+
     @Test
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysManagedNewer()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.ALWAYS,
-                                                     HAS_MANAGED_COPY, ( NEWER * OVER_ONE_DAY ) );
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.ALWAYS, HAS_MANAGED_COPY,
+                                                     ( NEWER * OVER_ONE_DAY ) );
     }
 
     @Test
@@ -88,8 +111,7 @@ public class RepositoryServletProxiedSnapshotPolicyTest
     public void testGetProxiedSnapshotsArtifactPolicyRejectFail()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.NEVER,
-                                                     HAS_MANAGED_COPY );
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.NEVER, HAS_MANAGED_COPY );
     }
 
     @Test
@@ -103,8 +125,7 @@ public class RepositoryServletProxiedSnapshotPolicyTest
     public void testGetProxiedSnapshotsArtifactPolicyRejectPass()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.NEVER,
-                                                     HAS_MANAGED_COPY );
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.NEVER, HAS_MANAGED_COPY );
     }
 
     @Test
@@ -159,7 +180,8 @@ public class RepositoryServletProxiedSnapshotPolicyTest
     }
 
     private void assertGetProxiedSnapshotsArtifactWithPolicy( int expectation, String snapshotsPolicy,
-                                                              boolean hasManagedCopy, long deltaManagedToRemoteTimestamp )
+                                                              boolean hasManagedCopy,
+                                                              long deltaManagedToRemoteTimestamp )
         throws Exception
     {
         // --- Setup
@@ -195,7 +217,7 @@ public class RepositoryServletProxiedSnapshotPolicyTest
             case EXPECT_MANAGED_CONTENTS:
                 assertResponseOK( response );
                 assertTrue( "Invalid Test Case: Can't expect managed contents with "
-                    + "test that doesn't have a managed copy in the first place.", hasManagedCopy );
+                                + "test that doesn't have a managed copy in the first place.", hasManagedCopy );
                 assertEquals( "Expected managed file contents", expectedManagedContents, response.getText() );
                 break;
             case EXPECT_REMOTE_CONTENTS:
