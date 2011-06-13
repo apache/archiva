@@ -34,6 +34,8 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -69,6 +71,8 @@ public abstract class AbstractRepositoryServletTestCase
 
     @Inject
     protected ApplicationContext applicationContext;
+
+    protected Logger log = LoggerFactory.getLogger( getClass() );
 
 
     protected void saveConfiguration()

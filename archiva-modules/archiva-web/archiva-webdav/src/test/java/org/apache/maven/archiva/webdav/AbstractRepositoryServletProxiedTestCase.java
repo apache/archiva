@@ -138,7 +138,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
         int port = repo.server.getConnectors()[0].getLocalPort();
         repo.url = "http://localhost:" + port + repo.context;
-        System.out.println( "Remote HTTP Server started on " + repo.url );
+        log.info( "Remote HTTP Server started on " + repo.url );
 
         repo.config = createRemoteRepository( repo.id, "Testable [" + repo.id + "] Remote Repo", repo.url );
 
@@ -206,6 +206,14 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         remoteCentral = createServer( "central" );
 
         assertServerSetupCorrectly( remoteCentral );
+
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
+            archivaConfiguration.getConfiguration().getRemoteRepositoriesAsMap().get( remoteCentral.id );
+        if ( remoteRepositoryConfiguration != null )
+        {
+            archivaConfiguration.getConfiguration().removeRemoteRepository( remoteRepositoryConfiguration );
+        }
+
         archivaConfiguration.getConfiguration().addRemoteRepository( remoteCentral.config );
         setupCleanRepo( remoteCentral.root );
     }
@@ -231,6 +239,12 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         remoteSnapshots = createServer( "snapshots" );
 
         assertServerSetupCorrectly( remoteSnapshots );
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
+            archivaConfiguration.getConfiguration().getRemoteRepositoriesAsMap().get( remoteSnapshots.id );
+        if ( remoteRepositoryConfiguration != null )
+        {
+            archivaConfiguration.getConfiguration().removeRemoteRepository( remoteRepositoryConfiguration );
+        }
         archivaConfiguration.getConfiguration().addRemoteRepository( remoteSnapshots.config );
         setupCleanRepo( remoteSnapshots.root );
     }
