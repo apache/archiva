@@ -25,16 +25,21 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * UnauthenticatedDavResourceFactory
  *
  * @version $Id:
  */
+@Service("archivaDavResourceFactory#unauthenticated")
 public class UnauthenticatedDavResourceFactory
     extends ArchivaDavResourceFactory
 {
 
+    @Inject
     public UnauthenticatedDavResourceFactory( ApplicationContext applicationContext, PlexusSisuBridge plexusSisuBridge,
                                               ArchivaConfiguration archivaConfiguration )
         throws PlexusSisuBridgeException
