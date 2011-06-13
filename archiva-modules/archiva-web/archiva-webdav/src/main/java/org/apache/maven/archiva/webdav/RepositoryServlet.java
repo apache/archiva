@@ -53,7 +53,6 @@ import java.util.Map;
 
 /**
  * RepositoryServlet
- * 
  */
 public class RepositoryServlet
     extends AbstractWebdavServlet
@@ -83,7 +82,7 @@ public class RepositoryServlet
     /**
      * Service the given request. This method has been overridden and copy/pasted to allow better exception handling and
      * to support different realms
-     * 
+     *
      * @param request
      * @param response
      * @throws ServletException
@@ -96,9 +95,8 @@ public class RepositoryServlet
         WebdavRequest webdavRequest = new WebdavRequestImpl( request, getLocatorFactory() );
         // DeltaV requires 'Cache-Control' header for all methods except 'VERSION-CONTROL' and 'REPORT'.
         int methodCode = DavMethods.getMethodCode( request.getMethod() );
-        boolean noCache =
-            DavMethods.isDeltaVMethod( webdavRequest )
-                && !( DavMethods.DAV_VERSION_CONTROL == methodCode || DavMethods.DAV_REPORT == methodCode );
+        boolean noCache = DavMethods.isDeltaVMethod( webdavRequest ) && !( DavMethods.DAV_VERSION_CONTROL == methodCode
+            || DavMethods.DAV_REPORT == methodCode );
         WebdavResponse webdavResponse = new WebdavResponseImpl( response, noCache );
         DavResource resource = null;
 
@@ -182,7 +180,7 @@ public class RepositoryServlet
             }
         }
 
-        resourceFactory =  wac.getBean (DavResourceFactory.class);
+        resourceFactory = wac.getBean("davResourceFactory#archiva",  DavResourceFactory.class );
         locatorFactory = new ArchivaDavLocatorFactory();
 
         ServletAuthenticator servletAuth = wac.getBean( ServletAuthenticator.class );
@@ -280,14 +278,14 @@ public class RepositoryServlet
     public void destroy()
     {
         configuration.removeListener( this );
-        
+
         resourceFactory = null;
         configuration = null;
         locatorFactory = null;
         sessionProvider = null;
         repositoryMap.clear();
         repositoryMap = null;
-        
+
         WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( getServletContext() );
 
         if ( wac instanceof ConfigurableApplicationContext )

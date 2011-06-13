@@ -52,6 +52,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -80,7 +81,6 @@ public class RepositoryServletSecurityTest
 
     private ServletRunner sr;
 
-    @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
     private DavSessionProvider davSessionProvider;
@@ -95,26 +95,33 @@ public class RepositoryServletSecurityTest
 
     private RepositoryServlet servlet;
 
+    @Inject
+    ApplicationContext applicationContext;
+
     @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        String appserverBase = new File( "target/appserver-base" ).getAbsolutePath();
-        System.setProperty( "appserver.base", appserverBase );
+        String appserverBase =  System.getProperty( "appserver.base", new File( "target/appserver-base" ).getAbsolutePath() );
 
         File testConf = new File( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
         FileUtils.copyFile( testConf, testConfDest );
 
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
+
+        archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
         Configuration config = archivaConfiguration.getConfiguration();
 
-        config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
+        if (!config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ))
+        {
+            config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
+        }
         saveConfiguration( archivaConfiguration );
 
-        CacheManager.getInstance().removeCache( "url-failures-cache" );
+        CacheManager.getInstance().clearAll();
 
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 

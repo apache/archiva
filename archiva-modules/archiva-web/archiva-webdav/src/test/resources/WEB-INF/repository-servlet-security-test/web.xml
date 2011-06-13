@@ -32,7 +32,7 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>
       classpath*:/META-INF/spring-context.xml
-      classpath*:/spring-context.xml
+      classpath*:/spring-context-servlet-security-test.xml
     </param-value>
   </context-param>
 
