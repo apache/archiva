@@ -21,7 +21,9 @@ package org.apache.archiva.metadata.repository.memory;
 
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.springframework.stereotype.Service;
 
+@Service("repositorySessionFactory#test")
 public class TestRepositorySessionFactory
     implements RepositorySessionFactory
 {

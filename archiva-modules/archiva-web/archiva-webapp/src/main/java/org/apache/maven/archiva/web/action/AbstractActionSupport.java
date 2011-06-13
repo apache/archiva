@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ public abstract class AbstractActionSupport
      * plexus.requirement
      */
     @Inject
+    @Named( value = "repositorySessionFactory" )
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject

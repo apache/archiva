@@ -65,4 +65,13 @@ public class UserRepositoriesStub
         return null;
     }
 
+    public List<String> getRepoIds()
+    {
+        return repoIds;
+    }
+
+    public void setRepoIds( List<String> repoIds )
+    {
+        this.repoIds = repoIds;
+    }
 }

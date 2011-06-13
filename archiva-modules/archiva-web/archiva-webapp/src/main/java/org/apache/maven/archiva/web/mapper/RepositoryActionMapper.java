@@ -79,6 +79,12 @@ public class RepositoryActionMapper
         	// if JEE 5 spec is correctly implemented, the "/*" pattern implies an empty string in servletpath
         	path = httpServletRequest.getPathInfo();
         }
+
+        if (StringUtils.isEmpty( path ))
+        {
+            // try RequestURI in last at least for StrutsTestCase
+            path = httpServletRequest.getRequestURI();
+        }
         
         if ( path.startsWith( BROWSE_PREFIX ) )
         {
