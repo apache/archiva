@@ -28,11 +28,16 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-   <context-param>
+  <context-param>
+    <param-name>contextClass</param-name>
+    <param-value>org.codehaus.redback.components.springutils.CachingWebApplicationContext</param-value>
+  </context-param>
+
+  <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-        classpath*:/spring-context.xml
-        classpath*:/META-INF/spring-context.xml
+      classpath*:/spring-context.xml
+      classpath*:/META-INF/spring-context.xml
     </param-value>
   </context-param>
 

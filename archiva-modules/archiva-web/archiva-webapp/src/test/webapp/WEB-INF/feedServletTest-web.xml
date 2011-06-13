@@ -28,22 +28,27 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
+  <context-param>
+    <param-name>contextClass</param-name>
+    <param-value>org.codehaus.redback.components.springutils.CachingWebApplicationContext</param-value>
+  </context-param>
+
   <servlet>
-	<servlet-name>RssFeedServlet</servlet-name>
-	<servlet-class>org.apache.maven.archiva.web.rss.RssFeedServlet</servlet-class>
+    <servlet-name>RssFeedServlet</servlet-name>
+    <servlet-class>org.apache.maven.archiva.web.rss.RssFeedServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-  	<servlet-name>RssFeedServlet</servlet-name>
-	<url-pattern>/feeds/*</url-pattern>
+    <servlet-name>RssFeedServlet</servlet-name>
+    <url-pattern>/feeds/*</url-pattern>
   </servlet-mapping>
 
 
-   <context-param>
+  <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-        classpath*:/spring-context.xml
-        classpath*:/META-INF/spring-context.xml
+      classpath*:/spring-context.xml
+      classpath*:/META-INF/spring-context.xml
     </param-value>
   </context-param>
 

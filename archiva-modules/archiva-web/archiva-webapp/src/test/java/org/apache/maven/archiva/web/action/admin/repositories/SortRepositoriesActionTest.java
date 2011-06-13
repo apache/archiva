@@ -64,7 +64,7 @@ public class SortRepositoriesActionTest
 	    
         //action = (SortRepositoriesAction) lookup( Action.class.getName(), "sortRepositoriesAction" );
 
-        action = (SortRepositoriesAction) getActionProxy( "sortDownRepositoryFromGroup.action" ).getAction();
+        action = (SortRepositoriesAction) getActionProxy( "/admin/sortDownRepositoryFromGroup.action" ).getAction();
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );

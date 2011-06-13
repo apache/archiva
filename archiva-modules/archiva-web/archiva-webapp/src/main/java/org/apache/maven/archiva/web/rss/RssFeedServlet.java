@@ -98,7 +98,7 @@ public class RssFeedServlet
         servletAuth = wac.getBean( ServletAuthenticator.class );
         httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
         // TODO: what if there are other types?
-        repositorySessionFactory = wac.getBean( RepositorySessionFactory.class );
+        repositorySessionFactory = wac.getBean( "repositorySessionFactory", RepositorySessionFactory.class );
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
