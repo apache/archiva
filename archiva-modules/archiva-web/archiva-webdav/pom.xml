@@ -159,6 +159,7 @@
           <systemPropertyVariables>
             <appserver.base>${basedir}/target/appserver-base</appserver.base>
           </systemPropertyVariables>
+          <forkMode>always</forkMode>
         </configuration>
       </plugin>
     </plugins>
