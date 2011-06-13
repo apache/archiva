@@ -20,16 +20,34 @@ package org.apache.maven.archiva.webdav;
  */
 
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
- * RepositoryServlet Tests, Proxied, Get of Metadata, exists on remote repository only. 
+ * RepositoryServlet Tests, Proxied, Get of Metadata, exists on remote repository only.
  *
  * @version $Id$
  */
 public class RepositoryServletProxiedMetadataRemoteOnlyTest
     extends AbstractRepositoryServletProxiedMetadataTestCase
 {
+
+    @Before
+    public void setup()
+        throws Exception
+    {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+    }
+
+
     @Test
     public void testGetProxiedSnapshotVersionMetadataRemoteOnly()
         throws Exception
@@ -44,8 +62,9 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         String timestamp = "20040305.112233";
         String buildNumber = "2";
         String lastUpdated = "20040305112233";
-        String expectedMetadata = createVersionMetadata( "org.apache.archiva", "archivatest-maven-plugin",
-                                                         version, timestamp, buildNumber, lastUpdated);
+        String expectedMetadata =
+            createVersionMetadata( "org.apache.archiva", "archivatest-maven-plugin", version, timestamp, buildNumber,
+                                   lastUpdated );
 
         populateRepo( remoteSnapshots, path, expectedMetadata );
 
@@ -68,14 +87,15 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
-        
+
         String path = "org/apache/maven/plugins/maven-assembly-plugin/2.2-beta-2-SNAPSHOT/maven-metadata.xml";
         String version = "2.2-beta-2-SNAPSHOT";
         String timestamp = "20071017.162810";
         String buildNumber = "20";
         String lastUpdated = "20071017162810";
-        String expectedMetadata = createVersionMetadata( "org.apache.maven.plugins", "maven-assembly-plugin", version,
-                                                         timestamp, buildNumber, lastUpdated );
+        String expectedMetadata =
+            createVersionMetadata( "org.apache.maven.plugins", "maven-assembly-plugin", version, timestamp, buildNumber,
+                                   lastUpdated );
 
         populateRepo( remoteSnapshots, path, expectedMetadata );
 
@@ -100,8 +120,8 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         setupCleanInternalRepo();
 
         String path = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-2/maven-metadata.xml";
-        String expectedMetadata = createVersionMetadata( "org.apache.archiva", "archivatest-maven-plugin",
-                                                         "4.0-alpha-2" );
+        String expectedMetadata =
+            createVersionMetadata( "org.apache.archiva", "archivatest-maven-plugin", "4.0-alpha-2" );
 
         populateRepo( remoteSnapshots, path, expectedMetadata );
 
@@ -128,8 +148,9 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         String path = "org/apache/archiva/archivatest-maven-plugin/maven-metadata.xml";
         String latest = "1.0-alpha-4";
         String release = "1.0-alpha-4";
-        String expectedMetadata = createProjectMetadata( "org.apache.archiva", "archivatest-maven-plugin",
-                                                         latest, release, new String[] { "1.0-alpha-4" } );
+        String expectedMetadata =
+            createProjectMetadata( "org.apache.archiva", "archivatest-maven-plugin", latest, release,
+                                   new String[]{ "1.0-alpha-4" } );
 
         populateRepo( remoteSnapshots, path, expectedMetadata );
 
@@ -154,7 +175,8 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         setupCleanInternalRepo();
 
         String path = "org/apache/archiva/maven-metadata.xml";
-        String expectedMetadata = createGroupMetadata( "org.apache.archiva", new String[] { "archivatest-maven-plugin" } );
+        String expectedMetadata =
+            createGroupMetadata( "org.apache.archiva", new String[]{ "archivatest-maven-plugin" } );
 
         populateRepo( remoteSnapshots, path, expectedMetadata );
 
