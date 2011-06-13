@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
+import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -28,6 +29,7 @@ import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.archiva.security.UserRepositoriesStub;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.easymock.MockControl;
 
@@ -75,7 +77,10 @@ public class GenerateReportActionTest
 
         //action = (GenerateReportAction) lookup( Action.class, "generateReport" );
 
-        action = (GenerateReportAction) getActionProxy( "/admin/generateReport.action" ).getAction();
+        UserRepositoriesStub stub = applicationContext.getBean( "userRepositories", UserRepositoriesStub.class );
+        stub.setRepoIds( Lists.<String>newArrayList( "internal", "snapshots" ) );
+
+        action = (GenerateReportAction) getActionProxy( "/report/generateReport.action" ).getAction();
 
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
