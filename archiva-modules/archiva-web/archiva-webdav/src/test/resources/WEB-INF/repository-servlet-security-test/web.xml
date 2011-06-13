@@ -31,8 +31,8 @@
    <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-        classpath*:/META-INF/spring-context.xml
-
+      classpath*:/META-INF/spring-context.xml
+      classpath*:/spring-context.xml
     </param-value>
   </context-param>
 
