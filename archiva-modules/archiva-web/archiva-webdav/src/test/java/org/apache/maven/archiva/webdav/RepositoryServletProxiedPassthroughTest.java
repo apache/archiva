@@ -25,6 +25,8 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -45,6 +47,20 @@ public class RepositoryServletProxiedPassthroughTest
             + "qIEAoIUiijY4Iw82RWOT75Rt3yZuY6ZI\n" + "=WLkm\n" + "-----END PGP SIGNATURE-----\n";
 
     private static final String PATH_ASC = "org/apache/archiva/test/1.0/test-1.0.jar.asc";
+
+    @Before
+    public void setup()
+        throws Exception
+    {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+    }
 
     @Test
     public void testGetProxiedManagedNewerSha1()
