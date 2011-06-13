@@ -19,6 +19,8 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -29,6 +31,20 @@ import org.junit.Test;
 public class RepositoryServletProxiedMetadataLocalOnlyTest
     extends AbstractRepositoryServletProxiedMetadataTestCase
 {
+
+    @Before
+    public void setup()
+        throws Exception
+    {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+    }
 
     @Test
     public void testGetProxiedSnapshotVersionMetadataLocalOnly()
