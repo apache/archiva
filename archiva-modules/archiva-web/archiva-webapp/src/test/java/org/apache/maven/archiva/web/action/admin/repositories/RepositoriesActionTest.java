@@ -50,7 +50,7 @@ public class RepositoriesActionTest
         super.setUp();
 
         //action = (RepositoriesAction) lookup( Action.class.getName(), "repositoriesAction" );
-        action = (RepositoriesAction) getActionProxy( "/admin/index.action"  ).getAction();
+        action = (RepositoriesAction) getActionProxy( "/admin/index.action" ).getAction();
 
     }
 
@@ -67,20 +67,20 @@ public class RepositoriesActionTest
         MetadataRepository metadataRepository = (MetadataRepository) control.getMock();
         control.expectAndReturn( metadataRepository.getMetadataFacets( "internal", RepositoryStatistics.FACET_ID ),
                                  Arrays.asList( "20091125.123456.678" ) );
-        control.expectAndReturn( metadataRepository.getMetadataFacet( "internal", RepositoryStatistics.FACET_ID,
-                                                                      "20091125.123456.678" ),
-                                 new RepositoryStatistics() );
+        control.expectAndReturn(
+            metadataRepository.getMetadataFacet( "internal", RepositoryStatistics.FACET_ID, "20091125.123456.678" ),
+            new RepositoryStatistics() );
         control.expectAndReturn( metadataRepository.getMetadataFacets( "snapshots", RepositoryStatistics.FACET_ID ),
                                  Arrays.asList( "20091112.012345.012" ) );
-        control.expectAndReturn( metadataRepository.getMetadataFacet( "snapshots", RepositoryStatistics.FACET_ID,
-                                                                      "20091112.012345.012" ),
-                                 new RepositoryStatistics() );
+        control.expectAndReturn(
+            metadataRepository.getMetadataFacet( "snapshots", RepositoryStatistics.FACET_ID, "20091112.012345.012" ),
+            new RepositoryStatistics() );
         control.replay();
 
         RepositorySession session = mock( RepositorySession.class );
         when( session.getRepository() ).thenReturn( metadataRepository );
-        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
-        TestRepositorySessionFactory factory = new TestRepositorySessionFactory();
+        TestRepositorySessionFactory factory =
+            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
         factory.setRepositorySession( session );
 
         ServletRunner sr = new ServletRunner();

@@ -107,8 +107,7 @@ public abstract class AbstractActionTestCase
 
     protected void setObservableRepos( List<String> repoIds )
     {
-        //(UserRepositoriesStub) lookup( UserRepositories.class );
-        UserRepositoriesStub repos = applicationContext.getBean( "userRepositories#test", UserRepositoriesStub.class );
+        UserRepositoriesStub repos = applicationContext.getBean( "userRepositories", UserRepositoriesStub.class );
         repos.setObservableRepositoryIds( repoIds );
     }
 

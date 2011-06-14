@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -390,6 +391,7 @@ public class BrowseActionTest
         throws Exception
     {
         super.setUp();
+        setObservableRepos( Lists.<String>newArrayList( "test-repo" ) );
         //action = (BrowseAction) lookup( Action.class, ACTION_HINT );
         action = (BrowseAction) getActionProxy( "/browse.action" ).getAction();
         metadataResolver = new TestMetadataResolver();
@@ -398,5 +400,12 @@ public class BrowseActionTest
         TestRepositorySessionFactory factory =
             applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
         factory.setRepositorySession( repositorySession );
+    }
+
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        setObservableRepos( Lists.<String>newArrayList( "test-repo" ) );
     }
 }
