@@ -32,6 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.easymock.MockControl;
+import org.junit.After;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,6 +97,16 @@ public class GenerateReportActionTest
 
         TestRepositorySessionFactory factory = new TestRepositorySessionFactory();
         factory.setRepositorySession( repositorySession );
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        UserRepositoriesStub stub = applicationContext.getBean( "userRepositories", UserRepositoriesStub.class );
+        stub.setRepoIds( Lists.<String>newArrayList( "test-repo" ) );
+        super.tearDown();
+
     }
 
     private void prepareAction( List<String> selectedRepositories, List<String> availableRepositories )
