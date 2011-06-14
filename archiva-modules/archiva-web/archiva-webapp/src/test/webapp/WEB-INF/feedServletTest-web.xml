@@ -47,7 +47,7 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-      classpath*:/spring-context.xml
+      classpath*:/spring-context-rss-servlet.xml
       classpath*:/META-INF/spring-context.xml
     </param-value>
   </context-param>
