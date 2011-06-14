@@ -457,13 +457,13 @@ public abstract class AbstractProxyConnectorFormAction
                 }
 
                 Map<String, Object> properties = connector.getProperties();
-                for ( String key : properties.keySet() )
+                for ( Map.Entry<String, Object> entry2 : properties.entrySet())
                 {
-                    Object value = properties.get( key );
+                    Object value = entry2.getValue();
                     if ( value.getClass().isArray() )
                     {
                         String[] arr = (String[]) value;
-                        properties.put( key, arr[0] );
+                        properties.put( entry2.getKey(), arr[0] );
                     }
                 }
 
