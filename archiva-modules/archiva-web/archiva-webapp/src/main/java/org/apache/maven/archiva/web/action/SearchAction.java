@@ -87,7 +87,7 @@ public class SearchAction
 
     private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
 
-    private List<String> managedRepositoryList;
+    private List<String> managedRepositoryList = new ArrayList<String>();
 
     private String groupId;
 
@@ -135,7 +135,6 @@ public class SearchAction
 
     public void prepare()
     {
-        managedRepositoryList = new ArrayList<String>();
         managedRepositoryList = getObservableRepos();
 
         if ( managedRepositoryList.size() > 0 )
