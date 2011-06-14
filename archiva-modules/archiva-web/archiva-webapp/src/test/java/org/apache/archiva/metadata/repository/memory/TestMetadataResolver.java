@@ -59,7 +59,9 @@ public class TestMetadataResolver
                                                                          String repoId, String namespace,
                                                                          String projectId, String projectVersion )
     {
-        return references.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
+        Collection<ProjectVersionReference> projectVersionReferences =
+            references.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
+        return projectVersionReferences;
     }
 
     public Collection<String> resolveRootNamespaces( RepositorySession repositorySession, String repoId )
@@ -106,8 +108,8 @@ public class TestMetadataResolver
     public Collection<ArtifactMetadata> resolveArtifacts( RepositorySession repositorySession, String repoId,
                                                           String namespace, String projectId, String projectVersion )
     {
-        List<ArtifactMetadata> artifacts = this.artifacts.get( createMapKey( repoId, namespace, projectId,
-                                                                             projectVersion ) );
+        List<ArtifactMetadata> artifacts =
+            this.artifacts.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
         return ( artifacts != null ? artifacts : Collections.<ArtifactMetadata>emptyList() );
     }
 

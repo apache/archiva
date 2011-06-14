@@ -27,7 +27,6 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
@@ -63,9 +62,10 @@ public class ShowArtifactActionTest
 
     private ShowArtifactAction action;
 
-    private static final List<ArtifactMetadata> TEST_SNAPSHOT_ARTIFACTS = Arrays.asList( createArtifact(
-        TEST_TS_SNAPSHOT_VERSION ), createArtifact( "1.0-20091120.222222-2", "20091120.222222", 2 ), createArtifact(
-        "1.0-20091123.333333-3", "20091123.333333", 3 ) );
+    private static final List<ArtifactMetadata> TEST_SNAPSHOT_ARTIFACTS =
+        Arrays.asList( createArtifact( TEST_TS_SNAPSHOT_VERSION ),
+                       createArtifact( "1.0-20091120.222222-2", "20091120.222222", 2 ),
+                       createArtifact( "1.0-20091123.333333-3", "20091123.333333", 3 ) );
 
     private static final long TEST_SIZE = 12345L;
 
@@ -78,8 +78,8 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueRelease()
     {
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
@@ -101,8 +101,8 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueSnapshot()
     {
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_SNAPSHOT_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_SNAPSHOT_VERSION ) );
         metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
                                        TEST_SNAPSHOT_ARTIFACTS );
 
@@ -131,8 +131,8 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactUniqueSnapshotTimestamped()
     {
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_SNAPSHOT_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_SNAPSHOT_VERSION ) );
         metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
                                        TEST_SNAPSHOT_ARTIFACTS );
 
@@ -172,8 +172,8 @@ public class ShowArtifactActionTest
 
     public void testGetArtifactNotInObservableRepos()
     {
-        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_VERSION ) );
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
@@ -187,8 +187,8 @@ public class ShowArtifactActionTest
     public void testGetArtifactOnlySeenInSecondObservableRepo()
     {
         setObservableRepos( Arrays.asList( OTHER_TEST_REPO, TEST_REPO ) );
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
@@ -211,10 +211,10 @@ public class ShowArtifactActionTest
     public void testGetArtifactSeenInBothObservableRepo()
     {
         setObservableRepos( Arrays.asList( TEST_REPO, OTHER_TEST_REPO ) );
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_VERSION ) );
-        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
@@ -237,10 +237,10 @@ public class ShowArtifactActionTest
     public void testGetArtifactCanOnlyObserveInOneOfTwoRepos()
     {
         setObservableRepos( Arrays.asList( TEST_REPO ) );
-        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_VERSION ) );
-        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, createProjectModel(
-            TEST_VERSION ) );
+        metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                            createProjectModel( TEST_VERSION ) );
 
         setActionParameters();
 
@@ -354,8 +354,8 @@ public class ShowArtifactActionTest
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
         ProjectVersionReference dependee1 = createReference( "artifactId1" );
         ProjectVersionReference dependee2 = createReference( "artifactId2" );
-        metadataResolver.setProjectReferences( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, Arrays.asList(
-            dependee1, dependee2 ) );
+        metadataResolver.setProjectReferences( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION,
+                                               Arrays.asList( dependee1, dependee2 ) );
 
         setActionParameters();
 
@@ -478,8 +478,8 @@ public class ShowArtifactActionTest
             assertEquals( artifact.getVersion(), actual.getVersion() );
             assertEquals( TEST_TYPE, actual.getType() );
             assertEquals( "12.06 K", actual.getSize() );
-            assertEquals( artifact.getNamespace() + "/" + artifact.getProject() + "/" + TEST_SNAPSHOT_VERSION + "/" +
-                              artifact.getId(), actual.getPath() );
+            assertEquals( artifact.getNamespace() + "/" + artifact.getProject() + "/" + TEST_SNAPSHOT_VERSION + "/"
+                              + artifact.getId(), actual.getPath() );
         }
     }
 
@@ -581,8 +581,8 @@ public class ShowArtifactActionTest
         ml1.setSubscribeAddress( prefix + "-subscribe@" );
         ml1.setUnsubscribeAddress( prefix + "-unsubscribe@" );
         ml1.setMainArchiveUrl( prefix + "-archive-url" );
-        ml1.setOtherArchives( Arrays.asList( "other-" + prefix + "-archive-url-1",
-                                             "other-" + prefix + "-archive-url-2" ) );
+        ml1.setOtherArchives(
+            Arrays.asList( "other-" + prefix + "-archive-url-1", "other-" + prefix + "-archive-url-2" ) );
         return ml1;
     }
 
@@ -638,12 +638,12 @@ public class ShowArtifactActionTest
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getResolver() ).thenReturn( metadataResolver );
         when( repositorySession.getRepository() ).thenReturn( repo );
-        //TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
-        //    RepositorySessionFactory.class );
-        TestRepositorySessionFactory repositorySessionFactory = new TestRepositorySessionFactory();
+        TestRepositorySessionFactory repositorySessionFactory =
+            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
         repositorySessionFactory.setRepositorySession( repositorySession );
 
         RepositoryContentFactory factory = mock( RepositoryContentFactory.class );
+
         action.setRepositoryFactory( factory );
 
         ManagedRepositoryConfiguration config = new ManagedRepositoryConfiguration();
@@ -659,5 +659,8 @@ public class ShowArtifactActionTest
         Configuration configuration = new Configuration();
         configuration.addManagedRepository( config );
         when( archivaConfig.getConfiguration() ).thenReturn( configuration );
+
+        when( factory.getArchivaConfiguration() ).thenReturn( archivaConfig );
+
     }
 }

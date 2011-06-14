@@ -19,15 +19,14 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.maven.archiva.security.AccessDeniedException;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
 
 public class AbstractRepositoryBasedAction
     extends AbstractActionSupport
@@ -42,7 +41,8 @@ public class AbstractRepositoryBasedAction
     {
         try
         {
-            return userRepositories.getObservableRepositoryIds( getPrincipal() );
+            List<String> ids = userRepositories.getObservableRepositoryIds( getPrincipal() );
+            return ids == null ? Collections.<String>emptyList() : ids;
         }
         catch ( PrincipalNotFoundException e )
         {
