@@ -93,9 +93,8 @@ public class GenerateReportActionTest
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
 
-        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
-
-        TestRepositorySessionFactory factory = new TestRepositorySessionFactory();
+        TestRepositorySessionFactory factory =
+            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
         factory.setRepositorySession( repositorySession );
     }
 
