@@ -73,7 +73,7 @@ public class DefaultMetadataResolver
      * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
      * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
      *
-     * @plexus.requirement role-hint="maven2"
+     * plexus.requirement role-hint="maven2"
      */
     @Inject
     @Named( value = "repositoryStorage#maven2" )
