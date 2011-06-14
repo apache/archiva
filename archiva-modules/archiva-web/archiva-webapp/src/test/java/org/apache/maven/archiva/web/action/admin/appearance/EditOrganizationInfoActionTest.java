@@ -209,6 +209,6 @@ public class EditOrganizationInfoActionTest
     protected AbstractAppearanceAction getAction()
     {
         //return (EditOrganisationInfoAction) lookup( Action.class.getName(), "editOrganisationInfo" );
-        return (EditOrganisationInfoAction) getActionProxy( "/admin/editOrganisationInfo.action" ).getAction();
+        return (EditOrganisationInfoAction) getActionProxy( "/admin/editAppearance.action" ).getAction();
     }
 }
