@@ -19,11 +19,6 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationManager;
@@ -41,9 +36,13 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectParent;
-import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
 import org.apache.struts2.StrutsSpringTestCase;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractActionTestCase
     extends StrutsSpringTestCase
@@ -95,12 +94,10 @@ public abstract class AbstractActionTestCase
     protected static final String TEST_SCM_DEV_CONNECTION = "scmDevConnection";
 
     protected static final String TEST_SCM_URL = "scmUrl";
-    
-    protected static final String TEST_GENERIC_METADATA_PROPERTY_NAME = "rating";
-    
-    protected static final String TEST_GENERIC_METADATA_PROPERTY_VALUE = "5 stars";
 
-    UserRepositoriesStub repos = new UserRepositoriesStub();
+    protected static final String TEST_GENERIC_METADATA_PROPERTY_NAME = "rating";
+
+    protected static final String TEST_GENERIC_METADATA_PROPERTY_VALUE = "5 stars";
 
     @Override
     protected String[] getContextLocations()
@@ -111,6 +108,7 @@ public abstract class AbstractActionTestCase
     protected void setObservableRepos( List<String> repoIds )
     {
         //(UserRepositoriesStub) lookup( UserRepositories.class );
+        UserRepositoriesStub repos = applicationContext.getBean( "userRepositories#test", UserRepositoriesStub.class );
         repos.setObservableRepositoryIds( repoIds );
     }
 
@@ -199,13 +197,13 @@ public abstract class AbstractActionTestCase
         parent.setVersion( TEST_PARENT_VERSION );
         mavenProjectFacet.setParent( parent );
         model.addFacet( mavenProjectFacet );
-        
+
         GenericMetadataFacet genericMetadataFacet = new GenericMetadataFacet();
-        Map<String, String> props = new HashMap<String,String>();
-        props.put( TEST_GENERIC_METADATA_PROPERTY_NAME, TEST_GENERIC_METADATA_PROPERTY_VALUE );        
+        Map<String, String> props = new HashMap<String, String>();
+        props.put( TEST_GENERIC_METADATA_PROPERTY_NAME, TEST_GENERIC_METADATA_PROPERTY_VALUE );
         genericMetadataFacet.setAdditionalProperties( props );
         model.addFacet( genericMetadataFacet );
-        
+
         return model;
     }
 
@@ -227,7 +225,7 @@ public abstract class AbstractActionTestCase
 
     public static String getBasedir()
     {
-       String basedir = System.getProperty( "basedir" );
+        String basedir = System.getProperty( "basedir" );
         if ( basedir == null )
         {
             basedir = new File( "" ).getAbsolutePath();

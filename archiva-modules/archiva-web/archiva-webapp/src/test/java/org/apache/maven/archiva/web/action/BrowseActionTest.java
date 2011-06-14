@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.action;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 
@@ -40,14 +39,15 @@ public class BrowseActionTest
 
     private BrowseAction action;
 
-    private static final List<String> GROUPS = Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven",
-                                                              "com.sun", "com.oracle", "repeat.repeat" );
+    private static final List<String> GROUPS =
+        Arrays.asList( "org.apache.archiva", "commons-lang", "org.apache.maven", "com.sun", "com.oracle",
+                       "repeat.repeat" );
 
     private static final String OTHER_TEST_REPO = "other-repo";
 
     public void testInstantiation()
     {
-        assertFalse( action == (BrowseAction) getActionProxy( "browse.action" ).getAction() );
+        assertFalse( action == (BrowseAction) getActionProxy( "/browse.action" ).getAction() );
     }
 
     public void testBrowse()
@@ -286,14 +286,14 @@ public class BrowseActionTest
         String selectedArtifactId = "apache";
 
         List<String> versions = Arrays.asList( "1", "2", "3", "4" );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "1" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "2" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "3" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "4" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "1" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "2" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "3" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "4" ) );
 
         action.setGroupId( selectedGroupId );
         action.setArtifactId( selectedArtifactId );
@@ -320,18 +320,18 @@ public class BrowseActionTest
         String selectedArtifactId = "apache";
 
         List<String> versions = Arrays.asList( "1", "2", "3", "4-SNAPSHOT", "4", "5-SNAPSHOT" );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "1" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "2" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "3" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "4-SNAPSHOT" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "4" ) );
-        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId, createProjectModel(
-            selectedGroupId, selectedArtifactId, "5-SNAPSHOT" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "1" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "2" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "3" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "4-SNAPSHOT" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "4" ) );
+        metadataResolver.setProjectVersion( TEST_REPO, selectedGroupId, selectedArtifactId,
+                                            createProjectModel( selectedGroupId, selectedArtifactId, "5-SNAPSHOT" ) );
 
         action.setGroupId( selectedGroupId );
         action.setArtifactId( selectedArtifactId );
@@ -395,8 +395,8 @@ public class BrowseActionTest
         metadataResolver = new TestMetadataResolver();
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getResolver() ).thenReturn( metadataResolver );
-        TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class  );
-        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+        TestRepositorySessionFactory factory =
+            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
         factory.setRepositorySession( repositorySession );
     }
 }
