@@ -60,7 +60,7 @@ public class RepositoryGroupsActionTest
         super.setUp();
 	
         //action = (RepositoryGroupsAction) lookup( Action.class.getName(), "repositoryGroupsAction" );
-        action = (RepositoryGroupsAction) getActionProxy( "/admin/repositoryGroups.action" );
+        action = (RepositoryGroupsAction) getActionProxy( "/admin/repositoryGroups.action" ).getAction();
 	    
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
