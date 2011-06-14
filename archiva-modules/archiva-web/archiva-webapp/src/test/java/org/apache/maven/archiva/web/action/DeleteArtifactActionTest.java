@@ -19,11 +19,9 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -97,10 +95,8 @@ public class DeleteArtifactActionTest
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
 
-        //TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
-        //    RepositorySessionFactory.class );
-
-        TestRepositorySessionFactory repositorySessionFactory = new TestRepositorySessionFactory();
+        TestRepositorySessionFactory repositorySessionFactory =
+            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
 
         repositorySessionFactory.setRepositorySession( repositorySession );
 
@@ -140,9 +136,9 @@ public class DeleteArtifactActionTest
         configurationControl.expectAndReturn( configuration.getConfiguration(), config );
         repositoryFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( REPOSITORY_ID ),
                                                   repoContent );
-        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( REPOSITORY_ID, GROUP_ID,
-                                                                                    ARTIFACT_ID, VERSION ),
-                                                   new ArrayList<ArtifactMetadata>() );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifacts( REPOSITORY_ID, GROUP_ID, ARTIFACT_ID, VERSION ),
+            new ArrayList<ArtifactMetadata>() );
 
         configurationControl.replay();
         repositoryFactoryControl.replay();
@@ -150,8 +146,8 @@ public class DeleteArtifactActionTest
 
         action.doDelete();
 
-        String artifactPath = REPO_LOCATION + "/" + StringUtils.replace( GROUP_ID, ".", "/" ) + "/" +
-            StringUtils.replace( ARTIFACT_ID, ".", "/" ) + "/" + VERSION + "/" + ARTIFACT_ID + "-" + VERSION;
+        String artifactPath = REPO_LOCATION + "/" + StringUtils.replace( GROUP_ID, ".", "/" ) + "/"
+            + StringUtils.replace( ARTIFACT_ID, ".", "/" ) + "/" + VERSION + "/" + ARTIFACT_ID + "-" + VERSION;
 
         assertFalse( new File( artifactPath + ".jar" ).exists() );
         assertFalse( new File( artifactPath + ".jar.sha1" ).exists() );
