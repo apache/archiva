@@ -38,4 +38,7 @@
 
   <alias name="userRepositories#test" alias="userRepositories"/>
 
+  <bean name="metadataResolver#test" class="org.apache.archiva.metadata.repository.memory.TestMetadataResolver"/>
+  <alias name="metadataResolver#test" alias="metadataResolver#default"/>
+
 </beans>
