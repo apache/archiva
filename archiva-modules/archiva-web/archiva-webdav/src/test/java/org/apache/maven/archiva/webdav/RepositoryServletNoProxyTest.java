@@ -23,9 +23,12 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * RepositoryServletTest
@@ -35,6 +38,15 @@ import java.io.File;
 public class RepositoryServletNoProxyTest
     extends AbstractRepositoryServletTestCase
 {
+
+    @Before
+    public void setUp()
+        throws Exception
+    {
+        super.setUp();
+        archivaConfiguration.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );
+    }
+
     @Test
     public void testLastModifiedHeaderExists()
         throws Exception
