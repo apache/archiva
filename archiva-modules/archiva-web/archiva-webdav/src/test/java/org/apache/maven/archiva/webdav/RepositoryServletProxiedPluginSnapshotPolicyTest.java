@@ -24,10 +24,12 @@ import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * RepositoryServlet Tests, Proxied, Get of Timestamped Snapshot Artifacts, with varying policy settings. 
@@ -177,6 +179,8 @@ public class RepositoryServletProxiedPluginSnapshotPolicyTest
             File managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
             managedFile.setLastModified( remoteFile.lastModified() + deltaManagedToRemoteTimestamp );
         }
+
+        archivaConfiguration.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>( 0 ) );
 
         setupSnapshotConnector( REPOID_INTERNAL, remoteSnapshots, snapshotsPolicy );
         saveConfiguration();

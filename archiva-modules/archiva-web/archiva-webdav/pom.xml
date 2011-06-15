@@ -29,6 +29,10 @@
   <artifactId>archiva-webdav</artifactId>
   <name>Archiva Web :: WebDAV</name>
 
+  <properties>
+    <webdav.forkMode>always</webdav.forkMode>
+  </properties>
+
   <dependencies>
     <!-- TODO: remove this hardcoding through a better event mechanism -->
     <dependency>
@@ -159,7 +163,7 @@
           <systemPropertyVariables>
             <appserver.base>${basedir}/target/appserver-base</appserver.base>
           </systemPropertyVariables>
-          <forkMode>always</forkMode>
+          <forkMode>${webdav.forkMode}</forkMode>
         </configuration>
       </plugin>
     </plugins>
