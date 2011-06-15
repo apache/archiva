@@ -62,7 +62,6 @@ import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.resolution.UnresolvableModelException;
-import org.apache.maven.repository.legacy.metadata.MetadataResolutionRequest;
 import org.apache.maven.shared.dependency.tree.DependencyNode;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.apache.maven.shared.dependency.tree.DependencyTreeResolutionListener;
@@ -548,19 +547,6 @@ public class DefaultDependencyTreeBuilder
             return new ArrayList<ArtifactVersion>( versions );
         }
 
-        public ResolutionGroup retrieve( MetadataResolutionRequest metadataResolutionRequest )
-            throws ArtifactMetadataRetrievalException
-        {
-            //TODO
-            return null;
-        }
-
-        public List<ArtifactVersion> retrieveAvailableVersions( MetadataResolutionRequest metadataResolutionRequest )
-            throws ArtifactMetadataRetrievalException
-        {
-            //TODO
-            return null;
-        }
 
         public List<ArtifactVersion> retrieveAvailableVersionsFromDeploymentRepository( Artifact artifact,
                                                                                         ArtifactRepository artifactRepository,
