@@ -41,6 +41,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class ShowArtifactAction
     /**
      * plexus.requirement
      */
+    @Inject
     private RepositoryContentFactory repositoryFactory;
 
     /* .\ Exposed Output Objects \.__________________________________ */
