@@ -23,14 +23,15 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
- * RepositoryServlet Tests, Proxied, Get of Release Artifacts, with varying policy settings. 
+ * RepositoryServlet Tests, Proxied, Get of Release Artifacts, with varying policy settings.
  *
  * @version $Id$
  */
@@ -175,6 +176,8 @@ public class RepositoryServletProxiedReleasePolicyTest
             managedFile.setLastModified( remoteFile.lastModified() + deltaManagedToRemoteTimestamp );
         }
 
+        archivaConfiguration.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );
+
         setupReleaseConnector( REPOID_INTERNAL, remoteCentral, releasePolicy );
         saveConfiguration();
 
@@ -192,7 +195,7 @@ public class RepositoryServletProxiedReleasePolicyTest
             case EXPECT_MANAGED_CONTENTS:
                 assertResponseOK( response );
                 assertTrue( "Invalid Test Case: Can't expect managed contents with "
-                    + "test that doesn't have a managed copy in the first place.", hasManagedCopy );
+                                + "test that doesn't have a managed copy in the first place.", hasManagedCopy );
                 assertEquals( "Expected managed file contents", expectedManagedContents, response.getText() );
                 break;
             case EXPECT_REMOTE_CONTENTS:

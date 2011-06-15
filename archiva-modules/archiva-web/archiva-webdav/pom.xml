@@ -30,7 +30,7 @@
   <name>Archiva Web :: WebDAV</name>
 
   <properties>
-    <webdav.forkMode>always</webdav.forkMode>
+    <webdav.forkMode>once</webdav.forkMode>
   </properties>
 
   <dependencies>
