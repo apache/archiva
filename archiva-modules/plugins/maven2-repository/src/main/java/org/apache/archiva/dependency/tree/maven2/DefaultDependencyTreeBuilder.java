@@ -225,11 +225,11 @@ public class DefaultDependencyTreeBuilder
 
                 // Note that we don't permit going to external repositories. We don't need to pass in a local and remote
                 // since our metadata source has control over them
-                //collector.collect( dependencyArtifacts, projectArtifact, managedVersions, null, null, metadataSource,
-                //                   null, Collections.singletonList( listener ) );
+                collector.collect( dependencyArtifacts, projectArtifact, managedVersions, null, null, metadataSource,
+                                   null, Collections.singletonList( listener ) );
 
-                collector.collect( dependencyArtifacts, projectArtifact, null, Collections.<ArtifactRepository>emptyList(),
-                                   metadataSource, null,  Collections.singletonList( (ResolutionListener) listener ) );
+                //collector.collect( dependencyArtifacts, projectArtifact, null, Collections.<ArtifactRepository>emptyList(),
+                //                   metadataSource, null,  Collections.singletonList( (ResolutionListener) listener ) );
 
                 /*
                 Set<Artifact> artifacts, Artifact originatingArtifact,
