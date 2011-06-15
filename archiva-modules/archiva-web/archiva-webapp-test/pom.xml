@@ -31,6 +31,12 @@
 
   <properties>
     <container.test.port>9696</container.test.port>
+    <tomcat5x.version>5.5.27</tomcat5x.version>
+    <cargo.wait>false</cargo.wait>
+    <cargo.install.dir>cargo-installs</cargo.install.dir>
+    <maxWaitTimeInMs>60000</maxWaitTimeInMs>
+    <!-- TODO: review how appropriate the memory settings are - should work with less -->
+    <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
   </properties>
 
   <dependencies>
@@ -334,7 +340,7 @@
           <plugin>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
-            <version>1.0</version>
+            <version>1.1.1</version>
             <executions>
               <execution>
                 <id>start-container</id>
@@ -542,12 +548,5 @@
       </properties>
     </profile>
   </profiles>
-  <properties>
-    <tomcat5x.version>5.5.27</tomcat5x.version>
-    <cargo.wait>false</cargo.wait>
-    <cargo.install.dir>cargo-installs</cargo.install.dir>
-    <maxWaitTimeInMs>60000</maxWaitTimeInMs>
-    <!-- TODO: review how appropriate the memory settings are - should work with less -->
-    <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
-  </properties>
+
 </project>
