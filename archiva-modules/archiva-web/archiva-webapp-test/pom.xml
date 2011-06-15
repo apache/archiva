@@ -52,6 +52,10 @@
           <artifactId>plexus-container-default</artifactId>
           <groupId>org.codehaus.plexus</groupId>
         </exclusion>
+        <exclusion>
+          <artifactId>plexus-component-api</artifactId>
+          <groupId>org.codehaus.plexus</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -66,6 +70,12 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-slf4j-logging</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>plexus-component-api</artifactId>
+          <groupId>org.codehaus.plexus</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium.client-drivers</groupId>
@@ -204,8 +214,8 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>dependency-maven-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
                 <id>unzip-archiva-webapp</id>
@@ -384,6 +394,7 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>selenium-maven-plugin</artifactId>
+            <version>1.1</version>
             <executions>
               <execution>
                 <phase>pre-integration-test</phase>
