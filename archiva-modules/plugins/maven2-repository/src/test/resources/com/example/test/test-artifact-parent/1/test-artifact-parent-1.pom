@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example.test</groupId>
+  <artifactId>test-artifact-parent</artifactId>
+  <version>1</version>
+  <packaging>pom</packaging>
+  <name>Test Artifact :: Parent</name>
+  <description>This is the uber parent POM.</description>
+  <url>http://test.com</url>
+  <scm>
+    <connection>scm:svn:http://svn.example.com/repos/test-artifact-parent/trunk</connection>
+    <developerConnection>scm:svn:https://svn.example.com/repos/test-artifact-parent/trunk</developerConnection>
+    <url>http://svn.example.com/repos/test-artifact-parent/trunk</url>
+  </scm>
+  <distributionManagement>
+    <repository>
+      <id>releases</id>
+      <name>Releases Repository</name>
+      <url>http://repo.test.com/archiva/repository/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <name>Snapshots Repository</name>
+      <url>http://repo.test.com/archiva/repository/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <developers>
+    <developer>
+      <id>jsmith</id>
+      <name>John Smith</name>
+      <email>jsmith@mail.com</email>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+</project>

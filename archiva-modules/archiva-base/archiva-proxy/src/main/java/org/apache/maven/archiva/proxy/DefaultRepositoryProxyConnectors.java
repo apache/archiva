@@ -20,6 +20,8 @@ package org.apache.maven.archiva.proxy;
  */
 
 import com.google.common.collect.Lists;
+import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.collections.CollectionUtils;

@@ -27,10 +27,14 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.RepositoryModelResolver;
+import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.Slf4JPlexusLogger;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
@@ -69,6 +73,7 @@ import org.apache.maven.shared.dependency.tree.traversal.BuildingDependencyNodeV
 import org.apache.maven.shared.dependency.tree.traversal.CollectingDependencyNodeVisitor;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.apache.maven.shared.dependency.tree.traversal.FilteringDependencyNodeVisitor;
+import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -80,6 +85,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -140,6 +146,9 @@ public class DefaultDependencyTreeBuilder
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
 
+    @Inject
+    private WagonFactory wagonFactory;
+
     @PostConstruct
     public void initialize()
         throws PlexusSisuBridgeException
@@ -160,18 +169,50 @@ public class DefaultDependencyTreeBuilder
             new DependencyTreeResolutionListener( new Slf4JPlexusLogger( getClass() ) );
 
         Artifact projectArtifact = factory.createProjectArtifact( groupId, artifactId, version );
-        File basedir = findArtifactInRepositories( repositoryIds, projectArtifact );
+        ManagedRepositoryConfiguration repository = findArtifactInRepositories( repositoryIds, projectArtifact );
 
-        if ( basedir == null )
+        if ( repository == null )
         {
             // metadata could not be resolved
             return;
         }
 
+        File basedir = new File( repository.getLocation() );
+
         try
         {
-            Model model =
-                buildProject( new RepositoryModelResolver( basedir, pathTranslator ), groupId, artifactId, version );
+            // MRM-1411
+            List< RemoteRepositoryConfiguration > remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>();
+            Map<String, ProxyInfo > networkProxies = new HashMap<String, ProxyInfo>();
+
+            Map<String, List< ProxyConnectorConfiguration >> proxyConnectorsMap = archivaConfiguration.getConfiguration().getProxyConnectorAsMap();
+            List<ProxyConnectorConfiguration> proxyConnectors = proxyConnectorsMap.get( repository.getId() );
+            if( proxyConnectors != null )
+            {
+                for( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+                {
+                    remoteRepositories.add( archivaConfiguration.getConfiguration().findRemoteRepositoryById( proxyConnector.getTargetRepoId() ) );
+
+                    NetworkProxyConfiguration networkProxyConfig = archivaConfiguration.getConfiguration().getNetworkProxiesAsMap().get(
+                        proxyConnector.getProxyId() );
+
+                    if( networkProxyConfig != null )
+                    {
+                        ProxyInfo proxy = new ProxyInfo();
+                        proxy.setType( networkProxyConfig.getProtocol() );
+                        proxy.setHost( networkProxyConfig.getHost() );
+                        proxy.setPort( networkProxyConfig.getPort() );
+                        proxy.setUserName( networkProxyConfig.getUsername() );
+                        proxy.setPassword( networkProxyConfig.getPassword() );
+
+                        // key/value: remote repo ID/proxy info
+                        networkProxies.put( proxyConnector.getTargetRepoId(), proxy );
+                    }
+                }
+            }
+
+            Model model = buildProject( new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories,
+                                         networkProxies, repository ), groupId, artifactId, version );
 
             Map managedVersions = createManagedVersionMap( model );
 
@@ -237,7 +278,7 @@ public class DefaultDependencyTreeBuilder
         }
     }
 
-    private File findArtifactInRepositories( List<String> repositoryIds, Artifact projectArtifact )
+    private ManagedRepositoryConfiguration findArtifactInRepositories( List<String> repositoryIds, Artifact projectArtifact )
     {
         for ( String repoId : repositoryIds )
         {
@@ -252,7 +293,7 @@ public class DefaultDependencyTreeBuilder
 
             if ( file.exists() )
             {
-                return repoDir;
+                return repositoryConfiguration;
             }
         }
         return null;
@@ -426,11 +467,13 @@ public class DefaultDependencyTreeBuilder
                 factory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
                                                artifact.getScope() );
 
-            File basedir = findArtifactInRepositories( repositoryIds, pomArtifact );
+            ManagedRepositoryConfiguration repository = findArtifactInRepositories( repositoryIds, pomArtifact );
 
             Model project = null;
-            if ( !Artifact.SCOPE_SYSTEM.equals( artifact.getScope() ) && basedir != null )
+            if ( !Artifact.SCOPE_SYSTEM.equals( artifact.getScope() ) && repository != null )
             {
+                File basedir = new File( repository.getLocation() );
+
                 try
                 {
                     project =

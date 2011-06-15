@@ -30,18 +30,28 @@ import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
+import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.utils.FileUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.wagon.Wagon;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,11 +72,19 @@ public class Maven2RepositoryMetadataResolverTest
 
     private static final String TEST_REPO_ID = "test";
 
+    private static final String TEST_REMOTE_REPO_ID = "central";
+
     private static final String ASF_SCM_CONN_BASE = "scm:svn:http://svn.apache.org/repos/asf/";
 
     private static final String ASF_SCM_DEV_CONN_BASE = "scm:svn:https://svn.apache.org/repos/asf/";
 
     private static final String ASF_SCM_VIEWVC_BASE = "http://svn.apache.org/viewvc/";
+
+    private static final String TEST_SCM_CONN_BASE = "scm:svn:http://svn.example.com/repos/";
+
+    private static final String TEST_SCM_DEV_CONN_BASE = "scm:svn:https://svn.example.com/repos/";
+
+    private static final String TEST_SCM_URL_BASE = "http://svn.example.com/repos/";
 
     private static final String EMPTY_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
 
@@ -74,6 +92,8 @@ public class Maven2RepositoryMetadataResolverTest
 
     @Inject
     private ArchivaConfiguration configuration;
+
+    private WagonFactory wagonFactory;
 
     @Before
     public void setUp()
@@ -87,8 +107,29 @@ public class Maven2RepositoryMetadataResolverTest
         testRepo.setId( TEST_REPO_ID );
         testRepo.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
         c.addManagedRepository( testRepo );
+
+        RemoteRepositoryConfiguration testRemoteRepo = new RemoteRepositoryConfiguration();
+        testRemoteRepo.setId( TEST_REMOTE_REPO_ID );
+        testRemoteRepo.setLayout( "default" );
+        testRemoteRepo.setName( "Central Repository" );
+        testRemoteRepo.setUrl( "http://central.repo.com/maven2" );
+        testRemoteRepo.setTimeout( 10 );
+        c.addRemoteRepository( testRemoteRepo );
+
+        ProxyConnectorConfiguration proxyConnector = new ProxyConnectorConfiguration();
+        proxyConnector.setSourceRepoId( TEST_REPO_ID );
+        proxyConnector.setTargetRepoId( TEST_REMOTE_REPO_ID );
+        proxyConnector.setDisabled( false );
+        c.addProxyConnector( proxyConnector );
+
         configuration.save( c );
 
+        wagonFactory = mock( WagonFactory.class );
+
+        storage.setWagonFactory( wagonFactory );
+
+        Wagon wagon = new MockWagon();
+        when( wagonFactory.getWagon( "wagon#http" ) ).thenReturn( wagon );
         //storage = (Maven2RepositoryStorage) lookup( RepositoryStorage.class, "maven2" );
     }
 
@@ -404,6 +445,91 @@ public class Maven2RepositoryMetadataResolverTest
         }
     }
 
+    // Tests for MRM-1411 - START
+    @Test
+    public void testGetProjectVersionMetadataWithParentSuccessful()
+        throws Exception
+    {
+        copyTestArtifactWithParent();
+
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test",
+                                                                               "test-artifact-module-a", "1.0" );
+
+        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
+        assertEquals( "jar", facet.getPackaging() );
+        assertEquals( "http://maven.apache.org", metadata.getUrl() );
+        assertEquals( "com.example.test", facet.getParent().getGroupId() );
+        assertEquals( "test-artifact-root", facet.getParent().getArtifactId() );
+        assertEquals( "1.0", facet.getParent().getVersion() );
+        assertEquals( "test-artifact-module-a", facet.getArtifactId() );
+        assertEquals( "com.example.test", facet.getGroupId() );
+        assertNull( metadata.getCiManagement() );
+        assertNotNull( metadata.getDescription() );
+
+        checkApacheLicense( metadata );
+
+        assertEquals( "1.0", metadata.getId() );
+        assertEquals( "Test Artifact :: Module A", metadata.getName() );
+        String path = "test-artifact/trunk/test-artifact-module-a";
+        assertEquals( TEST_SCM_CONN_BASE + path, metadata.getScm().getConnection() );
+        assertEquals( TEST_SCM_DEV_CONN_BASE + path, metadata.getScm().getDeveloperConnection() );
+        assertEquals( TEST_SCM_URL_BASE + path, metadata.getScm().getUrl() );
+
+        List<Dependency> dependencies = metadata.getDependencies();
+        assertEquals( 2, dependencies.size() );
+        assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
+        assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
+
+        deleteTestArtifactWithParent();
+    }
+
+    @Test
+    public void testGetProjectVersionMetadataWithParentNoRemoteReposConfigured()
+         throws Exception
+    {
+       // remove configuration
+        Configuration config = configuration.getConfiguration();
+        RemoteRepositoryConfiguration remoteRepo = config.findRemoteRepositoryById( TEST_REMOTE_REPO_ID );
+        config.removeRemoteRepository( remoteRepo );
+
+        configuration.save( config );
+
+        copyTestArtifactWithParent();
+
+        ProjectVersionMetadata metadata =  storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test",
+                                                                "test-artifact-module-a", "1.0" );
+        assertEquals( "1.0", metadata.getId() );
+
+        MavenProjectFacet facet = ( MavenProjectFacet ) metadata.getFacet( MavenProjectFacet.FACET_ID );
+        assertNotNull( facet );
+        assertEquals( "com.example.test", facet.getGroupId() );
+        assertEquals( "test-artifact-module-a", facet.getArtifactId() );
+        assertEquals( "jar", facet.getPackaging() );
+
+        deleteTestArtifactWithParent();
+    }
+
+    @Test
+    public void testGetProjectVersionMetadataWithParentNotInAnyRemoteRepo()
+         throws Exception
+    {
+        copyTestArtifactWithParent();
+
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-parent", "1.1" );
+
+        assertEquals( "1.1", metadata.getId() );
+
+        MavenProjectFacet facet = ( MavenProjectFacet ) metadata.getFacet( MavenProjectFacet.FACET_ID );
+        assertNotNull( facet );
+        assertEquals( "com.example.test", facet.getGroupId() );
+        assertEquals( "missing-parent", facet.getArtifactId() );
+        assertEquals( "jar", facet.getPackaging() );
+
+        deleteTestArtifactWithParent();
+    }
+
+    // Tests for MRM-1411 - END
+
     @Test
     public void testGetRootNamespaces()
     {
@@ -440,7 +566,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "com", ALL ) );
         assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "com.example", ALL ) );
         assertEquals( Arrays.asList( "incomplete-metadata", "invalid-pom", "malformed-metadata", "mislocated-pom",
-                                     "missing-metadata", "test-artifact" ), storage.listProjects( TEST_REPO_ID,
+                                     "missing-metadata", "missing-parent", "test-artifact" ), storage.listProjects( TEST_REPO_ID,
                                                                                                   "com.example.test",
                                                                                                   ALL ) );
 
@@ -608,4 +734,32 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( "The Apache Software Foundation", metadata.getOrganization().getName() );
         assertEquals( "http://www.apache.org/", metadata.getOrganization().getUrl() );
     }
+
+    private void deleteTestArtifactWithParent()
+         throws IOException
+    {
+        File dest = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-module-a" );
+        File parentPom = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-parent" );
+        File rootPom = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-root" );
+
+        FileUtils.deleteDirectory( dest );
+        FileUtils.deleteDirectory( parentPom );
+        FileUtils.deleteDirectory( rootPom );
+
+        assertFalse( dest.exists() );
+        assertFalse( parentPom.exists() );
+        assertFalse( rootPom.exists() );
+    }
+
+    private File copyTestArtifactWithParent()
+         throws IOException
+    {
+        File src = new File( FileUtil.getBasedir(), "target/test-classes/com/example/test/test-artifact-module-a" );
+        File dest = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-module-a" );
+
+        FileUtils.copyDirectory( src, dest );
+        assertTrue( dest.exists() );
+        return dest;
+    }
+
 }

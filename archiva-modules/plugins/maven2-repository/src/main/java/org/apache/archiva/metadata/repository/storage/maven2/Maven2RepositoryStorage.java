@@ -29,9 +29,13 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
+import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
@@ -46,6 +50,8 @@ import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.apache.maven.model.building.ModelProblem;
+import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -54,6 +60,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,7 +68,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
@@ -96,6 +105,9 @@ public class Maven2RepositoryStorage
     @Inject
     @Named( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
+
+    @Inject
+    private WagonFactory wagonFactory;
 
     private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
@@ -161,10 +173,48 @@ public class Maven2RepositoryStorage
                 "The artifact's POM file '" + file.getAbsolutePath() + "' was missing" );
         }
 
+        List<RemoteRepositoryConfiguration> remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>();
+        Map<String, ProxyInfo> networkProxies = new HashMap<String, ProxyInfo>();
+
+        Map<String, List<ProxyConnectorConfiguration>> proxyConnectorsMap = archivaConfiguration.getConfiguration().getProxyConnectorAsMap();
+        List<ProxyConnectorConfiguration> proxyConnectors = proxyConnectorsMap.get( repoId );
+        if( proxyConnectors != null )
+        {
+            for( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+            {
+                RemoteRepositoryConfiguration remoteRepoConfig = archivaConfiguration.getConfiguration().findRemoteRepositoryById(
+                    proxyConnector.getTargetRepoId() );
+
+                if( remoteRepoConfig != null )
+                {
+                    remoteRepositories.add( remoteRepoConfig );
+
+                    NetworkProxyConfiguration networkProxyConfig = archivaConfiguration.getConfiguration().getNetworkProxiesAsMap().get(
+                        proxyConnector.getProxyId() );
+
+                    if( networkProxyConfig != null )
+                    {
+                        ProxyInfo proxy = new ProxyInfo();
+                        proxy.setType( networkProxyConfig.getProtocol() );
+                        proxy.setHost( networkProxyConfig.getHost() );
+                        proxy.setPort( networkProxyConfig.getPort() );
+                        proxy.setUserName( networkProxyConfig.getUsername() );
+                        proxy.setPassword( networkProxyConfig.getPassword() );
+
+                        // key/value: remote repo ID/proxy info
+                        networkProxies.put( proxyConnector.getTargetRepoId(), proxy );
+                    }
+                }
+            }
+        }
+
         ModelBuildingRequest req = new DefaultModelBuildingRequest();
         req.setProcessPlugins( false );
         req.setPomFile( file );
-        req.setModelResolver( new RepositoryModelResolver( basedir, pathTranslator ) );
+
+        // MRM-1411
+        req.setModelResolver( new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories,
+                                                           networkProxies, repositoryConfiguration ) );
         req.setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
         Model model;
@@ -175,6 +225,30 @@ public class Maven2RepositoryStorage
         catch ( ModelBuildingException e )
         {
             String msg = "The artifact's POM file '" + file + "' was invalid: " + e.getMessage();
+
+            List<ModelProblem> modelProblems = e.getProblems();
+            for( ModelProblem problem : modelProblems )
+            {
+                // MRM-1411, related to MRM-1335
+                // this means that the problem was that the parent wasn't resolved!
+                if( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
+                    !e.getModelId().equals( problem.getModelId() ) )
+                {
+                    log.warn( "The artifact's parent POM file '" + file + "' cannot be resolved. " +
+                        "Using defaults for project version metadata.." );
+
+                    ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+                    metadata.setId( projectVersion );
+
+                    MavenProjectFacet facet = new MavenProjectFacet();
+                    facet.setGroupId( namespace );
+                    facet.setArtifactId( projectId );
+                    facet.setPackaging( "jar" );
+                    metadata.addFacet( facet );
+
+                    return metadata;
+                }
+            }
 
             throw new RepositoryStorageMetadataInvalidException( "invalid-pom", msg, e );
         }
@@ -230,6 +304,11 @@ public class Maven2RepositoryStorage
         metadata.addFacet( facet );
 
         return metadata;
+    }
+
+    public void setWagonFactory( WagonFactory wagonFactory )
+    {
+        this.wagonFactory = wagonFactory;
     }
 
     private List<org.apache.archiva.metadata.model.Dependency> convertDependencies( List<Dependency> dependencies )

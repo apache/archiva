@@ -274,7 +274,7 @@
       <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-plexus-bridge</artifactId>
-        <version>${project.version}</version>
+        <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
@@ -289,6 +289,11 @@
       <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-proxy</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-proxy-common</artifactId>
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>

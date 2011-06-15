@@ -282,22 +282,25 @@
         java.util.Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap =
             new java.util.HashMap<String, java.util.List<ProxyConnectorConfiguration>>();
 
-        java.util.Iterator<ProxyConnectorConfiguration> it = proxyConnectors.iterator();
-        while ( it.hasNext() )
+        if( proxyConnectors != null )
         {
-            ProxyConnectorConfiguration proxyConfig = it.next();
-            String key = proxyConfig.getSourceRepoId();
-
-            java.util.List<ProxyConnectorConfiguration> connectors = proxyConnectorMap.get( key );
-            if ( connectors == null )
+            java.util.Iterator<ProxyConnectorConfiguration> it = proxyConnectors.iterator();
+            while ( it.hasNext() )
             {
-                connectors = new java.util.ArrayList<ProxyConnectorConfiguration>();
-                proxyConnectorMap.put( key, connectors );
-            }
+                ProxyConnectorConfiguration proxyConfig = it.next();
+                String key = proxyConfig.getSourceRepoId();
 
-            connectors.add( proxyConfig );
-            java.util.Collections.sort( connectors,
-                org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator.getInstance() );
+                java.util.List<ProxyConnectorConfiguration> connectors = proxyConnectorMap.get( key );
+                if ( connectors == null )
+                {
+                    connectors = new java.util.ArrayList<ProxyConnectorConfiguration>();
+                    proxyConnectorMap.put( key, connectors );
+                }
+
+                connectors.add( proxyConfig );
+                java.util.Collections.sort( connectors,
+                    org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator.getInstance() );
+            }
         }
 
         return proxyConnectorMap;

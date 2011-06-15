@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.proxy;
+package org.apache.maven.archiva.common.utils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.archiva.proxy;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,15 +19,18 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-/**
- * @author Olivier Lamy
- * @since 1.4
- */
-public class WagonFactoryException
-    extends Exception
+import java.io.File;
+
+public class FileUtil
 {
-    public WagonFactoryException( String message, Throwable e )
+    public static String getBasedir()
     {
-        super( message, e );
+        String basedir = System.getProperty( "basedir" );
+        if ( basedir == null )
+        {
+            basedir = new File( "" ).getAbsolutePath();
+        }
+
+        return basedir;
     }
 }

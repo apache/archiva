@@ -68,7 +68,7 @@
           <field-name>urlFailureCache</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.proxy.WagonFactory</role>
+          <role>org.apache.archiva.proxy.common.WagonFactory</role>
           <role-hint>default</role-hint>
         </requirement>
         <requirement>

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.proxy;
+package org.apache.archiva.proxy.common;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,7 +20,6 @@ package org.apache.maven.archiva.proxy;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.maven.wagon.Wagon;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,7 @@ import javax.inject.Inject;
  * 
  */
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
 public class WagonFactoryTest
     extends TestCase
 {
