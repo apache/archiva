@@ -29,6 +29,10 @@
   <packaging>pom</packaging>
   <name>Archiva Web :: Application Tests</name>
 
+  <properties>
+    <container.test.port>9696</container.test.port>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.testng</groupId>
@@ -126,6 +130,15 @@
         </includes>
       </testResource>
     </testResources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>selenium-maven-plugin</artifactId>
+          <version>1.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -308,7 +321,7 @@
                 <phase>integration-test</phase>
                 <configuration>
                   <tasks>
-                    <get src="http://localhost:9696/archiva/" dest="${project.build.directory}/index.html"/>
+                    <get src="http://localhost:${container.test.port}/archiva/" dest="${project.build.directory}/index.html"/>
                     <delete file="${project.build.directory}/index.html"/>
                   </tasks>
                 </configuration>
@@ -358,7 +371,7 @@
                 <home>${project.build.directory}/${container.name}conf</home>
                 <type>existing</type>
                 <properties>
-                  <cargo.servlet.port>9696</cargo.servlet.port>
+                  <cargo.servlet.port>${container.test.port}</cargo.servlet.port>
                   <cargo.jvmargs>${cargo.jvm.args}</cargo.jvmargs>
                 </properties>
               </configuration>
@@ -375,7 +388,7 @@
         </property>
       </activation>
       <properties>
-        <baseUrl>http://localhost:9696/archiva/</baseUrl>
+        <baseUrl>http://localhost:${container.test.port}/archiva/</baseUrl>
       </properties>
     </profile>
     <profile>
@@ -394,7 +407,6 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>selenium-maven-plugin</artifactId>
-            <version>1.1</version>
             <executions>
               <execution>
                 <phase>pre-integration-test</phase>
