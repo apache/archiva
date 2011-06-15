@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
+import org.apache.maven.archiva.common.utils.FileUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -100,26 +101,15 @@ public class NexusRepositorySearchTest
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
     }
 
-    public static String getBasedir()
-    {
-        String basedir = System.getProperty( "basedir" );
-        if ( basedir == null )
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
-
-        return basedir;
-    }
-
     private void createSimpleIndex()
         throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
         List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
 
         createIndex( TEST_REPO_1, files );
@@ -129,19 +119,19 @@ public class NexusRepositorySearchTest
         throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
         List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-webapp/1.0/archiva-webapp-1.0.war" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/com/classname-search/1.0/classname-search-1.0.jar" ) );
 
         createIndex( TEST_REPO_1, files );
@@ -151,7 +141,7 @@ public class NexusRepositorySearchTest
     {
         ManagedRepositoryConfiguration repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( repository );
-        repositoryConfig.setLocation( getBasedir() + "/target/test-classes/" + repository );
+        repositoryConfig.setLocation( FileUtil.getBasedir() + "/target/test-classes/" + repository );
         repositoryConfig.setLayout( "default" );
         repositoryConfig.setName( repository );
         repositoryConfig.setScanned( true );
@@ -165,11 +155,11 @@ public class NexusRepositorySearchTest
     public void tearDown()
         throws Exception
     {
-        FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ) );
-        assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ).exists() );
+        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ) );
+        assertFalse( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ).exists() );
 
-        FileUtils.deleteDirectory( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
-        assertFalse( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
+        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
+        assertFalse( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
 
         super.tearDown();
     }
@@ -178,8 +168,8 @@ public class NexusRepositorySearchTest
         throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
         context = new DefaultIndexingContext( repository, repository,
-                                              new File( getBasedir(), "/target/test-classes/" + repository ),
-                                              new File( getBasedir(),
+                                              new File( FileUtil.getBasedir(), "/target/test-classes/" + repository ),
+                                              new File( FileUtil.getBasedir(),
                                                         "/target/test-classes/" + repository + "/.indexer" ), null,
                                               null, ArchivaNexusIndexerUtil.FULL_INDEX, false );
         //indexer.addIndexingContext( repository, repository, new File( getBasedir(), "/target/test-classes/" +
@@ -199,7 +189,7 @@ public class NexusRepositorySearchTest
         //indexerEngine.endIndexing( context );
         //indexer.removeIndexingContext( context, false );
 
-        assertTrue( new File( getBasedir(), "/target/test-classes/" + repository + "/.indexer" ).exists() );
+        assertTrue( new File( FileUtil.getBasedir(), "/target/test-classes/" + repository + "/.indexer" ).exists() );
     }
 
     @Test
@@ -319,9 +309,9 @@ public class NexusRepositorySearchTest
         createSimpleIndex();
 
         List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
         createIndex( TEST_REPO_2, files );
 
@@ -447,9 +437,9 @@ public class NexusRepositorySearchTest
         throws Exception
     {
         List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_2
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
         createIndex( TEST_REPO_2, files );
 
@@ -533,9 +523,9 @@ public class NexusRepositorySearchTest
         throws Exception
     {
         List<File> files = new ArrayList<File>();
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
-        files.add( new File( getBasedir(), "/target/test-classes/" + TEST_REPO_1
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
         createIndex( TEST_REPO_1, files );
 

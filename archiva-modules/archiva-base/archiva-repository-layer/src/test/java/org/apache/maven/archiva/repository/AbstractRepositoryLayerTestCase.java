@@ -41,17 +41,6 @@ public abstract class AbstractRepositoryLayerTestCase
     extends TestCase
 {
 
-    public static String getBasedir()
-    {
-       String basedir = System.getProperty( "basedir" );
-        if ( basedir == null )
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
-
-        return basedir;
-    }
-
     @Inject
     protected ApplicationContext applicationContext;
 

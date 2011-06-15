@@ -22,6 +22,7 @@ package org.apache.maven.archiva.configuration;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.FileUtil;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.components.springutils.ComponentContainer;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -48,20 +49,9 @@ public class ArchivaConfigurationTest
     @Inject
     private ComponentContainer componentContainer;
 
-    public static String getBasedir()
-    {
-        String basedir = System.getProperty( "basedir" );
-        if ( basedir == null )
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
-
-        return basedir;
-    }
-
     public static File getTestFile( String path )
     {
-        return new File( getBasedir(), path );
+        return new File( FileUtil.getBasedir(), path );
     }
 
     /**
@@ -131,19 +121,19 @@ public class ArchivaConfigurationTest
     public void testGetConfigurationFromDefaultsWithDefaultRepoLocationAlreadyExisting()
         throws Exception
     {
-        File repo = new File( getBasedir(), "/target/test-classes/existing_snapshots" );
+        File repo = new File( FileUtil.getBasedir(), "/target/test-classes/existing_snapshots" );
         repo.mkdirs();
 
-        repo = new File( getBasedir(), "/target/test-classes/existing_internal" );
+        repo = new File( FileUtil.getBasedir(), "/target/test-classes/existing_internal" );
         repo.mkdirs();
 
         String existingTestDefaultArchivaConfigFile = FileUtils.readFileToString(
             getTestFile( "target/test-classes/org/apache/maven/archiva/configuration/test-default-archiva.xml" ) );
         existingTestDefaultArchivaConfigFile =
-            StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", getBasedir() );
+            StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", FileUtil.getBasedir() );
 
         File generatedTestDefaultArchivaConfigFile =
-            new File( getBasedir(), "target/test-classes/org/apache/maven/archiva/configuration/default-archiva.xml" );
+            new File( FileUtil.getBasedir(), "target/test-classes/org/apache/maven/archiva/configuration/default-archiva.xml" );
 
         FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile, existingTestDefaultArchivaConfigFile,
                                      null );

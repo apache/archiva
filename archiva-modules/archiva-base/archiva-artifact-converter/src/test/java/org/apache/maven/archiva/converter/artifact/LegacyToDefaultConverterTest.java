@@ -22,6 +22,7 @@ package org.apache.maven.archiva.converter.artifact;
 import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.utils.FileUtil;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadata;
@@ -108,18 +109,7 @@ public class LegacyToDefaultConverterTest
 
     public static File getTestFile( String path )
     {
-        return new File( getBasedir(), path );
-    }
-
-    public static String getBasedir()
-    {
-        String basedir = System.getProperty( "basedir" );
-        if ( basedir == null )
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
-
-        return basedir;
+        return new File( FileUtil.getBasedir(), path );
     }
 
     private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
@@ -440,7 +430,7 @@ public class LegacyToDefaultConverterTest
         Artifact artifact =
             createArtifact( "org.apache.maven.plugins", "maven-foo-plugin", "1.0", "1.0", "maven-plugin" );
         artifact.setFile(
-            new File( getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
+            new File( FileUtil.getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
         artifactConverter.convert( artifact, targetRepository );
         // There is a warning but I can't figure out how to look at it. Eyeballing the results it appears
         // the plugin is being coverted correctly.

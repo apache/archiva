@@ -22,6 +22,7 @@ package org.apache.archiva.checksum;
 import java.io.File;
 
 import junit.framework.TestCase;
+import org.apache.maven.archiva.common.utils.FileUtil;
 
 /**
  * AbstractChecksumTestCase
@@ -31,28 +32,9 @@ import junit.framework.TestCase;
 public abstract class AbstractChecksumTestCase
     extends TestCase
 {
-    private File basedir;
-
-    public File getBasedir()
-    {
-        if ( basedir == null )
-        {
-            String sysprop = System.getProperty( "basedir" );
-            if ( sysprop != null )
-            {
-                basedir = new File( sysprop );
-            }
-            else
-            {
-                basedir = new File( System.getProperty( "user.dir" ) );
-            }
-        }
-        return basedir;
-    }
-
     public File getTestOutputDir()
     {
-        File dir = new File( getBasedir(), "target/test-output/" + getName() );
+        File dir = new File( FileUtil.getBasedir(), "target/test-output/" + getName() );
         if ( dir.exists() == false )
         {
             if ( dir.mkdirs() == false )
@@ -65,7 +47,7 @@ public abstract class AbstractChecksumTestCase
 
     public File getTestResource( String filename )
     {
-        File dir = new File( getBasedir(), "src/test/resources" );
+        File dir = new File( FileUtil.getBasedir(), "src/test/resources" );
         File file = new File( dir, filename );
         if ( file.exists() == false )
         {

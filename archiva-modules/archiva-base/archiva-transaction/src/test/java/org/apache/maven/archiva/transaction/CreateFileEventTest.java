@@ -22,13 +22,14 @@ package org.apache.maven.archiva.transaction;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.utils.FileUtil;
 
 /**
  */
 public class CreateFileEventTest
     extends AbstractFileEventTest
 {
-    private File testDir = new File( getBasedir(), "target/transaction-tests/create-file" );
+    private File testDir = new File( FileUtil.getBasedir(), "target/transaction-tests/create-file" );
 
     public void testCreateCommitRollback()
         throws Exception
@@ -52,7 +53,7 @@ public class CreateFileEventTest
         assertChecksumRollback( testFile );
 
         assertFalse( "Test file parent directories has been rolledback too", testDir.exists() );
-        assertTrue( "target directory still exists", new File( getBasedir(), "target" ).exists() );
+        assertTrue( "target directory still exists", new File( FileUtil.getBasedir(), "target" ).exists() );
     }
 
     public void testCreateCommitRollbackWithBackup()
@@ -114,6 +115,6 @@ public class CreateFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory( new File( getBasedir(), "target/transaction-tests" ) );
+        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "target/transaction-tests" ) );
     }
 }

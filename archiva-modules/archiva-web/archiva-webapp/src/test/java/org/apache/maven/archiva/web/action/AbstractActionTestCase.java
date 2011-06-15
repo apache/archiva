@@ -221,15 +221,4 @@ public abstract class AbstractActionTestCase
         stack.getContext().put( ActionContext.CONTAINER, container );
         ActionContext.setContext( new ActionContext( stack.getContext() ) );
     }
-
-    public static String getBasedir()
-    {
-        String basedir = System.getProperty( "basedir" );
-        if ( basedir == null )
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
-
-        return basedir;
-    }
 }

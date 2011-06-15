@@ -21,6 +21,7 @@ package org.apache.maven.archiva.policies;
 
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.utils.FileUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -357,22 +358,9 @@ public class ChecksumPolicyTest
         return localFile;
     }
 
-
-
-    public static String getBasedir()
-    {
-        String basedir = System.getProperty( "basedir" );
-        if ( basedir == null )
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
-
-        return basedir;
-    }
-
     public static File getTestFile( String path )
     {
-        return new File( getBasedir(), path );
+        return new File( FileUtil.getBasedir(), path );
     }
 
 }

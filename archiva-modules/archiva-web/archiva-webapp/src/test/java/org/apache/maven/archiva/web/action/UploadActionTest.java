@@ -27,6 +27,7 @@ import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.FileUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -91,7 +92,7 @@ public class UploadActionTest
         uploadAction.setConfiguration( archivaConfig );
         uploadAction.setRepositoryFactory( repoFactory );
 
-        File testRepo = new File( getBasedir(), "target/test-classes/test-repo" );
+        File testRepo = new File( FileUtil.getBasedir(), "target/test-classes/test-repo" );
         testRepo.mkdirs();
 
         assertTrue( testRepo.exists() );
@@ -289,9 +290,9 @@ public class UploadActionTest
     public void testArtifactUploadWithPomSuccessful()
         throws Exception
     {
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
-                             new File( getBasedir(), "target/test-classes/upload-artifact-test/pom.xml" ), false );
+                             new File( FileUtil.getBasedir(), "target/test-classes/upload-artifact-test/pom.xml" ), false );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
         content.setRepository( config.findManagedRepositoryById( REPOSITORY_ID ) );
@@ -324,9 +325,9 @@ public class UploadActionTest
     public void testArtifactUploadWithClassifier()
         throws Exception
     {
-        setUploadParameters( "1.0", "tests", new File( getBasedir(),
+        setUploadParameters( "1.0", "tests", new File( FileUtil.getBasedir(),
                                                        "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
-                             new File( getBasedir(), "target/test-classes/upload-artifact-test/pom.xml" ), false );
+                             new File( FileUtil.getBasedir(), "target/test-classes/upload-artifact-test/pom.xml" ), false );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
         content.setRepository( config.findManagedRepositoryById( REPOSITORY_ID ) );
@@ -371,7 +372,7 @@ public class UploadActionTest
     public void testArtifactUploadGeneratePomSuccessful()
         throws Exception
     {
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, true );
 
@@ -406,7 +407,7 @@ public class UploadActionTest
     public void testArtifactUploadNoPomSuccessful()
         throws Exception
     {
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, false );
 
@@ -483,7 +484,7 @@ public class UploadActionTest
     public void testArtifactUploadFailedRepositoryNotFound()
         throws Exception
     {
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, false );
 
@@ -511,7 +512,7 @@ public class UploadActionTest
     public void testArtifactUploadSnapshots()
         throws Exception
     {
-        setUploadParameters( "1.0-SNAPSHOT", null, new File( getBasedir(),
+        setUploadParameters( "1.0-SNAPSHOT", null, new File( FileUtil.getBasedir(),
                                                              "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, true );
 
@@ -583,7 +584,7 @@ public class UploadActionTest
         // MRM-1353
         // upload snapshot artifact again and check if build number was incremented
         setUploadParameters( "1.0-SNAPSHOT", null,
-                             new File( getBasedir(),
+                             new File( FileUtil.getBasedir(),
                                        "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ), null,
                              true );
 
@@ -640,7 +641,7 @@ public class UploadActionTest
     public void testChecksumIsCorrectWhenArtifactIsReUploaded()
         throws Exception
     {
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, true );
 
@@ -672,7 +673,7 @@ public class UploadActionTest
         verifyProjectMetadataChecksums( repoLocation );
 
         // RE-upload artifact
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-reuploaded.jar" ),
                              null, true );
 
@@ -706,7 +707,7 @@ public class UploadActionTest
     public void testUploadArtifactAlreadyExistingRedeploymentsBlocked()
         throws Exception
     {
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, true );
 
@@ -722,7 +723,7 @@ public class UploadActionTest
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, true );
 
@@ -746,7 +747,7 @@ public class UploadActionTest
     public void testUploadArtifactAlreadyExistingRedeploymentsAllowed()
         throws Exception
     {
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, true );
 
@@ -764,7 +765,7 @@ public class UploadActionTest
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        setUploadParameters( "1.0", null, new File( getBasedir(),
+        setUploadParameters( "1.0", null, new File( FileUtil.getBasedir(),
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, true );
 

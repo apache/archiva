@@ -38,18 +38,6 @@ public abstract class AbstractFileEventTest
 {
     protected List<Digester> digesters;
 
-    public static String getBasedir()
-    {
-
-        String basedir = System.getProperty( "basedir" );
-        if (basedir == null)
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
-        return basedir;
-
-    }
-
     @SuppressWarnings( "unchecked" )
     public void setUp()
         throws Exception

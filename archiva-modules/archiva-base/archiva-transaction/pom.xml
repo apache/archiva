@@ -29,6 +29,10 @@
   <description>API for managing transaction.</description>
   <dependencies>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
