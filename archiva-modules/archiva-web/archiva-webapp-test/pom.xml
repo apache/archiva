@@ -37,6 +37,7 @@
     <maxWaitTimeInMs>60000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
+    <seleniumPluginVersion>1.1</seleniumPluginVersion>
   </properties>
 
   <dependencies>
@@ -90,7 +91,7 @@
     <dependency>
       <groupId>org.seleniumhq.selenium.client-drivers</groupId>
       <artifactId>selenium-java-client-driver</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -141,7 +142,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>selenium-maven-plugin</artifactId>
-          <version>1.1</version>
+          <version>${seleniumPluginVersion}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -457,6 +458,19 @@
       </properties>
     </profile>
     <profile>
+      <id>chrome</id>
+      <activation>
+        <property>
+          <name>browser</name>
+          <value>chrome</value>
+        </property>
+      </activation>
+      <properties>
+        <selenium.browser>*googlechrome</selenium.browser>
+        <excluded.groups/>
+      </properties>
+    </profile>
+    <profile>
       <id>iexplore</id>
       <activation>
         <property>
@@ -548,5 +562,6 @@
       </properties>
     </profile>
   </profiles>
+
 
 </project>
