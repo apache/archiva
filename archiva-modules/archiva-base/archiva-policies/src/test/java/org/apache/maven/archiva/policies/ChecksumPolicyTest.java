@@ -19,20 +19,23 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.FileUtil;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import static org.junit.Assert.*;
 
 /**
  * ChecksumPolicyTest
@@ -40,17 +43,19 @@ import java.util.Properties;
  * @version $Id$
  */
 @RunWith( value = SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml"} )
 public class ChecksumPolicyTest
-    extends TestCase
 {
     private static final String GOOD = "good";
 
     private static final String BAD = "bad";
 
     @Inject
-    @Named(value="postDownloadPolicy#checksum")
+    @Named( value = "postDownloadPolicy#checksum" )
     PostDownloadPolicy downloadPolicy;
+
+    @Rule
+    public TestName name = new TestName();
 
     private PostDownloadPolicy lookupPolicy()
         throws Exception
@@ -334,7 +339,7 @@ public class ChecksumPolicyTest
         throws Exception
     {
         File sourceDir = getTestFile( "src/test/resources/checksums/" );
-        File destDir = getTestFile( "target/checksum-tests/" + getName() + "/" );
+        File destDir = getTestFile( "target/checksum-tests/" + name.getMethodName() + "/" );
 
         FileUtils.copyFileToDirectory( new File( sourceDir, "artifact.jar" ), destDir );
 
