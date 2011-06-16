@@ -41,15 +41,17 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.xml.sax.SAXException;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.xml.parsers.ParserConfigurationException;
+
+import static org.junit.Assert.*;
 
 /**
  * MetadataToolsTest
@@ -66,7 +68,6 @@ public class MetadataToolsTest
     @Inject
     @Named( value = "archivaConfiguration#mock" )
     protected MockConfiguration config;
-
 
     @Test
     public void testGatherSnapshotVersionsA()
@@ -355,7 +356,7 @@ public class MetadataToolsTest
         reference.setVersion( version );
 
         ManagedRepositoryConfiguration repo =
-            createRepository( "test-repo", "Test Repository: " + getName(), repoRootDir );
+            createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRootDir );
         ManagedRepositoryContent repoContent =
             applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
         repoContent.setRepository( repo );
@@ -574,7 +575,7 @@ public class MetadataToolsTest
     private ManagedRepositoryContent createTestRepoContent()
         throws Exception
     {
-        File repoRoot = new File( "target/metadata-tests/" + getName() );
+        File repoRoot = new File( "target/metadata-tests/" + name.getMethodName() );
         if ( repoRoot.exists() )
         {
             FileUtils.deleteDirectory( repoRoot );
@@ -583,7 +584,7 @@ public class MetadataToolsTest
         repoRoot.mkdirs();
 
         ManagedRepositoryConfiguration repoConfig =
-            createRepository( "test-repo", "Test Repository: " + getName(), repoRoot );
+            createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRoot );
 
         ManagedRepositoryContent repoContent =
             applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );

@@ -31,6 +31,8 @@ import org.junit.Test;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static org.junit.Assert.*;
+
 /**
  * LegacyPathParserTest
  *
@@ -53,8 +55,6 @@ public class LegacyPathParserTest
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
         parser = new LegacyPathParser( config );
         LegacyArtifactPath jaxen = new LegacyArtifactPath();
         jaxen.setPath( "jaxen/jars/jaxen-1.0-FCS-full.jar" );

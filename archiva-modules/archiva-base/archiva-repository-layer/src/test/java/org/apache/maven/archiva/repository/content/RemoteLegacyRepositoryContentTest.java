@@ -44,8 +44,6 @@ public class RemoteLegacyRepositoryContentTest
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
         RemoteRepositoryConfiguration repository =
             createRemoteRepository( "testRemoteLegacyRepo", "Unit Test Remote Legacy Repo",
                                     "http://repo1.maven.org/maven/" );

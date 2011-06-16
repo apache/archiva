@@ -30,9 +30,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+
+import static org.junit.Assert.*;
 
 /**
  * RepositoryRequestTest
@@ -55,8 +57,6 @@ public class RepositoryRequestTest
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
         LegacyPathParser legacyPathParser = new LegacyPathParser( archivaConfiguration );
         repoRequest = new RepositoryRequest( legacyPathParser );
     }

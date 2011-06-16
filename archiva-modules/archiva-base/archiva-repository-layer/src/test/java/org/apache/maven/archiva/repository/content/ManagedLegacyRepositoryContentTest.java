@@ -29,13 +29,15 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import static org.junit.Assert.*;
 
 /**
  * ManagedLegacyRepositoryContentTest
@@ -53,8 +55,6 @@ public class ManagedLegacyRepositoryContentTest
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
         File repoDir = new File( "src/test/repositories/legacy-repository" );
 
         ManagedRepositoryConfiguration repository = createRepository( "testRepo", "Unit Test Repo", repoDir );

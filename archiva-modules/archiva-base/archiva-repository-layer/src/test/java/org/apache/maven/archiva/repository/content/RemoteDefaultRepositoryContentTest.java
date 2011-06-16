@@ -43,8 +43,6 @@ public class RemoteDefaultRepositoryContentTest
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
         RemoteRepositoryConfiguration repository = createRemoteRepository( "testRemoteRepo", "Unit Test Remote Repo",
                                                                            "http://repo1.maven.org/maven2/" );
 

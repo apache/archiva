@@ -24,6 +24,8 @@ import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 /**
  * AbstractLegacyRepositoryContentTestCase
  *
