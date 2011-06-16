@@ -41,12 +41,14 @@ import org.custommonkey.xmlunit.Diff;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import static org.junit.Assert.*;
 
 /**
  * MetadataTransferTest - Tests the various fetching / merging concepts surrounding the maven-metadata.xml files

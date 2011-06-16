@@ -19,7 +19,6 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -53,15 +52,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.junit.Assert.*;
+
 /**
  * Integration test for connecting over a HTTP proxy.
  *
  * @version $Id: ManagedDefaultTransferTest.java 677852 2008-07-18 08:16:24Z brett $
  */
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml"} )
 public class HttpProxyTransferTest
-    extends TestCase
 {
     private static final String PROXY_ID = "proxy";
 
@@ -86,8 +86,6 @@ public class HttpProxyTransferTest
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
         proxyHandler = applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyConnectors.class );
 
         config = applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );
@@ -97,7 +95,7 @@ public class HttpProxyTransferTest
         config.getConfiguration().getProxyConnectors().clear();
 
         // Setup source repository (using default layout)
-        String repoPath = "target/test-repository/managed/" + getName();
+        String repoPath = "target/test-repository/managed/" + getClass().getSimpleName();
 
         File destRepoDir = new File( repoPath );
 
@@ -116,8 +114,8 @@ public class HttpProxyTransferTest
         repo.setLocation( repoPath );
         repo.setLayout( "default" );
 
-        ManagedRepositoryContent repoContent =
-            applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
+        ManagedRepositoryContent repoContent = applicationContext.getBean( "managedRepositoryContent#default",
+                                                                           ManagedRepositoryContent.class );
 
         repoContent.setRepository( repo );
         managedDefaultRepository = repoContent;
@@ -167,8 +165,6 @@ public class HttpProxyTransferTest
     public void tearDown()
         throws Exception
     {
-        super.tearDown();
-
         server.stop();
     }
 

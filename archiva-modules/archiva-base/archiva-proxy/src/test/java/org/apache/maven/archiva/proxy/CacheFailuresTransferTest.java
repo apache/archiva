@@ -29,8 +29,11 @@ import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import java.io.File;
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * CacheFailuresTransferTest

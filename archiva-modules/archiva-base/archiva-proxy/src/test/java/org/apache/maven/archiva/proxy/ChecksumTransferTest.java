@@ -30,6 +30,9 @@ import org.junit.Test;
 
 import java.io.File;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
 /**
  * ChecksumTransferTest
  *
@@ -54,10 +57,10 @@ public class ChecksumTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, true );
-        
+
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-        
-        assertNull(downloadedFile);
+
+        assertNull( downloadedFile );
     }
 
     @Test
@@ -430,16 +433,16 @@ public class ChecksumTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false  );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+        wagonMockControl.setMatcher( customWagonGetMatcher );
         wagonMockControl.setVoidCallable();
         wagonMock.get( path + ".sha1", new File( expectedFile.getAbsolutePath() + ".sha1.tmp" ) );
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+        wagonMockControl.setMatcher( customWagonGetMatcher );
         wagonMockControl.setVoidCallable();
         wagonMock.get( path + ".md5", new File( expectedFile.getAbsolutePath() + ".md5.tmp" ) );
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+        wagonMockControl.setMatcher( customWagonGetMatcher );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Resource does not exist." ) );
         wagonMockControl.replay();
 
@@ -470,14 +473,14 @@ public class ChecksumTransferTest
 
         File expectedFile = new File( managedDefaultDir, path );
         File remoteFile = new File( REPOPATH_PROXIED1, path );
-        
+
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO , false );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -499,12 +502,12 @@ public class ChecksumTransferTest
         File remoteFile = new File( REPOPATH_PROXIED1, path );
 
         setManagedOlderThanRemote( expectedFile, remoteFile );
-        
+
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO , false );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -512,7 +515,7 @@ public class ChecksumTransferTest
         assertNoTempFiles( expectedFile );
         // There are no hashcodes on the proxy side to download.
         // The FAIL policy will delete the checksums as bad.
-        
+
         assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
     }
 
@@ -525,14 +528,14 @@ public class ChecksumTransferTest
 
         File expectedFile = new File( managedDefaultDir, path );
         File remoteFile = new File( REPOPATH_PROXIED1, path );
-        
+
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO , false );
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
