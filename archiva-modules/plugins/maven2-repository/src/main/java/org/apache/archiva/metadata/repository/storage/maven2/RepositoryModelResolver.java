@@ -29,8 +29,10 @@ import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.FileModelSource;
 import org.apache.maven.model.building.ModelSource;
@@ -62,6 +64,8 @@ public class RepositoryModelResolver
     private ManagedRepositoryConfiguration targetRepository;
 
     private static final Logger log = LoggerFactory.getLogger( RepositoryModelResolver.class );
+
+    private static final String METADATA_FILENAME = "maven-metadata.xml";
 
     // key/value: remote repo ID/network proxy
     Map<String, ProxyInfo> networkProxyMap;
@@ -139,7 +143,8 @@ public class RepositoryModelResolver
     // because it's causing a cyclic dependency
     private boolean getModelFromProxy( RemoteRepositoryConfiguration remoteRepository, String groupId,
                                     String artifactId, String version, String filename )
-        throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException, WagonFactoryException
+        throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException, WagonFactoryException,
+        XMLException
     {
         boolean success = false;
         File tmpMd5 = null;
@@ -167,8 +172,39 @@ public class RepositoryModelResolver
                 {
                     tmpResource = new File( workingDirectory, filename );
 
+                    if ( VersionUtil.isSnapshot( version ) )
+                    {
+                        // get the metadata first!
+                        File tmpMetadataResource = new File( workingDirectory, METADATA_FILENAME );
+
+                        String metadataPath = StringUtils.substringBeforeLast( artifactPath, "/" ) + "/" + METADATA_FILENAME;
+
+                        wagon.get( metadataPath, tmpMetadataResource );
+
+                        log.debug( "Successfully downloaded metadata." );
+
+                        MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( tmpMetadataResource );
+
+                        // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
+                        MavenRepositoryMetadata.Snapshot snapshotVersion = metadata.getSnapshotVersion();
+                        String timestampVersion = version;
+                        if ( snapshotVersion != null )
+                        {
+                            timestampVersion =
+                                timestampVersion.substring( 0, timestampVersion.length() - 8 ); // remove SNAPSHOT from end
+                            timestampVersion =
+                                timestampVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
+
+                            filename = artifactId + "-" + timestampVersion + ".pom";
+
+                            artifactPath = pathTranslator.toPath( groupId, artifactId, version, filename );
+
+                            log.debug( "New artifactPath : " + artifactPath );
+                        }
+                    }
+
                     log.info( "Retrieving " + artifactPath + " from " + remoteRepository.getName() );
-                    
+
                     wagon.get( artifactPath, tmpResource );
 
                     log.debug( "Downloaded successfully." );

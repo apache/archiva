@@ -41,6 +41,36 @@
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-system</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.redback</groupId>
+          <artifactId>plexus-spring</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus.registry</groupId>
+          <artifactId>plexus-registry-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus.registry</groupId>
+          <artifactId>plexus-registry-commons</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>ehcache</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus.cache</groupId>
+          <artifactId>plexus-cache-ehcache</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus.cache</groupId>
+          <artifactId>plexus-cache-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-component-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -59,6 +89,20 @@
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-authorization-rbac</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>ehcache</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus.cache</groupId>
+          <artifactId>plexus-cache-ehcache</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus.cache</groupId>
+          <artifactId>plexus-cache-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
