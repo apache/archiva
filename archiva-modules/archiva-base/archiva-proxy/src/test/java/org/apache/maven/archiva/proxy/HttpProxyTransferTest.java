@@ -20,7 +20,6 @@ package org.apache.maven.archiva.proxy;
  */
 
 import junit.framework.TestCase;
-import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -47,12 +46,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.File;
+import java.io.IOException;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Integration test for connecting over a HTTP proxy.
@@ -91,8 +90,11 @@ public class HttpProxyTransferTest
 
         proxyHandler = applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyConnectors.class );
 
-        config =
-            (MockConfiguration) applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );
+        config = applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );
+
+        // clear from previous tests - TODO the spring context should be initialised per test instead, or the config
+        // made a complete mock
+        config.getConfiguration().getProxyConnectors().clear();
 
         // Setup source repository (using default layout)
         String repoPath = "target/test-repository/managed/" + getName();
