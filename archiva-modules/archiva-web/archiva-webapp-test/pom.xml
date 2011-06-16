@@ -32,12 +32,13 @@
   <properties>
     <container.test.port>9696</container.test.port>
     <tomcat5x.version>5.5.27</tomcat5x.version>
+    <tomcat6x.version>6.0.32</tomcat6x.version>
     <cargo.wait>false</cargo.wait>
     <cargo.install.dir>cargo-installs</cargo.install.dir>
     <maxWaitTimeInMs>60000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
-    <seleniumPluginVersion>1.1</seleniumPluginVersion>
+    <seleniumPluginVersion>2.0-SNAPSHOT</seleniumPluginVersion>
   </properties>
 
   <dependencies>
@@ -446,6 +447,20 @@
       </properties>
     </profile>
     <profile>
+      <id>tomcat6x</id>
+      <activation>
+        <property>
+          <name>tomcat6</name>
+        </property>
+      </activation>
+      <properties>
+        <container.name>tomcat6x</container.name>
+        <container.url>
+          http://archive.apache.org/dist/tomcat/tomcat-6/v${tomcat6x.version}/bin/apache-tomcat-${tomcat6x.version}.zip
+        </container.url>
+      </properties>
+    </profile>
+    <profile>
       <id>firefox</id>
       <activation>
         <property>
@@ -562,6 +577,19 @@
       </properties>
     </profile>
   </profiles>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus.snapshots</id>
+      <url>https://nexus.codehaus.org/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
 
 </project>
