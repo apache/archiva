@@ -67,15 +67,25 @@ public abstract class AbstractSeleniumTest
     public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort, String maxWaitTimeInMs )
         throws Exception
     {
-        AbstractSeleniumTest.baseUrl = baseUrl;
-        AbstractSeleniumTest.maxWaitTimeInMs = maxWaitTimeInMs;
-
-        if ( getSelenium() == null )
+        try
         {
-            DefaultSelenium s = new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl + "?" + forceLocaleParam );
-            s.start();
-            s.setTimeout( maxWaitTimeInMs );
-            selenium.set( s );
+            AbstractSeleniumTest.baseUrl = baseUrl;
+            AbstractSeleniumTest.maxWaitTimeInMs = maxWaitTimeInMs;
+
+            if ( getSelenium() == null )
+            {
+                DefaultSelenium s =
+                    new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl + "?" + forceLocaleParam );
+                s.start();
+                s.setTimeout( maxWaitTimeInMs );
+                selenium.set( s );
+            }
+        }
+        catch ( Exception e )
+        {
+            // yes
+            System.out.print( e.getMessage() );
+            e.printStackTrace();
         }
     }
 
@@ -405,14 +415,14 @@ public abstract class AbstractSeleniumTest
         Assert.assertFalse( getSelenium().isChecked( locator ) );
     }
 
-    public void assertXpathCount(String locator, int expectedCount)
+    public void assertXpathCount( String locator, int expectedCount )
     {
-        Assert.assertEquals( getSelenium().getXpathCount(locator).intValue(), expectedCount );
+        Assert.assertEquals( getSelenium().getXpathCount( locator ).intValue(), expectedCount );
     }
 
-    public void assertElementValue(String locator, String expectedValue)
+    public void assertElementValue( String locator, String expectedValue )
     {
-        Assert.assertEquals(getSelenium().getValue(locator), expectedValue);
+        Assert.assertEquals( getSelenium().getValue( locator ), expectedValue );
     }
 
 }
