@@ -103,7 +103,7 @@ public class ArtifactManagementTest
         addArtifact( groupId, artifactId, getVersion(), packaging, getArtifactFilePath(), getRepositoryId() );
         assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion()
             + "' was successfully deployed to repository 'internal'" );
-        getSelenium().open( baseUrl + "/browse/" + groupId + "/" + artifactId + "/" + getVersion() );
+        getSelenium().open( baseUrl + "/browse/" + groupId + "/" + artifactId + "/" + getVersion() + "?" + forceLocaleParam );
         waitPage();
 
         assertTextPresent( "<type>library</type>" );

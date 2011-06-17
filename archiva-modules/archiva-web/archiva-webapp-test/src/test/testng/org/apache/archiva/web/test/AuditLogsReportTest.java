@@ -28,7 +28,7 @@ public class AuditLogsReportTest
 {
     private void goToAuditLogReports()
     {
-        getSelenium().open( "/archiva/report/queryAuditLogReport.action" );
+        getSelenium().open( "/archiva/report/queryAuditLogReport.action?"+forceLocaleParam );
     }
 
     private void assertAuditLogsReportPage()

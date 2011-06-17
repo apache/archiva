@@ -54,8 +54,9 @@ public class ArchivaAdminTest
                                    @Optional( "localhost" ) String seleniumHost, @Optional( "4444" ) int seleniumPort )
         throws Exception
     {
-        super.open( baseUrl, browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
-        getSelenium().open( baseUrl );
+        super.open( baseUrl + "/index.action?" + forceLocaleParam , browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
+
+        getSelenium().open( baseUrl + "?" + forceLocaleParam );
         String title = getSelenium().getTitle();
         if ( title.endsWith( "Create Admin User" ) )
         {

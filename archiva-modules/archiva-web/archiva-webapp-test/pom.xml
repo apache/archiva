@@ -34,10 +34,11 @@
     <tomcat5x.version>5.5.33</tomcat5x.version>
     <tomcat6x.version>6.0.32</tomcat6x.version>
     <cargo.wait>false</cargo.wait>
+    <cargo.timeout>600000</cargo.timeout>
     <cargo.install.dir>cargo-installs</cargo.install.dir>
     <maxWaitTimeInMs>60000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
-    <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
+    <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m -Duser.language=en</cargo.jvm.args>
     <seleniumPluginVersion>2.0-SNAPSHOT</seleniumPluginVersion>
   </properties>
 
@@ -234,9 +235,33 @@
       </activation>
       <build>
         <plugins>
+          <!--
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>2.4.1</version>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>${project.build.directory}/${container.name}conf/webapps/archiva</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+            <executions>
+              <execution>
+                <id>clean-webapp</id>
+                <phase>process-sources</phase>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.2</version>
             <executions>
               <execution>
                 <id>unzip-archiva-webapp</id>
@@ -254,6 +279,7 @@
                     </artifactItem>
                   </artifactItems>
                   <outputDirectory>${project.build.directory}/${container.name}conf/webapps/archiva</outputDirectory>
+                  <overWriteSnapshots>true</overWriteSnapshots>
                 </configuration>
               </execution>
               <execution>
@@ -313,7 +339,14 @@
                       <fileset dir="src/test/${container.name}"/>
                     </copy>
                     <copy
-                        todir="${cargo.install.dir}/${container.name}/apache-tomcat-${tomcat5x.version}/apache-tomcat-${tomcat5x.version}/common/lib">
+                        todir="${cargo.install.dir}/${container.name}/apache-tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/common/lib">
+                      <fileset dir="${project.build.directory}/providedDependencies">
+                        <include name="**/*.jar"/>
+                      </fileset>
+                    </copy>
+                    <!-- for tomcat 6 -->
+                    <copy
+                        todir="${cargo.install.dir}/${container.name}/apache-tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/lib">
                       <fileset dir="${project.build.directory}/providedDependencies">
                         <include name="**/*.jar"/>
                       </fileset>
@@ -369,10 +402,12 @@
                 </zipUrlInstaller>
                 <log>${project.build.directory}/logs/${container.name}.log</log>
                 <output>${project.build.directory}/logs/${container.name}.out</output>
-                <timeout>600000</timeout>
+                <timeout>${cargo.timeout}</timeout>
                 <systemProperties>
                   <appserver.base>${project.build.directory}/appserver-base</appserver.base>
                   <appserver.home>${project.build.directory}/appserver-base</appserver.home>
+                  <user.language>en</user.language>
+                  <user.region>US</user.region>
                 </systemProperties>
               </container>
               <configuration>
@@ -436,11 +471,12 @@
       <id>tomcat5x</id>
       <activation>
         <property>
-          <name>!container</name>
+          <name>tomcat5</name>
         </property>
       </activation>
       <properties>
         <container.name>tomcat5x</container.name>
+        <tomcat.version>${tomcat5x.version}</tomcat.version>
         <container.url>
           http://archive.apache.org/dist/tomcat/tomcat-5/v${tomcat5x.version}/bin/apache-tomcat-${tomcat5x.version}.zip
         </container.url>
@@ -450,11 +486,12 @@
       <id>tomcat6x</id>
       <activation>
         <property>
-          <name>tomcat6</name>
+          <name>!container</name>
         </property>
       </activation>
       <properties>
         <container.name>tomcat6x</container.name>
+        <tomcat.version>${tomcat6x.version}</tomcat.version>
         <container.url>
           http://archive.apache.org/dist/tomcat/tomcat-6/v${tomcat6x.version}/bin/apache-tomcat-${tomcat6x.version}.zip
         </container.url>
@@ -569,7 +606,7 @@
         <cargo.jvm.args>
           -Xdebug -Xnoagent -Djava.compiler=NONE
           -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=${cargo.debug.port}
-          -Xmx512m -XX:MaxPermSize=256m
+          -Xmx512m -XX:MaxPermSize=256m  -Duser.language=en
         </cargo.jvm.args>
         <cargo.debug.port>8000</cargo.debug.port>
         <!-- wait an unusual amount of time (1hr) to allow debugging to occur -->

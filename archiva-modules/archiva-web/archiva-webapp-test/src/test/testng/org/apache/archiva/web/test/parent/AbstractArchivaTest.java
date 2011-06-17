@@ -101,7 +101,7 @@ public abstract class AbstractArchivaTest
     // Go to Login Page
     public void goToLoginPage()
     {
-        getSelenium().open( baseUrl );
+        getSelenium().open( baseUrl + "?" + forceLocaleParam );
         clickLinkWithText( "Login" );
         assertLoginPage();
     }

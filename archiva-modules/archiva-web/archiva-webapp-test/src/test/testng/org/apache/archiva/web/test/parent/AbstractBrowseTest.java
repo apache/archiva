@@ -26,7 +26,7 @@ public abstract class AbstractBrowseTest
     // Browse
     public void goToBrowsePage()
     {
-        getSelenium().open( "/archiva/browse" );
+        getSelenium().open( "/archiva/browse" + "?" + forceLocaleParam );
         assertBrowsePage();
     }
 

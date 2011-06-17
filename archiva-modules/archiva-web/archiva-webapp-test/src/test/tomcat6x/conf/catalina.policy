@@ -1,0 +1,7 @@
+    grant {
+                 permission java.security.AllPermission;
+              };
+
+grant codeBase "file:${catalina.home}/lib/tomcat-juli.jar" {
+ permission java.lang.RuntimePermission "setContextClassLoader";
+};
