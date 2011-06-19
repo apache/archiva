@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath*:/spring-context.xml"} )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase
 {
@@ -187,8 +187,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
 
-        Collection<ArtifactMetadata> artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
-                                                                          TEST_PROJECT_VERSION );
+        Collection<ArtifactMetadata> artifacts =
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         assertEquals( Collections.singletonList( metadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
 
         // test that namespace, project and project version is also constructed
@@ -198,9 +198,8 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( TEST_PROJECT, projectMetadata.getId() );
         assertEquals( TEST_NAMESPACE, projectMetadata.getNamespace() );
 
-        ProjectVersionMetadata projectVersionMetadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE,
-                                                                                      TEST_PROJECT,
-                                                                                      TEST_PROJECT_VERSION );
+        ProjectVersionMetadata projectVersionMetadata =
+            repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         assertEquals( TEST_PROJECT_VERSION, projectVersionMetadata.getId() );
     }
 
@@ -328,8 +327,9 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateNamespace( TEST_REPO_ID, "namespace" );
         repository.updateNamespace( OTHER_REPO_ID, "namespace" );
 
-        assertEquals( Arrays.asList( TEST_REPO_ID, OTHER_REPO_ID ), new ArrayList<String>(
-            repository.getRepositories() ) );
+        assertEquals( "repository.getRepositories() -> " + repository.getRepositories(),
+                      Arrays.asList( TEST_REPO_ID, OTHER_REPO_ID ),
+                      new ArrayList<String>( repository.getRepositories() ) );
     }
 
     @Test
@@ -448,8 +448,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifactMetadata );
         repository.save();
 
-        Collection<ArtifactMetadata> artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
-                                                                          TEST_PROJECT_VERSION );
+        Collection<ArtifactMetadata> artifacts =
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
 
         artifacts = repository.getArtifacts( TEST_REPO_ID );
@@ -478,8 +478,8 @@ public abstract class AbstractMetadataRepositoryTest
         metadata.addFacet( facet );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
 
-        Collection<ArtifactMetadata> artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
-                                                                          TEST_PROJECT_VERSION );
+        Collection<ArtifactMetadata> artifacts =
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         assertEquals( 1, artifacts.size() );
         metadata = artifacts.iterator().next();
         assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
@@ -552,8 +552,8 @@ public abstract class AbstractMetadataRepositoryTest
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
-        assertEquals( new TestMetadataFacet( TEST_VALUE ), repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID,
-                                                                                        TEST_NAME ) );
+        assertEquals( new TestMetadataFacet( TEST_VALUE ),
+                      repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
     }
 
     @Test
@@ -578,9 +578,8 @@ public abstract class AbstractMetadataRepositoryTest
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( null ) );
 
-        assertEquals( new TestMetadataFacet( TEST_METADATA_VALUE ), repository.getMetadataFacet( TEST_REPO_ID,
-                                                                                                 TEST_FACET_ID,
-                                                                                                 TEST_NAME ) );
+        assertEquals( new TestMetadataFacet( TEST_METADATA_VALUE ),
+                      repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
     }
 
     @Test
@@ -596,8 +595,8 @@ public abstract class AbstractMetadataRepositoryTest
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
 
-        assertEquals( Collections.singletonList( TEST_NAME ), repository.getMetadataFacets( TEST_REPO_ID,
-                                                                                            TEST_FACET_ID ) );
+        assertEquals( Collections.singletonList( TEST_NAME ),
+                      repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID ) );
     }
 
     @Test
@@ -694,8 +693,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
 
-        Collection<ArtifactMetadata> artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
-                                                                          TEST_PROJECT_VERSION );
+        Collection<ArtifactMetadata> artifacts =
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         ArrayList<ArtifactMetadata> actual = new ArrayList<ArtifactMetadata>( artifacts );
         Collections.sort( actual, new Comparator<ArtifactMetadata>()
         {
@@ -722,9 +721,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
 
-        List<String> versions = new ArrayList<String>( repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE,
-                                                                                       TEST_PROJECT,
-                                                                                       TEST_PROJECT_VERSION ) );
+        List<String> versions = new ArrayList<String>(
+            repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) );
         Collections.sort( versions );
         assertEquals( Arrays.asList( version1, version2 ), versions );
     }
@@ -740,10 +738,9 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
 
-        assertEquals( Collections.singleton( TEST_PROJECT_VERSION ), repository.getArtifactVersions( TEST_REPO_ID,
-                                                                                                     TEST_NAMESPACE,
-                                                                                                     TEST_PROJECT,
-                                                                                                     TEST_PROJECT_VERSION ) );
+        assertEquals( Collections.singleton( TEST_PROJECT_VERSION ),
+                      repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                                      TEST_PROJECT_VERSION ) );
     }
 
     @Test
@@ -754,8 +751,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
         repository.save();
 
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByDateRange( TEST_REPO_ID, null,
-                                                                                                 null ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
     }
 
     @Test
@@ -768,8 +765,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, namespace, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
         repository.save();
 
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByDateRange( TEST_REPO_ID, null,
-                                                                                                 null ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
     }
 
     @Test
@@ -781,8 +778,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         Date date = new Date( artifact.getWhenGathered().getTime() - 10000 );
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByDateRange( TEST_REPO_ID, date,
-                                                                                                 null ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, date, null ) );
     }
 
     @Test
@@ -806,8 +803,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         Date lower = new Date( artifact.getWhenGathered().getTime() - 10000 );
         Date upper = new Date( artifact.getWhenGathered().getTime() + 10000 );
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByDateRange( TEST_REPO_ID, lower,
-                                                                                                 upper ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, lower, upper ) );
     }
 
     @Test
@@ -819,8 +816,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         Date upper = new Date( artifact.getWhenGathered().getTime() + 10000 );
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByDateRange( TEST_REPO_ID, null,
-                                                                                                 upper ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, null, upper ) );
     }
 
     @Test
@@ -876,10 +873,10 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         // test it restricts to the appropriate repository
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByDateRange( TEST_REPO_ID, null,
-                                                                                                 null ) );
-        assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifactsByDateRange( OTHER_REPO_ID,
-                                                                                                       null, null ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
+        assertEquals( Collections.singletonList( secondArtifact ),
+                      repository.getArtifactsByDateRange( OTHER_REPO_ID, null, null ) );
     }
 
     @Test
@@ -895,14 +892,14 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         // test it restricts to the appropriate repository
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
-                                                                                                TEST_SHA1 ) );
-        assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifactsByChecksum( OTHER_REPO_ID,
-                                                                                                      TEST_SHA1 ) );
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
-                                                                                                TEST_MD5 ) );
-        assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifactsByChecksum( OTHER_REPO_ID,
-                                                                                                      TEST_MD5 ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
+        assertEquals( Collections.singletonList( secondArtifact ),
+                      repository.getArtifactsByChecksum( OTHER_REPO_ID, TEST_SHA1 ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) );
+        assertEquals( Collections.singletonList( secondArtifact ),
+                      repository.getArtifactsByChecksum( OTHER_REPO_ID, TEST_MD5 ) );
     }
 
     @Test
@@ -942,8 +939,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.updateNamespace( TEST_REPO_ID, "org.apache.maven.shared" );
 
-        assertEquals( Collections.singletonList( TEST_PROJECT ), repository.getProjects( TEST_REPO_ID,
-                                                                                         "org.apache.maven" ) );
+        assertEquals( Collections.singletonList( TEST_PROJECT ),
+                      repository.getProjects( TEST_REPO_ID, "org.apache.maven" ) );
     }
 
     @Test
@@ -962,8 +959,8 @@ public abstract class AbstractMetadataRepositoryTest
         List<String> expectedVersions = Collections.singletonList( TEST_PROJECT_VERSION );
         assertEquals( expectedVersions, repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven." + TEST_PROJECT,
                                                                        "other-project" ) );
-        assertEquals( expectedVersions, repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven",
-                                                                       TEST_PROJECT ) );
+        assertEquals( expectedVersions,
+                      repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven", TEST_PROJECT ) );
     }
 
     @Test
@@ -974,8 +971,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
         repository.save();
 
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
-                                                                                                TEST_MD5 ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) );
     }
 
     @Test
@@ -986,8 +983,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
         repository.save();
 
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
-                                                                                                TEST_SHA1 ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
     }
 
     @Test
@@ -1000,10 +997,10 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, namespace, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
         repository.save();
 
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
-                                                                                                TEST_SHA1 ) );
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifactsByChecksum( TEST_REPO_ID,
-                                                                                                TEST_MD5 ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
+        assertEquals( Collections.singletonList( artifact ),
+                      repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) );
     }
 
     @Test
@@ -1019,8 +1016,8 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, newProjectId, TEST_PROJECT_VERSION, artifact2 );
         repository.save();
 
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum(
-            TEST_REPO_ID, TEST_SHA1 ) );
+        List<ArtifactMetadata> artifacts =
+            new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
         Collections.sort( artifacts, new ArtifactMetadataComparator() );
         assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
 
@@ -1049,13 +1046,13 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
 
-        assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>( repository.getArtifacts(
-            TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
+        assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
 
         repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
 
-        assertTrue( repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
-                                             TEST_PROJECT_VERSION ).isEmpty() );
+        assertTrue(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
     }
 
     @Test
@@ -1084,8 +1081,8 @@ public abstract class AbstractMetadataRepositoryTest
         List<ArtifactMetadata> expected = Arrays.asList( artifact1, artifact2 );
         Collections.sort( expected, new ArtifactMetadataComparator() );
 
-        List<ArtifactMetadata> actual = new ArrayList<ArtifactMetadata>( repository.getArtifactsByDateRange(
-            TEST_REPO_ID, null, null ) );
+        List<ArtifactMetadata> actual =
+            new ArrayList<ArtifactMetadata>( repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
         Collections.sort( actual, new ArtifactMetadataComparator() );
 
         assertEquals( expected, actual );

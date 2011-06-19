@@ -37,6 +37,7 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,8 +128,8 @@ public class FileMetadataRepository
     {
         updateProject( repoId, namespace, projectId );
 
-        File directory = new File( getDirectory( repoId ),
-                                   namespace + "/" + projectId + "/" + versionMetadata.getId() );
+        File directory =
+            new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + versionMetadata.getId() );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
@@ -332,8 +333,8 @@ public class FileMetadataRepository
         Properties properties;
         try
         {
-            properties = readProperties( new File( getMetadataDirectory( repositoryId, facetId ), name ),
-                                         METADATA_KEY );
+            properties =
+                readProperties( new File( getMetadataDirectory( repositoryId, facetId ), name ), METADATA_KEY );
         }
         catch ( FileNotFoundException e )
         {
@@ -368,8 +369,8 @@ public class FileMetadataRepository
 
         try
         {
-            File directory = new File( getMetadataDirectory( repositoryId, metadataFacet.getFacetId() ),
-                                       metadataFacet.getName() );
+            File directory =
+                new File( getMetadataDirectory( repositoryId, metadataFacet.getFacetId() ), metadataFacet.getName() );
             writeProperties( properties, directory, METADATA_KEY );
         }
         catch ( IOException e )
@@ -515,8 +516,8 @@ public class FileMetadataRepository
                                     String property = (String) key;
                                     if ( property.startsWith( prefix ) )
                                     {
-                                        map.put( property.substring( prefix.length() + 1 ), properties.getProperty(
-                                            property ) );
+                                        map.put( property.substring( prefix.length() + 1 ),
+                                                 properties.getProperty( property ) );
                                     }
                                 }
                                 facet.fromProperties( map );
@@ -575,7 +576,12 @@ public class FileMetadataRepository
 
     public Collection<String> getRepositories()
     {
-        return configuration.getConfiguration().getManagedRepositoriesAsMap().keySet();
+        List<String> repositories = new ArrayList<String>();
+        for ( ManagedRepositoryConfiguration managedRepositoryConfiguration : configuration.getConfiguration().getManagedRepositories() )
+        {
+            repositories.add( managedRepositoryConfiguration.getId() );
+        }
+        return repositories;
     }
 
     public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
@@ -908,14 +914,14 @@ public class FileMetadataRepository
                     dependency.setArtifactId( dependencyArtifactId );
                     dependency.setGroupId( properties.getProperty( "dependency." + i + ".groupId" ) );
                     dependency.setClassifier( properties.getProperty( "dependency." + i + ".classifier" ) );
-                    dependency.setOptional( Boolean.valueOf( properties.getProperty(
-                        "dependency." + i + ".optional" ) ) );
+                    dependency.setOptional(
+                        Boolean.valueOf( properties.getProperty( "dependency." + i + ".optional" ) ) );
                     dependency.setScope( properties.getProperty( "dependency." + i + ".scope" ) );
                     dependency.setSystemPath( properties.getProperty( "dependency." + i + ".systemPath" ) );
                     dependency.setType( properties.getProperty( "dependency." + i + ".type" ) );
                     dependency.setVersion( properties.getProperty( "dependency." + i + ".version" ) );
-                    dependency.setOptional( Boolean.valueOf( properties.getProperty(
-                        "dependency." + i + ".optional" ) ) );
+                    dependency.setOptional(
+                        Boolean.valueOf( properties.getProperty( "dependency." + i + ".optional" ) ) );
                     versionMetadata.addDependency( dependency );
                 }
                 else
@@ -944,8 +950,8 @@ public class FileMetadataRepository
                             String property = (String) key;
                             if ( property.startsWith( facet.getFacetId() ) )
                             {
-                                map.put( property.substring( facet.getFacetId().length() + 1 ), properties.getProperty(
-                                    property ) );
+                                map.put( property.substring( facet.getFacetId().length() + 1 ),
+                                         properties.getProperty( property ) );
                             }
                         }
                         facet.fromProperties( map );
@@ -993,8 +999,8 @@ public class FileMetadataRepository
             reference.setProjectId( properties.getProperty( "ref:reference." + i + ".projectId" ) );
             reference.setNamespace( properties.getProperty( "ref:reference." + i + ".namespace" ) );
             reference.setProjectVersion( properties.getProperty( "ref:reference." + i + ".projectVersion" ) );
-            reference.setReferenceType( ProjectVersionReference.ReferenceType.valueOf( properties.getProperty(
-                "ref:reference." + i + ".referenceType" ) ) );
+            reference.setReferenceType( ProjectVersionReference.ReferenceType.valueOf(
+                properties.getProperty( "ref:reference." + i + ".referenceType" ) ) );
             references.add( reference );
         }
         return references;
