@@ -86,19 +86,19 @@ public class RepositoryServletBrowseTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId" );
         WebResponse response = sc.getResponse( request );
-        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
+        assertEquals( "1st Response", HttpServletResponse.SC_OK, response.getResponseCode() );
 
         request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/" );
         response = sc.getResponse( request );
-        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
+        assertEquals( "2nd Response", HttpServletResponse.SC_OK, response.getResponseCode() );
         
         request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar" );
         response = sc.getResponse( request );
-        assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
+        assertEquals( "3rd Response", HttpServletResponse.SC_OK, response.getResponseCode() );
         
         request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar/" );
         response = sc.getResponse( request );
-        assertEquals( "Response", HttpServletResponse.SC_NOT_FOUND, response.getResponseCode() );
+        assertEquals( "4th Response", HttpServletResponse.SC_NOT_FOUND, response.getResponseCode() );
     }
     
     

@@ -100,25 +100,24 @@ public abstract class AbstractRepositoryServletTestCase
         }
         FileUtils.copyFile( testConf, testConfDest );
 
-
         archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
-
 
         //archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
         repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
         Configuration config = archivaConfiguration.getConfiguration();
 
-        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ) )
-        {
-            config.addManagedRepository(
-                createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
-        }
-        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_LEGACY ) )
-        {
-            config.addManagedRepository(
-                createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
-        }
+        config.getManagedRepositories().clear();
+
+        config.addManagedRepository(
+            createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
+
+        config.addManagedRepository(
+            createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
+
+        config.getProxyConnectors().clear();
+
+        config.getRemoteRepositories().clear();
 
         saveConfiguration( archivaConfiguration );
 
@@ -159,7 +158,6 @@ public abstract class AbstractRepositoryServletTestCase
 
         super.tearDown();
     }
-
 
 
     protected void assertFileContents( String expectedContents, File repoRoot, String path )
