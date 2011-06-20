@@ -40,14 +40,15 @@ import org.testng.annotations.Test;
 public class LoginTest
     extends AbstractArchivaTest
 {
-    @Test
+    @Test(alwaysRun = true)
     public void testWithBadUsername()
     {
         goToLoginPage();
         setFieldValue( "loginForm_username", "badUsername" );
-        clickButtonWithValue( "Login" );
+        getSelenium().click( "loginSubmit" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        assertTextPresent( "You have entered an incorrect username and/or password" );
+        assertElementPresent( "//ul[@class=\'errorMessage\']" );
+        //assertTextPresent( "You have entered an incorrect username and/or password" );
     }
 
     @Test( dependsOnMethods = { "testWithBadUsername" }, alwaysRun = true )
@@ -59,8 +60,7 @@ public class LoginTest
         getSelenium().click( "loginSubmit" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         //assertTextPresent( "You have entered an incorrect username and/or password" );
-        // <ul class="errorMessage">
-
+        //<ul class="errorMessage"><li><span>
         assertElementPresent( "//ul[@class=\'errorMessage\']" );
     }
 
@@ -69,9 +69,10 @@ public class LoginTest
     {
         goToLoginPage();
         setFieldValue( "loginForm_password", "password" );
-        clickButtonWithValue( "Login" );
+        getSelenium().click( "loginSubmit" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        assertTextPresent( "User Name is required" );
+        //assertTextPresent( "User Name is required" );
+        assertElementPresent( "//tr[@errorFor=\'loginForm_username\']");
     }
 
     @Test( dependsOnMethods = { "testWithEmptyUsername" }, alwaysRun = true )
@@ -79,9 +80,10 @@ public class LoginTest
     {
         goToLoginPage();
         setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        clickButtonWithValue( "Login" );
+        getSelenium().click( "loginSubmit" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        assertTextPresent( "You have entered an incorrect username and/or password" );
+        //assertTextPresent( "You have entered an incorrect username and/or password" );
+        assertElementPresent( "//ul[@class=\'errorMessage\']" );
     }
 
     @Test( groups = { "loginSuccess" }, dependsOnMethods = { "testWithEmptyPassword" }, alwaysRun = true )
@@ -90,10 +92,12 @@ public class LoginTest
         goToLoginPage();
         setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
         setFieldValue( "loginForm_password", getProperty( "ADMIN_PASSWORD" ) );
-        clickButtonWithValue( "Login" );
+        getSelenium().click( "loginSubmit" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        assertTextPresent( "Edit Details" );
-        assertTextPresent( "Logout" );
+        //assertTextPresent( "Logout" );
+        assertElementPresent( "logoutLink" );
+        //assertTextPresent( "Edit Details" );
+        assertElementPresent( "editUserLink" );
         assertTextPresent( getProperty( "ADMIN_USERNAME" ) );
     }
 

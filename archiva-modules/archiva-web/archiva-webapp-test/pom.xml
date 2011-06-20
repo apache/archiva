@@ -46,7 +46,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>5.8</version>
+      <version>5.9</version>
       <scope>test</scope>
       <classifier>jdk15</classifier>
     </dependency>
@@ -235,29 +235,6 @@
       </activation>
       <build>
         <plugins>
-          <!--
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-clean-plugin</artifactId>
-            <version>2.4.1</version>
-            <configuration>
-              <filesets>
-                <fileset>
-                  <directory>${project.build.directory}/${container.name}conf/webapps/archiva</directory>
-                </fileset>
-              </filesets>
-            </configuration>
-            <executions>
-              <execution>
-                <id>clean-webapp</id>
-                <phase>process-sources</phase>
-                <goals>
-                  <goal>clean</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
@@ -519,6 +496,7 @@
       </activation>
       <properties>
         <selenium.browser>*googlechrome</selenium.browser>
+        <excluded.groups>requiresUpload</excluded.groups>
         <excluded.groups/>
       </properties>
     </profile>
