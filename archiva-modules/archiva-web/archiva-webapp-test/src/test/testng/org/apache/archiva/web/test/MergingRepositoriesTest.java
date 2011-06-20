@@ -30,7 +30,7 @@ public class MergingRepositoriesTest
     public void testAddStagingRepository()
     {
         goToRepositoriesPage();
-        getSelenium().open( "/archiva/admin/addRepository.action?" + forceLocaleParam );
+        getSelenium().open( "/archiva/admin/addRepository.action" );
         addStagingRepository( "merging-repo", "merging-repo", getRepositoryDir() + "merging-repo/", "",
                               "Maven 2.x Repository", "0 0 * * * ?", "", "" );
         assertTextPresent( "merging-repo" );

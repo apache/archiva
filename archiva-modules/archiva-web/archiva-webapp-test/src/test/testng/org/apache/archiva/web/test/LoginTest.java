@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
  * @version $Id$
  */
 
-@Test( groups = { "login" } )
+@Test( groups = { "login" }, dependsOnGroups = {"about"})
 public class LoginTest
     extends AbstractArchivaTest
 {

@@ -75,18 +75,19 @@ public abstract class AbstractArchivaTest
 
     public void assertCreateAdmin()
     {
-        assertPage( "Apache Archiva \\ Create Admin User" );
-        assertTextPresent( "Username" );
+        assertElementPresent( "adminCreateForm" );
+        //assertPage( "Apache Archiva \\ Create Admin User" );
+        //assertTextPresent( "Username" );
         assertFieldValue( "admin", "user.username" );
-        assertTextPresent( "Full Name*" );
+        //assertTextPresent( "Full Name*" );
         assertElementPresent( "user.fullName" );
-        assertTextPresent( "Email Address*" );
+        //assertTextPresent( "Email Address*" );
         assertElementPresent( "user.email" );
-        assertTextPresent( "Password*" );
+        //assertTextPresent( "Password*" );
         assertElementPresent( "user.password" );
-        assertTextPresent( "Confirm Password*" );
+        //assertTextPresent( "Confirm Password*" );
         assertElementPresent( "user.confirmPassword" );
-        assertButtonWithValuePresent( "Create Admin" );
+        //assertButtonWithValuePresent( "Create Admin" );
     }
 
     public void submitAdminData( String fullname, String email, String password )
@@ -101,8 +102,9 @@ public abstract class AbstractArchivaTest
     // Go to Login Page
     public void goToLoginPage()
     {
-        getSelenium().open( baseUrl + "?" + forceLocaleParam );
-        clickLinkWithText( "Login" );
+        getSelenium().open( baseUrl );
+        //clickLinkWithText( "Login" );
+        clickLinkWithLocator( "loginLink" );
         assertLoginPage();
     }
 
@@ -315,11 +317,14 @@ public abstract class AbstractArchivaTest
 
     protected void assertUserLoggedIn( String username )
     {
-        assertTextPresent( "Current User:" );
+        //assertTextPresent( "Current User:" );
         assertTextPresent( username );
-        assertLinkPresent( "Edit Details" );
-        assertLinkPresent( "Logout" );
-        assertTextNotPresent( "Login" );
+        //assertLinkPresent( "Edit Details" );
+        assertElementPresent( "editUserLink" );
+        assertElementPresent( "logoutLink" );
+        //assertLinkPresent( "Logout" );
+        //assertTextNotPresent( "Login" );
+        assertElementNotPresent( "loginLink" );
     }
 
     // User Roles

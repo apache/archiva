@@ -54,11 +54,13 @@ public class ArchivaAdminTest
                                    @Optional( "localhost" ) String seleniumHost, @Optional( "4444" ) int seleniumPort )
         throws Exception
     {
-        super.open( baseUrl + "/index.action?" + forceLocaleParam , browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
+        super.open( baseUrl , browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
 
-        getSelenium().open( baseUrl + "?" + forceLocaleParam );
+        getSelenium().open( baseUrl );
         String title = getSelenium().getTitle();
-        if ( title.endsWith( "Create Admin User" ) )
+        //assertElementPresent( "adminCreateForm" );
+        if (isElementPresent( "adminCreateForm" ))
+        //if ( title.endsWith( "Create Admin User" ) )
         {
             assertCreateAdmin();
             String fullname = getProperty( "ADMIN_FULLNAME" );
@@ -67,8 +69,9 @@ public class ArchivaAdminTest
             String password = getProperty( "ADMIN_PASSWORD" );
             submitAdminData( fullname, mail, password );
             assertUserLoggedIn( username );
-            submit();
-            clickLinkWithText( "Logout" );
+            //submit();
+            //clickLinkWithText( "Logout" );
+            clickLinkWithLocator( "logoutLink" );
         }
     }
 

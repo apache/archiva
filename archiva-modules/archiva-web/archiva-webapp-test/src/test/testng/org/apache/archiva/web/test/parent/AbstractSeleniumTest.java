@@ -44,8 +44,6 @@ public abstract class AbstractSeleniumTest
 
     public static String baseUrl;
 
-    public static String forceLocaleParam = "request_locale=en_US";
-
     public static String maxWaitTimeInMs;
 
     private static ThreadLocal<Selenium> selenium = new ThreadLocal<Selenium>();
@@ -75,7 +73,7 @@ public abstract class AbstractSeleniumTest
             if ( getSelenium() == null )
             {
                 DefaultSelenium s =
-                    new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl + "?" + forceLocaleParam );
+                    new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
                 s.start();
                 s.setTimeout( maxWaitTimeInMs );
                 selenium.set( s );
