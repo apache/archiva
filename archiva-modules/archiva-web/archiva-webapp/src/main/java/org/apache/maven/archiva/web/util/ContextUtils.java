@@ -39,8 +39,8 @@ public class ContextUtils
     static
     {
         defaultSchemePortMap = new HashMap<String, Integer>();
-        defaultSchemePortMap.put( "http", new Integer( 80 ) );
-        defaultSchemePortMap.put( "https", new Integer( 443 ) );
+        defaultSchemePortMap.put( "http", Integer.valueOf( 80 ) );
+        defaultSchemePortMap.put( "https", Integer.valueOf( 443 ) );
     }
 
     /**
