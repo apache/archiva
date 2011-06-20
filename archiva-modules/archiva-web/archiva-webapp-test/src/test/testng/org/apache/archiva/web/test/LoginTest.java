@@ -40,6 +40,7 @@ import org.testng.annotations.Test;
 public class LoginTest
     extends AbstractArchivaTest
 {
+    @Test
     public void testWithBadUsername()
     {
         goToLoginPage();
@@ -55,9 +56,12 @@ public class LoginTest
         goToLoginPage();
         setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
         setFieldValue( "loginForm_password", "badPassword" );
-        getSelenium().click( "loginForm__login" );
+        getSelenium().click( "loginSubmit" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        assertTextPresent( "You have entered an incorrect username and/or password" );
+        //assertTextPresent( "You have entered an incorrect username and/or password" );
+        // <ul class="errorMessage">
+
+        assertElementPresent( "//ul[@class=\'errorMessage\']" );
     }
 
     @Test( dependsOnMethods = { "testWithBadPassword" }, alwaysRun = true )

@@ -131,19 +131,25 @@ public abstract class AbstractArchivaTest
 
     public void assertLoginPage()
     {
-        assertPage( "Apache Archiva \\ Login Page" );
-        assertTextPresent( "Login" );
-        assertTextPresent( "Register" );
-        assertTextPresent( "Username" );
+        //assertPage( "Apache Archiva \\ Login Page" );
+        //assertTextPresent( "Login" );
+        assertElementPresent( "loginForm" );
+        //assertTextPresent( "Register" );
+        assertElementPresent( "registerLink" );
+        //assertTextPresent( "Username" );
         assertElementPresent( "username" );
-        assertTextPresent( "Password" );
+        //assertTextPresent( "Password" );
         assertElementPresent( "password" );
-        assertTextPresent( "Remember Me" );
+        //assertTextPresent( "Remember Me" );
         assertElementPresent( "rememberMe" );
-        assertButtonWithValuePresent( "Login" );
-        assertButtonWithValuePresent( "Cancel" );
-        assertTextPresent( "Need an Account? Register!" );
-        assertTextPresent( "Forgot your Password? Request a password reset." );
+        //assertButtonWithValuePresent( "Login" );
+        assertButtonWithIdPresent( "loginSubmit" );
+        //assertButtonWithValuePresent( "Cancel" );
+        assertButtonWithIdPresent( "loginCancel" );
+        //assertTextPresent( "Need an Account? Register!" );
+        //assertTextPresent( "Forgot your Password? Request a password reset." );
+        assertElementPresent( "registerLinkLoginPage" );
+        assertElementPresent( "forgottenPasswordLink" );
     }
 
     // User Management
