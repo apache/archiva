@@ -74,6 +74,7 @@
     <jackrabbit.version>2.2.5</jackrabbit.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
+    <lucene.version>2.4.1</lucene.version>
   </properties>
 
   <dependencyManagement>
@@ -106,41 +107,7 @@
         <artifactId>xercesImpl</artifactId>
         <version>2.8.1</version>
       </dependency>
-      <dependency>
-        <groupId>org.sonatype.nexus</groupId>
-        <artifactId>nexus-indexer</artifactId>
-        <version>3.0.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>classworlds</groupId>
-            <artifactId>classworlds</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>velocity</groupId>
-            <artifactId>velocity-dep</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-registry</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-settings</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.code.atinject</groupId>
-            <artifactId>atinject</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+
       <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
@@ -268,10 +235,41 @@
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-lucene-consumers</artifactId>
-        <version>1.4-SNAPSHOT</version>
+        <groupId>org.sonatype.nexus</groupId>
+        <artifactId>nexus-indexer</artifactId>
+        <version>3.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>classworlds</groupId>
+            <artifactId>classworlds</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>velocity</groupId>
+            <artifactId>velocity-dep</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-registry</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-settings</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.google.code.atinject</groupId>
+            <artifactId>atinject</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
+
       <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-plexus-bridge</artifactId>
@@ -540,14 +538,19 @@
         <version>1.2.14</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-lucene-consumers</artifactId>
+        <version>1.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
-        <version>2.4.1</version>
+        <version>${lucene.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queries</artifactId>
-        <version>2.4.1</version>
+        <version>${lucene.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
