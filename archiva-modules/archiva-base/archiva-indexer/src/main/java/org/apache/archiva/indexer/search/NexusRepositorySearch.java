@@ -36,6 +36,7 @@ import org.sonatype.nexus.index.FlatSearchResponse;
 import org.sonatype.nexus.index.NexusIndexer;
 import org.sonatype.nexus.index.context.IndexingContext;
 import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -49,6 +50,7 @@ import java.util.Set;
  * RepositorySearch implementation which uses the Nexus Indexer for searching.
  */
 @Service( "nexusSearch" )
+@Scope("prototype")
 public class NexusRepositorySearch
     implements RepositorySearch
 {

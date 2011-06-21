@@ -40,6 +40,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -107,6 +108,7 @@ public class SearchAction
 
     private boolean fromResultsPage;
 
+    @Inject
     private RepositorySearch nexusSearch;
 
     private Map<String, String> searchFields;
@@ -548,12 +550,11 @@ public class SearchAction
 
     public RepositorySearch getNexusSearch()
     {
-        // no need to do this when wiring is already in spring
         if ( nexusSearch == null )
         {
             WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(
                 ServletActionContext.getServletContext() );
-            nexusSearch = (RepositorySearch) wac.getBean( "nexusSearch" );
+            nexusSearch = wac.getBean( "nexusSearch", RepositorySearch.class );
         }
         return nexusSearch;
     }
