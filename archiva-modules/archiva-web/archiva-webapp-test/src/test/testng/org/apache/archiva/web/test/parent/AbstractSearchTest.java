@@ -52,8 +52,7 @@ public abstract class AbstractSearchTest
     {
         goToSearchPage();
 
-        getSelenium().type( "dom=document.forms[1].elements[0]", artifactId );
-        //clickButtonWithValue( "Search" );
+        setFieldValue( "quickSearchValue", artifactId );
         clickButtonWithLocator( "quickSearchSubmit" );
     }
 

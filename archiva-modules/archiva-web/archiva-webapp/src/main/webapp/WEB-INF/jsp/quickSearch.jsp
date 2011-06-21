@@ -95,7 +95,7 @@
   <c:url var="iconCreateUrl" value="/images/icons/create.png" />
   
   <s:form method="get" id="quickSearch" action="quickSearch" validate="true">    
-    <s:textfield label="Search for" size="50" name="q"/> 
+    <s:textfield label="Search for" size="50" name="q" id="quickSearchValue"/>
     <s:hidden name="completeQueryString" value="%{completeQueryString}"/>  
     <s:submit value="Search" id="quickSearchSubmit"/>
   </s:form>  

@@ -434,12 +434,15 @@ public abstract class AbstractArchivaTest
 
     public void assertFindArtifactPage()
     {
-        assertPage( "Apache Archiva \\ Find Artifact" );
-        assertTextPresent( "Find Artifact" );
-        assertTextPresent( "Search for:" );
-        assertTextPresent( "Checksum:" );
-        assertElementPresent( "q" );
-        assertButtonWithValuePresent( "Search" );
+        //assertPage( "Apache Archiva \\ Find Artifact" );
+        assertElementPresent( "searchBox" );
+        //assertTextPresent( "Find Artifact" );
+        //assertTextPresent( "Search for:" );
+        //assertTextPresent( "Checksum:" );
+        assertElementPresent( "quickSearchValue" );
+        assertElementPresent( "searchHint" );
+        //assertButtonWithValuePresent( "Search" );
+        assertElementPresent( "quickSearchSubmit" );
     }
 
     // Appearance
@@ -490,13 +493,17 @@ public abstract class AbstractArchivaTest
             "Upload Artifact,Group Id*:,Artifact Id*:,Version*:,Packaging*:,Classifier:,Generate Maven 2 POM,Artifact File*:,POM File:,Repository Id:";
         String[] arrayArtifact = artifact.split( "," );
         for ( String arrayartifact : arrayArtifact )
+        {
             assertTextPresent( arrayartifact );
+        }
 
         String artifactElements =
-            "upload_groupId,upload_artifactId,upload_version,upload_packaging,upload_classifier,upload_generatePom,upload_artifact,upload_pom,upload_repositoryId,upload_0";
+            "upload_groupId,upload_artifactId,upload_version,upload_packaging,upload_classifier,upload_generatePom,upload_artifact,upload_pom,upload_repositoryId,uploadSubmit";
         String[] arrayArtifactElements = artifactElements.split( "," );
         for ( String artifactelements : arrayArtifactElements )
+        {
             assertElementPresent( artifactelements );
+        }
     }
 
     public void addArtifact( String groupId, String artifactId, String version, String packaging,

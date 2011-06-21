@@ -154,7 +154,7 @@ public abstract class AbstractUpdatePolicy
         if ( !localFile.exists() )
         {
             // No file means it's ok.
-            log.debug( "OK to update " + getUpdateMode() + ", local file does not exist." );
+            log.debug( "OK to update {}, local file does not exist.", getUpdateMode() );
             return;
         }
 

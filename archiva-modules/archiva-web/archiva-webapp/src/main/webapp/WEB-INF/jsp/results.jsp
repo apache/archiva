@@ -115,7 +115,7 @@
         <s:submit label="Go!"/>
       </s:form> 
       <script type="text/javascript">
-        document.getElementById("quickSearch_q").focus();
+        document.getElementById("quickSearchValue").focus();
       </script>
     </c:if>
 

@@ -80,7 +80,7 @@
 
 
 <div id="topSearchBox">
-    <s:form method="get" action="quickSearch" namespace="/" validate="true">
+    <s:form method="get" action="quickSearch" namespace="/" validate="true" id="quickSearchBoxForm">
         <s:textfield id="quickSearchBox" label="Search for" size="30" name="q"/>
     </s:form>
 </div>

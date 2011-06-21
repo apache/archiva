@@ -226,7 +226,7 @@
             <td><s:checkbox name="scanAll" value="scanAll"/>Process All Artifacts</td>
           </tr>
           <tr>
-            <td><s:submit value="Scan Repository Now"/></td>
+            <td><s:submit value="Scan Repository Now" id="scanRepoNow%{#attr.repository.id}"/></td>
           </tr>
         </table>
         </s:form>
