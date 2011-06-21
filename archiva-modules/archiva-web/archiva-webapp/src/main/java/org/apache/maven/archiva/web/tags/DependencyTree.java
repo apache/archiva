@@ -44,7 +44,7 @@ import java.util.List;
  * @version $Id$
  *          plexus.component role="org.apache.maven.archiva.web.tags.DependencyTree"
  */
-@Service
+@Service( "dependencyTree" )
 public class DependencyTree
 {
     private Logger log = LoggerFactory.getLogger( DependencyTree.class );

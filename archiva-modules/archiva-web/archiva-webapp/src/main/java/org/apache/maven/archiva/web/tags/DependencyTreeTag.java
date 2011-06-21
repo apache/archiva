@@ -19,13 +19,14 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.web.tags.DependencyTree.TreeEntry;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.springframework.beans.BeansException;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -113,9 +114,12 @@ public class DependencyTreeTag
         DependencyTree deptree;
         try
         {
-            deptree = (DependencyTree) PlexusTagUtil.lookup( pageContext, DependencyTree.class );
+            WebApplicationContext webApplicationContext =
+                WebApplicationContextUtils.getRequiredWebApplicationContext( pageContext.getServletContext() );
+
+            deptree = ( DependencyTree ) webApplicationContext.getBean( "dependencyTree" );
         }
-        catch ( PlexusSisuBridgeException e )
+        catch ( BeansException e )
         {
             throw new JspException( "Unable to lookup DependencyTree: " + e.getMessage(), e );
         }

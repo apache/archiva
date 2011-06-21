@@ -22,7 +22,7 @@
 <%@ taglib prefix="archiva" uri="/WEB-INF/taglib.tld" %>
 
 <archiva:dependency-tree groupId="${groupId}" artifactId="${artifactId}" version="${version}"
-                         modelVersion="${model.version}">
+                         modelVersion="${model.version}" nodevar="node">
   <my:showArtifactLink groupId="${node.groupId}" artifactId="${node.artifactId}"
                        version="${node.version}"/>
 </archiva:dependency-tree>
