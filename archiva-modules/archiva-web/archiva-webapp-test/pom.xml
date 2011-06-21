@@ -38,7 +38,7 @@
     <cargo.install.dir>cargo-installs</cargo.install.dir>
     <maxWaitTimeInMs>60000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
-    <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m -Duser.language=en</cargo.jvm.args>
+    <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
     <seleniumPluginVersion>2.0-SNAPSHOT</seleniumPluginVersion>
   </properties>
 
@@ -383,8 +383,6 @@
                 <systemProperties>
                   <appserver.base>${project.build.directory}/appserver-base</appserver.base>
                   <appserver.home>${project.build.directory}/appserver-base</appserver.home>
-                  <user.language>en</user.language>
-                  <user.region>US</user.region>
                 </systemProperties>
               </container>
               <configuration>
@@ -584,7 +582,7 @@
         <cargo.jvm.args>
           -Xdebug -Xnoagent -Djava.compiler=NONE
           -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=${cargo.debug.port}
-          -Xmx512m -XX:MaxPermSize=256m  -Duser.language=en
+          -Xmx512m -XX:MaxPermSize=256m
         </cargo.jvm.args>
         <cargo.debug.port>8000</cargo.debug.port>
         <!-- wait an unusual amount of time (1hr) to allow debugging to occur -->

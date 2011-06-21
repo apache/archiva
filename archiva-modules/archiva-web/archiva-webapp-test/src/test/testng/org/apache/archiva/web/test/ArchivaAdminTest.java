@@ -58,9 +58,8 @@ public class ArchivaAdminTest
 
         getSelenium().open( baseUrl );
         String title = getSelenium().getTitle();
-        //assertElementPresent( "adminCreateForm" );
+        // if not admin user created create one
         if (isElementPresent( "adminCreateForm" ))
-        //if ( title.endsWith( "Create Admin User" ) )
         {
             assertCreateAdmin();
             String fullname = getProperty( "ADMIN_FULLNAME" );
@@ -69,10 +68,10 @@ public class ArchivaAdminTest
             String password = getProperty( "ADMIN_PASSWORD" );
             submitAdminData( fullname, mail, password );
             assertUserLoggedIn( username );
-            //submit();
-            //clickLinkWithText( "Logout" );
             clickLinkWithLocator( "logoutLink" );
         }
+
+        // take care about repositories : internal
     }
 
 }

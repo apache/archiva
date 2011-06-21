@@ -25,12 +25,15 @@ public abstract class AbstractSearchTest
     // Search
     public void goToSearchPage()
     {
-        if ( !"Apache Archiva \\ Quick Search".equals( getTitle() ) )
+        goToHomePage();
+        //if ( !"Apache Archiva \\ Quick Search".equals( getTitle() ) )
+        if ( isElementPresent( "quickSearchBox" ) )
         {
-            clickLinkWithText( "Search" );
+            //clickLinkWithText( "Search" );
+            clickLinkWithLocator( "menuSearchLink" );
             getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-
-            assertPage( "Apache Archiva \\ Quick Search" );
+            assertElementPresent( "quickSearchSubmit" );
+            //assertPage( "Apache Archiva \\ Quick Search" );
         }
     }
 
@@ -38,7 +41,7 @@ public abstract class AbstractSearchTest
     {
         assertPage( "Apache Archiva \\ Quick Search" );
         assertTextPresent( "Search for" );
-        assertElementPresent( "quickSearch_q" );
+        assertElementPresent( "quickSearchSubmit" );
         assertButtonWithValuePresent( "Search" );
         // assertLinkPresent( "Advanced Search" );
         assertTextPresent( "Enter your search terms. A variety of data will be searched for your keywords." );
@@ -50,11 +53,12 @@ public abstract class AbstractSearchTest
         goToSearchPage();
 
         getSelenium().type( "dom=document.forms[1].elements[0]", artifactId );
-        clickButtonWithValue( "Search" );
+        //clickButtonWithValue( "Search" );
+        clickButtonWithLocator( "quickSearchSubmit" );
     }
 
-    public void searchForArtifactAdvancedSearch( String groupId, String artifactId, String version,
-                                                 String repositoryId, String className, String rowCount )
+    public void searchForArtifactAdvancedSearch( String groupId, String artifactId, String version, String repositoryId,
+                                                 String className, String rowCount )
     {
         goToSearchPage();
 

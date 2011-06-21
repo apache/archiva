@@ -103,7 +103,6 @@ public abstract class AbstractArchivaTest
     public void goToLoginPage()
     {
         getSelenium().open( baseUrl );
-        //clickLinkWithText( "Login" );
         clickLinkWithLocator( "loginLink" );
         assertLoginPage();
     }
@@ -270,7 +269,7 @@ public abstract class AbstractArchivaTest
 
     public void login( String username, String password, boolean valid, String assertReturnPage )
     {
-        if ( isLinkPresent( "Login" ) )
+        if ( isElementPresent( "loginLink" ) )
         {
             goToLoginPage();
 
@@ -302,8 +301,8 @@ public abstract class AbstractArchivaTest
         {
             checkField( "rememberMe" );
         }
-        clickButtonWithValue( "Login" );
-
+        //clickButtonWithValue( "Login" );
+        clickButtonWithLocator( "loginSubmit" );
         if ( validUsernamePassword )
         {
             assertUserLoggedIn( username );
@@ -470,9 +469,14 @@ public abstract class AbstractArchivaTest
         clickButtonWithValue( "Save" );
     }
 
+    public void goToHomePage()
+    {
+         getSelenium().open( "");
+    }
     // Upload Artifact
     public void goToAddArtifactPage()
     {
+        // must be logged as admin
         getSelenium().open( "/archiva/upload.action" );
         assertAddArtifactPage();
     }
@@ -504,6 +508,7 @@ public abstract class AbstractArchivaTest
     public void addArtifact( String groupId, String artifactId, String version, String packaging, boolean generatePom,
                              String artifactFilePath, String repositoryId )
     {
+        login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
         goToAddArtifactPage();
         setFieldValue( "groupId", groupId );
         setFieldValue( "artifactId", artifactId );
@@ -534,9 +539,10 @@ public abstract class AbstractArchivaTest
         }
 
         setFieldValue( "artifact", path );
-        selectValue( "repositoryId", repositoryId );
+        selectValue( "upload_repositoryId", repositoryId );
 
-        clickButtonWithValue( "Submit" );
+        //clickButtonWithValue( "Submit" );
+        clickButtonWithLocator( "uploadSubmit" );
     }
 
     public void goToRepositoriesPage()

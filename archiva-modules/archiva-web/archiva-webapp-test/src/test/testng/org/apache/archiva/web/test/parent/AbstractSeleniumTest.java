@@ -72,8 +72,7 @@ public abstract class AbstractSeleniumTest
 
             if ( getSelenium() == null )
             {
-                DefaultSelenium s =
-                    new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
+                DefaultSelenium s = new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
                 s.start();
                 s.setTimeout( maxWaitTimeInMs );
                 selenium.set( s );
@@ -255,6 +254,7 @@ public abstract class AbstractSeleniumTest
         getSelenium().select( locator, "label=" + value );
     }
 
+
     public void assertOptionPresent( String selectField, String[] options )
     {
         assertElementPresent( selectField );
@@ -362,6 +362,21 @@ public abstract class AbstractSeleniumTest
     }
 
     public void clickLinkWithLocator( String locator, boolean wait )
+    {
+        assertElementPresent( locator );
+        getSelenium().click( locator );
+        if ( wait )
+        {
+            waitPage();
+        }
+    }
+
+    public void clickButtonWithLocator( String locator )
+    {
+        clickButtonWithLocator( locator, true );
+    }
+
+    public void clickButtonWithLocator( String locator, boolean wait )
     {
         assertElementPresent( locator );
         getSelenium().click( locator );

@@ -39,7 +39,7 @@
 
   <s:form action="upload!doUpload" method="post" enctype="multipart/form-data" validate="true">    
     <%@ include file="/WEB-INF/jsp/include/uploadForm.jspf" %>
-    <s:submit/>
+    <s:submit id="uploadSubmit"/>
   </s:form>
 </div>
 

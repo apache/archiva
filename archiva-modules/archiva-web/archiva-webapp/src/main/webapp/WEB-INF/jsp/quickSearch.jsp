@@ -97,7 +97,7 @@
   <s:form method="get" id="quickSearch" action="quickSearch" validate="true">    
     <s:textfield label="Search for" size="50" name="q"/> 
     <s:hidden name="completeQueryString" value="%{completeQueryString}"/>  
-    <s:submit value="Search"/>      	
+    <s:submit value="Search" id="quickSearchSubmit"/>
   </s:form>  
   <p>
     <s:actionerror/>

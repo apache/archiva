@@ -24,27 +24,32 @@ import java.io.File;
 import org.apache.archiva.web.test.parent.AbstractSearchTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "search" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "search" }, dependsOnGroups = {"about"}, sequential = true)
 public class SearchTest
     extends AbstractSearchTest
 {
 
+    @Test(alwaysRun = true)
     public void testSearchNonExistingArtifact()
         throws Exception
     {
         searchForArtifact( getProperty( "SEARCH_BAD_ARTIFACT" ) );
-        assertTextPresent( "No results found" );
+        //assertTextPresent( "No results found" );
+        assertElementPresent( "//span[@class=\'errorMessage\']" );
     }
 
     // TODO: make search tests more robust especially when comparing/asserting number of hits
+    @Test(alwaysRun = true)
     public void testSearchExistingArtifact()
     {
         searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
-        assertTextPresent( "Results" );
-        assertTextPresent( "Hits: 1 to 1 of 1" );
+        //assertTextPresent( "Results" );
+        assertElementPresent( "resultsBox" );
+        assertTextPresent( "1 to 1 of 1" );
         assertLinkPresent( "test" );
     }
 
+    @Test(alwaysRun = true)
     public void testViewSearchedArtifact()
     {
         searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
@@ -54,7 +59,8 @@ public class SearchTest
         clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
         assertPage( "Apache Archiva \\ Browse Repository" );
     }
-    
+
+    @Test(alwaysRun = true)
     public void testSearchWithMultipleKeywords()
     {
         String groupId = getProperty( "ADD_REMOVE_GROUPID" );
@@ -79,18 +85,21 @@ public class SearchTest
         assertTextPresent( "No results found" );
     }
 
+    @Test(alwaysRun = true)
     public void testSearchNonExistingArtifactInAdvancedSearch()
     {
         searchForArtifactAdvancedSearch( null, getProperty( "SEARCH_BAD_ARTIFACT" ), null, null, null, null );
         assertTextPresent( "No results found" );
     }
 
+    @Test(alwaysRun = true)
     public void testSearchNoSearchCriteriaSpecifiedInAdvancedSearch()
     {
         searchForArtifactAdvancedSearch( null, null, null, null, null, null );
         assertTextPresent( "Advanced Search - At least one search criteria must be provided." );
     }
 
+    @Test(alwaysRun = true)
     public void testSearchExistingArtifactUsingAdvancedSearchArtifactId()
     {
         searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null,
@@ -100,6 +109,7 @@ public class SearchTest
         assertLinkPresent( "test" );
     }
 
+    @Test(alwaysRun = true)
     public void testSearchExistingArtifactUsingAdvancedSearchGroupId()
     {
         searchForArtifactAdvancedSearch( getProperty( "GROUPID" ), null, null, getProperty( "REPOSITORYID" ), null,
@@ -109,6 +119,7 @@ public class SearchTest
         assertLinkPresent( "test" );
     }
 
+    @Test(alwaysRun = true)
     public void testSearchExistingArtifactAllCriteriaSpecifiedInAdvancedSearch()
     {
         searchForArtifactAdvancedSearch( getProperty( "GROUPID" ), getProperty( "ARTIFACT_ARTIFACTID" ) , getProperty( "ARTIFACT_VERSION" ), 
@@ -118,6 +129,7 @@ public class SearchTest
         assertLinkPresent( "test" );
     }
 
+    @Test(alwaysRun = true)
     public void testSearchExistingArtifactUsingAdvancedSearchNotInRepository()
     {
         searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, "snapshots", null, null );

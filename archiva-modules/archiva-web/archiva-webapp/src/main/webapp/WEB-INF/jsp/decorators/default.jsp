@@ -81,7 +81,7 @@
 
 <div id="topSearchBox">
     <s:form method="get" action="quickSearch" namespace="/" validate="true">
-        <s:textfield label="Search for" size="30" name="q"/>
+        <s:textfield id="quickSearchBox" label="Search for" size="30" name="q"/>
     </s:form>
 </div>
 
@@ -91,17 +91,17 @@
     <h5>Find</h5>
     <ul>
       <li class="none">
-        <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
+        <my:currentWWUrl action="index" namespace="/" id="menuSearchLink">Search</my:currentWWUrl>
       </li>
 
       <s:if test="%{#application['uiOptions'].showFindArtifacts}">
         <li class="none">
-          <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
+          <my:currentWWUrl action="findArtifact" namespace="/" id="menuFindArtifactLink">Find Artifact</my:currentWWUrl>
         </li>
       </s:if>
 
       <li class="none">
-        <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
+        <my:currentWWUrl action="browse" namespace="/" id="menuBrowseLink">Browse</my:currentWWUrl>
       </li>
     </ul>
 

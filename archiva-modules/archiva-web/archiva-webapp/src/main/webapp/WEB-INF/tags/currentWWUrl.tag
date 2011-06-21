@@ -21,6 +21,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ attribute name="action" %>
 <%@ attribute name="namespace" %>
+<%@ attribute name="id" %>
 <%@ attribute name="url" %>
 <%@ attribute name="useParams" required="false" %>
 
@@ -35,7 +36,7 @@
 </c:set>
 <c:if test="${!empty (action) && !empty (namespace)}">
   <c:set var="url">
-    <s:url action="%{#attr.action}" namespace="%{#attr.namespace}"/>
+    <s:url action="%{#attr.action}" namespace="%{#attr.namespace}" id="%{#attr.id}"/>
   </c:set>
 </c:if>
 <c:set var="text">
@@ -46,16 +47,12 @@ Current URL: <c:out value="${currentUrl}"/> -->
 <c:choose>
   <c:when test="${currentUrl == url}">
     <b>
-
     ${text}
-
     </b>
   </c:when>
   <c:otherwise>
-    <a href="${url}">
-
+    <a href="${url}" id="${id}">
     ${text}
-
     </a>
   </c:otherwise>
 </c:choose>
