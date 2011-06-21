@@ -179,7 +179,7 @@ public class NexusRepositorySearch
                 try
                 {
                     indexer.removeIndexingContext( entry.getValue(), false );
-                    log.debug( "Indexing context '" + entry.getKey() + "' removed from search." );
+                    log.debug( "Indexing context '{}' removed from search.", entry.getKey() );
                 }
                 catch ( IOException e )
                 {

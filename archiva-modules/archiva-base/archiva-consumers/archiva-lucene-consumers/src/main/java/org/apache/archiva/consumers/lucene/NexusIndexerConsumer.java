@@ -52,7 +52,7 @@ public class NexusIndexerConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
-    private static final Logger log = LoggerFactory.getLogger( NexusIndexerConsumer.class );
+    private Logger log = LoggerFactory.getLogger( NexusIndexerConsumer.class );
 
     private ArchivaConfiguration configuration;
 
@@ -135,7 +135,7 @@ public class NexusIndexerConsumer
             new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, context );
         try
         {
-            log.debug( "Queueing indexing task + '" + task + "' to add or update the artifact in the index." );
+            log.debug( "Queueing indexing task '{}' to add or update the artifact in the index.", task );
             scheduler.queueTask( task );
         }
         catch ( TaskQueueException e )
@@ -160,7 +160,7 @@ public class NexusIndexerConsumer
                 new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, context, false );
             try
             {
-                log.debug( "Queueing indexing task + '" + task + "' to add or update the artifact in the index." );
+                log.debug( "Queueing indexing task '{}' to add or update the artifact in the index.", task );
                 scheduler.queueTask( task );
             }
             catch ( TaskQueueException e )
@@ -176,7 +176,7 @@ public class NexusIndexerConsumer
             new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
         try
         {
-            log.debug( "Queueing indexing task + '" + task + "' to finish indexing." );
+            log.debug( "Queueing indexing task '{}' to finish indexing.", task );
             scheduler.queueTask( task );
         }
         catch ( TaskQueueException e )
