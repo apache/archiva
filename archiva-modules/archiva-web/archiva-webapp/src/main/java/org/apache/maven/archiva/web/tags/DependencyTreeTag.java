@@ -117,7 +117,7 @@ public class DependencyTreeTag
             WebApplicationContext webApplicationContext =
                 WebApplicationContextUtils.getRequiredWebApplicationContext( pageContext.getServletContext() );
 
-            deptree = ( DependencyTree ) webApplicationContext.getBean( "dependencyTree" );
+            deptree = webApplicationContext.getBean( "dependencyTree", DependencyTree.class );
         }
         catch ( BeansException e )
         {
