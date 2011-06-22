@@ -26,14 +26,11 @@ public abstract class AbstractSearchTest
     public void goToSearchPage()
     {
         goToHomePage();
-        //if ( !"Apache Archiva \\ Quick Search".equals( getTitle() ) )
-        if ( isElementPresent( "quickSearchBox" ) )
+        if (!isElementPresent( "quickSearchBox" ) )
         {
-            //clickLinkWithText( "Search" );
-            clickLinkWithLocator( "menuSearchLink" );
+            getSelenium().open( "/index.action");
             getSelenium().waitForPageToLoad( maxWaitTimeInMs );
             assertElementPresent( "quickSearchSubmit" );
-            //assertPage( "Apache Archiva \\ Quick Search" );
         }
     }
 
