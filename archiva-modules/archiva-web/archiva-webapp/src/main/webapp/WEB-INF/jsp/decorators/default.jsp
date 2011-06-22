@@ -91,17 +91,17 @@
     <h5>Find</h5>
     <ul>
       <li class="none">
-        <my:currentWWUrl action="index" namespace="/" id="menuSearchLink">Search</my:currentWWUrl>
+        <my:currentWWUrl action="index" namespace="/" linkId="menuSearchLink">Search</my:currentWWUrl>
       </li>
 
       <s:if test="%{#application['uiOptions'].showFindArtifacts}">
         <li class="none">
-          <my:currentWWUrl action="findArtifact" namespace="/" id="menuFindArtifactLink">Find Artifact</my:currentWWUrl>
+          <my:currentWWUrl action="findArtifact" namespace="/" linkId="menuFindArtifactLink">Find Artifact</my:currentWWUrl>
         </li>
       </s:if>
 
       <li class="none">
-        <my:currentWWUrl action="browse" namespace="/" id="menuBrowseLink">Browse</my:currentWWUrl>
+        <my:currentWWUrl action="browse" namespace="/" linkId="menuBrowseLink">Browse</my:currentWWUrl>
       </li>
     </ul>
 
