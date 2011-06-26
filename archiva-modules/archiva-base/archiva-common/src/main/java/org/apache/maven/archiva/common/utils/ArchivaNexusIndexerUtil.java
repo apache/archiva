@@ -22,10 +22,10 @@ package org.apache.maven.archiva.common.utils;
 import java.util.Arrays;
 import java.util.List;
 
-import org.sonatype.nexus.index.context.IndexCreator;
-import org.sonatype.nexus.index.creator.JarFileContentsIndexCreator;
-import org.sonatype.nexus.index.creator.MavenPluginArtifactInfoIndexCreator;
-import org.sonatype.nexus.index.creator.MinimalArtifactInfoIndexCreator;
+import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.creator.JarFileContentsIndexCreator;
+import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
+import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 
 /**
  * ArchivaNexusIndexerUtil 

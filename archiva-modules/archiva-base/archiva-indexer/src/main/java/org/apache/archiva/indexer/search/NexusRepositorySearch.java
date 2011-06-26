@@ -28,14 +28,17 @@ import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.Field;
+import org.apache.maven.index.FlatSearchRequest;
+import org.apache.maven.index.FlatSearchResponse;
+import org.apache.maven.index.MAVEN;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
+import org.apache.maven.index.expr.StringSearchExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.nexus.index.ArtifactInfo;
-import org.sonatype.nexus.index.FlatSearchRequest;
-import org.sonatype.nexus.index.FlatSearchResponse;
-import org.sonatype.nexus.index.NexusIndexer;
-import org.sonatype.nexus.index.context.IndexingContext;
-import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -120,27 +123,27 @@ public class NexusRepositorySearch
         BooleanQuery q = new BooleanQuery();
         if ( searchFields.getGroupId() != null && !"".equals( searchFields.getGroupId() ) )
         {
-            q.add( indexer.constructQuery( ArtifactInfo.GROUP_ID, searchFields.getGroupId() ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( searchFields.getGroupId() ) ), Occur.MUST );
         }
 
         if ( searchFields.getArtifactId() != null && !"".equals( searchFields.getArtifactId() ) )
         {
-            q.add( indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, searchFields.getArtifactId() ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( searchFields.getArtifactId() ) ), Occur.MUST );
         }
 
         if ( searchFields.getVersion() != null && !"".equals( searchFields.getVersion() ) )
         {
-            q.add( indexer.constructQuery( ArtifactInfo.VERSION, searchFields.getVersion() ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( searchFields.getVersion() ) ), Occur.MUST );
         }
 
         if ( searchFields.getPackaging() != null && !"".equals( searchFields.getPackaging() ) )
         {
-            q.add( indexer.constructQuery( ArtifactInfo.PACKAGING, searchFields.getPackaging() ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( searchFields.getPackaging() ) ), Occur.MUST );
         }
 
         if ( searchFields.getClassName() != null && !"".equals( searchFields.getClassName() ) )
         {
-            q.add( indexer.constructQuery( ArtifactInfo.NAMES, searchFields.getClassName() ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( searchFields.getClassName( ) ) ), Occur.MUST );
         }
 
         if ( q.getClauses() == null || q.getClauses().length <= 0 )
@@ -194,11 +197,11 @@ public class NexusRepositorySearch
 
     private void constructQuery( String term, BooleanQuery q )
     {
-        q.add( indexer.constructQuery( ArtifactInfo.GROUP_ID, term ), Occur.SHOULD );
-        q.add( indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, term ), Occur.SHOULD );
-        q.add( indexer.constructQuery( ArtifactInfo.VERSION, term ), Occur.SHOULD );
-        q.add( indexer.constructQuery( ArtifactInfo.PACKAGING, term ), Occur.SHOULD );
-        q.add( indexer.constructQuery( ArtifactInfo.NAMES, term ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression(  term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ), Occur.SHOULD );
     }
 
 

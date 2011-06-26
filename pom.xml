@@ -74,7 +74,7 @@
     <jackrabbit.version>2.2.5</jackrabbit.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-    <lucene.version>2.4.1</lucene.version>
+    <lucene.version>3.0.3</lucene.version>
   </properties>
 
   <dependencyManagement>
@@ -235,9 +235,9 @@
         <version>1.4-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.sonatype.nexus</groupId>
-        <artifactId>nexus-indexer</artifactId>
-        <version>3.0.1</version>
+        <groupId>org.apache.maven.indexer</groupId>
+        <artifactId>indexer-core</artifactId>
+        <version>4.1.1</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>

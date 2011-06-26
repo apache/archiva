@@ -17,39 +17,37 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-
 <component-set>
+<!--
   <components>
     <component>
-      <role>org.sonatype.nexus.index.NexusIndexer</role>
+      <role>org.apache.maven.index.NexusIndexer</role>
       <role-hint>archiva</role-hint>
-      <implementation>org.sonatype.nexus.index.DefaultNexusIndexer</implementation>
+      <implementation>org.apache.maven.index.DefaultNexusIndexer</implementation>
       <description>The default nexus indexer implementation.</description>
-      <instantiation-strategy>per-lookup</instantiation-strategy>
-      <isolated-realm>false</isolated-realm>
       <requirements>
         <requirement>
-          <role>org.sonatype.nexus.index.scan.Scanner</role>
+          <role>org.apache.maven.index.scan.Scanner</role>
           <role-hint>default</role-hint>
           <field-name>scanner</field-name>
         </requirement>
         <requirement>
-          <role>org.sonatype.nexus.index.search.SearchEngine</role>
+          <role>org.apache.maven.index.SearchEngine</role>
           <role-hint>default</role-hint>
           <field-name>searcher</field-name>
         </requirement>
         <requirement>
-          <role>org.sonatype.nexus.index.creator.IndexerEngine</role>
+          <role>org.apache.maven.index.IndexerEngine</role>
           <role-hint>default</role-hint>
           <field-name>indexerEngine</field-name>
         </requirement>
         <requirement>
-          <role>org.sonatype.nexus.index.QueryCreator</role>
+          <role>org.apache.maven.index.QueryCreator</role>
           <role-hint>default</role-hint>
           <field-name>queryCreator</field-name>
         </requirement>
       </requirements>
     </component>
   </components>
-
+-->
 </component-set>
