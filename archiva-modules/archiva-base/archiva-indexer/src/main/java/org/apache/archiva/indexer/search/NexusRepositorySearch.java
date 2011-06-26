@@ -22,6 +22,7 @@ package org.apache.archiva.indexer.search;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
@@ -53,7 +54,6 @@ import java.util.Set;
  * RepositorySearch implementation which uses the Nexus Indexer for searching.
  */
 @Service( "nexusSearch" )
-@Scope("prototype")
 public class NexusRepositorySearch
     implements RepositorySearch
 {
@@ -121,27 +121,27 @@ public class NexusRepositorySearch
         addIndexingContexts( searchFields.getRepositories() );
 
         BooleanQuery q = new BooleanQuery();
-        if ( searchFields.getGroupId() != null && !"".equals( searchFields.getGroupId() ) )
+        if ( StringUtils.isNotBlank( searchFields.getGroupId() ) )
         {
             q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( searchFields.getGroupId() ) ), Occur.MUST );
         }
 
-        if ( searchFields.getArtifactId() != null && !"".equals( searchFields.getArtifactId() ) )
+        if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
         {
             q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( searchFields.getArtifactId() ) ), Occur.MUST );
         }
 
-        if ( searchFields.getVersion() != null && !"".equals( searchFields.getVersion() ) )
+        if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
         {
             q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( searchFields.getVersion() ) ), Occur.MUST );
         }
 
-        if ( searchFields.getPackaging() != null && !"".equals( searchFields.getPackaging() ) )
+        if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
         {
             q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( searchFields.getPackaging() ) ), Occur.MUST );
         }
 
-        if ( searchFields.getClassName() != null && !"".equals( searchFields.getClassName() ) )
+        if ( StringUtils.isNotBlank( searchFields.getClassName() ) )
         {
             q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( searchFields.getClassName( ) ) ), Occur.MUST );
         }
@@ -175,6 +175,9 @@ public class NexusRepositorySearch
         {
             throw new RepositorySearchException( e );
         }
+        /*
+        olamy : don't understand why this ?? it remove content from index ??
+        comment until someone explain WTF ?? :-))
         finally
         {
             Map<String, IndexingContext> indexingContexts = indexer.getIndexingContexts();
@@ -192,7 +195,7 @@ public class NexusRepositorySearch
                     continue;
                 }
             }
-        }
+        }*/
     }
 
     private void constructQuery( String term, BooleanQuery q )
@@ -225,6 +228,13 @@ public class NexusRepositorySearch
                     else
                     {
                         indexDirectory = new File( repoConfig.getLocation(), ".indexer" );
+                    }
+
+                    if (indexer.getIndexingContexts().containsKey( repoConfig.getId() ))
+                    {
+                        // alreday here so no need to record it again
+                        log.info( "index with id {} already exists skip adding it", repoConfig.getId() );
+                        continue;
                     }
 
                     IndexingContext context = indexer.addIndexingContext( repoConfig.getId(), repoConfig.getId(),
@@ -283,7 +293,8 @@ public class NexusRepositorySearch
             results.addHit( id, hit );
         }
 
-        results.setTotalHits( results.getHitsMap().size() );
+        results.setTotalHits( response.getTotalHitsCount() );
+        results.setReturnedHitsCount( response.getReturnedHitsCount() );
         results.setLimits( limits );
 
         if ( limits == null || limits.getSelectedPage() == SearchResultLimits.ALL_PAGES )
@@ -334,6 +345,7 @@ public class NexusRepositorySearch
             }
         }
         paginated.setTotalHits( results.getTotalHits() );
+        paginated.setReturnedHitsCount( paginated.getHits().size() );
         paginated.setLimits( limits );
 
         return paginated;

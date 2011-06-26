@@ -132,4 +132,12 @@ public class SearchResultHit
         
         versions.add( version );
     }
+
+    @Override
+    public String toString()
+    {
+        return "SearchResultHit{" + "context='" + context + '\'' + ", url='" + url + '\'' + ", groupId='" + groupId
+            + '\'' + ", artifactId='" + artifactId + '\'' + ", version='" + version + '\'' + ", repositoryId='"
+            + repositoryId + '\'' + ", versions=" + versions + '}';
+    }
 }

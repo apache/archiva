@@ -36,6 +36,8 @@ public class SearchResults
 
     private int totalHits;
 
+    private int returnedHitsCount;
+
     private SearchResultLimits limits;
 
     public SearchResults()
@@ -87,5 +89,30 @@ public class SearchResults
     public void setTotalHits( int totalHits )
     {
         this.totalHits = totalHits;
+    }
+
+    /**
+     * @since 1.4
+     * @return
+     */
+    public int getReturnedHitsCount()
+    {
+        return returnedHitsCount;
+    }
+
+    /**
+     * @since 1.4
+     * @param returnedHitsCount
+     */
+    public void setReturnedHitsCount( int returnedHitsCount )
+    {
+        this.returnedHitsCount = returnedHitsCount;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SearchResults{" + "hits=" + hits + ", totalHits=" + totalHits + ", returnedHitsCount="
+            + returnedHitsCount + ", limits=" + limits + '}';
     }
 }

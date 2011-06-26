@@ -66,4 +66,10 @@ public class SearchResultLimits
     {
         this.selectedPage = selectedPage;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SearchResultLimits{" + "pageSize=" + pageSize + ", selectedPage=" + selectedPage + '}';
+    }
 }

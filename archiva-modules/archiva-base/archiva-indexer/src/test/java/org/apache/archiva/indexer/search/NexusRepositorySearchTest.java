@@ -29,10 +29,8 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
-import org.apache.maven.index.IndexerEngine;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
-import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.easymock.MockControl;
@@ -73,8 +71,6 @@ public class NexusRepositorySearchTest
 
     private static String TEST_REPO_2 = "nexus-search-test-repo-2";
 
-    private static int TEST_NUMBER = 0;
-
     @Inject
     PlexusSisuBridge plexusSisuBridge;
 
@@ -85,16 +81,6 @@ public class NexusRepositorySearchTest
         throws Exception
     {
         super.setUp();
-
-        //to prevent failure during obtain lock change name
-
-        System.gc();
-
-        TEST_NUMBER++;
-
-        //TEST_REPO_1 = TEST_REPO_1 + TEST_NUMBER;
-
-        //TEST_REPO_2 = TEST_REPO_2 + TEST_NUMBER;
 
         FileUtils.deleteDirectory(
             new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ) );
@@ -110,8 +96,6 @@ public class NexusRepositorySearchTest
 
         search = new NexusRepositorySearch( plexusSisuBridge, archivaConfig );
 
-        //indexerEngine = plexusSisuBridge.lookup( IndexerEngine.class );
-
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
         artifactContextProducer = plexusSisuBridge.lookup( ArtifactContextProducer.class );
@@ -121,7 +105,7 @@ public class NexusRepositorySearchTest
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
     }
 
-    private void createSimpleIndex()
+    private void createSimpleIndex( boolean scan )
         throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
         List<File> files = new ArrayList<File>();
@@ -132,10 +116,10 @@ public class NexusRepositorySearchTest
         files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
 
-        createIndex( TEST_REPO_1, files );
+        createIndex( TEST_REPO_1, files, scan );
     }
 
-    private void createIndexContainingMoreArtifacts()
+    private void createIndexContainingMoreArtifacts( boolean scan )
         throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
         List<File> files = new ArrayList<File>();
@@ -154,7 +138,7 @@ public class NexusRepositorySearchTest
         files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/com/classname-search/1.0/classname-search-1.0.jar" ) );
 
-        createIndex( TEST_REPO_1, files );
+        createIndex( TEST_REPO_1, files, scan );
     }
 
     private ManagedRepositoryConfiguration createRepositoryConfig( String repository )
@@ -175,23 +159,11 @@ public class NexusRepositorySearchTest
     public void tearDown()
         throws Exception
     {
-        /*
 
-        if ( context != null )
+        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
         {
-            context.unlock();
-            context.unlockExclusively();
-            context.close( true );
-        }
-        */
-
-        for (IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values())
-        {
-            //indexingContext.close( true );
             nexusIndexer.removeIndexingContext( indexingContext, true );
         }
-
-
 
         FileUtils.deleteDirectory(
             new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ) );
@@ -204,7 +176,7 @@ public class NexusRepositorySearchTest
         super.tearDown();
     }
 
-    private void createIndex( String repository, List<File> filesToBeIndexed )
+    private void createIndex( String repository, List<File> filesToBeIndexed, boolean scan )
         throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
     {
 
@@ -224,28 +196,15 @@ public class NexusRepositorySearchTest
             lockFile.delete();
         }
 
-        //IndexWriter.unlock( FSDirectory.open( lockFile.getParentFile()) );
-
         assertFalse( lockFile.exists() );
-
-        /*
-        context = new DefaultIndexingContext( repository, repository,
-                                              new File( FileUtil.getBasedir(), "/target/test-classes/" + repository ),
-                                              new File( FileUtil.getBasedir(),
-                                                        "/target/test-classes/" + repository + "/.indexer" ), null,
-                                              null, ArchivaNexusIndexerUtil.FULL_INDEX, false );
-        context.setSearchable( true );
-        */
 
         File repo = new File( FileUtil.getBasedir(), "/target/test-classes/" + repository );
         File indexDirectory = new File( FileUtil.getBasedir(), "/target/test-classes/" + repository + "/.indexer" );
 
-                //String id, String repositoryId, File repository, File indexDirectory,
-        //                                      String repositoryUrl, String indexUpdateUrl,
-        //                                      List<? extends IndexCreator > indexers
         IndexingContext context = nexusIndexer.addIndexingContext( repository, repository, repo, indexDirectory,
-                                         repo.toURI().toURL().toExternalForm(),
-                                         indexDirectory.toURI().toURL().toString(), ArchivaNexusIndexerUtil.FULL_INDEX );
+                                                                   repo.toURI().toURL().toExternalForm(),
+                                                                   indexDirectory.toURI().toURL().toString(),
+                                                                   ArchivaNexusIndexerUtil.FULL_INDEX );
 
         List<ArtifactContext> artifactContexts = new ArrayList<ArtifactContext>( filesToBeIndexed.size() );
         for ( File artifactFile : filesToBeIndexed )
@@ -255,9 +214,10 @@ public class NexusRepositorySearchTest
         }
 
         nexusIndexer.addArtifactsToIndex( artifactContexts, context );
-        nexusIndexer.scan( context );
-
-        //context.close( false );
+        if ( scan )
+        {
+            nexusIndexer.scan( context );
+        }
         assertTrue( new File( FileUtil.getBasedir(), "/target/test-classes/" + repository + "/.indexer" ).exists() );
     }
 
@@ -265,7 +225,7 @@ public class NexusRepositorySearchTest
     public void testQuickSearch()
         throws Exception
     {
-        createSimpleIndex();
+        createSimpleIndex( false );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -299,7 +259,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 2, results.getTotalHits() );
+        assertEquals( "total hints not 1", 1, results.getTotalHits() );
 
         //TODO: search for class & package names
     }
@@ -309,7 +269,7 @@ public class NexusRepositorySearchTest
     public void testQuickSearchWithMultipleKeywords()
         throws Exception
     {
-        createSimpleIndex();
+        createSimpleIndex( false );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -322,14 +282,14 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 0, results.getTotalHits() );
+        assertEquals( 1, results.getTotalHits() );
     }
 
     @Test
     public void testQuickSearchWithPagination()
         throws Exception
     {
-        createSimpleIndex();
+        createSimpleIndex( true );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -348,7 +308,8 @@ public class NexusRepositorySearchTest
 
         assertNotNull( results );
         assertEquals( 1, results.getHits().size() );
-        assertEquals( 2, results.getTotalHits() );
+        assertEquals( "total hits not 4 for page1 " + results, 4, results.getTotalHits() );
+        assertEquals( "returned hits not 1 for page1 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
 
         archivaConfigControl.reset();
@@ -366,8 +327,10 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 1, results.getHits().size() );
-        assertEquals( 2, results.getTotalHits() );
+
+        assertEquals( "hits not 1", 1, results.getHits().size() );
+        assertEquals( "total hits not 4 for page 2 " + results, 4, results.getTotalHits() );
+        assertEquals( "returned hits not 1 for page2 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
     }
 
@@ -375,14 +338,14 @@ public class NexusRepositorySearchTest
     public void testArtifactFoundInMultipleRepositories()
         throws Exception
     {
-        createSimpleIndex();
+        createSimpleIndex( true );
 
         List<File> files = new ArrayList<File>();
         files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
-        createIndex( TEST_REPO_2, files );
+        createIndex( TEST_REPO_2, files, true );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -399,7 +362,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 1, results.getTotalHits() );
+        assertEquals( 3, results.getTotalHits() );
 
         SearchResultHit hit = results.getHits().get( 0 );
         assertEquals( "org.apache.archiva", hit.getGroupId() );
@@ -417,7 +380,7 @@ public class NexusRepositorySearchTest
     public void testNoMatchFound()
         throws Exception
     {
-        createSimpleIndex();
+        createSimpleIndex( false );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -474,7 +437,7 @@ public class NexusRepositorySearchTest
     public void testSearchWithinSearchResults()
         throws Exception
     {
-        createSimpleIndex();
+        createSimpleIndex( true );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -491,12 +454,12 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 1, results.getTotalHits() );
+        assertEquals( "total hints not 1", 1, results.getTotalHits() );
 
         SearchResultHit hit = results.getHits().get( 0 );
         assertEquals( "org.apache.archiva", hit.getGroupId() );
         assertEquals( "archiva-test", hit.getArtifactId() );
-        assertEquals( 1, hit.getVersions().size() );
+        assertEquals("versions not 1", 1, hit.getVersions().size() );
         assertEquals( "1.0", hit.getVersions().get( 0 ) );
     }
 
@@ -510,7 +473,7 @@ public class NexusRepositorySearchTest
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
-        createIndex( TEST_REPO_2, files );
+        createIndex( TEST_REPO_2, files, false );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_2 );
@@ -541,7 +504,7 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearchWithPagination()
         throws Exception
     {
-        createIndexContainingMoreArtifacts();
+        createIndexContainingMoreArtifacts( false );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -564,7 +527,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 3, results.getTotalHits() );
+        assertEquals( 4, results.getTotalHits() );
         assertEquals( 1, results.getHits().size() );
 
         // page 2
@@ -582,7 +545,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 3, results.getTotalHits() );
+        assertEquals( 4, results.getTotalHits() );
         assertEquals( 1, results.getHits().size() );
     }
 
@@ -596,7 +559,7 @@ public class NexusRepositorySearchTest
             + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
-        createIndex( TEST_REPO_1, files );
+        createIndex( TEST_REPO_1, files, true );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -702,7 +665,7 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearchAllSearchCriteriaSpecified()
         throws Exception
     {
-        createSimpleIndex();
+        createSimpleIndex( true );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -725,19 +688,19 @@ public class NexusRepositorySearchTest
 
         assertNotNull( results );
 
-        assertEquals( 1, results.getTotalHits() );
+        assertEquals( "total hints not 1" + results, 1, results.getTotalHits() );
 
         SearchResultHit hit = results.getHits().get( 0 );
         assertEquals( "org.apache.archiva", hit.getGroupId() );
         assertEquals( "archiva-test", hit.getArtifactId() );
-        assertEquals( "2.0", hit.getVersions().get( 0 ) );
+        assertEquals( "version not 2.0", "2.0", hit.getVersions().get( 0 ) );
     }
 
     @Test
     public void testAdvancedSearchJarArtifacts()
         throws Exception
     {
-        createIndexContainingMoreArtifacts();
+        createIndexContainingMoreArtifacts( true );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -755,14 +718,14 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 5, results.getTotalHits() );
+        assertEquals( 6, results.getTotalHits() );
     }
 
     @Test
     public void testAdvancedSearchWithIncorrectPackaging()
         throws Exception
     {
-        createSimpleIndex();
+        createSimpleIndex( true );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -789,7 +752,7 @@ public class NexusRepositorySearchTest
     public void testAdvancedSearchClassname()
         throws Exception
     {
-        createIndexContainingMoreArtifacts();
+        createIndexContainingMoreArtifacts( true );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
@@ -807,12 +770,12 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 1, results.getTotalHits() );
+        assertEquals( "totalHits not 1 results " + results, 1, results.getTotalHits() );
 
         SearchResultHit hit = results.getHits().get( 0 );
-        assertEquals( "com", hit.getGroupId() );
-        assertEquals( "classname-search", hit.getArtifactId() );
-        assertEquals( "1.0", hit.getVersions().get( 0 ) );
+        assertEquals( "groupId not com", "com", hit.getGroupId() );
+        assertEquals( "arttifactId not classname-search", "classname-search", hit.getArtifactId() );
+        assertEquals( " hits.version(0) not 1.0", "1.0", hit.getVersions().get( 0 ) );
     }
 
     @Test
