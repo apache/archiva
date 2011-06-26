@@ -24,10 +24,10 @@ import java.io.IOException;
 
 import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.index.context.DefaultIndexingContext;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.taskqueue.Task;
-import org.sonatype.nexus.index.context.DefaultIndexingContext;
-import org.sonatype.nexus.index.context.IndexingContext;
-import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 
 public class ArtifactIndexingTask
     implements Task
