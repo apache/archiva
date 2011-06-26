@@ -35,6 +35,8 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -42,8 +44,6 @@ import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.nexus.index.context.IndexingContext;
-import org.sonatype.nexus.index.context.UnsupportedExistingLuceneIndexException;
 
 /**
  * Consumer for indexing the repository to provide search and IDE integration features.
