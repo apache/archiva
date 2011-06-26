@@ -71,7 +71,7 @@
     <slf4j.version>1.6.1</slf4j.version>
     <binder.version>0.9</binder.version>
     <spring.version>3.0.5.RELEASE</spring.version>
-    <jackrabbit.version>2.2.5</jackrabbit.version>
+    <jackrabbit.version>2.3-SNAPSHOT</jackrabbit.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>3.0.3</lucene.version>
@@ -1438,6 +1438,17 @@
           <id>redback.snapshots</id>
           <name>Codehaus Redback Snapshots Repository</name>
           <url>http://snapshots.repository.codehaus.org/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>apache.snapshots</id>
+          <name>Apache Snapshots</name>
+          <url>https://repository.apache.org/content/groups/snapshots-group/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
