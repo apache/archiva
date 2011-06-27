@@ -297,12 +297,8 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        IndexingContext context = indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
-                                                              new File( repositoryConfig.getLocation() ), destDir, null,
-                                                              null, ArchivaNexusIndexerUtil.FULL_INDEX );
-        context.setSearchable( true );
 
-        FlatSearchRequest request = new FlatSearchRequest( q );
+        FlatSearchRequest request = new FlatSearchRequest( q, getIndexingContext() );
         FlatSearchResponse response = indexer.searchFlat( request );
 
         assertEquals( 1, response.getTotalHits() );
@@ -313,8 +309,6 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( "org.apache.archiva", artifactInfo.groupId );
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
         assertEquals( "test-repo", artifactInfo.repository );
-
-        context.close( true );
     }
 
     private void unzipIndex( String indexDir, String destDir )
