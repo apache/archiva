@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 public class FindArtifactTest
     extends AbstractArchivaTest
 {
+    @Test(alwaysRun = true)
     public void testFindArtifactNullValues()
     {
         goToFindArtifactPage();
@@ -33,6 +34,7 @@ public class FindArtifactTest
         assertTextPresent( "You must select a file, or enter the checksum. If the file was given and you receive this message, there may have been an error generating the checksum." );
     }
 
+    @Test(alwaysRun = true)
     public void testFindArtifactUsingChecksum()
     {
         goToFindArtifactPage();

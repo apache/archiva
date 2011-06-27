@@ -22,11 +22,12 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArtifactManagementTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "artifactmanagement" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "artifactmanagement" }, dependsOnGroups = { "about" } )
 public class ArtifactManagementTest
     extends AbstractArtifactManagementTest
 {
 
+    @Test( alwaysRun = true )
     public void testAddArtifactNullValues()
     {
         goToAddArtifactPage();
@@ -39,14 +40,14 @@ public class ArtifactManagementTest
         assertTextPresent( "You must enter a packaging" );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactNullValues" } )
+    @Test( dependsOnMethods = { "testAddArtifactNullValues" }, alwaysRun = true )
     public void testAddArtifactNoGroupId()
     {
         addArtifact( " ", getArtifactId(), getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
         assertTextPresent( "You must enter a groupId." );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoArtifactId()
     {
 
@@ -54,28 +55,28 @@ public class ArtifactManagementTest
         assertTextPresent( "You must enter an artifactId." );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoVersion()
     {
         addArtifact( getGroupId(), getArtifactId(), " ", getPackaging(), getArtifactFilePath(), getRepositoryId() );
         assertTextPresent( "You must enter a version." );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactInvalidVersion()
     {
         addArtifact( getGroupId(), getArtifactId(), "asdf", getPackaging(), getArtifactFilePath(), getRepositoryId() );
         assertTextPresent( "Invalid version." );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoPackaging()
     {
         addArtifact( getGroupId(), getArtifactId(), getVersion(), " ", getArtifactFilePath(), getRepositoryId() );
         assertTextPresent( "You must enter a packaging." );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" } )
+    @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoFilePath()
     {
         addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), " ", getRepositoryId() );
@@ -90,7 +91,7 @@ public class ArtifactManagementTest
 
         addArtifact( groupId, artifactId, getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
         assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion()
-            + "' was successfully deployed to repository 'internal'" );
+                               + "' was successfully deployed to repository 'internal'" );
     }
 
     @Test( groups = "requiresUpload" )
@@ -102,7 +103,7 @@ public class ArtifactManagementTest
 
         addArtifact( groupId, artifactId, getVersion(), packaging, getArtifactFilePath(), getRepositoryId() );
         assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion()
-            + "' was successfully deployed to repository 'internal'" );
+                               + "' was successfully deployed to repository 'internal'" );
         getSelenium().open( baseUrl + "/browse/" + groupId + "/" + artifactId + "/" + getVersion() );
         waitPage();
 
@@ -141,18 +142,21 @@ public class ArtifactManagementTest
         assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deleted from repository 'internal'" );
     }
 
+    @Test( alwaysRun = true )
     public void testDeleteArtifactNoGroupId()
     {
         deleteArtifact( " ", "delete", "1.0", "internal" );
         assertTextPresent( "You must enter a groupId." );
     }
 
+    @Test( alwaysRun = true )
     public void testDeleteArtifactNoArtifactId()
     {
         deleteArtifact( "delete", " ", "1.0", "internal" );
         assertTextPresent( "You must enter an artifactId." );
     }
 
+    @Test( alwaysRun = true)
     public void testDeleteArtifactNoVersion()
     {
         deleteArtifact( "delete", "delete", " ", "internal" );
@@ -160,6 +164,7 @@ public class ArtifactManagementTest
         assertTextPresent( "You must enter a version." );
     }
 
+    @Test( alwaysRun = true)
     public void testDeleteArtifactInvalidVersion()
     {
         deleteArtifact( "delete", "delete", "asdf", "internal" );
@@ -167,23 +172,30 @@ public class ArtifactManagementTest
     }
 
     // HTML select should have the proper value, else it will cause a selenium error: Option with label 'customValue' not found
+    @Test( alwaysRun = true)
     public void testDeleteArtifactInvalidValues()
-	{
-		deleteArtifact( "<> \\/~+[ ]'\"", "<> \\/~+[ ]'\"", "<>", "internal");
-		assertTextPresent( "Invalid version." );
-        assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-        assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+    {
+        deleteArtifact( "<> \\/~+[ ]'\"", "<> \\/~+[ ]'\"", "<>", "internal" );
+        assertTextPresent( "Invalid version." );
+        assertTextPresent(
+            "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        assertTextPresent(
+            "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+    }
 
+    @Test( alwaysRun = true)
     public void testDeleteArtifactInvalidGroupId()
-	{
-		deleteArtifact( "<> \\/~+[ ]'\"", "delete", "1.0", "internal");
-		assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+    {
+        deleteArtifact( "<> \\/~+[ ]'\"", "delete", "1.0", "internal" );
+        assertTextPresent(
+            "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+    }
 
+    @Test( alwaysRun = true)
     public void testDeleteArtifactInvalidArtifactId()
-	{
-		deleteArtifact( "delete", "<> \\/~+[ ]'\"", "1.0", "internal");
-		assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+    {
+        deleteArtifact( "delete", "<> \\/~+[ ]'\"", "1.0", "internal" );
+        assertTextPresent(
+            "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+    }
 }

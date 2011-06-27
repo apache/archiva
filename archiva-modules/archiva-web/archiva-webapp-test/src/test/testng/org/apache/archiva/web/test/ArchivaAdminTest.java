@@ -27,7 +27,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-@Test( groups = {"about"}, alwaysRun = true )
+@Test( groups = { "about" }, alwaysRun = true )
 public class ArchivaAdminTest
     extends AbstractArchivaTest
 {
@@ -49,17 +49,17 @@ public class ArchivaAdminTest
     }
 
     @BeforeTest
-    @Parameters( {"baseUrl", "browser", "maxWaitTimeInMs", "seleniumHost", "seleniumPort"} )
+    @Parameters( { "baseUrl", "browser", "maxWaitTimeInMs", "seleniumHost", "seleniumPort" } )
     public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs,
                                    @Optional( "localhost" ) String seleniumHost, @Optional( "4444" ) int seleniumPort )
         throws Exception
     {
-        super.open( baseUrl , browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
+        super.open( baseUrl, browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
 
         getSelenium().open( baseUrl );
         String title = getSelenium().getTitle();
         // if not admin user created create one
-        if (isElementPresent( "adminCreateForm" ))
+        if ( isElementPresent( "adminCreateForm" ) )
         {
             assertCreateAdmin();
             String fullname = getProperty( "ADMIN_FULLNAME" );
@@ -69,6 +69,10 @@ public class ArchivaAdminTest
             submitAdminData( fullname, mail, password );
             assertUserLoggedIn( username );
             clickLinkWithLocator( "logoutLink" );
+        }
+        else
+        {
+            login( getAdminUsername(), getAdminPassword() );
         }
 
         // take care about repositories : internal
