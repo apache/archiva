@@ -26,7 +26,6 @@ import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -175,7 +174,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         Set<ArtifactInfo> results = response.getResults();
 
-        ArtifactInfo artifactInfo = (ArtifactInfo) results.iterator().next();
+        ArtifactInfo artifactInfo = results.iterator().next();
         assertEquals( "org.apache.archiva", artifactInfo.groupId );
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
         assertEquals( "test-repo", artifactInfo.repository );
@@ -203,8 +202,7 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        IndexSearcher searcher =
-            new IndexSearcher( new SimpleFSDirectory( new File( repositoryConfig.getLocation() + "/.indexer" ) ) );
+        IndexSearcher searcher = nexusIndexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
         TopDocs topDocs = searcher.search( q, null, 10 );
 
         searcher.close();
@@ -236,8 +234,7 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        IndexSearcher searcher =
-            new IndexSearcher( new SimpleFSDirectory( new File( repositoryConfig.getLocation() + "/.indexer" ) ) );
+        IndexSearcher searcher = nexusIndexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
 
         TopDocs topDocs = searcher.search( q, null, 10 );
 
@@ -267,8 +264,7 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        searcher =
-            new IndexSearcher( new SimpleFSDirectory( new File( repositoryConfig.getLocation() + "/.indexer" ) ) );
+        searcher = nexusIndexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
 
         topDocs = searcher.search( q, null, 10 );
 
