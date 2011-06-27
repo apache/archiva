@@ -184,9 +184,6 @@ public class ArtifactIndexingTask
                                         managedRepository.toURI().toURL().toString(),
                                         indexDirectory.toURI().toURL().toString(), ArchivaNexusIndexerUtil.FULL_INDEX );
 
-        //IndexingContext context =
-        //    new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
-        //                                null, null, ArchivaNexusIndexerUtil.FULL_INDEX, false );
         context.setSearchable( repository.isScanned() );
         return context;
     }

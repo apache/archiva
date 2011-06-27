@@ -21,20 +21,20 @@ package org.apache.archiva.scheduler.indexing;
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
-import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.DefaultArtifactContextProducer;
-import org.apache.maven.index.IndexerEngine;
+import org.apache.maven.index.FlatSearchRequest;
+import org.apache.maven.index.FlatSearchResponse;
+import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
+import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.taskqueue.Task;
@@ -66,11 +66,6 @@ public class ArchivaIndexingTaskExecutor
     /**
      * plexus.requirement
      */
-    private IndexerEngine indexerEngine;
-
-    /**
-     * plexus.requirement
-     */
     private IndexPacker indexPacker;
 
     private ArtifactContextProducer artifactContextProducer;
@@ -88,15 +83,15 @@ public class ArchivaIndexingTaskExecutor
 
         artifactContextProducer = new DefaultArtifactContextProducer();
 
-        indexerEngine = plexusSisuBridge.lookup( IndexerEngine.class, "default" );
-
         indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
+
+        nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
     }
 
     public void executeTask( Task task )
         throws TaskExecutionException
     {
-        synchronized ( indexerEngine )
+        synchronized ( nexusIndexer )
         {
             ArtifactIndexingTask indexingTask = (ArtifactIndexingTask) task;
 
@@ -116,8 +111,8 @@ public class ArchivaIndexingTaskExecutor
                 {
                     try
                     {
-                        log.debug(
-                            "Creating indexing context on resource: {}", indexingTask.getResourceFile().getPath() );
+                        log.debug( "Creating indexing context on resource: {}",
+                                   indexingTask.getResourceFile().getPath() );
                         context = ArtifactIndexingTask.createContext( repository, nexusIndexer );
                     }
                     catch ( IOException e )
@@ -146,35 +141,61 @@ public class ArchivaIndexingTaskExecutor
                     {
                         if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
                         {
-                            IndexSearcher s = context.getIndexSearcher();
-                            String uinfo = ac.getArtifactInfo().getUinfo();
-                            TopDocs d = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), 1 );
-                            if ( d.totalHits == 0 )
+                            //IndexSearcher s = context.getIndexSearcher();
+                            //String uinfo = ac.getArtifactInfo().getUinfo();
+                            //TopDocs d = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), 1 );
+
+                            BooleanQuery q = new BooleanQuery();
+                            q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression(
+                                ac.getArtifactInfo().groupId ) ), BooleanClause.Occur.MUST );
+                            q.add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression(
+                                ac.getArtifactInfo().artifactId ) ), BooleanClause.Occur.MUST );
+                            q.add( nexusIndexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression(
+                                ac.getArtifactInfo().version ) ), BooleanClause.Occur.MUST );
+                            if (ac.getArtifactInfo().classifier != null)
+                            {
+                                q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression(
+                                    ac.getArtifactInfo().classifier ) ), BooleanClause.Occur.MUST );
+                            }
+                            if (ac.getArtifactInfo().packaging != null)
+                            {
+                                q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression(
+                                    ac.getArtifactInfo().packaging ) ), BooleanClause.Occur.MUST );
+                            }
+                            FlatSearchRequest flatSearchRequest = new FlatSearchRequest( q, context );
+                            FlatSearchResponse flatSearchResponse = nexusIndexer.searchFlat( flatSearchRequest );
+                            if ( flatSearchResponse.getResults().isEmpty() )
+                            //if ( d.totalHits == 0 )
                             {
                                 log.debug( "Adding artifact '{}' to index..", ac.getArtifactInfo() );
-                                indexerEngine.index( context, ac );
-                                context.getIndexWriter().commit();
+                                //indexerEngine.index( context, ac );
+                                //context.getIndexWriter().commit();
+                                nexusIndexer.addArtifactToIndex( ac, context );
                             }
                             else
                             {
                                 log.debug( "Updating artifact '{}' in index..", ac.getArtifactInfo() );
-                                indexerEngine.update( context, ac );
-                                context.getIndexWriter().commit();
+                                // TODO check if update exists !!
+                                nexusIndexer.deleteArtifactFromIndex( ac, context );
+                                nexusIndexer.addArtifactToIndex( ac, context );
                             }
+
+                            //nexusIndexer.scan( context, true );
+
+                            context.updateTimestamp();
 
                             // close the context if not a repo scan request
                             if ( !indexingTask.isExecuteOnEntireRepo() )
                             {
                                 log.debug( "Finishing indexing task on resource file : {}",
-                                               indexingTask.getResourceFile().getPath() );
+                                           indexingTask.getResourceFile().getPath() );
                                 finishIndexingTask( indexingTask, repository, context );
                             }
                         }
                         else
                         {
                             log.debug( "Removing artifact '{}' from index..", ac.getArtifactInfo() );
-                            indexerEngine.remove( context, ac );
-                            context.getIndexWriter().commit();
+                            nexusIndexer.deleteArtifactFromIndex( ac, context );
                         }
                     }
                 }
@@ -217,6 +238,8 @@ public class ArchivaIndexingTaskExecutor
         }
         finally
         {
+            /*
+            olamy don't close it anymore as it nullify IndexSearcher
             if ( context != null )
             {
                 try
@@ -229,14 +252,8 @@ public class ArchivaIndexingTaskExecutor
                     throw new TaskExecutionException( "Error occurred while closing context: " + e.getMessage() );
                 }
             }
+            */
         }
-    }
-
-
-
-    public void setIndexerEngine( IndexerEngine indexerEngine )
-    {
-        this.indexerEngine = indexerEngine;
     }
 
     public void setIndexPacker( IndexPacker indexPacker )
