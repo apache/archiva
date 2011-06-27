@@ -80,8 +80,6 @@ public class ArchivaIndexingTaskExecutorTest
 
     private IndexingContext context;
 
-    private NexusIndexer nexusIndexer;
-
     @Inject
     PlexusSisuBridge plexusSisuBridge;
 
@@ -114,9 +112,7 @@ public class ArchivaIndexingTaskExecutorTest
         indexingExecutor.setIndexerEngine( indexerEngine );
         indexingExecutor.setIndexPacker( indexPacker );
 
-        nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-
-        context = ArtifactIndexingTask.createContext( repositoryConfig, nexusIndexer );
+        context = ArtifactIndexingTask.createContext( repositoryConfig, indexer );
 
 
     }
@@ -125,8 +121,13 @@ public class ArchivaIndexingTaskExecutorTest
     public void tearDown()
         throws Exception
     {
-        context.close( true );
-        indexer.removeIndexingContext( context, true );
+        //context.close( true );
+        //indexer.removeIndexingContext( context, true );
+
+        for (IndexingContext indexingContext : indexer.getIndexingContexts().values())
+        {
+            indexer.removeIndexingContext( indexingContext, true );
+        }
 
         // delete created index in the repository
         File indexDir = new File( repositoryConfig.getLocation(), ".indexer" );
@@ -159,11 +160,15 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        IndexingContext context = indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
+        if (!indexer.getIndexingContexts().containsKey( repositoryConfig.getId() ))
+        {
+            IndexingContext context = indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
                                                               new File( repositoryConfig.getLocation() ),
                                                               new File( repositoryConfig.getLocation(), ".indexer" ),
                                                               null, null, ArchivaNexusIndexerUtil.FULL_INDEX );
-        context.setSearchable( true );
+            context.setSearchable( true );
+        }
+
 
         FlatSearchRequest request = new FlatSearchRequest( q );
         FlatSearchResponse response = indexer.searchFlat( request );
@@ -179,7 +184,6 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
         assertEquals( "test-repo", artifactInfo.repository );
 
-        context.close( true );
     }
 
     @Test
@@ -202,7 +206,7 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        IndexSearcher searcher = nexusIndexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
+        IndexSearcher searcher = indexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
         TopDocs topDocs = searcher.search( q, null, 10 );
 
         searcher.close();
@@ -234,7 +238,7 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        IndexSearcher searcher = nexusIndexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
+        IndexSearcher searcher = indexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
 
         TopDocs topDocs = searcher.search( q, null, 10 );
 
@@ -248,7 +252,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         searcher.close();
 
-        context = ArtifactIndexingTask.createContext( repositoryConfig, nexusIndexer );
+        context = ArtifactIndexingTask.createContext( repositoryConfig, indexer );
 
         // remove added artifact from index
         task = new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.DELETE, context );
@@ -264,7 +268,7 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        searcher = nexusIndexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
+        searcher = indexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
 
         topDocs = searcher.search( q, null, 10 );
 
