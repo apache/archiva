@@ -439,10 +439,10 @@ public abstract class AbstractArchivaTest
         //assertTextPresent( "Find Artifact" );
         //assertTextPresent( "Search for:" );
         //assertTextPresent( "Checksum:" );
-        assertElementPresent( "quickSearchValue" );
-        assertElementPresent( "searchHint" );
+        assertElementPresent( "quickSearchBox" );
+        assertElementPresent( "checksumSearch" );
         //assertButtonWithValuePresent( "Search" );
-        assertElementPresent( "quickSearchSubmit" );
+        assertElementPresent( "checksumSearch_0" );
     }
 
     // Appearance

@@ -22,7 +22,7 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "findartifact" }, sequential = true )
+@Test( groups = { "findartifact" }, dependsOnGroups = {"about"}, sequential = true )
 public class FindArtifactTest
     extends AbstractArchivaTest
 {
