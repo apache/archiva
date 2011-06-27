@@ -19,22 +19,25 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.index.context.DefaultIndexingContext;
+import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.taskqueue.Task;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ArtifactIndexingTask
     implements Task
 {
     public enum Action
     {
-        ADD, DELETE, FINISH
+        ADD,
+        DELETE,
+        FINISH
     }
 
     private final ManagedRepositoryConfiguration repository;
@@ -120,27 +123,41 @@ public class ArtifactIndexingTask
     public boolean equals( Object obj )
     {
         if ( this == obj )
+        {
             return true;
+        }
         if ( obj == null )
+        {
             return false;
+        }
         if ( getClass() != obj.getClass() )
+        {
             return false;
+        }
         ArtifactIndexingTask other = (ArtifactIndexingTask) obj;
         if ( !action.equals( other.action ) )
+        {
             return false;
+        }
         if ( !repository.getId().equals( other.repository.getId() ) )
+        {
             return false;
+        }
         if ( resourceFile == null )
         {
             if ( other.resourceFile != null )
+            {
                 return false;
+            }
         }
         else if ( !resourceFile.equals( other.resourceFile ) )
+        {
             return false;
+        }
         return true;
     }
 
-    public static IndexingContext createContext( ManagedRepositoryConfiguration repository )
+    public static IndexingContext createContext( ManagedRepositoryConfiguration repository, NexusIndexer indexer )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
         String indexDir = repository.getIndexDir();
@@ -156,9 +173,20 @@ public class ArtifactIndexingTask
             indexDirectory = new File( managedRepository, ".indexer" );
         }
 
+        if ( indexer.getIndexingContexts().containsKey( repository.getId() ) )
+        {
+            LoggerFactory.getLogger( ArtifactIndexingTask.class ).warn(
+                "skip adding repository with id {} as already exists", repository.getId() );
+        }
+
         IndexingContext context =
-            new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
-                                        null, null, ArchivaNexusIndexerUtil.FULL_INDEX, false );
+            indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
+                                        managedRepository.toURI().toURL().toString(),
+                                        indexDirectory.toURI().toURL().toString(), ArchivaNexusIndexerUtil.FULL_INDEX );
+
+        //IndexingContext context =
+        //    new DefaultIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
+        //                                null, null, ArchivaNexusIndexerUtil.FULL_INDEX, false );
         context.setSearchable( repository.isScanned() );
         return context;
     }

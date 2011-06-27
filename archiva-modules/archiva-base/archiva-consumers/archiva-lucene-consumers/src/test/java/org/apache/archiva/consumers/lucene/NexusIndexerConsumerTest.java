@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.commons.io.FileUtils;
@@ -35,6 +36,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.index.NexusIndexer;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.junit.After;
@@ -94,6 +96,9 @@ public class NexusIndexerConsumerTest
     @Inject
     private ApplicationContext applicationContext;
 
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
 
     @Override
     @Before
@@ -108,7 +113,7 @@ public class NexusIndexerConsumerTest
         
         FileTypes filetypes = applicationContext.getBean( FileTypes.class );
 
-        nexusIndexerConsumer = new NexusIndexerConsumer( scheduler, configuration, filetypes );
+        nexusIndexerConsumer = new NexusIndexerConsumer( scheduler, configuration, filetypes, plexusSisuBridge );
         
         // initialize to set the file types to be processed
         ( (Initializable) nexusIndexerConsumer ).initialize();

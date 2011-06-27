@@ -31,6 +31,7 @@ import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.DefaultArtifactContextProducer;
 import org.apache.maven.index.IndexerEngine;
+import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
@@ -77,6 +78,8 @@ public class ArchivaIndexingTaskExecutor
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
 
+    private NexusIndexer nexusIndexer;
+
     @PostConstruct
     public void initialize()
         throws PlexusSisuBridgeException
@@ -115,7 +118,7 @@ public class ArchivaIndexingTaskExecutor
                     {
                         log.debug(
                             "Creating indexing context on resource: {}", indexingTask.getResourceFile().getPath() );
-                        context = ArtifactIndexingTask.createContext( repository );
+                        context = ArtifactIndexingTask.createContext( repository, nexusIndexer );
                     }
                     catch ( IOException e )
                     {

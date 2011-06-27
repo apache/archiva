@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -35,6 +37,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -64,16 +67,20 @@ public class NexusIndexerConsumer
 
     private IndexingContext context;
 
+    private NexusIndexer nexusIndexer;
+
     private List<String> includes = new ArrayList<String>();
 
     private ManagedRepositoryConfiguration repository;
 
     public NexusIndexerConsumer( ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
-                                 ArchivaConfiguration configuration, FileTypes filetypes )
+                                 ArchivaConfiguration configuration, FileTypes filetypes, PlexusSisuBridge plexusSisuBridge )
+        throws PlexusSisuBridgeException
     {
         this.configuration = configuration;
         this.filetypes = filetypes;
         this.scheduler = scheduler;
+        this.nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
     }
 
     public String getDescription()
@@ -100,7 +107,7 @@ public class NexusIndexerConsumer
         try
         {
             log.info( "Creating indexing context for repo : " + repository.getId() );
-            context = ArtifactIndexingTask.createContext( repository );
+            context = ArtifactIndexingTask.createContext( repository, nexusIndexer );
         }
         catch ( IOException e )
         {

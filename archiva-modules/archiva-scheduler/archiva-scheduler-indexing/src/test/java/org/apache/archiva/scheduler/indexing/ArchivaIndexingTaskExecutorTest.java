@@ -81,6 +81,8 @@ public class ArchivaIndexingTaskExecutorTest
 
     private IndexingContext context;
 
+    private NexusIndexer nexusIndexer;
+
     @Inject
     PlexusSisuBridge plexusSisuBridge;
 
@@ -113,7 +115,11 @@ public class ArchivaIndexingTaskExecutorTest
         indexingExecutor.setIndexerEngine( indexerEngine );
         indexingExecutor.setIndexPacker( indexPacker );
 
-        context = ArtifactIndexingTask.createContext( repositoryConfig );
+        nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+
+        context = ArtifactIndexingTask.createContext( repositoryConfig, nexusIndexer );
+
+
     }
 
     @After
@@ -245,7 +251,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         searcher.close();
 
-        context = ArtifactIndexingTask.createContext( repositoryConfig );
+        context = ArtifactIndexingTask.createContext( repositoryConfig, nexusIndexer );
 
         // remove added artifact from index
         task = new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.DELETE, context );

@@ -28,9 +28,10 @@
        default-lazy-init="true">
 
     <bean id="indexerConsumer" class="org.apache.archiva.consumers.lucene.NexusIndexerConsumer" lazy-init="true">      
-        <constructor-arg ref="archivaTaskScheduler#indexing"/>
-        <constructor-arg ref="archivaConfiguration"/>
-        <constructor-arg ref="fileTypes"/>
+      <constructor-arg ref="archivaTaskScheduler#indexing"/>
+      <constructor-arg ref="archivaConfiguration"/>
+      <constructor-arg ref="fileTypes"/>
+      <constructor-arg ref="plexusSisuBridge"/>
     </bean>
 
     <bean id="logger" class="org.apache.maven.archiva.common.utils.Slf4JPlexusLogger">
