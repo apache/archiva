@@ -1133,6 +1133,11 @@
         <version>1.8.3</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>jpox</groupId>
+        <artifactId>jpox-ehcache</artifactId>
+        <version>1.1.9</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

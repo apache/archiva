@@ -1,0 +1,74 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <diskStore path="java.io.tmpdir" />
+
+  <!-- make default cache very short lived -->
+
+  <defaultCache
+    maxElementsInMemory="100"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="300"
+    timeToLiveSeconds="600"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <!--
+    cache Redback classes longer to avoid a lot of SQL queries
+    See REDBACK-227
+  -->
+  <cache name="defaultJpox"
+      maxElementsInMemory="10000"
+      maxElementsOnDisk="0"
+      eternal="false"
+      overflowToDisk="false"
+      timeToIdleSeconds="1800"
+      timeToLiveSeconds="14400"
+      memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoOperation"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="1800"
+    timeToLiveSeconds="14400"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoPermission"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="1800"
+    timeToLiveSeconds="14400"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoResource"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="1800"
+    timeToLiveSeconds="14400"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoRole"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="1800"
+    timeToLiveSeconds="14400"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoUserAssignment"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="300"
+    timeToLiveSeconds="600"
+    memoryStoreEvictionPolicy="LFU" />
+
+</ehcache>
+

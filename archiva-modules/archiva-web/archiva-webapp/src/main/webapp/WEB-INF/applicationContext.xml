@@ -159,6 +159,12 @@
         <!-- NEEDED FOR POSTGRES, But causes problems in other JDBC implementations.
         <prop key="org.jpox.identifier.case">PreserveCase</prop>
         -->
+
+        <!-- cache activation -->
+        <prop key="org.jpox.cache.level2">true</prop>
+        <prop key="org.jpox.cache.level2.type">ehcacheclassbased</prop>
+        <prop key="org.jpox.cache.level2.cacheName">defaultJpox</prop>
+        <prop key="org.jpox.cache.level2.configurationFile">/ehcache.xml</prop>
       </props>
     </property>
   </bean>
