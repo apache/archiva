@@ -125,11 +125,6 @@ public class SearchResultHit
     
     public void addVersion( String version )
     {
-        if( versions == null )
-        {
-            versions = new ArrayList<String>();
-        }
-        
         versions.add( version );
     }
 

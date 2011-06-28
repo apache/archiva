@@ -30,7 +30,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.Field;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
@@ -40,15 +39,14 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
 
 /**
  * RepositorySearch implementation which uses the Nexus Indexer for searching.
@@ -274,7 +272,10 @@ public class NexusRepositorySearch
             SearchResultHit hit = hitsMap.get( id );
             if ( hit != null )
             {
-                hit.addVersion( artifactInfo.version );
+                if ( !hit.getVersions().contains( artifactInfo.version ) )
+                {
+                    hit.addVersion( artifactInfo.version );
+                }
             }
             else
             {
@@ -284,10 +285,7 @@ public class NexusRepositorySearch
                 // do we still need to set the repository id even though we're merging everything?
                 //hit.setRepositoryId( artifactInfo.repository );
                 hit.setUrl( artifactInfo.repository + "/" + artifactInfo.fname );
-                if ( !hit.getVersions().contains( artifactInfo.version ) )
-                {
-                    hit.addVersion( artifactInfo.version );
-                }
+                hit.addVersion( artifactInfo.version );
             }
 
             results.addHit( id, hit );

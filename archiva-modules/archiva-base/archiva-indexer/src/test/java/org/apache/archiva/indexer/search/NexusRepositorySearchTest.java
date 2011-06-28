@@ -41,11 +41,11 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 
 
 @RunWith( SpringJUnit4ClassRunner.class )
@@ -138,6 +138,19 @@ public class NexusRepositorySearchTest
         files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1
             + "/com/classname-search/1.0/classname-search-1.0.jar" ) );
 
+        createIndex( TEST_REPO_1, files, scan );
+    }
+    
+    private void createIndexContainingMultipleArtifactsSameVersion( boolean scan )
+        throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
+    {
+        List<File> files = new ArrayList<File>();
+        
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+        files.add( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 +
+            "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0-sources.jar" ) );
+        
         createIndex( TEST_REPO_1, files, scan );
     }
 
@@ -263,6 +276,36 @@ public class NexusRepositorySearchTest
 
         //TODO: search for class & package names
     }
+    
+    @Test
+    public void testQuickSearchMultipleArtifactsSameVersion() 
+        throws Exception
+    {
+        createIndexContainingMultipleArtifactsSameVersion( false );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.add( TEST_REPO_1 );
+
+        // search artifactId
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", selectedRepos, "archiva-search", null, null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 1, results.getTotalHits() );
+
+        SearchResultHit hit = results.getHits().get( 0 );
+        assertEquals( "org.apache.archiva", hit.getGroupId() );
+        assertEquals( "archiva-search", hit.getArtifactId() );
+        assertEquals( "1.0", hit.getVersions().get( 0 ) );
+        
+        //only 1 version of 1.0 is retrieved
+        assertEquals( 1, hit.getVersions().size() );
+    }
 
     // search for existing artifact using multiple keywords
     @Test
@@ -308,7 +351,7 @@ public class NexusRepositorySearchTest
 
         assertNotNull( results );
         assertEquals( 1, results.getHits().size() );
-        assertEquals( "total hits not 4 for page1 " + results, 4, results.getTotalHits() );
+        assertEquals( "total hits not 5 for page1 " + results, 5, results.getTotalHits() );
         assertEquals( "returned hits not 1 for page1 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
 
@@ -329,7 +372,7 @@ public class NexusRepositorySearchTest
         assertNotNull( results );
 
         assertEquals( "hits not 1", 1, results.getHits().size() );
-        assertEquals( "total hits not 4 for page 2 " + results, 4, results.getTotalHits() );
+        assertEquals( "total hits not 5 for page 2 " + results, 5, results.getTotalHits() );
         assertEquals( "returned hits not 1 for page2 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
     }
@@ -362,7 +405,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 3, results.getTotalHits() );
+        assertEquals( 4, results.getTotalHits() );
 
         SearchResultHit hit = results.getHits().get( 0 );
         assertEquals( "org.apache.archiva", hit.getGroupId() );
@@ -718,7 +761,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 6, results.getTotalHits() );
+        assertEquals( 7, results.getTotalHits() );
     }
 
     @Test
