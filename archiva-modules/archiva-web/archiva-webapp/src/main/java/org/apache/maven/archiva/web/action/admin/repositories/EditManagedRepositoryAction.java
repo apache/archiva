@@ -29,13 +29,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import javax.inject.Inject;
 
 /**
  * AddManagedRepositoryAction
@@ -166,6 +167,27 @@ public class EditManagedRepositoryAction
             {
                 repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(), repository.getId() );
                 repositorySession.save();
+            }
+            if ( result.equals( SUCCESS ) )
+            {
+                //MRM-1342 Repository statistics report doesn't appear to be working correctly
+                //scan repository when modification of repository is successful 
+                if ( result.equals( SUCCESS ) )
+                {
+                    try
+                    {
+                        executeRepositoryScanner( repository.getId() );
+                        if ( stageNeeded )
+                        {
+                            executeRepositoryScanner( stagingRepository.getId() );
+                        }
+                    }
+                    catch ( TaskQueueException e )
+                    {
+                        log.warn( new StringBuilder( "Unable to scan repository [" ).append( repository.getId() ).append( "]: " ).append(
+                                  e.getMessage() ).toString(), e );
+                    }
+                }
             }
         }
         catch ( IOException e )

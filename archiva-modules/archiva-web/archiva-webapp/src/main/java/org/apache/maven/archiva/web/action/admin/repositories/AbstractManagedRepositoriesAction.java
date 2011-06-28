@@ -19,6 +19,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -27,11 +29,12 @@ import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Abstract ManagedRepositories Action.
@@ -57,6 +60,13 @@ public abstract class AbstractManagedRepositoriesAction
     @Inject
     @Named( value = "commons-configuration" )
     private Registry registry;
+    
+    /**
+     * plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
+     */
+    @Inject
+    @Named( value = "archivaTaskScheduler#repository" )
+    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     public static final String CONFIRM = "confirm";
 
@@ -73,6 +83,11 @@ public abstract class AbstractManagedRepositoriesAction
     public void setRegistry( Registry registry )
     {
         this.registry = registry;
+    }
+    
+    public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
+    {
+        this.repositoryTaskScheduler = repositoryTaskScheduler;
     }
 
     protected void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
@@ -158,5 +173,19 @@ public abstract class AbstractManagedRepositoriesAction
         value = StringUtils.replace( value, "${appserver.home}",
                                      registry.getString( "appserver.home", "${appserver.home}" ) );
         return value;
+    } 
+    
+    //MRM-1342 Repository statistics report doesn't appear to be working correctly
+    //provide a method to scan repository
+    protected void executeRepositoryScanner( String repoId )
+        throws TaskQueueException
+    {
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repoId );
+        
+        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repoId ) )
+        {
+            repositoryTaskScheduler.queueTask( task );
+        }
     }
 }

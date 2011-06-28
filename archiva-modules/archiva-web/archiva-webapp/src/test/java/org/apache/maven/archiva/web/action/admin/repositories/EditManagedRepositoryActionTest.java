@@ -24,6 +24,8 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -35,6 +37,7 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
+import org.easymock.classextension.MockClassControl;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,6 +73,10 @@ public class EditManagedRepositoryActionTest
     private MockControl registryControl;
 
     private MetadataRepository metadataRepository;
+    
+    private MockControl repositoryTaskSchedulerControl;
+    
+    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Override
     protected void setUp()
@@ -90,6 +97,10 @@ public class EditManagedRepositoryActionTest
         registryControl = MockControl.createControl( Registry.class );
         registry = (Registry) registryControl.getMock();
         action.setRegistry( registry );
+        
+        repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
+        repositoryTaskScheduler = ( RepositoryArchivaTaskScheduler ) repositoryTaskSchedulerControl.getMock();
+        action.setRepositoryTaskScheduler( repositoryTaskScheduler );
 
         location = new File( "target/test/location" );
 
@@ -148,10 +159,12 @@ public class EditManagedRepositoryActionTest
     public void testEditRepository()
         throws Exception
     {
+        String stageRepoId = REPO_ID + "-stage";
+        
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
         roleManagerControl.setReturnValue( false );
 
-        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID + "-stage" );
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, stageRepoId );
         roleManagerControl.setReturnValue( false );
 
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
@@ -159,7 +172,7 @@ public class EditManagedRepositoryActionTest
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setReturnValue( false );
 
-        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID + "-stage" );
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, stageRepoId );
         roleManagerControl.setReturnValue( false );
 
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
@@ -173,6 +186,22 @@ public class EditManagedRepositoryActionTest
         registryControl.setReturnValue( "target/test" );
 
         registryControl.replay();
+
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( REPO_ID );
+        repositoryTaskScheduler.isProcessingRepositoryTask( REPO_ID );
+        repositoryTaskSchedulerControl.setReturnValue( false );
+        repositoryTaskScheduler.queueTask( task );
+        repositoryTaskSchedulerControl.setVoidCallable();
+
+        RepositoryTask stageTask = new RepositoryTask();
+        stageTask.setRepositoryId( stageRepoId );
+        repositoryTaskScheduler.isProcessingRepositoryTask( stageRepoId );
+        repositoryTaskSchedulerControl.setReturnValue( false );
+        repositoryTaskScheduler.queueTask( stageTask );
+        repositoryTaskSchedulerControl.setVoidCallable();
+
+        repositoryTaskSchedulerControl.replay();
 
         Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();
@@ -247,6 +276,15 @@ public class EditManagedRepositoryActionTest
         registryControl.setReturnValue( "target/test" );
 
         registryControl.replay();
+
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( REPO_ID );
+        repositoryTaskScheduler.isProcessingRepositoryTask( REPO_ID );
+        repositoryTaskSchedulerControl.setReturnValue( false );
+        repositoryTaskScheduler.queueTask( task );
+        repositoryTaskSchedulerControl.setVoidCallable();
+
+        repositoryTaskSchedulerControl.replay();
 
         Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();

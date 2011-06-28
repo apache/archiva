@@ -433,6 +433,24 @@ public class AdministrationServiceImpl
         }
 
         saveConfiguration( config );
+
+        //MRM-1342 Repository statistics report doesn't appear to be working correctly
+        //scan repository when adding of repository is successful 
+        try
+        {
+            executeRepositoryScanner( repoId );
+            if ( stageRepoNeeded )
+            {
+                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
+                executeRepositoryScanner( stagingRepository.getId() );
+            }
+        }
+        catch ( Exception e )
+        {
+            log.warn( new StringBuilder( "Unable to scan repository [" ).append( repoId ).append( "]: " ).append(
+                      e.getMessage() ).toString(), e );
+        }
+    
         return Boolean.TRUE;
     }
 

@@ -19,13 +19,13 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.MetadataFacet;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-
-import org.apache.archiva.metadata.model.MetadataFacet;
 
 public class RepositoryStatistics
     implements MetadataFacet
@@ -50,7 +50,7 @@ public class RepositoryStatistics
 
     static final String SCAN_TIMESTAMP_FORMAT = "yyyy/MM/dd/HHmmss.SSS";
 
-    private Map<String, Long> totalCountForType = new HashMap<String, Long>();
+    private Map<String, Long> totalCountForType = new ZeroForNullHashMap<String, Long>();
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
@@ -279,12 +279,21 @@ public class RepositoryStatistics
 
     public long getTotalCountForType( String type )
     {
-        Long value = totalCountForType.get( type );
-        return value != null ? value : 0;
+        return totalCountForType.get( type );
     }
 
     public void setTotalCountForType( String type, long count )
     {
         totalCountForType.put( type, count );
+    }
+    
+    private static final class ZeroForNullHashMap<K, V extends Long> extends HashMap<K, V>
+    {   
+        @Override
+        public V get(Object key) {
+            V value = super.get( key );
+            
+            return value != null ? value : ( V ) Long.valueOf( 0L );
+        }
     }
 }

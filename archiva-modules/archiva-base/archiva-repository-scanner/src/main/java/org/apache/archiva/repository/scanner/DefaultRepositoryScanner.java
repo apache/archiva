@@ -82,7 +82,9 @@ public class DefaultRepositoryScanner
 
         File repositoryBase = new File( repository.getLocation() );
 
-        if ( !repositoryBase.exists() )
+        //MRM-1342 Repository statistics report doesn't appear to be working correctly
+        //create the repo if not existing to have an empty stats
+        if ( !repositoryBase.exists() && !repositoryBase.mkdirs() )
         {
             throw new UnsupportedOperationException( "Unable to scan a repository, directory "
                 + repositoryBase.getPath() + " does not exist." );

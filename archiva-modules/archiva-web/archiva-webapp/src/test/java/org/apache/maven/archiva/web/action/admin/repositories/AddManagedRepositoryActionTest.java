@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -31,6 +33,7 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
+import org.easymock.classextension.MockClassControl;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,6 +63,10 @@ public class AddManagedRepositoryActionTest
     private MockControl registryControl;
 
     private ArchivaConfiguration archivaConfiguration;
+    
+    private MockControl repositoryTaskSchedulerControl;
+    
+    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Override
     protected void setUp()
@@ -81,6 +88,10 @@ public class AddManagedRepositoryActionTest
         registry = (Registry) registryControl.getMock();
         action.setRegistry( registry );
 
+        repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
+        repositoryTaskScheduler = ( RepositoryArchivaTaskScheduler ) repositoryTaskSchedulerControl.getMock();
+        action.setRepositoryTaskScheduler( repositoryTaskScheduler );
+        
         location = new File( "target/test/location" );
     }
 
@@ -146,6 +157,14 @@ public class AddManagedRepositoryActionTest
         registryControl.setReturnValue( "target/test" );
 
         registryControl.replay();
+        
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( REPO_ID );
+        repositoryTaskScheduler.isProcessingRepositoryTask( REPO_ID );
+        repositoryTaskSchedulerControl.setReturnValue( false );
+        repositoryTaskScheduler.queueTask( task );
+        repositoryTaskSchedulerControl.setVoidCallable();
+        repositoryTaskSchedulerControl.replay();
 
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();

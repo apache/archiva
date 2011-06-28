@@ -959,9 +959,31 @@ public class AdministrationServiceImplTest
         archivaConfig.save( config );
         archivaConfigControl.setVoidCallable();
 
+        //managed repo
+        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( repoId ), false );
+
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repoId );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        configControl.expectAndReturn( config.findManagedRepositoryById( repoId ), managedRepo );
+        repositoryTaskScheduler.queueTask( task );
+        repositoryTaskSchedulerControl.setVoidCallable();
+
+        //staged repo
+        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( repoId + STAGE ), false );
+        task = new RepositoryTask();
+        task.setRepositoryId( repoId + STAGE );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        configControl.expectAndReturn( config.findManagedRepositoryById( repoId + STAGE ), managedRepo );
+        repositoryTaskScheduler.queueTask( task );
+        repositoryTaskSchedulerControl.setVoidCallable();
+
         archivaConfigControl.replay();
         configControl.replay();
         registryControl.replay();
+        repositoryTaskSchedulerControl.replay();
         assertFalse( new File( releaseLocation ).isDirectory() );
         assertFalse( new File( stageLocation ).isDirectory() );
         boolean success = service.addManagedRepository( repoId, layout, name, "${appserver.base}/test-repository/" + projId + ".releases", true, true, false, true,

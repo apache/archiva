@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -112,6 +113,27 @@ public class AddManagedRepositoryAction
             }
 
             result = saveConfiguration( configuration );
+            
+            //MRM-1342 Repository statistics report doesn't appear to be working correctly
+            //scan repository when adding of repository is successful
+            if ( result.equals( SUCCESS ) )
+            {
+                try
+                {
+                    executeRepositoryScanner( repository.getId() );
+
+                    if ( stageNeeded )
+                    {
+                        ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig();
+                        executeRepositoryScanner( stagingRepository.getId() );
+                    }
+                }
+                catch ( TaskQueueException e )
+                {
+                    log.warn( new StringBuilder( "Unable to scan repository [" ).append( repository.getId() ).append( "]: " ).append(
+                              e.getMessage() ).toString(), e );
+                }
+            }
         }
         catch ( RoleManagerException e )
         {
