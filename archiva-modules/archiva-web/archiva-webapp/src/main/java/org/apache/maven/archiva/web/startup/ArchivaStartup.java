@@ -19,8 +19,12 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor;
 import org.codehaus.redback.components.scheduler.DefaultScheduler;
@@ -30,6 +34,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ExecutorService;
 
@@ -49,6 +54,10 @@ public class ArchivaStartup
 
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
+    private PlexusSisuBridge plexusSisuBridge;
+
+    private NexusIndexer nexusIndexer;
+
     public void contextInitialized( ServletContextEvent contextEvent )
     {
         WebApplicationContext wac =
@@ -56,12 +65,23 @@ public class ArchivaStartup
 
         SecuritySynchronization securitySync = wac.getBean( SecuritySynchronization.class );
 
-        repositoryTaskScheduler = wac.getBean( "archivaTaskScheduler#repository", RepositoryArchivaTaskScheduler.class );
+        repositoryTaskScheduler =
+            wac.getBean( "archivaTaskScheduler#repository", RepositoryArchivaTaskScheduler.class );
 
         tqeRepoScanning = wac.getBean( "taskQueueExecutor#repository-scanning", ThreadedTaskQueueExecutor.class );
 
         tqeIndexing = wac.getBean( "taskQueueExecutor#indexing", ThreadedTaskQueueExecutor.class );
 
+        plexusSisuBridge = wac.getBean( PlexusSisuBridge.class );
+
+        try
+        {
+            nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        }
+        catch ( PlexusSisuBridgeException e )
+        {
+            throw new RuntimeException( "Unable to get NexusIndexer: " + e.getMessage(), e );
+        }
         try
         {
             securitySync.startup();
@@ -126,6 +146,19 @@ public class ArchivaStartup
             // TODO fix close call
             //applicationContext.
         }
+
+        // closing correctly indexer to close correctly lock and file
+        for( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
+        {
+            try
+            {
+                indexingContext.close( false );
+            } catch ( Exception e )
+            {
+                contextEvent.getServletContext().log( "skip error closing indexingContext " + e.getMessage() );
+            }
+        }
+
     }
 
     private void stopTaskQueueExecutor( ThreadedTaskQueueExecutor taskQueueExecutor )
