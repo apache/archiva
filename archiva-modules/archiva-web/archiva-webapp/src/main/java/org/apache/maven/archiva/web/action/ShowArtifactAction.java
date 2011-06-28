@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;
+import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -32,6 +33,7 @@ import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
+import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -41,7 +43,6 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import javax.inject.Inject;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.inject.Inject;
 
 /**
  * Browse the repository.
@@ -144,7 +146,7 @@ public class ShowArtifactAction
 
         if ( versionMetadata.isIncomplete() )
         {
-            addIncompleteModelWarning();
+            addIncompleteModelWarning( "Artifact metadata is incomplete." );
         }
 
         model = versionMetadata;
@@ -158,7 +160,7 @@ public class ShowArtifactAction
         artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
 
         List<String> repos = getObservableRepos();
-
+        
         MetadataResolver metadataResolver = session.getResolver();
         for ( String repoId : repos )
         {
@@ -170,11 +172,22 @@ public class ShowArtifactAction
                 {
                     versionMetadata = metadataResolver.resolveProjectVersion( session, repoId, groupId, artifactId,
                                                                               version );
+                    if ( versionMetadata != null )
+                    {
+                        MetadataFacet repoProbFacet;
+                        if ( (repoProbFacet = versionMetadata.getFacet( RepositoryProblemFacet.FACET_ID ) ) != null )
+                        {
+                            addIncompleteModelWarning( "Artifact metadata is incomplete: " + ( ( RepositoryProblemFacet) repoProbFacet ).getProblem() );
+                            //set metadata to complete so that no additional 'Artifact metadata is incomplete' warning is logged
+                            versionMetadata.setIncomplete( false );
+                        }
+                    }
+                    
                 }
                 catch ( MetadataResolutionException e )
                 {
-                    addIncompleteModelWarning();
-
+                    addIncompleteModelWarning( "Error resolving artifact metadata: " + e.getMessage() );
+                    
                     // TODO: need a consistent way to construct this - same in ArchivaMetadataCreationConsumer
                     versionMetadata = new ProjectVersionMetadata();
                     versionMetadata.setId( version );
@@ -193,8 +206,7 @@ public class ShowArtifactAction
                     }
                     catch ( MetadataResolutionException e )
                     {
-                        addIncompleteModelWarning();
-
+                        addIncompleteModelWarning( "Error resolving artifact metadata: " + e.getMessage() );
                         artifacts = Collections.emptyList();
                     }
                     Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
@@ -226,11 +238,11 @@ public class ShowArtifactAction
 
         return versionMetadata;
     }
-
-    private void addIncompleteModelWarning()
+    
+    private void addIncompleteModelWarning( String warningMessage )
     {
-        addActionMessage(
-            "The model may be incomplete due to a previous error in resolving information. Refer to the repository problem reports for more information." );
+        addActionError( warningMessage );
+        //"The model may be incomplete due to a previous error in resolving information. Refer to the repository problem reports for more information." );
     }
 
     /**

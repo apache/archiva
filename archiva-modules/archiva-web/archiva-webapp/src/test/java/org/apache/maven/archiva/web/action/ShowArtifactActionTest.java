@@ -30,6 +30,7 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
+import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -57,6 +58,8 @@ public class ShowArtifactActionTest
     private static final String TEST_SNAPSHOT_VERSION = "1.0-SNAPSHOT";
 
     private static final String TEST_TS_SNAPSHOT_VERSION = "1.0-20091120.111111-1";
+    
+    private static final String TEST_NAMESPACE = "namespace";
 
     private static final String OTHER_TEST_REPO = "first-repo";
 
@@ -289,6 +292,56 @@ public class ShowArtifactActionTest
         assertNull( action.getDependencies() );
         assertNull( action.getMailingLists() );
         assertTrue( action.getArtifacts().isEmpty() );
+    }
+    
+    public void testMetadataHasRepositoryFacetProblem()
+    {
+        String errMsg = "Error in resolving artifact's parent POM file: Sample Parent POM not found";
+        ProjectVersionMetadata metaData = createProjectModel(TEST_SNAPSHOT_VERSION);
+        metaData.addFacet( createRepositoryProblemFacet( TEST_REPO, errMsg, 
+                                                         TEST_GROUP_ID, TEST_SNAPSHOT_VERSION, TEST_NAMESPACE ) );
+        
+        
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, metaData );
+        
+        metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
+                                  TEST_SNAPSHOT_ARTIFACTS );
+
+        action.setGroupId( TEST_GROUP_ID );
+        action.setArtifactId( TEST_ARTIFACT_ID );
+        action.setVersion( TEST_SNAPSHOT_VERSION );
+
+        String result = action.artifact();
+        
+        assertEquals( Action.SUCCESS, result );
+
+        assertTrue( action.hasActionErrors() );
+        assertFalse( action.hasActionMessages() );
+        assertEquals( "Artifact metadata is incomplete: " + errMsg, action.getActionErrors().toArray()[0].toString() );
+    }
+    
+    public void testMetadataIncomplete()
+    {
+        ProjectVersionMetadata metaData = createProjectModel(TEST_SNAPSHOT_VERSION);
+        metaData.setIncomplete( true );
+        
+        metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, metaData );
+        
+        metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
+                                  TEST_SNAPSHOT_ARTIFACTS );
+
+        action.setGroupId( TEST_GROUP_ID );
+        action.setArtifactId( TEST_ARTIFACT_ID );
+        action.setVersion( TEST_SNAPSHOT_VERSION );;
+
+        String result = action.artifact();
+        
+        assertEquals( Action.SUCCESS, result );
+
+        assertTrue( action.hasActionErrors() );
+        assertFalse( action.hasActionMessages() );
+
+        assertEquals( "Artifact metadata is incomplete.", action.getActionErrors().toArray()[0].toString() );
     }
 
     public void testGetMailingLists()
@@ -625,6 +678,19 @@ public class ShowArtifactActionTest
         assertEquals( Action.SUCCESS, result );
         assertTrue( action.getActionErrors().isEmpty() );
         assertTrue( action.getActionMessages().isEmpty() );
+    }
+    
+    private RepositoryProblemFacet createRepositoryProblemFacet( String repoId, String errMsg, String projectId, String projectVersion, String namespace )
+    {
+        RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
+        repoProblemFacet.setRepositoryId( repoId );
+        repoProblemFacet.setId( repoId );
+        repoProblemFacet.setMessage( errMsg );
+        repoProblemFacet.setProblem( errMsg );
+        repoProblemFacet.setProject( projectId );
+        repoProblemFacet.setVersion( projectVersion );
+        repoProblemFacet.setNamespace( namespace );
+        return repoProblemFacet;
     }
 
     protected void setUp()

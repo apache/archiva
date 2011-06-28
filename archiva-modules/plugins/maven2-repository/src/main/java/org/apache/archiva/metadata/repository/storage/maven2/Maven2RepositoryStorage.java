@@ -30,6 +30,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -56,9 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -71,6 +69,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
@@ -246,6 +247,18 @@ public class Maven2RepositoryStorage
                     facet.setPackaging( "jar" );
                     metadata.addFacet( facet );
 
+                    String errMsg = "Error in resolving artifact's parent POM file. " + problem.getException().getMessage();
+                    RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
+                    repoProblemFacet.setRepositoryId( repoId );
+                    repoProblemFacet.setId( repoId );
+                    repoProblemFacet.setMessage( errMsg );
+                    repoProblemFacet.setProblem( errMsg );
+                    repoProblemFacet.setProject( projectId );
+                    repoProblemFacet.setVersion( projectVersion );
+                    repoProblemFacet.setNamespace( namespace );
+                    
+                    metadata.addFacet( repoProblemFacet );
+                    
                     return metadata;
                 }
             }
