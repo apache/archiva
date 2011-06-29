@@ -28,11 +28,13 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.web.action.admin.SchedulerAction;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -66,12 +68,9 @@ public class MergeAction
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
-    /**
-     * TODO olamy : why using an action ???
-     * plexus.requirement role="com.opensymphony.xwork2.Action" role-hint="schedulerAction"
-     */
     @Inject
-    private SchedulerAction scheduler;
+    @Named( value = "archivaTaskScheduler#repository" )
+    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     private ManagedRepositoryConfiguration repository;
 
@@ -125,9 +124,10 @@ public class MergeAction
                 {
                     triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
                 }
-
             }
-            scheduler.scanRepository();
+
+            scanRepository();
+
             addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
 
             return SUCCESS;
@@ -168,7 +168,9 @@ public class MergeAction
                     triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
                 }
             }
-            scheduler.scanRepository();
+
+            scanRepository();
+
             addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
 
             return SUCCESS;
@@ -234,7 +236,6 @@ public class MergeAction
         {
             repositorySession.close();
         }
-        this.scheduler.setRepoid( repoid );
 
         Configuration config = archivaConfiguration.getConfiguration();
         this.repository = config.findManagedRepositoryById( repoid );
@@ -318,5 +319,29 @@ public class MergeAction
         Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
         repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
     }
-}
 
+    private void scanRepository()
+    {
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repoid );
+        task.setScanAll( true );
+
+        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repoid ) )
+        {
+            log.info( "Repository [" + repoid + "] task was already queued." );
+        }
+        else
+        {
+            try
+            {
+                log.info( "Your request to have repository [" + repoid + "] be indexed has been queued." );
+                repositoryTaskScheduler.queueTask( task );
+            }
+            catch ( TaskQueueException e )
+            {
+                log.warn(
+                    "Unable to queue your request to have repository [" + repoid + "] be indexed: " + e.getMessage() );
+            }
+        }
+    }
+}
