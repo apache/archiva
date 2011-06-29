@@ -30,8 +30,8 @@ import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;
 import sun.misc.BASE64Encoder;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import javax.servlet.http.HttpServletResponse;
 
 public class RssFeedServletTest
     extends TestCase
@@ -164,12 +164,6 @@ public class RssFeedServletTest
             assertEquals( "Should have been a unauthorized response.", HttpServletResponse.SC_UNAUTHORIZED,
                           he.getResponseCode() );
         }
-    }
-
-    //Override
-    protected String getPlexusConfigLocation()
-    {
-        return "org/apache/maven/archiva/web/rss/RssFeedServletTest.xml";
     }
 
     @Override

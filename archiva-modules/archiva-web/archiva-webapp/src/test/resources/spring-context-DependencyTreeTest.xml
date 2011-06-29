@@ -32,12 +32,6 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.metadata.repository.memory"/>
 
-  <alias name="repositorySessionFactory#test" alias="repositorySessionFactory"/>
-
-  <bean name="userRepositories#test" class="org.apache.maven.archiva.security.UserRepositoriesStub"/>
-
-  <alias name="userRepositories#test" alias="userRepositories"/>
-
-  <bean name="metadataResolver#test" class="org.apache.archiva.metadata.repository.memory.TestMetadataResolver"/>
-  <alias name="metadataResolver#test" alias="metadataResolver#default"/>
+  <bean name="archivaConfiguration#test" class="org.apache.archiva.configuration.TestConfiguration" />
+  <alias name="archivaConfiguration#test" alias="archivaConfiguration#default" />
 </beans>
