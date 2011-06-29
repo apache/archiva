@@ -30,6 +30,11 @@
           <name>archiva-merge-stage</name>
           <description>Merge Stage Repository</description>
         </operation>
+        <operation>
+          <id>archiva-merge-repository</id>
+          <name>archiva-merge-repository</name>
+          <description>Archiva Merge Repository</description>
+        </operation>
          <operation>
           <id>archiva-delete-artifact</id>
           <name>archiva-delete-artifact</name>
