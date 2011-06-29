@@ -196,7 +196,7 @@ public class AddManagedRepositoryAction
         else if ( repoId.toLowerCase().contains( "stage" ) )
         {
             addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                + "], rpository  id cannot contains word stage" );
+                + "], repository id cannot contains word stage" );
         }
 
         if ( !validator.validate( repository.getRefreshCronExpression() ) )

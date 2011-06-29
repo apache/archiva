@@ -44,6 +44,7 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -131,6 +132,36 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    public void testDeleteRepositoryAndReposUnderRepoGroup()
+        throws Exception
+    {
+        repositoryStatisticsManager.deleteStatistics( metadataRepository, REPO_ID );
+        repositoryStatisticsManagerControl.replay();
+
+        Configuration configuration = prepDeletionTest( createRepository(), 6 );
+        List<String> repoIds = new ArrayList<String>();
+        repoIds.add( REPO_ID );
+        configuration.addRepositoryGroup( createRepoGroup( repoIds, "repo.group" ) );
+
+        prepareRoleManagerMock();
+
+        assertEquals( 1, configuration.getRepositoryGroups().size() );
+
+        MockControl control = mockAuditListeners();
+        when( respositorySession.getRepository() ).thenReturn( metadataRepository );
+        String status = action.deleteContents();
+        assertEquals( Action.SUCCESS, status );
+
+        assertTrue( configuration.getManagedRepositories().isEmpty() );
+        assertEquals( 0, configuration.getRepositoryGroups().get( 0 ).getRepositories().size() );
+
+        assertFalse( location.exists() );
+
+        repositoryStatisticsManagerControl.verify();
+        control.verify();
+        metadataRepositoryControl.verify();
+    }
+
     public void testDeleteRepositoryConfirmation()
         throws Exception
     {
@@ -141,7 +172,7 @@ public class DeleteManagedRepositoryActionTest
         archivaConfigurationControl.setReturnValue( configuration );
 
         Configuration stageRepoConfiguration = new Configuration();
-        stageRepoConfiguration.addManagedRepository( createSatingRepository() );
+        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
         archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
 
         archivaConfigurationControl.replay();
@@ -292,7 +323,7 @@ public class DeleteManagedRepositoryActionTest
         archivaConfigurationControl.setReturnValue( configuration, expectCountGetConfig );
 
         Configuration stageRepoConfiguration = new Configuration();
-        stageRepoConfiguration.addManagedRepository( createSatingRepository() );
+        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
         archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
 
         archivaConfiguration.save( configuration );
@@ -351,7 +382,7 @@ public class DeleteManagedRepositoryActionTest
         return r;
     }
 
-    private ManagedRepositoryConfiguration createSatingRepository()
+    private ManagedRepositoryConfiguration createStagingRepository()
     {
         ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
         r.setId( REPO_ID + "-stage" );

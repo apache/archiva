@@ -37,8 +37,6 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -51,6 +49,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * plexus.component role="org.apache.archiva.stagerepository.merge.RepositoryMerger" role-hint="maven2"

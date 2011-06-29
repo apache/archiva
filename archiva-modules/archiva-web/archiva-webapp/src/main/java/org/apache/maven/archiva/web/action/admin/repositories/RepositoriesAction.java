@@ -41,13 +41,13 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Shows the Repositories Tab for the administrator.
@@ -150,7 +150,7 @@ public class RepositoriesAction
         List<ManagedRepositoryConfiguration> managedRepositoriesList = new ArrayList<ManagedRepositoryConfiguration>();
         for ( ManagedRepositoryConfiguration repoConfig : managedRepositories )
         {
-            if ( !repoConfig.getId().contains( "stage" ) )
+            if ( !repoConfig.getId().endsWith( "-stage" ) )
             {
                 managedRepositoriesList.add( repoConfig );
             }

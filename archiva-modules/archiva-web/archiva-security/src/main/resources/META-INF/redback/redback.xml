@@ -25,6 +25,11 @@
           <name>archiva-run-indexer</name>
           <description>Run Archiva Indexer</description>
         </operation>
+        <operation>
+          <id>archiva-merge-stage</id>
+          <name>archiva-merge-stage</name>
+          <description>Merge Stage Repository</description>
+        </operation>
          <operation>
           <id>archiva-delete-artifact</id>
           <name>archiva-delete-artifact</name>
@@ -250,6 +255,12 @@
               <id>archiva-delete-metadata</id>
               <name>Archiva Delete Repository Metadata</name>
               <operation>archiva-delete-metadata</operation>
+              <resource>${resource}</resource>
+            </permission>
+            <permission>
+              <id>archiva-merge-repository</id>
+              <name>Archiva Merge Repository</name>
+              <operation>archiva-merge-repository</operation>
               <resource>${resource}</resource>
             </permission>
           </permissions>

@@ -278,9 +278,8 @@
   <c:set var="location" value="${repository.location}"/>
   <jsp:useBean id="location" type="java.lang.String" scope="page"/>
 
-  <c:if
-      test='<%= !( (str.equalsIgnoreCase("internal") ) || (str.equalsIgnoreCase( "snapshots" )) ) &&
-      new File (new File(location ).getParent() ,str + "-stage" ).exists()%>'>
+  <%-- TODO: fix this hard coding - make stage repository configuration more transparent than the actual ManagedRepositoryConfiguration --%>
+  <c:if test='<%= new File (new File(location ).getParent() ,str + "-stage" ).exists()%>'>
      <tr>
        <th>
          stage repository location
@@ -289,23 +288,22 @@
       ${repository.location}${'-stage'}
     </td>
   </tr>
-    <tr>
-      <th>Merge Actions</th>
-      <td>
-        <redback:ifAuthorized permission="archiva-run-indexer">
-          <s:form action="merge" theme="simple">
-            <s:hidden name="repoid" value="%{#attr.repository.id}"/>
-            <%--<s:hidden name="repository" value="%{repository}"/>--%>
-            <table>
-              <tr>
-                <td><s:submit id="Merge" value="Merge"/></td>
-              </tr>
-
-            </table>
-          </s:form>
-        </redback:ifAuthorized>
-      </td>
-    </tr>
+  <redback:ifAuthorized permission="archiva-merge-repository" resource="${repository.id}">
+  <tr>
+    <th>Merge Actions</th>
+    <td>
+      <s:form action="merge" theme="simple">
+        <s:hidden name="repoid" value="%{#attr.repository.id}"/>
+        <%--<s:hidden name="repository" value="%{repository}"/>--%>
+        <table>
+          <tr>
+            <td><s:submit id="Merge" value="Merge"/></td>
+          </tr>
+        </table>
+      </s:form>
+    </td>
+  </tr>
+  </redback:ifAuthorized>
 
 
   </c:if>

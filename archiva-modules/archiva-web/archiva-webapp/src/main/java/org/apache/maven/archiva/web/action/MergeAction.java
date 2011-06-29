@@ -38,12 +38,11 @@ import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * plexus.component role="com.opensymphony.xwork2.Action" role-hint="mergeAction" instantiation-strategy="per-lookup"
@@ -104,7 +103,6 @@ public class MergeAction
     }
 
     public String doMerge()
-        throws Exception
     {
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
@@ -132,10 +130,10 @@ public class MergeAction
 
             return SUCCESS;
         }
-        catch ( Exception ex )
+        catch ( Exception e )
         {
-            ex.printStackTrace();
-            addActionError( "Error occurred while merging the repositories." );
+            log.error( e.getMessage(), e );
+            addActionError( "Error occurred while merging the repositories: " + e.getMessage() );
             return ERROR;
         }
         finally
@@ -175,10 +173,10 @@ public class MergeAction
 
             return SUCCESS;
         }
-        catch ( Exception ex )
+        catch ( Exception e )
         {
-            ex.printStackTrace();
-            addActionError( "Error occurred while merging the repositories." );
+            log.error( e.getMessage(), e );
+            addActionError( "Error occurred while merging the repositories: " + e.getMessage() );
             return ERROR;
         }
         finally
@@ -288,12 +286,7 @@ public class MergeAction
                 metadata.getNamespace() + metadata.getProject() + metadata.getProjectVersion() + metadata.getVersion();
             map.put( metadataId, metadata );
         }
-        Iterator iterator = map.keySet().iterator();
-
-        while ( iterator.hasNext() )
-        {
-            conflictSourceArtifactsToBeDisplayed.add( map.get( iterator.next() ) );
-        }
+        conflictSourceArtifactsToBeDisplayed.addAll( map.values() );
     }
 
     private void mergeWithOutSnapshots( MetadataRepository metadataRepository, List<ArtifactMetadata> sourceArtifacts,
