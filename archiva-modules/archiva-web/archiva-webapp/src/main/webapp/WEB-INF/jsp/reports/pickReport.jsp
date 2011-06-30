@@ -27,9 +27,9 @@
   <title>Reports</title>
   <s:head theme="xhtml" />
   
-  <link rel="stylesheet" href="<c:url value='/css/no-theme/jquery-ui-1.7.2.custom.css'/>" type="text/css" />
-  <script type="text/javascript" src="<c:url value='/js/jquery-1.3.2.min.js'/>"></script>
-  <script type="text/javascript" src="<c:url value='/js/jquery-ui-1.7.2.custom.min.js'/>"></script>
+  <link rel="stylesheet" href="<c:url value='/css/no-theme/jquery-ui-1.8.14.custom.css'/>" type="text/css" />
+  <script type="text/javascript" src="<c:url value='/js/jquery-1.6.1.min.js'/>"></script>
+  <script type="text/javascript" src="<c:url value='/js/jquery-ui-1.8.14.custom.min.js'/>"></script>
   <script type="text/javascript" charset="utf-8">
     $(document).ready(function()
     {
