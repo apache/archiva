@@ -35,7 +35,7 @@
 		$("#accordion").accordion({autoHeight:false});
 	});
 	</script>
-  <link rel="stylesheet" href="<c:url value='/css/no-theme/jquery-ui-1.8.14.custom.css'/>" type="text/css" media="all"/>
+  <link rel="stylesheet" href="<c:url value='/css/no-theme/jquery-ui-1.8.14.theme.css'/>" type="text/css" media="all"/>
 </head>
 
 <body>
