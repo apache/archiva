@@ -9,9 +9,9 @@ Installing Apache Archiva
 
   The following documents cover the different installation alternatives:
 
-    * {{{standalone.html} Installing standalone}}
+    * {{{./standalone.html} Installing standalone}}
 
-    * {{{webapp.html} Installing as a web application}}
+    * {{{./webapp.html} Installing as a web application}}
 
-    * {{{upgrade.html} Upgrading to a new version}}
+    * {{{./upgrade.html} Upgrading to a new version}}
 

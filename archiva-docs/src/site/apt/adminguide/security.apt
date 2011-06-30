@@ -7,9 +7,9 @@ Understanding Apache Archiva Security
   Archiva's security is managed by {{{http://redback.codehaus.org/} Redback}}. The following document describes how to configure your
   repository security:
 
-    * {{{roles.html} Roles in Archiva}}
+    * {{{./roles.html} Roles in Archiva}}
 
-    * {{{customising-security.html} Customising Security}}
+    * {{{./customising-security.html} Customising Security}}
 
     []
 

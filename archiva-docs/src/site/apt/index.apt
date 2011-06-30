@@ -14,10 +14,10 @@
 
   To get started with Archiva, you can read the following documentation:
    
-    * {{{quick-start.html} A Quick Getting Started Guide}}
+    * {{{./quick-start.html} A Quick Getting Started Guide}}
 
-    * {{{userguide/index.html} Users Guide}}
+    * {{{./userguide/index.html} Users Guide}}
 
-    * {{{adminguide/index.html} Administrators Guide}}
+    * {{{./adminguide/index.html} Administrators Guide}}
 
     []

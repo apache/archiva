@@ -26,7 +26,7 @@ Apache Archiva Databases
     * <<<jdbc/users>>> - the user store
 
   Configuring an external database for either or both of these sources depends is configured in <<<jetty.xml>>> if you are using the
-  {{{standalone.html} standalone installation}}, or in the application server configuration if you are using the {{{webapp.html} web application
+  {{{./standalone.html} standalone installation}}, or in the application server configuration if you are using the {{{./webapp.html} web application
   installation}}.
 
   By default the archiva and users databases are stored in the <<<databases>>> directory where Archiva is installed. To change the

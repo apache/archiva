@@ -11,7 +11,7 @@ Configuration Files of Apache Archiva
 
     * <<<archiva.xml>>> - this is the primary Archiva configuration file
 
-    * <<<security.properties>>> - this configures the security as described in the {{{security.html} security configuration documentation}}
+    * <<<security.properties>>> - this configures the security as described in the {{{./security.html} security configuration documentation}}
 
   This section will focus on the <<<archiva.xml>>> file.
 
@@ -19,7 +19,7 @@ Configuration Files of Apache Archiva
 
   The Archiva configuration file is stored in one of two locations:
 
-    * The application server configuration directory (see {{{standalone.html} installing Archiva standalone}} for more information)
+    * The application server configuration directory (see {{{./standalone.html} installing Archiva standalone}} for more information)
 
     * The user home directory (<<<~/.m2/archiva.xml>>>). 
 

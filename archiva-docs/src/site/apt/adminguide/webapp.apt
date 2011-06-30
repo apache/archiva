@@ -102,7 +102,7 @@ Upgrading Archiva
   To upgrade the Archiva web application, simply replace the web application with an alternative. Since the database and configuration files are stored
   externally to the application, no further maintainance is needed.
 
-  For general information about upgrading Archiva, see the relevant section in the {{{standalone.html#Upgrading%20Archiva} Installing standalone}} guide.
+  For general information about upgrading Archiva, see the relevant section in the {{{./standalone.html#Upgrading%20Archiva} Installing standalone}} guide.
 
 Configuring and Running Archiva
 

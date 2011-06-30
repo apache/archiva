@@ -123,7 +123,7 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
 
   For every artifact found by the repository scanner, processing is done on this artifact by different
   consumers. Examples of the processing done are: indexing, repository purge and database update. Details about consumers are 
-  available in the {{{consumers.html} Consumers}} page.
+  available in the {{{./consumers.html} Consumers}} page.
 
 * Repository Purge
 
@@ -204,4 +204,4 @@ Artifacts in the repository:
 
   It is essential that the database scan occur after the repo scan as this is where the pom information of the artifacts in
   the database will be processed by the consumers and in turn, added to the database (as ArchivaProjectModel objects). For
-  more details about the different database consumers, please see the {{{consumers.html} Consumers}} page.
+  more details about the different database consumers, please see the {{{./consumers.html} Consumers}} page.

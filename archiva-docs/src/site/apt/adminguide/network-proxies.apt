@@ -6,7 +6,7 @@ Understanding Network Proxy Configuration of Apache Archiva
 
   Archiva uses the terminology "proxy" for two different concepts:
 
-    * The remote repository proxying cache, as configured through {{{proxy-connectors.html} proxy connectors}} between repositories
+    * The remote repository proxying cache, as configured through {{{./proxy-connectors.html} proxy connectors}} between repositories
 
     * Network proxies, which are traditional protocol based proxies (primarily for HTTP access to remote repositories over a firewall)
 

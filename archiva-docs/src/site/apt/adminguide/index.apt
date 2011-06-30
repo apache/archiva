@@ -9,21 +9,21 @@ System Administrators Guide to Apache Archiva
 
   The following sections describe the process for configuring Archiva for use:
 
-    * {{{installing.html} Installing Archiva}}
+    * {{{./installing.html} Installing Archiva}}
 
-    * {{{databases.html} Configuring databases for Archiva}}
+    * {{{./databases.html} Configuring databases for Archiva}}
 
-    * {{{security.html} Configuring security for Archiva}}
+    * {{{./security.html} Configuring security for Archiva}}
 
-    * {{{configuration.html} Using the graphical administration interface}}
+    * {{{./configuration.html} Using the graphical administration interface}}
 
-    * {{{configuration-files.html} The configuration files available for Archiva}}
+    * {{{./configuration-files.html} The configuration files available for Archiva}}
 
-    * {{{audit-logs.html} Audit logging}}
+    * {{{./audit-logs.html} Audit logging}}
 
-    * {{{reports.html} Repository health reports}}
+    * {{{./reports.html} Repository health reports}}
 
-    * {{{web-services.html} Archiva Web Services}}
+    * {{{./web-services.html} Archiva Web Services}}
 
     []
 

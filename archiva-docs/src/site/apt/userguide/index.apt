@@ -7,21 +7,21 @@ Users Guide
   Welcome to the Archiva user's guide. Getting to know and use Archiva is very simple - please select one of the following documents to learn how to use
   Archiva quickly.
 
-    * {{{browsing.html} Browsing Archiva repositories}}
+    * {{{./browsing.html} Browsing Archiva repositories}}
 
-    * {{{searching.html} Searching Archiva repositories}}
+    * {{{./searching.html} Searching Archiva repositories}}
 
-    * {{{find-artifact.html} Identifying an unknown artifact by comparing the repository checksum database}}
+    * {{{./find-artifact.html} Identifying an unknown artifact by comparing the repository checksum database}}
 
-    * {{{using-repository.html} Using Archiva as a repository for Maven, Ivy, etc.}}
+    * {{{./using-repository.html} Using Archiva as a repository for Maven, Ivy, etc.}}
 
-    * {{{deploy.html} Deploying artifacts to the repository}}
+    * {{{./deploy.html} Deploying artifacts to the repository}}
 
-    * {{{virtual-repositories.html} Configuring Virtual Repositories}}
+    * {{{./virtual-repositories.html} Configuring Virtual Repositories}}
 
-    * {{{rss.html}RSS Feeds in Archiva}}
+    * {{{./rss.html}RSS Feeds in Archiva}}
     
-    * {{{auditlog-report.html}Viewing the Audit Log Report}}
+    * {{{./auditlog-report.html}Viewing the Audit Log Report}}
 
     []
 
