@@ -680,12 +680,12 @@
       <dependency>
         <groupId>org.codehaus.redback.components.cache</groupId>
         <artifactId>spring-cache-api</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback.components.cache</groupId>
         <artifactId>spring-cache-ehcache</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
       </dependency>
 
       <!-- redback -->
