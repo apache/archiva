@@ -391,7 +391,7 @@
       <dependency>
         <groupId>org.codehaus.redback.components</groupId>
         <artifactId>spring-jdo2</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
       </dependency>
 
       <!--
@@ -650,7 +650,7 @@
       <dependency>
         <groupId>org.codehaus.redback.components</groupId>
         <artifactId>spring-taskqueue</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback.components</groupId>
