@@ -540,7 +540,7 @@
       <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-lucene-consumers</artifactId>
-        <version>1.4-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
