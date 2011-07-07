@@ -17,15 +17,15 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-  <Context path="/continuum">
-    <Resource name="jdbc/users" auth="Container" type="javax.sql.DataSource"
-              username="sa"
-              password=""
-              driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-              url="jdbc:derby:${catalina.base}/target/database/users;create=true"
-    />
-    <Resource name="mail/Session" auth="Container"
-            type="javax.mail.Session"
-            mail.smtp.host="localhost"/>
+<Context path="/archiva">
+  <Resource name="jdbc/users" auth="Container" type="javax.sql.DataSource"
+            username="sa"
+            password=""
+            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+            url="jdbc:derby:${catalina.base}/target/database/users;create=true"
+  />
+  <Resource name="mail/Session" auth="Container"
+          type="javax.mail.Session"
+          mail.smtp.host="localhost"/>
                 
 </Context>
