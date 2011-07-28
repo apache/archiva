@@ -174,6 +174,8 @@ public class Maven2RepositoryStorage
                 "The artifact's POM file '" + file.getAbsolutePath() + "' was missing" );
         }
 
+        // TODO: this is a workaround until we can properly resolve using proxies as well - this doesn't cache
+        //       anything locally!
         List<RemoteRepositoryConfiguration> remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>();
         Map<String, ProxyInfo> networkProxies = new HashMap<String, ProxyInfo>();
 

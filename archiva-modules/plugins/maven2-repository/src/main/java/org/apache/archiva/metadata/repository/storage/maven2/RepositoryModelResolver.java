@@ -139,7 +139,7 @@ public class RepositoryModelResolver
         return new RepositoryModelResolver( basedir, pathTranslator );
     }
 
-    // TODO: we need to do some refactoring, we cannot re-use the proxy components of archiva-proxy in maven2-repository
+    // FIXME: we need to do some refactoring, we cannot re-use the proxy components of archiva-proxy in maven2-repository
     // because it's causing a cyclic dependency
     private boolean getModelFromProxy( RemoteRepositoryConfiguration remoteRepository, String groupId,
                                     String artifactId, String version, String filename )

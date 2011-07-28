@@ -180,6 +180,8 @@ public class DefaultDependencyTreeBuilder
         try
         {
             // MRM-1411
+            // TODO: this is a workaround for a lack of proxy capability in the resolvers - replace when it can all be
+            //       handled there. It doesn't cache anything locally!
             List< RemoteRepositoryConfiguration > remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>();
             Map<String, ProxyInfo > networkProxies = new HashMap<String, ProxyInfo>();
 
