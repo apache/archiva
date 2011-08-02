@@ -69,7 +69,7 @@
     <redback.version>1.3-SNAPSHOT</redback.version>
     <jetty.version>6.1.19</jetty.version>
     <slf4j.version>1.6.1</slf4j.version>
-    <binder.version>0.9</binder.version>
+    <binder.version>0.11</binder.version>
     <spring.version>3.0.5.RELEASE</spring.version>
     <jackrabbit.version>2.3-SNAPSHOT</jackrabbit.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -980,6 +980,17 @@
         <groupId>com.atlassian.xmlrpc</groupId>
         <artifactId>atlassian-xmlrpc-binder</artifactId>
         <version>${binder.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.xmlrpc</groupId>
+        <artifactId>atlassian-xmlrpc-binder-client-apache</artifactId>
+        <version>${binder.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>

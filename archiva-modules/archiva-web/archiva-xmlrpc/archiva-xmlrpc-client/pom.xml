@@ -41,6 +41,10 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.atlassian.xmlrpc</groupId>
+      <artifactId>atlassian-xmlrpc-binder-client-apache</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <!-- Exec plugin doesn't use runtime scope - odd -->
@@ -75,7 +79,7 @@
     </plugins>
   </build>
   <properties>
-    <archiva.url>http://127.0.0.1:8080/archiva/</archiva.url>
+    <archiva.url>http://127.0.0.1:8080/archiva</archiva.url>
     <username>admin</username>
   </properties>
 </project>

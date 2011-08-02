@@ -22,10 +22,10 @@ package org.apache.archiva.web.xmlrpc.client;
 import java.net.URL;
 import java.util.List;
 
-import com.atlassian.xmlrpc.AuthenticationInfo;
+import com.atlassian.xmlrpc.ApacheBinder;
 import com.atlassian.xmlrpc.Binder;
 import com.atlassian.xmlrpc.BindingException;
-import com.atlassian.xmlrpc.DefaultBinder;
+import com.atlassian.xmlrpc.ConnectionInfo;
 import org.apache.archiva.web.xmlrpc.api.AdministrationService;
 import org.apache.archiva.web.xmlrpc.api.PingService;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
@@ -49,13 +49,16 @@ public class SampleClient
 {   
     public static void main( String[] args ) 
     {       
-        Binder binder = new DefaultBinder();
-        
+
+        Binder binder = new ApacheBinder();
+        ConnectionInfo info = new ConnectionInfo();
+        info.setUsername( args[1] );
+        info.setPassword( args[2] );
+
         try
         {
-            AuthenticationInfo authnInfo = new AuthenticationInfo( args[1], args[2] );
-            AdministrationService adminService = binder.bind( AdministrationService.class, new URL( args[0] ), authnInfo );
-            PingService pingService = binder.bind( PingService.class, new URL( args[0] ), authnInfo );
+            AdministrationService adminService = binder.bind( AdministrationService.class, new URL( args[0] ), info );
+            PingService pingService = binder.bind( PingService.class, new URL( args[0] ), info );
                        
             System.out.println( "Ping : " + pingService.ping() );
             
