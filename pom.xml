@@ -1183,6 +1183,7 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <!-- remove when com.atlassian.xmlrpc:atlassian-xmlrpc-binder-annotations:0.11 will be in central -->
     <repository>
       <id>maven.atlassian</id>
       <url>https://maven.atlassian.com/content/groups/public</url>
