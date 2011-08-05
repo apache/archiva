@@ -21,6 +21,7 @@ package org.apache.archiva.web.xmlrpc.client;
 
 import java.net.URL;
 import java.util.List;
+import java.util.TimeZone;
 
 import com.atlassian.xmlrpc.ApacheBinder;
 import com.atlassian.xmlrpc.Binder;
@@ -54,6 +55,7 @@ public class SampleClient
         ConnectionInfo info = new ConnectionInfo();
         info.setUsername( args[1] );
         info.setPassword( args[2] );
+        info.setTimeZone( TimeZone.getDefault() );
 
         try
         {
