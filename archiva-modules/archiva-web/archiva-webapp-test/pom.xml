@@ -39,7 +39,7 @@
     <maxWaitTimeInMs>60000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
-    <seleniumPluginVersion>2.0-SNAPSHOT</seleniumPluginVersion>
+    <seleniumPluginVersion>2.0</seleniumPluginVersion>
   </properties>
 
   <dependencies>
