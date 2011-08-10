@@ -36,11 +36,40 @@
       <interceptor name="redbackAutoLogin" class="redbackAutoLoginInterceptor"/>
       <interceptor name="redbackPolicyEnforcement" class="redbackPolicyEnforcementInterceptor"/>
       <interceptor name="paramFilter" class="com.opensymphony.xwork2.interceptor.ParameterFilterInterceptor"/>
+      <interceptor name="archivaParams" class="org.apache.maven.archiva.web.interceptor.ArchivaParametersInterceptor"/>
+
+
+      <interceptor-stack name="defaultArchivaStack">
+        <interceptor-ref name="exception"/>
+        <interceptor-ref name="alias"/>
+        <interceptor-ref name="servletConfig"/>
+        <interceptor-ref name="i18n"/>
+        <interceptor-ref name="prepare"/>
+        <interceptor-ref name="chain"/>
+        <interceptor-ref name="debugging"/>
+        <interceptor-ref name="scopedModelDriven"/>
+        <interceptor-ref name="modelDriven"/>
+        <interceptor-ref name="fileUpload"/>
+        <interceptor-ref name="checkbox"/>
+        <interceptor-ref name="multiselect"/>
+        <interceptor-ref name="staticParams"/>
+        <interceptor-ref name="actionMappingParams"/>
+        <interceptor-ref name="archivaParams">
+          <param name="excludeParams">dojo\..*,^struts\..*</param>
+        </interceptor-ref>
+        <interceptor-ref name="conversionError"/>
+        <interceptor-ref name="validation">
+            <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
+        <interceptor-ref name="workflow">
+            <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
+      </interceptor-stack>
 
       <interceptor-stack name="configuredArchivaStack">
         <interceptor-ref name="redbackForceAdminUser"/>
         <interceptor-ref name="redbackAutoLogin"/>
-        <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="defaultArchivaStack"/>
         <interceptor-ref name="paramFilter">
           <param name="blocked">externalResult</param>
         </interceptor-ref>
@@ -63,7 +92,7 @@
       <interceptor-stack name="unconfiguredArchivaStack">
         <interceptor-ref name="redbackForceAdminUser"/>
         <interceptor-ref name="redbackAutoLogin"/>
-        <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="defaultArchivaStack"/>
         <interceptor-ref name="redbackPolicyEnforcement"/>
         <interceptor-ref name="redbackSecureActions">
           <param name="enableReferrerCheck">false</param>
@@ -81,7 +110,7 @@
 
       <interceptor-stack name="configuredPrepareParamsStack">
         <!-- <interceptor-ref name="prepare" /> -->
-        <interceptor-ref name="params"/>
+        <interceptor-ref name="archivaParams"/>
         <interceptor-ref name="configuredArchivaStack"/>
       </interceptor-stack>
     </interceptors>

@@ -27,6 +27,9 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n"/>
     </layout>
   </appender>
+  <logger name="com.opensymphony.xwork2.interceptor.ParametersInterceptor">
+    <level value="debug"/>
+  </logger>
   <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder">
     <level value="error"/>
   </logger>

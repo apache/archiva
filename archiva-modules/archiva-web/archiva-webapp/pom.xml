@@ -162,6 +162,11 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
+      <groupId>ognl</groupId>
+      <artifactId>ognl</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-core</artifactId>
     </dependency>

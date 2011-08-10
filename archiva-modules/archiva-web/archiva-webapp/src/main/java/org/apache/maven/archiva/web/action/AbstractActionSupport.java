@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action;
 import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.interceptor.ParameterNameAware;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
@@ -179,4 +180,5 @@ public abstract class AbstractActionSupport
         }
         return beans;
     }
+
 }
