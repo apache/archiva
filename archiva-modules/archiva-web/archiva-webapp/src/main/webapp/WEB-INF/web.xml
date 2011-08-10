@@ -122,6 +122,23 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+        <servlet>
+          <servlet-name>RedbackXmlRpcServlet</servlet-name>
+          <servlet-class>com.atlassian.xmlrpc.spring.BinderSpringXmlRpcServlet</servlet-class>
+          <init-param>
+            <param-name>serviceListBeanName</param-name>
+            <param-value>redbackXmlrpcServicesList</param-value>
+          </init-param>
+          <init-param>
+            <param-name>authHandlerBeanName</param-name>
+            <param-value>redbackXmlRpcAuthenticator</param-value>
+          </init-param>
+          <init-param>
+            <param-name>enabledForExtensions</param-name>
+            <param-value>true</param-value>
+          </init-param>
+        </servlet>
+
 	<servlet>
 		<servlet-name>RssFeedServlet</servlet-name>
 		<servlet-class>
@@ -143,6 +160,11 @@
 		<servlet-name>XmlRpcServlet</servlet-name>
 		<url-pattern>/xmlrpc</url-pattern>
 	</servlet-mapping>
+
+        <servlet-mapping>
+          <servlet-name>RedbackXmlRpcServlet</servlet-name>
+          <url-pattern>/redback-xmlrpc</url-pattern>
+        </servlet-mapping>
 
 	<resource-ref>
 		<res-ref-name>jdbc/users</res-ref-name>

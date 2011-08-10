@@ -226,6 +226,16 @@
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-common-integrations</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-xmlrpc-services</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-xmlrpc-security</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <!-- Other dependencies -->
     <dependency>
       <groupId>org.apache.archiva</groupId>

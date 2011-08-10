@@ -68,7 +68,33 @@
     <constructor-arg ref="repositoryMerger#maven2"/>
     <constructor-arg ref="auditListener#logging"/>
     <constructor-arg ref="commons-configuration"/>
+  </bean>
 
+  <!-- Redback Web Services -->
+  <bean name="redbackRoleService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.RoleServiceImpl">
+    <constructor-arg ref="rBACManager#cached"/>
+    <constructor-arg ref="roleManager"/>
+  </bean>
+
+  <bean name="redbackOperationService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.OperationServiceImpl">
+    <constructor-arg ref="rBACManager#cached"/>
+  </bean>
+
+  <bean name="redbackPermissionService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.PermissionServiceImpl">
+    <constructor-arg ref="rBACManager#cached"/>
+  </bean>
+
+  <bean name="redbackResourceService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.ResourceServiceImpl">
+    <constructor-arg ref="rBACManager#cached"/>
+  </bean>
+
+  <bean name="redbackUserService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.UserServiceImpl">
+    <constructor-arg ref="userManager#cached"/>
   </bean>
 
   <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">
@@ -84,6 +110,22 @@
   <bean name="xmlRpcAuthenticator" class="org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator">
     <constructor-arg ref="securitySystem"/>
     <constructor-arg ref="userRepositories"/>
+  </bean>
+
+  <bean name="redbackXmlrpcServicesList" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="redbackOperationService"/>
+        <ref bean="redbackPermissionService"/>
+        <ref bean="redbackResourceService"/>
+        <ref bean="redbackRoleService"/>
+        <ref bean="redbackUserService"/>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean name="redbackXmlRpcAuthenticator" class="org.codehaus.redback.xmlrpc.security.XmlRpcAuthenticator">
+    <constructor-arg ref="securitySystem"/>
   </bean>
 
   <bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">

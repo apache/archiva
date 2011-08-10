@@ -820,6 +820,16 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-xmlrpc-services</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-xmlrpc-security</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
 
       <!-- redback -->
 
