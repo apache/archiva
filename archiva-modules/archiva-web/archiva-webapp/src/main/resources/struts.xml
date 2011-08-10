@@ -36,8 +36,6 @@
       <interceptor name="redbackAutoLogin" class="redbackAutoLoginInterceptor"/>
       <interceptor name="redbackPolicyEnforcement" class="redbackPolicyEnforcementInterceptor"/>
       <interceptor name="paramFilter" class="com.opensymphony.xwork2.interceptor.ParameterFilterInterceptor"/>
-      <interceptor name="archivaParams" class="org.apache.maven.archiva.web.interceptor.ArchivaParametersInterceptor"/>
-
 
       <interceptor-stack name="defaultArchivaStack">
         <interceptor-ref name="exception"/>
@@ -54,8 +52,9 @@
         <interceptor-ref name="multiselect"/>
         <interceptor-ref name="staticParams"/>
         <interceptor-ref name="actionMappingParams"/>
-        <interceptor-ref name="archivaParams">
+        <interceptor-ref name="params">
           <param name="excludeParams">dojo\..*,^struts\..*</param>
+          <param name="acceptParamNames">[a-zA-Z0-9\-\.\]\[\(\)_'\s]+</param>
         </interceptor-ref>
         <interceptor-ref name="conversionError"/>
         <interceptor-ref name="validation">
@@ -110,7 +109,7 @@
 
       <interceptor-stack name="configuredPrepareParamsStack">
         <!-- <interceptor-ref name="prepare" /> -->
-        <interceptor-ref name="archivaParams"/>
+        <interceptor-ref name="params"/>
         <interceptor-ref name="configuredArchivaStack"/>
       </interceptor-stack>
     </interceptors>
