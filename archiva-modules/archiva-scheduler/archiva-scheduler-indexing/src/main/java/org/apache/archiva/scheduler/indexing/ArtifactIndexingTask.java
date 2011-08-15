@@ -19,9 +19,9 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.taskqueue.Task;
@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class ArtifactIndexingTask
     implements Task
@@ -157,7 +158,8 @@ public class ArtifactIndexingTask
         return true;
     }
 
-    public static IndexingContext createContext( ManagedRepositoryConfiguration repository, NexusIndexer indexer )
+    public static IndexingContext createContext( ManagedRepositoryConfiguration repository, NexusIndexer indexer,
+                                                 List<IndexCreator> indexCreators )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
         String indexDir = repository.getIndexDir();
@@ -182,7 +184,7 @@ public class ArtifactIndexingTask
         IndexingContext context =
             indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
                                         managedRepository.toURI().toURL().toString(),
-                                        indexDirectory.toURI().toURL().toString(), ArchivaNexusIndexerUtil.FULL_INDEX );
+                                        indexDirectory.toURI().toURL().toString(), indexCreators );
 
         context.setSearchable( repository.isScanned() );
         return context;

@@ -32,6 +32,7 @@ import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.SourcedSearchExpression;
@@ -48,6 +49,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
@@ -75,6 +77,8 @@ public class ArchivaIndexingTaskExecutor
 
     private NexusIndexer nexusIndexer;
 
+    private List<IndexCreator> allIndexCreators;
+
     @PostConstruct
     public void initialize()
         throws PlexusSisuBridgeException
@@ -86,6 +90,8 @@ public class ArchivaIndexingTaskExecutor
         indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
 
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+
+        allIndexCreators = plexusSisuBridge.lookupList( IndexCreator.class );
     }
 
     public void executeTask( Task task )
@@ -113,7 +119,7 @@ public class ArchivaIndexingTaskExecutor
                     {
                         log.debug( "Creating indexing context on resource: {}",
                                    indexingTask.getResourceFile().getPath() );
-                        context = ArtifactIndexingTask.createContext( repository, nexusIndexer );
+                        context = ArtifactIndexingTask.createContext( repository, nexusIndexer, allIndexCreators );
                     }
                     catch ( IOException e )
                     {

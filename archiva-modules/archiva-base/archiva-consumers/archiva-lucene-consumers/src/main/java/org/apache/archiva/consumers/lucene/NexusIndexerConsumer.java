@@ -38,6 +38,7 @@ import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -73,6 +74,8 @@ public class NexusIndexerConsumer
 
     private ManagedRepositoryConfiguration repository;
 
+    private List<IndexCreator> allIndexCreators;
+
     public NexusIndexerConsumer( ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
                                  ArchivaConfiguration configuration, FileTypes filetypes, PlexusSisuBridge plexusSisuBridge )
         throws PlexusSisuBridgeException
@@ -81,6 +84,7 @@ public class NexusIndexerConsumer
         this.filetypes = filetypes;
         this.scheduler = scheduler;
         this.nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        this.allIndexCreators = plexusSisuBridge.lookupList( IndexCreator.class );
     }
 
     public String getDescription()
@@ -107,7 +111,7 @@ public class NexusIndexerConsumer
         try
         {
             log.info( "Creating indexing context for repo : " + repository.getId() );
-            context = ArtifactIndexingTask.createContext( repository, nexusIndexer );
+            context = ArtifactIndexingTask.createContext( repository, nexusIndexer, allIndexCreators );
         }
         catch ( IOException e )
         {

@@ -19,23 +19,9 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
-import junit.framework.TestCase;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.common.utils.FileUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.index.ArtifactContext;
-import org.apache.maven.index.ArtifactContextProducer;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
-import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.easymock.MockControl;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -46,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.inject.Inject;
 
 
 @RunWith( SpringJUnit4ClassRunner.class )

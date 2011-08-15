@@ -26,7 +26,6 @@ import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TopDocs;
-import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.index.ArtifactInfo;
@@ -34,6 +33,7 @@ import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.expr.StringSearchExpression;
@@ -96,7 +96,8 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
-        ArtifactIndexingTask.createContext( repositoryConfig, indexer );
+        ArtifactIndexingTask.createContext( repositoryConfig, indexer,
+                                            plexusSisuBridge.lookupList( IndexCreator.class ) );
     }
 
     @After
@@ -152,7 +153,7 @@ public class ArchivaIndexingTaskExecutorTest
                                                                   new File( repositoryConfig.getLocation() ),
                                                                   new File( repositoryConfig.getLocation(),
                                                                             ".indexer" ), null, null,
-                                                                  ArchivaNexusIndexerUtil.FULL_INDEX );
+                                                                  plexusSisuBridge.lookupList( IndexCreator.class ) );
             context.setSearchable( true );
         }
 
@@ -296,7 +297,6 @@ public class ArchivaIndexingTaskExecutorTest
         q.add(
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
-
 
         FlatSearchRequest request = new FlatSearchRequest( q, getIndexingContext() );
         FlatSearchResponse response = indexer.searchFlat( request );

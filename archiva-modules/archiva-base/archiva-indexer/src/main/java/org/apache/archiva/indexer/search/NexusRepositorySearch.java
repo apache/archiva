@@ -25,7 +25,6 @@ import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -35,6 +34,7 @@ import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.OSGI;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.StringSearchExpression;
@@ -62,12 +62,15 @@ public class NexusRepositorySearch
 
     private ArchivaConfiguration archivaConfig;
 
+    private List<? extends IndexCreator> allIndexCreators;
+
     @Inject
     public NexusRepositorySearch( PlexusSisuBridge plexusSisuBridge, ArchivaConfiguration archivaConfig )
         throws PlexusSisuBridgeException
     {
         this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
         this.archivaConfig = archivaConfig;
+        allIndexCreators = plexusSisuBridge.lookupList( IndexCreator.class );
     }
 
     /**
@@ -274,7 +277,7 @@ public class NexusRepositorySearch
                     IndexingContext context = indexer.addIndexingContext( repoConfig.getId(), repoConfig.getId(),
                                                                           new File( repoConfig.getLocation() ),
                                                                           indexDirectory, null, null,
-                                                                          ArchivaNexusIndexerUtil.FULL_INDEX );
+                                                                          getAllIndexCreators() );
                     context.setSearchable( repoConfig.isScanned() );
                 }
                 else
@@ -294,6 +297,13 @@ public class NexusRepositorySearch
             }
         }
     }
+
+
+    protected List<? extends IndexCreator> getAllIndexCreators()
+    {
+        return allIndexCreators;
+    }
+
 
     private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits )
     {

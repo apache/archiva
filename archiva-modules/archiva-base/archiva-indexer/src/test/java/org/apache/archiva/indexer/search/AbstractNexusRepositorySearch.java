@@ -22,7 +22,6 @@ package org.apache.archiva.indexer.search;
 import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.utils.ArchivaNexusIndexerUtil;
 import org.apache.maven.archiva.common.utils.FileUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -30,7 +29,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.easymock.MockControl;
@@ -59,7 +57,7 @@ public abstract class AbstractNexusRepositorySearch
 
     public static String TEST_REPO_2 = "nexus-search-test-repo-2";
 
-    RepositorySearch search;
+    NexusRepositorySearch search;
 
     ArchivaConfiguration archivaConfig;
 
@@ -166,7 +164,7 @@ public abstract class AbstractNexusRepositorySearch
         IndexingContext context = nexusIndexer.addIndexingContext( repository, repository, repo, indexDirectory,
                                                                    repo.toURI().toURL().toExternalForm(),
                                                                    indexDirectory.toURI().toURL().toString(),
-                                                                   ArchivaNexusIndexerUtil.FULL_INDEX );
+                                                                   search.getAllIndexCreators() );
 
         List<ArtifactContext> artifactContexts = new ArrayList<ArtifactContext>( filesToBeIndexed.size() );
         for ( File artifactFile : filesToBeIndexed )
