@@ -48,17 +48,46 @@ public class SearchFields
      * class name or package name
      */
     private String className;
-    
+
     /**
      * repositories
      */
     private List<String> repositories = new ArrayList<String>();
-    
+
+
+    /**
+     * contains osgi metadata Bundle-Version if available
+     *
+     * @since 1.4
+     */
+    private String bundleVersion;
+
+    /**
+     * contains osgi metadata Bundle-SymbolicName if available
+     *
+     * @since 1.4
+     */
+    private String bundleSymbolicName;
+
+    /**
+     * contains osgi metadata Export-Package if available
+     *
+     * @since 1.4
+     */
+    private String bundleExportPackage;
+
+    /**
+     * contains osgi metadata Export-Service if available
+     *
+     * @since 1.4
+     */
+    private String bundleExportService;
+
     public SearchFields()
     {
-        
+        // no op
     }
-    
+
     public SearchFields( String groupId, String artifactId, String version, String packaging, String className,
                          List<String> repositories )
     {
@@ -69,7 +98,7 @@ public class SearchFields
         this.className = className;
         this.repositories = repositories;
     }
-    
+
     public String getGroupId()
     {
         return groupId;
@@ -128,5 +157,46 @@ public class SearchFields
     public void setRepositories( List<String> repositories )
     {
         this.repositories = repositories;
+    }
+
+
+    public String getBundleVersion()
+    {
+        return bundleVersion;
+    }
+
+    public void setBundleVersion( String bundleVersion )
+    {
+        this.bundleVersion = bundleVersion;
+    }
+
+    public String getBundleSymbolicName()
+    {
+        return bundleSymbolicName;
+    }
+
+    public void setBundleSymbolicName( String bundleSymbolicName )
+    {
+        this.bundleSymbolicName = bundleSymbolicName;
+    }
+
+    public String getBundleExportPackage()
+    {
+        return bundleExportPackage;
+    }
+
+    public void setBundleExportPackage( String bundleExportPackage )
+    {
+        this.bundleExportPackage = bundleExportPackage;
+    }
+
+    public String getBundleExportService()
+    {
+        return bundleExportService;
+    }
+
+    public void setBundleExportService( String bundleExportService )
+    {
+        this.bundleExportService = bundleExportService;
     }
 }

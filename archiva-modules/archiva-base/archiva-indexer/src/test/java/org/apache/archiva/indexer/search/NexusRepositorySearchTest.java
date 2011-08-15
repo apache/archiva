@@ -44,6 +44,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -51,59 +52,9 @@ import javax.inject.Inject;
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class NexusRepositorySearchTest
-    extends TestCase
+    extends AbstractNexusRepositorySearch
 {
-    private RepositorySearch search;
 
-    private ArchivaConfiguration archivaConfig;
-
-    //private DefaultIndexingContext context;
-
-    //private IndexerEngine indexerEngine;
-
-    private ArtifactContextProducer artifactContextProducer;
-
-    private MockControl archivaConfigControl;
-
-    private Configuration config;
-
-    private static String TEST_REPO_1 = "nexus-search-test-repo";
-
-    private static String TEST_REPO_2 = "nexus-search-test-repo-2";
-
-    @Inject
-    PlexusSisuBridge plexusSisuBridge;
-
-    NexusIndexer nexusIndexer;
-
-    @Before
-    public void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        FileUtils.deleteDirectory(
-            new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ) );
-        assertFalse( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ).exists() );
-
-        FileUtils.deleteDirectory(
-            new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
-        assertFalse( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
-
-        archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
-
-        archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
-
-        search = new NexusRepositorySearch( plexusSisuBridge, archivaConfig );
-
-        nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-
-        artifactContextProducer = plexusSisuBridge.lookup( ArtifactContextProducer.class );
-
-        config = new Configuration();
-        config.addManagedRepository( createRepositoryConfig( TEST_REPO_1 ) );
-        config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
-    }
 
     private void createSimpleIndex( boolean scan )
         throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
@@ -154,94 +105,13 @@ public class NexusRepositorySearchTest
         createIndex( TEST_REPO_1, files, scan );
     }
 
-    private ManagedRepositoryConfiguration createRepositoryConfig( String repository )
-    {
-        ManagedRepositoryConfiguration repositoryConfig = new ManagedRepositoryConfiguration();
-        repositoryConfig.setId( repository );
-        repositoryConfig.setLocation( FileUtil.getBasedir() + "/target/test-classes/" + repository );
-        repositoryConfig.setLayout( "default" );
-        repositoryConfig.setName( repository );
-        repositoryConfig.setScanned( true );
-        repositoryConfig.setSnapshots( false );
-        repositoryConfig.setReleases( true );
-
-        return repositoryConfig;
-    }
-
-    @After
-    public void tearDown()
-        throws Exception
-    {
-
-        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
-        {
-            nexusIndexer.removeIndexingContext( indexingContext, true );
-        }
-
-        FileUtils.deleteDirectory(
-            new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ) );
-        assertFalse( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_1 + "/.indexer" ).exists() );
-
-        FileUtils.deleteDirectory(
-            new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ) );
-        assertFalse( new File( FileUtil.getBasedir(), "/target/test-classes/" + TEST_REPO_2 + "/.indexer" ).exists() );
-
-        super.tearDown();
-    }
-
-    private void createIndex( String repository, List<File> filesToBeIndexed, boolean scan )
-        throws IOException, UnsupportedExistingLuceneIndexException, IllegalArtifactCoordinateException
-    {
-
-        File indexerDirectory = new File( FileUtil.getBasedir(), "/target/test-classes/" + repository + "/.indexer" );
-
-        if ( indexerDirectory.exists() )
-        {
-            FileUtils.deleteDirectory( indexerDirectory );
-        }
-
-        assertFalse( indexerDirectory.exists() );
-
-        File lockFile =
-            new File( FileUtil.getBasedir(), "/target/test-classes/" + repository + "/.indexer/write.lock" );
-        if ( lockFile.exists() )
-        {
-            lockFile.delete();
-        }
-
-        assertFalse( lockFile.exists() );
-
-        File repo = new File( FileUtil.getBasedir(), "/target/test-classes/" + repository );
-        File indexDirectory = new File( FileUtil.getBasedir(), "/target/test-classes/" + repository + "/.indexer" );
-
-        IndexingContext context = nexusIndexer.addIndexingContext( repository, repository, repo, indexDirectory,
-                                                                   repo.toURI().toURL().toExternalForm(),
-                                                                   indexDirectory.toURI().toURL().toString(),
-                                                                   ArchivaNexusIndexerUtil.FULL_INDEX );
-
-        List<ArtifactContext> artifactContexts = new ArrayList<ArtifactContext>( filesToBeIndexed.size() );
-        for ( File artifactFile : filesToBeIndexed )
-        {
-            ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
-            artifactContexts.add( ac );
-        }
-
-        nexusIndexer.addArtifactsToIndex( artifactContexts, context );
-        if ( scan )
-        {
-            nexusIndexer.scan( context );
-        }
-        assertTrue( new File( FileUtil.getBasedir(), "/target/test-classes/" + repository + "/.indexer" ).exists() );
-    }
-
     @Test
     public void testQuickSearch()
         throws Exception
     {
         createSimpleIndex( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
-        selectedRepos.add( TEST_REPO_1 );
+        List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
@@ -351,7 +221,7 @@ public class NexusRepositorySearchTest
 
         assertNotNull( results );
         assertEquals( 1, results.getHits().size() );
-        assertEquals( "total hits not 5 for page1 " + results, 5, results.getTotalHits() );
+        assertEquals( "total hits not 6 for page1 " + results, 6, results.getTotalHits() );
         assertEquals( "returned hits not 1 for page1 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
 
@@ -372,7 +242,7 @@ public class NexusRepositorySearchTest
         assertNotNull( results );
 
         assertEquals( "hits not 1", 1, results.getHits().size() );
-        assertEquals( "total hits not 5 for page 2 " + results, 5, results.getTotalHits() );
+        assertEquals( "total hits not 6 for page 2 " + results, 6, results.getTotalHits() );
         assertEquals( "returned hits not 1 for page2 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
     }

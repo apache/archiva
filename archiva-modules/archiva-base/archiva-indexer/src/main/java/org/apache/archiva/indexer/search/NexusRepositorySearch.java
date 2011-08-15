@@ -34,6 +34,7 @@ import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.OSGI;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.StringSearchExpression;
@@ -41,12 +42,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.inject.Inject;
 
 /**
  * RepositorySearch implementation which uses the Nexus Indexer for searching.
@@ -121,27 +122,62 @@ public class NexusRepositorySearch
         BooleanQuery q = new BooleanQuery();
         if ( StringUtils.isNotBlank( searchFields.getGroupId() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( searchFields.getGroupId() ) ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( searchFields.getGroupId() ) ),
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( searchFields.getArtifactId() ) ), Occur.MUST );
+            q.add(
+                indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( searchFields.getArtifactId() ) ),
+                Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( searchFields.getVersion() ) ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( searchFields.getVersion() ) ),
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( searchFields.getPackaging() ) ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( searchFields.getPackaging() ) ),
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassName() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( searchFields.getClassName( ) ) ), Occur.MUST );
+            q.add(
+                indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( searchFields.getClassName() ) ),
+                Occur.MUST );
+        }
+
+        if ( StringUtils.isNotBlank( searchFields.getBundleSymbolicName() ) )
+        {
+            q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
+                                           new StringSearchExpression( searchFields.getBundleSymbolicName() ) ),
+                   Occur.MUST );
+        }
+
+        if ( StringUtils.isNotBlank( searchFields.getBundleVersion() ) )
+        {
+            q.add(
+                indexer.constructQuery( OSGI.VERSION, new StringSearchExpression( searchFields.getBundleVersion() ) ),
+                Occur.MUST );
+        }
+
+        if ( StringUtils.isNotBlank( searchFields.getBundleExportPackage() ) )
+        {
+            q.add( indexer.constructQuery( OSGI.EXPORT_PACKAGE,
+                                           new StringSearchExpression( searchFields.getBundleExportPackage() ) ),
+                   Occur.MUST );
+        }
+
+        if ( StringUtils.isNotBlank( searchFields.getBundleExportService() ) )
+        {
+            q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
+                                           new StringSearchExpression( searchFields.getBundleExportService() ) ),
+                   Occur.MUST );
         }
 
         if ( q.getClauses() == null || q.getClauses().length <= 0 )
@@ -199,7 +235,7 @@ public class NexusRepositorySearch
     private void constructQuery( String term, BooleanQuery q )
     {
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression(  term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( term ) ), Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ), Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ), Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ), Occur.SHOULD );
@@ -228,7 +264,7 @@ public class NexusRepositorySearch
                         indexDirectory = new File( repoConfig.getLocation(), ".indexer" );
                     }
 
-                    if (indexer.getIndexingContexts().containsKey( repoConfig.getId() ))
+                    if ( indexer.getIndexingContexts().containsKey( repoConfig.getId() ) )
                     {
                         // alreday here so no need to record it again
                         log.info( "index with id {} already exists skip adding it", repoConfig.getId() );
