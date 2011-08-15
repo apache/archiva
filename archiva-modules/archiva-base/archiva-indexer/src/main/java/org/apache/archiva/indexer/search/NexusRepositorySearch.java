@@ -322,6 +322,10 @@ public class NexusRepositorySearch
                 //hit.setRepositoryId( artifactInfo.repository );
                 hit.setUrl( artifactInfo.repository + "/" + artifactInfo.fname );
                 hit.addVersion( artifactInfo.version );
+                hit.setBundleExportPackage( artifactInfo.bundleExportPackage );
+                hit.setBundleExportService( artifactInfo.bundleExportService );
+                hit.setBundleSymbolicName( artifactInfo.bundleSymbolicName );
+                hit.setBundleVersion( artifactInfo.bundleVersion );
             }
 
             results.addHit( id, hit );

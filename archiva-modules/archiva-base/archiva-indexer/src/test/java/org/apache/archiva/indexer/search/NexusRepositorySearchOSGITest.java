@@ -19,7 +19,6 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.io.File;
@@ -48,7 +47,7 @@ public class NexusRepositorySearchOSGITest
 
         archivaConfigControl.replay();
 
-        SearchFields searchFields = new SearchFields(  );
+        SearchFields searchFields = new SearchFields();
         searchFields.setBundleSymbolicName( "org.apache.felix.bundlerepository" );
         searchFields.setBundleVersion( "1.6.6" );
         searchFields.setRepositories( selectedRepos );
@@ -65,6 +64,12 @@ public class NexusRepositorySearchOSGITest
         assertEquals( "org.apache.felix.bundlerepository", hit.getArtifactId() );
         assertEquals( "1.6.6", hit.getVersions().get( 0 ) );
 
+        assertEquals( "org.apache.felix.bundlerepository;uses:=\"org.osgi.framework\";version=\"2.0\"",
+                      hit.getBundleExportPackage() );
+        assertEquals( "org.apache.felix.bundlerepository.RepositoryAdmin,org.osgi.service.obr.RepositoryAdmin",
+                      hit.getBundleExportService() );
+        assertEquals( "org.apache.felix.bundlerepository", hit.getBundleSymbolicName() );
+        assertEquals( "1.6.6", hit.getBundleVersion() );
     }
 
 }
