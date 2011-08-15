@@ -19,23 +19,24 @@ package org.apache.maven.archiva.common.utils;
  * under the License.
  */
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
+import org.apache.maven.index.creator.OSGIArtifactIndexCreator;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * ArchivaNexusIndexerUtil 
- *
+ * ArchivaNexusIndexerUtil
  */
 public class ArchivaNexusIndexerUtil
 {
-    public static final List<? extends IndexCreator> FULL_INDEX = Arrays.<IndexCreator>asList(
-                                                                  new MinimalArtifactInfoIndexCreator(),
-                                                                  new JarFileContentsIndexCreator(),
-                                                                  new MavenPluginArtifactInfoIndexCreator() );
-    
+    // FIXME olamy use lookup mechanism from plexus/sisu as here some possible injections can fail !
+
+    public static final List<? extends IndexCreator> FULL_INDEX =
+        Arrays.<IndexCreator>asList( new MinimalArtifactInfoIndexCreator(), new JarFileContentsIndexCreator(),
+                                     new MavenPluginArtifactInfoIndexCreator(), new OSGIArtifactIndexCreator() );
+
 }
