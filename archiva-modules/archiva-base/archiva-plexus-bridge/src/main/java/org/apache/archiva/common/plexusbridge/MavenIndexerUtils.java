@@ -38,7 +38,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4
  */
-@Service("mavenIndexerUtils")
+@Service( "mavenIndexerUtils" )
 public class MavenIndexerUtils
 {
 
@@ -56,13 +56,20 @@ public class MavenIndexerUtils
         {
             // olamy when the TCL is not a URLClassLoader lookupList fail !
             // when using tomcat maven plugin so adding a simple hack
-            log.warn( "using lookList from sisu plexus failed so build indexCreator manually" );
+            log.warn( "using lookupList from sisu plexus failed so build indexCreator manually" );
 
             allIndexCreators =
-                Arrays.asList( new OSGIArtifactIndexCreator(), new MavenArchetypeArtifactInfoIndexCreator(),
-                               new MinimalArtifactInfoIndexCreator(), new JarFileContentsIndexCreator(),
-                               new MavenPluginArtifactInfoIndexCreator() );
+                Arrays.asList( plexusSisuBridge.lookup( IndexCreator.class, OSGIArtifactIndexCreator.ID ),
+                               plexusSisuBridge.lookup( IndexCreator.class, MavenArchetypeArtifactInfoIndexCreator.ID ),
+                               plexusSisuBridge.lookup( IndexCreator.class, MinimalArtifactInfoIndexCreator.ID ),
+                               plexusSisuBridge.lookup( IndexCreator.class, JarFileContentsIndexCreator.ID ),
+                               plexusSisuBridge.lookup( IndexCreator.class, MavenPluginArtifactInfoIndexCreator.ID ) );
 
+        }
+
+        if ( allIndexCreators == null || allIndexCreators.isEmpty() )
+        {
+            throw new PlexusSisuBridgeException( "no way to initiliaze IndexCreator" );
         }
 
         log.debug( "allIndexCreators {}", allIndexCreators );

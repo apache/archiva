@@ -33,6 +33,13 @@
   <logger name="org.apache.archiva.indexer.search.NexusRepositorySearch">
     <level value="debug"/>
   </logger>
+  <logger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils">
+    <level value="debug"/>
+  </logger>
+  <logger name="JPOX">
+    <level value="error"/>
+  </logger>
+
   <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder">
     <level value="error"/>
   </logger>

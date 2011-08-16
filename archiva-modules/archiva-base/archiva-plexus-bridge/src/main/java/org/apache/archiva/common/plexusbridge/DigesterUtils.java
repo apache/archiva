@@ -52,10 +52,15 @@ public class DigesterUtils
         {
             // olamy when the TCL is not a URLClassLoader lookupList fail !
             // when using tomcat maven plugin so adding a simple hack
-            log.warn( "using lookList from sisu plexus failed so build plexus Digesters manually" );
+            log.warn( "using lookupList from sisu plexus failed so build plexus Digesters manually" );
 
             allDigesters = Arrays.asList( new Sha1Digester(), new Md5Digester() );
 
+        }
+
+        if ( allDigesters == null || allDigesters.isEmpty() )
+        {
+            throw  new PlexusSisuBridgeException( "no way to initiliaze IndexCreator" );
         }
 
         log.debug( "allIndexCreators {}", allDigesters );
