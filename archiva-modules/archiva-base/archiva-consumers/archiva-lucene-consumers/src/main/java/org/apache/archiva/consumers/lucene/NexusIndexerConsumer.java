@@ -75,7 +75,7 @@ public class NexusIndexerConsumer
 
     private ManagedRepositoryConfiguration repository;
 
-    private List<IndexCreator> allIndexCreators;
+    private List<? extends IndexCreator> allIndexCreators;
 
     public NexusIndexerConsumer( ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
                                  ArchivaConfiguration configuration, FileTypes filetypes,
