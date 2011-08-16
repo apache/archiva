@@ -175,16 +175,18 @@ public class ArtifactIndexingTask
             indexDirectory = new File( managedRepository, ".indexer" );
         }
 
-        if ( indexer.getIndexingContexts().containsKey( repository.getId() ) )
+        IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
+
+        if ( context != null )
         {
             LoggerFactory.getLogger( ArtifactIndexingTask.class ).warn(
                 "skip adding repository with id {} as already exists", repository.getId() );
+            return context;
         }
 
-        IndexingContext context =
-            indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
-                                        managedRepository.toURI().toURL().toString(),
-                                        indexDirectory.toURI().toURL().toString(), indexCreators );
+        context = indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
+                                              managedRepository.toURI().toURL().toString(),
+                                              indexDirectory.toURI().toURL().toString(), indexCreators );
 
         context.setSearchable( repository.isScanned() );
         return context;

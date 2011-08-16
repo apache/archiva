@@ -112,6 +112,16 @@ public class ArchivaIndexingTaskExecutor
             if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() )
                 && indexingTask.isExecuteOnEntireRepo() )
             {
+                // TODO update or not !!
+                // do the full scan
+                try
+                {
+                    nexusIndexer.scan( context );
+                }
+                catch ( IOException e )
+                {
+                    throw new TaskExecutionException( "Error scan repository " + repository, e );
+                }
                 log.debug( "Finishing indexing task on repo: {}", repository.getId() );
                 finishIndexingTask( indexingTask, repository, context );
             }
@@ -129,12 +139,14 @@ public class ArchivaIndexingTaskExecutor
                     catch ( IOException e )
                     {
                         log.error( "Error occurred while creating context: " + e.getMessage() );
-                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage() );
+                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage(),
+                                                          e );
                     }
                     catch ( UnsupportedExistingLuceneIndexException e )
                     {
                         log.error( "Error occurred while creating context: " + e.getMessage() );
-                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage() );
+                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage(),
+                                                          e );
                     }
                 }
 
@@ -163,12 +175,12 @@ public class ArchivaIndexingTaskExecutor
                                 ac.getArtifactInfo().artifactId ) ), BooleanClause.Occur.MUST );
                             q.add( nexusIndexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression(
                                 ac.getArtifactInfo().version ) ), BooleanClause.Occur.MUST );
-                            if (ac.getArtifactInfo().classifier != null)
+                            if ( ac.getArtifactInfo().classifier != null )
                             {
                                 q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression(
                                     ac.getArtifactInfo().classifier ) ), BooleanClause.Occur.MUST );
                             }
-                            if (ac.getArtifactInfo().packaging != null)
+                            if ( ac.getArtifactInfo().packaging != null )
                             {
                                 q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression(
                                     ac.getArtifactInfo().packaging ) ), BooleanClause.Occur.MUST );
@@ -212,8 +224,8 @@ public class ArchivaIndexingTaskExecutor
                 }
                 catch ( IOException e )
                 {
-                    log.error(
-                        "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
+                    log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage(),
+                               e );
                     throw new TaskExecutionException(
                         "Error occurred while executing indexing task '" + indexingTask + "'", e );
                 }

@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,7 +84,7 @@ public class NexusRepositorySearch
                                  List<String> previousSearchTerms )
         throws RepositorySearchException
     {
-        addIndexingContexts( selectedRepos );
+        List<String> indexingContextIds = addIndexingContexts( selectedRepos );
 
         // since upgrade to nexus 2.0.0, query has changed from g:[QUERIED TERM]* to g:*[QUERIED TERM]*
         //      resulting to more wildcard searches so we need to increase max clause count
@@ -109,7 +110,7 @@ public class NexusRepositorySearch
             q.add( iQuery, Occur.MUST );
         }
 
-        return search( limits, q );
+        return search( limits, q, indexingContextIds );
     }
 
     /**
@@ -123,7 +124,7 @@ public class NexusRepositorySearch
             throw new RepositorySearchException( "Repositories cannot be null." );
         }
 
-        addIndexingContexts( searchFields.getRepositories() );
+        List<String> indexingContextIds = addIndexingContexts( searchFields.getRepositories() );
 
         BooleanQuery q = new BooleanQuery();
         if ( StringUtils.isNotBlank( searchFields.getGroupId() ) )
@@ -191,15 +192,16 @@ public class NexusRepositorySearch
             throw new RepositorySearchException( "No search fields set." );
         }
 
-        return search( limits, q );
+        return search( limits, q, indexingContextIds );
     }
 
-    private SearchResults search( SearchResultLimits limits, BooleanQuery q )
+    private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds )
         throws RepositorySearchException
     {
         try
         {
             FlatSearchRequest request = new FlatSearchRequest( q );
+            request.setContexts( getIndexingContexts( indexingContextIds ) );
             FlatSearchResponse response = indexer.searchFlat( request );
 
             if ( response == null || response.getTotalHits() == 0 )
@@ -238,6 +240,26 @@ public class NexusRepositorySearch
         }*/
     }
 
+    private List<IndexingContext> getIndexingContexts( List<String> ids )
+    {
+        List<IndexingContext> contexts = new ArrayList<IndexingContext>( ids.size() );
+
+        for ( String id : ids )
+        {
+            IndexingContext context = indexer.getIndexingContexts().get( id );
+            if ( context != null )
+            {
+                contexts.add( context );
+            }
+            else
+            {
+                log.warn( "context with id {} not exists", id );
+            }
+        }
+
+        return contexts;
+    }
+
     private void constructQuery( String term, BooleanQuery q )
     {
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ), Occur.SHOULD );
@@ -245,11 +267,18 @@ public class NexusRepositorySearch
         q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ), Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ), Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ), Occur.SHOULD );
+        // olamy IMHO we could set this option as at least one must match
+        //q.setMinimumNumberShouldMatch( 1 );
     }
 
 
-    private void addIndexingContexts( List<String> selectedRepos )
+    /**
+     * @param selectedRepos
+     * @return indexing contextId used
+     */
+    private List<String> addIndexingContexts( List<String> selectedRepos )
     {
+        List<String> indexingContextIds = new ArrayList<String>();
         for ( String repo : selectedRepos )
         {
             try
@@ -270,18 +299,30 @@ public class NexusRepositorySearch
                         indexDirectory = new File( repoConfig.getLocation(), ".indexer" );
                     }
 
-                    if ( indexer.getIndexingContexts().containsKey( repoConfig.getId() ) )
+                    IndexingContext context = indexer.getIndexingContexts().get( repoConfig.getId() );
+                    if ( context != null )
                     {
                         // alreday here so no need to record it again
-                        log.info( "index with id {} already exists skip adding it", repoConfig.getId() );
+                        log.debug( "index with id {} already exists skip adding it", repoConfig.getId() );
+                        // set searchable flag
+                        context.setSearchable( repoConfig.isScanned() );
+                        indexingContextIds.add( context.getId() );
                         continue;
                     }
 
-                    IndexingContext context = indexer.addIndexingContext( repoConfig.getId(), repoConfig.getId(),
-                                                                          new File( repoConfig.getLocation() ),
-                                                                          indexDirectory, null, null,
-                                                                          getAllIndexCreators() );
+                    context = indexer.addIndexingContext( repoConfig.getId(), repoConfig.getId(),
+                                                          new File( repoConfig.getLocation() ), indexDirectory, null,
+                                                          null, getAllIndexCreators() );
                     context.setSearchable( repoConfig.isScanned() );
+                    if ( context.isSearchable() )
+                    {
+                        indexingContextIds.add( context.getId() );
+                    }
+                    else
+                    {
+                        log.warn( "indexingContext with id {} not searchable", repoConfig.getId() );
+                    }
+
                 }
                 else
                 {
@@ -299,6 +340,7 @@ public class NexusRepositorySearch
                 continue;
             }
         }
+        return indexingContextIds;
     }
 
 

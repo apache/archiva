@@ -112,7 +112,7 @@ public class NexusIndexerConsumer
 
         try
         {
-            log.info( "Creating indexing context for repo : " + repository.getId() );
+            log.info( "Creating indexing context for repo : {}", repository.getId() );
             context = ArtifactIndexingTask.createContext( repository, nexusIndexer, allIndexCreators );
         }
         catch ( IOException e )
