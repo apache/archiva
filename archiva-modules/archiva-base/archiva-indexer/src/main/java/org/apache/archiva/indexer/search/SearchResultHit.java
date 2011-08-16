@@ -202,6 +202,9 @@ public class SearchResultHit
     {
         return "SearchResultHit{" + "context='" + context + '\'' + ", url='" + url + '\'' + ", groupId='" + groupId
             + '\'' + ", artifactId='" + artifactId + '\'' + ", version='" + version + '\'' + ", repositoryId='"
-            + repositoryId + '\'' + ", versions=" + versions + '}';
+            + repositoryId + '\'' + ", versions=" + versions + ", bundleVersion='" + bundleVersion + '\''
+            + ", bundleSymbolicName='" + bundleSymbolicName + '\'' + ", bundleExportPackage='" + bundleExportPackage
+            + '\'' + ", bundleExportService='" + bundleExportService + '\'' + '}';
     }
+
 }
