@@ -302,7 +302,7 @@ public class NexusRepositorySearch
     }
 
 
-    protected List<IndexCreator> getAllIndexCreators()
+    protected List<? extends IndexCreator> getAllIndexCreators()
     {
         return mavenIndexerUtils.getAllIndexCreators();
     }
