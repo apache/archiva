@@ -180,7 +180,7 @@ public class MetadataUpdaterConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        // Ignore paths like .indexer etc
+        // Ignore paths like .index etc
         if ( !path.startsWith( "." ) )
         {
             try

@@ -113,10 +113,10 @@ public class ArchivaIndexingTaskExecutor
                 && indexingTask.isExecuteOnEntireRepo() )
             {
                 // TODO update or not !!
-                // do the full scan
+                // olamy currently do the full scan
                 try
                 {
-                    nexusIndexer.scan( context );
+                    nexusIndexer.scan( context, null, false );
                 }
                 catch ( IOException e )
                 {
@@ -188,11 +188,8 @@ public class ArchivaIndexingTaskExecutor
                             FlatSearchRequest flatSearchRequest = new FlatSearchRequest( q, context );
                             FlatSearchResponse flatSearchResponse = nexusIndexer.searchFlat( flatSearchRequest );
                             if ( flatSearchResponse.getResults().isEmpty() )
-                            //if ( d.totalHits == 0 )
                             {
                                 log.debug( "Adding artifact '{}' to index..", ac.getArtifactInfo() );
-                                //indexerEngine.index( context, ac );
-                                //context.getIndexWriter().commit();
                                 nexusIndexer.addArtifactToIndex( ac, context );
                             }
                             else
@@ -244,7 +241,9 @@ public class ArchivaIndexingTaskExecutor
     {
         try
         {
+
             context.optimize();
+
 
             File managedRepository = new File( repository.getLocation() );
             final File indexLocation = new File( managedRepository, ".index" );
@@ -252,6 +251,7 @@ public class ArchivaIndexingTaskExecutor
             indexPacker.packIndex( request );
 
             log.debug( "Index file packaged at '{}'.", indexLocation.getPath() );
+
         }
         catch ( IOException e )
         {

@@ -185,7 +185,7 @@ public class ArtifactIndexingTask
         }
 
         context = indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
-                                              managedRepository.toURI().toURL().toString(),
+                                              managedRepository.toURI().toURL().toExternalForm(),
                                               indexDirectory.toURI().toURL().toString(), indexCreators );
 
         context.setSearchable( repository.isScanned() );
