@@ -44,7 +44,7 @@ public class CopyFileEvent
      * @param destination
      * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
      */
-    public CopyFileEvent( File source, File destination, List<Digester> digesters )
+    public CopyFileEvent( File source, File destination, List<? extends Digester> digesters )
     {
         super( digesters );
         this.source = source;

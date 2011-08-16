@@ -19,6 +19,7 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.DigesterUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -81,10 +82,13 @@ public class ValidateChecksumConsumer
     /**
      * plexus.requirement role="org.codehaus.plexus.digest.Digester"
      */
-    private List<Digester> digesterList;
+    private List<Digester> allDigesters;
 
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    private DigesterUtils digesterUtils;
 
     private File repositoryDir;
 
@@ -163,7 +167,7 @@ public class ValidateChecksumConsumer
         }
     }
 
-    public void processFile( String path, boolean executeOnEntireRepo )
+    public void processFile( String path, boolean executeOnEntireReDpo )
         throws Exception
     {
         processFile( path );
@@ -174,10 +178,9 @@ public class ValidateChecksumConsumer
         throws PlexusSisuBridgeException
     {
         checksum = plexusSisuBridge.lookup( ChecksumFile.class );
-        digesterList = plexusSisuBridge.lookupList( Digester.class );
-        for ( Iterator<Digester> itDigesters = digesterList.iterator(); itDigesters.hasNext(); )
+        List<Digester> allDigesters = new ArrayList<Digester>( digesterUtils.getAllDigesters() );
+        for ( Digester digester : allDigesters )
         {
-            Digester digester = itDigesters.next();
             includes.add( "**/*" + digester.getFilenameExtension() );
         }
     }

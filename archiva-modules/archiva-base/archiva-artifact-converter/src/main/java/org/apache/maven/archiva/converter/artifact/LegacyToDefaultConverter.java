@@ -19,6 +19,7 @@ package org.apache.maven.archiva.converter.artifact;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.DigesterUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
@@ -78,10 +79,13 @@ public class LegacyToDefaultConverter
      * {@link List}&lt;{@link Digester}
      * plexus.requirement role="org.codehaus.plexus.digest.Digester"
      */
-    private List<Digester> digesters;
+    private List<? extends Digester> digesters;
 
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    private DigesterUtils digesterUtils;
 
     /**
      * plexus.requirement
@@ -114,7 +118,7 @@ public class LegacyToDefaultConverter
     public void initialize()
         throws PlexusSisuBridgeException
     {
-        this.digesters = plexusSisuBridge.lookupList( Digester.class );
+        this.digesters = digesterUtils.getAllDigesters();
         translator = plexusSisuBridge.lookup( ModelConverter.class );
         artifactFactory = plexusSisuBridge.lookup( ArtifactFactory.class );
         artifactHandlerManager = plexusSisuBridge.lookup( ArtifactHandlerManager.class );
@@ -716,7 +720,7 @@ public class LegacyToDefaultConverter
     }
 
 
-    public List<Digester> getDigesters()
+    public List<? extends Digester> getDigesters()
     {
         return digesters;
     }

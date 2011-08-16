@@ -43,7 +43,7 @@ public class CreateFileEvent
      * @param destination
      * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
      */
-    public CreateFileEvent( String content, File destination, List<Digester> digesters )
+    public CreateFileEvent( String content, File destination, List<? extends Digester> digesters )
     {
         super( digesters );
         this.content = content;

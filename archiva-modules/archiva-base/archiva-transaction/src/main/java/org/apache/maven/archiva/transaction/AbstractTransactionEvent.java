@@ -49,19 +49,19 @@ public abstract class AbstractTransactionEvent
     /**
      * {@link List}&lt;{@link Digester}>
      */
-    private List<Digester> digesters;
+    private List<? extends Digester> digesters;
 
     protected AbstractTransactionEvent()
     {
         this( new ArrayList<Digester>( 0 ) );
     }
 
-    protected AbstractTransactionEvent( List<Digester> digesters )
+    protected AbstractTransactionEvent( List<? extends Digester> digesters )
     {
         this.digesters = digesters;
     }
 
-    protected List<Digester> getDigesters()
+    protected List<? extends Digester> getDigesters()
     {
         return digesters;
     }
