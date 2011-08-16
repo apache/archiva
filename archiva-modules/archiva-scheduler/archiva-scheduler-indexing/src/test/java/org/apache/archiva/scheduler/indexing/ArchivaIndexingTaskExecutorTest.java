@@ -20,6 +20,7 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.search.BooleanClause.Occur;
@@ -33,7 +34,6 @@ import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.expr.StringSearchExpression;
@@ -76,6 +76,9 @@ public class ArchivaIndexingTaskExecutorTest
     @Inject
     PlexusSisuBridge plexusSisuBridge;
 
+    @Inject
+    MavenIndexerUtils mavenIndexerUtils;
+
     @Before
     public void setUp()
         throws Exception
@@ -96,8 +99,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
-        ArtifactIndexingTask.createContext( repositoryConfig, indexer,
-                                            plexusSisuBridge.lookupList( IndexCreator.class ) );
+        ArtifactIndexingTask.createContext( repositoryConfig, indexer, mavenIndexerUtils.getAllIndexCreators() );
     }
 
     @After
@@ -153,7 +155,7 @@ public class ArchivaIndexingTaskExecutorTest
                                                                   new File( repositoryConfig.getLocation() ),
                                                                   new File( repositoryConfig.getLocation(),
                                                                             ".indexer" ), null, null,
-                                                                  plexusSisuBridge.lookupList( IndexCreator.class ) );
+                                                                  mavenIndexerUtils.getAllIndexCreators() );
             context.setSearchable( true );
         }
 

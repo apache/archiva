@@ -27,7 +27,10 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n"/>
     </layout>
   </appender>
-  <logger name="com.opensymphony.xwork2.interceptor.ParametersInterceptor">
+  <logger name="org.apache.maven.archiva.web.action.SearchAction">
+    <level value="debug"/>
+  </logger>
+  <logger name="org.apache.archiva.indexer.search.NexusRepositorySearch">
     <level value="debug"/>
   </logger>
   <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder">

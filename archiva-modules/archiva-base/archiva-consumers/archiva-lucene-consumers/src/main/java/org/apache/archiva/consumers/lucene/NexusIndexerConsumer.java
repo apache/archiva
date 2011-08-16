@@ -19,13 +19,7 @@ package org.apache.archiva.consumers.lucene;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
+import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -48,6 +42,13 @@ import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Consumer for indexing the repository to provide search and IDE integration features.
@@ -77,14 +78,15 @@ public class NexusIndexerConsumer
     private List<IndexCreator> allIndexCreators;
 
     public NexusIndexerConsumer( ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
-                                 ArchivaConfiguration configuration, FileTypes filetypes, PlexusSisuBridge plexusSisuBridge )
+                                 ArchivaConfiguration configuration, FileTypes filetypes,
+                                 PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
     {
         this.configuration = configuration;
         this.filetypes = filetypes;
         this.scheduler = scheduler;
         this.nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-        this.allIndexCreators = plexusSisuBridge.lookupList( IndexCreator.class );
+        this.allIndexCreators = mavenIndexerUtils.getAllIndexCreators();
     }
 
     public String getDescription()
@@ -126,14 +128,14 @@ public class NexusIndexerConsumer
     public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
-        if( executeOnEntireRepo )
+        if ( executeOnEntireRepo )
         {
             beginScan( repository, whenGathered );
         }
         else
         {
             this.repository = repository;
-            managedRepository = new File( repository.getLocation() );       
+            managedRepository = new File( repository.getLocation() );
         }
     }
 
@@ -158,7 +160,7 @@ public class NexusIndexerConsumer
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
-        if( executeOnEntireRepo )
+        if ( executeOnEntireRepo )
         {
             processFile( path );
         }
@@ -199,7 +201,7 @@ public class NexusIndexerConsumer
 
     public void completeScan( boolean executeOnEntireRepo )
     {
-        if( executeOnEntireRepo )
+        if ( executeOnEntireRepo )
         {
             completeScan();
         }

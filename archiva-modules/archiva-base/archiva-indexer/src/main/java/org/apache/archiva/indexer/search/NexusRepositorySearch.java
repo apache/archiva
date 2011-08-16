@@ -19,6 +19,7 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.indexer.util.SearchUtil;
@@ -56,21 +57,23 @@ import java.util.Set;
 public class NexusRepositorySearch
     implements RepositorySearch
 {
-    private Logger log = LoggerFactory.getLogger( NexusRepositorySearch.class );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     private NexusIndexer indexer;
 
     private ArchivaConfiguration archivaConfig;
 
-    private List<? extends IndexCreator> allIndexCreators;
+    private MavenIndexerUtils mavenIndexerUtils;
 
     @Inject
-    public NexusRepositorySearch( PlexusSisuBridge plexusSisuBridge, ArchivaConfiguration archivaConfig )
+    public NexusRepositorySearch( PlexusSisuBridge plexusSisuBridge, ArchivaConfiguration archivaConfig,
+                                  MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
     {
         this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
         this.archivaConfig = archivaConfig;
-        allIndexCreators = plexusSisuBridge.lookupList( IndexCreator.class );
+        this.mavenIndexerUtils = mavenIndexerUtils;
+
     }
 
     /**
@@ -299,9 +302,9 @@ public class NexusRepositorySearch
     }
 
 
-    protected List<? extends IndexCreator> getAllIndexCreators()
+    protected List<IndexCreator> getAllIndexCreators()
     {
-        return allIndexCreators;
+        return mavenIndexerUtils.getAllIndexCreators();
     }
 
 

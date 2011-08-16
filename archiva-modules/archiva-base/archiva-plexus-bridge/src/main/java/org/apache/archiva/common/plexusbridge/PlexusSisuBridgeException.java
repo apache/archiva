@@ -25,6 +25,12 @@ package org.apache.archiva.common.plexusbridge;
 public class PlexusSisuBridgeException
     extends Exception
 {
+
+    public PlexusSisuBridgeException( String message )
+    {
+        super( message );
+    }
+
     public PlexusSisuBridgeException( String message, Throwable throwable )
     {
         super( message, throwable );

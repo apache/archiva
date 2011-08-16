@@ -199,4 +199,14 @@ public class SearchFields
     {
         this.bundleExportService = bundleExportService;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SearchFields{" + "groupId='" + groupId + '\'' + ", artifactId='" + artifactId + '\'' + ", version='"
+            + version + '\'' + ", packaging='" + packaging + '\'' + ", className='" + className + '\''
+            + ", repositories=" + repositories + ", bundleVersion='" + bundleVersion + '\'' + ", bundleSymbolicName='"
+            + bundleSymbolicName + '\'' + ", bundleExportPackage='" + bundleExportPackage + '\''
+            + ", bundleExportService='" + bundleExportService + '\'' + '}';
+    }
 }

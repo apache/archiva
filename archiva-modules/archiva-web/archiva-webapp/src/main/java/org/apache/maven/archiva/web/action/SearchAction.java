@@ -49,7 +49,7 @@ import java.util.Map;
 
 /**
  * Search all indexed fields by the given criteria.
- *
+ * <p/>
  * plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
  */
 @Controller( "searchAction" )
@@ -170,8 +170,8 @@ public class SearchAction
     public String filteredSearch()
         throws MalformedURLException
     {
-        if ( ( groupId == null || "".equals( groupId ) ) && ( artifactId == null || "".equals( artifactId ) ) &&
-            ( className == null || "".equals( className ) ) && ( version == null || "".equals( version ) ) )
+        if ( ( groupId == null || "".equals( groupId ) ) && ( artifactId == null || "".equals( artifactId ) )
+            && ( className == null || "".equals( className ) ) && ( version == null || "".equals( version ) ) )
         {
             addActionError( "Advanced Search - At least one search criteria must be provided." );
             return INPUT;
@@ -188,8 +188,8 @@ public class SearchAction
         limits.setPageSize( rowCount );
         List<String> selectedRepos = new ArrayList<String>();
 
-        if ( repositoryId == null || StringUtils.isBlank( repositoryId ) || "all".equals( StringUtils.stripToEmpty(
-            repositoryId ) ) )
+        if ( repositoryId == null || StringUtils.isBlank( repositoryId ) || "all".equals(
+            StringUtils.stripToEmpty( repositoryId ) ) )
         {
             selectedRepos = getObservableRepos();
         }
@@ -204,6 +204,8 @@ public class SearchAction
         }
 
         SearchFields searchFields = new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
+
+        log.debug( "filteredSearch with searchFields {}", searchFields );
 
         // TODO: add packaging in the list of fields for advanced search (UI)?
         try
@@ -263,12 +265,14 @@ public class SearchAction
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
+        log.debug( "quickSearch with selectedRepos {} query {}", selectedRepos, q );
+
         try
         {
             if ( searchResultsOnly && !completeQueryString.equals( "" ) )
             {
-                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits,
-                                                   parseCompleteQueryString() );
+                results =
+                    getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
             }
             else
             {
@@ -552,8 +556,8 @@ public class SearchAction
     {
         if ( nexusSearch == null )
         {
-            WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(
-                ServletActionContext.getServletContext() );
+            WebApplicationContext wac =
+                WebApplicationContextUtils.getRequiredWebApplicationContext( ServletActionContext.getServletContext() );
             nexusSearch = wac.getBean( "nexusSearch", RepositorySearch.class );
         }
         return nexusSearch;

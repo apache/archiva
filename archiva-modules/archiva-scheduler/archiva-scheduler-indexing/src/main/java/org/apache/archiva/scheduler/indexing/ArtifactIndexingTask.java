@@ -159,7 +159,7 @@ public class ArtifactIndexingTask
     }
 
     public static IndexingContext createContext( ManagedRepositoryConfiguration repository, NexusIndexer indexer,
-                                                 List<IndexCreator> indexCreators )
+                                                 List<? extends IndexCreator> indexCreators )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
         String indexDir = repository.getIndexDir();

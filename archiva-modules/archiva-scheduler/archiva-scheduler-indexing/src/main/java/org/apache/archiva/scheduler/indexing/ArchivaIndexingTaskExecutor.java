@@ -19,6 +19,7 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.lucene.search.BooleanClause;
@@ -75,6 +76,9 @@ public class ArchivaIndexingTaskExecutor
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
 
+    @Inject
+    private MavenIndexerUtils mavenIndexerUtils;
+
     private NexusIndexer nexusIndexer;
 
     private List<IndexCreator> allIndexCreators;
@@ -91,7 +95,7 @@ public class ArchivaIndexingTaskExecutor
 
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
-        allIndexCreators = plexusSisuBridge.lookupList( IndexCreator.class );
+        allIndexCreators = mavenIndexerUtils.getAllIndexCreators();
     }
 
     public void executeTask( Task task )

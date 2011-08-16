@@ -32,6 +32,7 @@
       <constructor-arg ref="archivaConfiguration"/>
       <constructor-arg ref="fileTypes"/>
       <constructor-arg ref="plexusSisuBridge"/>
+      <constructor-arg ref="mavenIndexerUtils"/>
     </bean>
 
     <bean id="logger" class="org.apache.maven.archiva.common.utils.Slf4JPlexusLogger">
