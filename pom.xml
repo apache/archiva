@@ -75,6 +75,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>3.0.3</lucene.version>
+    <cxfVersion>2.4.2</cxfVersion>
   </properties>
 
   <dependencyManagement>
@@ -232,6 +233,16 @@
       <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-indexer</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-rest-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-rest-services</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -408,6 +419,27 @@
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-guice</artifactId>
         <version>3.0.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>jsr311-api</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-bundle-jaxrs</artifactId>
+        <version>${cxfVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
 
@@ -704,6 +736,17 @@
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-authorization-api</artifactId>
+        <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-users-memory</artifactId>
         <version>${redback.version}</version>
         <scope>test</scope>
@@ -831,7 +874,36 @@
         <version>${redback.version}</version>
       </dependency>
 
-      <!-- redback -->
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-rest-api</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-rest-services</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-rest-services</artifactId>
+        <version>${redback.version}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-authentication-api</artifactId>
+        <version>${redback.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>commons-logging</groupId>
+              <artifactId>commons-logging</artifactId>
+            </exclusion>
+          </exclusions>
+      </dependency>
+
+      <!-- redback components -->
 
       <dependency>
         <groupId>org.codehaus.redback.components.registry</groupId>
