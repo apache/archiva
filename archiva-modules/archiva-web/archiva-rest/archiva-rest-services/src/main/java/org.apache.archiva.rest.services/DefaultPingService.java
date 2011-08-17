@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Olivier Lamy
- * @since TODO
+ * @since 1.4
  */
 @Service( "pingService#rest" )
 public class DefaultPingService

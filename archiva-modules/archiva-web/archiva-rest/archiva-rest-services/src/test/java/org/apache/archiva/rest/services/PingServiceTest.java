@@ -28,7 +28,7 @@ import org.junit.Test;
 
 /**
  * @author Olivier Lamy
- * @since TODO
+ * @since 1.4
  */
 public class PingServiceTest
     extends AbstractRestServicesTest
