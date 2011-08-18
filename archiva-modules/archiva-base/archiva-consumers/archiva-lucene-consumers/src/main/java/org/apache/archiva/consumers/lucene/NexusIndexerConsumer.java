@@ -171,6 +171,8 @@ public class NexusIndexerConsumer
             // specify in indexing task that this is not a repo scan request!
             ArtifactIndexingTask task =
                 new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, context, false );
+            // only update index we don't need to scan the full repo here
+            task.setOnlyUpdate( true );
             try
             {
                 log.debug( "Queueing indexing task '{}' to add or update the artifact in the index.", task );
