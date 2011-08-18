@@ -761,7 +761,6 @@
         <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-keys-memory</artifactId>
         <version>${redback.version}</version>
-        <scope>test</scope>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -884,6 +883,12 @@
         <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-rest-services</artifactId>
         <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback</groupId>
@@ -895,12 +900,12 @@
         <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-authentication-api</artifactId>
         <version>${redback.version}</version>
-          <exclusions>
-            <exclusion>
-              <groupId>commons-logging</groupId>
-              <artifactId>commons-logging</artifactId>
-            </exclusion>
-          </exclusions>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- redback components -->

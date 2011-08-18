@@ -22,6 +22,7 @@
   <excludes>
     <pattern>/repository/*</pattern>
     <pattern>/components/*</pattern>
+    <pattern>/restServices/*</pattern>
   </excludes>
 
   <decorator name="default" page="default.jsp">
