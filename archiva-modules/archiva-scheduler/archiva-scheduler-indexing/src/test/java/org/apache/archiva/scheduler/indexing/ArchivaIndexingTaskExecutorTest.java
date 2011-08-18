@@ -278,11 +278,14 @@ public class ArchivaIndexingTaskExecutorTest
         ArtifactIndexingTask task =
             new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
                                       getIndexingContext() );
+        task.setExecuteOnEntireRepo( false );
 
         indexingExecutor.executeTask( task );
 
         task = new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.FINISH,
                                          getIndexingContext() );
+
+        task.setExecuteOnEntireRepo( false );
 
         indexingExecutor.executeTask( task );
 
@@ -303,14 +306,14 @@ public class ArchivaIndexingTaskExecutorTest
         FlatSearchRequest request = new FlatSearchRequest( q, getIndexingContext() );
         FlatSearchResponse response = indexer.searchFlat( request );
 
-        assertEquals( 1, response.getTotalHits() );
-
         Set<ArtifactInfo> results = response.getResults();
 
-        ArtifactInfo artifactInfo = (ArtifactInfo) results.iterator().next();
+        ArtifactInfo artifactInfo = results.iterator().next();
         assertEquals( "org.apache.archiva", artifactInfo.groupId );
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
         assertEquals( "test-repo", artifactInfo.repository );
+
+        assertEquals( 1, response.getTotalHits() );
     }
 
     private void unzipIndex( String indexDir, String destDir )

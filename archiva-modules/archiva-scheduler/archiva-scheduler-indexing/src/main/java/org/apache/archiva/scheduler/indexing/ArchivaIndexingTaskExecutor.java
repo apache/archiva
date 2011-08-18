@@ -112,11 +112,9 @@ public class ArchivaIndexingTaskExecutor
             if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() )
                 && indexingTask.isExecuteOnEntireRepo() )
             {
-                // TODO update or not !!
-                // olamy currently do the full scan
                 try
                 {
-                    nexusIndexer.scan( context, null, false );
+                    nexusIndexer.scan( context, null, indexingTask.isOnlyUpdate() );
                 }
                 catch ( IOException e )
                 {

@@ -51,6 +51,11 @@ public class ArtifactIndexingTask
 
     private boolean executeOnEntireRepo = true;
 
+    /**
+     * @since 1.4
+     */
+    private boolean onlyUpdate = false;
+
     public ArtifactIndexingTask( ManagedRepositoryConfiguration repository, File resourceFile, Action action,
                                  IndexingContext context )
     {
@@ -65,6 +70,13 @@ public class ArtifactIndexingTask
     {
         this( repository, resourceFile, action, context );
         this.executeOnEntireRepo = executeOnEntireRepo;
+    }
+
+    public ArtifactIndexingTask( ManagedRepositoryConfiguration repository, File resourceFile, Action action,
+                                 IndexingContext context, boolean executeOnEntireRepo, boolean onlyUpdate )
+    {
+        this( repository, resourceFile, action, context, executeOnEntireRepo );
+        this.onlyUpdate = onlyUpdate;
     }
 
     public boolean isExecuteOnEntireRepo()
@@ -92,13 +104,6 @@ public class ArtifactIndexingTask
         return action;
     }
 
-    @Override
-    public String toString()
-    {
-        return "ArtifactIndexingTask [action=" + action + ", repositoryId=" + repository.getId() + ", resourceFile="
-            + resourceFile + "]";
-    }
-
     public ManagedRepositoryConfiguration getRepository()
     {
         return repository;
@@ -107,6 +112,16 @@ public class ArtifactIndexingTask
     public IndexingContext getContext()
     {
         return context;
+    }
+
+    public boolean isOnlyUpdate()
+    {
+        return onlyUpdate;
+    }
+
+    public void setOnlyUpdate( boolean onlyUpdate )
+    {
+        this.onlyUpdate = onlyUpdate;
     }
 
     @Override
@@ -158,6 +173,23 @@ public class ArtifactIndexingTask
         return true;
     }
 
+
+    @Override
+    public String toString()
+    {
+        return "ArtifactIndexingTask [action=" + action + ", repositoryId=" + repository.getId() + ", resourceFile="
+            + resourceFile + "]";
+    }
+
+    /**
+     * FIXME remove this static somewhere else !
+     * @param repository
+     * @param indexer
+     * @param indexCreators
+     * @return
+     * @throws IOException
+     * @throws UnsupportedExistingLuceneIndexException
+     */
     public static IndexingContext createContext( ManagedRepositoryConfiguration repository, NexusIndexer indexer,
                                                  List<? extends IndexCreator> indexCreators )
         throws IOException, UnsupportedExistingLuceneIndexException
