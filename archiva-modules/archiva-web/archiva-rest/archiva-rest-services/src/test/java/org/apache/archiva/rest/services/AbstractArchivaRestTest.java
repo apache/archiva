@@ -1,5 +1,4 @@
 package org.apache.archiva.rest.services;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,27 +18,16 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.services.PingService;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
-import org.springframework.stereotype.Service;
+
+import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since TODO
  */
-@Service( "pingService#rest" )
-public class DefaultPingService
-    implements PingService
+public abstract class AbstractArchivaRestTest
+    extends AbstractRestServicesTest
 {
-    public String ping()
-    {
-        return "Yeah Baby It rocks!";
-    }
-
-    public String pingWithAuthz()
-    {
-        User user = RedbackAuthenticationThreadLocal.get();
-        return ping();
-    }
+    public String guestAuthzHeader =
+        "Basic " + org.apache.cxf.common.util.Base64Utility.encode( ( "guest" + ":" ).getBytes() );
 }

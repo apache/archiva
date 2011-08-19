@@ -41,14 +41,20 @@
 
   <jaxrs:server id="archivaServices" address="/archivaServices">
 
-    <jaxrs:serviceBeans>
-      <ref bean="pingService#rest"/>
-    </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
       <ref bean="repositoriesService#rest"/>
     </jaxrs:providers>
+
+    <jaxrs:serviceBeans>
+      <ref bean="pingService#rest"/>
+      <ref bean="repositoriesService#rest"/>
+    </jaxrs:serviceBeans>
+
+    <jaxrs:outInterceptors>
+      <ref bean="threadLocalUserCleaner#rest"/>
+    </jaxrs:outInterceptors>
 
    </jaxrs:server>
 

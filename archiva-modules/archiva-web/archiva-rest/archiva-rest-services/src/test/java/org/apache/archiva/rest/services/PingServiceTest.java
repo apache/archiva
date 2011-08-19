@@ -24,6 +24,7 @@ import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -31,7 +32,7 @@ import org.junit.Test;
  * @since 1.4
  */
 public class PingServiceTest
-    extends AbstractRestServicesTest
+    extends AbstractArchivaRestTest
 {
 
     PingService getPingService()
@@ -76,7 +77,20 @@ public class PingServiceTest
     {
 
         PingService service = getPingService();
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        String res = service.pingWithAuthz();
+        assertEquals( "Yeah Baby It rocks!", res );
+    }
+
+    @Ignore("FIXME guest failed ???")
+    public void pingWithAuthzGuest()
+        throws Exception
+    {
+
+        PingService service = getPingService();
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        WebClient.client( service ).header( "Authorization", guestAuthzHeader );
         String res = service.pingWithAuthz();
         assertEquals( "Yeah Baby It rocks!", res );
     }

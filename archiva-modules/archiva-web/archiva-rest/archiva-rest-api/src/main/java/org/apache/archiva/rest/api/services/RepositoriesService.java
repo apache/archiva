@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.model.RemoteRepository;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
@@ -40,13 +41,13 @@ public interface RepositoriesService
     @Path( "getManagedRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = true )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     List<ManagedRepository> getManagedRepositories();
 
     @Path( "getRemoteRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = true )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     List<RemoteRepository> getRemoteRepositories();
 
     @Path( "scanRepository" )

@@ -38,6 +38,13 @@
   <logger name="org.codehaus.redback.rest.services" >
     <level value="debug"/>
   </logger>
+  <logger name="JPOX">
+    <level value="ERROR"/>
+  </logger>
+
+  <logger name="org.springframework">
+    <level value="ERROR"/>
+  </logger>
 
   <root>
     <priority value ="info" />

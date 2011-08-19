@@ -26,20 +26,20 @@ import java.io.Serializable;
 @XmlRootElement( name = "remoteRepository" )
 public class RemoteRepository
     implements Serializable
-{   
+{
     private String id;
 
     private String name;
 
     private String url;
-    
+
     private String layout;
 
     public RemoteRepository()
     {
         // no op
     }
-    
+
     public RemoteRepository( String id, String name, String url, String layout )
     {
         this.id = id;
@@ -47,69 +47,79 @@ public class RemoteRepository
         this.url = url;
         this.layout = layout;
     }
-    
-    public boolean equals(Object other)
-    {
-        if ( this == other)
-        {
-            return true;
-        }
-        
-        if ( !(other instanceof RemoteRepository) )
-        {
-            return false;
-        }
-        
-        RemoteRepository that = (RemoteRepository) other;
-        boolean result = true;
-        result = result && ( getId() == null ? that.getId() == null : getId().equals( that.getId() ) );
-        return result;
-    } 
-    
+
+
     public String getId()
     {
         return this.id;
-    } 
-    
+    }
+
     public String getLayout()
     {
         return this.layout;
-    } 
-    
+    }
+
     public String getName()
     {
         return this.name;
-    } 
-    
+    }
+
     public String getUrl()
     {
         return this.url;
     }
-    
+
+
+    public void setId( String id )
+    {
+        this.id = id;
+    }
+
+    public void setLayout( String layout )
+    {
+        this.layout = layout;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public void setUrl( String url )
+    {
+        this.url = url;
+    }
+
+
     public int hashCode()
     {
         int result = 17;
         result = 37 * result + ( id != null ? id.hashCode() : 0 );
         return result;
     }
-    
-    public void setId(String id)
+
+    public boolean equals( Object other )
     {
-        this.id = id;
+        if ( this == other )
+        {
+            return true;
+        }
+
+        if ( !( other instanceof RemoteRepository ) )
+        {
+            return false;
+        }
+
+        RemoteRepository that = (RemoteRepository) other;
+        boolean result = true;
+        result = result && ( getId() == null ? that.getId() == null : getId().equals( that.getId() ) );
+        return result;
     }
-    
-    public void setLayout(String layout)
+
+    @Override
+    public String toString()
     {
-        this.layout = layout;
+        return "RemoteRepository{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", url='" + url + '\''
+            + ", layout='" + layout + '\'' + '}';
     }
-    
-    public void setName(String name)
-    {
-        this.name = name;
-    } 
-    
-    public void setUrl(String url)
-    {
-        this.url = url;
-    }     
 }

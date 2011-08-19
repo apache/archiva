@@ -19,27 +19,55 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.redback.rest.services.AbstractRestServicesTest;
+import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * @author Olivier Lamy
  */
 public class RepositoriesServiceTest
-    extends AbstractRestServicesTest
+    extends AbstractArchivaRestTest
 {
-    RepositoriesService getPingService()
+    RepositoriesService getRepositoriesService()
     {
         return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
                                           RepositoriesService.class );
 
     }
 
-    @Test
-    public void listRemoteRepositories() throws Exception
+    @Test( expected = ServerWebApplicationException.class )
+    public void listRemoteRepositoriesKarmaFailed()
+        throws Exception
     {
+        RepositoriesService service = getRepositoriesService();
+        try
+        {
+            assertFalse( service.getRemoteRepositories().isEmpty() );
+        }
+        catch ( ServerWebApplicationException e )
+        {
+            assertEquals( 403, e.getStatus() );
+            throw e;
+        }
+    }
+
+    @Test
+    public void listRemoteRepositoriesKarma()
+        throws Exception
+    {
+        RepositoriesService service = getRepositoriesService();
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        List<RemoteRepository> repos = service.getRemoteRepositories();
+        assertFalse( repos.isEmpty() );
+        log.info( "repos {}", repos );
 
     }
 }
