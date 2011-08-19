@@ -26,10 +26,15 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TestConfiguration
     implements ArchivaConfiguration
 {
-    private Configuration configuration;
+    private Configuration configuration = new Configuration();
+
+    private List<ConfigurationListener> configurationListeners = new ArrayList<ConfigurationListener>();
 
     public Configuration getConfiguration()
     {
@@ -49,12 +54,12 @@ public class TestConfiguration
 
     public void addListener( ConfigurationListener listener )
     {
-        throw new UnsupportedOperationException();
+        configurationListeners.add( listener );
     }
 
     public void removeListener( ConfigurationListener listener )
     {
-        throw new UnsupportedOperationException();
+        configurationListeners.remove( listener );
     }
 
     public void addChangeListener( RegistryListener listener )

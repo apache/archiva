@@ -100,17 +100,11 @@ public class DependencyTreeTest
         repoConfig.setLocation( "src/test/repositories/test" );
         configuration.addManagedRepository( repoConfig );
 
-        //ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         ArchivaConfiguration archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
         archivaConfiguration.save( configuration );
 
-        //tree = (DependencyTree) lookup( DependencyTree.class );
-
-        //artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.class );
-
         artifactFactory = plexusSisuBridge.lookup( ArtifactFactory.class );
 
-        //TestMetadataResolver metadataResolver = (TestMetadataResolver) lookup( MetadataResolver.class );
         TestMetadataResolver metadataResolver = applicationContext.getBean( TestMetadataResolver.class );
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_VERSION );
@@ -118,8 +112,6 @@ public class DependencyTreeTest
 
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getResolver() ).thenReturn( metadataResolver );
-        //TestRepositorySessionFactory repositorySessionFactory = (TestRepositorySessionFactory) lookup(
-        //    RepositorySessionFactory.class );
         TestRepositorySessionFactory repositorySessionFactory =
             applicationContext.getBean( TestRepositorySessionFactory.class );
         repositorySessionFactory.setRepositorySession( repositorySession );
