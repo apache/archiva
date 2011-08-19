@@ -251,6 +251,22 @@ public class RepositoryArchivaTaskScheduler
         }
     }
 
+    public boolean unQueueTask( RepositoryTask task )
+        throws TaskQueueException
+    {
+        synchronized ( repositoryScanningQueue )
+        {
+            if ( isProcessingRepositoryTask( task ) )
+            {
+                log.info( "cannot unuqueue Repository task '{}' not already queued.", task );
+                return false;
+            }
+            else
+            {
+                return repositoryScanningQueue.remove( task );
+            }
+        }
+    }
     public void configurationEvent( ConfigurationEvent event )
     {
         if ( event.getType() == ConfigurationEvent.SAVED )

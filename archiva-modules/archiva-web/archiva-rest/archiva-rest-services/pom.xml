@@ -83,10 +83,22 @@
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rest-api</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
     </dependency>
+
     <!-- normally not needed but here for wadl feature currently in cxf -->
     <dependency>
       <groupId>org.apache.cxf</groupId>

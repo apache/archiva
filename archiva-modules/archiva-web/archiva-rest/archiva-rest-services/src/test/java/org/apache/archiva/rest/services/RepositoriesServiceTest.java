@@ -19,16 +19,14 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.junit.Test;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.List;
 
 /**
@@ -37,8 +35,6 @@ import java.util.List;
 public class RepositoriesServiceTest
     extends AbstractArchivaRestTest
 {
-    @Inject @Named("taskQueue#repository-scanning")
-    private TaskQueue repositoryScanningQueue;
 
     RepositoriesService getRepositoriesService()
     {
@@ -101,12 +97,7 @@ public class RepositoriesServiceTest
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         String repoId = service.getManagedRepositories().get( 0 ).getId();
-        /*
-        while ( service.alreadyScanning( repoId ) )
-        {
-            Thread.sleep( 1 );
-        }
-        */
+
         assertTrue( service.scanRepository( repoId, true ) );
 
         log.info( "sanRepo call ok " );
@@ -114,4 +105,28 @@ public class RepositoriesServiceTest
         assertTrue( service.alreadyScanning( repoId ) );
 
     }
+
+    @Test
+    public void addManagedRepo()
+        throws Exception
+    {
+        RepositoriesService service = getRepositoriesService();
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        ManagedRepository repo = getTestManagedRepository();
+        if ( service.getManagedRepository( repo.getId() ) != null )
+        {
+            service.deleteManagedRepository( repo.getId() );
+            assertNull( service.getManagedRepository( repo.getId() ) );
+        }
+        service.addManagedRepository( repo );
+        assertNotNull( service.getManagedRepository( repo.getId() ) );
+    }
+
+
+    private ManagedRepository getTestManagedRepository()
+    {
+        return new ManagedRepository( "TEST", "test", "foo", "default", true, true, false, false, "2 * * * * ?" );
+    }
+
 }

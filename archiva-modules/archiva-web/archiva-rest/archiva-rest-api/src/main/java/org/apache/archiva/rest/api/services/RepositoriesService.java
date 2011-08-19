@@ -24,7 +24,9 @@ import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -45,6 +47,29 @@ public interface RepositoriesService
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<ManagedRepository> getManagedRepositories();
 
+    @Path( "getManagedRepository/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId );
+
+    @Path( "deleteManagedRepository/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean deleteManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
+        throws Exception;
+
+
+    @Path( "addManagedRepository" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean addManagedRepository( ManagedRepository managedRepository )
+        throws Exception;
+
+
     @Path( "getRemoteRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
@@ -64,4 +89,11 @@ public interface RepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean alreadyScanning( @PathParam( "repositoryId" ) String repositoryId );
+
+    @Path( "removeScanningTaskFromQueue/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    Boolean removeScanningTaskFromQueue( @PathParam( "repositoryId" ) String repositoryId );
+
 }

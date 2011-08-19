@@ -41,12 +41,19 @@ public class ManagedRepository
 
     private boolean releases = false;
 
+    private boolean blockRedeployments;
+
+    private boolean stageRepoNeeded;
+
+    private String cronExpression;
+
     public ManagedRepository()
     {
         // no op
     }
 
-    public ManagedRepository( String id, String name, String url, String layout, boolean snapshots, boolean releases )
+    public ManagedRepository( String id, String name, String url, String layout, boolean snapshots, boolean releases,
+                              boolean blockRedeployments, boolean stageRepoNeeded, String cronExpression )
     {
         this.id = id;
         this.name = name;
@@ -54,8 +61,10 @@ public class ManagedRepository
         this.layout = layout;
         this.snapshots = snapshots;
         this.releases = releases;
+        this.blockRedeployments = blockRedeployments;
+        this.stageRepoNeeded = stageRepoNeeded;
+        this.cronExpression = cronExpression;
     }
-
 
     public String getId()
     {
@@ -121,6 +130,36 @@ public class ManagedRepository
         this.url = url;
     }
 
+    public boolean isBlockRedeployments()
+    {
+        return blockRedeployments;
+    }
+
+    public void setBlockRedeployments( boolean blockRedeployments )
+    {
+        this.blockRedeployments = blockRedeployments;
+    }
+
+    public String getCronExpression()
+    {
+        return cronExpression;
+    }
+
+    public void setCronExpression( String cronExpression )
+    {
+        this.cronExpression = cronExpression;
+    }
+
+    public boolean isStageRepoNeeded()
+    {
+        return stageRepoNeeded;
+    }
+
+    public void setStageRepoNeeded( boolean stageRepoNeeded )
+    {
+        this.stageRepoNeeded = stageRepoNeeded;
+    }
+
 
     public int hashCode()
     {
@@ -151,6 +190,8 @@ public class ManagedRepository
     public String toString()
     {
         return "ManagedRepository{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", url='" + url + '\''
-            + ", layout='" + layout + '\'' + ", snapshots=" + snapshots + ", releases=" + releases + '}';
+            + ", layout='" + layout + '\'' + ", snapshots=" + snapshots + ", releases=" + releases
+            + ", blockRedeployments=" + blockRedeployments + ", cronExpression='" + cronExpression + '\''
+            + ", stageRepoNeeded=" + stageRepoNeeded + '}';
     }
 }
