@@ -70,4 +70,30 @@ public class RepositoriesServiceTest
         log.info( "repos {}", repos );
 
     }
+
+    @Test( expected = ServerWebApplicationException.class )
+    public void scanRepoKarmaFailed()
+        throws Exception
+    {
+        RepositoriesService service = getRepositoriesService();
+        try
+        {
+            service.scanRepository( "id", true );
+        }
+        catch ( ServerWebApplicationException e )
+        {
+            assertEquals( 403, e.getStatus() );
+            throw e;
+        }
+    }
+
+    @Test
+    public void scanRepo()
+        throws Exception
+    {
+        RepositoriesService service = getRepositoriesService();
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        assertTrue( service.scanRepository( service.getManagedRepositories().get( 0 ).getId(), true ) );
+    }
 }

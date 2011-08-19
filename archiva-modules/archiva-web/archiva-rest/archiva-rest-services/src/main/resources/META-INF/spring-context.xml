@@ -27,7 +27,7 @@
            http://www.springframework.org/schema/context 
            http://www.springframework.org/schema/context/spring-context-3.0.xsd
            http://cxf.apache.org/jaxrs
-           http://cxf.apache.org/schemas/jaxrs.xsd">
+           http://cxf.apache.org/schemas/jaxrs.xsd" default-lazy-init="true">
 
   <import resource="classpath:META-INF/cxf/cxf.xml"/>
   <!--

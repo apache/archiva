@@ -30,4 +30,10 @@ public abstract class AbstractArchivaRestTest
 {
     public String guestAuthzHeader =
         "Basic " + org.apache.cxf.common.util.Base64Utility.encode( ( "guest" + ":" ).getBytes() );
+
+    @Override
+    protected String getSpringConfigLocation()
+    {
+        return "classpath*:META-INF/spring-context.xml,classpath:META-INF/spring-context-test.xml";
+    }
 }

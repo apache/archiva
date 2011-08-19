@@ -43,7 +43,7 @@
   </logger>
 
   <logger name="org.springframework">
-    <level value="ERROR"/>
+    <level value="info"/>
   </logger>
 
   <root>

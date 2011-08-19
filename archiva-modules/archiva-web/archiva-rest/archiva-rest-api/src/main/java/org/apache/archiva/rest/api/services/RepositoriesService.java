@@ -41,19 +41,19 @@ public interface RepositoriesService
     @Path( "getManagedRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<ManagedRepository> getManagedRepositories();
 
     @Path( "getRemoteRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<RemoteRepository> getRemoteRepositories();
 
     @Path( "scanRepository" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = true )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean scanRepository( @QueryParam( "repositoryId" ) String repositoryId,
                             @QueryParam( "fullScan" ) boolean fullScan );
 }
