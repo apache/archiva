@@ -94,6 +94,12 @@ public class RepositoriesServiceTest
         RepositoriesService service = getRepositoriesService();
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
-        assertTrue( service.scanRepository( service.getManagedRepositories().get( 0 ).getId(), true ) );
+        String repoId = service.getManagedRepositories().get( 0 ).getId();
+        assertTrue( service.scanRepository( repoId, true ) );
+
+        log.info( "sanRepo call ok " );
+
+        assertTrue( service.alreadyScanning( repoId ) );
+
     }
 }

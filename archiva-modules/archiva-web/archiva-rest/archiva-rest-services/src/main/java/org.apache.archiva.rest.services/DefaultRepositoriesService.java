@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,5 +92,10 @@ public class DefaultRepositoriesService
             log.error( "failed to schedule scanning of repo with id {}", repositoryId, e );
         }
         return true;
+    }
+
+    public Boolean alreadyScanning( String repositoryId )
+    {
+        return repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId );
     }
 }
