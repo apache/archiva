@@ -1346,6 +1346,19 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <!-- make sure our code doesn't have 1.6 dependencies -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <version>1.7</version>
+        <configuration>
+          <signature>
+            <groupId>org.codehaus.mojo.signature</groupId>
+            <artifactId>java15</artifactId>
+            <version>1.0</version>
+          </signature>
+        </configuration>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
