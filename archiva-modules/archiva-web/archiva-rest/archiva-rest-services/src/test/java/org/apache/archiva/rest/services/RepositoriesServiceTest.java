@@ -24,8 +24,11 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.junit.Test;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 
 /**
@@ -34,6 +37,9 @@ import java.util.List;
 public class RepositoriesServiceTest
     extends AbstractArchivaRestTest
 {
+    @Inject @Named("taskQueue#repository-scanning")
+    private TaskQueue repositoryScanningQueue;
+
     RepositoriesService getRepositoriesService()
     {
         return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
@@ -95,6 +101,12 @@ public class RepositoriesServiceTest
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         String repoId = service.getManagedRepositories().get( 0 ).getId();
+        /*
+        while ( service.alreadyScanning( repoId ) )
+        {
+            Thread.sleep( 1 );
+        }
+        */
         assertTrue( service.scanRepository( repoId, true ) );
 
         log.info( "sanRepo call ok " );

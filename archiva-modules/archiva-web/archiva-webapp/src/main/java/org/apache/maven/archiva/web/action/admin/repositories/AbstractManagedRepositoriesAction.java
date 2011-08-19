@@ -43,7 +43,7 @@ import javax.inject.Named;
  *
  * @version $Id$
  */
-public abstract class AbstractManagedReposigettoriesAction
+public abstract class AbstractManagedRepositoriesAction
     extends AbstractRepositoriesAdminAction
 {
     /**
