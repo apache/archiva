@@ -44,30 +44,16 @@
   <distributionManagement>
     <!-- Site omitted - each project must provide their own -->
     <repository>
-      <id>apache.releases</id>
-      <name>Apache Release Distribution Repository</name>
-      <url>scp://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+      <id>vmbuild.staging</id>
+      <name>Apache Release Staging Repository on VMBuild</name>
+      <url>http://vmbuild.apache.org/archiva/repository/staged-archiva</url>
     </repository>
     <snapshotRepository>
-      <id>apache.snapshots</id>
+      <id>vmbuild.snapshots</id>
       <name>Apache Development Snapshot Repository</name>
-      <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
+      <url>http://vmbuild.apache.org/archiva/repository/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
-
-  <repositories>
-    <repository>
-      <id>apache.snapshots</id>
-      <name>Apache Snapshot Repository</name>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <!-- Developers listed by PMC Chair, PMC, Committers, Contributers, all alphabetical-->
   <developers>
