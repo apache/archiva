@@ -275,7 +275,6 @@ public class AdministrationServiceImpl
 
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repoId );
-
         repositoryTaskScheduler.queueTask( task );
 
         return true;

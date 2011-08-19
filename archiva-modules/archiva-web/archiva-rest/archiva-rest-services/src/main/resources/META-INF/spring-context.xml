@@ -47,6 +47,7 @@
     <jaxrs:providers>
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
+      <ref bean="repositoriesService#rest"/>
     </jaxrs:providers>
 
    </jaxrs:server>

@@ -19,24 +19,27 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.services.PingService;
-import org.springframework.stereotype.Service;
+import org.apache.archiva.rest.api.services.RepositoriesService;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.codehaus.redback.rest.services.AbstractRestServicesTest;
+import org.junit.Test;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
  */
-@Service( "pingService#rest" )
-public class DefaultPingService
-    implements PingService
+public class RepositoriesServiceTest
+    extends AbstractRestServicesTest
 {
-    public String ping()
+    RepositoriesService getPingService()
     {
-        return "Yeah Baby It rocks!";
+        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                          RepositoriesService.class );
+
     }
 
-    public String pingWithAuthz()
+    @Test
+    public void listRemoteRepositories() throws Exception
     {
-        return ping();
+
     }
 }

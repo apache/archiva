@@ -19,40 +19,40 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.ManagedRepository;
+import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
-@Path( "/pingService/" )
-public interface PingService
+@Path( "/repositoriesService/" )
+public interface RepositoriesService
 {
-
-    /**
-     * ping service to monitor Archiva with a nice returned message :-)
-     *
-     * @return Yeah Baby It rocks!
-     */
-    @Path( "ping" )
+    @Path( "getManagedRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = true )
-    String ping();
+    List<ManagedRepository> getManagedRepositories();
 
-    /**
-     * same as #ping but check authz
-     * @return
-     */
-    @Path( "pingWithAuthz" )
+    @Path( "getRemoteRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = false, noPermission = true )
-    String pingWithAuthz();
+    @RedbackAuthorization( noRestriction = true )
+    List<RemoteRepository> getRemoteRepositories();
 
+    @Path( "scanRepository" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = true )
+    Boolean scanRepository( @QueryParam( "repositoryId" ) String repositoryId,
+                            @QueryParam( "fullScan" ) boolean fullScan );
 }

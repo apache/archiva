@@ -21,9 +21,9 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.rest.api.services.PingService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
-import org.codehaus.redback.rest.services.FakeCreateAdminService;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -33,20 +33,6 @@ import org.junit.Test;
 public class PingServiceTest
     extends AbstractRestServicesTest
 {
-
-    @Before
-    public void setUp()
-        throws Exception
-    {
-        super.startServer();
-
-        FakeCreateAdminService fakeCreateAdminService =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/services/fakeCreateAdminService/",
-                                       FakeCreateAdminService.class );
-
-        Boolean res = fakeCreateAdminService.createAdminIfNeeded();
-        assertTrue( res.booleanValue() );
-    }
 
     PingService getPingService()
     {
@@ -64,6 +50,34 @@ public class PingServiceTest
         //WebClient.getConfig( userService ).getHttpConduit().getClient().setReceiveTimeout(3000);
 
         String res = getPingService().ping();
+        assertEquals( "Yeah Baby It rocks!", res );
+    }
+
+    @Test( expected = ServerWebApplicationException.class )
+    public void pingWithAuthzFailed()
+        throws Exception
+    {
+
+        try
+        {
+            String res = getPingService().pingWithAuthz();
+            fail( "not in exception" );
+        }
+        catch ( ServerWebApplicationException e )
+        {
+            assertEquals( 403, e.getStatus() );
+            throw e;
+        }
+    }
+
+    @Test
+    public void pingWithAuthz()
+        throws Exception
+    {
+
+        PingService service = getPingService();
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        String res = service.pingWithAuthz();
         assertEquals( "Yeah Baby It rocks!", res );
     }
 }
