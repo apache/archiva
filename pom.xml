@@ -52,15 +52,6 @@
     <url>http://svn.apache.org/viewvc/archiva/trunk</url>
   </scm>
 
-  <!-- TODO: we need to push this into the parent, and also upgrade to the latest ASF parent POM -->
-  <distributionManagement>
-    <repository>
-      <id>vmbuild.staging</id>
-      <name>Apache Release Staging Repository on VMBuild</name>
-      <url>http://vmbuild.apache.org/archiva/repository/staged-archiva</url>
-    </repository>
-  </distributionManagement>
-
   <properties>
     <struts.version>2.2.3</struts.version>
     <maven3x.version>3.0.3</maven3x.version>
@@ -1260,17 +1251,7 @@
   </dependencies>
 
   <repositories>
-    <repository>
-      <id>redback</id>
-      <url>http://snapshots.repository.codehaus.org/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <!-- remove when com.atlassian.xmlrpc:atlassian-xmlrpc-binder-annotations:0.11 will be in central -->
+    <!-- TODO: remove when com.atlassian.xmlrpc:atlassian-xmlrpc-binder-annotations:0.11 will be in central -->
     <repository>
       <id>maven.atlassian</id>
       <url>https://maven.atlassian.com/content/groups/public</url>
