@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
@@ -41,6 +41,10 @@
   </bean>
   <alias name="archivaTaskScheduler#repository" alias="scheduler#repository"/>
 
+  <!--
+  olamy we can use this if one day we move away from the old plexus stuff :-)
+  btw comment this as it breaks unit tests in web as depending on classloader loading
+  it override beans with same name but with type org.codehaus.redback.components.scheduler.DefaultScheduler
   <task:scheduler id="scheduler" pool-size="10"/>
-
+  -->
 </beans>

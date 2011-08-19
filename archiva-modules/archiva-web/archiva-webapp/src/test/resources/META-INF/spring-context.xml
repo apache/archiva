@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -17,27 +18,20 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee" version="2.4"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-
-  <display-name>Apache Archiva</display-name>
-
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  <context-param>
-	  <param-name>contextClass</param-name>
-	  <param-value>org.codehaus.redback.components.springutils.CachingWebApplicationContext</param-value>
-  </context-param>
-
-   <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>
-      classpath*:/META-INF/spring-context.xml
-      classpath*:/spring-context-servlet-security-test.xml
-    </param-value>
-  </context-param>
-
-</web-app>
+  <bean name="scheduler" class="org.codehaus.redback.components.scheduler.DefaultScheduler">
+    <property name="properties">
+      <props>
+        <prop key="org.quartz.scheduler.instanceName">scheduler1</prop>
+        <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+        <prop key="org.quartz.threadPool.threadCount">2</prop>
+        <prop key="org.quartz.threadPool.threadPriority">4</prop>
+        <prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
+      </props>
+    </property>
+  </bean>
+</beans>

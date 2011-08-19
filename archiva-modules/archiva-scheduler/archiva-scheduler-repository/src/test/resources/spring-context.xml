@@ -40,32 +40,6 @@
 
   <alias name="repositoryStatisticsManager#test" alias="repositoryStatisticsManager#default"/>
 
-  <!--
-    <component>
-      <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
-      <role-hint>test-repository-scanning</role-hint>
-      <implementation>org.apache.archiva.scheduler.repository.ArchivaRepositoryScanningTaskExecutor
-      </implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <field-name>archivaConfiguration</field-name>
-          <role-hint>test-repository-scanning</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.archiva.repository.scanner.RepositoryScanner</role>
-          <field-name>repoScanner</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager</role>
-        </requirement>
-        <requirement>
-          <role>org.apache.archiva.metadata.repository.RepositorySessionFactory</role>
-        </requirement>
-      </requirements>
-    </component>
-    -->
-
   <bean name="archivaConfiguration#test-repository-scanning" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#test-configured"/>
   </bean>
