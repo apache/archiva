@@ -139,7 +139,7 @@ public class RepositoriesServiceTest
         service.addManagedRepository( repo );
         repo = service.getManagedRepository( repo.getId() );
         assertNotNull( repo );
-        assertEquals( "foo", repo.getName() );
+        assertEquals( "test", repo.getName() );
         // toto is foo in French :-)
         repo.setName( "toto" );
 
