@@ -123,6 +123,34 @@ public class RepositoriesServiceTest
         assertNotNull( service.getManagedRepository( repo.getId() ) );
     }
 
+    @Test
+    public void updateManagedRepo()
+        throws Exception
+    {
+        RepositoriesService service = getRepositoriesService();
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        ManagedRepository repo = getTestManagedRepository();
+        if ( service.getManagedRepository( repo.getId() ) != null )
+        {
+            service.deleteManagedRepository( repo.getId() );
+            assertNull( service.getManagedRepository( repo.getId() ) );
+        }
+        service.addManagedRepository( repo );
+        repo = service.getManagedRepository( repo.getId() );
+        assertNotNull( repo );
+        assertEquals( "foo", repo.getName() );
+        // toto is foo in French :-)
+        repo.setName( "toto" );
+
+        service.updateManagedRepository( repo );
+
+        repo = service.getManagedRepository( repo.getId() );
+        assertNotNull( repo );
+        assertEquals( "toto", repo.getName() );
+
+    }
+
 
     private ManagedRepository getTestManagedRepository()
     {

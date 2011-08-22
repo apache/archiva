@@ -24,7 +24,7 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
-import org.apache.maven.index.creator.OSGIArtifactIndexCreator;
+import org.apache.maven.index.creator.OsgiArtifactIndexCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -59,7 +59,7 @@ public class MavenIndexerUtils
             log.warn( "using lookupList from sisu plexus failed so build indexCreator manually" );
 
             allIndexCreators =
-                Arrays.asList( plexusSisuBridge.lookup( IndexCreator.class, OSGIArtifactIndexCreator.ID ),
+                Arrays.asList( plexusSisuBridge.lookup( IndexCreator.class, OsgiArtifactIndexCreator.ID ),
                                plexusSisuBridge.lookup( IndexCreator.class, MavenArchetypeArtifactInfoIndexCreator.ID ),
                                plexusSisuBridge.lookup( IndexCreator.class, MinimalArtifactInfoIndexCreator.ID ),
                                plexusSisuBridge.lookup( IndexCreator.class, JarFileContentsIndexCreator.ID ),

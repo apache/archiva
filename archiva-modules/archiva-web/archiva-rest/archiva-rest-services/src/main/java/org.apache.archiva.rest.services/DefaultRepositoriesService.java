@@ -1,6 +1,9 @@
 package org.apache.archiva.rest.services;
 
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
@@ -18,11 +21,15 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
-import org.codehaus.redback.components.scheduler.Scheduler;
+import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -54,6 +61,12 @@ public class DefaultRepositoriesService
 
     private static final String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
 
+    // TODO move this field to an abstract class
+    @Inject
+    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+
+    @Inject
+    protected RoleManager roleManager;
 
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
@@ -144,6 +157,7 @@ public class DefaultRepositoriesService
             throw new Exception( "Error saving configuration for delete action" + e.getMessage() );
         }
 
+        // TODO could be async ? as directory can be huge
         File dir = new File( repository.getLocation() );
         if ( !FileUtils.deleteQuietly( dir ) )
         {
@@ -193,60 +207,21 @@ public class DefaultRepositoriesService
         return remoteRepos;
     }
 
-    public Boolean scanRepository( String repositoryId, boolean fullScan )
-    {
-        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
-        {
-            log.info( "scanning of repository with id {} already scheduled" );
-        }
-        RepositoryTask task = new RepositoryTask();
-        task.setRepositoryId( repositoryId );
-        task.setScanAll( fullScan );
-        try
-        {
-            repositoryTaskScheduler.queueTask( task );
-        }
-        catch ( TaskQueueException e )
-        {
-            log.error( "failed to schedule scanning of repo with id {}", repositoryId, e );
-            return false;
-        }
-        return true;
-    }
-
-    public Boolean alreadyScanning( String repositoryId )
-    {
-        return repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId );
-    }
-
-    public Boolean removeScanningTaskFromQueue( @PathParam( "repositoryId" ) String repositoryId )
-    {
-        RepositoryTask task = new RepositoryTask();
-        task.setRepositoryId( repositoryId );
-        try
-        {
-            return repositoryTaskScheduler.unQueueTask( task );
-        }
-        catch ( TaskQueueException e )
-        {
-            log.error( "failed to unschedule scanning of repo with id {}", repositoryId, e );
-            return false;
-        }
-    }
-
     public Boolean addManagedRepository( ManagedRepository managedRepository )
         throws Exception
     {
-        return addManagedRepository( managedRepository.getId(), managedRepository.getLayout(),
-                                     managedRepository.getName(), managedRepository.getUrl(),
-                                     managedRepository.isBlockRedeployments(), managedRepository.isReleases(),
-                                     managedRepository.isSnapshots(), managedRepository.isStageRepoNeeded(),
-                                     managedRepository.getCronExpression() );
+        return
+            addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
+                                  managedRepository.getUrl(), managedRepository.isBlockRedeployments(),
+                                  managedRepository.isReleases(), managedRepository.isSnapshots(),
+                                  managedRepository.isStageRepoNeeded(), managedRepository.getCronExpression() )
+                != null;
     }
 
-    private Boolean addManagedRepository( String repoId, String layout, String name, String location,
-                                          boolean blockRedeployments, boolean releasesIncluded,
-                                          boolean snapshotsIncluded, boolean stageRepoNeeded, String cronExpression )
+    private ManagedRepositoryConfiguration addManagedRepository( String repoId, String layout, String name,
+                                                                 String location, boolean blockRedeployments,
+                                                                 boolean releasesIncluded, boolean snapshotsIncluded,
+                                                                 boolean stageRepoNeeded, String cronExpression )
         throws Exception
     {
 
@@ -335,7 +310,145 @@ public class DefaultRepositoriesService
                 e.getMessage() ).toString(), e );
         }
 
-        return Boolean.TRUE;
+        return repository;
+    }
+
+    public Boolean updateManagedRepository( ManagedRepository repository )
+        throws Exception
+    {
+        // Ensure that the fields are valid.
+        Configuration configuration = archivaConfiguration.getConfiguration();
+
+        ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( repository.getId() );
+
+        if ( toremove != null )
+        {
+            configuration.removeManagedRepository( toremove );
+        }
+        // FIXME the case of the attached staging repository
+        /*
+        if ( stagingRepository != null )
+        {
+            removeRepository( stagingRepository.getId(), configuration );
+        }*/
+
+        // Save the repository configuration.
+        String result;
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        ManagedRepositoryConfiguration managedRepositoryConfiguration =
+            addManagedRepository( repository.getId(), repository.getLayout(), repository.getName(), repository.getUrl(),
+                                  repository.isBlockRedeployments(), repository.isReleases(), repository.isSnapshots(),
+                                  repository.isStageRepoNeeded(), repository.getCronExpression() );
+
+        // FIXME only location has changed from previous
+        boolean resetStats = true;
+
+        try
+        {
+            triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO );
+            addRepositoryRoles( managedRepositoryConfiguration );
+
+            // FIXME this staging part !!
+
+            //update changes of the staging repo
+            /*if ( stageNeeded )
+            {
+
+                stagingRepository = getStageRepoConfig( configuration );
+                addRepository( stagingRepository, configuration );
+                addRepositoryRoles( stagingRepository );
+
+            }*/
+            //delete staging repo when we dont need it
+            /*
+            if ( !stageNeeded )
+            {
+                stagingRepository = getStageRepoConfig( configuration );
+                removeRepository( stagingRepository.getId(), configuration );
+                removeContents( stagingRepository );
+                removeRepositoryRoles( stagingRepository );
+            }*/
+
+            saveConfiguration( this.archivaConfiguration.getConfiguration() );
+            if ( resetStats )
+            {
+                repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(), repository.getId() );
+                repositorySession.save();
+            }
+
+            //MRM-1342 Repository statistics report doesn't appear to be working correctly
+            //scan repository when modification of repository is successful
+            // olamy :  IMHO we are fine to ignore issue with scheduling scanning
+            // as here the repo has been updated
+            scanRepository( repository.getId(), true );
+            // FIXME staging !!
+            /*
+            if ( stageNeeded )
+            {
+                executeRepositoryScanner( stagingRepository.getId() );
+            }*/
+
+        }
+        catch ( IOException e )
+        {
+            throw e;
+        }
+        catch ( RoleManagerException e )
+        {
+            throw e;
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw e;
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+
+        return true;
+    }
+
+
+    public Boolean scanRepository( String repositoryId, boolean fullScan )
+    {
+        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
+        {
+            log.info( "scanning of repository with id {} already scheduled" );
+        }
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repositoryId );
+        task.setScanAll( fullScan );
+        try
+        {
+            repositoryTaskScheduler.queueTask( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( "failed to schedule scanning of repo with id {}", repositoryId, e );
+            return false;
+        }
+        return true;
+    }
+
+    public Boolean alreadyScanning( String repositoryId )
+    {
+        return repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId );
+    }
+
+    public Boolean removeScanningTaskFromQueue( @PathParam( "repositoryId" ) String repositoryId )
+    {
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repositoryId );
+        try
+        {
+            return repositoryTaskScheduler.unQueueTask( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( "failed to unschedule scanning of repo with id {}", repositoryId, e );
+            return false;
+        }
     }
 
     //-----------------------------------------------
@@ -343,6 +456,43 @@ public class DefaultRepositoriesService
     // FIXME most are copied from xmlrpc
     // olamt move those in common utility classes
     //-----------------------------------------------
+
+    protected void triggerAuditEvent( String repositoryId, String resource, String action )
+    {
+        User user = RedbackAuthenticationThreadLocal.get();
+        if ( user == null )
+        {
+            log.warn( "no user found in Redback ThreadLocal" );
+            AuditEvent event =
+                new AuditEvent( repositoryId, user == null ? "null" : user.getUsername(), resource, action );
+            // FIXME use a thread local through cxf interceptors to store this
+            //event.setRemoteIP( getRemoteAddr() );
+
+            for ( AuditListener listener : auditListeners )
+            {
+                listener.auditEvent( event );
+            }
+        }
+    }
+
+    protected void addRepositoryRoles( ManagedRepositoryConfiguration newRepository )
+        throws RoleManagerException
+    {
+        String repoId = newRepository.getId();
+
+        // TODO: double check these are configured on start up
+        // TODO: belongs in the business logic
+
+        if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
+        {
+            roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+        }
+
+        if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
+        {
+            roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+        }
+    }
 
     public Boolean executeRepositoryScanner( String repoId )
         throws Exception
