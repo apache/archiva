@@ -63,7 +63,7 @@ public abstract class AbstractDefaultRepositoryContent
      * plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
      */
     @Inject
-    protected List<ArtifactMappingProvider> artifactMappingProviders;
+    protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
     //@Inject
     //protected ApplicationContext applicationContext;
