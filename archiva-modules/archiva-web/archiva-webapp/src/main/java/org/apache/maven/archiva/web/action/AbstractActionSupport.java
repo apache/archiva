@@ -58,6 +58,7 @@ public abstract class AbstractActionSupport
     /**
      * plexus.requirement role="org.apache.archiva.audit.AuditListener"
      */
+    @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
     /**
@@ -75,8 +76,7 @@ public abstract class AbstractActionSupport
     @PostConstruct
     public void initialize()
     {
-        // TODO some caching here
-        this.auditListeners = Lists.newArrayList( applicationContext.getBeansOfType( AuditListener.class ).values() );
+        // no op
     }
 
     @SuppressWarnings( "unchecked" )

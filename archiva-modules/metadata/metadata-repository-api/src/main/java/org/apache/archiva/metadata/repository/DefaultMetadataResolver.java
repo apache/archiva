@@ -82,17 +82,18 @@ public class DefaultMetadataResolver
     /**
      * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
      */
+    @Inject
     private List<RepositoryListener> listeners;
 
 
-    @Inject
-    private ApplicationContext applicationContext;
+    //@Inject
+    //private ApplicationContext applicationContext;
 
     @PostConstruct
     private void initialize()
     {
-        listeners =
-            new ArrayList<RepositoryListener>( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
+        //listeners =
+        //    new ArrayList<RepositoryListener>( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
     }
 
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,

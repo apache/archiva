@@ -46,13 +46,14 @@ public class Maven2RepositoryPathTranslator
 
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "([0-9]{8}.[0-9]{6})-([0-9]+).*" );
 
-    @Inject
-    private ApplicationContext applicationContext;
+    //@Inject
+    //private ApplicationContext applicationContext;
 
     /**
      * plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
      * see #initialize
      */
+    @Inject
     private List<ArtifactMappingProvider> artifactMappingProviders;
 
     public Maven2RepositoryPathTranslator()
@@ -63,8 +64,9 @@ public class Maven2RepositoryPathTranslator
     @PostConstruct
     public void initialize()
     {
-        artifactMappingProviders = new ArrayList<ArtifactMappingProvider>(
-            applicationContext.getBeansOfType( ArtifactMappingProvider.class ).values() );
+
+        //artifactMappingProviders = new ArrayList<ArtifactMappingProvider>(
+        //    applicationContext.getBeansOfType( ArtifactMappingProvider.class ).values() );
 
     }
 

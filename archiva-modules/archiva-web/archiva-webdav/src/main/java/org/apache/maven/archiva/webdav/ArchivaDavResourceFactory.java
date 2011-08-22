@@ -110,6 +110,7 @@ public class ArchivaDavResourceFactory
     /**
      * plexus.requirement role="org.apache.archiva.audit.AuditListener"
      */
+    @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
     /**
@@ -145,7 +146,6 @@ public class ArchivaDavResourceFactory
     /**
      * plexus.requirement
      */
-    //Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
@@ -169,21 +169,16 @@ public class ArchivaDavResourceFactory
     /**
      * plexus.requirement
      */
-    //Inject
     private ChecksumFile checksum;
 
     /**
      * plexus.requirement role-hint="sha1"
      */
-    //Inject
-    //Named( value = "digester#sha1" )
     private Digester digestSha1;
 
     /**
      * plexus.requirement role-hint="md5";
      */
-    //Inject
-    //Named( value = "digester#md5" )
     private Digester digestMd5;
 
     /**
@@ -193,7 +188,6 @@ public class ArchivaDavResourceFactory
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
 
-    //Inject
     private ApplicationContext applicationContext;
 
     @Inject
@@ -209,8 +203,6 @@ public class ArchivaDavResourceFactory
         this.digestSha1 = plexusSisuBridge.lookup( Digester.class, "sha1" );
 
         repositoryRequest = new RepositoryRequest( new LegacyPathParser( archivaConfiguration ) );
-        this.auditListeners =
-            new ArrayList<AuditListener>( applicationContext.getBeansOfType( AuditListener.class ).values() );
     }
 
     @PostConstruct

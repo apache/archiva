@@ -62,16 +62,17 @@ public abstract class AbstractDefaultRepositoryContent
     /**
      * plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
      */
-    protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
-
     @Inject
-    protected ApplicationContext applicationContext;
+    protected List<ArtifactMappingProvider> artifactMappingProviders;
+
+    //@Inject
+    //protected ApplicationContext applicationContext;
 
     @PostConstruct
     protected void initialize()
     {
-        artifactMappingProviders = new ArrayList<ArtifactMappingProvider>(
-            applicationContext.getBeansOfType( ArtifactMappingProvider.class ).values() );
+        //artifactMappingProviders = new ArrayList<ArtifactMappingProvider>(
+        //    applicationContext.getBeansOfType( ArtifactMappingProvider.class ).values() );
     }
 
     public ArtifactReference toArtifactReference( String path )

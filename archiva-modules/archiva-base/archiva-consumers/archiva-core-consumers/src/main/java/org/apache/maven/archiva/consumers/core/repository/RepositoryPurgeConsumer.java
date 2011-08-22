@@ -107,12 +107,13 @@ public class RepositoryPurgeConsumer
 
     private boolean deleteReleasedSnapshots;
 
-    @Inject
-    private ApplicationContext applicationContext;
+    //@Inject
+    //private ApplicationContext applicationContext;
 
     /**
      * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
      */
+    @Inject
     private List<RepositoryListener> listeners = Collections.emptyList();
 
     /**
@@ -250,8 +251,8 @@ public class RepositoryPurgeConsumer
     @PostConstruct
     public void initialize()
     {
-        this.listeners =
-            new ArrayList<RepositoryListener>( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
+        //this.listeners =
+        //    new ArrayList<RepositoryListener>( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
         configuration.addChangeListener( this );
 
         initIncludes();

@@ -116,22 +116,25 @@ public class DefaultRepositoryProxyConnectors
     @Named( value = "metadataTools#default" )
     private MetadataTools metadataTools;
 
-    @Inject
-    private ApplicationContext applicationContext;
+    //@Inject
+    //private ApplicationContext applicationContext;
 
     /**
      * plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
      */
+    @Inject
     private Map<String, PreDownloadPolicy> preDownloadPolicies;
 
     /**
      * plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
      */
+    @Inject
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
     /**
      * plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
      */
+    @Inject
     private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
 
     /**
@@ -162,9 +165,9 @@ public class DefaultRepositoryProxyConnectors
     {
         initConnectorsAndNetworkProxies();
         archivaConfiguration.addChangeListener( this );
-        this.postDownloadPolicies = applicationContext.getBeansOfType( PostDownloadPolicy.class );
-        this.preDownloadPolicies = applicationContext.getBeansOfType( PreDownloadPolicy.class );
-        this.downloadErrorPolicies = applicationContext.getBeansOfType( DownloadErrorPolicy.class );
+        //this.postDownloadPolicies = applicationContext.getBeansOfType( PostDownloadPolicy.class );
+        //his.preDownloadPolicies = applicationContext.getBeansOfType( PreDownloadPolicy.class );
+        //this.downloadErrorPolicies = applicationContext.getBeansOfType( DownloadErrorPolicy.class );
     }
 
     @SuppressWarnings( "unchecked" )

@@ -27,5 +27,5 @@ package org.apache.maven.archiva.consumers;
 public interface KnownRepositoryContentConsumer
     extends RepositoryContentConsumer
 {
-
+    // no op
 }

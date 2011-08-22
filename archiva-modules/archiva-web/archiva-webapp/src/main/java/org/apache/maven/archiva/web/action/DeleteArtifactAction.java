@@ -125,6 +125,7 @@ public class DeleteArtifactAction
     /**
      * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
      */
+    @Inject
     private List<RepositoryListener> listeners;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
@@ -133,7 +134,6 @@ public class DeleteArtifactAction
     public void initialize()
     {
         super.initialize();
-        listeners = Lists.newArrayList( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
     }
 
     public String getGroupId()
