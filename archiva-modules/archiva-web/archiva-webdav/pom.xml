@@ -134,7 +134,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http-lightweight</artifactId>
+      <artifactId>wagon-http</artifactId>
       <scope>test</scope>
       <exclusions>
         <!-- This triggers httpunit to use it instead, but it doesn't work -->

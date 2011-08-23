@@ -996,12 +996,12 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http-lightweight</artifactId>
+        <artifactId>wagon-http</artifactId>
         <version>${wagon.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>nekohtml</groupId>
-            <artifactId>xercesMinimal</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1331,6 +1331,7 @@
                     <exclude>org.codehaus.plexus.registry:plexus-registry-api</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-commons</exclude>
                     <exclude>>org.codehaus.plexus:plexus-taskqueue</exclude>
+                    <exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
