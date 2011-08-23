@@ -2,7 +2,6 @@ target
 build
 *.iml
 derby.log
-${plexus.home}
 archiva-modules/archiva-web/archiva-webapp/appserver-base/
 archiva-modules/archiva-web/archiva-webapp/overlays/
 archiva-modules/archiva-web/archiva-webapp/src/main/webapp/archiva-applet.jar

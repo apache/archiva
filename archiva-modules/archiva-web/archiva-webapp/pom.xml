@@ -447,21 +447,15 @@
       </resource>
     </resources>
     <plugins>
-      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-agentlib:yjpagent</argLine>
-          <excludes>
-            <exclude>**/Abstract*</exclude>
-            <exclude>**/*TestCase.java</exclude>
-            <exclude>**/*Tests.java</exclude>
-            <exclude>**/*TestSuite.java</exclude>
-          </excludes>
+          <systemPropertyVariables>
+            <plexus.home>${project.build.outputDirectory}</plexus.home>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
-       -->
       <!-- hack for jetty:run, archiva web config files are checked in /WEB-INF/ dir -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
