@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.repository.managed;
+package org.apache.archiva.admin.repository;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,31 +19,15 @@ package org.apache.archiva.admin.repository.managed;
  */
 
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-
-import java.util.List;
-
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
-public interface ManagedRepositoryAdmin
+public class RepositoryAdminException
+    extends Exception
 {
-    List<ManagedRepository> getManagedRepositories()
-        throws RepositoryAdminException;
-
-    ManagedRepository getManagedRepository( String repositoryId )
-        throws RepositoryAdminException;
-
-    Boolean deleteManagedRepository( String repositoryId )
-        throws RepositoryAdminException;
-
-    Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
-        throws RepositoryAdminException;
-
-
-    Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
-        throws RepositoryAdminException;
-
-
+    public RepositoryAdminException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 }
