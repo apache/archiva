@@ -19,10 +19,29 @@ package org.apache.archiva.admin.repository.remote;
  */
 
 
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+
+import java.util.List;
+
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
 public interface RemoteRepositoryAdmin
 {
+    List<RemoteRepository> getRemoteRepositories()
+        throws RepositoryAdminException;
+
+    RemoteRepository getRemoteRepository( String repositoryId )
+        throws RepositoryAdminException;
+
+    Boolean deleteRemoteRepository( String repositoryId )
+        throws RepositoryAdminException;
+
+    Boolean addRemoteRepository( RemoteRepository remoteRepository )
+        throws RepositoryAdminException;
+
+
+    Boolean updateRemoteRepository( RemoteRepository remoteRepository )
+        throws RepositoryAdminException;
 }
