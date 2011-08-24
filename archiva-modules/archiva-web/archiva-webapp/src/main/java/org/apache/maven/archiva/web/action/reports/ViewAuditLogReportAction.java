@@ -80,17 +80,11 @@ public class ViewAuditLogReportAction
 
     private int page = 1;
 
-    private String prev;
-
-    private String next;
-
     protected boolean isLastPage = true;
 
     private List<AuditEvent> auditLogs;
 
     private static final String ALL_REPOSITORIES = "all";
-
-    protected int[] range = new int[2];
 
     private String initial = "true";
 
@@ -183,9 +177,6 @@ public class ViewAuditLogReportAction
             endDateInDF = cal.getTime();
         }
 
-        range[0] = ( page - 1 ) * rowCount;
-        range[1] = ( page * rowCount ) + 1;
-
         Collection<String> repos = getManagableRepositories();
         if ( !repository.equals( ALL_REPOSITORIES ) )
         {
@@ -233,44 +224,55 @@ public class ViewAuditLogReportAction
             repositorySession.close();
         }
 
+        headerName = HEADER_RESULTS;
+
         if ( auditLogs.isEmpty() )
         {
             addActionError( "No audit logs found." );
             initial = "true";
+            return SUCCESS;
         }
         else
         {
             initial = "false";
+            return paginate();
         }
-
-        headerName = HEADER_RESULTS;
-        paginate();
-
-        return SUCCESS;
     }
 
-    private void paginate()
+    private String paginate()
     {
-        if ( auditLogs.size() <= rowCount )
+        int rowCount = getRowCount();
+        int extraPage = ( auditLogs.size() % rowCount ) != 0 ? 1 : 0;
+        int totalPages = ( auditLogs.size() / rowCount ) + extraPage;
+
+        int currentPage = getPage();
+        if ( currentPage > totalPages )
+        {
+            addActionError(
+                "Error encountered while generating report :: The requested page exceeds the total number of pages." );
+            return ERROR;
+        }
+
+        if ( currentPage == totalPages )
         {
             isLastPage = true;
         }
         else
         {
             isLastPage = false;
-            auditLogs.remove( rowCount );
         }
 
-        prev = request.getRequestURL() + "?page=" + ( page - 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId
-            + "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate="
-            + endDate;
+        int start = rowCount * ( currentPage - 1 );
+        int end = ( start + rowCount ) - 1;
 
-        next = request.getRequestURL() + "?page=" + ( page + 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId
-            + "&artifactId=" + artifactId + "&repository=" + repository + "&startDate=" + startDate + "&endDate="
-            + endDate;
+        if ( end >= auditLogs.size() )
+        {
+            end = auditLogs.size() - 1;
+        }
 
-        prev = StringUtils.replace( prev, " ", "%20" );
-        next = StringUtils.replace( next, " ", "%20" );
+        auditLogs = auditLogs.subList( start, end + 1 );
+
+        return SUCCESS;
     }
 
     private List<String> getManagableRepositories()
@@ -387,26 +389,6 @@ public class ViewAuditLogReportAction
     public void setIsLastPage( boolean isLastPage )
     {
         this.isLastPage = isLastPage;
-    }
-
-    public String getPrev()
-    {
-        return prev;
-    }
-
-    public void setPrev( String prev )
-    {
-        this.prev = prev;
-    }
-
-    public String getNext()
-    {
-        return next;
-    }
-
-    public void setNext( String next )
-    {
-        this.next = next;
     }
 
     public String getInitial()

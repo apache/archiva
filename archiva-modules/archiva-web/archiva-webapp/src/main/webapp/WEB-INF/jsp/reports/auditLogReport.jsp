@@ -134,12 +134,36 @@
 		      </tr>		    
 		    </c:forEach>
 		  </table>	
-		  
-		  <s:set name="page" value="page"/>
-	      <c:if test="${page > 1}"><a href="<s:property value='prev' />">&lt;&lt;</a></c:if>
-			  <strong>Page: </strong>${page}
-		  <s:set name="isLastPage" value="isLastPage"/>		  
-		  <c:if test="${!isLastPage}"><a href="<s:property value='next' />">&gt;&gt;</a></c:if>
+
+          <c:set var="prevPageUrl">
+            <s:url action="viewAuditLogReport" namespace="/report">
+              <s:param name="repository" value="%{#attr.repository}" />
+              <s:param name="groupId" value="%{#attr.groupId}" />
+              <s:param name="artifactId" value="%{#attr.artifactId}" />
+              <s:param name="rowCount" value="%{#attr.rowCount}" />
+              <s:param name="page" value="%{#attr.page - 1}"/>
+              <s:param name="startDate" value="%{#attr.startDate}"/>
+              <s:param name="endDate" value="%{#attr.endDate}" />
+            </s:url>
+          </c:set>
+          <c:set var="nextPageUrl">
+            <s:url action="viewAuditLogReport" namespace="/report">
+              <s:param name="repository" value="%{#attr.repository }" />
+              <s:param name="groupId" value="%{#attr.groupId}" />
+              <s:param name="artifactId" value="%{#attr.artifactId }" />
+              <s:param name="rowCount" value="%{#attr.rowCount}" />
+              <s:param name="page" value="%{#attr.page + 1}"/>
+              <s:param name="startDate" value="%{#attr.startDate}"/>
+              <s:param name="endDate" value="%{#attr.endDate}" />
+            </s:url>
+           </c:set>
+
+           <s:set name="page" value="page"/>
+           <c:if test="${page gt 1}"><a href="${prevPageUrl}">&lt;&lt;</a></c:if>
+           <strong>Page: </strong>${page}
+           <s:set name="isLastPage" value="isLastPage"/>
+           <c:if test="${!isLastPage}"><a href="${nextPageUrl}">&gt;&gt;</a></c:if>
+ 
 		</c:if>  
 	</div>
    

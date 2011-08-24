@@ -262,7 +262,7 @@ public class GenerateReportAction
                     int start = rowCount * ( currentPage - 1 );
                     int end = ( start + rowCount ) - 1;
 
-                    if ( end > stats.size() )
+                    if ( end >= stats.size() )
                     {
                         end = stats.size() - 1;
                     }
