@@ -101,7 +101,6 @@ public class Maven2RepositoryMetadataResolverTest
     {
         super.setUp();
 
-        //ArchivaConfiguration configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
@@ -130,7 +129,6 @@ public class Maven2RepositoryMetadataResolverTest
 
         Wagon wagon = new MockWagon();
         when( wagonFactory.getWagon( "wagon#http" ) ).thenReturn( wagon );
-        //storage = (Maven2RepositoryStorage) lookup( RepositoryStorage.class, "maven2" );
     }
 
     @Test
@@ -493,7 +491,7 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetProjectVersionMetadataWithParentNoRemoteReposConfigured()
          throws Exception
     {
-       // remove configuration
+        // remove configuration
         Configuration config = configuration.getConfiguration();
         RemoteRepositoryConfiguration remoteRepo = config.findRemoteRepositoryById( TEST_REMOTE_REPO_ID );
         config.removeRemoteRepository( remoteRepo );
