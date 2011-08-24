@@ -42,14 +42,6 @@ public class RoleManagerTest
     @Inject
     RoleManager roleManager;
     
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-        
-
-    }
-
     @Test
     public void testExpectedRoles()
         throws Exception
