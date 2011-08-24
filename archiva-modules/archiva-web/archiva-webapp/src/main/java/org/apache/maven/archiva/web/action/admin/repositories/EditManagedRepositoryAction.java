@@ -168,25 +168,22 @@ public class EditManagedRepositoryAction
                 repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(), repository.getId() );
                 repositorySession.save();
             }
+            //MRM-1342 Repository statistics report doesn't appear to be working correctly
+            //scan repository when modification of repository is successful 
             if ( result.equals( SUCCESS ) )
             {
-                //MRM-1342 Repository statistics report doesn't appear to be working correctly
-                //scan repository when modification of repository is successful 
-                if ( result.equals( SUCCESS ) )
+                try
                 {
-                    try
+                    executeRepositoryScanner( repository.getId() );
+                    if ( stageNeeded )
                     {
-                        executeRepositoryScanner( repository.getId() );
-                        if ( stageNeeded )
-                        {
-                            executeRepositoryScanner( stagingRepository.getId() );
-                        }
+                        executeRepositoryScanner( stagingRepository.getId() );
                     }
-                    catch ( TaskQueueException e )
-                    {
-                        log.warn( new StringBuilder( "Unable to scan repository [" ).append( repository.getId() ).append( "]: " ).append(
-                                  e.getMessage() ).toString(), e );
-                    }
+                }
+                catch ( TaskQueueException e )
+                {
+                    log.warn( new StringBuilder( "Unable to scan repository [" ).append( repository.getId() ).append( "]: " ).append(
+                              e.getMessage() ).toString(), e );
                 }
             }
         }
