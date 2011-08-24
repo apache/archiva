@@ -13,3 +13,5 @@ archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/classes/
 archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/jsp/redback/
 archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/lib/
 archiva-modules/archiva-web/archiva-webapp-test/cargo-installs/
+*.ipr
+*.iws
