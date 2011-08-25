@@ -22,12 +22,16 @@ Configuring Maven 2 to use an Archiva repository
     <mirror>
       <id>archiva.default</id>
       <url>http://repo.mycompany.com:8080/archiva/repository/internal/</url>
-      <mirrorOf>*</mirrorOf>
+      <mirrorOf>external:*</mirrorOf>
     </mirror>
   </mirrors>
   ...
 </settings>
 +-------------------------------------------------------------------------+
+
+  <<Note:>> <There are other controls you can use on what is mirrored. See Maven's
+{{{http://maven.apache.org/guides/mini/guide-mirror-settings.html} Guide to
+Mirror Settings}} for more information.>
 
   With this in place, all repository requests will be sent to the internal repository (which by default is configured to proxy the central repository).
 
