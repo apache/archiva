@@ -35,11 +35,28 @@
     <module>archiva-rest</module>
   </modules>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <!-- for when the profile is not activated -->
+              <exclude>archiva-webapp-test/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <profiles>
     <profile>
       <id>it</id>
       <modules>
-        <module>archiva-webapp-test</module>        
+        <module>archiva-webapp-test</module>
       </modules>
     </profile>
   </profiles>

@@ -146,6 +146,21 @@
           <artifactId>selenium-maven-plugin</artifactId>
           <version>${seleniumPluginVersion}</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>${cargo.install.dir}/**</exclude>
+              <exclude>src/test/resources/appserver-base/**</exclude>
+              <exclude>src/test/resources/repository/**</exclude>
+              <exclude>src/test/resources/local-repo/**</exclude>
+              <exclude>src/test/resources/projects/**</exclude>
+              <exclude>src/test/resources/snapshots/**</exclude>
+              <exclude>src/test/tomcat*/conf/catalina.policy</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>

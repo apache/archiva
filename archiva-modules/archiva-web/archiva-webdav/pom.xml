@@ -36,7 +36,7 @@
   <dependencies>
     <!-- TODO: remove this hardcoding through a better event mechanism -->
     <dependency>
-      <groupId>org.apache.archiva</groupId>                          
+      <groupId>org.apache.archiva</groupId>
       <artifactId>audit</artifactId>
     </dependency>
     <dependency>
@@ -168,5 +168,21 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>src/main/resources/org/apache/maven/archiva/webdav/util/mime.types</exclude>
+              <exclude>src/test/resources/archiva-mime-types.txt</exclude>
+              <exclude>src/test/resources/artifact.jar.sha1</exclude>
+              <exclude>src/test/resources/maven-metadata.xml</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>

@@ -62,7 +62,7 @@
       <artifactId>jsp-2.1-jetty</artifactId>
       <version>${jetty.version}</version>
       <scope>runtime</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
@@ -109,7 +109,7 @@
               </commandLineArguments>
               <platforms>
                 <platform>jsw</platform>
-              </platforms>              
+              </platforms>
               <generatorConfigurations>
                 <generatorConfiguration>
                   <generator>jsw</generator>
@@ -175,9 +175,9 @@
                   -->
                   <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
                 </systemProperties>
-              </jvmSettings> 
+              </jvmSettings>
             </daemon>
-          </daemons>          
+          </daemons>
           <repoPath>lib</repoPath>
           <repositoryLayout>flat</repositoryLayout>
           <assembleDirectory>target/generated-resources/appassembler/jsw/archiva</assembleDirectory>
@@ -217,9 +217,9 @@
             <configuration>
               <tasks>
                 <copy todir="target/generated-resources/appassembler/jsw/archiva/conf">
-                  <fileset dir="src/main/conf" />                  
+                  <fileset dir="src/main/conf" />
                 </copy>
-                <mkdir dir="target/generated-resources/appassembler/jsw/archiva/logs" />      
+                <mkdir dir="target/generated-resources/appassembler/jsw/archiva/logs" />
               </tasks>
             </configuration>
             <goals>
@@ -237,5 +237,18 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>src/main/conf/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>

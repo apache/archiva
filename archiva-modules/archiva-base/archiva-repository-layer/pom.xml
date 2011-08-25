@@ -88,5 +88,21 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>src/test/resources/test-repo/**</exclude>
+              <exclude>src/test/resources/m1-repo-filelist.txt</exclude>
+              <exclude>src/test/repositories/**</exclude>
+              <exclude>src/test/expected-poms/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>
