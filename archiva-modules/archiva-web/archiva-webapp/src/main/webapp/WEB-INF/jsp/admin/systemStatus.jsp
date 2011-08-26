@@ -112,13 +112,18 @@
       <th>&nbsp;</th>
     </tr>
     <c:forEach var="cacheEntry" items="${caches}">
+      <c:set var="flushCacheUrl">
+        <s:url action="flushCache">
+          <s:param name="cacheKey">${cacheEntry.key}</s:param>
+        </s:url>
+      </c:set>
       <tr>
         <td>${cacheEntry.key}</td>
         <td align="right">${cacheEntry.value.statistics.size}</td>
         <td align="right">${cacheEntry.value.statistics.cacheHits}</td>
         <td align="right">${cacheEntry.value.statistics.cacheMiss}</td>
         <td align="right"><fmt:formatNumber value="${cacheEntry.value.statistics.cacheHitRate}" pattern="#%"/></td>
-        <td><a href="javascript:alert('Not yet implemented')">Flush</a></td>
+        <td><a href="${flushCacheUrl}">Flush</a></td>
       </tr>
     </c:forEach>
   </table>

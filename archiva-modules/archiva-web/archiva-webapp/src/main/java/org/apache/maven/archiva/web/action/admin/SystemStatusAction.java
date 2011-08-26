@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action.admin;
  */
 
 import org.apache.archiva.repository.scanner.RepositoryScanner;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.cache.Cache;
@@ -65,6 +66,8 @@ public class SystemStatusAction
 
     private String memoryStatus;
 
+    private String cacheKey;
+
     @PostConstruct
     public void initialize()
     {
@@ -95,6 +98,17 @@ public class SystemStatusAction
 
         return SUCCESS;
     }
+    
+    public String flush()
+    {
+        if( !StringUtils.isEmpty( cacheKey ) )
+        {
+            Cache cache = caches.get( cacheKey );
+            cache.clear();
+        }
+
+        return SUCCESS;
+    }
 
     private static String formatMemory( long l )
     {
@@ -119,5 +133,15 @@ public class SystemStatusAction
     public Map<String, TaskQueue> getQueues()
     {
         return queues;
+    }
+
+    public String getCacheKey()
+    {
+        return cacheKey;
+    }
+
+    public void setCacheKey( String cacheKey )
+    {
+        this.cacheKey = cacheKey;
     }
 }
